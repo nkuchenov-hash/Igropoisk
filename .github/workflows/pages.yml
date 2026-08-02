@@ -10,9 +10,6 @@ permissions:
   pages: write
   id-token: write
 
-environment:
-  name: github-pages
-
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -33,7 +30,7 @@ jobs:
           enablement: true
 
       - name: Upload site
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: .
 
