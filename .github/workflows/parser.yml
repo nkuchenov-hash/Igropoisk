@@ -39,14 +39,14 @@ jobs:
           cache-dependency-path: parser/requirements.txt
       - name: Install parser dependencies
         run: pip install -r parser/requirements.txt
-      - name: Run registry-driven collector
+      - name: Run registry-driven collector for all 50 games
         env:
           PYTHONUNBUFFERED: "1"
         run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            LIMIT="1"
-          else
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             LIMIT="${{ github.event.inputs.limit || '50' }}"
+          else
+            LIMIT="50"
           fi
           ONLY="${{ github.event.inputs.only }}"
           if [ -n "$ONLY" ]; then
