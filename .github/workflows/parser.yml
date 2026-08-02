@@ -1,4 +1,4 @@
-name: Collect, validate and build 50 game pages
+name: Parse and build 50 game pages separately
 
 on:
   push:
@@ -14,13 +14,70 @@ permissions:
   contents: write
 
 concurrency:
-  group: igropoisk-full-parser
+  group: igropoisk-50-separate-pages
   cancel-in-progress: false
 
 jobs:
-  collect:
+  parse-one-game:
+    name: Parse ${{ matrix.game }}
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 45
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        game:
+          - "The Witcher 3: Wild Hunt"
+          - "Bloodborne"
+          - "Metal Gear Solid V: The Phantom Pain"
+          - "Fallout 4"
+          - "Undertale"
+          - "Tom Clancy's Rainbow Six Siege"
+          - "Dark Souls III"
+          - "Overwatch"
+          - "DOOM"
+          - "Titanfall 2"
+          - "Sid Meier's Civilization VI"
+          - "Stardew Valley"
+          - "The Legend of Zelda: Breath of the Wild"
+          - "Horizon Zero Dawn"
+          - "NieR: Automata"
+          - "Resident Evil 7 Biohazard"
+          - "Divinity: Original Sin 2"
+          - "Hollow Knight"
+          - "God of War"
+          - "Red Dead Redemption 2"
+          - "Marvel's Spider-Man"
+          - "Monster Hunter: World"
+          - "Kingdom Come: Deliverance"
+          - "Celeste"
+          - "Sekiro: Shadows Die Twice"
+          - "Death Stranding"
+          - "Control"
+          - "Disco Elysium"
+          - "Resident Evil 2"
+          - "Outer Wilds"
+          - "Cyberpunk 2077"
+          - "The Last of Us Part II"
+          - "Ghost of Tsushima"
+          - "Hades"
+          - "Mount & Blade II: Bannerlord"
+          - "Half-Life: Alyx"
+          - "It Takes Two"
+          - "Forza Horizon 5"
+          - "Resident Evil Village"
+          - "Deathloop"
+          - "Elden Ring"
+          - "God of War Ragnarok"
+          - "Horizon Forbidden West"
+          - "Stray"
+          - "Baldur's Gate 3"
+          - "Alan Wake 2"
+          - "Hogwarts Legacy"
+          - "Marvel's Spider-Man 2"
+          - "Helldivers 2"
+          - "Black Myth: Wukong"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -30,29 +87,99 @@ jobs:
           cache-dependency-path: parser/requirements.txt
       - name: Install dependencies
         run: pip install -r parser/requirements.txt
-      - name: Parse all 50 games
+      - name: Parse exactly one game
         env:
           PYTHONUNBUFFERED: "1"
-        run: python parser/collect_v2.py --limit 50
-      - name: Build all publishable pages
+        run: python parser/collect_v2.py --limit 1 --only "${{ matrix.game }}"
+      - name: Build page for this game if gate passed
         run: python parser/build_pages.py
-      - name: Validate generated output
+      - name: Create safe artifact name
+        id: artifact
+        shell: python
+        run: |
+          import os, re
+          name = re.sub(r'[^a-z0-9]+', '-', "${{ matrix.game }}".lower()).strip('-')
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as f:
+              f.write(f'name={name}\n')
+      - name: Upload this game's result
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-${{ steps.artifact.outputs.name }}
+          path: |
+            data/
+            game/
+          if-no-files-found: error
+          retention-days: 3
+
+  merge-and-publish:
+    name: Merge 50 results and publish pages
+    needs: parse-one-game
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download all per-game results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: game-*
+          path: parsed-results
+      - name: Merge passed games and drafts
         run: |
           python - <<'PY'
-          import json, pathlib, sys
-          public = pathlib.Path('data/public/games.json')
-          rows = json.loads(public.read_text(encoding='utf-8')) if public.exists() else []
-          bad = [g for g in rows if not g.get('publication', {}).get('gate_passed')]
-          if bad:
-              raise SystemExit('Public dataset contains records that failed gate')
+          import json, pathlib, shutil
+          root = pathlib.Path('parsed-results')
+          public = []
+          seen = set()
+          drafts_out = pathlib.Path('data/drafts')
+          drafts_out.mkdir(parents=True, exist_ok=True)
+          reports = []
+          for p in root.rglob('games.json'):
+              try:
+                  rows = json.loads(p.read_text(encoding='utf-8'))
+              except Exception:
+                  continue
+              for g in rows:
+                  if not g.get('publication', {}).get('gate_passed'):
+                      continue
+                  slug = g.get('identity', {}).get('slug')
+                  if slug and slug not in seen:
+                      seen.add(slug)
+                      public.append(g)
+          for p in root.rglob('drafts/*.json'):
+              shutil.copy2(p, drafts_out / p.name)
+          for p in root.rglob('parser-report.json'):
+              try:
+                  reports.append(json.loads(p.read_text(encoding='utf-8')))
+              except Exception:
+                  pass
+          pathlib.Path('data/public').mkdir(parents=True, exist_ok=True)
+          pathlib.Path('data/public/games.json').write_text(
+              json.dumps(public, ensure_ascii=False, indent=2), encoding='utf-8'
+          )
+          pathlib.Path('data/parser-report-50.json').write_text(
+              json.dumps({'runs': reports, 'published': len(public)}, ensure_ascii=False, indent=2), encoding='utf-8'
+          )
+          print(f'Merged {len(public)} publishable games from 50 separate parser runs')
+          PY
+      - name: Generate all passed pages
+        run: python parser/build_pages.py
+      - name: Verify physical page files
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          rows = json.loads(pathlib.Path('data/public/games.json').read_text(encoding='utf-8'))
           for game in rows:
               slug = game['identity']['slug']
               page = pathlib.Path('game') / slug / 'index.html'
               if not page.exists():
-                  raise SystemExit(f'Missing generated page: {page}')
-          print(f'Generated and validated {len(rows)} public pages')
+                  raise SystemExit(f'Missing page: {page}')
+          print(f'Verified {len(rows)} generated pages')
           PY
-      - name: Commit parsed data and pages
+      - name: Commit merged data and generated pages
         run: |
           git config user.name "igropoisk-bot"
           git config user.email "actions@users.noreply.github.com"
@@ -60,12 +187,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No generated changes"
           else
-            git commit -m "Publish parsed pages for 50-game run"
+            git commit -m "Publish pages from 50 separate parser runs"
             git push
           fi
-      - name: Upload parser report
-        uses: actions/upload-artifact@v4
-        with:
-          name: parser-report-50-games
-          path: data/parser-report.json
-          if-no-files-found: error
