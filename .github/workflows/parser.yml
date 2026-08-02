@@ -1,4 +1,4 @@
-name: Collect, validate and build game pages
+name: Collect, validate and build 50 game pages
 
 on:
   push:
@@ -7,15 +7,6 @@ on:
       - "parser/**"
       - ".github/workflows/parser.yml"
   workflow_dispatch:
-    inputs:
-      limit:
-        description: Number of seed games to process
-        required: false
-        default: "50"
-      only:
-        description: Exact game title (optional)
-        required: false
-        default: ""
   schedule:
     - cron: "17 2 * * 1,4"
 
@@ -23,7 +14,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: igropoisk-parser
+  group: igropoisk-full-parser
   cancel-in-progress: false
 
 jobs:
@@ -37,51 +28,44 @@ jobs:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: parser/requirements.txt
-      - name: Install parser dependencies
+      - name: Install dependencies
         run: pip install -r parser/requirements.txt
-      - name: Run registry-driven collector for all 50 games
+      - name: Parse all 50 games
         env:
           PYTHONUNBUFFERED: "1"
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            LIMIT="${{ github.event.inputs.limit || '50' }}"
-          else
-            LIMIT="50"
-          fi
-          ONLY="${{ github.event.inputs.only }}"
-          if [ -n "$ONLY" ]; then
-            python parser/collect_v2.py --limit "$LIMIT" --only "$ONLY"
-          else
-            python parser/collect_v2.py --limit "$LIMIT"
-          fi
-      - name: Validate public dataset
+        run: python parser/collect_v2.py --limit 50
+      - name: Build all publishable pages
+        run: python parser/build_pages.py
+      - name: Validate generated output
         run: |
           python - <<'PY'
           import json, pathlib, sys
-          p = pathlib.Path('data/public/games.json')
-          rows = json.loads(p.read_text(encoding='utf-8')) if p.exists() else []
+          public = pathlib.Path('data/public/games.json')
+          rows = json.loads(public.read_text(encoding='utf-8')) if public.exists() else []
           bad = [g for g in rows if not g.get('publication', {}).get('gate_passed')]
           if bad:
-              print('Public dataset contains records that failed gate', file=sys.stderr)
-              sys.exit(1)
-          print(f'Public records: {len(rows)}')
+              raise SystemExit('Public dataset contains records that failed gate')
+          for game in rows:
+              slug = game['identity']['slug']
+              page = pathlib.Path('game') / slug / 'index.html'
+              if not page.exists():
+                  raise SystemExit(f'Missing generated page: {page}')
+          print(f'Generated and validated {len(rows)} public pages')
           PY
-      - name: Generate public game pages
-        run: python parser/build_pages.py
-      - name: Commit parser output and pages
+      - name: Commit parsed data and pages
         run: |
           git config user.name "igropoisk-bot"
           git config user.email "actions@users.noreply.github.com"
           git add data/ game/
           if git diff --cached --quiet; then
-            echo "No data or page changes"
+            echo "No generated changes"
           else
-            git commit -m "Update parsed game pages"
+            git commit -m "Publish parsed pages for 50-game run"
             git push
           fi
-      - name: Upload report
+      - name: Upload parser report
         uses: actions/upload-artifact@v4
         with:
-          name: parser-report
+          name: parser-report-50-games
           path: data/parser-report.json
           if-no-files-found: error
