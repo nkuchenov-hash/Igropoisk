@@ -39,7 +39,7 @@ jobs:
           cache-dependency-path: parser/requirements.txt
       - name: Install parser dependencies
         run: pip install -r parser/requirements.txt
-      - name: Run collector
+      - name: Run registry-driven collector
         env:
           PYTHONUNBUFFERED: "1"
         run: |
@@ -50,9 +50,9 @@ jobs:
           fi
           ONLY="${{ github.event.inputs.only }}"
           if [ -n "$ONLY" ]; then
-            python parser/collect.py --limit "$LIMIT" --only "$ONLY"
+            python parser/collect_v2.py --limit "$LIMIT" --only "$ONLY"
           else
-            python parser/collect.py --limit "$LIMIT"
+            python parser/collect_v2.py --limit "$LIMIT"
           fi
       - name: Validate public dataset
         run: |
