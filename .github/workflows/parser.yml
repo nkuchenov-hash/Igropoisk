@@ -1,4 +1,4 @@
-name: Collect and validate game pages
+name: Collect, validate and build game pages
 
 on:
   push:
@@ -66,15 +66,17 @@ jobs:
               sys.exit(1)
           print(f'Public records: {len(rows)}')
           PY
-      - name: Commit parser output
+      - name: Generate public game pages
+        run: python parser/build_pages.py
+      - name: Commit parser output and pages
         run: |
           git config user.name "igropoisk-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/
+          git add data/ game/
           if git diff --cached --quiet; then
-            echo "No data changes"
+            echo "No data or page changes"
           else
-            git commit -m "Update parsed game data"
+            git commit -m "Update parsed game pages"
             git push
           fi
       - name: Upload report
