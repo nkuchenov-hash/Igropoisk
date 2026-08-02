@@ -1,6 +1,11 @@
 name: Collect and validate game pages
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "parser/**"
+      - ".github/workflows/parser.yml"
   workflow_dispatch:
     inputs:
       limit:
@@ -38,7 +43,11 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
         run: |
-          LIMIT="${{ github.event.inputs.limit || '50' }}"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            LIMIT="1"
+          else
+            LIMIT="${{ github.event.inputs.limit || '50' }}"
+          fi
           ONLY="${{ github.event.inputs.only }}"
           if [ -n "$ONLY" ]; then
             python parser/collect.py --limit "$LIMIT" --only "$ONLY"
