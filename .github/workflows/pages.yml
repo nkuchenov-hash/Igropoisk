@@ -24,6 +24,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Inject repaired UI layer
+        run: |
+          sed -i 's#</head>#<link rel="stylesheet" href="fix.css"></head>#' index.html
+          sed -i 's#</body>#<script src="fix.js"></script></body>#' index.html
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
