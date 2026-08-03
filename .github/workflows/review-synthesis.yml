@@ -30,8 +30,8 @@ jobs:
           node --check scripts/prepare-review-research.mjs
           node --check scripts/synthesize-review.mjs
           node --check scripts/enrich-review-media.mjs
+          node --check scripts/validate-review-output.mjs
           node --check scripts/render-review-pages.mjs
-          node --check article/_shared/review-article.js
           node --check article/_shared/review-carousel.js
       - name: Discover and validate professional sources
         run: node scripts/prepare-review-research.mjs "${{ inputs.slug }}"
@@ -52,6 +52,8 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
           OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
+      - name: Enforce article depth, dimensions and zero duplicates
+        run: node scripts/validate-review-output.mjs "${{ inputs.slug }}"
       - name: Render static pages for every published review
         run: node scripts/render-review-pages.mjs
       - name: Commit research, articles and generated pages
