@@ -1,0 +1,14 @@
+(()=>{
+'use strict';
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const slug=document.body.dataset.article||new URLSearchParams(location.search).get('game')||'';
+const root=document.documentElement;
+const fetchJSON=async url=>{const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw new Error(`${response.status}: ${url}`);return response.json()};
+function render(article){
+  document.title=`${article.title} — Игропоиск`;
+  document.body.innerHTML=`<header class="article-header"><div class="ig-container article-header__inner"><a class="article-logo" href="../../index.html">ИГРОПОИСК</a><nav class="article-nav"><a href="../../index.html">Главное</a><a href="../../game/${encodeURIComponent(article.game_slug)}/">Страница игры</a></nav><button class="ig-button" id="theme" type="button" style="margin-left:auto">☀</button></div></header><section class="article-hero" id="articleHero"><div class="ig-container article-hero__inner"><div class="article-hero__copy"><div class="article-kicker">Обзор Игропоиска</div><h1>${esc(article.title)}</h1><div class="article-dek">${esc(article.dek)}</div><div class="article-meta"><span>${esc(article.author)}</span><span>${esc(article.published_at)}</span><strong class="article-score">${esc(article.score)} / 10</strong></div></div></div></section><main class="ig-container article-layout"><article class="article-body"><p class="article-lead">${esc(article.lead)}</p>${(article.sections||[]).map(section=>`<section class="article-section"><h2>${esc(section.heading)}</h2>${(section.paragraphs||[]).map(paragraph=>`<p>${esc(paragraph)}</p>`).join('')}</section>`).join('')}</article><aside class="article-aside"><div class="ig-panel"><h2>Источники обзора</h2>${(article.sources||[]).map(source=>`<a class="article-source" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.name)} ↗</a>`).join('')}<div class="article-method">Текст является самостоятельным редакционным синтезом. Источники используются для сопоставления аргументов и фактов; их формулировки не копируются.</div></div></aside></main>`;
+  document.querySelector('#articleHero').style.backgroundImage=`url("${String(article.hero||'').replace(/"/g,'%22')}")`;
+  const theme=document.querySelector('#theme');root.dataset.theme=localStorage.getItem('igroTheme')||root.dataset.theme||'dark';const paint=()=>theme.textContent=root.dataset.theme==='light'?'☾':'☀';paint();theme.onclick=()=>{root.dataset.theme=root.dataset.theme==='light'?'dark':'light';localStorage.setItem('igroTheme',root.dataset.theme);paint()};
+}
+fetchJSON(`../../data/articles/${slug}.json`).then(render).catch(error=>{document.body.innerHTML=`<main class="ig-container" style="padding:60px 0"><h1>Обзор пока не опубликован</h1><p class="ig-muted">${esc(error.message)}</p><a class="ig-button" href="../../index.html">На главную</a></main>`});
+})();
