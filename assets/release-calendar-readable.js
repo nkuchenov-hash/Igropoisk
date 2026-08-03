@@ -43,13 +43,17 @@
       const platformLine=[...content.children].find(node=>node.tagName==='SPAN');
       content.insertBefore(description,platformLine||null);
     }
-    description.textContent=descriptionFor(game);
-    card.title=`${game.title}: ${description.textContent}`;
+    const text=descriptionFor(game);
+    if(description.textContent!==text)description.textContent=text;
+    const title=`${game.title}: ${text}`;
+    if(card.title!==title)card.title=title;
   }
 
   function decorateFeedCard(card,game){
     const description=card.querySelector('.release-feed-card__body>p');
-    if(description)description.textContent=descriptionFor(game);
+    if(!description)return;
+    const text=descriptionFor(game);
+    if(description.textContent!==text)description.textContent=text;
   }
 
   function decorate(root=document){
