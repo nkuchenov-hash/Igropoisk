@@ -61,18 +61,12 @@ function makeInfiniteRail(target){
     if(target.scrollLeft<=itemStep*.35){
       adjusting=true;
       const last=target.lastElementChild;
-      if(last){
-        target.prepend(last);
-        target.scrollLeft+=itemStep;
-      }
+      if(last){target.prepend(last);target.scrollLeft+=itemStep}
       adjusting=false;
     }else if(target.scrollLeft>=maxScroll-itemStep*.35){
       adjusting=true;
       const first=target.firstElementChild;
-      if(first){
-        target.append(first);
-        target.scrollLeft-=itemStep;
-      }
+      if(first){target.append(first);target.scrollLeft-=itemStep}
       adjusting=false;
     }
   };
@@ -82,9 +76,26 @@ function makeInfiniteRail(target){
     scrollFrame=requestAnimationFrame(normalize);
   };
 
-  const step=direction=>{
+  const prepareBoundary=direction=>{
     if(!itemStep)measure();
-    if(itemStep>0)target.scrollBy({left:direction*itemStep,behavior:reducedMotion()?'auto':'smooth'});
+    if(!itemStep)return;
+    const maxScroll=target.scrollWidth-target.clientWidth;
+    adjusting=true;
+    if(direction>0&&target.scrollLeft>=maxScroll-itemStep*1.15){
+      const first=target.firstElementChild;
+      if(first){target.append(first);target.scrollLeft-=itemStep}
+    }else if(direction<0&&target.scrollLeft<=itemStep*1.15){
+      const last=target.lastElementChild;
+      if(last){target.prepend(last);target.scrollLeft+=itemStep}
+    }
+    adjusting=false;
+  };
+
+  const step=direction=>{
+    prepareBoundary(direction);
+    if(itemStep>0){
+      requestAnimationFrame(()=>target.scrollBy({left:direction*itemStep,behavior:reducedMotion()?'auto':'smooth'}));
+    }
   };
 
   const buttons=ensureControls(target);
