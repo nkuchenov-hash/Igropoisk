@@ -1,37 +1,52 @@
 {
   "parser": "popular",
   "status": "success",
-  "checked_at": "2026-08-03T12:21:02.540Z",
-  "duration_ms": 2259,
-  "ranked_count": 2,
-  "discovered_count": 0,
-  "sources_success": 7,
-  "sources_total": 10,
+  "checked_at": "2026-08-03T12:25:11.347Z",
+  "duration_ms": 1605,
+  "ranked_count": 30,
+  "sources_success": 8,
+  "sources_total": 8,
   "output": "data/popular/current.json",
-  "note": "Рейтинг рассчитан по свежему всплеску внимания, независимым источникам и росту Steam-аудитории.",
+  "note": "Глобальный рейтинг сформирован по Steam-чартам и свежему редакционному тренду.",
   "source_statuses": [
+    {
+      "id": "Steam Top Sellers",
+      "status": "success",
+      "items": 50,
+      "matched": 50,
+      "duration_ms": 199,
+      "url": "https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=topsellers&infinite=1&cc=us&l=english&json=1"
+    },
+    {
+      "id": "Steam Most Played",
+      "status": "success",
+      "items": 50,
+      "matched": 50,
+      "duration_ms": 269,
+      "url": "https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=globaltopsellers&infinite=1&cc=us&l=english&json=1"
+    },
     {
       "id": "ign-rss",
       "status": "success",
       "items": 20,
       "matched": 3,
-      "duration_ms": 188,
+      "duration_ms": 420,
       "url": "https://www.ign.com/rss/articles/feed"
     },
     {
       "id": "pcgamer-rss",
       "status": "success",
       "items": 50,
-      "matched": 4,
-      "duration_ms": 183,
+      "matched": 5,
+      "duration_ms": 184,
       "url": "https://www.pcgamer.com/rss/"
     },
     {
       "id": "gamespot-rss",
       "status": "success",
       "items": 15,
-      "matched": 1,
-      "duration_ms": 156,
+      "matched": 3,
+      "duration_ms": 101,
       "url": "https://www.gamespot.com/feeds/mashup/"
     },
     {
@@ -39,50 +54,24 @@
       "status": "success",
       "items": 100,
       "matched": 2,
-      "duration_ms": 269,
+      "duration_ms": 90,
       "url": "https://www.eurogamer.net/feed"
     },
     {
       "id": "rps-rss",
       "status": "success",
       "items": 100,
-      "matched": 0,
-      "duration_ms": 127,
+      "matched": 1,
+      "duration_ms": 85,
       "url": "https://www.rockpapershotgun.com/feed"
     },
     {
       "id": "polygon-rss",
       "status": "success",
       "items": 10,
-      "matched": 0,
-      "duration_ms": 120,
+      "matched": 1,
+      "duration_ms": 724,
       "url": "https://www.polygon.com/rss/index.xml"
-    },
-    {
-      "id": "twitch-streams",
-      "status": "skipped",
-      "error": "TWITCH_CLIENT_ID/TWITCH_CLIENT_SECRET are not configured",
-      "url": "https://api.twitch.tv/helix/streams?first=100"
-    },
-    {
-      "id": "youtube-popular",
-      "status": "skipped",
-      "error": "YOUTUBE_API_KEY is not configured",
-      "url": "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&videoCategoryId=20&maxResults=50"
-    },
-    {
-      "id": "reddit-gaming",
-      "status": "skipped",
-      "error": "REDDIT_ACCESS_TOKEN is not configured",
-      "url": "https://oauth.reddit.com/r/Games+gaming+pcgaming+PS5+XboxSeriesX+NintendoSwitch/new?limit=100"
-    },
-    {
-      "id": "steam-current-players",
-      "status": "success",
-      "items": 26,
-      "matched": 0,
-      "duration_ms": 1214,
-      "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={steam_appid}"
     }
   ]
 }

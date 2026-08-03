@@ -1,87 +1,1198 @@
 {
-  "schema_version": 2,
-  "generated_at": "2026-08-03T12:21:02.540Z",
+  "schema_version": 3,
+  "generated_at": "2026-08-03T12:25:11.347Z",
   "window_hours": 72,
   "method": {
-    "formula": "popular_score = weighted fresh attention + independent-source breadth bonus",
-    "minimum_news_sources": 2,
-    "minimum_news_signal": 0.12,
-    "minimum_steam_growth": 0.08,
+    "formula": "72% global Steam chart position + 22% fresh editorial trend + 6% independent-source breadth",
+    "chart_size": 50,
     "family_weights": {
-      "news": 0.34,
-      "reddit": 0.14,
-      "youtube": 0.18,
-      "twitch": 0.2,
-      "steam": 0.1,
-      "attention": 0.04
+      "steam_chart": 0.72,
+      "news": 0.22,
+      "breadth": 0.06
     }
   },
   "ranking": [
     {
-      "slug": "elden-ring",
-      "title": "Elden Ring",
-      "year": 2022,
-      "image": "",
-      "score": 44,
-      "confidence": 0.63,
-      "delta": -2.9,
+      "slug": "beast-of-reincarnation",
+      "title": "Beast of Reincarnation",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2001760/8051f36f9874f82c4d998354409343346b5f6b3f/capsule_231x87.jpg?t=1785194490",
+      "score": 82,
+      "confidence": 0.91,
+      "delta": null,
       "families": [
+        "steam_chart",
         "news"
       ],
       "signals": {
-        "news": 0.2763618761888364
+        "steam_chart": 1.6789999999999998,
+        "news": 1.1070711411339793
       },
       "news_sources": 2,
+      "in_catalog": false,
       "evidence": [
         {
-          "source": "IGN",
-          "url": "https://www.ign.com/articles/elden-ring-players-are-hoping-for-godwyn-dlc-after-fromsoftware-shares-cryptic-social-media-post",
-          "title": "Elden Ring Players Are Hoping for Godwyn DLC After FromSoftware Shares Cryptic Social Media Post",
-          "observed_at": "Sat, 1 Aug 2026 19:59:57 +0000",
+          "source": "Rock Paper Shotgun",
+          "title": "This week in PC games: Beast of Reincarnation, Big Walk, and Marvel Tōkon, plus a round table RPG, some flammable robots, and a flock of lovestruck pigeons",
+          "url": "https://www.rockpapershotgun.com/this-week-in-pc-games-beast-of-reincarnation-big-walk-and-marvel-tokon-plus-a-round-table-rpg-some-flammable-robots-and-a-flock-of-lovestruck-pigeons",
+          "observed_at": "Mon, 03 Aug 2026 10:48:17 +0000",
           "family": "news",
-          "value": 0.211
+          "value": 0.94
         },
         {
-          "source": "PC Gamer",
-          "url": "https://www.pcgamer.com/movies-tv/filming-has-wrapped-on-garlands-elden-ring-movie-just-6-months-after-it-started-according-to-a-now-deleted-instagram-post/",
-          "title": "Filming has wrapped on Garland's Elden Ring movie just 6 months after it started, according to a now deleted instagram post",
-          "observed_at": "Fri, 31 Jul 2026 13:20:32 +0000",
+          "source": "Steam Top Sellers",
+          "title": "Beast of Reincarnation",
+          "url": "https://store.steampowered.com/app/2001760/",
+          "position": 7,
+          "appid": 2001760,
+          "family": "steam_chart",
+          "value": 0.88
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Beast of Reincarnation",
+          "url": "https://store.steampowered.com/app/2001760/",
+          "position": 4,
+          "appid": 2001760,
+          "family": "steam_chart",
+          "value": 0.799
+        },
+        {
+          "source": "GameSpot",
+          "title": "Preorder Beast of Reincarnation At A Discount And Get Some DLC For Free",
+          "url": "https://www.gamespot.com/articles/preorder-beast-of-reincarnation-at-a-discount-and-get-some-dlc-for-free/",
+          "observed_at": "Sat, 01 Aug 2026 14:00:00 +0000",
           "family": "news",
-          "value": 0.065
+          "value": 0.167
         }
       ]
     },
     {
-      "slug": "grand-theft-auto-vi",
-      "title": "Grand Theft Auto VI",
-      "year": 2026,
-      "image": "",
-      "score": 4,
-      "confidence": 0.63,
-      "delta": -57.1,
+      "slug": "steam-deck",
+      "title": "Steam Deck",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1675200/0f9e2ea28cf0382479618500fc527b7ccf251b8f/capsule_231x87.jpg?t=1781214136",
+      "score": 78,
+      "confidence": 0.83,
+      "delta": null,
       "families": [
+        "steam_chart",
         "news"
       ],
       "signals": {
-        "news": 0.13668294182228008
+        "steam_chart": 1.387,
+        "news": 1.9260972603211441
       },
-      "news_sources": 2,
+      "news_sources": 1,
+      "in_catalog": false,
       "evidence": [
         {
-          "source": "GameSpot",
-          "url": "https://www.gamespot.com/articles/heres-why-people-think-the-ocarina-of-time-remake-will-launch-a-week-before-gta-6/",
-          "title": "Here&#8217;s Why People Think The Ocarina Of Time Remake Will Launch A Week Before GTA 6",
-          "observed_at": "Fri, 31 Jul 2026 16:29:54 +0000",
+          "source": "PC Gamer",
+          "title": "'Deck de France' is a new free software that can turn your bike trainer into a controller for your Steam Deck",
+          "url": "https://www.pcgamer.com/hardware/deck-de-france-is-a-new-free-software-that-can-turn-your-bike-trainer-into-a-controller-for-your-steam-deck/",
+          "observed_at": "Mon, 03 Aug 2026 11:50:43 +0000",
           "family": "news",
-          "value": 0.073
+          "value": 0.978
         },
         {
-          "source": "Eurogamer",
-          "url": "https://www.eurogamer.net/zelda-ocarina-of-time-remake-switch-2-amiibo-november",
-          "title": "Could Switch 2's The Legend of Zelda: Ocarina of Time remake be squaring up for a GTA 6 head-to-head? Newly sighted amiibo suggest a potential November release",
-          "observed_at": "Fri, 31 Jul 2026 12:42:19 +0000",
+          "source": "PC Gamer",
+          "title": "OEM Steam Deck LCD batteries are back in stock on iFixIt, but now cost $130 for just the part",
+          "url": "https://www.pcgamer.com/hardware/handheld-gaming-pcs/oem-steam-deck-lcd-batteries-are-back-in-stock-on-ifixit-but-now-cost-usd130-for-just-the-part/",
+          "observed_at": "Mon, 03 Aug 2026 11:01:57 +0000",
           "family": "news",
-          "value": 0.063
+          "value": 0.948
+        },
+        {
+          "source": "Steam Top Sellers",
+          "title": "Steam Deck",
+          "url": "https://store.steampowered.com/app/1675200/",
+          "position": 8,
+          "appid": 1675200,
+          "family": "steam_chart",
+          "value": 0.86
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Steam Deck",
+          "url": "https://store.steampowered.com/app/1675200/",
+          "position": 20,
+          "appid": 1675200,
+          "family": "steam_chart",
+          "value": 0.527
+        }
+      ]
+    },
+    {
+      "slug": "counter-strike-2",
+      "title": "Counter-Strike 2",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/730/942c04efaa5bc87afb6f2a97dbf17ac614c8a84d/capsule_231x87.jpg?t=1784564069",
+      "score": 72,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.85
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Counter-Strike 2",
+          "url": "https://store.steampowered.com/app/730/",
+          "position": 1,
+          "appid": 730,
+          "family": "steam_chart",
+          "value": 1
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Counter-Strike 2",
+          "url": "https://store.steampowered.com/app/730/",
+          "position": 1,
+          "appid": 730,
+          "family": "steam_chart",
+          "value": 0.85
+        }
+      ]
+    },
+    {
+      "slug": "mistfall-hunter",
+      "title": "Mistfall Hunter",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3282300/5c5bfdce4efdd500208933786787db993efaf7d4/capsule_231x87.jpg?t=1785673983",
+      "score": 71.4,
+      "confidence": 0.83,
+      "delta": null,
+      "families": [
+        "steam_chart",
+        "news"
+      ],
+      "signals": {
+        "steam_chart": 1.762,
+        "news": 0.07172966886269382
+      },
+      "news_sources": 1,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Mistfall Hunter",
+          "url": "https://store.steampowered.com/app/3282300/",
+          "position": 2,
+          "appid": 3282300,
+          "family": "steam_chart",
+          "value": 0.98
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Mistfall Hunter",
+          "url": "https://store.steampowered.com/app/3282300/",
+          "position": 5,
+          "appid": 3282300,
+          "family": "steam_chart",
+          "value": 0.782
+        },
+        {
+          "source": "GameSpot",
+          "title": "Mistfall Hunter&#8217;s Best Class Just Got Even Better",
+          "url": "https://www.gamespot.com/articles/mistfall-hunters-best-class-just-got-even-better/",
+          "observed_at": "Fri, 31 Jul 2026 15:59:48 +0000",
+          "family": "news",
+          "value": 0.072
+        }
+      ]
+    },
+    {
+      "slug": "steam-machine",
+      "title": "Steam Machine",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4165910/078827d20191ceda1d7e205f34510095fb1b1fda/capsule_231x87.jpg?t=1782171053",
+      "score": 67.1,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.725
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Steam Machine",
+          "url": "https://store.steampowered.com/app/4165910/",
+          "position": 3,
+          "appid": 4165910,
+          "family": "steam_chart",
+          "value": 0.96
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Steam Machine",
+          "url": "https://store.steampowered.com/app/4165910/",
+          "position": 6,
+          "appid": 4165910,
+          "family": "steam_chart",
+          "value": 0.765
+        }
+      ]
+    },
+    {
+      "slug": "baldurs-gate-3",
+      "title": "Baldur’s Gate 3",
+      "year": 2023,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1086940/3dd81008e9c385caf68152450c22353f6a8abec9/capsule_231x87.jpg?t=1777363040",
+      "score": 65.6,
+      "confidence": 0.83,
+      "delta": null,
+      "families": [
+        "steam_chart",
+        "news"
+      ],
+      "signals": {
+        "steam_chart": 1.4060000000000001,
+        "news": 0.7757806793300706
+      },
+      "news_sources": 1,
+      "in_catalog": true,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Baldur's Gate 3",
+          "url": "https://store.steampowered.com/app/1086940/",
+          "position": 13,
+          "appid": 1086940,
+          "family": "steam_chart",
+          "value": 0.76
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Baldur's Gate 3",
+          "url": "https://store.steampowered.com/app/1086940/",
+          "position": 13,
+          "appid": 1086940,
+          "family": "steam_chart",
+          "value": 0.646
+        },
+        {
+          "source": "PC Gamer",
+          "title": "Baldur's Gate 3 is the cheapest it's ever been to celebrate its third anniversary",
+          "url": "https://www.pcgamer.com/games/baldurs-gate/baldurs-gate-3-is-the-cheapest-its-ever-been-to-celebrate-its-third-anniversary/",
+          "observed_at": "Sun, 02 Aug 2026 16:13:15 +0000",
+          "family": "news",
+          "value": 0.459
+        },
+        {
+          "source": "PC Gamer",
+          "title": "The maker of the Baldur's Gate 3 over-the-shoulder camera mod has gone to great lengths to demonstrate it's not like other third-person viewpoint solutions",
+          "url": "https://www.pcgamer.com/games/baldurs-gate/the-maker-of-the-baldurs-gate-3-over-the-shoulder-camera-mod-has-gone-to-great-lengths-to-demonstrate-its-not-like-other-third-person-viewpoint-solutions/",
+          "observed_at": "Sun, 02 Aug 2026 06:32:05 +0000",
+          "family": "news",
+          "value": 0.316
+        }
+      ]
+    },
+    {
+      "slug": "palworld",
+      "title": "Palworld",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1623730/0703d5a0658c7aedaa3be4391d6f5cccc1bb6d7a/capsule_231x87.jpg?t=1784714419",
+      "score": 64.3,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.651
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Palworld",
+          "url": "https://store.steampowered.com/app/1623730/",
+          "position": 5,
+          "appid": 1623730,
+          "family": "steam_chart",
+          "value": 0.92
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Palworld",
+          "url": "https://store.steampowered.com/app/1623730/",
+          "position": 8,
+          "appid": 1623730,
+          "family": "steam_chart",
+          "value": 0.731
+        }
+      ]
+    },
+    {
+      "slug": "marvels-spider-man-2",
+      "title": "Marvel’s Spider-Man 2",
+      "year": 2023,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2651280/379bd114fe5c23850555d1eb67fa8ac996bf702b/capsule_231x87.jpg?t=1763569811",
+      "score": 64.1,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.6480000000000001
+      },
+      "news_sources": 0,
+      "in_catalog": true,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Marvel's Spider-Man 2",
+          "url": "https://store.steampowered.com/app/2651280/",
+          "position": 6,
+          "appid": 2651280,
+          "family": "steam_chart",
+          "value": 0.9
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Marvel's Spider-Man 2",
+          "url": "https://store.steampowered.com/app/2651280/",
+          "position": 7,
+          "appid": 2651280,
+          "family": "steam_chart",
+          "value": 0.748
+        }
+      ]
+    },
+    {
+      "slug": "street-fightertm-6",
+      "title": "Street Fighter™ 6",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1364780/3f34c45db4411c3cdbaa95d7bbd296454ad6300a/capsule_231x87_alt_assets_20.jpg?t=1785737403",
+      "score": 59.8,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.536
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Most Played",
+          "title": "Street Fighter™ 6",
+          "url": "https://store.steampowered.com/app/1364780/",
+          "position": 3,
+          "appid": 1364780,
+          "family": "steam_chart",
+          "value": 0.816
+        },
+        {
+          "source": "Steam Top Sellers",
+          "title": "Street Fighter™ 6",
+          "url": "https://store.steampowered.com/app/1364780/",
+          "position": 15,
+          "appid": 1364780,
+          "family": "steam_chart",
+          "value": 0.72
+        }
+      ]
+    },
+    {
+      "slug": "marvel-s-spider-man-remastered",
+      "title": "Marvel’s Spider-Man Remastered",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1817070/capsule_231x87.jpg?t=1763569047",
+      "score": 59.7,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.534
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Marvel’s Spider-Man Remastered",
+          "url": "https://store.steampowered.com/app/1817070/",
+          "position": 10,
+          "appid": 1817070,
+          "family": "steam_chart",
+          "value": 0.82
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Marvel’s Spider-Man Remastered",
+          "url": "https://store.steampowered.com/app/1817070/",
+          "position": 9,
+          "appid": 1817070,
+          "family": "steam_chart",
+          "value": 0.714
+        }
+      ]
+    },
+    {
+      "slug": "steam-controller",
+      "title": "Steam Controller",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4165870/ffcc348e71b13c5a8c297c53220a592438796f7c/capsule_231x87.jpg?t=1785179804",
+      "score": 58.4,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.501
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Steam Controller",
+          "url": "https://store.steampowered.com/app/4165870/",
+          "position": 4,
+          "appid": 4165870,
+          "family": "steam_chart",
+          "value": 0.94
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Steam Controller",
+          "url": "https://store.steampowered.com/app/4165870/",
+          "position": 18,
+          "appid": 4165870,
+          "family": "steam_chart",
+          "value": 0.561
+        }
+      ]
+    },
+    {
+      "slug": "apex-legendstm",
+      "title": "Apex Legends™",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1172470/877bc6f0c9f3fe5804f3f309aed8ae08875ad5fd/capsule_231x87.jpg?t=1784581218",
+      "score": 55.3,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.42
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Apex Legends™",
+          "url": "https://store.steampowered.com/app/1172470/",
+          "position": 14,
+          "appid": 1172470,
+          "family": "steam_chart",
+          "value": 0.74
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Apex Legends™",
+          "url": "https://store.steampowered.com/app/1172470/",
+          "position": 11,
+          "appid": 1172470,
+          "family": "steam_chart",
+          "value": 0.68
+        }
+      ]
+    },
+    {
+      "slug": "cyberpunk-2077",
+      "title": "Cyberpunk 2077",
+      "year": 2020,
+      "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/e9047d8ec47ae3d94bb8b464fb0fc9e9972b4ac7/header.jpg?t=1784714077",
+      "score": 53,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.363
+      },
+      "news_sources": 0,
+      "in_catalog": true,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Cyberpunk 2077",
+          "url": "https://store.steampowered.com/app/1091500/",
+          "position": 16,
+          "appid": 1091500,
+          "family": "steam_chart",
+          "value": 0.7
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Cyberpunk 2077",
+          "url": "https://store.steampowered.com/app/1091500/",
+          "position": 12,
+          "appid": 1091500,
+          "family": "steam_chart",
+          "value": 0.663
+        }
+      ]
+    },
+    {
+      "slug": "halo-campaign-evolved",
+      "title": "Halo: Campaign Evolved",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
+      "score": 51.7,
+      "confidence": 0.83,
+      "delta": null,
+      "families": [
+        "steam_chart",
+        "news"
+      ],
+      "signals": {
+        "steam_chart": 1.103,
+        "news": 0.5965188805404773
+      },
+      "news_sources": 1,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Halo: Campaign Evolved",
+          "url": "https://store.steampowered.com/app/2806050/",
+          "position": 12,
+          "appid": 2806050,
+          "family": "steam_chart",
+          "value": 0.78
+        },
+        {
+          "source": "Polygon",
+          "title": "10 best games like Halo: Campaign Evolved",
+          "url": "https://www.polygon.com/best-games-like-halo-campaign-evolved/",
+          "observed_at": "Sun, 02 Aug 2026 23:00:12 GMT",
+          "family": "news",
+          "value": 0.597
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Halo: Campaign Evolved",
+          "url": "https://store.steampowered.com/app/2806050/",
+          "position": 32,
+          "appid": 2806050,
+          "family": "steam_chart",
+          "value": 0.323
+        }
+      ]
+    },
+    {
+      "slug": "marvel-rivals",
+      "title": "Marvel Rivals",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2767030/f77a7018444fbf8bd96dd79de42b4f5d6603d236/capsule_231x87.jpg?t=1783674088",
+      "score": 51.2,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.316
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Marvel Rivals",
+          "url": "https://store.steampowered.com/app/2767030/",
+          "position": 9,
+          "appid": 2767030,
+          "family": "steam_chart",
+          "value": 0.84
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Marvel Rivals",
+          "url": "https://store.steampowered.com/app/2767030/",
+          "position": 23,
+          "appid": 2767030,
+          "family": "steam_chart",
+          "value": 0.476
+        }
+      ]
+    },
+    {
+      "slug": "warframe",
+      "title": "Warframe",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/230410/e0b104aeb9dc8c563cacc84b114bc48ba416f28e/capsule_231x87.jpg?t=1785169127",
+      "score": 51,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.31
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Warframe",
+          "url": "https://store.steampowered.com/app/230410/",
+          "position": 11,
+          "appid": 230410,
+          "family": "steam_chart",
+          "value": 0.8
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Warframe",
+          "url": "https://store.steampowered.com/app/230410/",
+          "position": 21,
+          "appid": 230410,
+          "family": "steam_chart",
+          "value": 0.51
+        }
+      ]
+    },
+    {
+      "slug": "shift-at-midnight",
+      "title": "Shift At Midnight",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3722330/19c9e6ec567f975b0b4462b8c84c1a38c74adf0d/capsule_231x87.jpg?t=1785426429",
+      "score": 46.9,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.204
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Shift At Midnight",
+          "url": "https://store.steampowered.com/app/3722330/",
+          "position": 18,
+          "appid": 3722330,
+          "family": "steam_chart",
+          "value": 0.66
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Shift At Midnight",
+          "url": "https://store.steampowered.com/app/3722330/",
+          "position": 19,
+          "appid": 3722330,
+          "family": "steam_chart",
+          "value": 0.544
+        }
+      ]
+    },
+    {
+      "slug": "corsair-cove",
+      "title": "Corsair Cove",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1368140/9317363cb16926256a8e15b2dd91eee8203e4f11/capsule_231x87.jpg?t=1785750972",
+      "score": 42.6,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.095
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Most Played",
+          "title": "Corsair Cove",
+          "url": "https://store.steampowered.com/app/1368140/",
+          "position": 16,
+          "appid": 1368140,
+          "family": "steam_chart",
+          "value": 0.595
+        },
+        {
+          "source": "Steam Top Sellers",
+          "title": "Corsair Cove",
+          "url": "https://store.steampowered.com/app/1368140/",
+          "position": 26,
+          "appid": 1368140,
+          "family": "steam_chart",
+          "value": 0.5
+        }
+      ]
+    },
+    {
+      "slug": "dota-2",
+      "title": "Dota 2",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/570/capsule_231x87.jpg?t=1769535998",
+      "score": 42.5,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.093
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Most Played",
+          "title": "Dota 2",
+          "url": "https://store.steampowered.com/app/570/",
+          "position": 2,
+          "appid": 570,
+          "family": "steam_chart",
+          "value": 0.833
+        },
+        {
+          "source": "Steam Top Sellers",
+          "title": "Dota 2",
+          "url": "https://store.steampowered.com/app/570/",
+          "position": 38,
+          "appid": 570,
+          "family": "steam_chart",
+          "value": 0.26
+        }
+      ]
+    },
+    {
+      "slug": "assassin-s-creed-black-flag-resynced",
+      "title": "Assassin's Creed Black Flag Resynced",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3751950/e38674a3067b5ac028974bbfb42c835d0cf27122/capsule_231x87.jpg?t=1783617053",
+      "score": 41.2,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.059
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Assassin's Creed Black Flag Resynced",
+          "url": "https://store.steampowered.com/app/3751950/",
+          "position": 21,
+          "appid": 3751950,
+          "family": "steam_chart",
+          "value": 0.6
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Assassin's Creed Black Flag Resynced",
+          "url": "https://store.steampowered.com/app/3751950/",
+          "position": 24,
+          "appid": 3751950,
+          "family": "steam_chart",
+          "value": 0.459
+        }
+      ]
+    },
+    {
+      "slug": "battlefieldtm-6",
+      "title": "Battlefield™ 6",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2807960/d7ae078e0a543a97ff5a5d72165999535b0b1cdc/capsule_231x87.jpg?t=1784839791",
+      "score": 40.2,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.0330000000000001
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Battlefield™ 6",
+          "url": "https://store.steampowered.com/app/2807960/",
+          "position": 24,
+          "appid": 2807960,
+          "family": "steam_chart",
+          "value": 0.54
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Battlefield™ 6",
+          "url": "https://store.steampowered.com/app/2807960/",
+          "position": 22,
+          "appid": 2807960,
+          "family": "steam_chart",
+          "value": 0.493
+        }
+      ]
+    },
+    {
+      "slug": "wuthering-waves",
+      "title": "Wuthering Waves",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3513350/73c9d69886aea606deb7d023d82c8003b7beb6c8/capsule_231x87.jpg?t=1783626990",
+      "score": 40.1,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.031
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Wuthering Waves",
+          "url": "https://store.steampowered.com/app/3513350/",
+          "position": 19,
+          "appid": 3513350,
+          "family": "steam_chart",
+          "value": 0.64
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Wuthering Waves",
+          "url": "https://store.steampowered.com/app/3513350/",
+          "position": 28,
+          "appid": 3513350,
+          "family": "steam_chart",
+          "value": 0.391
+        }
+      ]
+    },
+    {
+      "slug": "dead-by-daylight",
+      "title": "Dead by Daylight",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/381210/capsule_231x87.jpg?t=1784216454",
+      "score": 39,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 1.002
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Dead by Daylight",
+          "url": "https://store.steampowered.com/app/381210/",
+          "position": 23,
+          "appid": 381210,
+          "family": "steam_chart",
+          "value": 0.56
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Dead by Daylight",
+          "url": "https://store.steampowered.com/app/381210/",
+          "position": 25,
+          "appid": 381210,
+          "family": "steam_chart",
+          "value": 0.442
+        }
+      ]
+    },
+    {
+      "slug": "machine-party",
+      "title": "Machine Party",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4108000/5986ba4057fa210d0f96bd470e41a0dd439ed6fb/capsule_231x87.jpg?t=1785746697",
+      "score": 38.1,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 0.978
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Most Played",
+          "title": "Machine Party",
+          "url": "https://store.steampowered.com/app/4108000/",
+          "position": 17,
+          "appid": 4108000,
+          "family": "steam_chart",
+          "value": 0.578
+        },
+        {
+          "source": "Steam Top Sellers",
+          "title": "Machine Party",
+          "url": "https://store.steampowered.com/app/4108000/",
+          "position": 31,
+          "appid": 4108000,
+          "family": "steam_chart",
+          "value": 0.4
+        }
+      ]
+    },
+    {
+      "slug": "marvel-to-kon-fighting-souls",
+      "title": "MARVEL Tōkon: Fighting Souls",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1784908718",
+      "score": 37.1,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 0.952
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "MARVEL Tōkon: Fighting Souls",
+          "url": "https://store.steampowered.com/app/3787240/",
+          "position": 17,
+          "appid": 3787240,
+          "family": "steam_chart",
+          "value": 0.68
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "MARVEL Tōkon: Fighting Souls",
+          "url": "https://store.steampowered.com/app/3787240/",
+          "position": 35,
+          "appid": 3787240,
+          "family": "steam_chart",
+          "value": 0.272
+        }
+      ]
+    },
+    {
+      "slug": "dragonsword-awakening",
+      "title": "DragonSword : Awakening",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4570720/ad4778acc2facf46b58f6c66492e925c9efd5cb7/capsule_231x87.jpg?t=1785492030",
+      "score": 34.6,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 0.8879999999999999
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "DragonSword : Awakening",
+          "url": "https://store.steampowered.com/app/4570720/",
+          "position": 27,
+          "appid": 4570720,
+          "family": "steam_chart",
+          "value": 0.48
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "DragonSword : Awakening",
+          "url": "https://store.steampowered.com/app/4570720/",
+          "position": 27,
+          "appid": 4570720,
+          "family": "steam_chart",
+          "value": 0.408
+        }
+      ]
+    },
+    {
+      "slug": "marvel-s-spider-man-miles-morales",
+      "title": "Marvel’s Spider-Man: Miles Morales",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1817190/capsule_231x87.jpg?t=1763569499",
+      "score": 31.8,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 0.817
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Marvel’s Spider-Man: Miles Morales",
+          "url": "https://store.steampowered.com/app/1817190/",
+          "position": 28,
+          "appid": 1817190,
+          "family": "steam_chart",
+          "value": 0.46
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Marvel’s Spider-Man: Miles Morales",
+          "url": "https://store.steampowered.com/app/1817190/",
+          "position": 30,
+          "appid": 1817190,
+          "family": "steam_chart",
+          "value": 0.357
+        }
+      ]
+    },
+    {
+      "slug": "tom-clancys-rainbow-six-siege",
+      "title": "Tom Clancy’s Rainbow Six Siege",
+      "year": 2015,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/359550/c1bbd10ec5e3d5a0b285935b9dd847e7e4483376/capsule_231x87_alt_assets_24.jpg?t=1784137517",
+      "score": 30.5,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 0.784
+      },
+      "news_sources": 0,
+      "in_catalog": true,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Tom Clancy's Rainbow Six Siege",
+          "url": "https://store.steampowered.com/app/359550/",
+          "position": 22,
+          "appid": 359550,
+          "family": "steam_chart",
+          "value": 0.58
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Tom Clancy's Rainbow Six Siege",
+          "url": "https://store.steampowered.com/app/359550/",
+          "position": 39,
+          "appid": 359550,
+          "family": "steam_chart",
+          "value": 0.204
+        }
+      ]
+    },
+    {
+      "slug": "gears-of-war-e-day",
+      "title": "Gears of War: E-Day",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3010850/d0917fcdbf27faffb3380f6f67e71e90f84b7ed5/capsule_231x87.jpg?t=1785432491",
+      "score": 29.4,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 0.756
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Gears of War: E-Day",
+          "url": "https://store.steampowered.com/app/3010850/",
+          "position": 20,
+          "appid": 3010850,
+          "family": "steam_chart",
+          "value": 0.62
+        },
+        {
+          "source": "Steam Most Played",
+          "title": "Gears of War: E-Day",
+          "url": "https://store.steampowered.com/app/3010850/",
+          "position": 43,
+          "appid": 3010850,
+          "family": "steam_chart",
+          "value": 0.136
+        }
+      ]
+    },
+    {
+      "slug": "rust",
+      "title": "Rust",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/252490/21aac0b6e20e1ba12f635e7deb730e32a51afbd5/capsule_231x87.jpg?t=1781536981",
+      "score": 28.6,
+      "confidence": 0.75,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "steam_chart": 0.734
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Most Played",
+          "title": "Rust",
+          "url": "https://store.steampowered.com/app/252490/",
+          "position": 29,
+          "appid": 252490,
+          "family": "steam_chart",
+          "value": 0.374
+        },
+        {
+          "source": "Steam Top Sellers",
+          "title": "Rust",
+          "url": "https://store.steampowered.com/app/252490/",
+          "position": 33,
+          "appid": 252490,
+          "family": "steam_chart",
+          "value": 0.36
         }
       ]
     }
@@ -89,27 +1200,43 @@
   "discovered_unmatched": [],
   "source_statuses": [
     {
+      "id": "Steam Top Sellers",
+      "status": "success",
+      "items": 50,
+      "matched": 50,
+      "duration_ms": 199,
+      "url": "https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=topsellers&infinite=1&cc=us&l=english&json=1"
+    },
+    {
+      "id": "Steam Most Played",
+      "status": "success",
+      "items": 50,
+      "matched": 50,
+      "duration_ms": 269,
+      "url": "https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=globaltopsellers&infinite=1&cc=us&l=english&json=1"
+    },
+    {
       "id": "ign-rss",
       "status": "success",
       "items": 20,
       "matched": 3,
-      "duration_ms": 188,
+      "duration_ms": 420,
       "url": "https://www.ign.com/rss/articles/feed"
     },
     {
       "id": "pcgamer-rss",
       "status": "success",
       "items": 50,
-      "matched": 4,
-      "duration_ms": 183,
+      "matched": 5,
+      "duration_ms": 184,
       "url": "https://www.pcgamer.com/rss/"
     },
     {
       "id": "gamespot-rss",
       "status": "success",
       "items": 15,
-      "matched": 1,
-      "duration_ms": 156,
+      "matched": 3,
+      "duration_ms": 101,
       "url": "https://www.gamespot.com/feeds/mashup/"
     },
     {
@@ -117,50 +1244,24 @@
       "status": "success",
       "items": 100,
       "matched": 2,
-      "duration_ms": 269,
+      "duration_ms": 90,
       "url": "https://www.eurogamer.net/feed"
     },
     {
       "id": "rps-rss",
       "status": "success",
       "items": 100,
-      "matched": 0,
-      "duration_ms": 127,
+      "matched": 1,
+      "duration_ms": 85,
       "url": "https://www.rockpapershotgun.com/feed"
     },
     {
       "id": "polygon-rss",
       "status": "success",
       "items": 10,
-      "matched": 0,
-      "duration_ms": 120,
+      "matched": 1,
+      "duration_ms": 724,
       "url": "https://www.polygon.com/rss/index.xml"
-    },
-    {
-      "id": "twitch-streams",
-      "status": "skipped",
-      "error": "TWITCH_CLIENT_ID/TWITCH_CLIENT_SECRET are not configured",
-      "url": "https://api.twitch.tv/helix/streams?first=100"
-    },
-    {
-      "id": "youtube-popular",
-      "status": "skipped",
-      "error": "YOUTUBE_API_KEY is not configured",
-      "url": "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&videoCategoryId=20&maxResults=50"
-    },
-    {
-      "id": "reddit-gaming",
-      "status": "skipped",
-      "error": "REDDIT_ACCESS_TOKEN is not configured",
-      "url": "https://oauth.reddit.com/r/Games+gaming+pcgaming+PS5+XboxSeriesX+NintendoSwitch/new?limit=100"
-    },
-    {
-      "id": "steam-current-players",
-      "status": "success",
-      "items": 26,
-      "matched": 0,
-      "duration_ms": 1214,
-      "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={steam_appid}"
     }
   ]
 }
