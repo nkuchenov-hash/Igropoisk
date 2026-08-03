@@ -3,6 +3,7 @@
 
   const ROOT='/Igropoisk/';
   const HEADER_SELECTOR='.site-header,.game-header,.article-header,.ig-site-header';
+  const OPEN_HEADER_SELECTOR=HEADER_SELECTOR.split(',').map(selector=>`${selector}.is-menu-open`).join(',');
   const items=[
     {id:'home',label:'Главное',href:`${ROOT}#home`},
     {id:'what-to-play',label:'Во что поиграть?',href:`${ROOT}#what-to-play`},
@@ -74,6 +75,14 @@
     root.querySelectorAll?.(HEADER_SELECTOR).forEach(normalize);
   }
 
+  function ensureHeader(){
+    if(document.querySelector(HEADER_SELECTOR)||!document.body)return;
+    const header=document.createElement('header');
+    header.className='ig-site-header';
+    document.body.prepend(header);
+    normalize(header);
+  }
+
   function activatePage(id,updateHistory=true){
     const target=document.getElementById(id);
     if(!target||!target.classList.contains('page'))return false;
@@ -90,13 +99,17 @@
 
   function updateActive(forced){
     const active=forced||document.querySelector('main.page.active')?.id||currentSection();
-    document.querySelectorAll('.ig-site-header__nav a[data-page],.ig-site-header__logo[data-page]').forEach(link=>{
+    document.querySelectorAll('.ig-site-header__nav a[data-page]').forEach(link=>{
       const selected=link.dataset.page===active;
-      link.classList.toggle('is-active',selected&&link.classList.contains('ig-site-header__nav')===false);
-      if(link.closest('.ig-site-header__nav')){
-        link.classList.toggle('is-active',selected);
-        if(selected)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
-      }
+      link.classList.toggle('is-active',selected);
+      if(selected)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+    });
+  }
+
+  function closeMenus(){
+    document.querySelectorAll(OPEN_HEADER_SELECTOR).forEach(node=>{
+      node.classList.remove('is-menu-open');
+      node.querySelector('[data-ig-menu-toggle]')?.setAttribute('aria-expanded','false');
     });
   }
 
@@ -105,7 +118,7 @@
     if(menuButton){
       const header=menuButton.closest(HEADER_SELECTOR);
       const open=!header.classList.contains('is-menu-open');
-      document.querySelectorAll(`${HEADER_SELECTOR}.is-menu-open`).forEach(node=>node.classList.remove('is-menu-open'));
+      closeMenus();
       header.classList.toggle('is-menu-open',open);
       menuButton.setAttribute('aria-expanded',String(open));
       return;
@@ -121,17 +134,11 @@
     if(link){
       const id=link.dataset.page;
       if(activatePage(id,true))event.preventDefault();
-      link.closest(HEADER_SELECTOR)?.classList.remove('is-menu-open');
+      closeMenus();
       return;
     }
 
-    if(!event.target.closest(HEADER_SELECTOR)){
-      document.querySelectorAll(`${HEADER_SELECTOR}.is-menu-open`).forEach(node=>{
-        node.classList.remove('is-menu-open');
-        node.querySelector('[data-ig-menu-toggle]')?.setAttribute('aria-expanded','false');
-      });
-    }
-
+    if(!event.target.closest(HEADER_SELECTOR))closeMenus();
     if(event.target.closest('[data-page]'))setTimeout(updateActive,0);
   });
 
@@ -140,15 +147,28 @@
     if(!activatePage(id,false))updateActive();
   });
 
+  let ensureQueued=false;
+  function queueEnsure(){
+    if(ensureQueued)return;
+    ensureQueued=true;
+    queueMicrotask(()=>{
+      ensureQueued=false;
+      scan();
+      ensureHeader();
+      updateActive();
+    });
+  }
+
   const observer=new MutationObserver(mutations=>{
     for(const mutation of mutations){
       mutation.addedNodes.forEach(node=>{if(node instanceof HTMLElement)scan(node)});
     }
-    updateActive();
+    queueEnsure();
   });
 
   observer.observe(document.documentElement,{subtree:true,childList:true});
   scan();
+  ensureHeader();
   applyTheme(themeValue());
   const initial=decodeURIComponent(location.hash.slice(1));
   if(initial)activatePage(initial,false);else updateActive();
