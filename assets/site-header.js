@@ -53,7 +53,7 @@
       <div class="ig-site-header__actions">
         ${contextLink}
         <a class="ig-site-header__action" href="${ROOT}#search" data-page="search">Поиск</a>
-        <button class="ig-site-header__theme" type="button" data-ig-theme-toggle aria-label="Переключить тему"></button>
+        <button class="ig-site-header__theme" id="theme" type="button" data-ig-theme-toggle aria-label="Переключить тему"></button>
         <button class="ig-site-header__menu-button" type="button" data-ig-menu-toggle aria-expanded="false">Меню</button>
       </div>
     </div>`;
@@ -126,7 +126,11 @@
 
     const themeButton=event.target.closest('[data-ig-theme-toggle]');
     if(themeButton){
-      applyTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
+      if(typeof themeButton.onclick==='function'){
+        setTimeout(()=>applyTheme(document.documentElement.dataset.theme),0);
+      }else{
+        applyTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
+      }
       return;
     }
 
