@@ -3,6 +3,25 @@
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const setState=(target,title,text)=>{target.innerHTML=`<div class="popular-state"><strong>${esc(title)}</strong><span>${esc(text)}</span></div>`};
+const prefersReducedMotion=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+const ensureRailControls=target=>{
+  const heading=target.closest('.section')?.querySelector('.section-head');
+  if(!heading)return;
+  let meta=heading.querySelector('.section-head__meta');
+  if(!meta){
+    meta=document.createElement('div');
+    meta.className='section-head__meta';
+    heading.appendChild(meta);
+  }
+  if(meta.querySelector(`[data-controls-for="${target.id}"]`))return;
+  const controls=document.createElement('div');
+  controls.className='rail-controls';
+  controls.dataset.controlsFor=target.id;
+  controls.setAttribute('aria-label',target.id==='homeNews'?'Прокрутка новостей':'Прокрутка популярного');
+  controls.innerHTML=`<button class="rail-button" type="button" data-rail-target="${target.id}" data-direction="prev" aria-label="Прокрутить влево">←</button><button class="rail-button" type="button" data-rail-target="${target.id}" data-direction="next" aria-label="Прокрутить вправо">→</button>`;
+  meta.appendChild(controls);
+};
 
 window.IgropoiskInfiniteRail=window.IgropoiskInfiniteRail||function makeInfiniteRail(target){
   if(!target)return;
@@ -10,6 +29,7 @@ window.IgropoiskInfiniteRail=window.IgropoiskInfiniteRail||function makeInfinite
   const source=[...target.children];
   if(source.length<2)return;
 
+  ensureRailControls(target);
   const count=source.length;
   const fragment=document.createDocumentFragment();
   for(let set=0;set<3;set+=1){
@@ -30,27 +50,31 @@ window.IgropoiskInfiniteRail=window.IgropoiskInfiniteRail||function makeInfinite
   target.setAttribute('aria-label',target.id==='homeNews'?'Последние новости, горизонтальная лента':'Сейчас популярно, горизонтальная лента');
 
   let segmentWidth=0;
+  let itemStep=0;
   let positioned=false;
   let recentering=false;
   let dragged=false;
   let pointerId=null;
   let startX=0;
   let startScroll=0;
+  const cleanupCallbacks=[];
 
   const measure=()=>{
     const first=target.children[0];
     const middle=target.children[count];
+    const middleNext=target.children[count+1];
     if(!first||!middle)return;
     const nextWidth=middle.offsetLeft-first.offsetLeft;
-    if(nextWidth<=0)return;
-    const oldWidth=segmentWidth;
-    segmentWidth=nextWidth;
+    if(nextWidth>0)segmentWidth=nextWidth;
+    if(middleNext){
+      const nextStep=middleNext.offsetLeft-middle.offsetLeft;
+      if(nextStep>0)itemStep=nextStep;
+    }
+    if(!itemStep)itemStep=middle.getBoundingClientRect().width;
+    if(!segmentWidth||!itemStep)return;
     if(!positioned){
       target.scrollLeft=segmentWidth;
       positioned=true;
-    }else if(oldWidth>0){
-      const relative=(target.scrollLeft-oldWidth)/oldWidth;
-      target.scrollLeft=segmentWidth+(relative*segmentWidth);
     }
   };
 
@@ -66,6 +90,12 @@ window.IgropoiskInfiniteRail=window.IgropoiskInfiniteRail||function makeInfinite
       target.scrollLeft=left-segmentWidth;
       recentering=false;
     }
+  };
+
+  const step=direction=>{
+    if(!itemStep)measure();
+    if(!itemStep)return;
+    target.scrollBy({left:direction*itemStep,behavior:prefersReducedMotion()?'auto':'smooth'});
   };
 
   const onPointerDown=event=>{
@@ -98,8 +128,7 @@ window.IgropoiskInfiniteRail=window.IgropoiskInfiniteRail||function makeInfinite
   const onKeyDown=event=>{
     if(event.key!=='ArrowLeft'&&event.key!=='ArrowRight')return;
     event.preventDefault();
-    const direction=event.key==='ArrowRight'?1:-1;
-    target.scrollBy({left:direction*Math.max(target.clientWidth*.72,260),behavior:'smooth'});
+    step(event.key==='ArrowRight'?1:-1);
   };
 
   target.addEventListener('scroll',recenter,{passive:true});
@@ -114,6 +143,12 @@ window.IgropoiskInfiniteRail=window.IgropoiskInfiniteRail||function makeInfinite
   resizeObserver.observe(target);
   requestAnimationFrame(()=>requestAnimationFrame(measure));
 
+  document.querySelectorAll(`[data-rail-target="${target.id}"]`).forEach(button=>{
+    const handler=()=>step(button.dataset.direction==='prev'?-1:1);
+    button.addEventListener('click',handler);
+    cleanupCallbacks.push(()=>button.removeEventListener('click',handler));
+  });
+
   target._igInfiniteRailCleanup=()=>{
     resizeObserver.disconnect();
     target.removeEventListener('scroll',recenter);
@@ -123,6 +158,7 @@ window.IgropoiskInfiniteRail=window.IgropoiskInfiniteRail||function makeInfinite
     target.removeEventListener('pointercancel',stopDrag);
     target.removeEventListener('click',suppressDraggedClick,true);
     target.removeEventListener('keydown',onKeyDown);
+    cleanupCallbacks.forEach(fn=>fn());
     target.classList.remove('infinite-rail','is-dragging');
     target.removeAttribute('role');
     target.removeAttribute('aria-label');
@@ -199,7 +235,13 @@ async function load(){
     window.IgropoiskInfiniteRail(target);
     wireImageFallbacks(target);
     const heading=target.closest('.section')?.querySelector('.section-head');
-    if(heading&&!heading.querySelector('.popular-updated')){const note=document.createElement('span');note.className='section-note popular-updated';note.textContent=data.generated_at?`Обновлено ${new Date(data.generated_at).toLocaleString('ru-RU')}`:'По данным парсера';heading.appendChild(note)}
+    if(heading&&!heading.querySelector('.popular-updated')){
+      const note=document.createElement('span');
+      note.className='section-note popular-updated';
+      note.textContent=data.generated_at?`Обновлено ${new Date(data.generated_at).toLocaleString('ru-RU')}`:'По данным парсера';
+      const meta=heading.querySelector('.section-head__meta')||heading;
+      meta.prepend(note);
+    }
   }catch(error){
     console.warn('Игропоиск: popular parser output unavailable',error);
     setState(target,'Рейтинг временно недоступен','Не удалось получить свежие данные парсера.');
