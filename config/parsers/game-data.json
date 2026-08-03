@@ -1,39 +1,48 @@
 {
-  "schema_version":1,
+  "schema_version":2,
   "id":"game-data",
   "title":"Парсер данных игры",
   "status":"active",
   "schedule":"При добавлении игры и затем раз в неделю",
-  "purpose":"Собрать проверяемую карточку игры: идентичность, даты, разработчиков, жанры, платформы, системные требования, обложку, hero, скриншоты, видео и официальные ссылки.",
+  "purpose":"Собрать проверяемую карточку игры и большой медианабор: идентичность, даты, разработчиков, жанры, платформы, требования, обложку, hero, видео и десятки качественных скриншотов.",
   "method":{
-    "formula":"Поле публикуется из источника с максимальным trust, если идентичность игры совпала по app id, официальному slug или нормализованному названию.",
-    "normalization":"Изображения сохраняются как исходные URL. Синтетические скриншоты и автоматически дорисованные изображения запрещены.",
+    "formula":"Поле публикуется из источника с максимальным trust. Медианабор считается готовым только после сбора не менее 30 кандидатов из минимум трёх независимых источников и прохождения технического и визуального аудита.",
+    "normalization":"Изображения сохраняются как исходные URL с источником, разрешением, версией игры и хешем. Синтетические, дорисованные и неверно масштабированные скриншоты запрещены.",
     "steps":[
-      "Разрешить идентичность игры по Steam app id, официальному URL и названию.",
+      "Разрешить точную идентичность игры по app id, официальному URL, году и названию; отдельно зафиксировать исключённые ремейки и продолжения.",
       "Получить структурированные данные магазина и официальных платформ.",
-      "Извлечь hero, вертикальную обложку, полный набор скриншотов и видео-превью.",
-      "Проверить HTTP-ответ, MIME-type, минимальное разрешение и отсутствие дублей по URL/hash.",
+      "Собрать hero, обложку, видео и не менее 30 кандидатов-скриншотов из минимум трёх независимых медиагалерей.",
+      "Проверить HTTP-ответ, MIME-type, фактическое разрешение, соотношение сторон и отсутствие миниатюр.",
+      "Удалить точные и визуально близкие дубли по URL, hash и сходству сцены.",
+      "Провести vision-аудит резкости, JPEG-артефактов, апскейла, читаемости и соответствия нужной версии игры.",
+      "Оставить минимум 18 качественных уникальных кадров, пригодных для карточек статьи и медиараздела игры.",
       "Разделить изображения на screenshots, artwork, covers и video thumbnails.",
-      "Сопоставить системные требования и платформы, сохранив источник каждого поля.",
-      "Сохранить draft, журнал запуска и ошибки по каждому URL."
+      "Сохранить для каждого кадра source_url, source_name, width, height, visual_tags, quality_score и identity_match.",
+      "Сохранить draft, медиакаталог, журнал запуска и причины отклонения каждого URL."
     ],
     "screenshot_rules":[
-      "Не менее 1280×720 для полноразмерного скриншота, если источник отдаёт размеры.",
-      "Не использовать изображения из обзоров как официальные скриншоты без явной маркировки источника.",
+      "Минимум 30 кандидатов и минимум 18 прошедших качество кадров.",
+      "Минимум три независимых медиa-источника; один источник не может формировать весь набор.",
+      "Для современных игр целевая ширина не ниже 1280 px; для исторических — не ниже 1024 px.",
+      "Не использовать thumbnails, видимый апскейл, сильное размытие и тяжёлые JPEG-артефакты.",
+      "Не смешивать оригинал, ремейк, ремастер, продолжение или другой платформенный порт без явной маркировки.",
       "Не смешивать key art, обложку и gameplay screenshots.",
-      "Удалять точные и визуально близкие дубли; исходный URL сохранять.",
-      "Первый hero выбирается только из официального магазина или сайта издателя."
+      "Удалять одинаковые и почти одинаковые сцены, даже если URL различаются.",
+      "Hero выбирается только из официального магазина или сайта издателя."
     ]
   },
   "sources":[
     {"id":"steam-store","enabled":true,"family":"store","name":"Steam Store API","type":"api-template","url":"https://store.steampowered.com/api/appdetails?appids={steam_appid}&l=english","weight":1,"trust":0.98},
     {"id":"steam-cdn","enabled":true,"family":"media","name":"Steam CDN","type":"media-template","url":"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/{steam_appid}/","weight":1,"trust":0.98},
-    {"id":"official-site","enabled":true,"family":"official","name":"Официальный сайт игры","type":"page","url":"{official_url}","weight":1,"trust":1},
+    {"id":"official-site","enabled":true,"family":"official","name":"Официальный сайт или press kit","type":"page","url":"{official_url}","weight":1,"trust":1},
+    {"id":"mobygames","enabled":true,"family":"media-archive","name":"MobyGames Screenshots","type":"page-search","url":"https://www.mobygames.com/game/{mobygames_id}/screenshots/","weight":0.85,"trust":0.88},
+    {"id":"gamespot-media","enabled":true,"family":"media-archive","name":"GameSpot Images","type":"page-search","url":"https://www.gamespot.com/games/{slug}/images/","weight":0.85,"trust":0.86},
+    {"id":"ign-media","enabled":true,"family":"media-archive","name":"IGN Images","type":"page-search","url":"https://www.ign.com/games/{slug}/images","weight":0.82,"trust":0.85},
+    {"id":"gog","enabled":true,"family":"store","name":"GOG","type":"page-search","url":"https://www.gog.com/","weight":0.7,"trust":0.9},
     {"id":"playstation-store","enabled":true,"family":"platform","name":"PlayStation Store","type":"page-search","url":"https://store.playstation.com/","weight":0.8,"trust":0.96},
     {"id":"xbox-store","enabled":true,"family":"platform","name":"Xbox Store","type":"page-search","url":"https://www.xbox.com/games/store/","weight":0.8,"trust":0.96},
-    {"id":"nintendo-store","enabled":true,"family":"platform","name":"Nintendo Store","type":"page-search","url":"https://www.nintendo.com/store/products/","weight":0.8,"trust":0.96},
-    {"id":"gog","enabled":true,"family":"store","name":"GOG","type":"page-search","url":"https://www.gog.com/","weight":0.6,"trust":0.9}
+    {"id":"nintendo-store","enabled":true,"family":"platform","name":"Nintendo Store","type":"page-search","url":"https://www.nintendo.com/store/products/","weight":0.8,"trust":0.96}
   ],
-  "outputs":["data/drafts/{slug}.json","data/parser-runs/game-data.json"],
+  "outputs":["data/drafts/{slug}.json","data/media/{slug}.json","data/parser-runs/game-data.json"],
   "examples":[{"label":"Пример страницы игры","url":"../../../game/the-witcher-3-wild-hunt/"},{"label":"Пример draft","url":"../../../data/drafts/the-witcher-3-wild-hunt.json"}]
 }
