@@ -1,15 +1,18 @@
 {
-  "schema_version": 5,
-  "generated_at": "2026-08-03T15:31:54.380Z",
+  "schema_version": 6,
+  "generated_at": "2026-08-03T15:36:49.791Z",
   "window_hours": 96,
   "method": {
-    "formula": "55% global discussion + 35% Steam demand + 10% independent publisher breadth",
+    "formula": "35% news + 20% Reddit + 15% YouTube + 10% Twitch + 15% Steam demand + 5% breadth",
     "family_weights": {
-      "news": 0.55,
-      "steam_chart": 0.35,
-      "breadth": 0.1
+      "news": 0.35,
+      "reddit": 0.2,
+      "youtube": 0.15,
+      "twitch": 0.1,
+      "steam_chart": 0.15,
+      "breadth": 0.05
     },
-    "image_fallback": "catalog cover → Steam vertical poster → Steam app details → Steam search image → header/capsule"
+    "image_fallback": "catalog/manual → Steam vertical poster → Steam app details → header/capsule"
   },
   "ranking": [
     {
@@ -19,23 +22,25 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2001760/8051f36f9874f82c4d998354409343346b5f6b3f/capsule_231x87.jpg?t=1785194490",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2001760/8051f36f9874f82c4d998354409343346b5f6b3f/capsule_231x87.jpg?t=1785194490",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/2001760/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2001760/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/2001760/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2001760/8051f36f9874f82c4d998354409343346b5f6b3f/capsule_184x69.jpg?t=1785194490",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2001760/d068139fe039e26a6a9d9f57ac5d89785b984d33/header.jpg?t=1785194490",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2001760/8051f36f9874f82c4d998354409343346b5f6b3f/capsule_231x87.jpg?t=1785194490",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2001760/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2001760/capsule_616x353.jpg"
       ],
-      "score": 95,
-      "confidence": 0.97,
+      "score": 51.7,
+      "confidence": 0.81,
       "delta": null,
       "families": [
         "news",
         "steam_chart"
       ],
       "signals": {
-        "news": 3.5184460197611225,
+        "news": 3.5101173671448693,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.92
       },
       "news_sources": 5,
@@ -56,7 +61,7 @@
           "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxQb28tNGdlaXRBZlVkNEl0LTVSNk5sSW05b2cybDZhREtkcTZlaXhxN3dtZk5uNmhYTkVneDF3cmtXenJhT0haTEZJbHN4LTNwWDdQQy10b1NBbDZwMnRDb0xBMF9JVGJHOVpIRFNDSEFiOHphak1KUVMtQlljTVBadFlhTkhlcW5Xa1NlZmtvNVFNYVMxUnBQeA?oc=5",
           "observed_at": "Mon, 03 Aug 2026 11:00:00 GMT",
           "family": "news",
-          "value": 0.877
+          "value": 0.875
         },
         {
           "source": "Edwin Evans-Thirlwell",
@@ -64,7 +69,7 @@
           "url": "https://www.rockpapershotgun.com/this-week-in-pc-games-beast-of-reincarnation-big-walk-and-marvel-tokon-plus-a-round-table-rpg-some-flammable-robots-and-a-flock-of-lovestruck-pigeons",
           "observed_at": "Mon, 03 Aug 2026 10:48:17 +0000",
           "family": "news",
-          "value": 0.872
+          "value": 0.87
         },
         {
           "source": "blog.playstation.com",
@@ -72,7 +77,7 @@
           "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxORHZBYnZiYk1ELVMtVldRbG1HMFBHQTZzd3ZFNkg1VmVEYkRkMThoOVZxei1WM0hxU3dYWHE3VndEMnZkOUxVRktRaHpUVkhidEozVFFhRERNcnAzOENxb1Z3LXFVWHNOcTRDWGRhQkJpajhiRUFGZ1Vfb0pYd2ZYT2hJN05WdnRUYmdvd29TQW1OMmEtdnJDYk8zbm4tcWxrbnhzTVNwbTNwQmpDN0hCbEU2eHhpS1k?oc=5",
           "observed_at": "Mon, 03 Aug 2026 08:00:10 GMT",
           "family": "news",
-          "value": 0.805
+          "value": 0.803
         },
         {
           "source": "Gematsu",
@@ -80,7 +85,7 @@
           "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxPSDdHWHFxWjV0MEFyTlZwMUJLUDlORDYxYXdpU19CdDh5ako3RkduY3lERDFNYm1VZGdvUUkzTldhRlZpTDRFa1czUmg3U3YyNmV4dE5rQkc4RExyakVoR1QwVVdrRDFhT0RneDU4ellNdmttWERGc2h6dW92NGxVWHZVWWVIY1lqbDEzTE1fRXNrTjlob3RsTEpkTXNtTFZyWmtHOG0xZU9TcHIySUtfdW4wRlBjMnBmQTlvWkRR?oc=5",
           "observed_at": "Mon, 03 Aug 2026 04:23:47 GMT",
           "family": "news",
-          "value": 0.725
+          "value": 0.723
         },
         {
           "source": "Callum Self",
@@ -93,29 +98,97 @@
       ]
     },
     {
+      "slug": "grand-theft-auto-vi",
+      "title": "Grand Theft Auto VI",
+      "year": 2026,
+      "image": "https://www.igrandtheftauto.com/content/images/grand-theft-auto-vi-official-cover-art-hi-res.jpg",
+      "image_candidates": [
+        "https://www.igrandtheftauto.com/content/images/grand-theft-auto-vi-official-cover-art-hi-res.jpg"
+      ],
+      "score": 39.3,
+      "confidence": 0.73,
+      "delta": null,
+      "families": [
+        "news"
+      ],
+      "signals": {
+        "news": 3.6541736397326483,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
+        "steam_chart": 0
+      },
+      "news_sources": 5,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Eddie Makuch",
+          "title": "The Last Of Us Co-Director Asks Why You Even Care About GTA 6, And The Internet Has Thoughts",
+          "url": "https://www.gamespot.com/articles/the-last-of-us-co-director-asks-why-you-even-care-about-gta-6-and-the-internet-has-thoughts/",
+          "observed_at": "Mon, 03 Aug 2026 14:02:11 +0000",
+          "family": "news",
+          "value": 0.955
+        },
+        {
+          "source": "Gamereactor UK",
+          "title": "Rumour: Grand Theft Auto VI fans can finally expect to hear more about the game this month - Gamereactor UK",
+          "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOVDh0OS15OGRGSWQ2bmJrdmZxZDFzcmFMeERxa2Vfa2VoVDc1d1hKZGdMckxUcloteXUxQnVrLXAxVE9NcDgtakRIbFdPRXBaMWkxaHRvbElwX3M3WWxjSFlkczNMOHdJWWt6WVo4cWZ0dVk1bENKeThHSmlEX1dVSW5xbVJHbU5zYk1tdHJnNTRMYkRaWTZ6cGVDSE4taXlWMDRpMGdrSW1zQjhnb3JxNlVZdExzYVJ3TzBiXzdnaGxEM1k?oc=5",
+          "observed_at": "Mon, 03 Aug 2026 12:10:19 GMT",
+          "family": "news",
+          "value": 0.905
+        },
+        {
+          "source": "GAMINGbible",
+          "title": "Former Rockstar dev's promising AAA GTA 6 rival is canned after 6 years in development - GAMINGbible",
+          "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNQkYwV3JxcURvRWpYb3BFbDVCNldMTkRLWWY5NGxLRXZYdFBhQUVfNWxKX29WUDF5VDlELVRPZHFTNVRzYlRBdXV4a2NOOGNKbzIxMlM3VDd4VjgyUjZpZTd0SUlBRGl1RU1LLU1NMWYxRWJldnNQSkNBNE1VM3E1cjQ0NzBUUGpKNGw5anhqaDA3MjVVUkE0bGRERGt4SWhXMEE?oc=5",
+          "observed_at": "Mon, 03 Aug 2026 10:00:03 GMT",
+          "family": "news",
+          "value": 0.85
+        },
+        {
+          "source": "GTA BOOM",
+          "title": "Rockstar Barely Markets GTA 6 Because Fans Like Yamal Do It for Free - GTA BOOM",
+          "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE4xNE1zWjhXZTJUNWNnR1VZWVphVHNEa000QUtKUzZyaEp6T1pLNElLR3NvT2NfNFg5aHFIR2d3b2QtVk5pTUp1NEtyc09kajVIYTJiaWZDM0RRRW51NjYtYmtWajlMTURCbWxxTEdKUkJaLVpFSFVwT09Jc19IWjg?oc=5",
+          "observed_at": "Mon, 03 Aug 2026 09:04:52 GMT",
+          "family": "news",
+          "value": 0.828
+        },
+        {
+          "source": "Matt Wales",
+          "title": "Could Switch 2's The Legend of Zelda: Ocarina of Time remake be squaring up for a GTA 6 head-to-head? Newly sighted amiibo suggest a potential November release",
+          "url": "https://www.eurogamer.net/zelda-ocarina-of-time-remake-switch-2-amiibo-november",
+          "observed_at": "Fri, 31 Jul 2026 12:42:19 +0000",
+          "family": "news",
+          "value": 0.115
+        }
+      ]
+    },
+    {
       "slug": "palworld",
       "title": "Palworld",
       "year": null,
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1623730/0703d5a0658c7aedaa3be4391d6f5cccc1bb6d7a/capsule_231x87.jpg?t=1784714419",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1623730/0703d5a0658c7aedaa3be4391d6f5cccc1bb6d7a/capsule_231x87.jpg?t=1784714419",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/1623730/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1623730/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/1623730/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1623730/0703d5a0658c7aedaa3be4391d6f5cccc1bb6d7a/capsule_184x69.jpg?t=1784714419",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1623730/6912f19c43a95ff5fe514eedd35e68bf12335459/header.jpg?t=1784714419",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1623730/0703d5a0658c7aedaa3be4391d6f5cccc1bb6d7a/capsule_231x87.jpg?t=1784714419",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1623730/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1623730/capsule_616x353.jpg"
       ],
-      "score": 66,
-      "confidence": 0.83,
+      "score": 34.5,
+      "confidence": 0.73,
       "delta": null,
       "families": [
         "news",
         "steam_chart"
       ],
       "signals": {
-        "news": 1.8953476370135574,
+        "news": 1.8908610847211351,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.9
       },
       "news_sources": 3,
@@ -127,7 +200,7 @@
           "url": "https://news.google.com/rss/articles/CBMiekFVX3lxTE5peVBFdmpmVWNKQmZWNGhRNmJIdVdRWkFfSFJvSWx4ajVBaDB3N3l2RW1lT2ZucUxoYXQyWXc1VTZmTkNVeklhRmZYYTRhLVVoWllOUEFRU2dTT19vcE82eFlrTHZ5OGl3RVYxSTd1ZzBORFNRQ3dJQWp3?oc=5",
           "observed_at": "Mon, 03 Aug 2026 12:01:20 GMT",
           "family": "news",
-          "value": 0.904
+          "value": 0.901
         },
         {
           "source": "Steam Top Sellers",
@@ -144,7 +217,7 @@
           "url": "https://www.eurogamer.net/palworld-online-revealed-mobile-mmorpg",
           "observed_at": "Mon, 03 Aug 2026 08:58:10 +0000",
           "family": "news",
-          "value": 0.827
+          "value": 0.825
         },
         {
           "source": "Andrea Shearon",
@@ -157,92 +230,31 @@
       ]
     },
     {
-      "slug": "grand-theft-auto-vi",
-      "title": "Grand Theft Auto VI",
-      "year": 2026,
-      "image": "https://www.igrandtheftauto.com/content/images/grand-theft-auto-vi-official-cover-art-hi-res.jpg",
-      "image_candidates": [
-        "https://www.igrandtheftauto.com/content/images/grand-theft-auto-vi-official-cover-art-hi-res.jpg"
-      ],
-      "score": 65,
-      "confidence": 0.85,
-      "delta": null,
-      "families": [
-        "news"
-      ],
-      "signals": {
-        "news": 3.662844102757523,
-        "steam_chart": 0
-      },
-      "news_sources": 5,
-      "in_catalog": false,
-      "evidence": [
-        {
-          "source": "Eddie Makuch",
-          "title": "The Last Of Us Co-Director Asks Why You Even Care About GTA 6, And The Internet Has Thoughts",
-          "url": "https://www.gamespot.com/articles/the-last-of-us-co-director-asks-why-you-even-care-about-gta-6-and-the-internet-has-thoughts/",
-          "observed_at": "Mon, 03 Aug 2026 14:02:11 +0000",
-          "family": "news",
-          "value": 0.958
-        },
-        {
-          "source": "Gamereactor UK",
-          "title": "Rumour: Grand Theft Auto VI fans can finally expect to hear more about the game this month - Gamereactor UK",
-          "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOVDh0OS15OGRGSWQ2bmJrdmZxZDFzcmFMeERxa2Vfa2VoVDc1d1hKZGdMckxUcloteXUxQnVrLXAxVE9NcDgtakRIbFdPRXBaMWkxaHRvbElwX3M3WWxjSFlkczNMOHdJWWt6WVo4cWZ0dVk1bENKeThHSmlEX1dVSW5xbVJHbU5zYk1tdHJnNTRMYkRaWTZ6cGVDSE4taXlWMDRpMGdrSW1zQjhnb3JxNlVZdExzYVJ3TzBiXzdnaGxEM1k?oc=5",
-          "observed_at": "Mon, 03 Aug 2026 12:10:19 GMT",
-          "family": "news",
-          "value": 0.908
-        },
-        {
-          "source": "GAMINGbible",
-          "title": "Former Rockstar dev's promising AAA GTA 6 rival is canned after 6 years in development - GAMINGbible",
-          "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNQkYwV3JxcURvRWpYb3BFbDVCNldMTkRLWWY5NGxLRXZYdFBhQUVfNWxKX29WUDF5VDlELVRPZHFTNVRzYlRBdXV4a2NOOGNKbzIxMlM3VDd4VjgyUjZpZTd0SUlBRGl1RU1LLU1NMWYxRWJldnNQSkNBNE1VM3E1cjQ0NzBUUGpKNGw5anhqaDA3MjVVUkE0bGRERGt4SWhXMEE?oc=5",
-          "observed_at": "Mon, 03 Aug 2026 10:00:03 GMT",
-          "family": "news",
-          "value": 0.852
-        },
-        {
-          "source": "GTA BOOM",
-          "title": "Rockstar Barely Markets GTA 6 Because Fans Like Yamal Do It for Free - GTA BOOM",
-          "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE4xNE1zWjhXZTJUNWNnR1VZWVphVHNEa000QUtKUzZyaEp6T1pLNElLR3NvT2NfNFg5aHFIR2d3b2QtVk5pTUp1NEtyc09kajVIYTJiaWZDM0RRRW51NjYtYmtWajlMTURCbWxxTEdKUkJaLVpFSFVwT09Jc19IWjg?oc=5",
-          "observed_at": "Mon, 03 Aug 2026 09:04:52 GMT",
-          "family": "news",
-          "value": 0.83
-        },
-        {
-          "source": "Matt Wales",
-          "title": "Could Switch 2's The Legend of Zelda: Ocarina of Time remake be squaring up for a GTA 6 head-to-head? Newly sighted amiibo suggest a potential November release",
-          "url": "https://www.eurogamer.net/zelda-ocarina-of-time-remake-switch-2-amiibo-november",
-          "observed_at": "Fri, 31 Jul 2026 12:42:19 +0000",
-          "family": "news",
-          "value": 0.115
-        }
-      ]
-    },
-    {
       "slug": "baldurs-gate-3",
       "title": "Baldur’s Gate 3",
       "year": 2023,
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1086940/3dd81008e9c385caf68152450c22353f6a8abec9/capsule_231x87.jpg?t=1777363040",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1086940/3dd81008e9c385caf68152450c22353f6a8abec9/capsule_231x87.jpg?t=1777363040",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/3dd81008e9c385caf68152450c22353f6a8abec9/capsule_184x69.jpg?t=1777363040",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/3dd81008e9c385caf68152450c22353f6a8abec9/capsule_231x87.jpg?t=1777363040",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/capsule_616x353.jpg"
       ],
-      "score": 42.6,
-      "confidence": 0.76,
+      "score": 21.5,
+      "confidence": 0.69,
       "delta": null,
       "families": [
         "news",
         "steam_chart"
       ],
       "signals": {
-        "news": 0.8956356604138156,
+        "news": 0.8935155658480841,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.72
       },
       "news_sources": 2,
@@ -263,7 +275,7 @@
           "url": "https://www.pcgamer.com/games/baldurs-gate/baldurs-gate-3-is-the-cheapest-its-ever-been-to-celebrate-its-third-anniversary/",
           "observed_at": "Sun, 02 Aug 2026 16:13:15 +0000",
           "family": "news",
-          "value": 0.51
+          "value": 0.509
         },
         {
           "source": "Jody Macgregor",
@@ -271,7 +283,7 @@
           "url": "https://www.pcgamer.com/games/baldurs-gate/the-maker-of-the-baldurs-gate-3-over-the-shoulder-camera-mod-has-gone-to-great-lengths-to-demonstrate-its-not-like-other-third-person-viewpoint-solutions/",
           "observed_at": "Sun, 02 Aug 2026 06:32:05 +0000",
           "family": "news",
-          "value": 0.386
+          "value": 0.385
         }
       ]
     },
@@ -282,23 +294,25 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/2806050/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2806050/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/2806050/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_184x69.jpg?t=1785367749",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2806050/30d8542d35d7919b34e5f5dbe955d04c3f99e6da/header.jpg?t=1785367749",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2806050/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2806050/capsule_616x353.jpg"
       ],
-      "score": 41.6,
-      "confidence": 0.69,
+      "score": 21.1,
+      "confidence": 0.65,
       "delta": null,
       "families": [
         "news",
         "steam_chart"
       ],
       "signals": {
-        "news": 0.8650896346581265,
+        "news": 0.8630418467970872,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.76
       },
       "news_sources": 1,
@@ -310,7 +324,7 @@
           "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQMUtudUt3WmhEWXRVdFR6V1lXZlp3NVViZno3TkRiZFMyVElhRnF4aV9TMTZuRks3czNTdDNyTm5kcGlmUFJ5MWZOZU45c21YZ283WDRySDMzYXFkaHMtTmdyNnl3SUtOX3VSM2JuZENRRHN1bXh3cERKN3FQcXBsLVBBSUh4V0NCYUZ4Ty1KUHRSQlhMa2twVWM1V0l6Zmd1Z0hSX09PMA?oc=5",
           "observed_at": "Mon, 03 Aug 2026 10:30:50 GMT",
           "family": "news",
-          "value": 0.865
+          "value": 0.863
         },
         {
           "source": "Steam Top Sellers",
@@ -324,28 +338,70 @@
       ]
     },
     {
+      "slug": "elden-ring",
+      "title": "Elden Ring",
+      "year": 2022,
+      "image": "",
+      "image_candidates": [],
+      "score": 19.9,
+      "confidence": 0.61,
+      "delta": null,
+      "families": [
+        "news"
+      ],
+      "signals": {
+        "news": 1.8544954471012018,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
+        "steam_chart": 0
+      },
+      "news_sources": 2,
+      "in_catalog": true,
+      "evidence": [
+        {
+          "source": "Ed Thorn",
+          "title": "The Soulslike genre has grown stale after Elden Ring, and only FromSoftware can take it to strange new places",
+          "url": "https://www.rockpapershotgun.com/the-soulslike-genre-has-grown-stale-after-elden-ring-and-only-fromsoftware-can-take-it-to-strange-new-places",
+          "observed_at": "Mon, 03 Aug 2026 12:59:49 +0000",
+          "family": "news",
+          "value": 0.927
+        },
+        {
+          "source": "Tom's Guide",
+          "title": "The action game I’ve been obsessed with for 3 years is now on Nintendo Switch 2 — and it’ll keep you busy until Elden Ring: Tarnished Edition - Tom's Guide",
+          "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOZkYwZXVxb0ZfSnktXzdtd0MybG51bUVsT0loMnlsUUxoeER3NXoxM3M4bTR5QUc4b3RZRGdvSUtDRTg0ZzhSWXkzZHJvWEplZ1hzZlFtWTUzS2ZWdDhBaElXbXhKV3QzWGtNOEtORnV4Y0hjc1JUVzdhSmRiZGlIN1V3?oc=5",
+          "observed_at": "Mon, 03 Aug 2026 13:00:00 GMT",
+          "family": "news",
+          "value": 0.927
+        }
+      ]
+    },
+    {
       "slug": "counter-strike-2",
       "title": "Counter-Strike 2",
       "year": null,
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/730/942c04efaa5bc87afb6f2a97dbf17ac614c8a84d/capsule_231x87.jpg?t=1784564069",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/730/942c04efaa5bc87afb6f2a97dbf17ac614c8a84d/capsule_231x87.jpg?t=1784564069",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/730/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/730/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/730/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/942c04efaa5bc87afb6f2a97dbf17ac614c8a84d/capsule_184x69.jpg?t=1784564069",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/162664aa5da85f418105350c5d67ca565f6c3713/header.jpg?t=1784564069",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/942c04efaa5bc87afb6f2a97dbf17ac614c8a84d/capsule_231x87.jpg?t=1784564069",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/730/capsule_616x353.jpg"
       ],
-      "score": 35,
-      "confidence": 0.62,
+      "score": 15,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 1
       },
       "news_sources": 0,
@@ -363,105 +419,31 @@
       ]
     },
     {
-      "slug": "mistfall-hunter",
-      "title": "Mistfall Hunter",
-      "year": null,
-      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3282300/5c5bfdce4efdd500208933786787db993efaf7d4/capsule_231x87.jpg?t=1785673983",
-      "image_candidates": [
-        "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3282300/5c5bfdce4efdd500208933786787db993efaf7d4/capsule_231x87.jpg?t=1785673983",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3282300/library_600x900.jpg",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3282300/library_600x900_2x.jpg",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3282300/5c5bfdce4efdd500208933786787db993efaf7d4/capsule_184x69.jpg?t=1785673983",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3282300/08d970d57d0e400ef35abae2602c5d5cd5f842d5/header.jpg?t=1785673983",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3282300/5c5bfdce4efdd500208933786787db993efaf7d4/capsule_231x87.jpg?t=1785673983",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3282300/header.jpg",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3282300/capsule_616x353.jpg"
-      ],
-      "score": 34.3,
-      "confidence": 0.62,
-      "delta": null,
-      "families": [
-        "steam_chart"
-      ],
-      "signals": {
-        "news": 0,
-        "steam_chart": 0.98
-      },
-      "news_sources": 0,
-      "in_catalog": false,
-      "evidence": [
-        {
-          "source": "Steam Top Sellers",
-          "title": "Mistfall Hunter",
-          "url": "https://store.steampowered.com/app/3282300/",
-          "position": 2,
-          "appid": 3282300,
-          "family": "steam_chart",
-          "value": 0.98
-        }
-      ]
-    },
-    {
-      "slug": "elden-ring",
-      "title": "Elden Ring",
-      "year": 2022,
-      "image": "",
-      "image_candidates": [],
-      "score": 31.9,
-      "confidence": 0.64,
-      "delta": null,
-      "families": [
-        "news"
-      ],
-      "signals": {
-        "news": 1.8588957126028345,
-        "steam_chart": 0
-      },
-      "news_sources": 2,
-      "in_catalog": true,
-      "evidence": [
-        {
-          "source": "Ed Thorn",
-          "title": "The Soulslike genre has grown stale after Elden Ring, and only FromSoftware can take it to strange new places",
-          "url": "https://www.rockpapershotgun.com/the-soulslike-genre-has-grown-stale-after-elden-ring-and-only-fromsoftware-can-take-it-to-strange-new-places",
-          "observed_at": "Mon, 03 Aug 2026 12:59:49 +0000",
-          "family": "news",
-          "value": 0.929
-        },
-        {
-          "source": "Tom's Guide",
-          "title": "The action game I’ve been obsessed with for 3 years is now on Nintendo Switch 2 — and it’ll keep you busy until Elden Ring: Tarnished Edition - Tom's Guide",
-          "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOZkYwZXVxb0ZfSnktXzdtd0MybG51bUVsT0loMnlsUUxoeER3NXoxM3M4bTR5QUc4b3RZRGdvSUtDRTg0ZzhSWXkzZHJvWEplZ1hzZlFtWTUzS2ZWdDhBaElXbXhKV3QzWGtNOEtORnV4Y0hjc1JUVzdhSmRiZGlIN1V3?oc=5",
-          "observed_at": "Mon, 03 Aug 2026 13:00:00 GMT",
-          "family": "news",
-          "value": 0.929
-        }
-      ]
-    },
-    {
       "slug": "warframe",
       "title": "Warframe",
       "year": null,
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/230410/e0b104aeb9dc8c563cacc84b114bc48ba416f28e/capsule_231x87.jpg?t=1785169127",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/230410/e0b104aeb9dc8c563cacc84b114bc48ba416f28e/capsule_231x87.jpg?t=1785169127",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/230410/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/230410/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/230410/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/230410/e0b104aeb9dc8c563cacc84b114bc48ba416f28e/capsule_184x69.jpg?t=1785169127",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/230410/a000b4bf98dde5d51cd44206f1ac21d04841017e/header.jpg?t=1785169127",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/230410/e0b104aeb9dc8c563cacc84b114bc48ba416f28e/capsule_231x87.jpg?t=1785169127",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/230410/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/230410/capsule_616x353.jpg"
       ],
-      "score": 31.4,
-      "confidence": 0.69,
+      "score": 14.8,
+      "confidence": 0.65,
       "delta": null,
       "families": [
         "news",
         "steam_chart"
       ],
       "signals": {
-        "news": 0.23293028605146793,
+        "news": 0.23237890756635515,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.74
       },
       "news_sources": 1,
@@ -482,7 +464,48 @@
           "url": "https://www.rockpapershotgun.com/what-if-stop-killing-games-win-anthem-spacecraft-and-warframe-devs-on-the-massive-undertaking-of-reverse-engineering-an-always-online-game",
           "observed_at": "Sat, 01 Aug 2026 13:04:59 +0000",
           "family": "news",
-          "value": 0.233
+          "value": 0.232
+        }
+      ]
+    },
+    {
+      "slug": "mistfall-hunter",
+      "title": "Mistfall Hunter",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3282300/5c5bfdce4efdd500208933786787db993efaf7d4/capsule_231x87.jpg?t=1785673983",
+      "image_candidates": [
+        "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3282300/5c5bfdce4efdd500208933786787db993efaf7d4/capsule_231x87.jpg?t=1785673983",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/3282300/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/3282300/library_600x900.jpg",
+        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3282300/5c5bfdce4efdd500208933786787db993efaf7d4/capsule_184x69.jpg?t=1785673983",
+        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3282300/08d970d57d0e400ef35abae2602c5d5cd5f842d5/header.jpg?t=1785673983",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/3282300/header.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/3282300/capsule_616x353.jpg"
+      ],
+      "score": 14.7,
+      "confidence": 0.53,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
+        "steam_chart": 0.98
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Mistfall Hunter",
+          "url": "https://store.steampowered.com/app/3282300/",
+          "position": 2,
+          "appid": 3282300,
+          "family": "steam_chart",
+          "value": 0.98
         }
       ]
     },
@@ -493,22 +516,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2651280/379bd114fe5c23850555d1eb67fa8ac996bf702b/capsule_231x87.jpg?t=1763569811",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2651280/379bd114fe5c23850555d1eb67fa8ac996bf702b/capsule_231x87.jpg?t=1763569811",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/2651280/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2651280/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/2651280/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2651280/379bd114fe5c23850555d1eb67fa8ac996bf702b/capsule_184x69.jpg?t=1763569811",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2651280/header.jpg?t=1763569811",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2651280/379bd114fe5c23850555d1eb67fa8ac996bf702b/capsule_231x87.jpg?t=1763569811",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2651280/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2651280/capsule_616x353.jpg"
       ],
-      "score": 30.8,
-      "confidence": 0.62,
+      "score": 13.2,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.88
       },
       "news_sources": 0,
@@ -532,22 +557,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2767030/f77a7018444fbf8bd96dd79de42b4f5d6603d236/capsule_231x87.jpg?t=1783674088",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2767030/f77a7018444fbf8bd96dd79de42b4f5d6603d236/capsule_231x87.jpg?t=1783674088",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/2767030/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2767030/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/2767030/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2767030/f77a7018444fbf8bd96dd79de42b4f5d6603d236/capsule_184x69.jpg?t=1783674088",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2767030/86f180fb2b17adae577bd1d175ca8096c9f91769/header.jpg?t=1783674088",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2767030/f77a7018444fbf8bd96dd79de42b4f5d6603d236/capsule_231x87.jpg?t=1783674088",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2767030/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2767030/capsule_616x353.jpg"
       ],
-      "score": 29.4,
-      "confidence": 0.62,
+      "score": 12.6,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.84
       },
       "news_sources": 0,
@@ -571,22 +598,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1817070/capsule_231x87.jpg?t=1763569047",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1817070/capsule_231x87.jpg?t=1763569047",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/1817070/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1817070/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/1817070/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1817070/capsule_184x69.jpg?t=1763569047",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1817070/header.jpg?t=1763569047",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1817070/capsule_231x87.jpg?t=1763569047",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1817070/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1817070/capsule_616x353.jpg"
       ],
-      "score": 28.7,
-      "confidence": 0.62,
+      "score": 12.3,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.8200000000000001
       },
       "news_sources": 0,
@@ -610,22 +639,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1364780/3f34c45db4411c3cdbaa95d7bbd296454ad6300a/capsule_231x87_alt_assets_20.jpg?t=1785737403",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1364780/3f34c45db4411c3cdbaa95d7bbd296454ad6300a/capsule_231x87_alt_assets_20.jpg?t=1785737403",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/1364780/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1364780/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/1364780/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1364780/3f34c45db4411c3cdbaa95d7bbd296454ad6300a/capsule_184x69_alt_assets_20.jpg?t=1785737403",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1364780/header.jpg?t=1785737403",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1364780/3f34c45db4411c3cdbaa95d7bbd296454ad6300a/capsule_231x87_alt_assets_20.jpg?t=1785737403",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1364780/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1364780/capsule_616x353.jpg"
       ],
-      "score": 28,
-      "confidence": 0.62,
+      "score": 12,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.8
       },
       "news_sources": 0,
@@ -649,22 +680,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1784908718",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1784908718",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_184x69.jpg?t=1784908718",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/943fda32c11b3e3f451458ffa95a4adca1f316a4/header.jpg?t=1784908718",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1784908718",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/capsule_616x353.jpg"
       ],
-      "score": 27.3,
-      "confidence": 0.62,
+      "score": 11.7,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.78
       },
       "news_sources": 0,
@@ -688,22 +721,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1172470/877bc6f0c9f3fe5804f3f309aed8ae08875ad5fd/capsule_231x87.jpg?t=1784581218",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1172470/877bc6f0c9f3fe5804f3f309aed8ae08875ad5fd/capsule_231x87.jpg?t=1784581218",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1172470/877bc6f0c9f3fe5804f3f309aed8ae08875ad5fd/capsule_184x69.jpg?t=1784581218",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1172470/d526c56eae3339c03aa8dd45f4b06026d2c2c08c/header.jpg?t=1784581218",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1172470/877bc6f0c9f3fe5804f3f309aed8ae08875ad5fd/capsule_231x87.jpg?t=1784581218",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/capsule_616x353.jpg"
       ],
-      "score": 24.5,
-      "confidence": 0.62,
+      "score": 10.5,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.7
       },
       "news_sources": 0,
@@ -727,23 +762,23 @@
       "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/e9047d8ec47ae3d94bb8b464fb0fc9e9972b4ac7/header.jpg?t=1784714077",
       "image_candidates": [
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/e9047d8ec47ae3d94bb8b464fb0fc9e9972b4ac7/header.jpg?t=1784714077",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/644eb087007768417a847e52c38eeaf34b57fd12/page_bg_raw.jpg?t=1784714077",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/590e0988a2fb79f44d3e31e41fd4949eb76abc41/capsule_184x69.jpg?t=1784714077",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/590e0988a2fb79f44d3e31e41fd4949eb76abc41/capsule_231x87.jpg?t=1784714077",
-        "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1091500/590e0988a2fb79f44d3e31e41fd4949eb76abc41/capsule_231x87.jpg?t=1784714077",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/capsule_616x353.jpg"
       ],
-      "score": 23.8,
-      "confidence": 0.62,
+      "score": 10.2,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.6799999999999999
       },
       "news_sources": 0,
@@ -767,22 +802,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3010850/d0917fcdbf27faffb3380f6f67e71e90f84b7ed5/capsule_231x87.jpg?t=1785432491",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3010850/d0917fcdbf27faffb3380f6f67e71e90f84b7ed5/capsule_231x87.jpg?t=1785432491",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3010850/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3010850/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/3010850/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3010850/d0917fcdbf27faffb3380f6f67e71e90f84b7ed5/capsule_184x69.jpg?t=1785432491",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3010850/1abb0c5ef76c14f463dd6e3964adb64f984237d2/header.jpg?t=1785432491",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3010850/d0917fcdbf27faffb3380f6f67e71e90f84b7ed5/capsule_231x87.jpg?t=1785432491",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3010850/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3010850/capsule_616x353.jpg"
       ],
-      "score": 23.1,
-      "confidence": 0.62,
+      "score": 9.9,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.6599999999999999
       },
       "news_sources": 0,
@@ -806,22 +843,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3722330/19c9e6ec567f975b0b4462b8c84c1a38c74adf0d/capsule_231x87.jpg?t=1785426429",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3722330/19c9e6ec567f975b0b4462b8c84c1a38c74adf0d/capsule_231x87.jpg?t=1785426429",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3722330/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3722330/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/3722330/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3722330/19c9e6ec567f975b0b4462b8c84c1a38c74adf0d/capsule_184x69.jpg?t=1785426429",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3722330/759ecea2ffe1ad3819aefdda79e265b8b332bf8f/header.jpg?t=1785426429",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3722330/19c9e6ec567f975b0b4462b8c84c1a38c74adf0d/capsule_231x87.jpg?t=1785426429",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3722330/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3722330/capsule_616x353.jpg"
       ],
-      "score": 22.4,
-      "confidence": 0.62,
+      "score": 9.6,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.64
       },
       "news_sources": 0,
@@ -845,22 +884,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3513350/73c9d69886aea606deb7d023d82c8003b7beb6c8/capsule_231x87.jpg?t=1783626990",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3513350/73c9d69886aea606deb7d023d82c8003b7beb6c8/capsule_231x87.jpg?t=1783626990",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/73c9d69886aea606deb7d023d82c8003b7beb6c8/capsule_184x69.jpg?t=1783626990",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/def229d7f1bf39fab1ccf752b49654017e13ef53/header.jpg?t=1783626990",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/73c9d69886aea606deb7d023d82c8003b7beb6c8/capsule_231x87.jpg?t=1783626990",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/capsule_616x353.jpg"
       ],
-      "score": 21.7,
-      "confidence": 0.62,
+      "score": 9.3,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.62
       },
       "news_sources": 0,
@@ -884,22 +925,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3751950/e38674a3067b5ac028974bbfb42c835d0cf27122/capsule_231x87.jpg?t=1783617053",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3751950/e38674a3067b5ac028974bbfb42c835d0cf27122/capsule_231x87.jpg?t=1783617053",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3751950/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3751950/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/3751950/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751950/e38674a3067b5ac028974bbfb42c835d0cf27122/capsule_184x69.jpg?t=1783617053",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751950/9b046115b1663a4be2b252712328e4f6c162da68/header.jpg?t=1783617053",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751950/e38674a3067b5ac028974bbfb42c835d0cf27122/capsule_231x87.jpg?t=1783617053",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3751950/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/3751950/capsule_616x353.jpg"
       ],
-      "score": 21,
-      "confidence": 0.62,
+      "score": 9,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.6
       },
       "news_sources": 0,
@@ -917,68 +960,30 @@
       ]
     },
     {
-      "slug": "bloodborne",
-      "title": "Bloodborne",
-      "year": 2015,
-      "image": "https://image.api.playstation.com/cdn/UP9000/CUSA00900_00/9EJsLXyKS0S1BRey5nwQBOuYr6EDRbGX.png",
-      "image_candidates": [
-        "https://image.api.playstation.com/cdn/UP9000/CUSA00900_00/9EJsLXyKS0S1BRey5nwQBOuYr6EDRbGX.png",
-        "https://image.api.playstation.com/vulcan/img/rnd/202010/2614/O2Z66UWrZH8zcejxopwWxhGu.png"
-      ],
-      "score": 20.5,
-      "confidence": 0.64,
-      "delta": null,
-      "families": [
-        "news"
-      ],
-      "signals": {
-        "news": 1.1014941498683715,
-        "steam_chart": 0
-      },
-      "news_sources": 2,
-      "in_catalog": true,
-      "evidence": [
-        {
-          "source": "Notebookcheck",
-          "title": "PlayStation's Shuhei Yoshida: Bloodborne PC port and PS5 remaster remain a mystery - Notebookcheck",
-          "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxONlNYWmk4MW9jNHhzZlFZeHAwbXQ3RnNRVnk2cnhSZG5QczRiYmoxajduS1ZURWJnS2tUQXZEblRHWEJSTGZ2cVppdk5BZ015YkhZbzBwOUpQaFhTaTh2U2dZc0ZJckF3d09kOHpJYmR5SXlXUEFtbE5tTS1sQWtJUWF0MWVhV3FPREVGczhUdzBSV200c3JEY3BEV3NSM3pNeUk0U1JuaGxfanY1QllZLWZucXM3UkhmM2NXVF81d3ZweXBQ?oc=5",
-          "observed_at": "Mon, 03 Aug 2026 09:13:00 GMT",
-          "family": "news",
-          "value": 0.833
-        },
-        {
-          "source": "ted.litchfield@futurenet.com (Ted Litchfield)",
-          "title": "Former Sony exec Shuhei Yoshida is 'a huge fan' of Bloodborne, says it's 'a complete mystery' why it was never put on PC",
-          "url": "https://www.pcgamer.com/games/action/former-sony-exec-shuhei-yoshida-is-a-huge-fan-of-bloodborne-says-its-a-complete-mystery-why-it-was-never-put-on-pc/",
-          "observed_at": "Sat, 01 Aug 2026 17:58:01 +0000",
-          "family": "news",
-          "value": 0.268
-        }
-      ]
-    },
-    {
       "slug": "tom-clancys-rainbow-six-siege",
       "title": "Tom Clancy’s Rainbow Six Siege",
       "year": 2015,
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/359550/c1bbd10ec5e3d5a0b285935b9dd847e7e4483376/capsule_231x87_alt_assets_24.jpg?t=1784137517",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/359550/c1bbd10ec5e3d5a0b285935b9dd847e7e4483376/capsule_231x87_alt_assets_24.jpg?t=1784137517",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/359550/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/359550/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/359550/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/359550/c1bbd10ec5e3d5a0b285935b9dd847e7e4483376/capsule_184x69_alt_assets_24.jpg?t=1784137517",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/359550/159d232dac26cee77cf57e32ec0545ac91c09dbc/header_alt_assets_24.jpg?t=1784137517",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/359550/c1bbd10ec5e3d5a0b285935b9dd847e7e4483376/capsule_231x87_alt_assets_24.jpg?t=1784137517",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/359550/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/359550/capsule_616x353.jpg"
       ],
-      "score": 20.3,
-      "confidence": 0.62,
+      "score": 8.7,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.5800000000000001
       },
       "news_sources": 0,
@@ -1002,22 +1007,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/381210/capsule_231x87.jpg?t=1784216454",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/381210/capsule_231x87.jpg?t=1784216454",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/381210/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/381210/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/381210/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/381210/capsule_184x69.jpg?t=1784216454",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/381210/header.jpg?t=1784216454",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/381210/capsule_231x87.jpg?t=1784216454",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/381210/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/381210/capsule_616x353.jpg"
       ],
-      "score": 19.6,
-      "confidence": 0.62,
+      "score": 8.4,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.56
       },
       "news_sources": 0,
@@ -1041,22 +1048,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2807960/d7ae078e0a543a97ff5a5d72165999535b0b1cdc/capsule_231x87.jpg?t=1784839791",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2807960/d7ae078e0a543a97ff5a5d72165999535b0b1cdc/capsule_231x87.jpg?t=1784839791",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/2807960/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2807960/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/2807960/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2807960/d7ae078e0a543a97ff5a5d72165999535b0b1cdc/capsule_184x69.jpg?t=1784839791",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2807960/c12d12ce3c7d217398d3fcad77427bfc9d57c570/header.jpg?t=1784839791",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2807960/d7ae078e0a543a97ff5a5d72165999535b0b1cdc/capsule_231x87.jpg?t=1784839791",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2807960/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/2807960/capsule_616x353.jpg"
       ],
-      "score": 18.9,
-      "confidence": 0.62,
+      "score": 8.1,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.54
       },
       "news_sources": 0,
@@ -1080,22 +1089,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1368140/9317363cb16926256a8e15b2dd91eee8203e4f11/capsule_231x87.jpg?t=1785750972",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1368140/9317363cb16926256a8e15b2dd91eee8203e4f11/capsule_231x87.jpg?t=1785750972",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/1368140/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1368140/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/1368140/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1368140/9317363cb16926256a8e15b2dd91eee8203e4f11/capsule_184x69.jpg?t=1785750972",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1368140/cafda7c6ff9641cc9ede1823317b835a2b3f38ab/header.jpg?t=1785750972",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1368140/9317363cb16926256a8e15b2dd91eee8203e4f11/capsule_231x87.jpg?t=1785750972",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1368140/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1368140/capsule_616x353.jpg"
       ],
-      "score": 18.2,
-      "confidence": 0.62,
+      "score": 7.8,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.52
       },
       "news_sources": 0,
@@ -1119,23 +1130,25 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4108000/5986ba4057fa210d0f96bd470e41a0dd439ed6fb/capsule_231x87.jpg?t=1785746697",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4108000/5986ba4057fa210d0f96bd470e41a0dd439ed6fb/capsule_231x87.jpg?t=1785746697",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/4108000/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/4108000/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/4108000/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4108000/5986ba4057fa210d0f96bd470e41a0dd439ed6fb/capsule_184x69.jpg?t=1785746697",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4108000/00ae7d0e0fd0ad72635bddb1dd80ee68cc94eed5/header.jpg?t=1785746697",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4108000/5986ba4057fa210d0f96bd470e41a0dd439ed6fb/capsule_231x87.jpg?t=1785746697",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/4108000/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/4108000/capsule_616x353.jpg"
       ],
-      "score": 17.7,
-      "confidence": 0.69,
+      "score": 7.7,
+      "confidence": 0.57,
       "delta": null,
       "families": [
         "news",
         "steam_chart"
       ],
       "signals": {
-        "news": 0.06912348068706338,
+        "news": 0.06895985576428913,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.42000000000000004
       },
       "news_sources": 1,
@@ -1167,22 +1180,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1817190/capsule_231x87.jpg?t=1763569499",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1817190/capsule_231x87.jpg?t=1763569499",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/1817190/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1817190/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/1817190/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1817190/capsule_184x69.jpg?t=1763569499",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1817190/header.jpg?t=1763569499",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1817190/capsule_231x87.jpg?t=1763569499",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1817190/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/1817190/capsule_616x353.jpg"
       ],
-      "score": 17.5,
-      "confidence": 0.62,
+      "score": 7.5,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.5
       },
       "news_sources": 0,
@@ -1206,22 +1221,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4162040/7976c7dc75e50a5c922c04b431d6729bc86a503d/capsule_231x87_alt_assets_0.jpg?t=1785276247",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4162040/7976c7dc75e50a5c922c04b431d6729bc86a503d/capsule_231x87_alt_assets_0.jpg?t=1785276247",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/4162040/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/4162040/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/4162040/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4162040/7976c7dc75e50a5c922c04b431d6729bc86a503d/capsule_184x69_alt_assets_0.jpg?t=1785276247",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4162040/e60db1b53e9e0161b0b827f32f902ced884d38c0/header_alt_assets_0.jpg?t=1785276247",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4162040/7976c7dc75e50a5c922c04b431d6729bc86a503d/capsule_231x87_alt_assets_0.jpg?t=1785276247",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/4162040/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/4162040/capsule_616x353.jpg"
       ],
-      "score": 16.8,
-      "confidence": 0.62,
+      "score": 7.2,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.48
       },
       "news_sources": 0,
@@ -1245,22 +1262,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4570720/ad4778acc2facf46b58f6c66492e925c9efd5cb7/capsule_231x87.jpg?t=1785492030",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4570720/ad4778acc2facf46b58f6c66492e925c9efd5cb7/capsule_231x87.jpg?t=1785492030",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/4570720/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/4570720/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/4570720/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4570720/ad4778acc2facf46b58f6c66492e925c9efd5cb7/capsule_184x69.jpg?t=1785492030",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4570720/96a897e98f4472e656fbe6681191b3066cab6056/header.jpg?t=1785492030",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4570720/ad4778acc2facf46b58f6c66492e925c9efd5cb7/capsule_231x87.jpg?t=1785492030",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/4570720/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/4570720/capsule_616x353.jpg"
       ],
-      "score": 16.1,
-      "confidence": 0.62,
+      "score": 6.9,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.45999999999999996
       },
       "news_sources": 0,
@@ -1284,22 +1303,24 @@
       "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/236390/104c3c519fdb3ba92fbe2348ebfadcebf2a7ee8f/capsule_231x87.jpg?t=1784211516",
       "image_candidates": [
         "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/236390/104c3c519fdb3ba92fbe2348ebfadcebf2a7ee8f/capsule_231x87.jpg?t=1784211516",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/236390/library_600x900.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/236390/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/236390/library_600x900.jpg",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/236390/104c3c519fdb3ba92fbe2348ebfadcebf2a7ee8f/capsule_184x69.jpg?t=1784211516",
         "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/236390/65885881b96806d55fea45e130233fdafd78b129/header.jpg?t=1784211516",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/236390/104c3c519fdb3ba92fbe2348ebfadcebf2a7ee8f/capsule_231x87.jpg?t=1784211516",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/236390/header.jpg",
         "https://cdn.cloudflare.steamstatic.com/steam/apps/236390/capsule_616x353.jpg"
       ],
-      "score": 15.4,
-      "confidence": 0.62,
+      "score": 6.6,
+      "confidence": 0.53,
       "delta": null,
       "families": [
         "steam_chart"
       ],
       "signals": {
         "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
         "steam_chart": 0.43999999999999995
       },
       "news_sources": 0,
@@ -1315,24 +1336,90 @@
           "value": 0.44
         }
       ]
+    },
+    {
+      "slug": "rust",
+      "title": "Rust",
+      "year": null,
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/252490/21aac0b6e20e1ba12f635e7deb730e32a51afbd5/capsule_231x87.jpg?t=1781536981",
+      "image_candidates": [
+        "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/252490/21aac0b6e20e1ba12f635e7deb730e32a51afbd5/capsule_231x87.jpg?t=1781536981",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_600x900_2x.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_600x900.jpg",
+        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/21aac0b6e20e1ba12f635e7deb730e32a51afbd5/capsule_184x69.jpg?t=1781536981",
+        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/header.jpg?t=1781536981",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/252490/header.jpg",
+        "https://cdn.cloudflare.steamstatic.com/steam/apps/252490/capsule_616x353.jpg"
+      ],
+      "score": 6,
+      "confidence": 0.53,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
+        "steam_chart": 0.4
+      },
+      "news_sources": 0,
+      "in_catalog": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Rust",
+          "url": "https://store.steampowered.com/app/252490/",
+          "position": 31,
+          "appid": 252490,
+          "family": "steam_chart",
+          "value": 0.4
+        }
+      ]
     }
   ],
   "discovered_unmatched": [],
   "source_statuses": [
     {
+      "id": "youtube-popular",
+      "status": "skipped",
+      "error": "YOUTUBE_API_KEY is not configured"
+    },
+    {
+      "id": "twitch-streams",
+      "status": "skipped",
+      "error": "TWITCH_CLIENT_ID/TWITCH_CLIENT_SECRET are not configured"
+    },
+    {
+      "id": "reddit-public",
+      "status": "error",
+      "error": "HTTP 403",
+      "duration_ms": 100,
+      "url": "https://www.reddit.com/r/Games/hot.json?limit=100"
+    },
+    {
       "id": "ign-rss",
       "status": "success",
       "items": 20,
       "matched": 1,
-      "duration_ms": 199,
+      "duration_ms": 439,
       "url": "https://www.ign.com/rss/articles/feed"
+    },
+    {
+      "id": "steam-top-sellers",
+      "status": "success",
+      "items": 50,
+      "matched": 50,
+      "duration_ms": 383,
+      "url": "https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=topsellers&infinite=1&cc=us&l=english&json=1"
     },
     {
       "id": "pcgamer-rss",
       "status": "success",
       "items": 50,
       "matched": 6,
-      "duration_ms": 266,
+      "duration_ms": 134,
       "url": "https://www.pcgamer.com/rss/"
     },
     {
@@ -1340,7 +1427,7 @@
       "status": "success",
       "items": 15,
       "matched": 2,
-      "duration_ms": 232,
+      "duration_ms": 257,
       "url": "https://www.gamespot.com/feeds/mashup/"
     },
     {
@@ -1348,7 +1435,7 @@
       "status": "success",
       "items": 100,
       "matched": 4,
-      "duration_ms": 255,
+      "duration_ms": 214,
       "url": "https://www.eurogamer.net/feed"
     },
     {
@@ -1356,23 +1443,15 @@
       "status": "success",
       "items": 100,
       "matched": 4,
-      "duration_ms": 165,
+      "duration_ms": 391,
       "url": "https://www.rockpapershotgun.com/feed"
-    },
-    {
-      "id": "steam-top-sellers",
-      "status": "success",
-      "items": 50,
-      "matched": 50,
-      "duration_ms": 1219,
-      "url": "https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=topsellers&infinite=1&cc=us&l=english&json=1"
     },
     {
       "id": "polygon-rss",
       "status": "success",
       "items": 10,
       "matched": 0,
-      "duration_ms": 580,
+      "duration_ms": 676,
       "url": "https://www.polygon.com/rss/index.xml"
     },
     {
@@ -1380,15 +1459,15 @@
       "status": "success",
       "items": 100,
       "matched": 2,
-      "duration_ms": 602,
+      "duration_ms": 541,
       "url": "https://news.google.com/rss/search?q=gaming%20OR%20%22video%20game%22%20when%3A4d&hl=en-US&gl=US&ceid=US%3Aen"
     },
     {
       "id": "google-news-console-games",
       "status": "success",
       "items": 100,
-      "matched": 8,
-      "duration_ms": 512,
+      "matched": 7,
+      "duration_ms": 523,
       "url": "https://news.google.com/rss/search?q=PlayStation%20OR%20Xbox%20OR%20Nintendo%20OR%20Rockstar%20Games%20when%3A4d&hl=en-US&gl=US&ceid=US%3Aen"
     }
   ]
