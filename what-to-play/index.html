@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta name="description" content="Персональный подбор игр — Игропоиск">
+  <title>Во что поиграть? — Игропоиск</title>
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260803-8">
+  <link rel="stylesheet" href="../assets/home-page.css?v=20260803-8">
+  <link rel="stylesheet" href="../assets/what-to-play.css?v=20260803-2">
+</head>
+<body>
+<header class="site-header">
+  <div class="ig-container site-header__inner">
+    <a class="site-logo" href="../" aria-label="Игропоиск — главное">ИГРОПОИСК</a>
+    <nav class="site-nav" aria-label="Основная навигация">
+      <a href="../">Главное</a>
+      <a class="active" href="./">Во что поиграть?</a>
+      <a href="../#search">Поиск игр</a>
+      <a href="../#news">Новости</a>
+    </nav>
+    <div class="site-actions"><button class="ig-button icon-button" id="theme" aria-label="Переключить тему">☀</button></div>
+  </div>
+</header>
+<main id="what-to-play">
+  <section class="wtp-shell">
+    <div class="ig-container wtp-layout">
+      <aside class="wtp-context" aria-label="Параметры подбора">
+        <div><div class="ig-kicker">Персональный подбор</div><h1>Во что поиграть?</h1><p>Опиши, чего хочется сейчас. Помощник задаст только нужные вопросы и подберёт игры из базы Игропоиска.</p></div>
+        <div class="wtp-profile" id="wtpProfile"><div class="wtp-profile__empty">Пока ничего не выбрано</div></div>
+        <button class="ig-button wtp-reset" id="wtpReset" type="button">Начать заново</button>
+      </aside>
+      <section class="wtp-chat-card" aria-label="Диалог подбора игр">
+        <header class="wtp-chat-head"><div class="wtp-assistant-mark" aria-hidden="true">ИП</div><div><strong>Помощник Игропоиска</strong><span>Подбирает только по базе сайта</span></div><span class="wtp-status">онлайн</span></header>
+        <div class="wtp-chat" id="wtpChat" aria-live="polite"></div>
+        <div class="wtp-composer">
+          <div class="wtp-suggestions" id="wtpSuggestions" aria-label="Быстрые ответы"></div>
+          <form class="wtp-form" id="wtpForm"><textarea id="wtpInput" rows="1" maxlength="500" placeholder="Например: хочу короткую атмосферную игру без сложных боёв"></textarea><button class="wtp-send" type="submit" aria-label="Отправить">→</button></form>
+          <small>Можно отвечать своими словами. Подбор меняется после каждого уточнения.</small>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="ig-container wtp-results-section" id="wtpResultsSection" hidden>
+    <div class="wtp-results-head"><div><div class="ig-kicker">Результат</div><h2>Подходящие игры</h2></div><button class="ig-button" id="wtpRefine" type="button">Уточнить подбор</button></div>
+    <div class="wtp-results" id="wtpResults"></div>
+  </section>
+</main>
+<script>
+const themeButton=document.getElementById('theme');
+const savedTheme=localStorage.getItem('igroTheme')||'dark';
+document.documentElement.dataset.theme=savedTheme;
+themeButton.textContent=savedTheme==='light'?'☾':'☀';
+themeButton.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=next;themeButton.textContent=next==='light'?'☾':'☀';localStorage.setItem('igroTheme',next);});
+</script>
+<script src="../assets/what-to-play.js?v=20260803-2"></script>
+</body>
+</html>
