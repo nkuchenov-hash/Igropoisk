@@ -6,7 +6,15 @@
     {
       "id": "popular",
       "enabled": true,
-      "interval_minutes": 60,
+      "interval_minutes": 360,
+      "quota_policy": {
+        "mode": "free_tier_safe",
+        "youtube_method": "videos.list",
+        "youtube_regions_per_run": 6,
+        "youtube_calls_per_run": 6,
+        "maximum_scheduled_runs_per_day": 4,
+        "estimated_youtube_units_per_day": 24
+      },
       "command": "node scripts/parse-popular.mjs && node scripts/filter-popular.mjs",
       "outputs": [
         "data/popular/current.json",
