@@ -29,8 +29,9 @@ jobs:
           sed -i 's#</head>#<link rel="stylesheet" href="fix.css"></head>#' index.html
           sed -i 's#</body>#<script src="fix.js"></script></body>#' index.html
 
-      - name: Enforce shared layout contract
+      - name: Enforce shared layout and header contracts
         run: |
+          node --check assets/site-header.js
           python3 -m py_compile scripts/enforce_layout_contract.py
           python3 scripts/enforce_layout_contract.py --write
           python3 scripts/enforce_layout_contract.py --check
