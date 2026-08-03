@@ -25,14 +25,19 @@ const targetPerSection=Number(balance.screenshots_per_section?.target||4);
 const maxPerSection=Number(balance.screenshots_per_section?.maximum||6);
 const minSources=Number(sourcePolicy.minimum_media_sources||5);
 const maxSourceShare=Number(sourcePolicy.maximum_share_from_one_source||0.35);
-const historical=Number(game.identity?.release_year||game.release_year||0)<2010;
-const minWidth=Number(historical?quality.minimum_width_historical:quality.minimum_width_modern)||1280;
-const minHeight=Number(historical?quality.minimum_height_historical:quality.minimum_height_modern)||720;
-const minBytes=Number(historical?quality.minimum_bytes_historical:quality.minimum_bytes_modern)||80000;
+const minWidth=Number(quality.minimum_width_historical||quality.minimum_width_modern||480);
+const minHeight=Number(quality.minimum_height_historical||quality.minimum_height_modern||480);
+const minBytes=Number(quality.minimum_bytes_historical||quality.minimum_bytes_modern||25000);
 const maxBytes=Number(quality.maximum_download_bytes||25000000);
-const minAspect=Number(quality.minimum_aspect_ratio||1.2);
-const maxAspect=Number(quality.maximum_aspect_ratio||2.4);
-const minConfidence=Number(quality.visual_quality_confidence||0.84);
+const minAspect=Number(quality.minimum_aspect_ratio||0.75);
+const maxAspect=Number(quality.maximum_aspect_ratio||2.6);
+const minConfidence=Number(quality.visual_quality_confidence||0.92);
+const minSharpness=Number(quality.minimum_sharpness||0.82);
+const minCompression=Number(quality.minimum_compression_quality||0.78);
+const minReadability=Number(quality.minimum_readability||0.72);
+const minComposition=Number(quality.minimum_composition_quality||0.76);
+const minRenderSuitability=Number(quality.minimum_render_suitability||0.84);
+const targetRenderWidth=Number(quality.target_render_width_desktop||1000);
 const canonical=value=>{try{const u=new URL(value);u.hash='';return `${u.origin}${u.pathname}${u.search}`}catch{return String(value||'')}};
 const host=value=>{try{return new URL(value).hostname.replace(/^www\./,'').toLowerCase()}catch{return''}};
 
@@ -42,11 +47,12 @@ function dimensions(buffer,type){
   if(type.includes('webp')&&buffer.length>30&&buffer.toString('ascii',12,16)==='VP8X')return {width:1+buffer.readUIntLE(24,3),height:1+buffer.readUIntLE(27,3)};
   return {width:0,height:0};
 }
+
 async function inspect(item){
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),15000);
   try{
-    const response=await fetch(item.url,{redirect:'follow',signal:controller.signal,headers:{'user-agent':'IgropoiskMediaAudit/1.0'}});
+    const response=await fetch(item.url,{redirect:'follow',signal:controller.signal,headers:{'user-agent':'IgropoiskMediaAudit/2.0'}});
     if(!response.ok)return {...item,file_probe_passed:false,reject_reason:`http_${response.status}`};
     const type=(response.headers.get('content-type')||'').toLowerCase();
     if(!type.startsWith('image/'))return {...item,file_probe_passed:false,reject_reason:'not_image',mime:type};
@@ -56,8 +62,8 @@ async function inspect(item){
     const measured=dimensions(buffer,type);
     const aspect=measured.width&&measured.height?measured.width/measured.height:0;
     const passed=measured.width>=minWidth&&measured.height>=minHeight&&buffer.length>=minBytes&&aspect>=minAspect&&aspect<=maxAspect;
-    return {...item,url:response.url,mime:type,bytes:buffer.length,width:measured.width,height:measured.height,aspect_ratio:aspect,file_probe_passed:passed,reject_reason:passed?null:(!measured.width||!measured.height?'unknown_dimensions':measured.width<minWidth||measured.height<minHeight?'below_resolution':buffer.length<minBytes?'file_too_small':'invalid_aspect_ratio')};
-  }catch(error){return {...item,file_probe_passed:false,reject_reason:error.name==='AbortError'?'timeout':'download_failed'} }
+    return {...item,url:response.url,mime:type,bytes:buffer.length,width:measured.width,height:measured.height,aspect_ratio:aspect,file_probe_passed:passed,reject_reason:passed?null:(!measured.width||!measured.height?'unknown_dimensions':measured.width<minWidth||measured.height<minHeight?'below_technical_floor':buffer.length<minBytes?'below_byte_floor':'invalid_aspect_ratio')};
+  }catch(error){return {...item,file_probe_passed:false,reject_reason:error.name==='AbortError'?'timeout':'download_failed'}}
   finally{clearTimeout(timer)}
 }
 
@@ -71,46 +77,57 @@ function add(item,kind='screenshot'){
 for(const item of game.media?.items||[])add(item,item.kind);
 for(const item of game.media?.screenshots||[])add(item,'screenshot');
 const measured=[];
-for(let i=0;i<raw.length;i+=8){measured.push(...await Promise.all(raw.slice(i,i+8).map(inspect)))}
+for(let i=0;i<raw.length;i+=8)measured.push(...await Promise.all(raw.slice(i,i+8).map(inspect)));
 const candidates=measured.filter(item=>item.file_probe_passed);
 const rejectedByFile=measured.filter(item=>!item.file_probe_passed);
 const candidateSources=new Set(candidates.map(item=>item.source_domain).filter(Boolean));
 if(candidates.length<minCandidates||candidateSources.size<minSources){
-  write(`data/parser-runs/review-media-${slug}.json`,{status:'blocked',reason:'measured_candidate_gate',required_candidates:minCandidates,raw_candidates:raw.length,measured_candidates:measured.length,approved_by_file_probe:candidates.length,rejected_by_file_probe:rejectedByFile.map(item=>({url:item.url,reason:item.reject_reason,width:item.width||0,height:item.height||0,bytes:item.bytes||0,mime:item.mime||''})),required_sources:minSources,found_sources:candidateSources.size});
+  write(`data/parser-runs/review-media-${slug}.json`,{status:'blocked',reason:'technical_candidate_gate',required_candidates:minCandidates,raw_candidates:raw.length,measured_candidates:measured.length,approved_by_file_probe:candidates.length,rejected_by_file_probe:rejectedByFile.map(item=>({url:item.url,reason:item.reject_reason,width:item.width||0,height:item.height||0,bytes:item.bytes||0,mime:item.mime||''})),required_sources:minSources,found_sources:candidateSources.size});
   process.exit(2);
 }
 
 async function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();return JSON.parse(data.output_text)}
-const auditSchema={type:'object',additionalProperties:false,required:['results'],properties:{results:{type:'array',minItems:candidates.length,maxItems:candidates.length,items:{type:'object',additionalProperties:false,required:['media_id','quality_passed','quality_confidence','sharpness','compression','readability','visible_subject','duplicate_group','problems'],properties:{media_id:{type:'string'},quality_passed:{type:'boolean'},quality_confidence:{type:'number'},sharpness:{type:'number'},compression:{type:'number'},readability:{type:'number'},visible_subject:{type:'string'},duplicate_group:{type:'string'},problems:{type:'array',items:{type:'string'}}}}}}};
-const auditContent=[{type:'input_text',text:`Audit screenshots only after technical file validation. Reject blur, visible upscale, heavy compression, thumbnails, dominant watermarks, stretched images, wrong game versions, duplicate scenes and near-duplicate crops. Measured minimum is ${minWidth}x${minHeight} and ${minBytes} bytes. Old graphics are acceptable; bad files are not.`}];
+const auditSchema={type:'object',additionalProperties:false,required:['results'],properties:{results:{type:'array',minItems:candidates.length,maxItems:candidates.length,items:{type:'object',additionalProperties:false,required:['media_id','quality_passed','quality_confidence','sharpness','compression','readability','composition','render_suitability','visible_upscale','soft_resampling','stretched','muddy','visible_subject','duplicate_group','problems'],properties:{media_id:{type:'string'},quality_passed:{type:'boolean'},quality_confidence:{type:'number'},sharpness:{type:'number'},compression:{type:'number'},readability:{type:'number'},composition:{type:'number'},render_suitability:{type:'number'},visible_upscale:{type:'boolean'},soft_resampling:{type:'boolean'},stretched:{type:'boolean'},muddy:{type:'boolean'},visible_subject:{type:'string'},duplicate_group:{type:'string'},problems:{type:'array',items:{type:'string'}}}}}}};
+const auditContent=[{type:'input_text',text:`Judge actual visual quality, not nominal resolution. The technical floor is only ${minWidth}x${minHeight}; a clean 600x600 original may pass. Evaluate every image as if displayed up to ${targetRenderWidth}px wide in an article card. Reject anything visibly soft, upscaled, smeared, muddy, stretched, heavily compressed, ugly, poorly framed, dominated by overlays or unsuitable at that rendered size. Old game graphics are acceptable; bad source files are not. Mark visible_upscale, soft_resampling, stretched and muddy explicitly. composition means whether the frame is visually useful and attractive enough for publication. render_suitability means whether it remains acceptable at the target display size.`}];
 for(const item of candidates){auditContent.push({type:'input_text',text:`MEDIA_ID: ${item.id}\nMEASURED_SIZE: ${item.width}x${item.height}\nBYTES: ${item.bytes}\nMIME: ${item.mime}\nSOURCE: ${item.source_domain}\nCAPTION: ${item.caption}`});auditContent.push({type:'input_image',image_url:item.url,detail:'high'})}
-const audit=await call({model:process.env.OPENAI_VISION_MODEL||process.env.OPENAI_MODEL||'gpt-5',input:[{role:'user',content:auditContent}],text:{format:{type:'json_schema',name:'review_media_quality',strict:true,schema:auditSchema}}});
+const audit=await call({model:process.env.OPENAI_VISION_MODEL||process.env.OPENAI_MODEL||'gpt-5',input:[{role:'user',content:auditContent}],text:{format:{type:'json_schema',name:'review_media_quality_v2',strict:true,schema:auditSchema}}});
 const auditMap=new Map(audit.results.map(result=>[result.media_id,result]));
 const usedGroups=new Set();
-const approved=candidates.filter(item=>{const result=auditMap.get(item.id);const group=result?.duplicate_group||item.id;const passed=Boolean(item.file_probe_passed&&result?.quality_passed&&Number(result.quality_confidence)>=minConfidence&&Number(result.sharpness)>=0.68&&Number(result.compression)>=0.68&&Number(result.readability)>=0.62&&!usedGroups.has(group));if(passed)usedGroups.add(group);return passed});
+const approved=candidates.filter(item=>{
+  const result=auditMap.get(item.id);const group=result?.duplicate_group||item.id;
+  const passed=Boolean(item.file_probe_passed&&result?.quality_passed&&Number(result.quality_confidence)>=minConfidence&&Number(result.sharpness)>=minSharpness&&Number(result.compression)>=minCompression&&Number(result.readability)>=minReadability&&Number(result.composition)>=minComposition&&Number(result.render_suitability)>=minRenderSuitability&&!result.visible_upscale&&!result.soft_resampling&&!result.stretched&&!result.muddy&&!usedGroups.has(group));
+  if(passed)usedGroups.add(group);return passed;
+});
 const approvedSources=new Set(approved.map(item=>item.source_domain).filter(Boolean));
-if(approved.length<minApproved||approvedSources.size<minSources){write(`data/parser-runs/review-media-${slug}.json`,{status:'blocked',reason:'vision_quality_gate',file_probe_approved:candidates.length,vision_approved:approved.length,required_approved:minApproved,sources:approvedSources.size,required_sources:minSources,audit});process.exit(2)}
+if(approved.length<minApproved||approvedSources.size<minSources){write(`data/parser-runs/review-media-${slug}.json`,{status:'blocked',reason:'visual_quality_gate',file_probe_approved:candidates.length,vision_approved:approved.length,required_approved:minApproved,sources:approvedSources.size,required_sources:minSources,audit});process.exit(2)}
 
 const selectionSchema={type:'object',additionalProperties:false,required:['sections'],properties:{sections:{type:'array',minItems:article.sections.length,maxItems:article.sections.length,items:{type:'object',additionalProperties:false,required:['section_id','media_ids','captions'],properties:{section_id:{type:'string'},media_ids:{type:'array',minItems:minPerSection,maxItems:maxPerSection,items:{type:'string'}},captions:{type:'array',minItems:minPerSection,maxItems:maxPerSection,items:{type:'string'}}}}}}};
-const selectionContent=[{type:'input_text',text:`Assign ${minPerSection}-${maxPerSection} unique screenshots to every section, normally ${targetPerSection}. Never reuse an image or duplicate scene. Each image must show a different concrete aspect of the section. Write a useful caption explaining what is visible and why it matters.`}];
+const selectionContent=[{type:'input_text',text:`Assign ${minPerSection}-${maxPerSection} visually strong, unique screenshots to every section, normally ${targetPerSection}. Never reuse an image or duplicate scene. Prefer attractive, clean frames with clear subjects and useful composition. Write a caption explaining what is visible and why it matters.`}];
 for(const section of article.sections)selectionContent.push({type:'input_text',text:`SECTION_ID: ${section.id}\nHEADING: ${section.heading}\nTEXT: ${(section.paragraphs||[]).join('\n')}`});
 for(const item of approved){selectionContent.push({type:'input_text',text:`MEDIA_ID: ${item.id}\nSOURCE: ${item.source_domain}\nVISIBLE: ${auditMap.get(item.id)?.visible_subject||item.caption}`});selectionContent.push({type:'input_image',image_url:item.url,detail:'high'})}
 const selection=await call({model:process.env.OPENAI_VISION_MODEL||process.env.OPENAI_MODEL||'gpt-5',input:[{role:'user',content:selectionContent}],text:{format:{type:'json_schema',name:'review_section_carousels',strict:true,schema:selectionSchema}}});
 const approvedMap=new Map(approved.map(item=>[item.id,item]));
 const used=new Set();
-for(const section of article.sections){const picked=selection.sections.find(item=>item.section_id===section.id)||{media_ids:[],captions:[]};const ids=picked.media_ids.filter(id=>approvedMap.has(id)&&!used.has(id)).slice(0,maxPerSection);while(ids.length<minPerSection){const fallback=approved.find(item=>!used.has(item.id)&&!ids.includes(item.id));if(!fallback)break;ids.push(fallback.id)}ids.forEach(id=>used.add(id));section.images=ids.map((id,index)=>{const item=approvedMap.get(id);const result=auditMap.get(id);return {url:item.url,alt:result.visible_subject||item.caption,caption:picked.captions[index]||item.caption,source_name:item.source_name||item.source_domain,source_url:item.source_url,width:item.width,height:item.height,bytes:item.bytes,mime:item.mime,duplicate_group:result.duplicate_group,quality:{confidence:result.quality_confidence,sharpness:result.sharpness,compression:result.compression,readability:result.readability}}});section.image=section.images[0]||null}
+for(const section of article.sections){
+  const picked=selection.sections.find(item=>item.section_id===section.id)||{media_ids:[],captions:[]};
+  const ids=picked.media_ids.filter(id=>approvedMap.has(id)&&!used.has(id)).slice(0,maxPerSection);
+  while(ids.length<minPerSection){const fallback=approved.find(item=>!used.has(item.id)&&!ids.includes(item.id));if(!fallback)break;ids.push(fallback.id)}
+  ids.forEach(id=>used.add(id));
+  section.images=ids.map((id,index)=>{const item=approvedMap.get(id);const result=auditMap.get(id);return {url:item.url,alt:result.visible_subject||item.caption,caption:picked.captions[index]||item.caption,source_name:item.source_name||item.source_domain,source_url:item.source_url,width:item.width,height:item.height,bytes:item.bytes,mime:item.mime,duplicate_group:result.duplicate_group,quality:{confidence:result.quality_confidence,sharpness:result.sharpness,compression:result.compression,readability:result.readability,composition:result.composition,render_suitability:result.render_suitability,visible_upscale:result.visible_upscale,soft_resampling:result.soft_resampling,stretched:result.stretched,muddy:result.muddy}}});
+  section.image=section.images[0]||null;
+}
 const images=article.sections.flatMap(section=>section.images||[]);
 const uniqueUrls=new Set(images.map(item=>canonical(item.url)));
 const sourceCounts=new Map();for(const image of images){const domain=host(image.source_url)||host(image.url);sourceCounts.set(domain,(sourceCounts.get(domain)||0)+1)}
 const largestShare=Math.max(0,...sourceCounts.values())/Math.max(1,images.length);
 const passed=images.length>=minTotal&&uniqueUrls.size===images.length&&uniqueUrls.size>=minUnique&&sourceCounts.size>=minSources&&largestShare<=maxSourceShare&&article.sections.every(section=>(section.images||[]).length>=minPerSection);
-article.schema_version=Math.max(Number(article.schema_version||4),8);
-article.media_gate={candidate_required:minCandidates,raw_found:raw.length,file_probe_passed:candidates.length,approved_required:minApproved,vision_approved:approved.length,total_required:minTotal,total_found:images.length,unique_required:minUnique,unique_found:uniqueUrls.size,source_required:minSources,source_found:sourceCounts.size,largest_source_share:largestShare,maximum_source_share:maxSourceShare,passed};
+article.schema_version=Math.max(Number(article.schema_version||4),9);
+article.media_gate={candidate_required:minCandidates,raw_found:raw.length,file_probe_passed:candidates.length,approved_required:minApproved,vision_approved:approved.length,total_required:minTotal,total_found:images.length,unique_required:minUnique,unique_found:uniqueUrls.size,source_required:minSources,source_found:sourceCounts.size,largest_source_share:largestShare,maximum_source_share:maxSourceShare,quality_basis:'rendered_visual_quality',passed};
 article.validation={...(article.validation||{}),media_quality_audit:audit,total_article_images:images.length,unique_article_images:uniqueUrls.size};
 if(!passed)article.publication_status='blocked';
 const output=passed?`data/articles/${slug}.json`:`data/article-drafts/${slug}.json`;
 write(output,article);
-write(`data/article-media/${slug}.json`,{schema_version:3,game_slug:slug,sections:article.sections.map(section=>({id:section.id,images:section.images||[]}))});
-write(`data/parser-runs/review-media-${slug}.json`,{parser:'review-media-audit',status:passed?'success':'blocked',game_slug:slug,checked_at:new Date().toISOString(),gate:article.media_gate,output});
+write(`data/article-media/${slug}.json`,{schema_version:4,game_slug:slug,quality_basis:'rendered_visual_quality',sections:article.sections.map(section=>({id:section.id,images:section.images||[]}))});
+write(`data/parser-runs/review-media-${slug}.json`,{parser:'review-media-audit-v2',status:passed?'success':'blocked',game_slug:slug,checked_at:new Date().toISOString(),gate:article.media_gate,output});
 console.log(JSON.stringify({slug,...article.media_gate},null,2));
 if(!passed)process.exitCode=2;
