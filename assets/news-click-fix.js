@@ -75,7 +75,23 @@
     }
   }
 
+  function loadFullArchive() {
+    if (!document.querySelector('link[href*="news-archive-full.css"]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'assets/news-archive-full.css?v=20260803-1';
+      document.head.appendChild(link);
+    }
+    if (!document.querySelector('script[src*="news-archive-full.js"]')) {
+      const script = document.createElement('script');
+      script.src = 'assets/news-archive-full.js?v=20260803-1';
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+  }
+
   const scheduleRender = () => {
+    loadFullArchive();
     setTimeout(renderCuratedHomeNews, 900);
     setTimeout(renderCuratedHomeNews, 2200);
   };
