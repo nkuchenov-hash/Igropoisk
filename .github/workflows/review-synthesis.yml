@@ -27,6 +27,7 @@ jobs:
           node-version: '20'
       - name: Validate JavaScript
         run: |
+          node --check scripts/sync-review-policy.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/discover-review-media.mjs
           node --check scripts/synthesize-review.mjs
@@ -34,6 +35,8 @@ jobs:
           node --check scripts/validate-review-output.mjs
           node --check scripts/render-review-pages.mjs
           node --check article/_shared/review-carousel.js
+      - name: Synchronize text, media and layout gates
+        run: node scripts/sync-review-policy.mjs
       - name: Discover and validate professional sources
         run: node scripts/prepare-review-research.mjs "${{ inputs.slug }}"
         env:
@@ -67,7 +70,7 @@ jobs:
         run: |
           git config user.name "igropoisk-editor[bot]"
           git config user.email "igropoisk-editor[bot]@users.noreply.github.com"
-          git add data/research data/reviews data/media-candidates data/articles data/article-drafts data/article-media data/parser-runs data/drafts article
+          git add config/parsers/review-synthesis.json data/research data/reviews data/media-candidates data/articles data/article-drafts data/article-media data/parser-runs data/drafts article
           git diff --cached --quiet || git commit -m "Build audited review for ${{ inputs.slug }}"
           git pull --rebase
           git push
