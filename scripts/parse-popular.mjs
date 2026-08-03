@@ -1,65 +1,447 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const root=process.cwd();
-const readJSON=file=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
-const config=readJSON('config/parsers/popular.json');
-const catalog=readJSON('data/catalog-visible.json');
-const now=Date.now();
-const checkedAt=new Date(now).toISOString();
-const timeout=20_000;
-const canonical=value=>String(value||'').normalize('NFKD').toLowerCase().replace(/&amp;/g,' and ').replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
-const decode=value=>String(value||'').replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,'$1').replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ').trim();
-const fetchText=async(url,options={})=>{const response=await fetch(url,{...options,signal:AbortSignal.timeout(timeout),headers:{'user-agent':'IgropoiskPopularityParser/1.0 (+https://github.com/nkuchenov-hash/Igropoisk)',...(options.headers||{})}});if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.text()};
-const fetchJSON=async(url,options={})=>JSON.parse(await fetchText(url,options));
+const root = process.cwd();
+const readJSON = file => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
+const config = readJSON('config/parsers/popular.json');
+const catalog = readJSON('data/catalog-visible.json');
+const now = Date.now();
+const checkedAt = new Date(now).toISOString();
+const timeout = 20_000;
 
-const drafts=new Map();
-const draftDir=path.join(root,'data','drafts');
-if(fs.existsSync(draftDir))for(const filename of fs.readdirSync(draftDir).filter(name=>name.endsWith('.json'))){try{const data=readJSON(`data/drafts/${filename}`);if(data?.identity?.slug)drafts.set(data.identity.slug,data)}catch{}}
-const games=catalog.map(item=>{const draft=drafts.get(item.slug);return{...item,steam_appid:draft?.identity?.steam_appid||item.steam_appid||null,image:draft?.media?.hero||draft?.media?.cover||item.hero||item.cover||'',aliases:[item.title,item.name,item.slug.replace(/-/g,' ')]}});
-for(const aliasGroup of config.aliases||[]){let game=games.find(item=>item.slug===aliasGroup.slug);if(!game){game={slug:aliasGroup.slug,title:aliasGroup.title,year:null,steam_appid:null,image:'',aliases:[]};games.push(game)}game.aliases=[...new Set([...(game.aliases||[]),aliasGroup.title,...(aliasGroup.aliases||[])].filter(Boolean))]}
-for(const game of games)game.aliases=[...new Set((game.aliases||[]).map(canonical).filter(value=>value.length>=3))].sort((a,b)=>b.length-a.length);
+const canonical = value => String(value || '')
+  .normalize('NFKD')
+  .toLowerCase()
+  .replace(/&amp;/g, ' and ')
+  .replace(/[^a-z0-9а-яё]+/gi, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
 
-const signals=new Map();
-const unmatched=new Map();
-const statuses=[];
-const familyWeights=Object.fromEntries((config.families||[]).map(item=>[item.id,Number(item.weight)||0]));
-const totalWeight=Object.values(familyWeights).reduce((sum,value)=>sum+value,0)||1;
-function ensure(slug){if(!signals.has(slug))signals.set(slug,{families:{},evidence:[]});return signals.get(slug)}
-function add(slug,family,value,evidence){if(!slug||!Number.isFinite(value)||value<=0)return;const row=ensure(slug);row.families[family]=(row.families[family]||0)+value;if(evidence)row.evidence.push({...evidence,family,value:Number(value.toFixed(3))})}
-function resolve(text){const value=` ${canonical(text)} `;let best=null;for(const game of games)for(const alias of game.aliases||[]){if(value.includes(` ${alias} `)||(alias.length>=8&&value.includes(alias))){if(!best||alias.length>best.alias.length)best={game,alias}}}return best?.game||null}
-function rememberUnmatched(name,family,value,url=''){const key=canonical(name);if(!key||key.length<4)return;const item=unmatched.get(key)||{title:name,families:{},score:0,urls:[]};item.families[family]=(item.families[family]||0)+value;item.score+=value;if(url&&!item.urls.includes(url))item.urls.push(url);unmatched.set(key,item)}
-function recency(date){const time=Date.parse(date);if(!Number.isFinite(time))return .45;const ageHours=Math.max(0,(now-time)/3_600_000);return Math.pow(.5,ageHours/Number(config.method?.recency_half_life_hours||24))}
-function xmlTag(block,names){for(const name of names){const match=block.match(new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${name}>`,'i'));if(match)return decode(match[1])}return''}
-function parseFeed(xml){const blocks=xml.match(/<item\b[\s\S]*?<\/item>|<entry\b[\s\S]*?<\/entry>/gi)||[];return blocks.map(block=>{const linkAttr=block.match(/<link[^>]+href=["']([^"']+)["']/i)?.[1];return{title:xmlTag(block,['title']),description:xmlTag(block,['description','summary','content']),date:xmlTag(block,['pubDate','published','updated']),url:linkAttr||xmlTag(block,['link','guid'])}}).filter(item=>item.title)}
+const decode = value => String(value || '')
+  .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+  .replace(/<[^>]+>/g, ' ')
+  .replace(/&amp;/g, '&')
+  .replace(/&quot;/g, '"')
+  .replace(/&#39;|&apos;/g, "'")
+  .replace(/&lt;/g, '<')
+  .replace(/&gt;/g, '>')
+  .replace(/\s+/g, ' ')
+  .trim();
 
-async function collectRSS(){for(const source of (config.sources||[]).filter(item=>item.enabled!==false&&item.type==='rss')){const started=Date.now();try{const items=parseFeed(await fetchText(source.url));let matched=0;for(const item of items){const game=resolve(`${item.title} ${item.description}`);if(!game)continue;const value=recency(item.date)*Number(source.weight||1);add(game.slug,'news',value,{source:source.name,url:item.url,title:item.title,observed_at:item.date||checkedAt});matched++}statuses.push({id:source.id,status:'success',items:items.length,matched,duration_ms:Date.now()-started,url:source.url})}catch(error){statuses.push({id:source.id,status:'error',error:error.message,duration_ms:Date.now()-started,url:source.url})}}}
+const fetchText = async (url, options = {}) => {
+  const response = await fetch(url, {
+    ...options,
+    signal: AbortSignal.timeout(timeout),
+    headers: {
+      'user-agent': 'IgropoiskPopularityParser/2.0 (+https://github.com/nkuchenov-hash/Igropoisk)',
+      ...(options.headers || {})
+    }
+  });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.text();
+};
+const fetchJSON = async (url, options = {}) => JSON.parse(await fetchText(url, options));
 
-async function collectTwitch(){const source=(config.sources||[]).find(item=>item.id==='twitch-streams'&&item.enabled!==false);if(!source)return;const started=Date.now();const clientId=process.env.TWITCH_CLIENT_ID,secret=process.env.TWITCH_CLIENT_SECRET;if(!clientId||!secret){statuses.push({id:source.id,status:'skipped',error:'TWITCH_CLIENT_ID/TWITCH_CLIENT_SECRET are not configured',url:source.url});return}try{const token=await fetchJSON(`https://id.twitch.tv/oauth2/token?client_id=${encodeURIComponent(clientId)}&client_secret=${encodeURIComponent(secret)}&grant_type=client_credentials`,{method:'POST'});const data=await fetchJSON(source.url,{headers:{Authorization:`Bearer ${token.access_token}`,'Client-Id':clientId}});let matched=0;for(const stream of data.data||[]){const value=Math.log1p(Number(stream.viewer_count||0))+0.35;const game=resolve(stream.game_name);if(game){add(game.slug,'twitch',value,{source:'Twitch',url:`https://www.twitch.tv/${stream.user_login}`,title:stream.game_name,viewers:stream.viewer_count});matched++}else rememberUnmatched(stream.game_name,'twitch',value,`https://www.twitch.tv/directory/category/${encodeURIComponent(canonical(stream.game_name).replace(/ /g,'-'))}`)}statuses.push({id:source.id,status:'success',items:(data.data||[]).length,matched,duration_ms:Date.now()-started,url:source.url})}catch(error){statuses.push({id:source.id,status:'error',error:error.message,duration_ms:Date.now()-started,url:source.url})}}
+let previous = null;
+try { previous = readJSON('data/popular/current.json'); } catch {}
+const previousPlayers = new Map();
+for (const item of previous?.ranking || []) {
+  const steamEvidence = (item.evidence || []).find(row => row.family === 'steam' && Number.isFinite(Number(row.players)));
+  if (steamEvidence) previousPlayers.set(item.slug, Number(steamEvidence.players));
+}
 
-async function collectYouTube(){const source=(config.sources||[]).find(item=>item.id==='youtube-popular'&&item.enabled!==false);if(!source)return;const started=Date.now();const key=process.env.YOUTUBE_API_KEY;if(!key){statuses.push({id:source.id,status:'skipped',error:'YOUTUBE_API_KEY is not configured',url:source.url});return}try{let items=[];for(const region of ['US','GB','DE','FR','BR','JP']){const data=await fetchJSON(`${source.url}&regionCode=${region}&key=${encodeURIComponent(key)}`);items.push(...(data.items||[]).map(item=>({...item,region})))}let matched=0;for(const video of items){const title=video.snippet?.title||'';const game=resolve(`${title} ${(video.snippet?.tags||[]).join(' ')}`);const views=Number(video.statistics?.viewCount||0),comments=Number(video.statistics?.commentCount||0);const value=Math.log1p(views)+.25*Math.log1p(comments);const url=`https://www.youtube.com/watch?v=${video.id}`;if(game){add(game.slug,'youtube',value,{source:`YouTube ${video.region}`,url,title,views});matched++}else rememberUnmatched(title,'youtube',value,url)}statuses.push({id:source.id,status:'success',items:items.length,matched,duration_ms:Date.now()-started,url:source.url})}catch(error){statuses.push({id:source.id,status:'error',error:error.message,duration_ms:Date.now()-started,url:source.url})}}
+const drafts = new Map();
+const draftDir = path.join(root, 'data', 'drafts');
+if (fs.existsSync(draftDir)) {
+  for (const filename of fs.readdirSync(draftDir).filter(name => name.endsWith('.json'))) {
+    try {
+      const data = readJSON(`data/drafts/${filename}`);
+      if (data?.identity?.slug) drafts.set(data.identity.slug, data);
+    } catch {}
+  }
+}
 
-async function collectReddit(){const source=(config.sources||[]).find(item=>item.id==='reddit-gaming'&&item.enabled!==false);if(!source)return;const started=Date.now();const token=process.env.REDDIT_ACCESS_TOKEN;if(!token){statuses.push({id:source.id,status:'skipped',error:'REDDIT_ACCESS_TOKEN is not configured',url:source.url});return}try{const data=await fetchJSON(source.url,{headers:{Authorization:`Bearer ${token}`}});let matched=0;for(const child of data.data?.children||[]){const post=child.data||{},game=resolve(`${post.title||''} ${post.selftext||''}`);const value=1+.35*Math.log1p(Number(post.num_comments||0))+.2*Math.log1p(Math.max(0,Number(post.score||0)));const url=`https://www.reddit.com${post.permalink||''}`;if(game){add(game.slug,'reddit',value,{source:`Reddit r/${post.subreddit}`,url,title:post.title,comments:post.num_comments,score:post.score});matched++}else rememberUnmatched(post.title,'reddit',value,url)}statuses.push({id:source.id,status:'success',items:(data.data?.children||[]).length,matched,duration_ms:Date.now()-started,url:source.url})}catch(error){statuses.push({id:source.id,status:'error',error:error.message,duration_ms:Date.now()-started,url:source.url})}}
+const games = catalog.map(item => {
+  const draft = drafts.get(item.slug);
+  return {
+    ...item,
+    steam_appid: draft?.identity?.steam_appid || item.steam_appid || null,
+    image: draft?.media?.hero || draft?.media?.cover || item.hero || item.cover || '',
+    aliases: [item.title, item.name, item.slug.replace(/-/g, ' ')],
+    upcoming: Number(item.year) > new Date().getUTCFullYear()
+  };
+});
 
-async function collectSteam(){const source=(config.sources||[]).find(item=>item.id==='steam-current-players'&&item.enabled!==false);if(!source)return;const started=Date.now();let items=0,matched=0;for(let index=0;index<games.length;index+=8){const batch=games.slice(index,index+8).filter(game=>Number(game.steam_appid));const results=await Promise.all(batch.map(async game=>{try{const url=source.url.replace('{steam_appid}',game.steam_appid);const data=await fetchJSON(url);return{game,players:Number(data.response?.player_count||0),url}}catch{return null}}));for(const result of results.filter(Boolean)){items++;if(result.players>0){add(result.game.slug,'steam',Math.log1p(result.players),{source:'Steam current players',url:result.url,title:result.game.title,players:result.players});matched++}}}statuses.push({id:source.id,status:'success',items,matched,duration_ms:Date.now()-started,url:source.url})}
+for (const aliasGroup of config.aliases || []) {
+  let game = games.find(item => item.slug === aliasGroup.slug);
+  if (!game) {
+    game = {
+      slug: aliasGroup.slug,
+      title: aliasGroup.title,
+      year: aliasGroup.year || null,
+      steam_appid: aliasGroup.steam_appid || null,
+      image: aliasGroup.image || '',
+      aliases: [],
+      upcoming: aliasGroup.upcoming !== false
+    };
+    games.push(game);
+  }
+  game.aliases = [...new Set([
+    ...(game.aliases || []),
+    aliasGroup.title,
+    ...(aliasGroup.aliases || [])
+  ].filter(Boolean))];
+}
 
-function normalizeFamilies(){const normalized=new Map();for(const family of Object.keys(familyWeights)){const rows=[...signals.entries()].map(([slug,data])=>({slug,value:Math.log1p(data.families[family]||0)})).filter(row=>row.value>0).sort((a,b)=>a.value-b.value);rows.forEach((row,index)=>{const norm=rows.length===1?1:index/(rows.length-1);if(!normalized.has(row.slug))normalized.set(row.slug,{});normalized.get(row.slug)[family]=norm})}return normalized}
+for (const game of games) {
+  game.aliases = [...new Set((game.aliases || []).map(canonical).filter(Boolean))]
+    .sort((a, b) => b.length - a.length);
+}
 
-const started=Date.now();
+const signals = new Map();
+const unmatched = new Map();
+const statuses = [];
+const familyWeights = Object.fromEntries((config.families || []).map(item => [item.id, Number(item.weight) || 0]));
+const minimumNewsSources = Number(config.method?.minimum_news_sources || 2);
+const minimumNewsSignal = Number(config.method?.minimum_news_signal || 0.12);
+const minimumSteamGrowth = Number(config.method?.minimum_steam_growth || 0.08);
+
+function ensure(slug) {
+  if (!signals.has(slug)) signals.set(slug, { families: {}, evidence: [], newsSources: new Set() });
+  return signals.get(slug);
+}
+
+function add(slug, family, value, evidence) {
+  if (!slug || !Number.isFinite(value) || value <= 0) return;
+  const row = ensure(slug);
+  row.families[family] = (row.families[family] || 0) + value;
+  if (family === 'news' && evidence?.source) row.newsSources.add(evidence.source);
+  if (evidence) row.evidence.push({ ...evidence, family, value: Number(value.toFixed(3)) });
+}
+
+function resolve(text) {
+  const value = ` ${canonical(text)} `;
+  let best = null;
+  for (const game of games) {
+    for (const alias of game.aliases || []) {
+      const words = alias.split(' ').length;
+      const ambiguousSingleWord = words === 1 && alias.length < 6;
+      if (ambiguousSingleWord) continue;
+      if (value.includes(` ${alias} `)) {
+        if (!best || alias.length > best.alias.length) best = { game, alias };
+      }
+    }
+  }
+  return best?.game || null;
+}
+
+function rememberUnmatched(name, family, value, url = '') {
+  const key = canonical(name);
+  if (!key || key.length < 4) return;
+  const item = unmatched.get(key) || { title: name, families: {}, score: 0, urls: [] };
+  item.families[family] = (item.families[family] || 0) + value;
+  item.score += value;
+  if (url && !item.urls.includes(url)) item.urls.push(url);
+  unmatched.set(key, item);
+}
+
+function recency(date) {
+  const time = Date.parse(date);
+  if (!Number.isFinite(time)) return 0;
+  const ageHours = Math.max(0, (now - time) / 3_600_000);
+  const windowHours = Number(config.method?.window_hours || 72);
+  if (ageHours > windowHours) return 0;
+  return Math.pow(0.5, ageHours / Number(config.method?.recency_half_life_hours || 18));
+}
+
+function xmlTag(block, names) {
+  for (const name of names) {
+    const match = block.match(new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${name}>`, 'i'));
+    if (match) return decode(match[1]);
+  }
+  return '';
+}
+
+function parseFeed(xml) {
+  const blocks = xml.match(/<item\b[\s\S]*?<\/item>|<entry\b[\s\S]*?<\/entry>/gi) || [];
+  return blocks.map(block => {
+    const linkAttr = block.match(/<link[^>]+href=["']([^"']+)["']/i)?.[1];
+    return {
+      title: xmlTag(block, ['title']),
+      description: xmlTag(block, ['description', 'summary', 'content']),
+      date: xmlTag(block, ['pubDate', 'published', 'updated']),
+      url: linkAttr || xmlTag(block, ['link', 'guid'])
+    };
+  }).filter(item => item.title);
+}
+
+async function collectRSS() {
+  for (const source of (config.sources || []).filter(item => item.enabled !== false && item.type === 'rss')) {
+    const started = Date.now();
+    try {
+      const items = parseFeed(await fetchText(source.url));
+      let matched = 0;
+      for (const item of items) {
+        const freshness = recency(item.date);
+        if (!freshness) continue;
+        const game = resolve(`${item.title} ${item.description}`);
+        if (!game) continue;
+        const value = freshness * Number(source.weight || 1);
+        add(game.slug, 'news', value, {
+          source: source.name,
+          url: item.url,
+          title: item.title,
+          observed_at: item.date || checkedAt
+        });
+        matched++;
+      }
+      statuses.push({ id: source.id, status: 'success', items: items.length, matched, duration_ms: Date.now() - started, url: source.url });
+    } catch (error) {
+      statuses.push({ id: source.id, status: 'error', error: error.message, duration_ms: Date.now() - started, url: source.url });
+    }
+  }
+}
+
+async function collectTwitch() {
+  const source = (config.sources || []).find(item => item.id === 'twitch-streams' && item.enabled !== false);
+  if (!source) return;
+  const started = Date.now();
+  const clientId = process.env.TWITCH_CLIENT_ID;
+  const secret = process.env.TWITCH_CLIENT_SECRET;
+  if (!clientId || !secret) {
+    statuses.push({ id: source.id, status: 'skipped', error: 'TWITCH_CLIENT_ID/TWITCH_CLIENT_SECRET are not configured', url: source.url });
+    return;
+  }
+  try {
+    const token = await fetchJSON(`https://id.twitch.tv/oauth2/token?client_id=${encodeURIComponent(clientId)}&client_secret=${encodeURIComponent(secret)}&grant_type=client_credentials`, { method: 'POST' });
+    const data = await fetchJSON(source.url, { headers: { Authorization: `Bearer ${token.access_token}`, 'Client-Id': clientId } });
+    let matched = 0;
+    for (const stream of data.data || []) {
+      const value = Math.log1p(Number(stream.viewer_count || 0));
+      const game = resolve(stream.game_name);
+      if (game) {
+        add(game.slug, 'twitch', value, {
+          source: 'Twitch',
+          url: `https://www.twitch.tv/${stream.user_login}`,
+          title: stream.game_name,
+          viewers: stream.viewer_count
+        });
+        matched++;
+      } else {
+        rememberUnmatched(stream.game_name, 'twitch', value);
+      }
+    }
+    statuses.push({ id: source.id, status: 'success', items: (data.data || []).length, matched, duration_ms: Date.now() - started, url: source.url });
+  } catch (error) {
+    statuses.push({ id: source.id, status: 'error', error: error.message, duration_ms: Date.now() - started, url: source.url });
+  }
+}
+
+async function collectYouTube() {
+  const source = (config.sources || []).find(item => item.id === 'youtube-popular' && item.enabled !== false);
+  if (!source) return;
+  const started = Date.now();
+  const key = process.env.YOUTUBE_API_KEY;
+  if (!key) {
+    statuses.push({ id: source.id, status: 'skipped', error: 'YOUTUBE_API_KEY is not configured', url: source.url });
+    return;
+  }
+  try {
+    let items = [];
+    for (const region of ['US', 'GB', 'DE', 'FR', 'BR', 'JP']) {
+      const data = await fetchJSON(`${source.url}&regionCode=${region}&key=${encodeURIComponent(key)}`);
+      items.push(...(data.items || []).map(item => ({ ...item, region })));
+    }
+    let matched = 0;
+    for (const video of items) {
+      const title = video.snippet?.title || '';
+      const game = resolve(`${title} ${(video.snippet?.tags || []).join(' ')}`);
+      const views = Number(video.statistics?.viewCount || 0);
+      const comments = Number(video.statistics?.commentCount || 0);
+      const value = Math.log1p(views) + 0.25 * Math.log1p(comments);
+      const url = `https://www.youtube.com/watch?v=${video.id}`;
+      if (game) {
+        add(game.slug, 'youtube', value, { source: `YouTube ${video.region}`, url, title, views });
+        matched++;
+      } else {
+        rememberUnmatched(title, 'youtube', value, url);
+      }
+    }
+    statuses.push({ id: source.id, status: 'success', items: items.length, matched, duration_ms: Date.now() - started, url: source.url });
+  } catch (error) {
+    statuses.push({ id: source.id, status: 'error', error: error.message, duration_ms: Date.now() - started, url: source.url });
+  }
+}
+
+async function collectReddit() {
+  const source = (config.sources || []).find(item => item.id === 'reddit-gaming' && item.enabled !== false);
+  if (!source) return;
+  const started = Date.now();
+  const token = process.env.REDDIT_ACCESS_TOKEN;
+  if (!token) {
+    statuses.push({ id: source.id, status: 'skipped', error: 'REDDIT_ACCESS_TOKEN is not configured', url: source.url });
+    return;
+  }
+  try {
+    const data = await fetchJSON(source.url, { headers: { Authorization: `Bearer ${token}` } });
+    let matched = 0;
+    for (const child of data.data?.children || []) {
+      const post = child.data || {};
+      const game = resolve(`${post.title || ''} ${post.selftext || ''}`);
+      const value = 1 + 0.35 * Math.log1p(Number(post.num_comments || 0)) + 0.2 * Math.log1p(Math.max(0, Number(post.score || 0)));
+      const url = `https://www.reddit.com${post.permalink || ''}`;
+      if (game) {
+        add(game.slug, 'reddit', value, { source: `Reddit r/${post.subreddit}`, url, title: post.title, comments: post.num_comments, score: post.score });
+        matched++;
+      } else {
+        rememberUnmatched(post.title, 'reddit', value, url);
+      }
+    }
+    statuses.push({ id: source.id, status: 'success', items: (data.data?.children || []).length, matched, duration_ms: Date.now() - started, url: source.url });
+  } catch (error) {
+    statuses.push({ id: source.id, status: 'error', error: error.message, duration_ms: Date.now() - started, url: source.url });
+  }
+}
+
+async function collectSteam() {
+  const source = (config.sources || []).find(item => item.id === 'steam-current-players' && item.enabled !== false);
+  if (!source) return;
+  const started = Date.now();
+  let items = 0;
+  let matched = 0;
+  for (let index = 0; index < games.length; index += 8) {
+    const batch = games.slice(index, index + 8).filter(game => Number(game.steam_appid));
+    const results = await Promise.all(batch.map(async game => {
+      try {
+        const url = source.url.replace('{steam_appid}', game.steam_appid);
+        const data = await fetchJSON(url);
+        return { game, players: Number(data.response?.player_count || 0), url };
+      } catch {
+        return null;
+      }
+    }));
+    for (const result of results.filter(Boolean)) {
+      items++;
+      const baseline = previousPlayers.get(result.game.slug);
+      const growth = baseline > 0 ? (result.players - baseline) / baseline : 0;
+      if (growth >= minimumSteamGrowth) {
+        add(result.game.slug, 'steam', Math.log1p(growth * 100), {
+          source: 'Steam player momentum',
+          url: result.url,
+          title: result.game.title,
+          players: result.players,
+          previous_players: baseline,
+          growth: Number(growth.toFixed(3))
+        });
+        matched++;
+      }
+    }
+  }
+  statuses.push({ id: source.id, status: 'success', items, matched, duration_ms: Date.now() - started, url: source.url });
+}
+
+function normalizeFamilies() {
+  const normalized = new Map();
+  for (const family of Object.keys(familyWeights)) {
+    const rows = [...signals.entries()]
+      .map(([slug, data]) => ({ slug, value: Math.log1p(data.families[family] || 0) }))
+      .filter(row => row.value > 0)
+      .sort((a, b) => a.value - b.value);
+    rows.forEach((row, index) => {
+      const norm = rows.length === 1 ? 1 : index / (rows.length - 1);
+      if (!normalized.has(row.slug)) normalized.set(row.slug, {});
+      normalized.get(row.slug)[family] = norm;
+    });
+  }
+  return normalized;
+}
+
+const started = Date.now();
 await collectRSS();
-await Promise.all([collectTwitch(),collectYouTube(),collectReddit(),collectSteam()]);
-const normalized=normalizeFamilies();
-let previous=null;try{previous=readJSON('data/popular/current.json')}catch{}
-const previousRank=new Map((previous?.ranking||[]).map(item=>[item.slug,item.score]));
-const ranking=[];
-for(const game of games){const data=signals.get(game.slug);if(!data)continue;const norms=normalized.get(game.slug)||{};const families=Object.keys(norms);const availableWeight=families.reduce((sum,family)=>sum+(familyWeights[family]||0),0);const weighted=families.reduce((sum,family)=>sum+norms[family]*(familyWeights[family]||0),0);const independence=Math.min(1,families.length/Number(config.method?.minimum_independent_families||2));const confidence=(availableWeight/totalWeight)*independence;const score=availableWeight?100*weighted/availableWeight:0;if(families.length<Number(config.method?.minimum_independent_families||2)||confidence<Number(config.method?.publication_threshold||.45))continue;ranking.push({slug:game.slug,title:game.title||game.name,year:game.year||null,image:game.image||'',score:Number(score.toFixed(1)),confidence:Number(confidence.toFixed(2)),delta:previousRank.has(game.slug)?Number((score-previousRank.get(game.slug)).toFixed(1)):null,families,signals:data.families,evidence:data.evidence.sort((a,b)=>b.value-a.value).slice(0,12)})}
-ranking.sort((a,b)=>b.score-a.score||b.confidence-a.confidence);
-const discovered=[...unmatched.values()].filter(item=>Object.keys(item.families).length>=1).sort((a,b)=>b.score-a.score).slice(0,30).map(item=>({...item,score:Number(item.score.toFixed(2)),urls:item.urls.slice(0,5)}));
-const output={schema_version:1,generated_at:checkedAt,window_hours:config.method?.window_hours||72,method:{formula:config.method?.formula,minimum_independent_families:config.method?.minimum_independent_families,publication_threshold:config.method?.publication_threshold,family_weights:familyWeights},ranking:ranking.slice(0,30),discovered_unmatched:discovered,source_statuses:statuses};
-fs.mkdirSync(path.join(root,'data','popular'),{recursive:true});
-fs.mkdirSync(path.join(root,'data','parser-runs'),{recursive:true});
-fs.writeFileSync(path.join(root,'data','popular','current.json'),`${JSON.stringify(output,null,2)}\n`);
-const successCount=statuses.filter(item=>item.status==='success').length;
-const run={parser:'popular',status:successCount?'success':'error',checked_at:checkedAt,duration_ms:Date.now()-started,ranked_count:ranking.length,discovered_count:discovered.length,sources_success:successCount,sources_total:statuses.length,output:'data/popular/current.json',note:ranking.length?'Рейтинг рассчитан по независимым группам сигналов.':'Недостаточно независимых сигналов для публикации.',source_statuses:statuses};
-fs.writeFileSync(path.join(root,'data','parser-runs','popular.json'),`${JSON.stringify(run,null,2)}\n`);
-console.log(JSON.stringify(run,null,2));
+await Promise.all([collectTwitch(), collectYouTube(), collectReddit(), collectSteam()]);
+
+const normalized = normalizeFamilies();
+const previousRank = new Map((previous?.ranking || []).map(item => [item.slug, item.score]));
+const ranking = [];
+
+for (const game of games) {
+  const data = signals.get(game.slug);
+  if (!data) continue;
+  const norms = normalized.get(game.slug) || {};
+  const families = Object.keys(norms);
+  const nonSteamFamilies = families.filter(family => family !== 'steam');
+  const newsSources = data.newsSources.size;
+  const newsSignal = data.families.news || 0;
+
+  const qualifiesByBreadth = nonSteamFamilies.length >= 2;
+  const qualifiesByNews = newsSources >= minimumNewsSources && newsSignal >= minimumNewsSignal;
+  const qualifiesByMomentum = families.includes('steam') && nonSteamFamilies.length >= 1;
+
+  if (!(qualifiesByBreadth || qualifiesByNews || qualifiesByMomentum)) continue;
+
+  const weighted = families.reduce((sum, family) => sum + norms[family] * (familyWeights[family] || 0), 0);
+  const availableWeight = families.reduce((sum, family) => sum + (familyWeights[family] || 0), 0) || 1;
+  const breadthBonus = Math.min(12, Math.max(0, newsSources - 1) * 4 + Math.max(0, nonSteamFamilies.length - 1) * 3);
+  const score = Math.min(100, 100 * weighted / availableWeight + breadthBonus);
+  const confidence = Math.min(1, 0.35 + 0.12 * nonSteamFamilies.length + 0.08 * Math.min(newsSources, 4));
+
+  ranking.push({
+    slug: game.slug,
+    title: game.title || game.name,
+    year: game.year || null,
+    image: game.image || '',
+    score: Number(score.toFixed(1)),
+    confidence: Number(confidence.toFixed(2)),
+    delta: previousRank.has(game.slug) ? Number((score - previousRank.get(game.slug)).toFixed(1)) : null,
+    families,
+    signals: data.families,
+    news_sources: newsSources,
+    evidence: data.evidence.sort((a, b) => b.value - a.value).slice(0, 12)
+  });
+}
+
+ranking.sort((a, b) => b.score - a.score || b.confidence - a.confidence);
+const discovered = [...unmatched.values()]
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 30)
+  .map(item => ({ ...item, score: Number(item.score.toFixed(2)), urls: item.urls.slice(0, 5) }));
+
+const output = {
+  schema_version: 2,
+  generated_at: checkedAt,
+  window_hours: config.method?.window_hours || 72,
+  method: {
+    formula: config.method?.formula,
+    minimum_news_sources: minimumNewsSources,
+    minimum_news_signal: minimumNewsSignal,
+    minimum_steam_growth: minimumSteamGrowth,
+    family_weights: familyWeights
+  },
+  ranking: ranking.slice(0, 30),
+  discovered_unmatched: discovered,
+  source_statuses: statuses
+};
+
+fs.mkdirSync(path.join(root, 'data', 'popular'), { recursive: true });
+fs.mkdirSync(path.join(root, 'data', 'parser-runs'), { recursive: true });
+fs.writeFileSync(path.join(root, 'data', 'popular', 'current.json'), `${JSON.stringify(output, null, 2)}\n`);
+
+const successCount = statuses.filter(item => item.status === 'success').length;
+const run = {
+  parser: 'popular',
+  status: successCount ? 'success' : 'error',
+  checked_at: checkedAt,
+  duration_ms: Date.now() - started,
+  ranked_count: ranking.length,
+  discovered_count: discovered.length,
+  sources_success: successCount,
+  sources_total: statuses.length,
+  output: 'data/popular/current.json',
+  note: ranking.length
+    ? 'Рейтинг рассчитан по свежему всплеску внимания, независимым источникам и росту Steam-аудитории.'
+    : 'Недостаточно свежих независимых сигналов для публикации.',
+  source_statuses: statuses
+};
+
+fs.writeFileSync(path.join(root, 'data', 'parser-runs', 'popular.json'), `${JSON.stringify(run, null, 2)}\n`);
+console.log(JSON.stringify(run, null, 2));
