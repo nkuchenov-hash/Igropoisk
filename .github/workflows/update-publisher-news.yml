@@ -7,7 +7,9 @@ on:
   push:
     paths:
       - 'data/news-sources.json'
+      - 'data/youtube-sources.json'
       - 'scripts/fetch-publisher-news.mjs'
+      - 'scripts/fetch-youtube-signals.mjs'
       - 'scripts/build-news-events.mjs'
       - '.github/workflows/update-publisher-news.yml'
 
@@ -35,18 +37,21 @@ jobs:
       - name: Fetch official company studio platform and game news
         run: node scripts/fetch-publisher-news.mjs
 
+      - name: Fetch official gaming YouTube signals
+        run: node scripts/fetch-youtube-signals.mjs
+
       - name: Rebuild unified news events
         run: node scripts/build-news-events.mjs
 
-      - name: Commit official feed and events
+      - name: Commit official feed signals and events
         run: |
-          if git diff --quiet -- data/publisher-news.json data/news-events.json assets/publisher-news; then
-            echo "Official feed and event index are current"
+          if git diff --quiet -- data/publisher-news.json data/youtube-signals.json data/news-events.json assets/publisher-news; then
+            echo "Official feed, YouTube signals and event index are current"
             exit 0
           fi
           git config user.name "igropoisk-official-news-bot"
           git config user.email "actions@users.noreply.github.com"
           git pull --rebase origin main
-          git add data/publisher-news.json data/news-events.json assets/publisher-news
-          git commit -m "Update official gaming news events"
+          git add data/publisher-news.json data/youtube-signals.json data/news-events.json assets/publisher-news
+          git commit -m "Update official gaming news events and YouTube signals"
           git push
