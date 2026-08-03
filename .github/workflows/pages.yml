@@ -31,6 +31,7 @@ jobs:
 
       - name: Enforce shared layout contract
         run: |
+          python3 -m py_compile scripts/enforce_layout_contract.py
           python3 scripts/enforce_layout_contract.py --write
           python3 scripts/enforce_layout_contract.py --check
 
