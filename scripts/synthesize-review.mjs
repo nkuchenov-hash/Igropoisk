@@ -5,250 +5,87 @@ const root=process.cwd();
 const slug=process.argv[2];
 if(!slug){console.error('Usage: node scripts/synthesize-review.mjs <game-slug>');process.exit(1)}
 if(!process.env.OPENAI_API_KEY){console.error('OPENAI_API_KEY is required');process.exit(1)}
-
-const readJSON=file=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
+const read=file=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
 const exists=file=>fs.existsSync(path.join(root,file));
-const writeJSON=(file,value)=>{const target=path.join(root,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,`${JSON.stringify(value,null,2)}\n`)};
+const write=(file,value)=>{const target=path.join(root,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,`${JSON.stringify(value,null,2)}\n`)};
+const config=read('config/parsers/review-synthesis.json');
+const files={draft:`data/drafts/${slug}.json`,ratings:`data/ratings/${slug}.json`,reviews:`data/reviews/${slug}.json`,research:`data/research/${slug}-source-matrix.json`};
+for(const file of Object.values(files))if(!exists(file)){console.error(`Missing ${file}`);process.exit(1)}
+const game=read(files.draft),ratings=read(files.ratings),reviews=read(files.reviews),research=read(files.research);
 const checkedAt=new Date().toISOString();
-const config=readJSON('config/parsers/review-synthesis.json');
-const reviewsPath=`data/reviews/${slug}.json`;
-const ratingPath=`data/ratings/${slug}.json`;
-const gamePath=`data/drafts/${slug}.json`;
-if(!exists(reviewsPath)||!exists(ratingPath)||!exists(gamePath)){console.error('Verified reviews, rating output and game draft are required before synthesis');process.exit(1)}
-
-const reviews=readJSON(reviewsPath);
-const rating=readJSON(ratingPath);
-const game=readJSON(gamePath);
 const gate=config.publication_gate||{};
-const requiredEditorial=Number(gate.editorial_reviews_required||20);
-const requiredPublications=Number(gate.independent_publications_required||requiredEditorial);
-const requiredScreenshots=Number(gate.verified_screenshots_required||6);
-const minimumSections=Number(gate.minimum_sections||8);
-const maximumSections=Number(gate.maximum_sections||10);
-const minimumWords=Number(gate.minimum_article_words||2000);
-const configuredEditorial=(config.sources||[]).filter(source=>source.enabled!==false&&source.family==='editorial');
-const verifiedMedia=[game.media?.hero,game.media?.cover,...(game.media?.screenshots||[]),...(game.media?.artwork||[])].filter(Boolean);
+const requiredSources=Number(gate.editorial_reviews_required||20),minSections=Number(gate.minimum_sections||8),maxSections=Number(gate.maximum_sections||10),minWords=Number(gate.minimum_article_words||2000),minImages=Number(gate.verified_screenshots_required||6);
+const countWords=value=>(String(value||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]+/g)||[]).length;
+const canonical=value=>{try{const u=new URL(value);u.hash='';for(const key of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'])u.searchParams.delete(key);return `${u.origin}${u.pathname.replace(/\/$/,'')}${u.search}`}catch{return String(value||'').trim()}};
+async function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}
 
-const canonicalUrl=value=>{try{const url=new URL(value);url.hash='';['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(key=>url.searchParams.delete(key));return `${url.origin}${url.pathname.replace(/\/$/,'')}${url.search}`}catch{return String(value||'').trim()}};
-const hostname=value=>{try{return new URL(value).hostname.replace(/^www\./,'').toLowerCase()}catch{return''}};
-const configuredDomains=[...new Set(configuredEditorial.map(source=>hostname(source.url)).filter(Boolean))];
-const allowedDomain=domain=>configuredDomains.some(configured=>domain===configured||domain.endsWith(`.${configured}`)||configured.endsWith(`.${domain}`));
-const allowedImages=new Set(verifiedMedia.map(canonicalUrl));
-const countWords=value=>(String(value||'').match(/[A-Za-zА-Яа-яЁё0-9’-]+/g)||[]).length;
-
-async function callOpenAI(body){
-  const response=await fetch('https://api.openai.com/v1/responses',{
-    method:'POST',
-    headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},
-    body:JSON.stringify(body)
-  });
-  if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);
-  const result=await response.json();
-  const outputText=result.output_text||result.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;
-  if(!outputText)throw new Error('The model returned no structured output');
-  return JSON.parse(outputText);
+const sources=(research.accepted||reviews.reviews||[]).slice(0,requiredSources);
+if(sources.length<requiredSources||research.coverage?.passed===false){console.error(`Source gate failed: ${sources.length}/${requiredSources}`);process.exit(2)}
+const sourceMap=new Map(sources.map((source,index)=>[source.id||`source-${index+1}`,{...source,id:source.id||`source-${index+1}`}]))
+const media=[];
+const pushMedia=(url,kind,caption,sourceUrl)=>{if(!url||media.some(item=>canonical(item.url)===canonical(url)))return;media.push({id:`media-${media.length+1}`,url,kind,caption:caption||'',source_url:sourceUrl||game.links?.store||game.links?.official||''})};
+if(Array.isArray(game.media?.items))for(const item of game.media.items)pushMedia(item.url,item.kind,item.caption,item.source_url);
+else{
+  pushMedia(game.media?.hero,'hero','Официальное главное изображение');
+  pushMedia(game.media?.cover,'cover','Официальная обложка');
+  for(const item of game.media?.screenshots||[])typeof item==='string'?pushMedia(item,'screenshot','Официальный скриншот'):pushMedia(item.url,'screenshot',item.caption,item.source_url);
+  for(const item of game.media?.artwork||[])typeof item==='string'?pushMedia(item,'artwork','Официальный арт'):pushMedia(item.url,'artwork',item.caption,item.source_url);
 }
+if(media.filter(item=>item.kind==='screenshot').length<minImages){console.error(`Media gate failed: need ${minImages} screenshots`);process.exit(2)}
+const identity={identity:game.identity,release:game.release,companies:game.companies,classification:game.classification,editorial:game.editorial,requirements:game.requirements,links:game.links};
 
-const imageSchema={
-  type:'object',additionalProperties:false,
-  required:['url','alt','caption','source_name','source_url','reason'],
-  properties:{
-    url:{type:'string'},alt:{type:'string'},caption:{type:'string'},
-    source_name:{type:'string'},source_url:{type:'string'},reason:{type:'string'}
-  }
-};
-const schema={
-  type:'object',additionalProperties:false,
-  required:['title','dek','author','published_at','hero','lead','sections','sources','methodology','claim_sources'],
-  properties:{
-    title:{type:'string'},dek:{type:'string'},author:{type:'string'},published_at:{type:'string'},hero:{type:'string'},lead:{type:'string'},
-    sections:{type:'array',minItems:minimumSections,maxItems:maximumSections,items:{
-      type:'object',additionalProperties:false,required:['id','heading','paragraphs','image'],
-      properties:{id:{type:'string'},heading:{type:'string'},paragraphs:{type:'array',minItems:3,items:{type:'string'}},image:imageSchema}
-    }},
-    sources:{type:'array',minItems:requiredEditorial,items:{
-      type:'object',additionalProperties:false,required:['name','publication','url','purpose','type'],
-      properties:{name:{type:'string'},publication:{type:'string'},url:{type:'string'},purpose:{type:'string'},type:{type:'string',enum:['editorial','official','aggregate','media']}}
-    }},
-    methodology:{type:'string'},
-    claim_sources:{type:'array',minItems:8,items:{
-      type:'object',additionalProperties:false,required:['claim','urls'],
-      properties:{claim:{type:'string'},urls:{type:'array',minItems:1,items:{type:'string'}}}
-    }}
-  }
-};
+const outlineSchema={type:'object',additionalProperties:false,required:['thesis','reader_promise','sections'],properties:{thesis:{type:'string'},reader_promise:{type:'string'},sections:{type:'array',minItems:minSections,maxItems:maxSections,items:{type:'object',additionalProperties:false,required:['id','heading','purpose','questions','source_ids','visual_intent'],properties:{id:{type:'string'},heading:{type:'string'},purpose:{type:'string'},questions:{type:'array',minItems:2,items:{type:'string'}},source_ids:{type:'array',minItems:2,items:{type:'string'}},visual_intent:{type:'string'}}}}}};
+const outline=await call({model:process.env.OPENAI_MODEL||'gpt-5',input:`Ты редактор Игропоиска. Построй план большого обзора конкретной игры, исходя из её жанра и реальных особенностей. Не используй универсальный шаблон механически. План должен дать читателю практическое понимание того, как игра устроена, как в неё играют, что она делает хорошо и что состарилось или не работает. Нужны ${minSections}-${maxSections} непересекающихся разделов. Каждый раздел опирается на существующие source_ids и получает конкретный visual_intent.\n\nИГРА:\n${JSON.stringify(identity,null,2)}\n\nМАТРИЦА ИСТОЧНИКОВ:\n${JSON.stringify(sources,null,2)}`,text:{format:{type:'json_schema',name:'igropoisk_review_outline',strict:true,schema:outlineSchema}}});
 
-const input=`You are the Игропоиск editorial research and review synthesizer. Write in Russian.
+const articleSchema={type:'object',additionalProperties:false,required:['title','dek','author','published_at','lead','sections','verdict','used_source_ids','claim_sources'],properties:{title:{type:'string'},dek:{type:'string'},author:{type:'string'},published_at:{type:'string'},lead:{type:'string'},sections:{type:'array',minItems:minSections,maxItems:maxSections,items:{type:'object',additionalProperties:false,required:['id','heading','paragraphs','source_ids','media_id','image_caption'],properties:{id:{type:'string'},heading:{type:'string'},paragraphs:{type:'array',minItems:3,items:{type:'string'}},source_ids:{type:'array',minItems:2,items:{type:'string'}},media_id:{type:'string'},image_caption:{type:'string'}}}},verdict:{type:'object',additionalProperties:false,required:['summary','best_for','not_for'],properties:{summary:{type:'string'},best_for:{type:'array',items:{type:'string'}},not_for:{type:'array',items:{type:'string'}}}},used_source_ids:{type:'array',minItems:requiredSources,items:{type:'string'}},claim_sources:{type:'array',minItems:10,items:{type:'object',additionalProperties:false,required:['claim','source_ids'],properties:{claim:{type:'string'},source_ids:{type:'array',minItems:1,items:{type:'string'}}}}}}};
+const articleDraft=await call({model:process.env.OPENAI_MODEL||'gpt-5',input:`Напиши оригинальный подробный обзор Игропоиска на русском языке по утверждённому плану. Минимум ${minWords} содержательных слов без списка источников. Не пересказывай издания по очереди. Объясни игровой цикл, управление, устройство миссий и мира, сильные стороны, конкретные проблемы, исторический контекст и современную пригодность. Не раскрывай крупные сюжетные повороты. Используй только существующие source_ids и media_id. Изображение должно буквально показывать предмет раздела: бой — бой, вождение — автомобиль в движении, персонажи — сюжетную сцену, город — город.\n\nПЛАН:\n${JSON.stringify(outline,null,2)}\n\nИГРА:\n${JSON.stringify(identity,null,2)}\n\nИСТОЧНИКИ:\n${JSON.stringify(sources,null,2)}\n\nМЕДИА:\n${JSON.stringify(media,null,2)}\n\nОЦЕНКА ИГРОПОИСКА ИЗ ПАРСЕРА: ${ratings.calculation?.score_10??ratings.score??'не рассчитана'}`,text:{format:{type:'json_schema',name:'igropoisk_review_body',strict:true,schema:articleSchema}}});
 
-PUBLICATION GATE
-- A finished article requires at least ${requiredEditorial} unique professional game reviews from at least ${requiredPublications} independent publications.
-- The article must contain ${minimumSections}-${maximumSections} substantive thematic sections and at least ${minimumWords} Russian words.
-- Official pages, stores, Metacritic, OpenCritic and user reviews do not count toward the editorial gate.
-- Prefer the direct canonical review URLs already present in SEED REVIEW RECORDS. Search only to verify or replace broken/incorrect links.
-- Review hubs are not evidence when a direct game-specific review exists.
-- Syndicated copies, translations of the same article and multiple URLs for one publication count once.
-- Every editorial source in the final JSON must materially affect a claim or comparison. Do not pad the list.
-
-WRITING METHOD
-- Explain what the game is, its normal play rhythm, characters, world, quests, monster contracts, combat, progression, interface, presentation, technical state and who should play it.
-- Build a comparison matrix of agreements, disagreements, minority views, platform-specific issues and factual claims.
-- Organize the article by game systems and player experience, never source by source.
-- Each section must contain a thesis, concrete explanation, limitations and conclusion.
-- Select only images from VERIFIED MEDIA. The visual subject must match the section: a combat section needs visible combat, a character section may use a portrait, exploration needs travel or landscape.
-- Put a relevant screenshot inside every section and explain the choice in image.reason.
-- Map major claims to direct source URLs.
-- Put all materially used sources at the end through the sources array.
-- Do not invent quotes, facts, scores, dates or links.
-- No sentence may copy more than 12 consecutive words from a source.
-- The final score is assigned by code from the rating parser and must not be argued from one review.
-
-CONFIGURED EDITORIAL PUBLICATIONS:
-${JSON.stringify(configuredEditorial,null,2)}
-
-SEED REVIEW RECORDS:
-${JSON.stringify(reviews.reviews||[],null,2)}
-
-RATING CALCULATION:
-${JSON.stringify(rating,null,2)}
-
-VERIFIED GAME FACTS:
-${JSON.stringify({identity:game.identity,release:game.release,companies:game.companies,classification:game.classification,editorial:game.editorial,requirements:game.requirements,links:game.links},null,2)}
-
-VERIFIED MEDIA URLS:
-${JSON.stringify(verifiedMedia,null,2)}`;
-
-const article=await callOpenAI({
-  model:process.env.OPENAI_MODEL||'gpt-5',
-  tools:[{type:'web_search'}],
-  input,
-  text:{format:{type:'json_schema',name:'igropoisk_review_article',strict:true,schema}}
-});
-article.slug=slug;
-article.game_slug=slug;
-article.score=rating.calculation?.score_10;
-article.hero=allowedImages.has(canonicalUrl(article.hero))?article.hero:(game.media?.hero||game.media?.screenshots?.[0]||game.media?.cover||'');
-
-const editorialSources=(article.sources||[]).filter(source=>source.type==='editorial');
-const acceptedEditorial=[];
 const rejected=[];
-const seenUrls=new Set();
-const seenPublications=new Set();
-for(const source of editorialSources){
-  const url=canonicalUrl(source.url);
-  const publication=String(source.publication||source.name||'').trim().toLowerCase();
-  const domain=hostname(url);
+const validSourceIds=new Set(sourceMap.keys()),mediaMap=new Map(media.map(item=>[item.id,item]));
+const sections=[];
+for(const section of articleDraft.sections||[]){
+  const sourceIds=[...new Set(section.source_ids||[])].filter(id=>validSourceIds.has(id));
+  const mediaItem=mediaMap.get(section.media_id);
   const reasons=[];
-  if(!url.startsWith('http'))reasons.push('invalid URL');
-  if(!allowedDomain(domain))reasons.push('publication is outside configured source list');
-  if(seenUrls.has(url))reasons.push('duplicate URL');
-  if(seenPublications.has(publication))reasons.push('duplicate publication');
-  if(reasons.length){rejected.push({source,reasons});continue}
-  seenUrls.add(url);
-  seenPublications.add(publication);
-  acceptedEditorial.push({...source,url});
-}
-
-const validSections=[];
-for(const section of article.sections||[]){
-  const imageUrl=canonicalUrl(section.image?.url);
-  const reasons=[];
-  if(!allowedImages.has(imageUrl))reasons.push('image is outside verified media set');
-  if(countWords(section.image?.reason)<5)reasons.push('image selection reason is too vague');
-  if((section.paragraphs||[]).length<3)reasons.push('section is too short');
+  if(sourceIds.length<2)reasons.push('fewer than two verified sources');
+  if(!mediaItem||mediaItem.kind!=='screenshot')reasons.push('invalid or non-screenshot media');
+  if((section.paragraphs||[]).reduce((sum,p)=>sum+countWords(p),0)<150)reasons.push('section is too short');
   if(reasons.length){rejected.push({section:section.id,reasons});continue}
-  validSections.push(section);
+  sections.push({...section,source_ids:sourceIds,media:mediaItem});
 }
 
-let imageAudit={results:[],error:null};
-if(validSections.length){
-  const auditSchema={
-    type:'object',additionalProperties:false,required:['results'],
-    properties:{results:{type:'array',minItems:validSections.length,maxItems:validSections.length,items:{
-      type:'object',additionalProperties:false,required:['section_id','matches','confidence','visible_subject','explanation'],
-      properties:{section_id:{type:'string'},matches:{type:'boolean'},confidence:{type:'number'},visible_subject:{type:'string'},explanation:{type:'string'}}
-    }}}
-  };
-  const content=[{type:'input_text',text:'Проверь, соответствует ли каждый официальный скриншот теме и тексту раздела. Боевой раздел должен показывать реальное сражение или явную боевую ситуацию. Портрет персонажа не подходит для боя, интерфейса или исследования. Верни результаты в том же порядке.'}];
-  for(const section of validSections){
-    content.push({type:'input_text',text:`SECTION_ID: ${section.id}\nHEADING: ${section.heading}\nTEXT: ${(section.paragraphs||[]).join('\n')}\nAUTHOR_REASON: ${section.image.reason}`});
-    content.push({type:'input_image',image_url:section.image.url});
+async function auditImages(items){if(!items.length)return[];const schema={type:'object',additionalProperties:false,required:['results'],properties:{results:{type:'array',minItems:items.length,maxItems:items.length,items:{type:'object',additionalProperties:false,required:['section_id','matches','confidence','visible_subject','problem'],properties:{section_id:{type:'string'},matches:{type:'boolean'},confidence:{type:'number'},visible_subject:{type:'string'},problem:{type:'string'}}}}}};const content=[{type:'input_text',text:'Проверь каждый скриншот относительно текста раздела. Оцени только то, что реально видно. Портрет не может иллюстрировать бой, автомобильная поездка — перестрелку, а меню — исследование города. Порог соответствия строгий.'}];for(const item of items){content.push({type:'input_text',text:`SECTION_ID: ${item.id}\nHEADING: ${item.heading}\nTEXT: ${item.paragraphs.join('\n')}\nCAPTION: ${item.image_caption}`});content.push({type:'input_image',image_url:item.media.url,detail:'high'})}const result=await call({model:process.env.OPENAI_VISION_MODEL||process.env.OPENAI_MODEL||'gpt-5',input:[{role:'user',content}],text:{format:{type:'json_schema',name:'igropoisk_visual_audit',strict:true,schema}}});return result.results||[]}
+let audits=await auditImages(sections);
+const auditMap=()=>new Map(audits.map(item=>[item.section_id,item]));
+for(let attempt=0;attempt<2;attempt++){
+  const byId=auditMap();const failed=sections.filter(section=>{const audit=byId.get(section.id);return !audit||!audit.matches||Number(audit.confidence)<0.75});
+  if(!failed.length)break;
+  for(const section of failed){
+    const candidates=media.filter(item=>item.kind==='screenshot'&&!sections.some(other=>other.id!==section.id&&other.media.id===item.id)).slice(0,12);
+    if(!candidates.length)continue;
+    const schema={type:'object',additionalProperties:false,required:['selected_media_id','reason'],properties:{selected_media_id:{type:'string'},reason:{type:'string'}}};
+    const content=[{type:'input_text',text:`Выбери единственный скриншот, который буквально соответствует разделу. SECTION: ${section.heading}\nTEXT: ${section.paragraphs.join('\n')}\nКандидаты идут в порядке MEDIA_ID.`}];
+    for(const candidate of candidates){content.push({type:'input_text',text:`MEDIA_ID: ${candidate.id} — ${candidate.caption||candidate.kind}`});content.push({type:'input_image',image_url:candidate.url,detail:'high'})}
+    const choice=await call({model:process.env.OPENAI_VISION_MODEL||process.env.OPENAI_MODEL||'gpt-5',input:[{role:'user',content}],text:{format:{type:'json_schema',name:'igropoisk_image_repair',strict:true,schema}}});
+    if(mediaMap.has(choice.selected_media_id)){section.media=mediaMap.get(choice.selected_media_id);section.media_id=choice.selected_media_id;section.image_caption=choice.reason}
   }
-  try{
-    imageAudit=await callOpenAI({
-      model:process.env.OPENAI_VISION_MODEL||process.env.OPENAI_MODEL||'gpt-5',
-      input:[{role:'user',content}],
-      text:{format:{type:'json_schema',name:'igropoisk_image_relevance_audit',strict:true,schema:auditSchema}}
-    });
-  }catch(error){
-    imageAudit={results:[],error:error.message};
-    rejected.push({stage:'image-audit',reasons:[error.message]});
-  }
+  audits=await auditImages(sections);
 }
+const byId=auditMap();
+const auditedSections=sections.filter(section=>{const audit=byId.get(section.id);const ok=audit?.matches===true&&Number(audit.confidence)>=0.75;if(!ok)rejected.push({section:section.id,reasons:['semantic image audit failed'],audit:audit||null});return ok});
+const words=countWords(articleDraft.lead)+auditedSections.reduce((sum,section)=>sum+section.paragraphs.reduce((n,p)=>n+countWords(p),0),0)+countWords(articleDraft.verdict?.summary);
+const usedIds=new Set([...(articleDraft.used_source_ids||[]),...(articleDraft.claim_sources||[]).flatMap(item=>item.source_ids||[]),...auditedSections.flatMap(item=>item.source_ids||[])]);
+const usedSources=[...usedIds].filter(id=>sourceMap.has(id)).map(id=>sourceMap.get(id));
+const uniqueImages=new Set(auditedSections.map(section=>section.media.id)).size;
 
-const auditById=new Map((imageAudit.results||[]).map(item=>[item.section_id,item]));
-for(const section of validSections){
-  const audit=auditById.get(section.id);
-  if(!audit||audit.matches!==true||Number(audit.confidence)<0.7){
-    rejected.push({section:section.id,reasons:['image does not semantically match section'],audit:audit||null});
-  }
-}
-const auditedSections=validSections.filter(section=>{
-  const audit=auditById.get(section.id);
-  return audit?.matches===true&&Number(audit.confidence)>=0.7;
-});
-const claimUrls=new Set((article.claim_sources||[]).flatMap(item=>item.urls||[]).map(canonicalUrl));
-const materiallyUsed=acceptedEditorial.filter(source=>claimUrls.has(canonicalUrl(source.url))).length;
-const articleWordCount=countWords(article.lead)+auditedSections.reduce((sum,section)=>sum+(section.paragraphs||[]).reduce((subtotal,paragraph)=>subtotal+countWords(paragraph),0),0);
-const uniqueImages=new Set(auditedSections.map(section=>canonicalUrl(section.image.url))).size;
-const passed=
-  acceptedEditorial.length>=requiredEditorial&&
-  seenPublications.size>=requiredPublications&&
-  auditedSections.length>=minimumSections&&
-  auditedSections.length<=maximumSections&&
-  articleWordCount>=minimumWords&&
-  uniqueImages>=requiredScreenshots&&
-  materiallyUsed>=requiredEditorial&&
-  !imageAudit.error;
-
-article.sections=auditedSections;
-article.sources=[...acceptedEditorial,...(article.sources||[]).filter(source=>source.type!=='editorial')];
-article.publication_status=passed?'published':'blocked';
-article.reading_time_minutes=Math.max(1,Math.ceil(articleWordCount/180));
-article.source_gate={required_editorial:requiredEditorial,accepted_editorial:acceptedEditorial.length,required_publications:requiredPublications,accepted_publications:seenPublications.size,passed};
-article.source_coverage={configured_editorial:configuredEditorial.length,discovered:editorialSources.length,accepted_editorial:acceptedEditorial.length,rejected:rejected.length,materially_used:materiallyUsed};
-article.validation={
-  checked_at:checkedAt,
-  required_sections:minimumSections,
-  accepted_sections:auditedSections.length,
-  minimum_words:minimumWords,
-  accepted_words:articleWordCount,
-  required_screenshots:requiredScreenshots,
-  accepted_unique_screenshots:uniqueImages,
-  image_audit:imageAudit,
-  rejected
-};
-
-const run={
-  parser:'review-synthesis',
-  status:passed?'success':'blocked',
-  game_slug:slug,
-  checked_at:checkedAt,
-  gate:{
-    required_editorial:requiredEditorial,accepted_editorial:acceptedEditorial.length,
-    required_publications:requiredPublications,accepted_publications:seenPublications.size,
-    minimum_sections:minimumSections,accepted_sections:auditedSections.length,
-    minimum_words:minimumWords,accepted_words:articleWordCount,
-    required_screenshots:requiredScreenshots,accepted_screenshots:uniqueImages,
-    materially_used:materiallyUsed,image_audit_passed:!imageAudit.error&&auditedSections.length===validSections.length,
-    passed
-  },
-  sections:auditedSections.length,
-  sources:acceptedEditorial.length,
-  output:passed?`data/articles/${slug}.json`:`data/article-drafts/${slug}.json`,
-  note:passed?'20-source, length and semantic image checks passed.':'Research draft saved; publication is blocked until source, length and image relevance checks pass.'
-};
-
-if(passed)writeJSON(`data/articles/${slug}.json`,article);
-else writeJSON(`data/article-drafts/${slug}.json`,article);
-writeJSON('data/parser-runs/review-synthesis.json',run);
+const qualitySchema={type:'object',additionalProperties:false,required:['passed','coverage','specificity','balance','clarity','redundancy','spoiler_control','problems'],properties:{passed:{type:'boolean'},coverage:{type:'number'},specificity:{type:'number'},balance:{type:'number'},clarity:{type:'number'},redundancy:{type:'number'},spoiler_control:{type:'number'},problems:{type:'array',items:{type:'string'}}}};
+const quality=await call({model:process.env.OPENAI_AUDIT_MODEL||process.env.OPENAI_MODEL||'gpt-5',input:`Проведи строгий редакционный аудит обзора. Он должен давать рабочее представление об игре, объяснять игровой процесс и ограничения, содержать конкретные наблюдения, не повторяться, не быть рекламным и не раскрывать крупные повороты. Поставь passed=true только если каждый показатель не ниже 0.75.\n\nПЛАН:\n${JSON.stringify(outline,null,2)}\n\nТЕКСТ:\n${JSON.stringify({lead:articleDraft.lead,sections:auditedSections,verdict:articleDraft.verdict},null,2)}`,text:{format:{type:'json_schema',name:'igropoisk_editorial_quality_audit',strict:true,schema:qualitySchema}}});
+const passed=usedSources.length>=requiredSources&&auditedSections.length>=minSections&&auditedSections.length<=maxSections&&words>=minWords&&uniqueImages>=minImages&&quality.passed===true;
+const score=ratings.calculation?.score_10??ratings.score??null;
+const article={schema_version:4,slug,game_slug:slug,title:articleDraft.title,dek:articleDraft.dek,author:articleDraft.author||'Редакция Игропоиска',published_at:articleDraft.published_at||new Date().toLocaleDateString('ru-RU'),updated_at:new Date().toISOString(),score,hero:game.media?.hero||media.find(item=>item.kind==='hero')?.url||media[0]?.url||'',lead:articleDraft.lead,reading_time_minutes:Math.max(1,Math.ceil(words/180)),publication_status:passed?'published':'blocked',source_gate:{required_editorial:requiredSources,accepted_editorial:usedSources.length,passed:usedSources.length>=requiredSources},sections:auditedSections.map(section=>({id:section.id,heading:section.heading,paragraphs:section.paragraphs,image:{url:section.media.url,alt:section.image_caption,caption:section.image_caption,source_name:section.media.caption||'Проверенный скриншот',source_url:section.media.source_url||'',reason:byId.get(section.id)?.visible_subject||section.image_caption},source_ids:section.source_ids})),verdict:articleDraft.verdict,sources:usedSources.map(source=>({id:source.id,name:source.publication,publication:source.publication,url:source.resolved_url||source.url,purpose:[...(source.praise||[]),...(source.criticism||[])].slice(0,2).join(' · '),type:'editorial'})),methodology:`Многоэтапный синтез ${usedSources.length} независимых профессиональных материалов: проверка корпуса, динамический план, написание, мультимодальный подбор изображений и финальный редакционный аудит.`,claim_sources:(articleDraft.claim_sources||[]).map(item=>({claim:item.claim,urls:(item.source_ids||[]).map(id=>sourceMap.get(id)?.resolved_url||sourceMap.get(id)?.url).filter(Boolean)})),source_coverage:{available:sources.length,materially_used:usedSources.length,rejected:rejected.length},validation:{checked_at:checkedAt,words,sections:auditedSections.length,unique_images:uniqueImages,image_audit:audits,quality,rejected}};
+const output=passed?`data/articles/${slug}.json`:`data/article-drafts/${slug}.json`;
+write(output,article);
+const run={parser:'review-synthesis',status:passed?'success':'blocked',game_slug:slug,checked_at:checkedAt,execution_mode:'research-plan-write-image-audit-quality-audit',gate:{required_editorial:requiredSources,accepted_editorial:usedSources.length,minimum_sections:minSections,accepted_sections:auditedSections.length,minimum_words:minWords,accepted_words:words,required_screenshots:minImages,accepted_screenshots:uniqueImages,image_audit_passed:auditedSections.length===sections.length,quality_audit_passed:quality.passed,passed},output,note:passed?'All source, length, visual and editorial gates passed.':'Draft saved; publication blocked by one or more quality gates.'};
+write('data/parser-runs/review-synthesis.json',run);write(`data/parser-runs/review-synthesis-${slug}.json`,run);
 console.log(JSON.stringify(run,null,2));
+if(!passed)process.exitCode=2;
