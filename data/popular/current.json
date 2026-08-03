@@ -1,11 +1,96 @@
 {
   "schema_version": 1,
-  "generated_at": null,
+  "generated_at": "2026-08-03T11:46:36.271Z",
   "window_hours": 72,
   "method": {
-    "status": "waiting_for_first_run"
+    "formula": "popular_score = 100 × Σ(weight_family × normalized_signal_family) / Σ(available_weight_family)",
+    "minimum_independent_families": 2,
+    "publication_threshold": 0.45,
+    "family_weights": {
+      "news": 0.25,
+      "reddit": 0.15,
+      "youtube": 0.18,
+      "twitch": 0.22,
+      "steam": 0.12,
+      "attention": 0.08
+    }
   },
   "ranking": [],
   "discovered_unmatched": [],
-  "source_statuses": []
+  "source_statuses": [
+    {
+      "id": "ign-rss",
+      "status": "success",
+      "items": 20,
+      "matched": 3,
+      "duration_ms": 575,
+      "url": "https://www.ign.com/rss/articles/feed"
+    },
+    {
+      "id": "pcgamer-rss",
+      "status": "success",
+      "items": 50,
+      "matched": 4,
+      "duration_ms": 665,
+      "url": "https://www.pcgamer.com/rss/"
+    },
+    {
+      "id": "gamespot-rss",
+      "status": "success",
+      "items": 15,
+      "matched": 7,
+      "duration_ms": 385,
+      "url": "https://www.gamespot.com/feeds/mashup/"
+    },
+    {
+      "id": "eurogamer-rss",
+      "status": "success",
+      "items": 100,
+      "matched": 13,
+      "duration_ms": 485,
+      "url": "https://www.eurogamer.net/feed"
+    },
+    {
+      "id": "rps-rss",
+      "status": "success",
+      "items": 100,
+      "matched": 8,
+      "duration_ms": 338,
+      "url": "https://www.rockpapershotgun.com/feed"
+    },
+    {
+      "id": "polygon-rss",
+      "status": "success",
+      "items": 10,
+      "matched": 1,
+      "duration_ms": 772,
+      "url": "https://www.polygon.com/rss/index.xml"
+    },
+    {
+      "id": "twitch-streams",
+      "status": "skipped",
+      "error": "TWITCH_CLIENT_ID/TWITCH_CLIENT_SECRET are not configured",
+      "url": "https://api.twitch.tv/helix/streams?first=100"
+    },
+    {
+      "id": "youtube-popular",
+      "status": "skipped",
+      "error": "YOUTUBE_API_KEY is not configured",
+      "url": "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&videoCategoryId=20&maxResults=50"
+    },
+    {
+      "id": "reddit-gaming",
+      "status": "skipped",
+      "error": "REDDIT_ACCESS_TOKEN is not configured",
+      "url": "https://oauth.reddit.com/r/Games+gaming+pcgaming+PS5+XboxSeriesX+NintendoSwitch/new?limit=100"
+    },
+    {
+      "id": "steam-current-players",
+      "status": "success",
+      "items": 26,
+      "matched": 26,
+      "duration_ms": 496,
+      "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={steam_appid}"
+    }
+  ]
 }
