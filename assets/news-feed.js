@@ -41,9 +41,7 @@
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? '' : dateFormatters[lang].format(date);
   }
-  function sourceLabel(item) {
-    return item.primarySource || item.sources?.[0]?.name || '';
-  }
+  function sourceLabel(item) { return item.primarySource || item.sources?.[0]?.name || ''; }
   function renderCard(item, compact, lang) {
     const copy = labels(lang);
     const title = escapeHtml(localized(item, 'title', lang));
@@ -69,11 +67,36 @@
     target._igInfiniteRailCleanup?.();
     target.innerHTML = `<div class="empty">${escapeHtml(text)}</div>`;
   }
-  async function loadEvents() {
-    const response = await fetch(`data/news-events.json?v=${Date.now()}`, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`events: ${response.status}`);
+  async function loadJson(path) {
+    const response = await fetch(`${path}?v=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`${path}: ${response.status}`);
     const payload = await response.json();
     return Array.isArray(payload) ? payload : payload.items || [];
+  }
+  function legacyToEvent(item, official) {
+    const sourceName = item.publisher || item.organization || item.source || '';
+    const importance = item.superImportant || Number(item.trendScore || 0) >= 400 ? 'critical' : item.mainEligible || Number(item.sourceCount || 0) >= 2 ? 'major' : 'normal';
+    return {
+      id: item.id, type: official ? 'official' : 'ranked', importance,
+      titleRu: item.titleRu || item.title || '', titleEn: item.titleEn || item.title || '',
+      summaryRu: item.summaryRu || item.summary || '', summaryEn: item.summaryEn || item.summary || '',
+      publishedAt: item.publishedAt, game: item.game || '', image: item.image, imageSourceUrl: item.imageSourceUrl,
+      primaryUrl: item.url, primarySource: sourceName, trendScore: Number(item.trendScore || 0),
+      sources: [{ name: sourceName, organization: item.organization || item.publisher || '', kind: official ? 'official' : 'media', url: item.url, official }],
+      homeUntil: item.homeUntil || new Date(new Date(item.publishedAt).getTime() + (official ? 36 : importance === 'critical' ? 168 : importance === 'major' ? 72 : 48) * 3600e3).toISOString()
+    };
+  }
+  async function loadEvents() {
+    try {
+      const events = await loadJson('data/news-events.json');
+      if (events.length) return events;
+    } catch (error) {
+      console.warn('Event index is not ready; using source feeds.', error);
+    }
+    const results = await Promise.allSettled([loadJson('data/news.json'), loadJson('data/publisher-news.json')]);
+    const ranked = results[0].status === 'fulfilled' ? results[0].value.map(item => legacyToEvent(item, false)) : [];
+    const official = results[1].status === 'fulfilled' ? results[1].value.map(item => legacyToEvent(item, true)) : [];
+    return [...ranked, ...official];
   }
   function homeItems(items) {
     const now = Date.now();
@@ -111,7 +134,7 @@
     const source = controls.querySelector('[data-news-source]')?.value || '';
     const filtered = allItems.filter(item => {
       if (active !== 'all' && item.type !== active) return false;
-      const names = (item.sources || []).map(source => source.name).filter(Boolean);
+      const names = (item.sources || []).map(entry => entry.name).filter(Boolean);
       if (source && !names.includes(source)) return false;
       const text = `${localized(item, 'title', lang)} ${localized(item, 'summary', lang)} ${item.game || ''} ${names.join(' ')}`.toLowerCase();
       return !query || text.includes(query);
@@ -121,7 +144,7 @@
   function bindFilters(page, lang) {
     const controls = ensureFilters(page, lang);
     const sourceSelect = controls.querySelector('[data-news-source]');
-    const sources = [...new Set(allItems.flatMap(item => (item.sources || []).map(source => source.name)).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    const sources = [...new Set(allItems.flatMap(item => (item.sources || []).map(entry => entry.name)).filter(Boolean))].sort((a, b) => a.localeCompare(b));
     sourceSelect.innerHTML = `<option value="">${labels(lang).source}: ${labels(lang).all}</option>${sources.map(source => `<option value="${escapeHtml(source)}">${escapeHtml(source)}</option>`).join('')}`;
     controls.querySelectorAll('[data-news-filter]').forEach(button => button.addEventListener('click', () => {
       controls.querySelectorAll('[data-news-filter]').forEach(item => item.classList.toggle('is-active', item === button));
