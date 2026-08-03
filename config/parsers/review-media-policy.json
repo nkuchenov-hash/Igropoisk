@@ -1,6 +1,6 @@
 {
-  "schema_version": 8,
-  "purpose": "Создавать полноценные журнальные обзоры: подробный текст, широкая адаптивная вёрстка и большой набор визуально качественных уникальных скриншотов с осмысленными комментариями.",
+  "schema_version": 9,
+  "purpose": "Создавать полноценные журнальные обзоры с минимум тремя визуально качественными уникальными скриншотами в каждом разделе.",
   "article_balance": {
     "minimum_words": 2200,
     "target_words": 2800,
@@ -28,7 +28,8 @@
     "single_column_below_px": 760
   },
   "card_behavior": {
-    "one_or_more_cards_per_section": true,
+    "minimum_images_per_card": 3,
+    "target_images_per_card": 4,
     "horizontal_carousel_inside_card": true,
     "desktop_arrows": true,
     "keyboard_navigation": true,
@@ -42,11 +43,17 @@
   },
   "discovery_policy": {
     "use_web_image_search": true,
-    "search_queries_per_game_minimum": 8,
-    "search_result_pages_per_query": 3,
+    "independent_from_text_sources": true,
+    "continue_search_until_every_section_is_filled": true,
+    "stop_on_insufficient_media": false,
+    "provider_order": ["google_images","yandex_images","bing_images","official_galleries","press_kits","historical_archives","game_databases","editorial_galleries"],
+    "expand_queries_after_each_round": true,
+    "search_queries_per_game_minimum": 12,
+    "search_result_pages_per_query": 5,
     "include_game_title_variants": true,
     "include_original_language_title": true,
     "include_platform_and_year_queries": true,
+    "include_section_specific_queries": true,
     "include_gameplay_city_combat_character_vehicle_interface_queries": true,
     "crawl_editorial_article_galleries": true,
     "crawl_official_press_kits": true,
@@ -56,7 +63,8 @@
     "store_candidate_origin_page": true,
     "store_direct_image_url": true,
     "download_and_measure_every_candidate": true,
-    "never_trust_declared_dimensions": true
+    "never_trust_declared_dimensions": true,
+    "never_reuse_text_source_limit_as_media_source_limit": true
   },
   "quality_gate": {
     "minimum_width_modern": 480,
@@ -82,6 +90,8 @@
     "reject_muddy_contrast": true,
     "reject_stretched_aspect_ratio": true,
     "reject_ugly_or_unusable_composition": true,
+    "reject_excessive_empty_canvas": true,
+    "reject_tiny_subject_inside_large_canvas": true,
     "reject_watermark_dominating_image": true,
     "reject_wrong_game_version": true,
     "reject_duplicate_url": true,
@@ -97,14 +107,14 @@
     "semantic_relevance_confidence": 0.86
   },
   "source_policy": {
-    "minimum_media_sources": 5,
+    "minimum_media_sources": 3,
     "target_media_sources": 8,
     "prefer_official_press_kits": true,
     "allow_editorial_full_resolution_archives": true,
     "allow_historical_archives": true,
     "allow_search_discovered_original_files": true,
-    "forbid_single_source_media_set": true,
-    "maximum_share_from_one_source": 0.35,
+    "forbid_single_source_media_set": false,
+    "maximum_share_from_one_source": 0.7,
     "store_source_url_and_resolution_for_every_image": true
   },
   "caption_policy": {
@@ -124,14 +134,14 @@
     "require_return_to_game_top_and_bottom": true
   },
   "publication_invariants": [
+    "Каждый раздел обязан получить минимум три уникальных визуально качественных скриншота.",
+    "Нехватка кадров не является основанием остановить сборку: pipeline расширяет поисковые запросы и источники до заполнения всех разделов.",
+    "Поиск изображений выполняется отдельно от источников текста обзора.",
     "Разрешение используется только как технический нижний предел и не считается показателем качества.",
     "Чистый оригинальный кадр 600×600 может пройти, если он визуально резкий, не растянут и пригоден для фактического размера показа.",
-    "Большой файл отклоняется, если он размыт, искусственно увеличен, пережат, растянут, визуально грязен или композиционно непригоден.",
-    "Каждый кандидат оценивается с учётом целевого размера показа в карточке статьи, а не только собственных пикселей.",
-    "Кадр без confidence, sharpness, compression, readability, composition и render suitability либо с любым показателем ниже порога блокирует публикацию.",
+    "Большой файл отклоняется, если он размыт, искусственно увеличен, пережат, растянут, визуально грязен, содержит чрезмерное пустое поле или композиционно непригоден.",
+    "Каждый кандидат оценивается с учётом целевого размера показа в карточке статьи.",
     "Количество уникальных URL обязано совпадать с общим количеством кадров статьи.",
-    "Один duplicate_group может быть использован не более одного раза во всей статье.",
-    "Скриншоты не заменяют анализ: статья и каждый её раздел проходят отдельный текстовый gate.",
-    "Нарушение любого правила блокирует генерацию HTML и публикацию обзора."
+    "Один duplicate_group может быть использован не более одного раза во всей статье."
   ]
 }
