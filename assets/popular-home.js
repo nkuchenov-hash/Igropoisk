@@ -80,4 +80,9 @@ const newsScript=document.createElement('script');
 newsScript.src=`assets/news-feed.js?v=20260803-1`;
 newsScript.defer=true;
 document.head.appendChild(newsScript);
+
+const shellScript=document.createElement('script');
+shellScript.src=`assets/site-shell.js?v=20260803-1`;
+shellScript.defer=true;
+document.head.appendChild(shellScript);
 })();
