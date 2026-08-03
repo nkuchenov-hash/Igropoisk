@@ -6,11 +6,12 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="description" content="Игропоиск — каталог игр, рейтинги, обзоры, новости и удобный поиск.">
+  <meta name="description" content="Игропоиск — каталог игр, рейтинги, обзоры, новости и персональный подбор игр.">
   <title>Игропоиск</title>
-  <link rel="stylesheet" href="assets/design-system.css?v=20260803-7">
-  <link rel="stylesheet" href="assets/home-page.css?v=20260803-7">
-  <link rel="stylesheet" href="assets/popular-home.css?v=20260803-7">
+  <link rel="stylesheet" href="assets/design-system.css?v=20260803-8">
+  <link rel="stylesheet" href="assets/home-page.css?v=20260803-8">
+  <link rel="stylesheet" href="assets/popular-home.css?v=20260803-8">
+  <link rel="stylesheet" href="assets/what-to-play.css?v=20260803-1">
 </head>
 <body>
 <header class="site-header">
@@ -18,6 +19,7 @@
     <button class="site-logo" data-page="home" aria-label="Игропоиск — главное">ИГРОПОИСК</button>
     <nav class="site-nav" aria-label="Основная навигация">
       <button class="active" data-page="home">Главное</button>
+      <button data-page="what-to-play">Во что поиграть?</button>
       <button data-page="search">Поиск игр</button>
       <button data-page="news">Новости</button>
     </nav>
@@ -31,13 +33,51 @@
   <section class="hero">
     <div class="hero-slide active" style="background-image:url('https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/library_hero.jpg')"></div>
     <div class="hero-slide" style="background-image:url('https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/library_hero.jpg')"></div>
-    <div class="ig-container hero-content"><div class="hero-copy"><h1>Игры, в которые стоит играть</h1><p>Рейтинги, обзоры и проверенные страницы помогают найти игру, которая действительно понравится.</p><button class="primary" data-page="search">Найти игру →</button></div></div>
+    <div class="ig-container hero-content"><div class="hero-copy"><h1>Игры, в которые стоит играть</h1><p>Рейтинги, обзоры и проверенные страницы помогают найти игру, которая действительно понравится.</p><div class="hero-actions"><button class="primary" data-page="what-to-play">Подобрать игру →</button><button class="ig-button" data-page="search">Открыть каталог</button></div></div></div>
   </section>
   <div class="ig-container">
     <section class="section"><div class="section-head"><h2>Сейчас популярно</h2></div><div class="game-row" id="popular"></div></section>
     <section class="section"><div class="section-head"><h2>Свежие обзоры</h2></div><div class="dashboard"><article class="card feature-card" data-game="the-witcher-3-wild-hunt"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/292030/library_hero.jpg" alt="The Witcher 3"><div class="card-body"><div class="date">Обзор</div><h3>Почему «Ведьмак 3» всё ещё работает</h3><p>Квесты, герои и устройство мира, которые не устарели спустя годы.</p></div></article><div class="small-list" id="reviews"></div></div></section>
     <section class="section"><div class="section-head"><h2>Последние новости</h2></div><div class="news-grid" id="homeNews"></div></section>
   </div>
+</main>
+<main class="page" id="what-to-play">
+  <section class="wtp-shell">
+    <div class="ig-container wtp-layout">
+      <aside class="wtp-context" aria-label="Параметры подбора">
+        <div>
+          <div class="ig-kicker">Персональный подбор</div>
+          <h1>Во что поиграть?</h1>
+          <p>Опиши, чего хочется сейчас. Помощник задаст только нужные вопросы и подберёт игры из базы Игропоиска.</p>
+        </div>
+        <div class="wtp-profile" id="wtpProfile">
+          <div class="wtp-profile__empty">Пока ничего не выбрано</div>
+        </div>
+        <button class="ig-button wtp-reset" id="wtpReset" type="button">Начать заново</button>
+      </aside>
+
+      <section class="wtp-chat-card" aria-label="Диалог подбора игр">
+        <header class="wtp-chat-head">
+          <div class="wtp-assistant-mark" aria-hidden="true">ИП</div>
+          <div><strong>Помощник Игропоиска</strong><span>Подбирает только по базе сайта</span></div>
+          <span class="wtp-status">онлайн</span>
+        </header>
+        <div class="wtp-chat" id="wtpChat" aria-live="polite"></div>
+        <div class="wtp-composer">
+          <div class="wtp-suggestions" id="wtpSuggestions" aria-label="Быстрые ответы"></div>
+          <form class="wtp-form" id="wtpForm">
+            <textarea id="wtpInput" rows="1" maxlength="500" placeholder="Например: хочу короткую атмосферную игру без сложных боёв"></textarea>
+            <button class="wtp-send" type="submit" aria-label="Отправить">→</button>
+          </form>
+          <small>Можно отвечать своими словами. Подбор меняется после каждого уточнения.</small>
+        </div>
+      </section>
+    </div>
+  </section>
+  <section class="ig-container wtp-results-section" id="wtpResultsSection" hidden>
+    <div class="wtp-results-head"><div><div class="ig-kicker">Результат</div><h2>Подходящие игры</h2></div><button class="ig-button" id="wtpRefine" type="button">Уточнить подбор</button></div>
+    <div class="wtp-results" id="wtpResults"></div>
+  </section>
 </main>
 <main class="page" id="search">
   <div class="ig-container"><div class="search-layout">
@@ -46,7 +86,8 @@
   </div></div>
 </main>
 <main class="page" id="news"><div class="ig-container news-page"><h1>Новости</h1><div class="news-grid" id="newsPage"></div></div></main>
-<script src="assets/home-page.js?v=20260803-7"></script>
-<script src="assets/popular-home.js?v=20260803-7"></script>
+<script src="assets/home-page.js?v=20260803-8"></script>
+<script src="assets/popular-home.js?v=20260803-8"></script>
+<script src="assets/what-to-play.js?v=20260803-1"></script>
 </body>
 </html>
