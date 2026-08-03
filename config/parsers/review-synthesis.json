@@ -1,40 +1,81 @@
 {
-  "schema_version":1,
-  "id":"review-synthesis",
-  "title":"AI-сборщик обзора Игропоиска",
-  "status":"active",
-  "schedule":"После обновления набора обзоров или вручную",
-  "purpose":"Создавать самостоятельную редакционную статью, которая осмысленно интегрирует факты и аргументы нескольких источников, а не пересказывает их по очереди.",
-  "method":{
-    "formula":"Минимум 3 независимых редакционных источника + официальные факты + проверенный набор медиа.",
-    "normalization":"Каждый тезис хранит карту подтверждающих источников. Прямые цитаты не используются; длинные формулировки источников не копируются.",
-    "steps":[
-      "Собрать обзоры, официальные данные, системные требования и проверенные скриншоты.",
-      "Выделить повторяющиеся тезисы, расхождения и уникальные наблюдения каждого автора.",
-      "Сформировать собственную логику статьи: тезис, аргументы, ограничения и вывод.",
-      "Разбить материал на тематические разделы, а не на блоки по названиям изданий.",
-      "Для каждого раздела выбрать скриншот, который визуально подтверждает тему: мир, бой, интерфейс, персонажи или техническую сторону.",
-      "Не ставить изображения случайно: у каждого изображения есть section_id, caption, source_url и объяснение выбора.",
-      "Проверить факты, исключить неподтверждённые утверждения и сформировать итоговый verdict.",
-      "В конце статьи вывести полный список реально использованных источников с прямыми ссылками."
+  "schema_version": 2,
+  "id": "review-synthesis",
+  "title": "AI-сборщик обзора Игропоиска",
+  "status": "active",
+  "schedule": "После сбора 20 обзоров или вручную",
+  "purpose": "Создавать самостоятельную редакционную статью, которая осмысленно интегрирует широкую выборку профессиональной критики, официальные факты и проверенные изображения.",
+  "publication_gate": {
+    "editorial_reviews_required": 20,
+    "independent_publications_required": 20,
+    "official_fact_sources_required": 1,
+    "verified_screenshots_required": 4,
+    "minimum_sections": 4,
+    "maximum_sections": 7,
+    "draft_below_gate": true,
+    "publish_below_gate": false
+  },
+  "method": {
+    "formula": "20 уникальных профессиональных обзоров + официальные факты + проверенный набор медиа + готовый расчёт рейтинга.",
+    "normalization": "Официальные страницы, магазины, агрегаторы и пользовательские отзывы учитываются отдельно и не заменяют 20 независимых редакционных обзоров. Дубли, синдикация и переводы одного материала считаются одним источником.",
+    "steps": [
+      "Найти не менее 20 профессиональных обзоров игры в настроенных изданиях.",
+      "Проверить канонический URL, издание, автора, дату, платформу и версию игры.",
+      "Удалить дубли, переводы, синдицированные копии и материалы без содержательной рецензии.",
+      "Для каждого обзора выделить похвалу, критику, аргументы, оценку и уникальные наблюдения.",
+      "Построить матрицу согласий, разногласий, меньшинственных мнений и технических отличий платформ.",
+      "Сформировать собственный тезис и 4–7 тематических разделов по системам игры и опыту игрока.",
+      "Для каждого основного раздела выбрать релевантный официальный скриншот с подписью и источником.",
+      "Связать каждый существенный тезис с поддерживающими URL и проверить неподтверждённые факты.",
+      "Сформировать вердикт отдельно от механического расчёта рейтинга.",
+      "В конце статьи вывести все реально использованные источники; не добавлять ссылки для количества.",
+      "Если валидных редакционных обзоров меньше 20, сохранить только исследовательский черновик со статусом blocked."
     ],
-    "article_structure":[
+    "article_structure": [
       "Hero: заголовок, подзаголовок, автор, дата, оценка и официальный hero.",
       "Lead: основной вывод статьи без спойлеров.",
-      "3–6 тематических разделов с собственными тезисами.",
-      "Скриншот или арт внутри релевантного раздела, с подписью и источником.",
-      "Раздел ограничений и слабых сторон.",
-      "Вердикт и объяснение оценки.",
-      "Источники, использованные при написании статьи."
+      "4–7 тематических разделов с собственными тезисами, аргументами и ограничениями.",
+      "Релевантный официальный скриншот внутри каждого основного раздела, с подписью и источником.",
+      "Отдельное рассмотрение слабых сторон и значимых расхождений между изданиями.",
+      "Вердикт и объяснение редакционной оценки.",
+      "Полный список источников, реально использованных при написании статьи."
     ]
   },
-  "sources":[
-    {"id":"parsed-reviews","enabled":true,"family":"editorial","name":"Распарсенные обзоры изданий","type":"data","url":"../../../data/reviews/{slug}.json","weight":1,"trust":0.9},
-    {"id":"rating-audit","enabled":true,"family":"scores","name":"Аудит рейтинга","type":"data","url":"../../../data/ratings/{slug}.json","weight":0.8,"trust":0.95},
+  "sources": [
+    {"id":"ign","enabled":true,"family":"editorial","name":"IGN","type":"review-search","url":"https://www.ign.com/reviews/games","weight":1,"trust":0.9},
+    {"id":"gamespot","enabled":true,"family":"editorial","name":"GameSpot","type":"review-search","url":"https://www.gamespot.com/game-reviews/","weight":1,"trust":0.9},
+    {"id":"pcgamer","enabled":true,"family":"editorial","name":"PC Gamer","type":"review-search","url":"https://www.pcgamer.com/games/reviews/","weight":1,"trust":0.9},
+    {"id":"eurogamer","enabled":true,"family":"editorial","name":"Eurogamer","type":"review-search","url":"https://www.eurogamer.net/reviews","weight":1,"trust":0.9},
+    {"id":"gamesradar","enabled":true,"family":"editorial","name":"GamesRadar+","type":"review-search","url":"https://www.gamesradar.com/reviews/","weight":0.95,"trust":0.87},
+    {"id":"polygon","enabled":true,"family":"editorial","name":"Polygon","type":"review-search","url":"https://www.polygon.com/reviews","weight":0.95,"trust":0.87},
+    {"id":"rock-paper-shotgun","enabled":true,"family":"editorial","name":"Rock Paper Shotgun","type":"review-search","url":"https://www.rockpapershotgun.com/reviews","weight":0.95,"trust":0.87},
+    {"id":"vgc","enabled":true,"family":"editorial","name":"VGC","type":"review-search","url":"https://www.videogameschronicle.com/review/","weight":0.9,"trust":0.86},
+    {"id":"game-informer","enabled":true,"family":"editorial","name":"Game Informer","type":"review-search","url":"https://gameinformer.com/reviews","weight":0.9,"trust":0.88},
+    {"id":"destructoid","enabled":true,"family":"editorial","name":"Destructoid","type":"review-search","url":"https://www.destructoid.com/category/reviews/","weight":0.88,"trust":0.84},
+    {"id":"push-square","enabled":true,"family":"editorial","name":"Push Square","type":"review-search","url":"https://www.pushsquare.com/reviews","weight":0.86,"trust":0.84},
+    {"id":"nintendo-life","enabled":true,"family":"editorial","name":"Nintendo Life","type":"review-search","url":"https://www.nintendolife.com/reviews","weight":0.86,"trust":0.84},
+    {"id":"rpg-site","enabled":true,"family":"editorial","name":"RPG Site","type":"review-search","url":"https://www.rpgsite.net/reviews","weight":0.86,"trust":0.84},
+    {"id":"rpgfan","enabled":true,"family":"editorial","name":"RPGFan","type":"review-search","url":"https://www.rpgfan.com/reviews/","weight":0.84,"trust":0.82},
+    {"id":"shacknews","enabled":true,"family":"editorial","name":"Shacknews","type":"review-search","url":"https://www.shacknews.com/topic/review","weight":0.84,"trust":0.82},
+    {"id":"gamepressure","enabled":true,"family":"editorial","name":"Gamepressure","type":"review-search","url":"https://www.gamepressure.com/games/reviews.asp","weight":0.84,"trust":0.82},
+    {"id":"igromania","enabled":true,"family":"editorial","name":"Игромания","type":"review-search","url":"https://www.igromania.ru/reviews/","weight":0.9,"trust":0.86},
+    {"id":"stopgame","enabled":true,"family":"editorial","name":"StopGame","type":"review-search","url":"https://stopgame.ru/review","weight":0.9,"trust":0.86},
+    {"id":"kanobu","enabled":true,"family":"editorial","name":"Канобу","type":"review-search","url":"https://kanobu.ru/reviews/","weight":0.86,"trust":0.82},
+    {"id":"ixbt-games","enabled":true,"family":"editorial","name":"iXBT Games","type":"review-search","url":"https://ixbt.games/reviews/","weight":0.86,"trust":0.82},
+    {"id":"rating-audit","enabled":true,"family":"aggregate-context","name":"Аудит рейтинга","type":"data","url":"../../../data/ratings/{slug}.json","weight":0.8,"trust":0.95},
     {"id":"game-draft","enabled":true,"family":"facts","name":"Проверенные данные игры","type":"data","url":"../../../data/drafts/{slug}.json","weight":1,"trust":0.98},
     {"id":"official-site","enabled":true,"family":"facts","name":"Официальный сайт игры","type":"page","url":"{official_url}","weight":1,"trust":1},
-    {"id":"screenshots","enabled":true,"family":"media","name":"Официальные скриншоты","type":"media-data","url":"../../../data/drafts/{slug}.json#media.screenshots","weight":1,"trust":0.98}
+    {"id":"screenshots","enabled":true,"family":"media","name":"Официальные скриншоты","type":"media-data","url":"../../../data/drafts/{slug}.json#media.screenshots","weight":1,"trust":0.98},
+    {"id":"opencritic","enabled":true,"family":"aggregate-context","name":"OpenCritic","type":"aggregate-search","url":"https://opencritic.com/","weight":0.5,"trust":0.86},
+    {"id":"metacritic","enabled":true,"family":"aggregate-context","name":"Metacritic","type":"aggregate-search","url":"https://www.metacritic.com/game/","weight":0.5,"trust":0.86}
   ],
-  "outputs":["data/articles/{slug}.json","data/parser-runs/review-synthesis.json"],
-  "examples":[{"label":"Пример обзора игры","url":"../../../article/the-witcher-3-wild-hunt/"},{"label":"JSON статьи","url":"../../../data/articles/the-witcher-3-wild-hunt.json"}]
+  "outputs": [
+    "data/articles/{slug}.json",
+    "data/article-drafts/{slug}.json",
+    "data/parser-runs/review-synthesis.json"
+  ],
+  "examples": [
+    {"label":"Демонстрационный макет обзора","url":"../../../article/the-witcher-3-wild-hunt/"},
+    {"label":"JSON демонстрационной статьи","url":"../../../data/articles/the-witcher-3-wild-hunt.json"}
+  ]
 }
