@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "timezone": "UTC",
+  "default_interval_minutes": 60,
+  "parsers": [
+    {
+      "id": "popular",
+      "enabled": true,
+      "interval_minutes": 60,
+      "command": "node scripts/parse-popular.mjs && node scripts/filter-popular.mjs",
+      "outputs": [
+        "data/popular/current.json",
+        "data/parser-runs/popular.json"
+      ]
+    }
+  ]
+}
