@@ -2,113 +2,84 @@
 
 ## Purpose
 
-Create an original, comprehensive Игропоиск review by integrating a broad verified body of professional criticism, official game data and semantically relevant official screenshots. The output is not a collage of summaries and must not imitate the wording or structure of any one publication.
+Produce a comprehensive Игропоиск review through a repeatable research and editorial pipeline. The system must explain the actual game, not merely summarize critic sentiment, and must refuse publication when evidence, length, visual relevance or editorial quality is insufficient.
 
-## Publication gate
+## Pipeline
 
-A finished Игропоиск review requires:
+1. **Identity lock**
+   - Resolve exact title, year, developer, platform and store/app identifiers.
+   - Record excluded versions such as remakes, remasters, sequels and DLC.
+   - Reject a source when it concerns a different release unless it is explicitly classified as a port review used only for platform comparison.
 
-- at least **20 unique professional editorial reviews** from 20 independent publications;
-- a canonical direct review URL, publication, author or editorial desk, date and platform/version context for every review where available;
-- at least **8 substantive thematic sections**;
-- at least **2,000 words** of useful article text, excluding source lists and metadata;
-- official facts from the developer, publisher or store as a separate evidence class;
-- a verified media set with hero, cover and at least six distinct relevant screenshots;
-- a completed rating-parser result;
-- a separate visual relevance audit for every screenshot inserted into the article.
+2. **Source research**
+   - Discover at least 30 candidates to retain 20 independent professional sources after validation.
+   - Store direct game-specific URLs, not review hubs or aggregator snippets.
+   - Validate the live URL. For historical publications, resolve an Internet Archive snapshot of the original review when the live page is gone.
+   - Deduplicate by canonical URL, publication and syndicated origin.
+   - For games released before 2010, require at least 12 contemporary reviews; professional retrospectives and port reviews may supply the remaining historical context.
+   - Official pages, stores, Metacritic/OpenCritic, user reviews, forums and videos never count toward the 20-source editorial gate.
 
-Official pages, Metacritic/OpenCritic, user reviews and store ratings do **not** replace the 20 professional editorial reviews. They may be used only as supplementary evidence.
+3. **Evidence matrix**
+   - Extract publication, author, date, platform/version, visible score, praise, criticism and concrete evidence points.
+   - Map every source to a stable `source_id`.
+   - The writing model may cite only these IDs. Code expands them to validated URLs so the model cannot invent or substitute links.
 
-If any gate fails, the system may create a research matrix or internal draft, but publication status must remain `blocked`. It must not publish a finished Игропоиск article.
+4. **Dynamic article plan**
+   - Build 8–10 sections from the game’s actual genre, systems, pacing and source evidence.
+   - Do not reuse a Witcher-, shooter-, RPG- or open-world template when it does not fit.
+   - The plan must make the reader understand what they do during normal play, how missions or sessions are structured, what the game expects, what succeeds and what fails.
 
-## Required inputs
+5. **Writing gate**
+   - Minimum 2,000 useful words excluding metadata and source lists.
+   - Each section needs a thesis, concrete explanation, limitation or criticism, and a conclusion.
+   - Organize by systems and player experience, never publication-by-publication.
+   - Avoid large spoilers and copied wording. No sentence may reproduce more than 12 consecutive words from a source.
+   - Include a clear verdict and separate notes for readers who are and are not a good fit.
 
-- verified game identity and official facts;
-- at least 20 independent editorial reviews with publication name and direct canonical URL;
-- normalized rating calculation from `data/ratings/<slug>.json`;
-- verified screenshots and media from `data/drafts/<slug>.json`;
-- parser configuration from `config/parsers/review-synthesis.json`.
+6. **Media selection**
+   - Use only the verified media catalog from the game-data parser.
+   - Every selected image has a stable `media_id`, source URL and caption.
+   - The visible subject must literally match the section: combat shows combat, driving shows driving, a character section may use a portrait, interface discussion requires interface or preparation imagery.
 
-## Research workflow
+7. **Multimodal visual audit and repair**
+   - A separate vision call inspects each selected image beside the full section text.
+   - The model’s own caption or reason is not evidence.
+   - Reject matches below 0.75 confidence.
+   - Automatically attempt up to two replacements from unused verified screenshots and re-audit them.
+   - Publication requires at least six distinct approved screenshots.
 
-1. Validate and deduplicate the 20 editorial sources by canonical URL and publication.
-2. Reject review hubs when a direct game-specific review URL exists.
-3. Extract each source's central praise, criticism, evidence, score, reviewed platform and version.
-4. Build a private comparison matrix containing:
-   - broad agreements;
-   - substantial disagreements;
-   - minority observations;
-   - platform-specific or technical differences;
-   - claims requiring an official source.
-5. Cluster findings by the game's systems and player experience, not by publication name.
-6. Choose an original Игропоиск thesis that is not copied from a headline or verdict.
+8. **Editorial quality audit**
+   - Independently score coverage, specificity, balance, clarity, redundancy and spoiler control.
+   - Every dimension must reach 0.75.
+   - A failed source, length, visual or quality gate saves the result to `data/article-drafts/` with explicit reasons. It must not appear as a finished Игропоиск review.
 
-## Article requirements
+## Required files
 
-The article must give a reader a working understanding of the game, not merely explain why critics liked it. Cover, where applicable:
+- `data/drafts/<slug>.json` — verified game facts and media;
+- `data/ratings/<slug>.json` — transparent score calculation;
+- `data/research/<slug>-source-matrix.json` — validated source corpus;
+- `data/reviews/<slug>.json` — selected twenty professional sources;
+- `config/parsers/review-synthesis.json` — editable methodology and publication starting points.
 
-- what kind of game it is and its normal play rhythm;
-- protagonist, central relationships and narrative premise without major spoilers;
-- structure and character of the open world;
-- side quests, investigations and consequences of choices;
-- distinctive activity or profession at the center of the game;
-- combat mechanics, strengths and concrete control problems;
-- progression, equipment, economy and interface;
-- presentation, sound and writing;
-- technical state and meaningful platform differences;
-- final verdict and who should or should not play it.
+## Published output
 
-Use 8–10 thematic sections. Each section must contain a thesis, concrete explanation, meaningful criticism or limitation and a conclusion. The article must contain at least 2,000 words without padding, repeated claims or source-by-source narration.
+A published `data/articles/<slug>.json` contains:
 
-## Screenshot selection and visual audit
-
-1. Select images only from the verified media set.
-2. Store `section_id`, URL, caption, image source and an explicit reason for selection.
-3. The visible subject must match the section:
-   - combat requires visible combat, an enemy encounter or a clearly identifiable combat mechanic;
-   - exploration requires travel, landscape or environmental discovery;
-   - characters and relationships may use portraits or dialogue scenes;
-   - monster contracts require a visible monster, investigation or preparation context;
-   - interface and progression should use interface, inventory, equipment or preparation imagery when available.
-4. A portrait is forbidden as the main illustration of combat, interface or exploration unless the text is specifically analyzing that portrait scene.
-5. After writing, run a separate multimodal audit that actually inspects each selected image alongside the section text.
-6. Reject any section whose image is unrelated or whose relevance confidence is below 0.70.
-7. Publication requires at least six distinct approved screenshots.
-
-The model's own `reason` field is not proof of relevance. Only the separate image audit can pass the visual gate.
-
-## Source and claim audit
-
-- Map every major factual or evaluative claim to supporting direct source URLs.
-- Every one of the 20 editorial sources must materially support at least one claim or comparison.
-- Do not pad the source list with unused links.
-- Syndicated copies, translated reposts and multiple URLs from one publication count once.
-- Aggregators may audit score distribution but do not count toward the editorial gate.
-- User reviews may inform a separately labeled player-reception section but never count as professional criticism.
-
-## Output contract
-
-Return strict JSON with:
-
-- `slug`, `game_slug`, `title`, `dek`, `author`, `published_at`, `score`, `hero`, `lead`;
-- `publication_status`, `reading_time_minutes` and `source_gate`;
-- `sections[]` containing `id`, `heading`, at least three `paragraphs[]` and a verified `image` object;
-- `sources[]` containing `name`, `publication`, `url`, `purpose` and `type`;
-- `methodology` describing how the 20 sources were compared and integrated;
-- `claim_sources[]` mapping major claims to source URLs;
-- `source_coverage` with collected, accepted, rejected and materially used counts;
-- `validation` with word count, section count, unique screenshot count and multimodal image-audit results.
+- title, dek, lead, score and reading time;
+- 8–10 thematic sections with verified images;
+- verdict with `best_for` and `not_for`;
+- validated source list at the end;
+- claim-to-URL mappings;
+- source, word-count, image and quality audit results.
 
 ## Forbidden
 
-- publishing with fewer than 20 unique professional editorial reviews;
-- publishing fewer than 8 substantive sections or fewer than 2,000 words;
-- counting official pages, aggregators, stores or user reviews toward the 20-review gate;
-- fabricated quotes, scores, dates, URLs or publication names;
-- copying source paragraphs or more than 12 consecutive words from one source;
-- presenting one source's opinion as consensus;
-- treating syndicated or duplicated articles as independent sources;
-- generating a final rating without rating-parser output;
-- using publisher advertising language as editorial judgment;
-- inserting generated images, unrelated screenshots or a character portrait into a combat section;
-- trusting image captions without visually inspecting the actual image.
+- publishing with fewer than 20 independent professional sources;
+- counting an aggregator, store page or user review toward the source gate;
+- using several articles from one publication as several independent sources;
+- mixing an original game with its remake or sequel;
+- invented URLs, scores, quotations or dates;
+- source padding that does not materially affect the article;
+- generated images or unrelated screenshots;
+- short review summaries that do not explain how the game actually plays;
+- promotional language presented as editorial judgment.
