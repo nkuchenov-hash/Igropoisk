@@ -1,0 +1,35 @@
+name: Editorial pipeline check
+
+on:
+  push:
+    paths:
+      - 'scripts/prepare-review-research.mjs'
+      - 'scripts/synthesize-review.mjs'
+      - 'skills/review-synthesizer/**'
+      - 'config/parsers/review-synthesis.json'
+      - 'data/articles/**'
+      - 'data/reviews/**'
+      - 'data/research/**'
+      - 'data/ratings/**'
+      - 'data/drafts/**'
+      - 'article/_shared/**'
+      - 'article/**/index.html'
+      - '.github/workflows/editorial-pipeline-check.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check JavaScript syntax
+        run: |
+          node --check scripts/prepare-review-research.mjs
+          node --check scripts/synthesize-review.mjs
+          node --check assets/parser-method.js
+          node --check article/_shared/review-article.js
+      - name: Validate editorial data
+        run: node scripts/validate-editorial-pipeline.mjs
