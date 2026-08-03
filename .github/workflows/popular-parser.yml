@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: popular-games-parser
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   parse:
@@ -42,4 +42,5 @@ jobs:
           git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
           git add data/popular/current.json data/parser-runs/popular.json
           git commit -m "Update current popular games"
+          git pull --rebase
           git push
