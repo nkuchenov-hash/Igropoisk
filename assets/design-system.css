@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 :root{
   --ig-bg:#071017;
   --ig-surface:#0d171f;
@@ -21,7 +23,7 @@
   --ig-container:1480px;
   --ig-gutter:26px;
   --ig-header-height:64px;
-  --ig-font:Inter,Arial,sans-serif;
+  --ig-font:"Inter","Segoe UI",Arial,sans-serif;
   --ig-display:Georgia,"Times New Roman",serif;
   --ig-transition:160ms ease;
   color-scheme:dark;
@@ -47,7 +49,7 @@ button,input,select,textarea{font:inherit}
 button{cursor:pointer}
 img{max-width:100%}
 :focus-visible{outline:2px solid var(--ig-accent);outline-offset:3px}
-.ig-container{max-width:var(--ig-container);margin:0 auto;padding-left:var(--ig-gutter);padding-right:var(--ig-gutter)}
+.ig-container{width:100%;max-width:var(--ig-container);margin:0 auto;padding-left:var(--ig-gutter);padding-right:var(--ig-gutter)}
 .ig-header{height:var(--ig-header-height);display:flex;align-items:center;gap:30px;padding:0 28px;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--ig-line);background:var(--ig-header);backdrop-filter:blur(16px)}
 .ig-logo{font-size:24px;font-weight:950;letter-spacing:-.04em}
 .ig-nav{display:flex;gap:24px}
@@ -76,5 +78,8 @@ img{max-width:100%}
 .ig-favorite{width:100%;margin-top:12px;border:1px solid var(--ig-line-strong);background:transparent;color:var(--ig-text);border-radius:var(--ig-radius-sm);padding:11px 12px}
 .ig-favorite[aria-pressed="true"]{border-color:var(--ig-accent);background:color-mix(in srgb,var(--ig-accent) 12%,transparent)}
 .ig-empty{padding:18px;color:var(--ig-muted);border:1px dashed var(--ig-line-strong);border-radius:var(--ig-radius-sm)}
+@media(min-width:1800px){:root{--ig-container:1760px;--ig-gutter:36px}}
+@media(min-width:2400px){:root{--ig-container:2240px;--ig-gutter:48px}}
+@media(min-width:3200px){:root{--ig-container:2840px;--ig-gutter:64px}}
 @media(max-width:900px){.ig-nav{display:none}}
 @media(max-width:600px){:root{--ig-gutter:14px}.ig-header{padding-left:14px;padding-right:14px}.ig-score-grid{grid-template-columns:1fr 1fr}}
