@@ -25,7 +25,7 @@ const ensureControls=target=>{
 function makeInfiniteRail(target){
   target._igInfiniteRailCleanup?.();
   const originals=[...target.children];
-  if(originals.length!==REQUIRED_COUNT)return;
+  if(originals.length<2)return;
   const count=originals.length;
   const fragment=document.createDocumentFragment();
   for(let set=0;set<3;set+=1){
@@ -40,7 +40,7 @@ function makeInfiniteRail(target){
   target.classList.add('infinite-rail');
   target.tabIndex=0;
   target.setAttribute('role','region');
-  target.setAttribute('aria-label','Сейчас популярно, бесконечная горизонтальная лента из 20 игр');
+  target.setAttribute('aria-label',`Сейчас популярно, бесконечная горизонтальная лента из ${count} игр`);
 
   let segmentWidth=0,itemStep=0,positioned=false,recentering=false,pointerId=null,dragged=false,startX=0,startScroll=0;
   const measure=()=>{
@@ -70,11 +70,48 @@ function makeInfiniteRail(target){
 }
 window.IgropoiskInfiniteRail=makeInfiniteRail;
 
+const candidateRank=url=>{
+  const value=String(url||'').toLowerCase();
+  if(value.startsWith('assets/covers/popular/'))return 0;
+  if(value.includes('library_600x900_2x'))return 1;
+  if(value.includes('library_600x900'))return 2;
+  if(value.includes('cover')||value.includes('poster'))return 3;
+  if(value.includes('header'))return 4;
+  if(value.includes('616x353'))return 5;
+  if(value.includes('capsule'))return 6;
+  return 7;
+};
+
+const coverCandidates=item=>{
+  const appid=(item.evidence||[]).find(row=>Number(row.appid))?.appid;
+  const steam=appid?[
+    `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900_2x.jpg`,
+    `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg`,
+    `https://shared.akamai.steamstatic.com/steam/apps/${appid}/library_600x900_2x.jpg`,
+    `https://shared.akamai.steamstatic.com/steam/apps/${appid}/library_600x900.jpg`,
+    `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/header.jpg`,
+    `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/capsule_616x353.jpg`
+  ]:[];
+  return [...new Set([item.image,...(item.image_candidates||[]),...steam].filter(Boolean))].sort((a,b)=>candidateRank(a)-candidateRank(b));
+};
+
+const wireCoverFallbacks=target=>{
+  target.querySelectorAll('img[data-cover-candidates]').forEach(img=>{
+    let candidates=[];
+    try{candidates=JSON.parse(img.dataset.coverCandidates||'[]')}catch{}
+    let index=0;
+    img.addEventListener('error',()=>{
+      index+=1;
+      if(index<candidates.length)img.src=candidates[index];
+    });
+  });
+};
+
 async function load(){
   const target=document.querySelector('#popular');
   if(!target)return;
   target._igInfiniteRailCleanup?.();
-  setState(target,'Обновляем рейтинг','Загружаем полный набор из 20 игр.');
+  setState(target,'Обновляем рейтинг','Загружаем актуальный топ игр.');
   try{
     const stamp=Date.now();
     const [popularResponse,catalogResponse]=await Promise.all([
@@ -83,23 +120,25 @@ async function load(){
     ]);
     if(!popularResponse.ok)throw new Error(`Popularity HTTP ${popularResponse.status}`);
     const data=await popularResponse.json();
-    const ranking=Array.isArray(data.ranking)?data.ranking:[];
-    const policy=data.cover_policy||{};
-    const complete=ranking.length===REQUIRED_COUNT&&policy.required_count===REQUIRED_COUNT&&policy.verified_count===REQUIRED_COUNT&&policy.placeholders_allowed===false&&ranking.every(item=>item.cover_verified===true&&typeof item.image==='string'&&item.image.startsWith('assets/covers/popular/'));
-    if(!complete)throw new Error('Incomplete popular package');
+    const ranking=Array.isArray(data.ranking)?data.ranking.slice(0,REQUIRED_COUNT):[];
+    if(ranking.length<REQUIRED_COUNT)throw new Error(`Expected ${REQUIRED_COUNT} games, received ${ranking.length}`);
 
     const catalog=catalogResponse.ok?await catalogResponse.json():[];
     const existing=new Set((catalog||[]).map(item=>item.slug));
     target.innerHTML=ranking.map((item,index)=>{
       const clickable=existing.has(item.slug);
+      const candidates=coverCandidates(item);
+      const src=candidates[0]||item.image||'';
       const evidence=(item.families||[]).slice(0,3).map(value=>({steam_chart:'Steam',news:'СМИ',reddit:'Reddit',youtube:'YouTube',twitch:'Twitch'}[value]||value)).join(' · ');
-      return `<article class="card game-card popular-card"${clickable?` data-game="${esc(item.slug)}"`:''} aria-label="${esc(item.title)}"><div class="popular-rank">${index+1}</div><div class="popular-poster"><img src="${esc(item.image)}?v=${stamp}" alt="${esc(item.title)}" decoding="async"></div><div class="card-body"><h3>${esc(item.title)}</h3><div class="popular-meta"><span>Индекс ${esc(item.score)}</span><small>${esc(evidence)}</small></div>${clickable?'':'<span class="popular-pending">Страница готовится</span>'}</div></article>`;
+      return `<article class="card game-card popular-card"${clickable?` data-game="${esc(item.slug)}"`:''} aria-label="${esc(item.title)}"><div class="popular-rank">${index+1}</div><div class="popular-poster"><img src="${esc(src)}" data-cover-candidates='${esc(JSON.stringify(candidates))}' alt="${esc(item.title)}" loading="eager" decoding="async"></div><div class="card-body"><h3>${esc(item.title)}</h3><div class="popular-meta"><span>Индекс ${esc(item.score)}</span><small>${esc(evidence)}</small></div>${clickable?'':'<span class="popular-pending">Страница готовится</span>'}</div></article>`;
     }).join('');
+
+    wireCoverFallbacks(target);
     makeInfiniteRail(target);
 
     const heading=target.closest('.section')?.querySelector('.section-head');
     if(heading){let meta=heading.querySelector('.section-head__meta');if(!meta){meta=document.createElement('div');meta.className='section-head__meta';heading.appendChild(meta)}let note=meta.querySelector('.popular-updated');if(!note){note=document.createElement('span');note.className='section-note popular-updated';meta.prepend(note)}note.textContent=data.generated_at?`Обновлено ${new Date(data.generated_at).toLocaleString('ru-RU')}`:'По данным парсера'}
-  }catch(error){console.warn('Игропоиск: rejected incomplete popular feed',error);setState(target,'Рейтинг обновляется','Публикация появится только после проверки 20 игр и 20 обложек.')}
+  }catch(error){console.warn('Игропоиск: popular feed unavailable',error);setState(target,'Рейтинг временно недоступен','Не удалось загрузить опубликованный топ-20.')}
 }
 
 load();
