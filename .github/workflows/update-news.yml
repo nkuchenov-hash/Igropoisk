@@ -3,7 +3,7 @@ name: Update gaming news
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 */3 * * *'
+    - cron: '17 5 * * *'
   push:
     paths:
       - 'scripts/fetch-news.mjs'
@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Fetch article pages and download original images
+      - name: Build daily global gaming-news ranking
         run: node scripts/fetch-news.mjs
 
       - name: Commit updated feed and images
@@ -40,5 +40,5 @@ jobs:
           git config user.name "igropoisk-news-bot"
           git config user.email "actions@users.noreply.github.com"
           git add data/news.json assets/news
-          git commit -m "Update news with original article images"
+          git commit -m "Update daily global gaming news ranking"
           git push
