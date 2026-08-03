@@ -2,6 +2,11 @@ name: Popular games parser
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/parse-popular.mjs'
+      - 'config/parsers/popular.json'
+      - '.github/workflows/popular-parser.yml'
   schedule:
     - cron: '17 */3 * * *'
 
