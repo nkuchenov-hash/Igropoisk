@@ -1,31 +1,52 @@
-name: Synthesize Игропоиск review
+name: Build Игропоиск review
 
 on:
   workflow_dispatch:
     inputs:
       slug:
-        description: Game slug
+        description: Exact game slug
         required: true
 
 permissions:
   contents: write
 
+concurrency:
+  group: review-${{ inputs.slug }}
+  cancel-in-progress: false
+
 jobs:
-  synthesize:
+  build:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node scripts/synthesize-review.mjs "${{ inputs.slug }}"
+      - name: Validate JavaScript
+        run: |
+          node --check scripts/prepare-review-research.mjs
+          node --check scripts/synthesize-review.mjs
+      - name: Discover and validate professional sources
+        run: node scripts/prepare-review-research.mjs "${{ inputs.slug }}"
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
-      - name: Commit published article or blocked research draft
+          OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
+      - name: Plan, write and audit article
+        run: node scripts/synthesize-review.mjs "${{ inputs.slug }}"
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
+          OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
+          OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
+      - name: Commit research, article and audit logs
         run: |
-          git config user.name "igropoisk-editor"
-          git config user.email "actions@users.noreply.github.com"
-          git add data/articles data/article-drafts data/parser-runs/review-synthesis.json
-          git diff --cached --quiet || git commit -m "Synthesize review research for ${{ inputs.slug }}"
+          git config user.name "igropoisk-editor[bot]"
+          git config user.email "igropoisk-editor[bot]@users.noreply.github.com"
+          git add data/research data/reviews data/articles data/article-drafts data/parser-runs
+          git diff --cached --quiet || git commit -m "Build audited review for ${{ inputs.slug }}"
+          git pull --rebase
           git push
