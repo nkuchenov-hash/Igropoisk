@@ -1,0 +1,69 @@
+/* Shared site architecture and interaction states.
+ * Page modules may arrange content inside the system frame, but may not create
+ * their own outer container, header, page background, or interaction palette.
+ */
+:root{
+  --ig-hover-text:var(--ig-rating);
+  --ig-hover-border:color-mix(in srgb,var(--ig-rating) 72%,var(--ig-line-strong));
+  --ig-hover-surface:color-mix(in srgb,var(--ig-rating) 8%,var(--ig-surface));
+}
+
+.ig-hover-text:hover,
+.ig-link:hover{
+  color:var(--ig-hover-text);
+}
+
+.ig-interactive:hover{
+  color:var(--ig-hover-text);
+  border-color:var(--ig-hover-border);
+  background:var(--ig-hover-surface);
+}
+
+/* Every standalone page uses the same site canvas. */
+body.ig-site-page{
+  background:var(--ig-bg)!important;
+}
+
+/* Common application grids: system rails around one flexible content column. */
+html body .wtp-layout{
+  grid-template-columns:var(--ig-grid-left) minmax(0,1fr) var(--ig-grid-right)!important;
+  gap:var(--ig-grid-gap)!important;
+}
+html body .release-layout{
+  grid-template-columns:minmax(0,1fr) var(--ig-grid-right)!important;
+  gap:var(--ig-grid-gap)!important;
+}
+
+/* Calendar-specific blocks remain blocks; their outer page structure is shared. */
+.release-breadcrumb a:hover,
+.release-rail-head a:hover,
+.release-calendar-more:hover,
+.release-approximate-chip:hover,
+.release-list-item:hover h3,
+.release-feed-card:hover h3{
+  color:var(--ig-hover-text)!important;
+}
+.release-calendar-item:hover h3,
+.release-upcoming-item:hover h3{
+  color:var(--ig-hover-text);
+}
+.release-calendar-item:hover,
+.release-approximate-chip:hover,
+.release-feed-card:hover{
+  border-color:var(--ig-hover-border)!important;
+}
+
+@media(max-width:1320px){
+  html body .wtp-layout{
+    grid-template-columns:minmax(260px,var(--ig-grid-left)) minmax(0,1fr)!important;
+  }
+  html body .wtp-layout::after{display:none!important}
+}
+
+@media(max-width:980px){
+  html body .wtp-layout,
+  html body .release-layout{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+  .release-rail{position:static!important}
+}
