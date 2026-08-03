@@ -1,6 +1,6 @@
 {
-  "schema_version": 9,
-  "purpose": "Создавать полноценные журнальные обзоры с минимум тремя визуально качественными уникальными скриншотами в каждом разделе.",
+  "schema_version": 10,
+  "purpose": "Собирать журнальные обзоры, которые нельзя опубликовать с повторяющимися, плохими или недостающими изображениями и с нарушенной сеткой статьи.",
   "article_balance": {
     "minimum_words": 2200,
     "target_words": 2800,
@@ -10,26 +10,46 @@
     "target_sections": 10,
     "maximum_sections": 12,
     "minimum_candidate_screenshots": 80,
-    "target_candidate_screenshots": 120,
+    "target_candidate_screenshots": 140,
     "minimum_approved_screenshots": 40,
     "minimum_total_screenshots": 30,
     "minimum_unique_screenshots": 30,
-    "screenshots_per_section": {"minimum":3,"target":4,"maximum":6}
+    "screenshots_per_section": {"minimum": 3, "target": 4, "maximum": 6}
   },
   "layout_policy": {
+    "source_of_truth": "design_system_only",
     "desktop_three_column_layout": true,
     "left_sticky_table_of_contents": true,
-    "center_reading_column_min_width": 760,
-    "center_reading_column_max_width": 980,
     "right_sticky_metadata_rail": true,
-    "maximum_page_width": 1600,
-    "media_cards_match_reading_column_width": true,
+    "center_reading_column_min_width": 720,
+    "center_reading_column_max_width": 860,
+    "left_rail_min_width": 280,
+    "left_rail_max_width": 340,
+    "right_rail_min_width": 300,
+    "right_rail_max_width": 360,
+    "maximum_page_width": 1760,
+    "media_card_max_height": 560,
+    "media_card_compact": true,
     "collapse_sidebars_below_px": 1180,
     "single_column_below_px": 760
+  },
+  "hero_policy": {
+    "required": true,
+    "allowed_kinds": ["official_key_art", "official_artwork", "licensed_promotional_art"],
+    "forbidden_kinds": ["screenshot", "store_header", "thumbnail", "gameplay_frame", "logo_only", "cover_crop"],
+    "must_be_game_specific": true,
+    "must_pass_visual_audit": true,
+    "must_have_safe_text_zone": true,
+    "reject_visible_upscale": true,
+    "reject_soft_resampling": true,
+    "reject_muddy_contrast": true,
+    "reject_bad_crop": true
   },
   "card_behavior": {
     "minimum_images_per_card": 3,
     "target_images_per_card": 4,
+    "maximum_images_per_card": 6,
+    "compact_height": true,
     "horizontal_carousel_inside_card": true,
     "desktop_arrows": true,
     "keyboard_navigation": true,
@@ -38,30 +58,22 @@
     "dots": true,
     "caption_changes_with_slide": true,
     "source_changes_with_slide": true,
-    "preload_next_image": true,
-    "progressive_enhancement": true
+    "preload_next_image": true
   },
   "discovery_policy": {
-    "use_web_image_search": true,
     "independent_from_text_sources": true,
     "continue_search_until_every_section_is_filled": true,
-    "stop_on_insufficient_media": false,
-    "provider_order": ["google_images","yandex_images","bing_images","official_galleries","press_kits","historical_archives","game_databases","editorial_galleries"],
+    "provider_order": ["google_images", "yandex_images", "bing_images", "official_galleries", "press_kits", "historical_archives", "game_databases", "editorial_galleries"],
+    "minimum_search_rounds": 3,
+    "maximum_search_rounds_before_hard_error": 20,
     "expand_queries_after_each_round": true,
     "search_queries_per_game_minimum": 12,
     "search_result_pages_per_query": 5,
-    "include_game_title_variants": true,
+    "include_title_variants": true,
     "include_original_language_title": true,
     "include_platform_and_year_queries": true,
     "include_section_specific_queries": true,
-    "include_gameplay_city_combat_character_vehicle_interface_queries": true,
-    "crawl_editorial_article_galleries": true,
-    "crawl_official_press_kits": true,
-    "crawl_store_galleries": true,
-    "crawl_historical_archives": true,
     "follow_thumbnail_to_original": true,
-    "store_candidate_origin_page": true,
-    "store_direct_image_url": true,
     "download_and_measure_every_candidate": true,
     "never_trust_declared_dimensions": true,
     "never_reuse_text_source_limit_as_media_source_limit": true
@@ -76,7 +88,7 @@
     "maximum_download_bytes": 25000000,
     "minimum_aspect_ratio": 0.75,
     "maximum_aspect_ratio": 2.6,
-    "target_render_width_desktop": 1000,
+    "target_render_width_desktop": 860,
     "resolution_is_only_technical_floor": true,
     "allow_clean_small_originals": true,
     "require_known_dimensions": true,
@@ -106,42 +118,32 @@
     "minimum_render_suitability": 0.84,
     "semantic_relevance_confidence": 0.86
   },
-  "source_policy": {
-    "minimum_media_sources": 3,
-    "target_media_sources": 8,
-    "prefer_official_press_kits": true,
-    "allow_editorial_full_resolution_archives": true,
-    "allow_historical_archives": true,
-    "allow_search_discovered_original_files": true,
-    "forbid_single_source_media_set": false,
-    "maximum_share_from_one_source": 0.7,
-    "store_source_url_and_resolution_for_every_image": true
+  "deduplication_policy": {
+    "canonical_url_unique": true,
+    "content_hash_unique": true,
+    "perceptual_hash_unique": true,
+    "duplicate_group_unique": true,
+    "scene_embedding_unique": true,
+    "near_duplicate_threshold": 0.92,
+    "same_scene_different_crop_forbidden": true,
+    "reuse_across_sections_forbidden": true
   },
-  "caption_policy": {
-    "minimum_sentences": 1,
-    "must_explain_visible_detail": true,
-    "must_connect_detail_to_section_claim": true,
-    "forbid_generic_caption": true,
-    "forbid_repeating_section_text": true
-  },
-  "content_policy": {
-    "screenshots_supplement_not_replace_text": true,
-    "require_table_of_contents": true,
-    "require_lead": true,
-    "require_verdict": true,
-    "require_best_for_and_not_for": true,
-    "require_source_list": true,
-    "require_return_to_game_top_and_bottom": true
+  "publication_gate": {
+    "fail_closed": true,
+    "html_generation_requires_pass": true,
+    "deployment_requires_pass": true,
+    "missing_audit_is_failure": true,
+    "missing_hero_art_is_failure": true,
+    "missing_three_images_in_any_section_is_failure": true,
+    "any_duplicate_is_failure": true,
+    "layout_token_violation_is_failure": true
   },
   "publication_invariants": [
-    "Каждый раздел обязан получить минимум три уникальных визуально качественных скриншота.",
-    "Нехватка кадров не является основанием остановить сборку: pipeline расширяет поисковые запросы и источники до заполнения всех разделов.",
-    "Поиск изображений выполняется отдельно от источников текста обзора.",
-    "Разрешение используется только как технический нижний предел и не считается показателем качества.",
-    "Чистый оригинальный кадр 600×600 может пройти, если он визуально резкий, не растянут и пригоден для фактического размера показа.",
-    "Большой файл отклоняется, если он размыт, искусственно увеличен, пережат, растянут, визуально грязен, содержит чрезмерное пустое поле или композиционно непригоден.",
-    "Каждый кандидат оценивается с учётом целевого размера показа в карточке статьи.",
-    "Количество уникальных URL обязано совпадать с общим количеством кадров статьи.",
-    "Один duplicate_group может быть использован не более одного раза во всей статье."
+    "Каждый раздел содержит минимум три уникальных визуально качественных скриншота.",
+    "При нехватке кадров discovery автоматически расширяет запросы и источники; недостаточный набор никогда не передаётся в генератор HTML.",
+    "Ни один URL, файл, perceptual hash, duplicate_group или визуально совпадающая сцена не повторяется во всей статье.",
+    "Hero создаётся только из арта по конкретной игре и никогда не создаётся из скриншота, store header или миниатюры.",
+    "Средняя колонка, боковые панели и высота медиакарточек берутся только из токенов дизайн-системы.",
+    "Любое нарушение инварианта завершает сборку ненулевым кодом до генерации и деплоя HTML."
   ]
 }
