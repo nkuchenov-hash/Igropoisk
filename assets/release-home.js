@@ -1,6 +1,21 @@
 (()=>{
 'use strict';
 const grid=document.querySelector('#releaseHomeGrid');
+
+function ensureReleaseNav(){
+  const nav=document.querySelector('.ig-site-header__nav');
+  if(!nav||nav.querySelector('[data-ig-release-nav]'))return Boolean(nav);
+  const link=document.createElement('a');
+  link.href='/Igropoisk/calendar/';
+  link.textContent='Календарь релизов';
+  link.dataset.igReleaseNav='true';
+  const news=nav.querySelector('[data-page="news"]');
+  nav.insertBefore(link,news||null);
+  return true;
+}
+const releaseNavObserver=new MutationObserver(()=>{if(ensureReleaseNav())releaseNavObserver.disconnect()});
+releaseNavObserver.observe(document.documentElement,{subtree:true,childList:true});
+ensureReleaseNav();
 if(!grid)return;
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const initials=title=>String(title||'').split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
