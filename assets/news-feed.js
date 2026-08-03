@@ -46,7 +46,9 @@
   }
 
   function setState(target, text) {
-    if (target) target.innerHTML = `<div class="empty">${escapeHtml(text)}</div>`;
+    if (!target) return;
+    target._igInfiniteRailCleanup?.();
+    target.innerHTML = `<div class="empty">${escapeHtml(text)}</div>`;
   }
 
   async function loadNews() {
@@ -74,7 +76,10 @@
         return;
       }
 
-      if (home) home.innerHTML = items.slice(0, 5).map(item => renderCard(item, true)).join('');
+      if (home) {
+        home.innerHTML = items.slice(0, 12).map(item => renderCard(item, true)).join('');
+        window.IgropoiskInfiniteRail?.(home);
+      }
       if (page) page.innerHTML = items.map(item => renderCard(item, false)).join('');
     } catch (error) {
       console.warn('Original-image news feed is unavailable.', error);
