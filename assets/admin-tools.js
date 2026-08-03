@@ -5,9 +5,9 @@ const fetchJSON=async url=>{try{const response=await fetch(url,{cache:'no-store'
 const statusClass=status=>status==='success'?'ok':status==='error'?'error':'pending';
 const statusLabel=status=>({success:'Работает',error:'Ошибка',pending:'Ожидает запуска',partial:'Частично'}[status]||status||'Нет данных');
 
-function parserCard(type,title,description,workflow,run){
-  const details=run?`<dl class="mini-stats"><dt>Игра</dt><dd>${esc(run.game_slug||'—')}</dd><dt>Проверено</dt><dd>${esc(run.checked_at||'—')}</dd><dt>Результат</dt><dd>${esc(run.output||run.note||'—')}</dd></dl>`:'<p>Журнал ещё не создан.</p>';
-  return `<article class="ig-admin-card" id="${esc(type)}"><span class="ig-admin-status ${statusClass(run?.status)}">${esc(statusLabel(run?.status))}</span><h2>${esc(title)}</h2><p>${esc(description)}</p>${details}<a class="ig-button" href="https://github.com/nkuchenov-hash/Igropoisk/actions/workflows/${esc(workflow)}" target="_blank" rel="noopener noreferrer">Открыть запуск ↗</a></article>`;
+function parserCard(type,title,description,page,workflow,run){
+  const details=run?`<dl class="mini-stats"><dt>Игра</dt><dd>${esc(run.game_slug||'весь каталог')}</dd><dt>Проверено</dt><dd>${esc(run.checked_at||'—')}</dd><dt>Результат</dt><dd>${esc(run.output||run.note||'—')}</dd></dl>`:'<p>Журнал ещё не создан.</p>';
+  return `<article class="ig-admin-card" id="${esc(type)}"><span class="ig-admin-status ${statusClass(run?.status)}">${esc(statusLabel(run?.status))}</span><h2>${esc(title)}</h2><p>${esc(description)}</p>${details}<div class="admin-card-actions"><a class="ig-button" href="parsers/${esc(page)}/">Открыть методику →</a><a class="ig-button secondary" href="https://github.com/nkuchenov-hash/Igropoisk/actions/workflows/${esc(workflow)}" target="_blank" rel="noopener noreferrer">Запуск ↗</a></div></article>`;
 }
 
 function ratingTable(rating){
@@ -18,27 +18,22 @@ function ratingTable(rating){
 function bindAdminNavigation(){
   const links=[...document.querySelectorAll('.ig-admin-sidebar a[href^="#"]')];
   const sections=links.map(link=>document.querySelector(link.getAttribute('href'))).filter(Boolean);
-  links.forEach(link=>link.addEventListener('click',()=>{
-    links.forEach(item=>item.classList.toggle('active',item===link));
-  }));
+  links.forEach(link=>link.addEventListener('click',()=>links.forEach(item=>item.classList.toggle('active',item===link))));
   if(!('IntersectionObserver' in window)||!sections.length)return;
-  const observer=new IntersectionObserver(entries=>{
-    const visible=entries.filter(entry=>entry.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
-    if(!visible)return;
-    links.forEach(link=>link.classList.toggle('active',link.getAttribute('href')===`#${visible.target.id}`));
-  },{rootMargin:'-18% 0px -68% 0px',threshold:[0,.15,.4]});
+  const observer=new IntersectionObserver(entries=>{const visible=entries.filter(entry=>entry.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!visible)return;links.forEach(link=>link.classList.toggle('active',link.getAttribute('href')===`#${visible.target.id}`))},{rootMargin:'-18% 0px -68% 0px',threshold:[0,.15,.4]});
   sections.forEach(section=>observer.observe(section));
 }
 
 async function load(){
-  const [gameRun,newsRun,ratingRun,reviewRun,rating,runtime]=await Promise.all([
-    fetchJSON('../data/parser-runs/game-data.json'),fetchJSON('../data/parser-runs/news.json'),fetchJSON('../data/parser-runs/ratings.json'),fetchJSON('../data/parser-runs/review-synthesis.json'),fetchJSON('../data/ratings/the-witcher-3-wild-hunt.json'),fetchJSON('../config/runtime.json')
+  const [popularRun,gameRun,newsRun,ratingRun,reviewRun,rating,runtime]=await Promise.all([
+    fetchJSON('../data/parser-runs/popular.json'),fetchJSON('../data/parser-runs/game-data.json'),fetchJSON('../data/parser-runs/news.json'),fetchJSON('../data/parser-runs/ratings.json'),fetchJSON('../data/parser-runs/review-synthesis.json'),fetchJSON('../data/ratings/the-witcher-3-wild-hunt.json'),fetchJSON('../config/runtime.json')
   ]);
   document.querySelector('#parserCards').innerHTML=[
-    parserCard('game-parser','Парсер данных игры','Steam Store API: название, разработчики, жанры, платформы, медиа и системные требования.','game-data-parser.yml',gameRun),
-    parserCard('news-parser','Парсер новостей','Получает официальные новости, сохраняет исходные URL, дату, автора и журнал ошибок.','news-parser.yml',newsRun),
-    parserCard('rating-parser','Парсер рейтингов','Показывает каждую извлечённую оценку и рассчитывает итог по опубликованной формуле.','ratings-parser.yml',ratingRun),
-    parserCard('review-synthesis','AI-обзор Игропоиска','Интегрирует минимум три источника в самостоятельную статью и сохраняет карту источников.','review-synthesis.yml',reviewRun)
+    parserCard('popular-parser','Парсер «Сейчас популярно»','Считает актуальный интерес по игровым СМИ, Reddit, YouTube, Twitch и Steam.','popular','popular-parser.yml',popularRun),
+    parserCard('game-parser','Парсер данных игры','Название, разработчики, жанры, платформы, скриншоты, видео и системные требования.','game-data','game-data-parser.yml',gameRun),
+    parserCard('news-parser','Парсер новостей','Получает официальные новости и публикации СМИ, сохраняет URL, дату, автора и журнал.','news','news-parser.yml',newsRun),
+    parserCard('rating-parser','Парсер рейтингов','Показывает каждую извлечённую оценку и рассчитывает итог по опубликованной формуле.','ratings','ratings-parser.yml',ratingRun),
+    parserCard('review-synthesis','AI-обзор Игропоиска','Интегрирует несколько источников в самостоятельную статью с разделами, скриншотами и списком источников.','review-synthesis','review-synthesis.yml',reviewRun)
   ].join('');
   document.querySelector('#ratingAudit').innerHTML=ratingTable(rating);
   const connected=Boolean(runtime?.ratings_api_base);
