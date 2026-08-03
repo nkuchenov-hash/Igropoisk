@@ -1,6 +1,27 @@
 {
-  "schema_version": 10,
-  "purpose": "Собирать журнальные обзоры, которые нельзя опубликовать с повторяющимися, плохими или недостающими изображениями и с нарушенной сеткой статьи.",
+  "schema_version": 11,
+  "purpose": "Собирать и проверять контент журнальных обзоров, не управляя структурой, сеткой, ширинами или визуальными размерами страницы.",
+  "responsibility_boundary": {
+    "design_system_is_only_layout_source": true,
+    "builder_may_not_define_layout": true,
+    "builder_may_not_override_layout_tokens": true,
+    "builder_may_not_emit_inline_layout_styles": true,
+    "builder_may_not_choose_column_widths": true,
+    "builder_may_not_choose_card_dimensions": true,
+    "builder_only_populates_named_content_slots": true,
+    "content_slots": [
+      "article_hero_art",
+      "article_title",
+      "article_dek",
+      "article_metadata",
+      "article_lead",
+      "article_sections",
+      "article_section_media",
+      "article_verdict",
+      "article_sources",
+      "article_author"
+    ]
+  },
   "article_balance": {
     "minimum_words": 2200,
     "target_words": 2800,
@@ -16,26 +37,9 @@
     "minimum_unique_screenshots": 30,
     "screenshots_per_section": {"minimum": 3, "target": 4, "maximum": 6}
   },
-  "layout_policy": {
-    "source_of_truth": "design_system_only",
-    "desktop_three_column_layout": true,
-    "left_sticky_table_of_contents": true,
-    "right_sticky_metadata_rail": true,
-    "center_reading_column_min_width": 720,
-    "center_reading_column_max_width": 860,
-    "left_rail_min_width": 280,
-    "left_rail_max_width": 340,
-    "right_rail_min_width": 300,
-    "right_rail_max_width": 360,
-    "maximum_page_width": 1760,
-    "media_card_max_height": 560,
-    "media_card_compact": true,
-    "collapse_sidebars_below_px": 1180,
-    "single_column_below_px": 760
-  },
   "hero_policy": {
     "required": true,
-    "allowed_kinds": ["official_key_art", "official_artwork", "licensed_promotional_art"],
+    "allowed_kinds": ["official_key_art", "official_artwork", "promotional_art"],
     "forbidden_kinds": ["screenshot", "store_header", "thumbnail", "gameplay_frame", "logo_only", "cover_crop"],
     "must_be_game_specific": true,
     "must_pass_visual_audit": true,
@@ -45,20 +49,18 @@
     "reject_muddy_contrast": true,
     "reject_bad_crop": true
   },
-  "card_behavior": {
-    "minimum_images_per_card": 3,
-    "target_images_per_card": 4,
-    "maximum_images_per_card": 6,
-    "compact_height": true,
-    "horizontal_carousel_inside_card": true,
-    "desktop_arrows": true,
-    "keyboard_navigation": true,
-    "mobile_swipe": true,
-    "counter": true,
-    "dots": true,
-    "caption_changes_with_slide": true,
-    "source_changes_with_slide": true,
-    "preload_next_image": true
+  "media_content_policy": {
+    "minimum_images_per_section_slot": 3,
+    "target_images_per_section_slot": 4,
+    "maximum_images_per_section_slot": 6,
+    "captions_required": true,
+    "source_attribution_required": true,
+    "alt_text_required": true,
+    "builder_outputs_content_only": true,
+    "design_system_renders_carousel": true,
+    "design_system_controls_card_size": true,
+    "design_system_controls_image_fit": true,
+    "design_system_controls_responsive_behavior": true
   },
   "discovery_policy": {
     "independent_from_text_sources": true,
@@ -88,7 +90,7 @@
     "maximum_download_bytes": 25000000,
     "minimum_aspect_ratio": 0.75,
     "maximum_aspect_ratio": 2.6,
-    "target_render_width_desktop": 860,
+    "target_render_width_source": "design_system_token",
     "resolution_is_only_technical_floor": true,
     "allow_clean_small_originals": true,
     "require_known_dimensions": true,
@@ -130,20 +132,22 @@
   },
   "publication_gate": {
     "fail_closed": true,
-    "html_generation_requires_pass": true,
-    "deployment_requires_pass": true,
+    "html_generation_requires_content_pass": true,
+    "deployment_requires_content_pass": true,
     "missing_audit_is_failure": true,
     "missing_hero_art_is_failure": true,
     "missing_three_images_in_any_section_is_failure": true,
     "any_duplicate_is_failure": true,
-    "layout_token_violation_is_failure": true
+    "layout_validation_belongs_to_design_system": true,
+    "content_validator_must_not_validate_layout_dimensions": true
   },
   "publication_invariants": [
-    "Каждый раздел содержит минимум три уникальных визуально качественных скриншота.",
-    "При нехватке кадров discovery автоматически расширяет запросы и источники; недостаточный набор никогда не передаётся в генератор HTML.",
+    "Каждый раздел передаёт в соответствующий слот минимум три уникальных визуально качественных скриншота.",
+    "При нехватке кадров discovery автоматически расширяет запросы и источники; недостаточный набор не передаётся в генератор контента.",
     "Ни один URL, файл, perceptual hash, duplicate_group или визуально совпадающая сцена не повторяется во всей статье.",
-    "Hero создаётся только из арта по конкретной игре и никогда не создаётся из скриншота, store header или миниатюры.",
-    "Средняя колонка, боковые панели и высота медиакарточек берутся только из токенов дизайн-системы.",
-    "Любое нарушение инварианта завершает сборку ненулевым кодом до генерации и деплоя HTML."
+    "Hero-слот получает только арт по конкретной игре и никогда не получает скриншот, store header или миниатюру.",
+    "Сборщик не создаёт сетку, не задаёт размеры и не пишет inline layout CSS; он только заполняет именованные слоты дизайн-системы.",
+    "Структура страницы, ширины колонок, размеры карточек, адаптивность и способ отображения изображений принадлежат исключительно дизайн-системе.",
+    "Любое нарушение контентного инварианта завершает сборку ненулевым кодом до генерации и деплоя HTML."
   ]
 }
