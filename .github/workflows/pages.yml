@@ -38,6 +38,7 @@ jobs:
         run: |
           node --check scripts/inject-release-ui.mjs
           node --check assets/release-home.js
+          node --check assets/release-header-bridge.js
           node --check assets/release-calendar.js
           node --check assets/release-admin.js
           node --check assets/release-admin-card.js
