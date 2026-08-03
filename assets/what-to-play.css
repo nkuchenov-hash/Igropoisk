@@ -101,3 +101,20 @@
   .site-logo{font-size:22px;white-space:nowrap}
   .site-actions{flex:0 0 auto}
 }
+
+/* Desktop composition: wider context, compact chat, informative right rail. */
+@media(min-width:1180px){
+  .wtp-layout{grid-template-columns:minmax(360px,420px) minmax(520px,1fr) minmax(280px,330px);gap:18px}
+  .wtp-context{padding:34px;min-height:650px;background:linear-gradient(145deg,var(--ig-surface),color-mix(in srgb,var(--ig-rating) 4%,var(--ig-surface)))}
+  .wtp-context h1{font-family:var(--ig-game-display);font-size:clamp(54px,4vw,74px);line-height:.94;letter-spacing:-.06em}
+  .wtp-context p{font-size:16px;line-height:1.62}
+  .wtp-chat-card{min-height:650px;grid-template-rows:auto minmax(330px,1fr) auto}
+  .wtp-message{max-width:86%}
+  .wtp-layout::after{content:"КАК ЭТО РАБОТАЕТ\A\A 1  Расскажи о себе\A Настроение, время, жанры и платформы.\A\A 2  Ответь на вопросы\A Обычно достаточно 2–4 коротких ответов.\A\A 3  Получи варианты\A Сервис покажет подходящие игры и объяснит выбор.\A\A 4  Уточняй и исключай\A Подбор пересчитывается после каждого ответа.\A\A 5  Рекомендации улучшаются\A Чем больше ответов, тем точнее результат.";white-space:pre-line;display:block;min-height:650px;padding:30px 26px;border:1px solid var(--ig-line);border-radius:var(--ig-radius-lg);background:linear-gradient(180deg,rgba(7,16,23,.18),rgba(7,16,23,.82)),url('https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/library_hero.jpg') center bottom/100% 42% no-repeat,var(--ig-surface);color:var(--ig-muted);font-size:13px;line-height:1.48;box-shadow:var(--ig-shadow)}
+  html[data-theme="light"] .wtp-layout::after{background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.92)),url('https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/library_hero.jpg') center bottom/100% 42% no-repeat,var(--ig-surface)}
+  .wtp-layout::after::first-line{color:var(--ig-rating);font-weight:900;letter-spacing:.1em}
+}
+@media(min-width:1051px) and (max-width:1179px){
+  .wtp-layout{grid-template-columns:minmax(340px,390px) minmax(0,1fr)}
+}
+@media(max-width:1179px){.wtp-layout::after{display:none}}
