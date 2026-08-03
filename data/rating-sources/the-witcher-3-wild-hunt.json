@@ -1,0 +1,41 @@
+{
+  "game_slug": "the-witcher-3-wild-hunt",
+  "sources": [
+    {
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/the-witcher-3-review/",
+      "scale": 100,
+      "patterns": ["The Verdict\\s*([0-9]{2,3})", "\\b92\\b"]
+    },
+    {
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/the-witcher-3-wild-hunt-review/1900-6416135/",
+      "scale": 10,
+      "patterns": ["10\\s*(?:/\\s*10|Essential)", "GameSpot\\s*10"]
+    },
+    {
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2015/05/12/the-witcher-3-the-wild-hunt-review",
+      "scale": 10,
+      "patterns": ["9\\.3\\s*(?:/\\s*10)?"]
+    },
+    {
+      "publication": "Game Informer",
+      "url": "https://www.gameinformer.com/games/the_witcher_3_wild_hunt/b/playstation4/archive/2015/05/12/the-witcher-3-wild-hunt-review-game-informer.aspx",
+      "scale": 10,
+      "patterns": ["9\\.8\\s*(?:/\\s*10)?"]
+    },
+    {
+      "publication": "Metacritic",
+      "url": "https://www.metacritic.com/game/the-witcher-3-wild-hunt/",
+      "scale": 100,
+      "patterns": ["Metascore[^0-9]{0,120}92", "Based on [0-9]+ Critic Reviews[^0-9]{0,40}92"]
+    },
+    {
+      "publication": "OpenCritic",
+      "url": "https://opencritic.com/game/463/the-witcher-3-wild-hunt-",
+      "scale": 100,
+      "patterns": ["Top Critic Average[^0-9]{0,40}93", "\\b93\\b"]
+    }
+  ]
+}
