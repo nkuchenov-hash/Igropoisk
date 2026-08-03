@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "purpose": "Сделать обзор визуально насыщенным: меньше повторяющегося текста, больше качественных и осмысленно прокомментированных скриншотов.",
+  "article_balance": {
+    "minimum_words": 1300,
+    "target_words": 1600,
+    "maximum_words_without_editor_approval": 2200,
+    "minimum_sections": 7,
+    "maximum_sections": 9,
+    "minimum_total_screenshots": 18,
+    "minimum_unique_screenshots": 8,
+    "screenshots_per_section": {"minimum": 2, "target": 3, "maximum": 5}
+  },
+  "card_behavior": {
+    "one_card_per_section": true,
+    "horizontal_carousel_inside_card": true,
+    "desktop_arrows": true,
+    "mobile_swipe": true,
+    "counter": true,
+    "dots": true,
+    "caption_changes_with_slide": true,
+    "source_changes_with_slide": true
+  },
+  "quality_gate": {
+    "minimum_width_modern": 1280,
+    "minimum_width_historical": 1024,
+    "allow_640x480_only_when_unique_evidence": false,
+    "reject_thumbnail": true,
+    "reject_visible_upscale": true,
+    "reject_heavy_jpeg_artifacts": true,
+    "reject_blur": true,
+    "reject_wrong_game_version": true,
+    "reject_duplicate_scene": true,
+    "visual_quality_confidence": 0.78,
+    "semantic_relevance_confidence": 0.78
+  },
+  "source_policy": {
+    "minimum_media_sources": 3,
+    "prefer_official_press_kits": true,
+    "allow_editorial_full_resolution_archives": true,
+    "allow_historical_archives": true,
+    "forbid_single_source_media_set": true,
+    "store_source_url_and_resolution_for_every_image": true
+  },
+  "caption_policy": {
+    "minimum_sentences": 1,
+    "must_explain_visible_detail": true,
+    "must_connect_detail_to_section_claim": true,
+    "forbid_generic_caption": true
+  }
+}
