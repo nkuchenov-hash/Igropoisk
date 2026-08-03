@@ -1,5 +1,5 @@
 {
-  "schema_version": 6,
+  "schema_version": 7,
   "purpose": "Создавать полноценные журнальные обзоры: подробный текст, широкая адаптивная вёрстка и большой набор качественных уникальных скриншотов с осмысленными комментариями.",
   "article_balance": {
     "minimum_words": 2200,
@@ -61,10 +61,10 @@
   "quality_gate": {
     "minimum_width_modern": 1600,
     "minimum_height_modern": 900,
-    "minimum_width_historical": 1280,
-    "minimum_height_historical": 720,
-    "minimum_bytes_modern": 140000,
-    "minimum_bytes_historical": 80000,
+    "minimum_width_historical": 1600,
+    "minimum_height_historical": 900,
+    "minimum_bytes_modern": 180000,
+    "minimum_bytes_historical": 180000,
     "maximum_download_bytes": 25000000,
     "minimum_aspect_ratio": 1.2,
     "maximum_aspect_ratio": 2.4,
@@ -83,8 +83,11 @@
     "reject_near_duplicate_crop": true,
     "reject_stretched_aspect_ratio": true,
     "reject_reuse_across_sections": true,
-    "visual_quality_confidence": 0.84,
-    "semantic_relevance_confidence": 0.82
+    "visual_quality_confidence": 0.92,
+    "minimum_sharpness": 0.82,
+    "minimum_compression_quality": 0.78,
+    "minimum_readability": 0.72,
+    "semantic_relevance_confidence": 0.86
   },
   "source_policy": {
     "minimum_media_sources": 5,
@@ -116,6 +119,7 @@
   "publication_invariants": [
     "Каждый кандидат скачивается и измеряется заново; размеры из метаданных и ответа модели не считаются доказательством.",
     "Файл без image MIME, реальных размеров, достаточного веса и допустимого соотношения сторон отклоняется до vision-аудита.",
+    "Кадр без confidence, sharpness, compression и readability либо с любым показателем ниже порога блокирует публикацию.",
     "Количество уникальных URL обязано совпадать с общим количеством кадров статьи.",
     "Один duplicate_group может быть использован не более одного раза во всей статье.",
     "Скриншоты не заменяют анализ: статья и каждый её раздел проходят отдельный текстовый gate.",
