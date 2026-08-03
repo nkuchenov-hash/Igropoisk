@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "popular",
+  "title": "Парсер «Сейчас популярно»",
+  "status": "active",
+  "schedule": "Каждые 3 часа",
+  "purpose": "Определять игры, которые действительно получают наибольшее внимание сейчас, без ручного назначения позиций редактором.",
+  "method": {
+    "window_hours": 72,
+    "recency_half_life_hours": 24,
+    "minimum_independent_families": 2,
+    "publication_threshold": 0.45,
+    "formula": "popular_score = 100 × Σ(weight_family × normalized_signal_family) / Σ(available_weight_family)",
+    "normalization": "Внутри каждого источника применяется log1p к сырым значениям, затем percentile normalization 0–1. Один источник не может повысить итог более чем на вес своей группы.",
+    "confidence": "Доля доступных весов × коэффициент независимости. Результат с confidence ниже 0.45 не публикуется на главной.",
+    "discovery": "Twitch-категории, YouTube-заголовки, Reddit-посты и новости дают кандидатов. Кандидат сопоставляется с каталогом по названию и алиасам; неизвестные игры сохраняются отдельно для добавления в каталог.",
+    "steps": [
+      "Получить свежие материалы и показатели из всех включённых источников.",
+      "Выделить названия игр и сопоставить их с каталогом и таблицей алиасов.",
+      "Посчитать сырые сигналы: число материалов, число независимых изданий, комментарии, просмотры, live-зрители и текущие игроки.",
+      "Применить временное затухание к материалам старше нескольких часов.",
+      "Нормализовать каждый источник отдельно, чтобы крупная платформа не подавляла остальные.",
+      "Собрать итоговый score и confidence, сохранить полный расчёт и список исходных URL.",
+      "Публиковать только игры с сигналами минимум из двух независимых групп."
+    ]
+  },
+  "families": [
+    {"id":"news","label":"Игровые издания","weight":0.25,"metric":"взвешенные упоминания + число независимых изданий"},
+    {"id":"reddit","label":"Reddit","weight":0.15,"metric":"посты + комментарии + score за 72 часа"},
+    {"id":"youtube","label":"YouTube Gaming","weight":0.18,"metric":"просмотры свежих и популярных игровых видео"},
+    {"id":"twitch","label":"Twitch","weight":0.22,"metric":"live-зрители и число активных трансляций"},
+    {"id":"steam","label":"Steam","weight":0.12,"metric":"текущие игроки и изменение относительно предыдущего запуска"},
+    {"id":"attention","label":"Общий интерес","weight":0.08,"metric":"просмотры связанных страниц и дополнительные открытые сигналы"}
+  ],
+  "sources": [
+    {"id":"ign-rss","enabled":true,"family":"news","name":"IGN","type":"rss","url":"https://www.ign.com/rss/articles/feed","weight":1},
+    {"id":"pcgamer-rss","enabled":true,"family":"news","name":"PC Gamer","type":"rss","url":"https://www.pcgamer.com/rss/","weight":1},
+    {"id":"gamespot-rss","enabled":true,"family":"news","name":"GameSpot","type":"rss","url":"https://www.gamespot.com/feeds/mashup/","weight":1},
+    {"id":"eurogamer-rss","enabled":true,"family":"news","name":"Eurogamer","type":"rss","url":"https://www.eurogamer.net/feed","weight":1},
+    {"id":"rps-rss","enabled":true,"family":"news","name":"Rock Paper Shotgun","type":"rss","url":"https://www.rockpapershotgun.com/feed","weight":1},
+    {"id":"polygon-rss","enabled":true,"family":"news","name":"Polygon","type":"rss","url":"https://www.polygon.com/rss/index.xml","weight":1},
+    {"id":"twitch-streams","enabled":true,"family":"twitch","name":"Twitch Helix — активные трансляции","type":"api","url":"https://api.twitch.tv/helix/streams?first=100","secret_names":["TWITCH_CLIENT_ID","TWITCH_CLIENT_SECRET"],"weight":1},
+    {"id":"youtube-popular","enabled":true,"family":"youtube","name":"YouTube Data API — Gaming","type":"api","url":"https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&videoCategoryId=20&maxResults=50","secret_names":["YOUTUBE_API_KEY"],"weight":1},
+    {"id":"reddit-gaming","enabled":true,"family":"reddit","name":"Reddit — игровые сообщества","type":"api","url":"https://oauth.reddit.com/r/Games+gaming+pcgaming+PS5+XboxSeriesX+NintendoSwitch/new?limit=100","secret_names":["REDDIT_ACCESS_TOKEN"],"weight":1},
+    {"id":"steam-current-players","enabled":true,"family":"steam","name":"Steam — текущие игроки","type":"api-template","url":"https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={steam_appid}","weight":1}
+  ],
+  "aliases": [
+    {"slug":"grand-theft-auto-vi","title":"Grand Theft Auto VI","aliases":["Grand Theft Auto 6","GTA VI","GTA 6"]},
+    {"slug":"grand-theft-auto-v","title":"Grand Theft Auto V","aliases":["GTA V","GTA 5","GTA Online"]},
+    {"slug":"the-witcher-3-wild-hunt","title":"The Witcher 3: Wild Hunt","aliases":["The Witcher 3","Witcher 3","Ведьмак 3"]}
+  ],
+  "outputs": [
+    "data/popular/current.json",
+    "data/parser-runs/popular.json"
+  ],
+  "examples": [
+    {"label":"Блок на главной","url":"../../../index.html"},
+    {"label":"Текущий JSON рейтинга","url":"../../../data/popular/current.json"}
+  ]
+}
