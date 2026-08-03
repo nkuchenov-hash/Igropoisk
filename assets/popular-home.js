@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const setState=(target,title,text)=>{target.innerHTML=`<div class="popular-state"><strong>${esc(title)}</strong><span>${esc(text)}</span></div>`};
 const candidatesFor=item=>{
   const appid=(item.evidence||[]).find(row=>Number(row.appid))?.appid;
@@ -16,7 +16,7 @@ const wireImageFallbacks=target=>{
   target.querySelectorAll('img[data-cover-candidates]').forEach(img=>{
     let candidates=[];
     try{candidates=JSON.parse(img.dataset.coverCandidates||'[]')}catch{}
-    let index=Math.max(0,candidates.indexOf(img.currentSrc||img.src));
+    let index=Math.max(0,candidates.indexOf(img.getAttribute('src')));
     img.addEventListener('error',()=>{
       index+=1;
       if(index<candidates.length){img.src=candidates[index];return}
