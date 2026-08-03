@@ -7,7 +7,11 @@ async function load(){
   if(!target)return;
   setState(target,'Обновляем рейтинг','Получаем свежие данные из источников.');
   try{
-    const [popularResponse,catalogResponse]=await Promise.all([fetch('data/popular/current.json',{cache:'no-store'}),fetch('data/catalog-visible.json',{cache:'no-store'})]);
+    const stamp=Date.now();
+    const [popularResponse,catalogResponse]=await Promise.all([
+      fetch(`data/popular/current.json?v=${stamp}`,{cache:'no-store'}),
+      fetch(`data/catalog-visible.json?v=${stamp}`,{cache:'no-store'})
+    ]);
     if(!popularResponse.ok)throw new Error(`Popularity HTTP ${popularResponse.status}`);
     const data=await popularResponse.json();
     if(!Array.isArray(data.ranking)||!data.ranking.length){
