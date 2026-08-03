@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inject and verify the mandatory Igropoisk outer-width contract."""
+"""Inject and verify the mandatory Igropoisk layout and shared-header contracts."""
 
 from __future__ import annotations
 
@@ -10,16 +10,32 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+HEADER_STYLE_TAG = (
+    '<link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-1" '
+    'data-ig-shared-header="style">'
+)
 STYLE_TAG = (
     '<link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" '
     'data-ig-layout-contract="style">'
+)
+HEADER_SCRIPT_TAG = (
+    '<script src="/Igropoisk/assets/site-header.js?v=20260803-1" '
+    'data-ig-shared-header="script" defer></script>'
 )
 SCRIPT_TAG = (
     '<script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" '
     'data-ig-layout-contract="script" defer></script>'
 )
+HEADER_STYLE_PATTERN = re.compile(
+    r"\s*<link\b[^>]*\bdata-ig-shared-header\s*=\s*(['\"])style\1[^>]*>\s*",
+    re.IGNORECASE,
+)
 STYLE_PATTERN = re.compile(
     r"\s*<link\b[^>]*\bdata-ig-layout-contract\s*=\s*(['\"])style\1[^>]*>\s*",
+    re.IGNORECASE,
+)
+HEADER_SCRIPT_PATTERN = re.compile(
+    r"\s*<script\b[^>]*\bdata-ig-shared-header\s*=\s*(['\"])script\1[^>]*>\s*</script>\s*",
     re.IGNORECASE,
 )
 SCRIPT_PATTERN = re.compile(
@@ -68,9 +84,13 @@ def insert_before_closing(text: str, closing_tag: str, payload: str, path: Path)
 
 def canonicalize_html(path: Path, write: bool) -> bool:
     original = path.read_text(encoding="utf-8")
-    cleaned = STYLE_PATTERN.sub("\n", original)
+    cleaned = HEADER_STYLE_PATTERN.sub("\n", original)
+    cleaned = STYLE_PATTERN.sub("\n", cleaned)
+    cleaned = HEADER_SCRIPT_PATTERN.sub("\n", cleaned)
     cleaned = SCRIPT_PATTERN.sub("\n", cleaned)
+    cleaned = insert_before_closing(cleaned, "</head>", HEADER_STYLE_TAG, path)
     cleaned = insert_before_closing(cleaned, "</head>", STYLE_TAG, path)
+    cleaned = insert_before_closing(cleaned, "</body>", HEADER_SCRIPT_TAG, path)
     cleaned = insert_before_closing(cleaned, "</body>", SCRIPT_TAG, path)
     changed = cleaned != original
     if write and changed:
@@ -83,24 +103,33 @@ def verify_html(path: Path) -> list[str]:
     errors: list[str] = []
     rel = relative(path)
 
-    if text.count('data-ig-layout-contract="style"') != 1:
-        errors.append(f"{rel}: expected exactly one layout contract stylesheet")
-    if text.count('data-ig-layout-contract="script"') != 1:
-        errors.append(f"{rel}: expected exactly one layout contract script")
-    if STYLE_TAG not in text:
-        errors.append(f"{rel}: layout contract stylesheet is not canonical")
-    if SCRIPT_TAG not in text:
-        errors.append(f"{rel}: layout contract script is not canonical")
+    expected = (
+        ('data-ig-shared-header="style"', HEADER_STYLE_TAG, "shared header stylesheet"),
+        ('data-ig-layout-contract="style"', STYLE_TAG, "layout contract stylesheet"),
+        ('data-ig-shared-header="script"', HEADER_SCRIPT_TAG, "shared header script"),
+        ('data-ig-layout-contract="script"', SCRIPT_TAG, "layout contract script"),
+    )
+    for marker, canonical, label in expected:
+        if text.count(marker) != 1:
+            errors.append(f"{rel}: expected exactly one {label}")
+        if canonical not in text:
+            errors.append(f"{rel}: {label} is not canonical")
 
+    header_style_pos = text.find(HEADER_STYLE_TAG)
     style_pos = text.find(STYLE_TAG)
     head_pos = text.lower().rfind("</head>")
+    if header_style_pos >= 0 and style_pos >= 0 and header_style_pos > style_pos:
+        errors.append(f"{rel}: shared header stylesheet must load before layout contract")
     if style_pos >= 0 and head_pos >= 0:
         after_style = text[style_pos + len(STYLE_TAG) : head_pos]
         if after_style.strip():
             errors.append(f"{rel}: layout contract stylesheet must be last in <head>")
 
+    header_script_pos = text.find(HEADER_SCRIPT_TAG)
     script_pos = text.find(SCRIPT_TAG)
     body_pos = text.lower().rfind("</body>")
+    if header_script_pos >= 0 and script_pos >= 0 and header_script_pos > script_pos:
+        errors.append(f"{rel}: shared header script must load before layout contract guard")
     if script_pos >= 0 and body_pos >= 0:
         after_script = text[script_pos + len(SCRIPT_TAG) : body_pos]
         if after_script.strip():
@@ -181,12 +210,22 @@ def verify_reserved_tokens() -> list[str]:
     return errors
 
 
+def verify_assets() -> list[str]:
+    required = (
+        Path("assets/site-header.css"),
+        Path("assets/site-header.js"),
+        Path("assets/layout-contract.css"),
+        Path("assets/layout-contract.js"),
+    )
+    return [f"Missing mandatory asset: {path}" for path in required if not (ROOT / path).is_file()]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--write",
         action="store_true",
-        help="inject or move canonical contract assets before validating",
+        help="inject or move canonical shared assets before validating",
     )
     parser.add_argument(
         "--check",
@@ -206,25 +245,26 @@ def main() -> int:
                 changed += int(canonicalize_html(path, write=True))
 
         errors: list[str] = []
+        errors.extend(verify_assets())
         for path in html_files:
             errors.extend(verify_html(path))
         errors.extend(verify_exceptions(html_files))
         errors.extend(verify_reserved_tokens())
 
         if errors:
-            print("Layout contract failed:", file=sys.stderr)
+            print("Layout/header contract failed:", file=sys.stderr)
             for error in errors:
                 print(f"- {error}", file=sys.stderr)
             return 1
 
         mode = "updated and verified" if args.write else "verified"
         print(
-            f"Layout contract {mode}: {len(html_files)} HTML files; "
+            f"Layout/header contract {mode}: {len(html_files)} HTML files; "
             f"{changed} files changed; 0 unapproved exceptions."
         )
         return 0
     except ContractError as exc:
-        print(f"Layout contract failed: {exc}", file=sys.stderr)
+        print(f"Layout/header contract failed: {exc}", file=sys.stderr)
         return 1
 
 
