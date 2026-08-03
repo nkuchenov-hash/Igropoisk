@@ -17,11 +17,12 @@ const decode = value => String(value || '')
   .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/<[^>]+>/g, ' ')
   .replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'")
   .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
+const uniqueUrls = values => [...new Set((values || []).filter(value => /^https?:\/\//i.test(String(value || ''))))];
 
 const fetchText = async url => {
   const response = await fetch(url, {
     signal: AbortSignal.timeout(timeout),
-    headers: {'user-agent':'Mozilla/5.0 IgropoiskPopularityParser/4.0','accept-language':'en-US,en;q=0.9'}
+    headers: {'user-agent':'Mozilla/5.0 IgropoiskPopularityParser/5.0','accept-language':'en-US,en;q=0.9'}
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return response.text();
@@ -39,8 +40,8 @@ if (fs.existsSync(draftDir)) {
   }
 }
 
-const media = {
-  'grand-theft-auto-vi': 'https://www.igrandtheftauto.com/content/images/grand-theft-auto-vi-official-cover-art-hi-res.jpg'
+const manualMedia = {
+  'grand-theft-auto-vi': ['https://www.igrandtheftauto.com/content/images/grand-theft-auto-vi-official-cover-art-hi-res.jpg']
 };
 const games = [];
 const bySlug = new Map();
@@ -53,14 +54,28 @@ function registerGame(input) {
   const slug = input.slug || slugify(title);
   let game = bySlug.get(slug) || byTitle.get(canonical(title));
   if (!game) {
-    game = {slug,title,year:input.year || null,steam_appid:Number(input.steam_appid || input.appid) || null,image:input.image || media[slug] || '',aliases:[],in_catalog:Boolean(input.in_catalog)};
-    games.push(game); bySlug.set(slug, game);
+    game = {
+      slug,
+      title,
+      year: input.year || null,
+      steam_appid: Number(input.steam_appid || input.appid) || null,
+      image_candidates: uniqueUrls([...(input.image_candidates || []), input.image, ...(manualMedia[slug] || [])]),
+      aliases: [],
+      in_catalog: Boolean(input.in_catalog)
+    };
+    games.push(game);
+    bySlug.set(slug, game);
   }
   game.year ||= input.year || null;
   game.steam_appid ||= Number(input.steam_appid || input.appid) || null;
-  game.image ||= input.image || media[slug] || '';
+  game.image_candidates = uniqueUrls([
+    ...(game.image_candidates || []),
+    ...(input.image_candidates || []),
+    input.image,
+    ...(manualMedia[slug] || [])
+  ]);
   game.in_catalog ||= Boolean(input.in_catalog);
-  game.aliases = [...new Set([...(game.aliases || []),title,...(input.aliases || [])].filter(Boolean).map(canonical))].sort((a,b)=>b.length-a.length);
+  game.aliases = [...new Set([...(game.aliases || []), title, ...(input.aliases || [])].filter(Boolean).map(canonical))].sort((a,b)=>b.length-a.length);
   byTitle.set(canonical(title), game);
   if (game.steam_appid) byAppid.set(game.steam_appid, game);
   return game;
@@ -68,7 +83,14 @@ function registerGame(input) {
 
 for (const item of catalog) {
   const draft = drafts.get(item.slug);
-  registerGame({...item,title:item.title || item.name,steam_appid:draft?.identity?.steam_appid || item.steam_appid,image:draft?.media?.cover || draft?.media?.hero || item.cover || item.hero || media[item.slug] || '',aliases:[item.slug.replace(/-/g,' ')],in_catalog:true});
+  registerGame({
+    ...item,
+    title: item.title || item.name,
+    steam_appid: draft?.identity?.steam_appid || item.steam_appid,
+    image_candidates: [draft?.media?.cover, item.cover, draft?.media?.hero, item.hero],
+    aliases: [item.slug.replace(/-/g,' ')],
+    in_catalog: true
+  });
 }
 for (const alias of config.aliases || []) registerGame(alias);
 
@@ -136,8 +158,7 @@ async function collectNews() {
         if (!game) continue;
         const row = ensure(game);
         const publisher = publisherFrom(item, source.name);
-        const duplicate = row.evidence.some(e => e.url && e.url === item.url);
-        if (duplicate) continue;
+        if (row.evidence.some(e => e.url && e.url === item.url)) continue;
         row.news += freshness;
         row.publishers.add(publisher);
         row.evidence.push({source:publisher,title:item.title,url:item.url,observed_at:item.date,family:'news',value:Number(freshness.toFixed(3))});
@@ -154,21 +175,47 @@ function parseSteam(html) {
   const rows = html.match(/<a[^>]+data-ds-appid="[^"]+"[\s\S]*?<\/a>/gi) || [];
   return rows.map(row=>({
     appid:Number((row.match(/data-ds-appid="([^"]+)"/i)?.[1] || '').split(',')[0]),
-    title:decode(row.match(/<span class="title">([\s\S]*?)<\/span>/i)?.[1] || '')
+    title:decode(row.match(/<span class="title">([\s\S]*?)<\/span>/i)?.[1] || ''),
+    image:row.match(/<img[^>]+src="([^"]+)"/i)?.[1] || ''
   })).filter(item=>item.appid && item.title);
 }
+
+async function enrichSteamMedia(game, searchImage='') {
+  if (!game?.steam_appid) return;
+  const appid = game.steam_appid;
+  const base = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}`;
+  let apiImages = [];
+  try {
+    const payload = await fetchJSON(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=us&l=english`);
+    const details = payload?.[appid]?.data;
+    apiImages = [details?.capsule_imagev5, details?.header_image, details?.capsule_image];
+  } catch {}
+  game.image_candidates = uniqueUrls([
+    ...(game.image_candidates || []),
+    `${base}/library_600x900.jpg`,
+    `${base}/library_600x900_2x.jpg`,
+    ...apiImages,
+    searchImage,
+    `${base}/header.jpg`,
+    `${base}/capsule_616x353.jpg`
+  ]);
+}
+
 async function collectSteam() {
   const url='https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=topsellers&infinite=1&cc=us&l=english&json=1';
   const started=Date.now();
   try {
     const items=parseSteam((await fetchJSON(url)).results_html || '');
-    items.slice(0,50).forEach((item,index)=>{
-      const game=byAppid.get(item.appid) || registerGame({title:item.title,appid:item.appid,image:`https://cdn.cloudflare.steamstatic.com/steam/apps/${item.appid}/library_600x900.jpg`});
-      game.image=`https://cdn.cloudflare.steamstatic.com/steam/apps/${item.appid}/library_600x900.jpg`;
+    const selected = items.slice(0,50);
+    selected.forEach((item,index)=>{
+      const game=byAppid.get(item.appid) || registerGame({title:item.title,appid:item.appid,image:item.image});
       const row=ensure(game);
       row.chart=Math.max(row.chart,1-index/50);
       row.evidence.push({source:'Steam Top Sellers',title:item.title,url:`https://store.steampowered.com/app/${item.appid}/`,position:index+1,appid:item.appid,family:'steam_chart',value:Number((1-index/50).toFixed(3))});
     });
+    for (let i=0;i<selected.length;i+=8) {
+      await Promise.all(selected.slice(i,i+8).map(item=>enrichSteamMedia(byAppid.get(item.appid) || byTitle.get(canonical(item.title)), item.image)));
+    }
     statuses.push({id:'steam-top-sellers',status:'success',items:items.length,matched:items.length,duration_ms:Date.now()-started,url});
   } catch(error) {statuses.push({id:'steam-top-sellers',status:'error',error:error.message,duration_ms:Date.now()-started,url});}
 }
@@ -186,13 +233,20 @@ const ranking=rows.map(row=>{
   const discussed=row.publishers.size>=2 && row.news>.08;
   if (!chart && !discussed) return null;
   const score=100*(.55*news+.35*chart+.10*breadth);
-  return {slug:row.game.slug,title:row.game.title,year:row.game.year || null,image:row.game.image || '',score:Number(score.toFixed(1)),confidence:Number(Math.min(1,.5+.07*Math.min(row.publishers.size,5)+(chart? .12:0)).toFixed(2)),delta:null,families:[...(row.news?['news']:[]),...(chart?['steam_chart']:[])],signals:{news:row.news,steam_chart:chart},news_sources:row.publishers.size,in_catalog:row.game.in_catalog,evidence:row.evidence.sort((a,b)=>b.value-a.value).slice(0,16)};
+  const candidates=uniqueUrls(row.game.image_candidates || []);
+  return {
+    slug:row.game.slug,title:row.game.title,year:row.game.year || null,
+    image:candidates[0] || '',image_candidates:candidates,
+    score:Number(score.toFixed(1)),confidence:Number(Math.min(1,.5+.07*Math.min(row.publishers.size,5)+(chart?.12:0)).toFixed(2)),delta:null,
+    families:[...(row.news?['news']:[]),...(chart?['steam_chart']:[])],signals:{news:row.news,steam_chart:chart},news_sources:row.publishers.size,
+    in_catalog:row.game.in_catalog,evidence:row.evidence.sort((a,b)=>b.value-a.value).slice(0,16)
+  };
 }).filter(Boolean).sort((a,b)=>b.score-a.score || b.confidence-a.confidence).slice(0,30);
 
-const output={schema_version:4,generated_at:checkedAt,window_hours:96,method:{formula:'55% global discussion + 35% Steam demand + 10% independent publisher breadth',family_weights:{news:.55,steam_chart:.35,breadth:.10}},ranking,discovered_unmatched:[],source_statuses:statuses};
+const output={schema_version:5,generated_at:checkedAt,window_hours:96,method:{formula:'55% global discussion + 35% Steam demand + 10% independent publisher breadth',family_weights:{news:.55,steam_chart:.35,breadth:.10},image_fallback:'catalog cover → Steam vertical poster → Steam app details → Steam search image → header/capsule'},ranking,discovered_unmatched:[],source_statuses:statuses};
 fs.mkdirSync(path.join(root,'data','popular'),{recursive:true});
 fs.mkdirSync(path.join(root,'data','parser-runs'),{recursive:true});
 fs.writeFileSync(path.join(root,'data','popular','current.json'),`${JSON.stringify(output,null,2)}\n`);
-const run={parser:'popular',status:ranking.length>=10?'success':'warning',checked_at:checkedAt,duration_ms:Date.now()-started,ranked_count:ranking.length,sources_success:statuses.filter(item=>item.status==='success').length,sources_total:statuses.length,output:'data/popular/current.json',note:'Рейтинг рассчитан по глобальной обсуждаемости, независимым изданиям и спросу Steam.',source_statuses:statuses};
+const run={parser:'popular',status:ranking.length>=10?'success':'warning',checked_at:checkedAt,duration_ms:Date.now()-started,ranked_count:ranking.length,sources_success:statuses.filter(item=>item.status==='success').length,sources_total:statuses.length,output:'data/popular/current.json',note:'Рейтинг рассчитан; для каждой игры сохранён каскад источников обложки.',source_statuses:statuses};
 fs.writeFileSync(path.join(root,'data','parser-runs','popular.json'),`${JSON.stringify(run,null,2)}\n`);
 console.log(JSON.stringify(run,null,2));
