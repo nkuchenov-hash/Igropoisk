@@ -6,6 +6,7 @@ on:
     paths:
       - 'scripts/parse-popular.mjs'
       - 'scripts/filter-popular.mjs'
+      - 'scripts/resolve-popular-covers.mjs'
       - 'config/parsers/popular.json'
       - '.github/workflows/popular-parser.yml'
 
@@ -24,25 +25,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Calculate current popularity
+      - name: Calculate current popularity and require covers
         env:
           TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
           TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           REDDIT_ACCESS_TOKEN: ${{ secrets.REDDIT_ACCESS_TOKEN }}
         run: |
-          echo "Verifying configured popularity sources"
           node scripts/parse-popular.mjs
           node scripts/filter-popular.mjs
-      - name: Commit fresh ranking and audit log
+          node scripts/resolve-popular-covers.mjs
+      - name: Commit complete ranking
         run: |
-          if git diff --quiet -- data/popular/current.json data/parser-runs/popular.json; then
+          if git diff --quiet -- data/popular/current.json data/popular/covers.json data/parser-runs/popular.json assets/covers/popular; then
             echo "No popularity changes"
             exit 0
           fi
           git config user.name "igropoisk-parser[bot]"
           git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
-          git add data/popular/current.json data/parser-runs/popular.json
-          git commit -m "Update current popular games"
+          git add data/popular/current.json data/popular/covers.json data/parser-runs/popular.json assets/covers/popular
+          git commit -m "Update complete popular games ranking"
           git pull --rebase
           git push
