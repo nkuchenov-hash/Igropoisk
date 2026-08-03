@@ -1,0 +1,27 @@
+name: Design system check
+
+on:
+  push:
+    paths:
+      - 'assets/**'
+      - 'game/**'
+      - 'index.html'
+      - 'scripts/validate-design-system.mjs'
+      - '.github/workflows/design-system-check.yml'
+  pull_request:
+    paths:
+      - 'assets/**'
+      - 'game/**'
+      - 'index.html'
+      - 'scripts/validate-design-system.mjs'
+      - '.github/workflows/design-system-check.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node scripts/validate-design-system.mjs
