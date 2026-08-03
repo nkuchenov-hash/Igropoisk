@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - 'scripts/parse-popular.mjs'
+      - 'scripts/filter-popular.mjs'
       - 'config/parsers/popular.json'
       - '.github/workflows/popular-parser.yml'
   schedule:
@@ -31,7 +32,9 @@ jobs:
           TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           REDDIT_ACCESS_TOKEN: ${{ secrets.REDDIT_ACCESS_TOKEN }}
-        run: node scripts/parse-popular.mjs
+        run: |
+          node scripts/parse-popular.mjs
+          node scripts/filter-popular.mjs
       - name: Commit fresh ranking and audit log
         run: |
           if git diff --quiet -- data/popular/current.json data/parser-runs/popular.json; then
