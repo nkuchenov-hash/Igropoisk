@@ -12,6 +12,7 @@
         <button data-page="home">Главное</button>
         <button data-page="what-to-play">Во что поиграть?</button>
         <button data-page="search">Поиск игр</button>
+        <a class="release-nav-link" href="${ROOT}calendar/" data-ig-release-nav>Календарь релизов</a>
         <button data-page="news">Новости</button>
       </nav>
       <div class="site-actions">
@@ -33,6 +34,7 @@
     const hash=decodeURIComponent(location.hash.slice(1));
     if(pages.includes(hash))return hash;
     const path=location.pathname.toLowerCase();
+    if(path.includes('/calendar/'))return 'calendar';
     if(path.includes('/news/'))return 'news';
     if(path.includes('/game/')||path.includes('/article/'))return 'search';
     return 'home';
@@ -63,6 +65,11 @@
     document.querySelectorAll('.site-header[data-ig-shared-header="generated"] .site-nav [data-page]').forEach(button=>{
       button.classList.toggle('active',button.dataset.page===active);
     });
+    document.querySelectorAll('.site-header[data-ig-shared-header="generated"] [data-ig-release-nav]').forEach(link=>{
+      const selected=active==='calendar';
+      link.classList.toggle('active',selected);
+      if(selected)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+    });
   }
 
   function normalize(header){
@@ -88,6 +95,7 @@
   function ensureHeader(){
     if(!document.body||document.querySelector(HEADER_SELECTOR))return;
     const header=document.createElement('header');
+    header.className='ig-site-header';
     document.body.prepend(header);
     normalize(header);
   }
