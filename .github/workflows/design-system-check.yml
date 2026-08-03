@@ -5,15 +5,19 @@ on:
     paths:
       - 'assets/**'
       - 'game/**'
+      - 'data/**'
+      - 'docs/**'
       - 'index.html'
-      - 'scripts/validate-design-system.mjs'
+      - 'scripts/**'
       - '.github/workflows/design-system-check.yml'
   pull_request:
     paths:
       - 'assets/**'
       - 'game/**'
+      - 'data/**'
+      - 'docs/**'
       - 'index.html'
-      - 'scripts/validate-design-system.mjs'
+      - 'scripts/**'
       - '.github/workflows/design-system-check.yml'
 
 jobs:
