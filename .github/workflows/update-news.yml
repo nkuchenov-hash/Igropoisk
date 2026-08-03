@@ -1,4 +1,4 @@
-name: Update gaming news
+name: Update global gaming news ranking
 
 on:
   workflow_dispatch:
@@ -8,13 +8,14 @@ on:
     paths:
       - 'scripts/fetch-news.mjs'
       - 'scripts/postprocess-industry-news.mjs'
+      - 'scripts/build-news-events.mjs'
       - '.github/workflows/update-news.yml'
 
 permissions:
   contents: write
 
 concurrency:
-  group: update-gaming-news
+  group: update-global-gaming-news
   cancel-in-progress: true
 
 jobs:
@@ -37,15 +38,18 @@ jobs:
       - name: Localize and classify ranked news
         run: node scripts/postprocess-industry-news.mjs
 
-      - name: Commit ranked feed
+      - name: Rebuild unified news events
+        run: node scripts/build-news-events.mjs
+
+      - name: Commit ranked feed images and events
         run: |
-          if git diff --quiet -- data/news.json assets/news; then
-            echo "Ranked news feed is current"
+          if git diff --quiet -- data/news.json data/news-events.json assets/news; then
+            echo "Ranked feed and event index are current"
             exit 0
           fi
           git config user.name "igropoisk-news-bot"
           git config user.email "actions@users.noreply.github.com"
           git pull --rebase origin main
-          git add data/news.json assets/news
-          git commit -m "Update daily global gaming news ranking"
+          git add data/news.json data/news-events.json assets/news
+          git commit -m "Update daily global gaming news events"
           git push
