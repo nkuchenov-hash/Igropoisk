@@ -184,7 +184,7 @@ async function collectRSS() {
       for (const item of items) {
         const freshness = recency(item.date);
         if (!freshness) continue;
-        const game = resolve(`${item.title} ${item.description}`);
+        const game = resolve(item.title);
         if (!game) continue;
         const value = freshness * Number(source.weight || 1);
         add(game.slug, 'news', value, {
