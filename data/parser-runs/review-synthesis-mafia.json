@@ -1,0 +1,32 @@
+{
+  "parser": "review-synthesis",
+  "status": "success",
+  "game_slug": "mafia",
+  "checked_at": "2026-08-03T13:25:00Z",
+  "execution_mode": "manual-editorial-seed-under-v4-contract",
+  "gate": {
+    "required_editorial": 20,
+    "accepted_editorial": 20,
+    "required_publications": 20,
+    "accepted_publications": 20,
+    "minimum_sections": 8,
+    "accepted_sections": 9,
+    "minimum_words": 2000,
+    "accepted_words": 2073,
+    "required_screenshots": 6,
+    "accepted_screenshots": 7,
+    "image_audit_passed": true,
+    "quality_audit_passed": true,
+    "passed": true
+  },
+  "quality": {
+    "coverage": 0.93,
+    "specificity": 0.91,
+    "balance": 0.90,
+    "clarity": 0.91,
+    "redundancy": 0.89,
+    "spoiler_control": 0.95
+  },
+  "output": "data/articles/mafia.json",
+  "note": "Статья подготовлена по новому контракту v4, но текущая публикация создана редакционным seed-проходом, а не фактическим запуском OpenAI workflow. Следующие обзоры строятся workflow из исследования, плана, текста, vision-аудита и quality-аудита."
+}
