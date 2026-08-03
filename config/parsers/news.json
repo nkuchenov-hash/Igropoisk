@@ -1,0 +1,33 @@
+{
+  "schema_version":1,
+  "id":"news",
+  "title":"Парсер новостей",
+  "status":"active",
+  "schedule":"Каждые 2 часа",
+  "purpose":"Находить новости по игре, отделять официальные сообщения от публикаций СМИ, удалять дубли и сохранять исходные ссылки.",
+  "method":{
+    "formula":"news_priority = source_trust × recency_decay × relevance × novelty",
+    "normalization":"Одна и та же новость, перепечатанная несколькими сайтами, объединяется в кластер. Главным URL выбирается первичный или официальный источник.",
+    "steps":[
+      "Получить официальные feeds, Steam News и RSS включённых изданий.",
+      "Отфильтровать материалы по названию игры, алиасам, студии и связанным персонажам.",
+      "Определить первичный источник и сгруппировать перепечатки.",
+      "Извлечь заголовок, краткое содержание, дату, автора, изображение и исходный URL.",
+      "Проверить, что изображение относится к материалу и не является рекламным баннером.",
+      "Рассчитать relevance и novelty; старые или повторные материалы не поднимать наверх.",
+      "Сохранить результат и подробный журнал по каждому источнику."
+    ]
+  },
+  "sources":[
+    {"id":"steam-news","enabled":true,"family":"official","name":"Steam News API","type":"api-template","url":"https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid={steam_appid}&count=30&maxlength=1000&format=json","weight":1,"trust":0.98},
+    {"id":"official-news","enabled":true,"family":"official","name":"Официальный сайт / блог","type":"feed-or-page","url":"{official_news_url}","weight":1,"trust":1},
+    {"id":"ign-rss","enabled":true,"family":"press","name":"IGN","type":"rss","url":"https://www.ign.com/rss/articles/feed","weight":0.75,"trust":0.82},
+    {"id":"pcgamer-rss","enabled":true,"family":"press","name":"PC Gamer","type":"rss","url":"https://www.pcgamer.com/rss/","weight":0.75,"trust":0.84},
+    {"id":"gamespot-rss","enabled":true,"family":"press","name":"GameSpot","type":"rss","url":"https://www.gamespot.com/feeds/mashup/","weight":0.75,"trust":0.84},
+    {"id":"eurogamer-rss","enabled":true,"family":"press","name":"Eurogamer","type":"rss","url":"https://www.eurogamer.net/feed","weight":0.75,"trust":0.84},
+    {"id":"rps-rss","enabled":true,"family":"press","name":"Rock Paper Shotgun","type":"rss","url":"https://www.rockpapershotgun.com/feed","weight":0.7,"trust":0.82},
+    {"id":"polygon-rss","enabled":true,"family":"press","name":"Polygon","type":"rss","url":"https://www.polygon.com/rss/index.xml","weight":0.7,"trust":0.82}
+  ],
+  "outputs":["data/news/{slug}.json","data/parser-runs/news.json"],
+  "examples":[{"label":"Пример новостного блока","url":"../../../examples/news-block/"},{"label":"Пример новостной статьи","url":"../../../news/the-witcher-3-update-example/"}]
+}
