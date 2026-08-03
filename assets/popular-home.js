@@ -1,11 +1,31 @@
 (()=>{
 'use strict';
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
 const setState=(target,title,text)=>{target.innerHTML=`<div class="popular-state"><strong>${esc(title)}</strong><span>${esc(text)}</span></div>`};
-const posterFor=item=>{
+const candidatesFor=item=>{
   const appid=(item.evidence||[]).find(row=>Number(row.appid))?.appid;
-  if(appid)return `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg`;
-  return item.image||'';
+  const steam=appid?[
+    `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg`,
+    `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900_2x.jpg`,
+    `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/header.jpg`,
+    `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/capsule_616x353.jpg`
+  ]:[];
+  return [...new Set([...(item.image_candidates||[]),item.image,...steam].filter(Boolean))];
+};
+const wireImageFallbacks=target=>{
+  target.querySelectorAll('img[data-cover-candidates]').forEach(img=>{
+    let candidates=[];
+    try{candidates=JSON.parse(img.dataset.coverCandidates||'[]')}catch{}
+    let index=Math.max(0,candidates.indexOf(img.currentSrc||img.src));
+    img.addEventListener('error',()=>{
+      index+=1;
+      if(index<candidates.length){img.src=candidates[index];return}
+      const placeholder=document.createElement('div');
+      placeholder.className='popular-placeholder';
+      placeholder.textContent=(img.alt||'?').slice(0,2).toUpperCase();
+      img.closest('.popular-poster')?.replaceWith(placeholder);
+    });
+  });
 };
 async function load(){
   const target=document.querySelector('#popular');
@@ -27,11 +47,14 @@ async function load(){
     const existing=new Set((catalog||[]).map(item=>item.slug));
     target.innerHTML=data.ranking.slice(0,14).map((item,index)=>{
       const clickable=existing.has(item.slug);
-      const image=posterFor(item);
-      const media=image?`<div class="popular-poster"><img src="${esc(image)}" alt="${esc(item.title)}" loading="lazy" decoding="async"></div>`:`<div class="popular-placeholder">${esc(String(item.title||'?').slice(0,2).toUpperCase())}</div>`;
+      const candidates=candidatesFor(item);
+      const media=candidates.length
+        ?`<div class="popular-poster"><img src="${esc(candidates[0])}" data-cover-candidates='${esc(JSON.stringify(candidates))}' alt="${esc(item.title)}" loading="lazy" decoding="async"></div>`
+        :`<div class="popular-placeholder">${esc(String(item.title||'?').slice(0,2).toUpperCase())}</div>`;
       const evidence=(item.families||[]).slice(0,3).map(value=>({steam_chart:'Steam',news:'СМИ',reddit:'Reddit',youtube:'YouTube',twitch:'Twitch',steam:'Steam',attention:'интерес'}[value]||value)).join(' · ');
       return `<article class="card game-card popular-card"${clickable?` data-game="${esc(item.slug)}"`:''} aria-label="${esc(item.title)}"><div class="popular-rank">${index+1}</div>${media}<div class="card-body"><h3>${esc(item.title)}</h3><div class="popular-meta"><span>Индекс ${esc(item.score)}</span><small>${esc(evidence)}</small></div>${clickable?'':'<span class="popular-pending">Страница готовится</span>'}</div></article>`;
     }).join('');
+    wireImageFallbacks(target);
     const heading=target.closest('.section')?.querySelector('.section-head');
     if(heading&&!heading.querySelector('.popular-updated')){const note=document.createElement('span');note.className='section-note popular-updated';note.textContent=data.generated_at?`Обновлено ${new Date(data.generated_at).toLocaleString('ru-RU')}`:'По данным парсера';heading.appendChild(note)}
   }catch(error){
