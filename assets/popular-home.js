@@ -1,14 +1,19 @@
 (()=>{
 'use strict';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const setState=(target,title,text)=>{target.innerHTML=`<div class="popular-state"><strong>${esc(title)}</strong><span>${esc(text)}</span></div>`};
 async function load(){
   const target=document.querySelector('#popular');
   if(!target)return;
+  setState(target,'Обновляем рейтинг','Получаем свежие данные из источников.');
   try{
     const [popularResponse,catalogResponse]=await Promise.all([fetch('data/popular/current.json',{cache:'no-store'}),fetch('data/catalog-visible.json',{cache:'no-store'})]);
     if(!popularResponse.ok)throw new Error(`Popularity HTTP ${popularResponse.status}`);
     const data=await popularResponse.json();
-    if(!Array.isArray(data.ranking)||!data.ranking.length)return;
+    if(!Array.isArray(data.ranking)||!data.ranking.length){
+      setState(target,'Рейтинг временно недоступен','Парсер отработал, но пока не набрал достаточно независимых сигналов для публикации.');
+      return;
+    }
     const catalog=catalogResponse.ok?await catalogResponse.json():[];
     const existing=new Set((catalog||[]).map(item=>item.slug));
     target.innerHTML=data.ranking.slice(0,14).map((item,index)=>{
@@ -19,7 +24,10 @@ async function load(){
     }).join('');
     const heading=document.querySelector('#popular')?.closest('.section')?.querySelector('.section-head');
     if(heading&&!heading.querySelector('.popular-updated')){const note=document.createElement('span');note.className='section-note popular-updated';note.textContent=data.generated_at?`Обновлено ${new Date(data.generated_at).toLocaleString('ru-RU')}`:'По данным парсера';heading.appendChild(note)}
-  }catch(error){console.warn('Игропоиск: popular parser output unavailable',error)}
+  }catch(error){
+    console.warn('Игропоиск: popular parser output unavailable',error);
+    setState(target,'Рейтинг временно недоступен','Не удалось получить свежие данные парсера.');
+  }
 }
 load();
 })();
