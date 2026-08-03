@@ -5,20 +5,30 @@ on:
     paths:
       - 'assets/**'
       - 'game/**'
+      - 'article/**'
+      - 'admin/**'
+      - 'backend/**'
+      - 'config/**'
       - 'data/**'
       - 'docs/**'
+      - 'skills/**'
       - 'index.html'
       - 'scripts/**'
-      - '.github/workflows/design-system-check.yml'
+      - '.github/workflows/**'
   pull_request:
     paths:
       - 'assets/**'
       - 'game/**'
+      - 'article/**'
+      - 'admin/**'
+      - 'backend/**'
+      - 'config/**'
       - 'data/**'
       - 'docs/**'
+      - 'skills/**'
       - 'index.html'
       - 'scripts/**'
-      - '.github/workflows/design-system-check.yml'
+      - '.github/workflows/**'
 
 jobs:
   validate:
@@ -28,4 +38,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node scripts/validate-design-system.mjs
+      - run: node scripts/validate-game-v3.mjs
