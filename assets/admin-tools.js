@@ -11,8 +11,23 @@ function parserCard(type,title,description,workflow,run){
 }
 
 function ratingTable(rating){
-  const rows=(rating?.sources||[]).map(source=>`<tr><td>${esc(source.publication)}</td><td>${esc(source.score)} / ${esc(source.scale)}</td><td>${esc(source.normalized)}</td><td><span class="ig-admin-status ${statusClass(source.status)}">${esc(source.status)}</span></td><td><a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">Источник ↗</a></td></tr>`).join('');
-  return `<section class="ig-admin-card" style="margin-top:18px"><div class="ig-admin-status ok">Формула прозрачна</div><h2>Расчёт рейтинга Игропоиска</h2><p>${esc(rating?.method?.description||'Нет данных')}</p><table class="ig-data-table"><thead><tr><th>Издание</th><th>Исходная оценка</th><th>Нормализовано</th><th>Статус</th><th>URL</th></tr></thead><tbody>${rows}</tbody></table><div class="ig-panel" style="margin-top:16px"><b>Медиана:</b> ${esc(rating?.calculation?.median_100??'—')} / 100　→　<strong class="ig-rating">${esc(rating?.calculation?.score_10??'—')} / 10</strong><br><code>${esc(JSON.stringify(rating?.calculation?.sorted||[]))}</code></div></section>`;
+  const rows=(rating?.sources||[]).map(source=>`<tr><td data-label="Издание">${esc(source.publication)}</td><td data-label="Исходная оценка">${esc(source.score)} / ${esc(source.scale)}</td><td data-label="Нормализовано">${esc(source.normalized)}</td><td data-label="Статус"><span class="ig-admin-status ${statusClass(source.status)}">${esc(source.status)}</span></td><td data-label="URL"><a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">Источник ↗</a></td></tr>`).join('');
+  return `<section class="ig-admin-card" style="margin-top:18px"><div class="ig-admin-status ok">Формула прозрачна</div><h2>Расчёт рейтинга Игропоиска</h2><p>${esc(rating?.method?.description||'Нет данных')}</p><div class="ig-table-scroll"><table class="ig-data-table"><thead><tr><th>Издание</th><th>Исходная оценка</th><th>Нормализовано</th><th>Статус</th><th>URL</th></tr></thead><tbody>${rows}</tbody></table></div><div class="ig-panel" style="margin-top:16px"><b>Медиана:</b> ${esc(rating?.calculation?.median_100??'—')} / 100　→　<strong class="ig-rating">${esc(rating?.calculation?.score_10??'—')} / 10</strong><br><code>${esc(JSON.stringify(rating?.calculation?.sorted||[]))}</code></div></section>`;
+}
+
+function bindAdminNavigation(){
+  const links=[...document.querySelectorAll('.ig-admin-sidebar a[href^="#"]')];
+  const sections=links.map(link=>document.querySelector(link.getAttribute('href'))).filter(Boolean);
+  links.forEach(link=>link.addEventListener('click',()=>{
+    links.forEach(item=>item.classList.toggle('active',item===link));
+  }));
+  if(!('IntersectionObserver' in window)||!sections.length)return;
+  const observer=new IntersectionObserver(entries=>{
+    const visible=entries.filter(entry=>entry.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+    if(!visible)return;
+    links.forEach(link=>link.classList.toggle('active',link.getAttribute('href')===`#${visible.target.id}`));
+  },{rootMargin:'-18% 0px -68% 0px',threshold:[0,.15,.4]});
+  sections.forEach(section=>observer.observe(section));
 }
 
 async function load(){
@@ -29,6 +44,7 @@ async function load(){
   const connected=Boolean(runtime?.ratings_api_base);
   document.querySelector('#backendStatus').innerHTML=`<span class="ig-admin-status ${connected?'ok':'pending'}">${connected?'Подключён':'Не развёрнут'}</span><h2>База пользовательских оценок</h2><p>${connected?'Клиент отправляет оценки в постоянную D1-базу.':'Код Worker и D1-схема готовы, но адрес API ещё не указан в config/runtime.json.'}</p><dl class="mini-stats"><dt>Уникальность</dt><dd>HMAC от IP + slug игры</dd><dt>История</dt><dd>Каждая отправка сохраняется в rating_events</dd><dt>Raw IP</dt><dd>Не хранится</dd></dl><a class="ig-button" href="../backend/ratings-worker/README.md">Инструкция подключения</a>`;
   const theme=document.querySelector('#theme');const root=document.documentElement;root.dataset.theme=localStorage.getItem('igroTheme')||root.dataset.theme||'dark';const paint=()=>theme.textContent=root.dataset.theme==='light'?'☾':'☀';paint();theme.onclick=()=>{root.dataset.theme=root.dataset.theme==='light'?'dark':'light';localStorage.setItem('igroTheme',root.dataset.theme);paint()};
+  bindAdminNavigation();
 }
 load();
 })();
