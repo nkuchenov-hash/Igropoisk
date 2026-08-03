@@ -29,6 +29,20 @@ jobs:
           sed -i 's#</head>#<link rel="stylesheet" href="fix.css"></head>#' index.html
           sed -i 's#</body>#<script src="fix.js"></script></body>#' index.html
 
+      - name: Install release calendar files
+        run: |
+          node --check scripts/install-release-calendar.mjs
+          node scripts/install-release-calendar.mjs
+
+      - name: Validate and inject release calendar UI
+        run: |
+          node --check scripts/inject-release-ui.mjs
+          node --check assets/release-home.js
+          node --check assets/release-calendar.js
+          node --check assets/release-admin.js
+          node --check assets/release-admin-card.js
+          node scripts/inject-release-ui.mjs
+
       - name: Enforce shared layout contract
         run: |
           python3 -m py_compile scripts/enforce_layout_contract.py
