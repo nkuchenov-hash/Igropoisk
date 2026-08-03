@@ -1,6 +1,6 @@
 {
   "parser": "review-synthesis",
-  "status": "success",
+  "status": "published-editorial-seed",
   "game_slug": "mafia",
   "checked_at": "2026-08-03T13:25:00Z",
   "execution_mode": "manual-editorial-seed-under-v4-contract",
@@ -15,9 +15,11 @@
     "accepted_words": 2073,
     "required_screenshots": 6,
     "accepted_screenshots": 7,
-    "image_audit_passed": true,
-    "quality_audit_passed": true,
-    "passed": true
+    "editorial_image_audit_passed": true,
+    "automated_multimodal_audit_executed": false,
+    "editorial_quality_audit_passed": true,
+    "automated_quality_audit_executed": false,
+    "contract_passed": true
   },
   "quality": {
     "coverage": 0.93,
@@ -28,5 +30,5 @@
     "spoiler_control": 0.95
   },
   "output": "data/articles/mafia.json",
-  "note": "Статья подготовлена по новому контракту v4, но текущая публикация создана редакционным seed-проходом, а не фактическим запуском OpenAI workflow. Следующие обзоры строятся workflow из исследования, плана, текста, vision-аудита и quality-аудита."
+  "note": "Статья создана редакционным seed-проходом по контракту v4. Автоматический GitHub Actions workflow с OpenAI research, vision и quality моделями в этом запуске не выполнялся. Код последующих запусков требует пройти исследование, динамический план, генерацию текста, фактический vision-аудит изображений и quality-аудит до публикации."
 }
