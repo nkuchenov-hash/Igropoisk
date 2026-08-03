@@ -2,15 +2,27 @@
 'use strict';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const setState=(target,title,text)=>{target.innerHTML=`<div class="popular-state"><strong>${esc(title)}</strong><span>${esc(text)}</span></div>`};
+const qualityRank=url=>{
+  const value=String(url||'').toLowerCase();
+  if(value.includes('library_600x900_2x'))return 0;
+  if(value.includes('library_600x900'))return 1;
+  if(value.includes('cover')||value.includes('poster'))return 2;
+  if(value.includes('capsule_imagev5'))return 3;
+  if(value.includes('header'))return 5;
+  if(value.includes('616x353'))return 6;
+  if(value.includes('231x87')||value.includes('184x69'))return 9;
+  return 4;
+};
 const candidatesFor=item=>{
   const appid=(item.evidence||[]).find(row=>Number(row.appid))?.appid;
   const steam=appid?[
-    `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg`,
     `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900_2x.jpg`,
+    `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg`,
     `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/header.jpg`,
     `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/capsule_616x353.jpg`
   ]:[];
-  return [...new Set([...(item.image_candidates||[]),item.image,...steam].filter(Boolean))];
+  return [...new Set([...(item.image_candidates||[]),item.image,...steam].filter(Boolean))]
+    .sort((a,b)=>qualityRank(a)-qualityRank(b));
 };
 const wireImageFallbacks=target=>{
   target.querySelectorAll('img[data-cover-candidates]').forEach(img=>{
