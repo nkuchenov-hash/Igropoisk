@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/synthesize-review.mjs'
+      - 'scripts/enrich-review-media.mjs'
       - 'skills/review-synthesizer/**'
       - 'config/parsers/review-synthesis.json'
       - 'data/articles/**'
@@ -29,6 +30,7 @@ jobs:
         run: |
           node --check scripts/prepare-review-research.mjs
           node --check scripts/synthesize-review.mjs
+          node --check scripts/enrich-review-media.mjs
           node --check assets/parser-method.js
           node --check article/_shared/review-article.js
       - name: Validate editorial data
