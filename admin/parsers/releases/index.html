@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Центр релизов — Админка Игропоиска</title>
+  <link rel="stylesheet" href="../../../assets/design-system.css?v=20260803-9">
+  <link rel="stylesheet" href="../../../assets/release-admin.css?v=20260803-1">
+</head>
+<body>
+<div class="release-admin-layout">
+  <aside class="release-admin-sidebar">
+    <a class="release-admin-logo" href="../../../index.html">ИГРОПОИСК</a>
+    <nav aria-label="Разделы админки">
+      <a href="../../">Обзор парсеров</a>
+      <a href="../popular/">Популярность</a>
+      <a href="../game-data/">Данные игры</a>
+      <a class="active" href="./" aria-current="page">Календарь релизов</a>
+      <a href="../news/">Новости</a>
+      <a href="../ratings/">Рейтинги</a>
+      <a href="../review-synthesis/">AI-обзоры</a>
+    </nav>
+    <div class="release-admin-sidebar__bottom"><a href="../../../calendar/">Открыть публичный календарь ↗</a></div>
+  </aside>
+
+  <main class="release-admin-main">
+    <header class="release-admin-topbar">
+      <div><div class="release-admin-kicker">Admin / Release pipeline</div><h1>Центр релизов</h1><p>Автоматическая очередь новых анонсов, изменений дат, изображений и черновиков страниц игр.</p></div>
+      <div class="release-admin-actions"><a class="ig-button" href="../../../docs/release-parser-rules.md">Правила парсера</a><a class="release-admin-primary" href="https://github.com/nkuchenov-hash/Igropoisk/actions/workflows/parser-scheduler.yml" target="_blank" rel="noopener noreferrer">Запустить обновление ↗</a><button class="ig-button release-admin-icon" id="releaseAdminTheme" type="button" aria-label="Переключить тему">☀</button></div>
+    </header>
+
+    <section class="release-admin-metrics" id="releaseAdminMetrics" aria-label="Состояние очереди"></section>
+
+    <section class="release-admin-card release-admin-queue">
+      <header class="release-admin-card__head">
+        <div><span>Редакционная очередь</span><h2>Релизы и страницы игр</h2></div>
+        <div class="release-admin-controls"><input id="releaseAdminSearch" type="search" placeholder="Найти игру"><select id="releaseAdminStatus"><option value="">Все статусы</option><option value="discovered">Обнаружено</option><option value="needs_review">Требует проверки</option><option value="draft">Черновик страницы</option><option value="ready">Готово</option><option value="published">Опубликовано</option></select></div>
+      </header>
+      <div class="release-admin-status-tabs" id="releaseAdminTabs"></div>
+      <div class="release-admin-table-wrap"><table class="release-admin-table"><thead><tr><th>Игра</th><th>Дата и платформы</th><th>Источники</th><th>Изображение</th><th>Страница</th><th>Действие</th></tr></thead><tbody id="releaseAdminRows"></tbody></table></div>
+    </section>
+
+    <div class="release-admin-bottom-grid">
+      <section class="release-admin-card">
+        <header class="release-admin-card__head"><div><span>Наблюдение</span><h2>Последние изменения</h2></div></header>
+        <div class="release-admin-change-list" id="releaseAdminChanges"></div>
+      </section>
+      <section class="release-admin-card">
+        <header class="release-admin-card__head"><div><span>Состояние источников</span><h2>Последний запуск</h2></div><strong id="releaseAdminRunStatus">—</strong></header>
+        <div class="release-admin-source-list" id="releaseAdminSources"></div>
+      </section>
+    </div>
+  </main>
+</div>
+<script src="../../../assets/release-admin.js?v=20260803-1"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "horizon_days": 540,
+  "steam_discovery_limit": 100,
+  "download_images": true,
+  "seed_steam_appids": [2001760, 1478500, 3787240, 2075800, 2713000, 3751260, 1636440, 2638890],
+  "source_priorities": {
+    "official_site": 100,
+    "official_store": 90,
+    "igdb": 80,
+    "rawg": 55,
+    "media_calendar": 30
+  },
+  "date_rules": {
+    "accepted_precisions": ["exact", "month", "quarter", "year", "tbd"],
+    "never_invent_exact_day": true,
+    "separate_platform_and_region_events": true,
+    "preserve_history": true,
+    "official_conflict_requires_review": true
+  },
+  "image_rules": {
+    "preferred_width": 600,
+    "preferred_height": 900,
+    "minimum_bytes": 15000,
+    "allowed_content_types": ["image/jpeg", "image/png", "image/webp", "image/avif"],
+    "allow_remote_fallback": true,
+    "reject_watermarks": true,
+    "reject_media_thumbnails": true,
+    "reject_fan_art": true,
+    "reject_ai_generated_substitutes": true
+  },
+  "editorial_rules": {
+    "create_draft": true,
+    "auto_publish": false,
+    "preserve_locked_fields": true,
+    "minimum_draft_fields": ["title", "event", "platforms", "source", "image"]
+  }
+}

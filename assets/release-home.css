@@ -1,0 +1,31 @@
+.release-nav-link{position:relative;display:flex;align-items:center;color:var(--ig-text);font-weight:600;white-space:nowrap}
+.release-nav-link:after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:transparent}
+.release-nav-link:hover{color:var(--ig-rating)}
+.release-home-section{min-width:0}
+.release-home-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:18px}
+.release-home-kicker{margin-bottom:8px;color:var(--ig-accent);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.release-home-link{flex:0 0 auto;padding:8px 0;color:var(--ig-accent);font-size:14px;font-weight:800}
+.release-home-link:hover{color:var(--ig-rating)}
+.release-home-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;min-height:310px}
+.release-home-card{position:relative;min-width:0;overflow:hidden;border:1px solid var(--ig-line);border-radius:var(--ig-radius-md);background:linear-gradient(165deg,var(--ig-surface),var(--ig-surface-2));box-shadow:var(--ig-shadow);transition:transform var(--ig-transition),border-color var(--ig-transition)}
+.release-home-card:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--ig-accent) 65%,var(--ig-line-strong))}
+.release-home-card__link{display:block;height:100%}
+.release-home-card__media{position:relative;aspect-ratio:2/3;overflow:hidden;background:radial-gradient(circle at 30% 20%,color-mix(in srgb,var(--ig-accent) 24%,transparent),transparent 46%),var(--ig-surface-3)}
+.release-home-card__media img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+.release-home-card:hover .release-home-card__media img{transform:scale(1.025)}
+.release-home-card__media.is-broken img{display:none}
+.release-home-card__media.is-broken:after{content:attr(data-initials);position:absolute;inset:0;display:grid;place-items:center;color:var(--ig-muted);font:900 42px/1 var(--ig-game-display)}
+.release-home-date{position:absolute;top:10px;left:10px;z-index:2;display:inline-flex;align-items:center;min-height:28px;padding:0 9px;border:1px solid rgba(255,255,255,.17);border-radius:var(--ig-radius-xs);background:rgba(3,8,12,.78);backdrop-filter:blur(12px);color:#fff;font-size:11px;font-weight:800;text-transform:uppercase}
+.release-home-date.is-today,.release-home-date.is-near{border-color:color-mix(in srgb,var(--ig-rating) 75%,transparent);color:var(--ig-rating)}
+.release-home-card__body{padding:13px 13px 15px}
+.release-home-card h3{min-height:42px;margin:0 0 8px;font-size:15px;line-height:1.35;letter-spacing:-.018em}
+.release-home-meta{display:flex;gap:6px;flex-wrap:wrap;color:var(--ig-muted);font-size:11px;line-height:1.45}
+.release-home-meta span+span:before{content:"·";margin-right:6px;color:var(--ig-line-strong)}
+.release-home-status{display:flex;align-items:center;gap:7px;margin-top:10px;color:var(--ig-muted);font-size:11px}
+.release-home-status:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ig-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--ig-accent) 14%,transparent)}
+.release-home-status.confirmed:before{background:var(--ig-rating);box-shadow:0 0 0 3px color-mix(in srgb,var(--ig-rating) 14%,transparent)}
+.release-home-loading,.release-home-empty{grid-column:1/-1;display:grid;place-items:center;min-height:250px;padding:24px;border:1px dashed var(--ig-line-strong);border-radius:var(--ig-radius-md);color:var(--ig-muted)}
+@media(min-width:1900px){.release-home-grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media(max-width:1180px){.release-home-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.release-home-grid .release-home-card:nth-child(n+5){display:none}}
+@media(max-width:900px){.release-nav-link{display:none}.release-home-grid{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:minmax(180px,42vw);overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:10px}.release-home-card{scroll-snap-align:start}.release-home-grid .release-home-card:nth-child(n){display:block}}
+@media(max-width:600px){.release-home-head{align-items:center}.release-home-kicker{font-size:10px}.release-home-link{font-size:12px}.release-home-grid{grid-auto-columns:minmax(166px,70vw)}.release-home-card h3{font-size:14px}}
