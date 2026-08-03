@@ -1,0 +1,144 @@
+/* Readability and card-scale pass for the public release calendar. */
+.release-page{padding-top:30px;padding-bottom:96px}
+.release-breadcrumb{margin-bottom:40px;font-size:15px}
+.release-kicker{font-size:14px}
+.release-intro{gap:48px;margin-bottom:36px}
+.release-intro p{max-width:800px;font-size:19px;line-height:1.65}
+.release-intro__stats{flex-basis:430px;gap:12px}
+.release-intro__stats div{padding:19px}
+.release-intro__stats strong{font-size:31px}
+.release-intro__stats span{font-size:13px}
+
+.release-command-bar{gap:24px;margin-bottom:28px;padding:13px}
+.release-view-tabs button{min-height:48px;padding-inline:21px;font-size:16px}
+.release-quick-filters{gap:10px}
+.release-quick-filters label>span{font-size:12px}
+.release-quick-filters select{height:48px;min-width:170px;padding-left:14px;font-size:16px}
+.release-filter-button{height:48px;font-size:16px}
+.release-icon-button{width:46px;height:46px;font-size:19px}
+.release-period-bar{margin-bottom:18px}
+.release-period-nav{gap:12px}
+.release-period-nav h2{min-width:245px;font-size:27px}
+.release-period-nav .ig-button{font-size:16px}
+.release-result-count{font-size:15px}
+
+.release-layout{grid-template-columns:minmax(0,1fr) 400px;gap:28px}
+.release-rail{gap:18px}
+.release-rail-head{padding:22px 22px 15px}
+.release-rail-head h2{font-size:21px}
+.release-rail-head a{font-size:14px}
+.release-upcoming{padding:0 12px 14px}
+.release-upcoming-item{grid-template-columns:72px minmax(0,1fr);gap:14px;min-height:116px;padding:10px;border-radius:var(--ig-radius-md)}
+.release-upcoming-item__media{width:72px;height:96px}
+.release-upcoming-item h3{margin-bottom:8px;font-size:16px;line-height:1.35}
+.release-upcoming-item span{font-size:13px;line-height:1.4}
+.release-changes{padding:0 22px 20px}
+.release-change{padding:15px 0 15px 20px}
+.release-change:before{top:22px;width:9px;height:9px}
+.release-change strong{font-size:15px;line-height:1.45}
+.release-change span{margin-top:6px;font-size:13px;line-height:1.55}
+.release-rail-note{gap:14px;padding:21px}
+.release-rail-note strong{font-size:15px;line-height:1.4}
+.release-rail-note p{margin-top:8px;font-size:13px;line-height:1.6}
+.release-source-dot{width:11px;height:11px;margin-top:5px}
+
+.release-weekdays span{padding:14px 10px;font-size:13px}
+.release-day{min-height:286px;padding:11px}
+.release-day__number{min-height:29px;margin-bottom:10px;font-size:16px}
+.release-day.is-today .release-day__number>span:first-child{width:30px;height:30px}
+.release-day__count{font-size:12px}
+.release-day-items{display:grid;grid-auto-rows:112px;gap:9px}
+.release-calendar-item{height:112px;min-height:112px;grid-template-columns:72px minmax(0,1fr);gap:0;align-items:stretch;padding:0;overflow:hidden;border-radius:var(--ig-radius-sm)}
+.release-calendar-item__media{width:72px;height:100%;border-radius:0;border-right:1px solid var(--ig-line)}
+.release-calendar-item__media img{width:100%;height:100%;object-fit:cover}
+.release-calendar-item>span{display:flex;min-width:0;flex-direction:column;align-items:stretch;padding:9px 9px 8px;overflow:hidden;color:var(--ig-text);white-space:normal}
+.release-calendar-item h3{display:-webkit-box;overflow:hidden;margin:0 0 5px;font-size:13px;line-height:1.25;white-space:normal;text-overflow:clip;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.release-calendar-item__description{display:-webkit-box!important;overflow:hidden!important;margin:0!important;color:var(--ig-muted)!important;font-size:11px!important;line-height:1.35!important;white-space:normal!important;text-overflow:clip!important;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.release-calendar-item>span>span{display:block;margin-top:auto;overflow:hidden;color:var(--ig-muted);font-size:10.5px;line-height:1.3;text-overflow:ellipsis;white-space:nowrap}
+.release-calendar-more{padding-top:4px;font-size:12px}
+.release-approximate{padding:22px}
+.release-approximate h3{font-size:18px}
+.release-approximate-chip{padding:10px 14px;font-size:14px}
+
+.release-list{gap:16px}
+.release-list-date{gap:14px;padding:17px 20px}
+.release-list-date strong{font-size:32px}
+.release-list-date span{font-size:14px}
+.release-list-date small{font-size:12px}
+.release-list-item{grid-template-columns:82px minmax(0,1fr) auto;gap:18px;padding:15px 18px}
+.release-list-item__media{width:82px;height:106px}
+.release-list-item h3{font-size:20px}
+.release-list-item p{font-size:14px;line-height:1.6}
+.release-list-item__meta span{padding:5px 9px;font-size:11px}
+.release-bookmark{width:44px;height:44px;font-size:18px}
+
+.release-feed{gap:20px}
+.release-feed-card__body{padding:0 21px 22px}
+.release-feed-date{left:20px;bottom:14px;font-size:14px}
+.release-feed-card h3{margin-bottom:11px;font-size:25px;line-height:1.22}
+.release-feed-card p{font-size:15px;line-height:1.62}
+.release-feed-card__footer{margin-top:18px;padding-top:15px}
+.release-feed-card__footer span{font-size:13px}
+.release-empty{font-size:16px;line-height:1.6}
+
+.release-filter-sheet__panel,.release-modal__panel{font-size:16px}
+.release-filter-sheet__panel header{padding:24px}
+.release-filter-sheet__panel header span{font-size:13px}
+.release-filter-sheet__panel h2,.release-modal__panel h2{font-size:28px;line-height:1.15}
+.release-filter-group{padding:22px 24px}
+.release-filter-group h3{font-size:17px}
+.release-check span{font-size:16px;line-height:1.5}
+.release-filter-sheet__panel footer{padding:20px 24px}
+.release-filter-sheet__panel footer button{font-size:16px}
+.release-detail-copy>p,.release-detail-copy li,.release-detail-platforms,.release-detail-label,.release-detail-source-list a{font-size:15px;line-height:1.6}
+.release-detail-date{font-size:25px}
+.release-detail-tags span{font-size:12px}
+
+@media(min-width:1800px){
+  .release-layout{grid-template-columns:minmax(0,1fr) 440px;gap:34px}
+  .release-day{min-height:304px}
+  .release-day-items{grid-auto-rows:120px}
+  .release-calendar-item{height:120px;min-height:120px;grid-template-columns:78px minmax(0,1fr)}
+  .release-calendar-item__media{width:78px}
+  .release-calendar-item h3{font-size:14px}
+  .release-calendar-item__description{font-size:11.5px!important}
+}
+
+@media(max-width:1450px){
+  .release-layout{grid-template-columns:minmax(0,1fr) 360px;gap:22px}
+  .release-day{min-height:274px;padding:9px}
+  .release-day-items{grid-auto-rows:106px;gap:7px}
+  .release-calendar-item{height:106px;min-height:106px;grid-template-columns:64px minmax(0,1fr)}
+  .release-calendar-item__media{width:64px}
+  .release-calendar-item>span{padding:8px 7px}
+  .release-calendar-item h3{font-size:12px}
+  .release-calendar-item__description{font-size:10.5px!important}
+}
+
+@media(max-width:1180px){
+  .release-layout{grid-template-columns:1fr}
+  .release-rail{position:static;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:26px}
+  .release-rail-note{grid-column:1/-1}
+  .release-command-bar{align-items:stretch;flex-direction:column}
+  .release-quick-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .release-quick-filters select{width:100%;min-width:0}
+}
+
+@media(max-width:760px){
+  .release-page{padding-top:20px;padding-bottom:64px}
+  .release-breadcrumb{margin-bottom:25px}
+  .release-intro{align-items:flex-start;flex-direction:column;gap:22px}
+  .release-intro p{font-size:17px}
+  .release-intro__stats{width:100%;flex-basis:auto}
+  .release-command-bar{padding:10px}
+  .release-view-tabs{display:grid;grid-template-columns:repeat(3,1fr)}
+  .release-view-tabs button{padding-inline:10px;font-size:14px}
+  .release-quick-filters{grid-template-columns:1fr 1fr}
+  .release-period-bar{align-items:flex-start;flex-direction:column}
+  .release-period-nav{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto}
+  .release-period-nav h2{min-width:0;font-size:22px}
+  .release-period-nav #releaseToday{grid-column:1/-1;width:100%}
+  .release-rail{grid-template-columns:1fr}
+  .release-rail-note{grid-column:auto}
+  .release-feed{grid-template-columns:1fr}
+}
