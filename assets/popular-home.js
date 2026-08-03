@@ -24,49 +24,139 @@ const ensureControls=target=>{
 
 function makeInfiniteRail(target){
   target._igInfiniteRailCleanup?.();
-  const originals=[...target.children];
-  if(originals.length<2)return;
-  const count=originals.length;
-  const fragment=document.createDocumentFragment();
-  for(let set=0;set<3;set+=1){
-    originals.forEach(node=>{
-      const clone=node.cloneNode(true);
-      clone.dataset.railSet=String(set);
-      if(set!==1){clone.setAttribute('aria-hidden','true');clone.querySelectorAll('a,button,input,select,textarea,[tabindex]').forEach(el=>el.setAttribute('tabindex','-1'))}
-      fragment.appendChild(clone);
-    });
-  }
-  target.replaceChildren(fragment);
+  if(target.children.length<2)return;
+
   target.classList.add('infinite-rail');
   target.tabIndex=0;
   target.setAttribute('role','region');
-  target.setAttribute('aria-label',`Сейчас популярно, бесконечная горизонтальная лента из ${count} игр`);
+  target.setAttribute('aria-label',`Сейчас популярно, бесконечная горизонтальная лента из ${target.children.length} игр`);
 
-  let segmentWidth=0,itemStep=0,positioned=false,recentering=false,pointerId=null,dragged=false,startX=0,startScroll=0;
+  let itemStep=0,positioned=false,adjusting=false,pointerId=null,dragged=false,startX=0,startScroll=0,measureFrame=0,scrollFrame=0;
+
   const measure=()=>{
-    const first=target.children[0],middle=target.children[count],next=target.children[count+1];
-    if(!first||!middle)return;
-    segmentWidth=middle.offsetLeft-first.offsetLeft;
-    itemStep=next?next.offsetLeft-middle.offsetLeft:middle.getBoundingClientRect().width;
-    if(segmentWidth>0&&!positioned){target.scrollLeft=segmentWidth;positioned=true}
+    measureFrame=0;
+    const first=target.children[0];
+    const next=target.children[1];
+    if(!first)return;
+    const measured=next?next.offsetLeft-first.offsetLeft:first.getBoundingClientRect().width;
+    if(measured>0)itemStep=measured;
+    if(itemStep>0&&!positioned){
+      const last=target.lastElementChild;
+      if(last)target.prepend(last);
+      target.scrollLeft=itemStep;
+      positioned=true;
+    }
   };
-  const recenter=()=>{
-    if(!positioned||!segmentWidth||recentering)return;
-    const left=target.scrollLeft;
-    if(left<segmentWidth*.5){recentering=true;target.scrollLeft=left+segmentWidth;recentering=false}
-    else if(left>segmentWidth*1.5){recentering=true;target.scrollLeft=left-segmentWidth;recentering=false}
+
+  const scheduleMeasure=()=>{
+    if(measureFrame)return;
+    measureFrame=requestAnimationFrame(measure);
   };
-  const step=direction=>{if(!itemStep)measure();if(itemStep>0)target.scrollBy({left:direction*itemStep,behavior:reducedMotion()?'auto':'smooth'})};
+
+  const normalize=()=>{
+    scrollFrame=0;
+    if(!positioned||!itemStep||adjusting)return;
+    const maxScroll=target.scrollWidth-target.clientWidth;
+    if(maxScroll<=itemStep)return;
+    if(target.scrollLeft<=itemStep*.35){
+      adjusting=true;
+      const last=target.lastElementChild;
+      if(last){
+        target.prepend(last);
+        target.scrollLeft+=itemStep;
+      }
+      adjusting=false;
+    }else if(target.scrollLeft>=maxScroll-itemStep*.35){
+      adjusting=true;
+      const first=target.firstElementChild;
+      if(first){
+        target.append(first);
+        target.scrollLeft-=itemStep;
+      }
+      adjusting=false;
+    }
+  };
+
+  const onScroll=()=>{
+    if(scrollFrame)return;
+    scrollFrame=requestAnimationFrame(normalize);
+  };
+
+  const step=direction=>{
+    if(!itemStep)measure();
+    if(itemStep>0)target.scrollBy({left:direction*itemStep,behavior:reducedMotion()?'auto':'smooth'});
+  };
+
   const buttons=ensureControls(target);
-  const buttonHandlers=buttons.map(button=>{const handler=()=>step(button.dataset.direction==='prev'?-1:1);button.addEventListener('click',handler);return[button,handler]});
-  const down=event=>{if(event.pointerType!=='mouse'||event.button!==0)return;pointerId=event.pointerId;dragged=false;startX=event.clientX;startScroll=target.scrollLeft;target.setPointerCapture(pointerId);target.classList.add('is-dragging')};
-  const move=event=>{if(event.pointerId!==pointerId)return;const delta=event.clientX-startX;if(Math.abs(delta)>4)dragged=true;target.scrollLeft=startScroll-delta};
-  const up=event=>{if(event.pointerId!==pointerId)return;target.releasePointerCapture?.(pointerId);pointerId=null;target.classList.remove('is-dragging')};
-  const click=event=>{if(!dragged)return;event.preventDefault();event.stopPropagation();dragged=false};
-  const key=event=>{if(event.key!=='ArrowLeft'&&event.key!=='ArrowRight')return;event.preventDefault();step(event.key==='ArrowRight'?1:-1)};
-  target.addEventListener('scroll',recenter,{passive:true});target.addEventListener('pointerdown',down);target.addEventListener('pointermove',move);target.addEventListener('pointerup',up);target.addEventListener('pointercancel',up);target.addEventListener('click',click,true);target.addEventListener('keydown',key);
-  const resizeObserver=new ResizeObserver(()=>requestAnimationFrame(measure));resizeObserver.observe(target);requestAnimationFrame(()=>requestAnimationFrame(measure));
-  target._igInfiniteRailCleanup=()=>{resizeObserver.disconnect();buttonHandlers.forEach(([button,handler])=>button.removeEventListener('click',handler));target.removeEventListener('scroll',recenter);target.removeEventListener('pointerdown',down);target.removeEventListener('pointermove',move);target.removeEventListener('pointerup',up);target.removeEventListener('pointercancel',up);target.removeEventListener('click',click,true);target.removeEventListener('keydown',key);delete target._igInfiniteRailCleanup};
+  const buttonHandlers=buttons.map(button=>{
+    const handler=()=>step(button.dataset.direction==='prev'?-1:1);
+    button.addEventListener('click',handler);
+    return[button,handler];
+  });
+
+  const down=event=>{
+    if(event.pointerType!=='mouse'||event.button!==0)return;
+    pointerId=event.pointerId;
+    dragged=false;
+    startX=event.clientX;
+    startScroll=target.scrollLeft;
+    target.setPointerCapture(pointerId);
+    target.classList.add('is-dragging');
+  };
+  const move=event=>{
+    if(event.pointerId!==pointerId)return;
+    const delta=event.clientX-startX;
+    if(Math.abs(delta)>4)dragged=true;
+    target.scrollLeft=startScroll-delta;
+  };
+  const up=event=>{
+    if(event.pointerId!==pointerId)return;
+    target.releasePointerCapture?.(pointerId);
+    pointerId=null;
+    target.classList.remove('is-dragging');
+  };
+  const click=event=>{
+    if(!dragged)return;
+    event.preventDefault();
+    event.stopPropagation();
+    dragged=false;
+  };
+  const key=event=>{
+    if(event.key!=='ArrowLeft'&&event.key!=='ArrowRight')return;
+    event.preventDefault();
+    step(event.key==='ArrowRight'?1:-1);
+  };
+
+  target.addEventListener('scroll',onScroll,{passive:true});
+  target.addEventListener('pointerdown',down);
+  target.addEventListener('pointermove',move);
+  target.addEventListener('pointerup',up);
+  target.addEventListener('pointercancel',up);
+  target.addEventListener('click',click,true);
+  target.addEventListener('keydown',key);
+
+  const resizeObserver=new ResizeObserver(scheduleMeasure);
+  resizeObserver.observe(target);
+  requestAnimationFrame(()=>requestAnimationFrame(measure));
+
+  target._igInfiniteRailCleanup=()=>{
+    resizeObserver.disconnect();
+    if(measureFrame)cancelAnimationFrame(measureFrame);
+    if(scrollFrame)cancelAnimationFrame(scrollFrame);
+    buttonHandlers.forEach(([button,handler])=>button.removeEventListener('click',handler));
+    target.removeEventListener('scroll',onScroll);
+    target.removeEventListener('pointerdown',down);
+    target.removeEventListener('pointermove',move);
+    target.removeEventListener('pointerup',up);
+    target.removeEventListener('pointercancel',up);
+    target.removeEventListener('click',click,true);
+    target.removeEventListener('keydown',key);
+    target.classList.remove('infinite-rail','is-dragging');
+    target.removeAttribute('role');
+    target.removeAttribute('aria-label');
+    target.removeAttribute('tabindex');
+    delete target._igInfiniteRailCleanup;
+  };
 }
 window.IgropoiskInfiniteRail=makeInfiniteRail;
 
@@ -130,7 +220,11 @@ async function load(){
       const candidates=coverCandidates(item);
       const src=candidates[0]||item.image||'';
       const evidence=(item.families||[]).slice(0,3).map(value=>({steam_chart:'Steam',news:'СМИ',reddit:'Reddit',youtube:'YouTube',twitch:'Twitch'}[value]||value)).join(' · ');
-      return `<article class="card game-card popular-card"${clickable?` data-game="${esc(item.slug)}"`:''} aria-label="${esc(item.title)}"><div class="popular-rank">${index+1}</div><div class="popular-poster"><img src="${esc(src)}" data-cover-candidates='${esc(JSON.stringify(candidates))}' alt="${esc(item.title)}" loading="eager" decoding="async"></div><div class="card-body"><h3>${esc(item.title)}</h3><div class="popular-meta"><span>Индекс ${esc(item.score)}</span><small>${esc(evidence)}</small></div>${clickable?'':'<span class="popular-pending">Страница готовится</span>'}</div></article>`;
+      const width=Number(item.cover_width)||600;
+      const height=Number(item.cover_height)||900;
+      const loading=index<6?'eager':'lazy';
+      const priority=index<3?'high':'auto';
+      return `<article class="card game-card popular-card"${clickable?` data-game="${esc(item.slug)}"`:''} aria-label="${esc(item.title)}"><div class="popular-rank">${index+1}</div><div class="popular-poster"><img src="${esc(src)}" data-cover-candidates='${esc(JSON.stringify(candidates))}' alt="${esc(item.title)}" loading="${loading}" fetchpriority="${priority}" decoding="async" width="${width}" height="${height}"></div><div class="card-body"><h3>${esc(item.title)}</h3><div class="popular-meta"><span>Индекс ${esc(item.score)}</span><small>${esc(evidence)}</small></div>${clickable?'':'<span class="popular-pending">Страница готовится</span>'}</div></article>`;
     }).join('');
 
     wireCoverFallbacks(target);
