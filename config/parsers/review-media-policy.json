@@ -1,14 +1,16 @@
 {
-  "schema_version": 2,
-  "purpose": "Сделать обзор визуально насыщенным: меньше повторяющегося текста, больше качественных и осмысленно прокомментированных скриншотов.",
+  "schema_version": 3,
+  "purpose": "Сделать каждый обзор визуально насыщенным: сначала собрать десятки кадров из нескольких источников, затем отобрать лучшие и распределить их по осмысленным карточкам.",
   "article_balance": {
     "minimum_words": 1300,
     "target_words": 1600,
     "maximum_words_without_editor_approval": 2200,
     "minimum_sections": 7,
     "maximum_sections": 9,
+    "minimum_candidate_screenshots": 30,
+    "minimum_approved_screenshots": 18,
     "minimum_total_screenshots": 18,
-    "minimum_unique_screenshots": 8,
+    "minimum_unique_screenshots": 12,
     "screenshots_per_section": {"minimum": 2, "target": 3, "maximum": 5}
   },
   "card_behavior": {
