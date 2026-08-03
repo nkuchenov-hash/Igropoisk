@@ -1,3 +1,5 @@
+@import url('./site-system.css?v=20260803-1');
+
 /* Shared header: exact home-page header, with only a translucent background. */
 .site-header{
   position:sticky;
@@ -28,15 +30,26 @@
   gap:26px;
   height:100%;
 }
-.site-nav button{
+.site-nav button,
+.site-nav a{
   position:relative;
+  display:flex;
+  align-items:center;
   border:0;
   background:none;
   color:var(--ig-text);
   padding:0;
   font-weight:600;
+  white-space:nowrap;
+  transition:color var(--ig-transition);
 }
-.site-nav button.active::after{
+.site-nav button:hover,
+.site-nav a:hover{
+  color:var(--ig-hover-text);
+}
+.site-nav button.active::after,
+.site-nav a.active::after,
+.site-nav a[aria-current="page"]::after{
   content:"";
   position:absolute;
   left:0;
