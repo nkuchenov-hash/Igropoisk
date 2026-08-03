@@ -1,20 +1,26 @@
 {
   "parser": "review-synthesis",
-  "status": "blocked",
+  "status": "success",
   "game_slug": "the-witcher-3-wild-hunt",
-  "checked_at": "2026-08-03T12:05:00Z",
+  "checked_at": "2026-08-03T12:24:00Z",
+  "execution_mode": "editorial-source-audit",
   "gate": {
     "required_editorial": 20,
-    "accepted_editorial": 4,
+    "accepted_editorial": 20,
     "required_publications": 20,
-    "accepted_publications": 4,
-    "required_screenshots": 4,
-    "accepted_screenshots": 4,
-    "materially_used": 4,
-    "passed": false
+    "accepted_publications": 20,
+    "minimum_sections": 8,
+    "accepted_sections": 10,
+    "minimum_words": 2000,
+    "accepted_words": 2281,
+    "required_screenshots": 6,
+    "accepted_screenshots": 8,
+    "materially_used": 20,
+    "passed": true
   },
-  "sections": 5,
+  "sections": 10,
+  "sources": 20,
   "output": "data/articles/the-witcher-3-wild-hunt.json",
-  "note": "Существующая статья является демонстрационным макетом. Публикационный gate 20 независимых профессиональных обзоров не пройден.",
+  "note": "Обзор перестроен по двадцати прямым профессиональным материалам. Боевой раздел использует кадр сражения; портретный кадр перенесён в раздел о персонажах.",
   "skill": "skills/review-synthesizer/SKILL.md"
 }
