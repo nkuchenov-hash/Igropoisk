@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-03T11:46:36.271Z",
+  "generated_at": "2026-08-03T12:03:53.380Z",
   "window_hours": 72,
   "method": {
     "formula": "popular_score = 100 × Σ(weight_family × normalized_signal_family) / Σ(available_weight_family)",
     "minimum_independent_families": 2,
-    "publication_threshold": 0.45,
+    "publication_threshold": 0.35,
     "family_weights": {
       "news": 0.25,
       "reddit": 0.15,
@@ -15,7 +15,242 @@
       "attention": 0.08
     }
   },
-  "ranking": [],
+  "ranking": [
+    {
+      "slug": "cyberpunk-2077",
+      "title": "Cyberpunk 2077",
+      "year": 2020,
+      "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/644eb087007768417a847e52c38eeaf34b57fd12/page_bg_raw.jpg?t=1784714077",
+      "score": 49.2,
+      "confidence": 0.37,
+      "delta": null,
+      "families": [
+        "news",
+        "steam"
+      ],
+      "signals": {
+        "news": 0.015644770501328568,
+        "steam": 10.859729499912511
+      },
+      "evidence": [
+        {
+          "source": "Steam current players",
+          "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=1091500",
+          "title": "Cyberpunk 2077",
+          "players": 52037,
+          "family": "steam",
+          "value": 10.86
+        },
+        {
+          "source": "Eurogamer",
+          "url": "https://www.eurogamer.net/cyberpunk-edgerunners-brawler-report",
+          "title": "Cyberpunk: Edgerunners was reportedly being turned into a 2.5D brawler by CD Projekt Red and Shantae studio WayForward, but its fate is uncertain",
+          "observed_at": "Tue, 28 Jul 2026 12:06:31 +0000",
+          "family": "news",
+          "value": 0.016
+        }
+      ]
+    },
+    {
+      "slug": "doom",
+      "title": "DOOM",
+      "year": 2016,
+      "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/782330/page_bg_raw.jpg?t=1783432602",
+      "score": 44.4,
+      "confidence": 0.37,
+      "delta": null,
+      "families": [
+        "news",
+        "steam"
+      ],
+      "signals": {
+        "news": 0.28628269903423637,
+        "steam": 7.084226422097916
+      },
+      "evidence": [
+        {
+          "source": "Steam current players",
+          "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=782330",
+          "title": "DOOM",
+          "players": 1192,
+          "family": "steam",
+          "value": 7.084
+        },
+        {
+          "source": "GameSpot",
+          "url": "https://www.gamespot.com/articles/heres-a-chance-to-get-ghostwire-tokyo-and-two-other-games-for-5/",
+          "title": "Here’s A Chance To Get Ghostwire: Tokyo And Two Other Games For $5",
+          "observed_at": "Fri, 31 Jul 2026 17:00:00 +0000",
+          "family": "news",
+          "value": 0.144
+        },
+        {
+          "source": "GameSpot",
+          "url": "https://www.gamespot.com/articles/for-doom-composer-mick-gordon-every-soundtrack-is-waiting-to-be-discovered/",
+          "title": "For Doom Composer Mick Gordon, Every Soundtrack Is Waiting To Be Discovered",
+          "observed_at": "Fri, 31 Jul 2026 14:35:52 +0000",
+          "family": "news",
+          "value": 0.134
+        },
+        {
+          "source": "Eurogamer",
+          "url": "https://www.eurogamer.net/morrowind-browser-port",
+          "title": "Is Morrowind the new Doom? After getting a dual-screen port, the fan-favourite Elder Scrolls is now running in browsers",
+          "observed_at": "Mon, 27 Jul 2026 11:19:19 +0000",
+          "family": "news",
+          "value": 0.008
+        }
+      ]
+    },
+    {
+      "slug": "overwatch",
+      "title": "Overwatch",
+      "year": 2016,
+      "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2357570/0b6dd3ba6e6a325d9bad1589ed0b454dcc25d0f5/page_bg_raw.jpg?t=1784740349",
+      "score": 29.8,
+      "confidence": 0.37,
+      "delta": null,
+      "families": [
+        "news",
+        "steam"
+      ],
+      "signals": {
+        "news": 0.0005095174626167183,
+        "steam": 10.512818247002963
+      },
+      "evidence": [
+        {
+          "source": "Steam current players",
+          "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=2357570",
+          "title": "Overwatch",
+          "players": 36783,
+          "family": "steam",
+          "value": 10.513
+        },
+        {
+          "source": "Rock Paper Shotgun",
+          "url": "https://www.rockpapershotgun.com/you-only-get-one-permakillable-jedi-padawan-in-star-wars-zero-company-but-thats-fine-because-im-going-to-roll-an-r2-d2-deathsquad-anyway",
+          "title": "You only get one, permakillable Jedi Padawan in Star Wars Zero Company, but that's fine because I'm going to roll an R2-D2 deathsquad anyway",
+          "observed_at": "Thu, 23 Jul 2026 13:32:20 +0000",
+          "family": "news",
+          "value": 0.001
+        }
+      ]
+    },
+    {
+      "slug": "undertale",
+      "title": "Undertale",
+      "year": 2015,
+      "image": "https://store.akamai.steamstatic.com/images/storepagebackground/app/391540?t=1757349115",
+      "score": 26.5,
+      "confidence": 0.37,
+      "delta": null,
+      "families": [
+        "news",
+        "steam"
+      ],
+      "signals": {
+        "news": 0.008143128267276997,
+        "steam": 8.091933455979893
+      },
+      "evidence": [
+        {
+          "source": "Steam current players",
+          "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=391540",
+          "title": "Undertale",
+          "players": 3267,
+          "family": "steam",
+          "value": 8.092
+        },
+        {
+          "source": "Rock Paper Shotgun",
+          "url": "https://www.rockpapershotgun.com/i-dunno-why-they-chose-crashphalt-forgotten-steam-game-suddenly-becomes-a-hit-after-players-start-using-it-for-undertale-online-multiplayer",
+          "title": "\"I dunno why they chose Crashphalt\": forgotten Steam game suddenly becomes a hit after players start using it for Undertale online multiplayer",
+          "observed_at": "Mon, 27 Jul 2026 13:30:00 +0000",
+          "family": "news",
+          "value": 0.008
+        }
+      ]
+    },
+    {
+      "slug": "kingdom-come-deliverance",
+      "title": "Kingdom Come: Deliverance",
+      "year": 2018,
+      "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/379430/1efadf7847acdd7e31fa3834f1c88f8f520d85ea/page_bg_raw.jpg?t=1770998376",
+      "score": 18.8,
+      "confidence": 0.37,
+      "delta": null,
+      "families": [
+        "news",
+        "steam"
+      ],
+      "signals": {
+        "news": 0.00095250336218935,
+        "steam": 8.160518247477505
+      },
+      "evidence": [
+        {
+          "source": "Steam current players",
+          "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=379430",
+          "title": "Kingdom Come: Deliverance",
+          "players": 3499,
+          "family": "steam",
+          "value": 8.161
+        },
+        {
+          "source": "Rock Paper Shotgun",
+          "url": "https://www.rockpapershotgun.com/kingdom-come-salvation-could-be-warhorses-next-medieval-history-rpg-if-this-eu-trademark-filing-turns-out-to-be-the-genuine-article",
+          "title": "Kingdom Come Salvation could be Warhorse's next medieval history RPG, if this EU trademark filing turns out to be the genuine article",
+          "observed_at": "Fri, 24 Jul 2026 11:12:04 +0000",
+          "family": "news",
+          "value": 0.001
+        }
+      ]
+    },
+    {
+      "slug": "god-of-war",
+      "title": "God of War",
+      "year": 2018,
+      "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/page_bg_raw.jpg?t=1763059412",
+      "score": 18.1,
+      "confidence": 0.37,
+      "delta": null,
+      "families": [
+        "news",
+        "steam"
+      ],
+      "signals": {
+        "news": 0.0067204190269522235,
+        "steam": 7.533158807455563
+      },
+      "evidence": [
+        {
+          "source": "Steam current players",
+          "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=1593500",
+          "title": "God of War",
+          "players": 1868,
+          "family": "steam",
+          "value": 7.533
+        },
+        {
+          "source": "Eurogamer",
+          "url": "https://www.eurogamer.net/kratos-god-of-war-links-directly-to-laufey",
+          "title": "The next Kratos God of War game will follow and connect to Laufey, says Cory Barlog",
+          "observed_at": "Sun, 26 Jul 2026 17:27:52 +0000",
+          "family": "news",
+          "value": 0.005
+        },
+        {
+          "source": "Eurogamer",
+          "url": "https://www.eurogamer.net/god-of-war-laufey-release-date-confirmed",
+          "title": "God of War Laufey finally gets a release date - here's when you'll be able to play it",
+          "observed_at": "Sat, 25 Jul 2026 15:28:10 +0000",
+          "family": "news",
+          "value": 0.002
+        }
+      ]
+    }
+  ],
   "discovered_unmatched": [],
   "source_statuses": [
     {
@@ -23,7 +258,7 @@
       "status": "success",
       "items": 20,
       "matched": 3,
-      "duration_ms": 575,
+      "duration_ms": 140,
       "url": "https://www.ign.com/rss/articles/feed"
     },
     {
@@ -31,7 +266,7 @@
       "status": "success",
       "items": 50,
       "matched": 4,
-      "duration_ms": 665,
+      "duration_ms": 141,
       "url": "https://www.pcgamer.com/rss/"
     },
     {
@@ -39,7 +274,7 @@
       "status": "success",
       "items": 15,
       "matched": 7,
-      "duration_ms": 385,
+      "duration_ms": 139,
       "url": "https://www.gamespot.com/feeds/mashup/"
     },
     {
@@ -47,7 +282,7 @@
       "status": "success",
       "items": 100,
       "matched": 13,
-      "duration_ms": 485,
+      "duration_ms": 290,
       "url": "https://www.eurogamer.net/feed"
     },
     {
@@ -55,7 +290,7 @@
       "status": "success",
       "items": 100,
       "matched": 8,
-      "duration_ms": 338,
+      "duration_ms": 334,
       "url": "https://www.rockpapershotgun.com/feed"
     },
     {
@@ -63,7 +298,7 @@
       "status": "success",
       "items": 10,
       "matched": 1,
-      "duration_ms": 772,
+      "duration_ms": 131,
       "url": "https://www.polygon.com/rss/index.xml"
     },
     {
@@ -89,7 +324,7 @@
       "status": "success",
       "items": 26,
       "matched": 26,
-      "duration_ms": 496,
+      "duration_ms": 539,
       "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={steam_appid}"
     }
   ]
