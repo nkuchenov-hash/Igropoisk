@@ -16,6 +16,13 @@
       "Проверить, что изображение относится к материалу и не является рекламным баннером.",
       "Рассчитать relevance и novelty; старые или повторные материалы не поднимать наверх.",
       "Сохранить результат и подробный журнал по каждому источнику."
+    ],
+    "article_structure":[
+      "Hero с заголовком, кратким объяснением, датой и проверенным изображением.",
+      "Lead, отвечающий на вопрос, что произошло и почему это важно.",
+      "Тематические разделы вместо одного сплошного пересказа.",
+      "Иллюстрация внутри релевантного раздела с подписью и URL источника.",
+      "В конце — только реально использованные источники с прямыми ссылками."
     ]
   },
   "sources":[
@@ -28,6 +35,6 @@
     {"id":"rps-rss","enabled":true,"family":"press","name":"Rock Paper Shotgun","type":"rss","url":"https://www.rockpapershotgun.com/feed","weight":0.7,"trust":0.82},
     {"id":"polygon-rss","enabled":true,"family":"press","name":"Polygon","type":"rss","url":"https://www.polygon.com/rss/index.xml","weight":0.7,"trust":0.82}
   ],
-  "outputs":["data/news/{slug}.json","data/parser-runs/news.json"],
-  "examples":[{"label":"Пример новостного блока","url":"../../../examples/news-block/"},{"label":"Пример новостной статьи","url":"../../../news/the-witcher-3-update-example/"}]
+  "outputs":["data/news/{slug}.json","data/news-articles/{article_slug}.json","data/parser-runs/news.json"],
+  "examples":[{"label":"Пример новостного блока","url":"../../../examples/news-block/"},{"label":"Пример новостной статьи","url":"../../../news/the-witcher-3-redkit/"}]
 }
