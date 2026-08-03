@@ -1,0 +1,62 @@
+/*
+ * IGROPOISK OUTER LAYOUT CONTRACT
+ *
+ * This is the only authority for the outer content frame.
+ * Full-width backgrounds are allowed, but their content must use one of the
+ * protected frame classes below. A different outer width requires an approved
+ * data-ig-width-exception token registered in config/layout-width-exceptions.json.
+ */
+:root{
+  --ig-contract-max:1480px;
+  --ig-contract-gutter:26px;
+  --ig-container:var(--ig-contract-max)!important;
+  --ig-gutter:var(--ig-contract-gutter)!important;
+}
+
+@media(min-width:1800px){
+  :root{--ig-contract-max:1760px;--ig-contract-gutter:34px}
+}
+@media(min-width:2400px){
+  :root{--ig-contract-max:2240px;--ig-contract-gutter:44px}
+}
+@media(min-width:3200px){
+  :root{--ig-contract-max:2840px;--ig-contract-gutter:56px}
+}
+@media(max-width:600px){
+  :root{--ig-contract-gutter:14px}
+}
+
+html body :is(
+  .ig-container,
+  .ig-page-container,
+  .ig-content-frame,
+  .site-header__inner,
+  .hero-content,
+  .wtp-layout,
+  .wtp-results-section,
+  .news-page,
+  .news-page-wrap,
+  .page#news > .wrap,
+  .game-header__inner,
+  .game-hero__inner,
+  .article-header__inner,
+  .article-hero__inner,
+  .article-shell,
+  .article-layout
+):not([data-ig-width-exception]){
+  width:min(100%,var(--ig-contract-max))!important;
+  max-width:var(--ig-contract-max)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding-left:var(--ig-contract-gutter)!important;
+  padding-right:var(--ig-contract-gutter)!important;
+  box-sizing:border-box!important;
+}
+
+/* A full-bleed section may paint to the viewport, never move its inner frame. */
+.ig-full-bleed{
+  width:100%;
+  max-width:none;
+  margin-left:0;
+  margin-right:0;
+}
