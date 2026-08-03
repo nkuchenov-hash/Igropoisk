@@ -27,8 +27,7 @@ for(const name of files){
   }
 
   const sections=article.sections||[];
-  const text=[article.lead,...sections.flatMap(section=>section.paragraphs||[]),article.verdict?.summary].join(' ');
-  const words=countWords(text);
+  const words=countWords([article.lead,...sections.flatMap(section=>section.paragraphs||[]),article.verdict?.summary].join(' '));
   const allImages=sections.flatMap(imagesFor);
   const urls=allImages.map(image=>canonical(image.url));
   const duplicateUrls=urls.filter((url,index)=>urls.indexOf(url)!==index);
@@ -36,27 +35,36 @@ for(const name of files){
   const repeatedGroups=duplicateGroups.filter((group,index)=>duplicateGroups.indexOf(group)!==index);
   const errors=[];
 
-  if(words<Number(balance.minimum_words||1800))errors.push(`article words ${words}/${balance.minimum_words}`);
+  if(words<Number(balance.minimum_words||2200))errors.push(`article words ${words}/${balance.minimum_words}`);
   if(sections.length<Number(balance.minimum_sections||8))errors.push(`sections ${sections.length}/${balance.minimum_sections}`);
   for(const section of sections){
     const sectionWords=countWords((section.paragraphs||[]).join(' '));
     const images=imagesFor(section);
-    if(sectionWords<Number(balance.minimum_words_per_section||180))errors.push(`${section.id}: words ${sectionWords}/${balance.minimum_words_per_section}`);
-    if(images.length<Number(balance.screenshots_per_section?.minimum||2))errors.push(`${section.id}: images ${images.length}/${balance.screenshots_per_section?.minimum}`);
+    if(sectionWords<Number(balance.minimum_words_per_section||220))errors.push(`${section.id}: words ${sectionWords}/${balance.minimum_words_per_section}`);
+    if(images.length<Number(balance.screenshots_per_section?.minimum||3))errors.push(`${section.id}: images ${images.length}/${balance.screenshots_per_section?.minimum}`);
   }
-  if(allImages.length<Number(balance.minimum_total_screenshots||18))errors.push(`total images ${allImages.length}/${balance.minimum_total_screenshots}`);
-  if(new Set(urls).size<Number(balance.minimum_unique_screenshots||18))errors.push(`unique images ${new Set(urls).size}/${balance.minimum_unique_screenshots}`);
+  if(allImages.length<Number(balance.minimum_total_screenshots||30))errors.push(`total images ${allImages.length}/${balance.minimum_total_screenshots}`);
+  if(new Set(urls).size<Number(balance.minimum_unique_screenshots||30))errors.push(`unique images ${new Set(urls).size}/${balance.minimum_unique_screenshots}`);
   if(duplicateUrls.length)errors.push(`duplicate URLs: ${[...new Set(duplicateUrls)].join(', ')}`);
   if(repeatedGroups.length)errors.push(`duplicate scenes: ${[...new Set(repeatedGroups)].join(', ')}`);
 
   const historical=Number(article.release_year||article.identity?.release_year||0)<2010;
-  const minWidth=Number(historical?quality.minimum_width_historical:quality.minimum_width_modern)||1024;
-  const minHeight=Number(historical?quality.minimum_height_historical:quality.minimum_height_modern)||576;
+  const minWidth=Number(historical?quality.minimum_width_historical:quality.minimum_width_modern)||1280;
+  const minHeight=Number(historical?quality.minimum_height_historical:quality.minimum_height_modern)||720;
+  const minBytes=Number(historical?quality.minimum_bytes_historical:quality.minimum_bytes_modern)||80000;
+  const minAspect=Number(quality.minimum_aspect_ratio||1.2);
+  const maxAspect=Number(quality.maximum_aspect_ratio||2.4);
   for(const image of allImages){
-    const width=Number(image.width||0),height=Number(image.height||0);
+    const width=Number(image.width||0),height=Number(image.height||0),bytes=Number(image.bytes||0);
+    const mime=String(image.mime||'').toLowerCase();
+    const aspect=width&&height?width/height:0;
     if(quality.require_known_dimensions&&(!width||!height))errors.push(`unknown dimensions: ${image.url}`);
-    if(width&&width<minWidth)errors.push(`width ${width}/${minWidth}: ${image.url}`);
-    if(height&&height<minHeight)errors.push(`height ${height}/${minHeight}: ${image.url}`);
+    if(width<minWidth)errors.push(`width ${width}/${minWidth}: ${image.url}`);
+    if(height<minHeight)errors.push(`height ${height}/${minHeight}: ${image.url}`);
+    if(bytes<minBytes)errors.push(`bytes ${bytes}/${minBytes}: ${image.url}`);
+    if(quality.require_image_mime_type&&!mime.startsWith('image/'))errors.push(`invalid mime ${mime||'missing'}: ${image.url}`);
+    if(aspect<minAspect||aspect>maxAspect)errors.push(`aspect ${aspect.toFixed(3)} outside ${minAspect}-${maxAspect}: ${image.url}`);
+    if(!image.quality||Number(image.quality.confidence||0)<Number(quality.visual_quality_confidence||0.84))errors.push(`missing or weak vision audit: ${image.url}`);
   }
 
   const report={validator:'review-output',slug:article.slug,checked_at:new Date().toISOString(),passed:errors.length===0,words,sections:sections.length,total_images:allImages.length,unique_images:new Set(urls).size,errors};
