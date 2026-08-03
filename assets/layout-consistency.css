@@ -1,29 +1,51 @@
-/* Page-specific correction only. Global wide-screen layout remains in design-system.css. */
+/* News-only compatibility layer. Global and wide-screen layout remain controlled by design-system.css. */
 #news > .ig-container.news-page{
   width:min(100%,var(--ig-container))!important;
   max-width:var(--ig-container)!important;
   margin-inline:auto!important;
-  padding-left:var(--ig-gutter)!important;
-  padding-right:var(--ig-gutter)!important;
+  padding:48px var(--ig-gutter) 80px!important;
 }
+
 #news .news-toolbar,
 #news #newsPage{
   width:100%!important;
   max-width:100%!important;
 }
+
 #news #newsPage.news-grid{
   display:grid!important;
   grid-template-columns:repeat(4,minmax(0,1fr))!important;
   gap:16px!important;
   align-items:stretch!important;
 }
-#news #newsPage>.news-card{
+
+#news #newsPage > .news-card{
   width:100%!important;
   min-width:0!important;
   max-width:none!important;
 }
-@media(min-width:2400px){#news #newsPage.news-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important}}
-@media(min-width:3200px){#news #newsPage.news-grid{grid-template-columns:repeat(6,minmax(0,1fr))!important}}
-@media(max-width:1320px){#news #newsPage.news-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
-@media(max-width:980px){#news #newsPage.news-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
-@media(max-width:600px){#news #newsPage.news-grid{grid-template-columns:1fr!important}}
+
+@media(min-width:1800px){
+  #news #newsPage.news-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+}
+
+@media(min-width:2400px){
+  #news #newsPage.news-grid{grid-template-columns:repeat(6,minmax(0,1fr))!important}
+}
+
+@media(min-width:3200px){
+  #news #newsPage.news-grid{grid-template-columns:repeat(7,minmax(0,1fr))!important}
+}
+
+@media(max-width:1300px){
+  #news #newsPage.news-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+
+@media(max-width:980px){
+  #news #newsPage.news-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+
+@media(max-width:600px){
+  #news > .ig-container.news-page{padding-top:34px!important;padding-bottom:56px!important}
+  #news #newsPage.news-grid{grid-template-columns:1fr!important}
+}
