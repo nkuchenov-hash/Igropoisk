@@ -1,20 +1,28 @@
 {
   "parser": "popular",
   "status": "success",
-  "checked_at": "2026-08-03T12:25:11.347Z",
-  "duration_ms": 1605,
-  "ranked_count": 30,
+  "checked_at": "2026-08-03T12:26:29.560Z",
+  "duration_ms": 1272,
+  "ranked_count": 27,
   "sources_success": 8,
   "sources_total": 8,
   "output": "data/popular/current.json",
-  "note": "Глобальный рейтинг сформирован по Steam-чартам и свежему редакционному тренду.",
+  "note": "Опубликовано 27 игровых позиций после удаления оборудования и служебных продуктов.",
   "source_statuses": [
+    {
+      "id": "ign-rss",
+      "status": "success",
+      "items": 20,
+      "matched": 3,
+      "duration_ms": 217,
+      "url": "https://www.ign.com/rss/articles/feed"
+    },
     {
       "id": "Steam Top Sellers",
       "status": "success",
       "items": 50,
       "matched": 50,
-      "duration_ms": 199,
+      "duration_ms": 303,
       "url": "https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=topsellers&infinite=1&cc=us&l=english&json=1"
     },
     {
@@ -22,23 +30,15 @@
       "status": "success",
       "items": 50,
       "matched": 50,
-      "duration_ms": 269,
+      "duration_ms": 307,
       "url": "https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=globaltopsellers&infinite=1&cc=us&l=english&json=1"
-    },
-    {
-      "id": "ign-rss",
-      "status": "success",
-      "items": 20,
-      "matched": 3,
-      "duration_ms": 420,
-      "url": "https://www.ign.com/rss/articles/feed"
     },
     {
       "id": "pcgamer-rss",
       "status": "success",
       "items": 50,
       "matched": 5,
-      "duration_ms": 184,
+      "duration_ms": 259,
       "url": "https://www.pcgamer.com/rss/"
     },
     {
@@ -46,7 +46,7 @@
       "status": "success",
       "items": 15,
       "matched": 3,
-      "duration_ms": 101,
+      "duration_ms": 146,
       "url": "https://www.gamespot.com/feeds/mashup/"
     },
     {
@@ -54,7 +54,7 @@
       "status": "success",
       "items": 100,
       "matched": 2,
-      "duration_ms": 90,
+      "duration_ms": 302,
       "url": "https://www.eurogamer.net/feed"
     },
     {
@@ -62,7 +62,7 @@
       "status": "success",
       "items": 100,
       "matched": 1,
-      "duration_ms": 85,
+      "duration_ms": 190,
       "url": "https://www.rockpapershotgun.com/feed"
     },
     {
@@ -70,7 +70,7 @@
       "status": "success",
       "items": 10,
       "matched": 1,
-      "duration_ms": 724,
+      "duration_ms": 156,
       "url": "https://www.polygon.com/rss/index.xml"
     }
   ]
