@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 HEADER_STYLE_TAG = (
-    '<link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-1" '
+    '<link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" '
     'data-ig-shared-header="style">'
 )
 STYLE_TAG = (
@@ -19,7 +19,7 @@ STYLE_TAG = (
     'data-ig-layout-contract="style">'
 )
 HEADER_SCRIPT_TAG = (
-    '<script src="/Igropoisk/assets/site-header.js?v=20260803-1" '
+    '<script src="/Igropoisk/assets/site-header.js?v=20260803-2" '
     'data-ig-shared-header="script" defer></script>'
 )
 SCRIPT_TAG = (
