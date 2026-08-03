@@ -1,0 +1,47 @@
+name: Update official publisher news
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '11 * * * *'
+  push:
+    paths:
+      - 'scripts/fetch-publisher-news.mjs'
+      - '.github/workflows/update-publisher-news.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-publisher-news
+  cancel-in-progress: true
+
+jobs:
+  update-publisher-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Fetch official publisher news
+        run: node scripts/fetch-publisher-news.mjs
+
+      - name: Commit official feed
+        run: |
+          if git diff --quiet -- data/publisher-news.json assets/publisher-news; then
+            echo "Official publisher feed is current"
+            exit 0
+          fi
+          git config user.name "igropoisk-publisher-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git pull --rebase origin main
+          git add data/publisher-news.json assets/publisher-news
+          git commit -m "Update official publisher news"
+          git push
