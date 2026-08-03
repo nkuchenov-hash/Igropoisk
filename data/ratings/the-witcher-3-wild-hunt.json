@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "game_slug": "the-witcher-3-wild-hunt",
+  "checked_at": "2026-08-03T10:55:00Z",
+  "method": {
+    "name": "Robust critic median",
+    "description": "Each verified publication contributes at most one normalized critic score. Scores are converted to a 100-point scale. The published Игропоиск score is the median, which limits the influence of unusually high or low reviews.",
+    "scale": 100,
+    "rounding": "one decimal on a 10-point scale"
+  },
+  "sources": [
+    {
+      "publication": "PC Gamer",
+      "score": 92,
+      "scale": 100,
+      "normalized": 92,
+      "url": "https://www.pcgamer.com/the-witcher-3-review/",
+      "status": "parsed"
+    },
+    {
+      "publication": "GameSpot",
+      "score": 10,
+      "scale": 10,
+      "normalized": 100,
+      "url": "https://www.gamespot.com/reviews/the-witcher-3-wild-hunt-review/1900-6416135/",
+      "status": "parsed"
+    },
+    {
+      "publication": "IGN",
+      "score": 9.3,
+      "scale": 10,
+      "normalized": 93,
+      "url": "https://www.ign.com/articles/2015/05/12/the-witcher-3-the-wild-hunt-review",
+      "status": "parsed"
+    },
+    {
+      "publication": "Game Informer",
+      "score": 9.8,
+      "scale": 10,
+      "normalized": 98,
+      "url": "https://www.gameinformer.com/games/the_witcher_3_wild_hunt/b/playstation4/archive/2015/05/12/the-witcher-3-wild-hunt-review-game-informer.aspx",
+      "status": "parsed"
+    },
+    {
+      "publication": "Metacritic",
+      "score": 92,
+      "scale": 100,
+      "normalized": 92,
+      "url": "https://www.metacritic.com/game/the-witcher-3-wild-hunt/",
+      "status": "parsed",
+      "kind": "aggregate"
+    },
+    {
+      "publication": "OpenCritic",
+      "score": 93,
+      "scale": 100,
+      "normalized": 93,
+      "url": "https://opencritic.com/game/463/the-witcher-3-wild-hunt-",
+      "status": "parsed",
+      "kind": "aggregate"
+    }
+  ],
+  "calculation": {
+    "values": [92, 100, 93, 98, 92, 93],
+    "sorted": [92, 92, 93, 93, 98, 100],
+    "median_100": 93,
+    "score_10": 9.3
+  }
+}
