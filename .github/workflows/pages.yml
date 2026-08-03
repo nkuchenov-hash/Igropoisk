@@ -45,6 +45,35 @@ jobs:
           python3 -m py_compile scripts/enforce_layout_contract.py
           python3 scripts/enforce_layout_contract.py --write
           python3 scripts/enforce_layout_contract.py --check
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          errors = []
+          header_css = Path('assets/site-header.css').read_text(encoding='utf-8')
+          wtp_css = Path('assets/what-to-play.css').read_text(encoding='utf-8')
+          calendar_html = Path('calendar/index.html').read_text(encoding='utf-8')
+
+          if "@import url('./site-system.css" not in header_css:
+              errors.append('Shared header must import assets/site-system.css')
+          if 'class="ig-site-header"' not in calendar_html:
+              errors.append('Calendar must use the shared header root')
+          if 'release-site-header' in calendar_html or 'release-header-bridge.js' in calendar_html:
+              errors.append('Calendar contains a page-specific header implementation')
+          if re.search(r'\.site-header(?:__inner)?\s*\{', wtp_css):
+              errors.append('What-to-play may not style the site header')
+          for match in re.finditer(r'\.wtp-(?:layout|results-section)\s*\{([^}]*)\}', wtp_css):
+              if re.search(r'(^|;)\s*(?:width|max-width|margin-inline|margin-left|margin-right|padding-left|padding-right)\s*:', match.group(1)):
+                  errors.append('What-to-play may not override the outer content frame')
+                  break
+
+          if errors:
+              raise SystemExit('\n'.join(f'- {error}' for error in errors))
+          print('Shared page architecture verified.')
+          PY
+          find . -name '*.html' -type f -print0 | xargs -0 sed -i \
+            -e 's/site-header.css?v=20260803-1/site-header.css?v=20260803-2/g' \
+            -e 's/site-header.js?v=20260803-1/site-header.js?v=20260803-2/g'
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
