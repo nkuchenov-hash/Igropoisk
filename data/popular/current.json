@@ -1,19 +1,19 @@
 {
   "schema_version": 2,
-  "generated_at": "2026-08-03T12:18:25.606Z",
+  "generated_at": "2026-08-03T12:19:12.169Z",
   "window_hours": 72,
   "method": {
-    "formula": "popular_score = 100 × Σ(weight_family × normalized_signal_family) / Σ(available_weight_family)",
+    "formula": "popular_score = weighted fresh attention + independent-source breadth bonus",
     "minimum_news_sources": 2,
     "minimum_news_signal": 0.12,
     "minimum_steam_growth": 0.08,
     "family_weights": {
-      "news": 0.25,
-      "reddit": 0.15,
+      "news": 0.34,
+      "reddit": 0.14,
       "youtube": 0.18,
-      "twitch": 0.22,
-      "steam": 0.12,
-      "attention": 0.08
+      "twitch": 0.2,
+      "steam": 0.1,
+      "attention": 0.04
     }
   },
   "ranking": [
@@ -24,12 +24,12 @@
       "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3669870/bcda7ae5b393697f658d82aa5ffedaac7511130d/page_bg_raw.jpg?t=1784555062",
       "score": 100,
       "confidence": 0.63,
-      "delta": null,
+      "delta": 0,
       "families": [
         "news"
       ],
       "signals": {
-        "news": 1.347064929540117
+        "news": 1.1815366978700454
       },
       "news_sources": 2,
       "evidence": [
@@ -39,7 +39,7 @@
           "title": "Spider-Man: Brand New Day may have just set up a major Avengers: Doomsday threat",
           "observed_at": "Mon, 03 Aug 2026 01:00:12 GMT",
           "family": "news",
-          "value": 0.721
+          "value": 0.647
         },
         {
           "source": "Eurogamer",
@@ -47,7 +47,7 @@
           "title": "Control Resonant's story will take around 30 hours, Remedy says, with completionists looking at 50-hour runs",
           "observed_at": "Sun, 02 Aug 2026 20:03:59 +0000",
           "family": "news",
-          "value": 0.626
+          "value": 0.535
         }
       ]
     },
@@ -56,14 +56,14 @@
       "title": "Death Stranding",
       "year": 2019,
       "image": "",
-      "score": 87.3,
+      "score": 75.4,
       "confidence": 0.63,
-      "delta": null,
+      "delta": -11.9,
       "families": [
         "news"
       ],
       "signals": {
-        "news": 0.9961735541413088
+        "news": 0.7362078704583996
       },
       "news_sources": 2,
       "evidence": [
@@ -73,7 +73,7 @@
           "title": "The Best Deals Today: Mega Man Star Force Legacy Collection, Saros, Death Stranding 2, and More",
           "observed_at": "Sun, 2 Aug 2026 17:18:04 +0000",
           "family": "news",
-          "value": 0.578
+          "value": 0.481
         },
         {
           "source": "IGN",
@@ -81,7 +81,7 @@
           "title": "The Best Deals Today: LEGO Pokémon, DDR5 RAM, Death Stranding 2, and More",
           "observed_at": "Sat, 1 Aug 2026 16:40:13 +0000",
           "family": "news",
-          "value": 0.284
+          "value": 0.186
         },
         {
           "source": "GameSpot",
@@ -89,23 +89,23 @@
           "title": "Guillermo Del Toro Begged For An Easier Dead Cells, And The Game&#8217;s Devs Answered His Call",
           "observed_at": "Fri, 31 Jul 2026 14:58:40 +0000",
           "family": "news",
-          "value": 0.135
+          "value": 0.069
         }
       ]
     },
     {
       "slug": "grand-theft-auto-vi",
       "title": "Grand Theft Auto VI",
-      "year": null,
+      "year": 2026,
       "image": "",
-      "score": 54,
+      "score": 61.1,
       "confidence": 0.63,
-      "delta": null,
+      "delta": 7.1,
       "families": [
         "news"
       ],
       "signals": {
-        "news": 0.5300573657850312
+        "news": 0.304859652203733
       },
       "news_sources": 2,
       "evidence": [
@@ -115,7 +115,7 @@
           "title": "Preorder Beast of Reincarnation At A Discount And Get Some DLC For Free",
           "observed_at": "Sat, 01 Aug 2026 14:00:00 +0000",
           "family": "news",
-          "value": 0.263
+          "value": 0.168
         },
         {
           "source": "GameSpot",
@@ -123,7 +123,7 @@
           "title": "Here&#8217;s Why People Think The Ocarina Of Time Remake Will Launch A Week Before GTA 6",
           "observed_at": "Fri, 31 Jul 2026 16:29:54 +0000",
           "family": "news",
-          "value": 0.141
+          "value": 0.073
         },
         {
           "source": "Eurogamer",
@@ -131,7 +131,7 @@
           "title": "Could Switch 2's The Legend of Zelda: Ocarina of Time remake be squaring up for a GTA 6 head-to-head? Newly sighted amiibo suggest a potential November release",
           "observed_at": "Fri, 31 Jul 2026 12:42:19 +0000",
           "family": "news",
-          "value": 0.126
+          "value": 0.063
         }
       ]
     },
@@ -140,14 +140,14 @@
       "title": "Elden Ring",
       "year": 2022,
       "image": "",
-      "score": 37.3,
+      "score": 46.9,
       "confidence": 0.63,
-      "delta": null,
+      "delta": 9.6,
       "families": [
         "news"
       ],
       "signals": {
-        "news": 0.4409846113289757
+        "news": 0.2766883436905563
       },
       "news_sources": 2,
       "evidence": [
@@ -157,7 +157,7 @@
           "title": "Elden Ring Players Are Hoping for Godwyn DLC After FromSoftware Shares Cryptic Social Media Post",
           "observed_at": "Sat, 1 Aug 2026 19:59:57 +0000",
           "family": "news",
-          "value": 0.312
+          "value": 0.212
         },
         {
           "source": "PC Gamer",
@@ -165,7 +165,7 @@
           "title": "Filming has wrapped on Garland's Elden Ring movie just 6 months after it started, according to a now deleted instagram post",
           "observed_at": "Fri, 31 Jul 2026 13:20:32 +0000",
           "family": "news",
-          "value": 0.129
+          "value": 0.065
         }
       ]
     }
@@ -177,7 +177,7 @@
       "status": "success",
       "items": 20,
       "matched": 3,
-      "duration_ms": 451,
+      "duration_ms": 362,
       "url": "https://www.ign.com/rss/articles/feed"
     },
     {
@@ -185,15 +185,15 @@
       "status": "success",
       "items": 50,
       "matched": 4,
-      "duration_ms": 76,
+      "duration_ms": 271,
       "url": "https://www.pcgamer.com/rss/"
     },
     {
       "id": "gamespot-rss",
       "status": "success",
       "items": 15,
-      "matched": 4,
-      "duration_ms": 146,
+      "matched": 6,
+      "duration_ms": 178,
       "url": "https://www.gamespot.com/feeds/mashup/"
     },
     {
@@ -201,7 +201,7 @@
       "status": "success",
       "items": 100,
       "matched": 2,
-      "duration_ms": 55,
+      "duration_ms": 157,
       "url": "https://www.eurogamer.net/feed"
     },
     {
@@ -209,7 +209,7 @@
       "status": "success",
       "items": 100,
       "matched": 0,
-      "duration_ms": 110,
+      "duration_ms": 339,
       "url": "https://www.rockpapershotgun.com/feed"
     },
     {
@@ -217,7 +217,7 @@
       "status": "success",
       "items": 10,
       "matched": 1,
-      "duration_ms": 762,
+      "duration_ms": 575,
       "url": "https://www.polygon.com/rss/index.xml"
     },
     {
@@ -243,7 +243,7 @@
       "status": "success",
       "items": 26,
       "matched": 0,
-      "duration_ms": 533,
+      "duration_ms": 706,
       "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={steam_appid}"
     }
   ]
