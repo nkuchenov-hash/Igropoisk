@@ -1,4 +1,4 @@
-name: Update official publisher news
+name: Update official gaming sources
 
 on:
   workflow_dispatch:
@@ -6,18 +6,20 @@ on:
     - cron: '11 * * * *'
   push:
     paths:
+      - 'data/news-sources.json'
       - 'scripts/fetch-publisher-news.mjs'
+      - 'scripts/build-news-events.mjs'
       - '.github/workflows/update-publisher-news.yml'
 
 permissions:
   contents: write
 
 concurrency:
-  group: update-publisher-news
+  group: update-official-gaming-news
   cancel-in-progress: true
 
 jobs:
-  update-publisher-news:
+  update-official-news:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,18 +32,21 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Fetch official publisher news
+      - name: Fetch official company studio platform and game news
         run: node scripts/fetch-publisher-news.mjs
 
-      - name: Commit official feed
+      - name: Rebuild unified news events
+        run: node scripts/build-news-events.mjs
+
+      - name: Commit official feed and events
         run: |
-          if git diff --quiet -- data/publisher-news.json assets/publisher-news; then
-            echo "Official publisher feed is current"
+          if git diff --quiet -- data/publisher-news.json data/news-events.json assets/publisher-news; then
+            echo "Official feed and event index are current"
             exit 0
           fi
-          git config user.name "igropoisk-publisher-bot"
+          git config user.name "igropoisk-official-news-bot"
           git config user.email "actions@users.noreply.github.com"
           git pull --rebase origin main
-          git add data/publisher-news.json assets/publisher-news
-          git commit -m "Update official publisher news"
+          git add data/publisher-news.json data/news-events.json assets/publisher-news
+          git commit -m "Update official gaming news events"
           git push
