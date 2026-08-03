@@ -22,10 +22,10 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
-      - name: Commit article
+      - name: Commit published article or blocked research draft
         run: |
           git config user.name "igropoisk-editor"
           git config user.email "actions@users.noreply.github.com"
-          git add data/articles data/parser-runs/review-synthesis.json
-          git diff --cached --quiet || git commit -m "Synthesize review for ${{ inputs.slug }}"
+          git add data/articles data/article-drafts data/parser-runs/review-synthesis.json
+          git diff --cached --quiet || git commit -m "Synthesize review research for ${{ inputs.slug }}"
           git push
