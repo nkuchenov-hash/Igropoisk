@@ -1,0 +1,43 @@
+name: Parse game awards
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: Game slug from data/catalog-visible.json
+        required: true
+        type: string
+      title:
+        description: Optional title override
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  parse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Parse sourced awards
+        env:
+          GAME_SLUG: ${{ inputs.slug }}
+          GAME_TITLE: ${{ inputs.title }}
+        run: node scripts/parse-awards.mjs "$GAME_SLUG" "$GAME_TITLE"
+      - name: Validate design and data contracts
+        run: node scripts/validate-design-system.mjs
+      - name: Commit parsed data
+        run: |
+          if git diff --quiet -- data/awards; then
+            echo "No award data changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/awards
+          git commit -m "Parse sourced awards for ${{ inputs.slug }}"
+          git push
