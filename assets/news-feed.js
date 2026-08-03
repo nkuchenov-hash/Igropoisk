@@ -1,126 +1,192 @@
 'use strict';
 
 (() => {
-  const dateFormatters = {
-    ru: new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
-    en: new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  const trustedMedia = new Set(['Игромания','StopGame','IGN','GameSpot','Eurogamer','VGC','PC Gamer','GamesRadar+','Polygon','Rock Paper Shotgun','Ars Technica','PlayGround.ru']);
+  const formatters = {
+    ru: new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long' }),
+    en: new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric' })
   };
-  const trustedMedia = new Set(['Игромания','StopGame','IGN','GameSpot','Eurogamer','VGC','PC Gamer','GamesRadar+','Polygon','Rock Paper Shotgun','Ars Technica']);
   let allItems = [];
+  let activeTag = '';
 
-  function escapeHtml(value = '') { return String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'); }
-  function currentLanguage() {
-    const htmlLang = (document.documentElement.lang || '').toLowerCase();
-    if (htmlLang.startsWith('en')) return 'en';
-    const stored = String(localStorage.getItem('igropoisk-language') || localStorage.getItem('language') || '').toLowerCase();
-    return stored.startsWith('en') ? 'en' : 'ru';
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const escapeHtml = (value = '') => String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+  const hasCyrillic = value => /[А-Яа-яЁё]/.test(value || '');
+
+  function language() {
+    return (document.documentElement.lang || 'ru').toLowerCase().startsWith('en') ? 'en' : 'ru';
   }
-  function localized(item, field, lang) {
-    const value = item[`${field}${lang === 'ru' ? 'Ru' : 'En'}`];
-    return typeof value === 'string' ? value.trim() : '';
+
+  function text(item, field, lang) {
+    const localized = String(item[`${field}${lang === 'ru' ? 'Ru' : 'En'}`] || '').trim();
+    if (lang === 'ru' && localized && !hasCyrillic(localized) && field === 'title') return '';
+    return localized;
   }
-  function validItem(item, lang) {
-    return item && item.primaryUrl && /^https?:\/\//i.test(item.primaryUrl) && item.publishedAt && localized(item,'title',lang)
-      && typeof item.image === 'string'
-      && /^assets\/(news|publisher-news)\/[a-f0-9]{16}\.(jpg|png|webp|avif|gif)$/i.test(item.image)
-      && /^https?:\/\//i.test(item.imageSourceUrl || '');
-  }
+
   function labels(lang) {
-    return lang === 'ru' ? {
-      loading:'Загружаем новости…', unavailable:'Новости временно недоступны.', empty:'Нет событий по выбранным фильтрам.',
-      all:'Все', main:'Главное', official:'Официальные', confirmed:'Подтверждённые', source:'Источник', search:'Поиск по событиям',
-      critical:'Сверхважно', major:'Важное', sources:'источников', oneSource:'источник', reset:'Сбросить', game:'Игра'
-    } : {
-      loading:'Loading news…', unavailable:'News is temporarily unavailable.', empty:'No events match the selected filters.',
-      all:'All', main:'Top stories', official:'Official', confirmed:'Confirmed', source:'Source', search:'Search events',
-      critical:'Critical', major:'Important', sources:'sources', oneSource:'source', reset:'Reset', game:'Game'
+    return lang === 'ru'
+      ? { loading:'Загружаем новости…', unavailable:'Новости временно недоступны.', empty:'По выбранным тегам новостей нет.', search:'Найти игру, студию или тему', all:'Все новости', official:'От разработчиков' }
+      : { loading:'Loading news…', unavailable:'News is temporarily unavailable.', empty:'No news matches these tags.', search:'Search games, studios or topics', all:'All news', official:'From developers' };
+  }
+
+  function valid(item, lang) {
+    return item && /^https?:\/\//i.test(item.primaryUrl || '') && item.publishedAt && text(item,'title',lang)
+      && /^assets\/(news|publisher-news)\/[a-f0-9]{16}\.(jpg|png|webp|avif|gif)$/i.test(item.image || '');
+  }
+
+  function sourceName(item) {
+    return item.primarySource || item.sources?.[0]?.name || '';
+  }
+
+  function deriveTags(item, lang) {
+    const body = `${text(item,'title',lang)} ${text(item,'summary',lang)}`.toLowerCase();
+    const tags = [];
+    if (item.game) tags.push(item.game);
+    const organization = item.sources?.find(source => source.official)?.organization;
+    if (organization && organization !== item.game) tags.push(organization);
+    const groups = lang === 'ru' ? [
+      ['Релизы', /релиз|вышел|вышла|выходит|дата выхода|ранн.*доступ/],
+      ['Обновления', /патч|обновлен|хотфикс|сезон|update/],
+      ['Анонсы', /анонс|представил|трейлер|показал|direct/],
+      ['DLC', /\bdlc\b|дополнен|expansion/],
+      ['Индустрия', /студи|издател|увольнен|закрыт|поглощен|продаж|директор/],
+      ['Технологии', /движок|график|видеокарт|драйвер|unreal|unity|oled|желез/],
+      ['RPG', /\brpg\b|ролевая|ролевой/],
+      ['Стратегии', /стратег|\brts\b/],
+      ['Шутеры', /шутер|shoot/],
+      ['Симуляторы', /симулятор|simulator/],
+      ['Хорроры', /хоррор|horror/]
+    ] : [
+      ['Releases', /release|launch|early access/], ['Updates', /patch|update|hotfix|season/], ['Announcements', /announce|trailer|reveal|direct/], ['DLC', /\bdlc\b|expansion/], ['Industry', /studio|publisher|layoff|acquisition|sales|director/], ['Technology', /engine|graphics|gpu|driver|unreal|unity|oled/], ['RPG', /\brpg\b/], ['Strategy', /strategy|\brts\b/], ['Shooters', /shooter/], ['Simulation', /simulator/], ['Horror', /horror/]
+    ];
+    groups.forEach(([tag, pattern]) => { if (pattern.test(body)) tags.push(tag); });
+    if (item.type === 'official') tags.push(labels(lang).official);
+    return [...new Set(tags)].slice(0, 5);
+  }
+
+  function normalizedItem(item, official = false) {
+    const source = item.publisher || item.organization || item.source || '';
+    return {
+      ...item,
+      type: official ? 'official' : (item.type || 'ranked'),
+      primaryUrl: item.primaryUrl || item.url,
+      primarySource: item.primarySource || source,
+      titleRu: item.titleRu || item.title || '', titleEn: item.titleEn || item.title || '',
+      summaryRu: item.summaryRu || item.summary || '', summaryEn: item.summaryEn || item.summary || '',
+      mediaSourceCount: Number(item.mediaSourceCount || item.sourceCount || 1),
+      sources: item.sources || [{ name: source, organization: item.organization || item.publisher || '', official }],
+      homeUntil: item.homeUntil || new Date(new Date(item.publishedAt).getTime() + 72 * 3600e3).toISOString()
     };
   }
-  function formatDate(value, lang) { const date = new Date(value); return Number.isNaN(date.getTime()) ? '' : dateFormatters[lang].format(date); }
-  function sourceLabel(item) { return item.primarySource || item.sources?.[0]?.name || ''; }
-  function deriveTags(item, lang) {
-    const text = `${localized(item,'title',lang)} ${localized(item,'summary',lang)}`.toLowerCase();
-    const pairs = lang === 'ru'
-      ? [['релиз',/релиз|вышел|вышла|выходит|дата выхода/],['обновление',/патч|обновлен|хотфикс|update/],['анонс',/анонс|представил|трейлер|показал/],['DLC',/dlc|дополнен|expansion/],['индустрия',/студи|издател|увольнен|закрыт|поглощен|продаж/],['технологии',/движок|график|видеокарт|драйвер|unreal|unity/]]
-      : [['Release',/release|launch|release date/],['Update',/patch|update|hotfix/],['Announcement',/announce|trailer|reveal/],['DLC',/dlc|expansion/],['Industry',/studio|publisher|layoff|acquisition|sales/],['Technology',/engine|graphics|gpu|driver|unreal|unity/]];
-    const tags = pairs.filter(([,pattern]) => pattern.test(text)).map(([tag]) => tag);
-    if (item.game) tags.unshift(item.game);
-    if (item.type === 'official') tags.unshift(lang === 'ru' ? 'Официально' : 'Official');
-    return [...new Set(tags)].slice(0,4);
+
+  async function loadJson(path) {
+    const response = await fetch(`${path}?v=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`${path}: ${response.status}`);
+    const payload = await response.json();
+    return Array.isArray(payload) ? payload : payload.items || [];
   }
+
+  async function loadItems() {
+    try {
+      const events = await loadJson('data/news-events.json');
+      if (events.length) return events.map(item => normalizedItem(item, item.type === 'official'));
+    } catch {}
+    const [news, official] = await Promise.allSettled([loadJson('data/news.json'), loadJson('data/publisher-news.json')]);
+    return [
+      ...(news.status === 'fulfilled' ? news.value.map(item => normalizedItem(item, false)) : []),
+      ...(official.status === 'fulfilled' ? official.value.map(item => normalizedItem(item, true)) : [])
+    ];
+  }
+
+  function homeEligible(item) {
+    if (new Date(item.homeUntil || 0).getTime() < Date.now()) return false;
+    const sources = item.sources || [];
+    const trusted = sources.some(source => trustedMedia.has(source.name));
+    const official = item.type === 'official' || sources.some(source => source.official);
+    return official || trusted || Number(item.mediaSourceCount || 0) >= 2;
+  }
+
+  function score(item) {
+    return (item.importance === 'critical' ? 1000 : item.importance === 'major' ? 400 : 0)
+      + Number(item.trendScore || 0)
+      + (item.type === 'official' ? 80 : 0);
+  }
+
   function renderCard(item, compact, lang) {
-    const copy = labels(lang);
-    const title = escapeHtml(localized(item,'title',lang));
-    const summary = escapeHtml(localized(item,'summary',lang));
-    const source = escapeHtml(sourceLabel(item));
-    const totalSources = Array.isArray(item.sources) ? item.sources.length : 1;
-    const badge = item.importance === 'critical' ? copy.critical : item.importance === 'major' ? copy.major : item.type === 'official' ? copy.official : item.type === 'confirmed' ? copy.confirmed : '';
-    const sourceCount = totalSources > 1 ? `${totalSources} ${copy.sources}` : `1 ${copy.oneSource}`;
+    const title = escapeHtml(text(item,'title',lang));
+    const summary = escapeHtml(text(item,'summary',lang));
     const tags = deriveTags(item, lang);
-    return `<a class="card news-card parsed-news-card news-event-card" data-news-type="${escapeHtml(item.type || 'ranked')}" data-news-source="${source}" href="${escapeHtml(item.primaryUrl)}" target="_blank" rel="noopener noreferrer">
+    return `<a class="card news-card news-event-card" href="${escapeHtml(item.primaryUrl)}" target="_blank" rel="noopener noreferrer">
       <img src="${escapeHtml(item.image)}" alt="${title}" loading="lazy">
       <div class="card-body">
-        <div class="date">${escapeHtml(formatDate(item.publishedAt,lang))} · ${source}</div>
-        ${badge ? `<span class="news-card__badge">${escapeHtml(badge)}</span>` : ''}
-        ${tags.length ? `<div class="news-card__tags">${tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+        <div class="date">${escapeHtml(formatters[lang].format(new Date(item.publishedAt)))} · ${escapeHtml(sourceName(item))}</div>
+        <div class="news-card__tags">${tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join('')}</div>
         <h3>${title}</h3>
         ${compact || !summary ? '' : `<p>${summary}</p>`}
-        <div class="news-event-card__sources">${escapeHtml(sourceCount)}</div>
       </div>
     </a>`;
   }
-  function setState(target,text) { if (!target) return; target._igInfiniteRailCleanup?.(); target.innerHTML = `<div class="empty">${escapeHtml(text)}</div>`; }
-  async function loadJson(path) { const response = await fetch(`${path}?v=${Date.now()}`,{cache:'no-store'}); if (!response.ok) throw new Error(`${path}: ${response.status}`); const payload = await response.json(); return Array.isArray(payload) ? payload : payload.items || []; }
-  function legacyToEvent(item, official) {
-    const sourceName = item.publisher || item.organization || item.source || '';
-    const importance = item.superImportant || Number(item.trendScore || 0) >= 400 ? 'critical' : item.mainEligible || Number(item.sourceCount || 0) >= 2 ? 'major' : 'normal';
-    return { id:item.id, type:official?'official':'ranked', importance, titleRu:item.titleRu||item.title||'', titleEn:item.titleEn||item.title||'', summaryRu:item.summaryRu||item.summary||'', summaryEn:item.summaryEn||item.summary||'', publishedAt:item.publishedAt, game:item.game||'', image:item.image, imageSourceUrl:item.imageSourceUrl, primaryUrl:item.url, primarySource:sourceName, trendScore:Number(item.trendScore||0), mediaSourceCount:Number(item.sourceCount||0), sources:[{name:sourceName,organization:item.organization||item.publisher||'',kind:official?'official':'media',url:item.url,official}], homeUntil:item.homeUntil||new Date(new Date(item.publishedAt).getTime()+(official?36:importance==='critical'?168:importance==='major'?72:48)*3600e3).toISOString() };
+
+  function setState(target, value) {
+    if (target) target.innerHTML = `<div class="empty">${escapeHtml(value)}</div>`;
   }
-  async function loadEvents() {
-    try { const events = await loadJson('data/news-events.json'); if (events.length) return events; } catch (error) { console.warn('Event index is not ready; using source feeds.',error); }
-    const results = await Promise.allSettled([loadJson('data/news.json'),loadJson('data/publisher-news.json')]);
-    return [
-      ...(results[0].status==='fulfilled'?results[0].value.map(item=>legacyToEvent(item,false)):[]),
-      ...(results[1].status==='fulfilled'?results[1].value.map(item=>legacyToEvent(item,true)):[])
-    ];
+
+  function buildFilters(page, lang) {
+    let controls = $('#newsFilters');
+    if (!controls) {
+      controls = document.createElement('div');
+      controls.id = 'newsFilters';
+      controls.className = 'news-toolbar';
+      page.before(controls);
+    }
+    const frequencies = new Map();
+    allItems.flatMap(item => deriveTags(item, lang)).forEach(tag => frequencies.set(tag, (frequencies.get(tag) || 0) + 1));
+    const tags = [...frequencies].sort((a,b) => b[1] - a[1]).slice(0, 12).map(([tag]) => tag);
+    controls.innerHTML = `<div class="news-toolbar__top"><input type="search" data-news-search placeholder="${labels(lang).search}"></div><div class="news-tag-filter"><button class="is-active" data-tag="">${labels(lang).all}</button>${tags.map(tag => `<button data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</button>`).join('')}</div>`;
+    controls.addEventListener('click', event => {
+      const button = event.target.closest('[data-tag]');
+      if (!button) return;
+      activeTag = button.dataset.tag || '';
+      controls.querySelectorAll('[data-tag]').forEach(item => item.classList.toggle('is-active', item === button));
+      renderArchive(page, lang);
+    });
+    $('[data-news-search]', controls).addEventListener('input', () => renderArchive(page, lang));
   }
-  function credibleForHome(item) {
-    const mediaNames = (item.sources || []).filter(source => !source.official).map(source => source.name);
-    const trustedCount = new Set(mediaNames.filter(name => trustedMedia.has(name))).size;
-    const officialMajor = item.type === 'official' && Boolean(item.primarySource);
-    const confirmed = item.type === 'confirmed' && trustedCount >= 1;
-    const ranked = item.type === 'ranked' && trustedCount >= 1 && Number(item.mediaSourceCount || 0) >= 2;
-    const critical = item.importance === 'critical' && trustedCount >= 1;
-    return officialMajor || confirmed || ranked || critical;
+
+  function renderArchive(page, lang) {
+    const query = ($('[data-news-search]', $('#newsFilters'))?.value || '').trim().toLowerCase();
+    const filtered = allItems.filter(item => {
+      const tags = deriveTags(item, lang);
+      if (activeTag && !tags.includes(activeTag)) return false;
+      const haystack = `${text(item,'title',lang)} ${text(item,'summary',lang)} ${tags.join(' ')} ${sourceName(item)}`.toLowerCase();
+      return !query || haystack.includes(query);
+    }).sort((a,b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    page.innerHTML = filtered.length ? filtered.map(item => renderCard(item, false, lang)).join('') : `<div class="empty">${labels(lang).empty}</div>`;
   }
-  function homeItems(items) {
-    const now = Date.now();
-    return items.filter(item => new Date(item.homeUntil || 0).getTime() > now && credibleForHome(item))
-      .sort((a,b) => ({critical:3,major:2,normal:1}[b.importance]||0)-({critical:3,major:2,normal:1}[a.importance]||0) || Number(b.trendScore||0)-Number(a.trendScore||0) || new Date(b.publishedAt)-new Date(a.publishedAt)).slice(0,12);
+
+  async function render() {
+    const lang = language();
+    const home = $('#homeNews');
+    const page = $('#newsPage');
+    setState(home, labels(lang).loading);
+    setState(page, labels(lang).loading);
+    try {
+      allItems = (await loadItems()).filter(item => valid(item, lang));
+      const homeItems = allItems.filter(homeEligible).sort((a,b) => score(b) - score(a) || new Date(b.publishedAt) - new Date(a.publishedAt)).slice(0, 12);
+      if (home) home.innerHTML = homeItems.length ? homeItems.map(item => renderCard(item, true, lang)).join('') : `<div class="empty">${labels(lang).empty}</div>`;
+      if (page) { buildFilters(page, lang); renderArchive(page, lang); }
+    } catch (error) {
+      console.warn(error);
+      setState(home, labels(lang).unavailable);
+      setState(page, labels(lang).unavailable);
+    }
   }
-  function ensureFilters(page,lang) {
-    let controls = document.querySelector('#newsFilters'); if (controls) return controls;
-    const copy = labels(lang); controls = document.createElement('div'); controls.id='newsFilters'; controls.className='news-filters';
-    controls.innerHTML = `<div class="news-filters__types" role="group"><button type="button" class="is-active" data-news-filter="all">${copy.all}</button><button type="button" data-news-filter="ranked">${copy.main}</button><button type="button" data-news-filter="confirmed">${copy.confirmed}</button><button type="button" data-news-filter="official">${copy.official}</button></div><input type="search" data-news-search placeholder="${copy.search}" aria-label="${copy.search}"><select data-news-source aria-label="${copy.source}"><option value="">${copy.source}: ${copy.all}</option></select><button type="button" data-news-reset>${copy.reset}</button>`;
-    page.parentNode.insertBefore(controls,page); return controls;
-  }
-  function renderArchive(page,lang) {
-    const controls = ensureFilters(page,lang); const active = controls.querySelector('[data-news-filter].is-active')?.dataset.newsFilter || 'all'; const query = controls.querySelector('[data-news-search]')?.value.trim().toLowerCase() || ''; const source = controls.querySelector('[data-news-source]')?.value || '';
-    const filtered = allItems.filter(item => { if (active!=='all' && item.type!==active) return false; const names=(item.sources||[]).map(entry=>entry.name).filter(Boolean); if (source&&!names.includes(source)) return false; const text=`${localized(item,'title',lang)} ${localized(item,'summary',lang)} ${item.game||''} ${names.join(' ')}`.toLowerCase(); return !query||text.includes(query); }).sort((a,b)=>new Date(b.publishedAt)-new Date(a.publishedAt));
-    page.innerHTML = filtered.length ? filtered.map(item=>renderCard(item,false,lang)).join('') : `<div class="empty">${escapeHtml(labels(lang).empty)}</div>`;
-  }
-  function bindFilters(page,lang) {
-    const controls=ensureFilters(page,lang); const sourceSelect=controls.querySelector('[data-news-source]'); const sources=[...new Set(allItems.flatMap(item=>(item.sources||[]).map(entry=>entry.name)).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-    sourceSelect.innerHTML=`<option value="">${labels(lang).source}: ${labels(lang).all}</option>${sources.map(source=>`<option value="${escapeHtml(source)}">${escapeHtml(source)}</option>`).join('')}`;
-    controls.querySelectorAll('[data-news-filter]').forEach(button=>button.addEventListener('click',()=>{controls.querySelectorAll('[data-news-filter]').forEach(item=>item.classList.toggle('is-active',item===button));renderArchive(page,lang);}));
-    controls.querySelector('[data-news-search]').addEventListener('input',()=>renderArchive(page,lang)); sourceSelect.addEventListener('change',()=>renderArchive(page,lang)); controls.querySelector('[data-news-reset]').addEventListener('click',()=>{controls.querySelectorAll('[data-news-filter]').forEach((item,index)=>item.classList.toggle('is-active',index===0));controls.querySelector('[data-news-search]').value='';sourceSelect.value='';renderArchive(page,lang);});
-  }
-  async function renderNews() {
-    const lang=currentLanguage(); const home=document.querySelector('#homeNews'); const page=document.querySelector('#newsPage'); setState(home,labels(lang).loading); setState(page,labels(lang).loading);
-    try { allItems=(await loadEvents()).filter(item=>validItem(item,lang)); if(!allItems.length) throw new Error('No localized events available'); if(home){const selected=homeItems(allItems);home.innerHTML=selected.length?selected.map(item=>renderCard(item,true,lang)).join(''):`<div class="empty">${escapeHtml(labels(lang).empty)}</div>`;} if(page){bindFilters(page,lang);renderArchive(page,lang);} }
-    catch(error){console.warn('News event feed is unavailable.',error);setState(home,labels(lang).unavailable);setState(page,labels(lang).unavailable);}
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',renderNews,{once:true}); else renderNews();
-  window.addEventListener('igropoisk:languagechange',renderNews);
-  new MutationObserver(mutations=>{if(mutations.some(item=>item.attributeName==='lang')) renderNews();}).observe(document.documentElement,{attributes:true});
+
+  document.addEventListener('click', event => {
+    const card = event.target.closest('a.news-event-card[href]');
+    if (!card || event.defaultPrevented) return;
+    event.stopPropagation();
+  }, true);
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', render, { once: true }); else render();
 })();
