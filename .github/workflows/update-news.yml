@@ -4,6 +4,10 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '17 */3 * * *'
+  push:
+    paths:
+      - 'scripts/fetch-news.mjs'
+      - '.github/workflows/update-news.yml'
 
 permissions:
   contents: write
@@ -24,17 +28,17 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Fetch RSS feeds
+      - name: Fetch article pages and download original images
         run: node scripts/fetch-news.mjs
 
-      - name: Commit updated feed
+      - name: Commit updated feed and images
         run: |
-          if git diff --quiet -- data/news.json; then
-            echo "News feed is already current"
+          if git diff --quiet -- data/news.json assets/news; then
+            echo "News feed and images are already current"
             exit 0
           fi
           git config user.name "igropoisk-news-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/news.json
-          git commit -m "Update parsed gaming news"
+          git add data/news.json assets/news
+          git commit -m "Update news with original article images"
           git push
