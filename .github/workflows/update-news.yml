@@ -1,0 +1,40 @@
+name: Update gaming news
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */3 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-gaming-news
+  cancel-in-progress: true
+
+jobs:
+  update-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Fetch RSS feeds
+        run: node scripts/fetch-news.mjs
+
+      - name: Commit updated feed
+        run: |
+          if git diff --quiet -- data/news.json; then
+            echo "News feed is already current"
+            exit 0
+          fi
+          git config user.name "igropoisk-news-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/news.json
+          git commit -m "Update parsed gaming news"
+          git push
