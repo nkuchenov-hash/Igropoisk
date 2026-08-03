@@ -3,18 +3,58 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 
 const feeds = [
-  { source: 'PC Gamer', url: 'https://www.pcgamer.com/rss/' },
-  { source: 'Rock Paper Shotgun', url: 'https://www.rockpapershotgun.com/feed' },
-  { source: 'VGC', url: 'https://www.videogameschronicle.com/feed/' },
-  { source: 'GamingOnLinux', url: 'https://www.gamingonlinux.com/article_rss.php' },
-  { source: 'Ars Technica', url: 'https://feeds.arstechnica.com/arstechnica/gaming' }
+  { source: 'Игромания', url: 'https://www.igromania.ru/rss/rss_all.xml', language: 'ru' },
+  { source: 'StopGame', url: 'https://stopgame.ru/rss/news.xml', language: 'ru' },
+  { source: 'PlayGround.ru', url: 'https://www.playground.ru/rss/news.xml', language: 'ru' },
+  { source: 'PC Gamer', url: 'https://www.pcgamer.com/rss/', language: 'en' },
+  { source: 'Rock Paper Shotgun', url: 'https://www.rockpapershotgun.com/feed', language: 'en' },
+  { source: 'VGC', url: 'https://www.videogameschronicle.com/feed/', language: 'en' },
+  { source: 'GamingOnLinux', url: 'https://www.gamingonlinux.com/article_rss.php', language: 'en' },
+  { source: 'Ars Technica', url: 'https://feeds.arstechnica.com/arstechnica/gaming', language: 'en' }
 ];
 
 const limit = 36;
-const perFeedLimit = 14;
+const perFeedLimit = 24;
+const maxPerSource = 7;
 const outputPath = path.resolve('data/news.json');
 const imageDirectory = path.resolve('assets/news');
-const userAgent = 'IgropoiskNewsBot/2.0 (+https://github.com/nkuchenov-hash/Igropoisk)';
+const userAgent = 'IgropoiskNewsBot/3.0 (+https://github.com/nkuchenov-hash/Igropoisk)';
+
+const rejectPatterns = [
+  /survey|опрос/i,
+  /chance to win|win \$|giveaway|розыгрыш|выигра[йт]/i,
+  /newsletter|subscribe|подписывайтесь|подписка/i,
+  /audience|читател[ья]|редакци[яи]/i,
+  /podcast|подкаст/i,
+  /quiz|викторин/i,
+  /job opening|we(?:'re| are) hiring|ваканси/i,
+  /support us|donate|patreon|поддержать издание/i,
+  /deal of the day|best deals|скидки дня|распродажа/i,
+  /gift guide|подарочный гид/i,
+  /letter from the editor|обращение редакции/i,
+  /future of pc gamer|будущее pc gamer/i,
+  /review|рецензи[яи]|обзор/i,
+  /opinion|column|колонка|мнение/i,
+  /movie|film|cinema|anime|сериал|кино|аниме/i
+];
+
+const gamingSignals = [
+  /\bgame\b|\bgames\b|игр[аыеу]|геймпле/i,
+  /release|launch|релиз|выходит|вышла|вышел/i,
+  /announce|анонс|представил|показал|трейлер/i,
+  /update|patch|hotfix|обновлен|патч/i,
+  /dlc|expansion|дополнени/i,
+  /developer|studio|publisher|разработчик|студи[яи]|издател/i,
+  /steam|valve|playstation|xbox|nintendo|switch|game pass|epic games/i,
+  /pc|console|консол/i,
+  /rpg|shooter|strategy|simulator|survival|horror|action|adventure|mmorpg/i,
+  /движок|unreal engine|unity|directx|vulkan|proton|steam deck/i,
+  /gaming gpu|gaming driver|игровой драйвер|игровая видеокарта/i,
+  /sales|copies sold|тираж|продаж/i,
+  /acquisition|layoffs|закрытие студии|увольнен|поглощени/i,
+  /beta|demo|early access|бета|демоверси|ранний доступ/i,
+  /esports|киберспорт/i
+];
 
 function decodeEntities(value = '') {
   return value
@@ -63,6 +103,12 @@ function absoluteUrl(value, base) {
   }
 }
 
+function editoriallyRelevant(item) {
+  const text = `${item.title} ${item.summary} ${item.url}`;
+  if (rejectPatterns.some(pattern => pattern.test(text))) return false;
+  return gamingSignals.some(pattern => pattern.test(text));
+}
+
 function parseFeed(xml, feed) {
   const blocks = [
     ...(xml.match(/<item\b[\s\S]*?<\/item>/gi) || []),
@@ -85,9 +131,10 @@ function parseFeed(xml, feed) {
       summary: description.slice(0, 280),
       publishedAt,
       source: feed.source,
+      language: feed.language,
       url
     };
-  }).filter(item => item.title && item.url);
+  }).filter(item => item.title && item.url && editoriallyRelevant(item));
 }
 
 async function fetchText(url, timeoutMs = 18000) {
@@ -112,7 +159,9 @@ async function fetchText(url, timeoutMs = 18000) {
 async function fetchFeed(feed) {
   try {
     const { text } = await fetchText(feed.url, 15000);
-    return parseFeed(text, feed);
+    const items = parseFeed(text, feed);
+    console.log(`[news/feed] ${feed.source}: ${items.length} relevant items`);
+    return items;
   } catch (error) {
     console.error(`[news/feed] ${feed.source}: ${error.message}`);
     return [];
@@ -121,12 +170,7 @@ async function fetchFeed(feed) {
 
 function extractOriginalArticleImage(html, articleUrl) {
   const metaTags = html.match(/<meta\b[^>]*>/gi) || [];
-  const wanted = [
-    'og:image:secure_url',
-    'og:image',
-    'twitter:image',
-    'twitter:image:src'
-  ];
+  const wanted = ['og:image:secure_url', 'og:image', 'twitter:image', 'twitter:image:src'];
 
   for (const key of wanted) {
     for (const metaTag of metaTags) {
@@ -143,7 +187,6 @@ function extractOriginalArticleImage(html, articleUrl) {
     const candidate = absoluteUrl(attrFromTag(linkTag, 'href'), articleUrl);
     if (candidate) return candidate;
   }
-
   return '';
 }
 
@@ -157,12 +200,9 @@ function extensionFor(contentType, imageUrl) {
     'image/gif': '.gif'
   };
   if (byType[normalized]) return byType[normalized];
-
   try {
     const extension = path.extname(new URL(imageUrl).pathname).toLowerCase();
-    if (['.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif'].includes(extension)) {
-      return extension === '.jpeg' ? '.jpg' : extension;
-    }
+    if (['.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif'].includes(extension)) return extension === '.jpeg' ? '.jpg' : extension;
   } catch {}
   return '';
 }
@@ -181,25 +221,16 @@ async function downloadOriginalImage(imageUrl, id, articleUrl) {
       }
     });
     if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-
     const contentType = response.headers.get('content-type') || '';
-    if (!contentType.toLowerCase().startsWith('image/')) {
-      throw new Error(`not an image: ${contentType || 'unknown content type'}`);
-    }
-
+    if (!contentType.toLowerCase().startsWith('image/')) throw new Error(`not an image: ${contentType || 'unknown'}`);
     const extension = extensionFor(contentType, response.url || imageUrl);
     if (!extension) throw new Error(`unsupported image type: ${contentType}`);
-
     const bytes = Buffer.from(await response.arrayBuffer());
     if (bytes.length < 1024) throw new Error('image is too small');
     if (bytes.length > 20 * 1024 * 1024) throw new Error('image exceeds 20 MB');
-
     const filename = `${id}${extension}`;
     await fs.writeFile(path.join(imageDirectory, filename), bytes);
-    return {
-      image: `assets/news/${filename}`,
-      imageSourceUrl: response.url || imageUrl
-    };
+    return { image: `assets/news/${filename}`, imageSourceUrl: response.url || imageUrl };
   } finally {
     clearTimeout(timer);
   }
@@ -209,41 +240,57 @@ async function hydrateArticle(item) {
   try {
     const { text: html, finalUrl } = await fetchText(item.url);
     const originalImageUrl = extractOriginalArticleImage(html, finalUrl);
-    if (!originalImageUrl) throw new Error('original article has no og:image or twitter:image');
-
+    if (!originalImageUrl) throw new Error('original article has no main image');
     const downloaded = await downloadOriginalImage(originalImageUrl, item.id, finalUrl);
-    return {
-      ...item,
-      url: finalUrl,
-      ...downloaded
-    };
+    return { ...item, url: finalUrl, ...downloaded };
   } catch (error) {
     console.error(`[news/article] ${item.url}: ${error.message}`);
     return null;
   }
 }
 
+function balancedCandidates(items) {
+  const groups = new Map();
+  for (const item of items) {
+    if (!groups.has(item.source)) groups.set(item.source, []);
+    groups.get(item.source).push(item);
+  }
+  for (const group of groups.values()) group.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+
+  const result = [];
+  let added = true;
+  while (added && result.length < limit * 2) {
+    added = false;
+    for (const [source, group] of groups) {
+      const already = result.filter(item => item.source === source).length;
+      if (already >= maxPerSource || !group.length) continue;
+      result.push(group.shift());
+      added = true;
+    }
+  }
+  return result;
+}
+
 await fs.mkdir(path.dirname(outputPath), { recursive: true });
 await fs.mkdir(imageDirectory, { recursive: true });
 
 const feedItems = (await Promise.all(feeds.map(fetchFeed))).flat();
-const deduplicated = [...new Map(feedItems.map(item => [item.url, item])).values()]
-  .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+const deduplicated = [...new Map(feedItems.map(item => [item.url, item])).values()];
+const candidates = balancedCandidates(deduplicated);
 
 const items = [];
-for (const item of deduplicated) {
+for (const item of candidates) {
   if (items.length >= limit) break;
   const hydrated = await hydrateArticle(item);
   if (hydrated) items.push(hydrated);
 }
+items.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
-if (!items.length) throw new Error('No news articles with downloadable original images were found.');
+if (!items.length) throw new Error('No editorially relevant gaming news with original images were found.');
 
 const usedFiles = new Set(items.map(item => path.basename(item.image)));
 const existingFiles = await fs.readdir(imageDirectory).catch(() => []);
-await Promise.all(existingFiles
-  .filter(filename => !usedFiles.has(filename))
-  .map(filename => fs.rm(path.join(imageDirectory, filename), { force: true })));
+await Promise.all(existingFiles.filter(filename => !usedFiles.has(filename)).map(filename => fs.rm(path.join(imageDirectory, filename), { force: true })));
 
-await fs.writeFile(outputPath, `${JSON.stringify({ generatedAt: new Date().toISOString(), items }, null, 2)}\n`);
-console.log(`[news] wrote ${items.length} articles with downloaded original images`);
+await fs.writeFile(outputPath, `${JSON.stringify({ generatedAt: new Date().toISOString(), editorialPolicy: 'Only concrete game, release, studio, platform and gaming-technology news. No surveys, giveaways, publication promos, reviews or opinion pieces.', items }, null, 2)}\n`);
+console.log(`[news] wrote ${items.length} filtered articles from ${new Set(items.map(item => item.source)).size} sources`);
