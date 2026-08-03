@@ -6,15 +6,19 @@ on:
     - cron: '7 * * * *'
   push:
     paths:
+      - 'scripts/install-release-calendar.mjs'
+      - 'scripts/release-payload/**'
       - 'config/parsers/schedule.json'
+      - 'config/parsers/releases.json'
       - 'scripts/run-scheduled-parsers.mjs'
+      - 'scripts/parse-releases.mjs'
       - '.github/workflows/parser-scheduler.yml'
 
 permissions:
   contents: write
 
 concurrency:
-  group: central-parser-scheduler
+  group: central-parser-scheduler-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -25,22 +29,48 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Install release calendar files
+        run: |
+          node --check scripts/install-release-calendar.mjs
+          node scripts/install-release-calendar.mjs
+          node --check scripts/parse-releases.mjs
       - name: Run due parsers
         env:
           TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
           TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           REDDIT_ACCESS_TOKEN: ${{ secrets.REDDIT_ACCESS_TOKEN }}
-        run: node scripts/run-scheduled-parsers.mjs
-      - name: Commit parser outputs
+          RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
         run: |
-          if git diff --quiet -- data; then
+          mkdir -p assets/covers/releases data/release-drafts
+          node scripts/run-scheduled-parsers.mjs
+      - name: Commit parser and release-calendar outputs
+        run: |
+          TARGETS=(
+            data
+            assets/covers/releases
+            assets/release-home.css
+            assets/release-home.js
+            assets/release-calendar.css
+            assets/release-calendar.js
+            assets/release-admin.css
+            assets/release-admin.js
+            assets/release-admin-card.js
+            calendar
+            admin/parsers/releases
+            config/parsers/releases.json
+            config/parsers/schedule.json
+            scripts/parse-releases.mjs
+            scripts/inject-release-ui.mjs
+            docs/release-parser-rules.md
+          )
+          if [ -z "$(git status --porcelain -- "${TARGETS[@]}")" ]; then
             echo "No parser output changes"
             exit 0
           fi
           git config user.name "igropoisk-parser[bot]"
           git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
-          git add data
-          git commit -m "Update scheduled parser outputs"
+          git add -A -- "${TARGETS[@]}"
+          git commit -m "Install release calendar and update parser outputs"
           git pull --rebase
           git push
