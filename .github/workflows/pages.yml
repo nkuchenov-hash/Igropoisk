@@ -29,6 +29,11 @@ jobs:
           sed -i 's#</head>#<link rel="stylesheet" href="fix.css"></head>#' index.html
           sed -i 's#</body>#<script src="fix.js"></script></body>#' index.html
 
+      - name: Enforce shared layout contract
+        run: |
+          python3 scripts/enforce_layout_contract.py --write
+          python3 scripts/enforce_layout_contract.py --check
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
