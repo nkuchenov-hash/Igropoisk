@@ -9,25 +9,28 @@ const now = Date.now();
 const checkedAt = new Date(now).toISOString();
 const timeout = 25_000;
 
-const canonical = value => String(value || '')
-  .normalize('NFKD').toLowerCase().replace(/&amp;/g, ' and ')
-  .replace(/[^a-z0-9а-яё]+/gi, ' ').replace(/\s+/g, ' ').trim();
+const canonical = value => String(value || '').normalize('NFKD').toLowerCase()
+  .replace(/&amp;/g, ' and ').replace(/[^a-z0-9а-яё]+/gi, ' ').replace(/\s+/g, ' ').trim();
 const slugify = value => canonical(value).replace(/\s+/g, '-').slice(0, 90);
 const decode = value => String(value || '')
   .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/<[^>]+>/g, ' ')
   .replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'")
   .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
-const uniqueUrls = values => [...new Set((values || []).filter(value => /^https?:\/\//i.test(String(value || ''))))];
 
-const fetchText = async url => {
+async function fetchText(url, options = {}) {
   const response = await fetch(url, {
+    ...options,
     signal: AbortSignal.timeout(timeout),
-    headers: {'user-agent':'Mozilla/5.0 IgropoiskPopularityParser/5.0','accept-language':'en-US,en;q=0.9'}
+    headers: {
+      'user-agent': 'Mozilla/5.0 IgropoiskPopularityParser/6.0',
+      'accept-language': 'en-US,en;q=0.9',
+      ...(options.headers || {})
+    }
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return response.text();
-};
-const fetchJSON = async url => JSON.parse(await fetchText(url));
+}
+const fetchJSON = async (url, options = {}) => JSON.parse(await fetchText(url, options));
 
 const drafts = new Map();
 const draftDir = path.join(root, 'data', 'drafts');
@@ -41,7 +44,7 @@ if (fs.existsSync(draftDir)) {
 }
 
 const manualMedia = {
-  'grand-theft-auto-vi': ['https://www.igrandtheftauto.com/content/images/grand-theft-auto-vi-official-cover-art-hi-res.jpg']
+  'grand-theft-auto-vi': 'https://www.igrandtheftauto.com/content/images/grand-theft-auto-vi-official-cover-art-hi-res.jpg'
 };
 const games = [];
 const bySlug = new Map();
@@ -59,7 +62,7 @@ function registerGame(input) {
       title,
       year: input.year || null,
       steam_appid: Number(input.steam_appid || input.appid) || null,
-      image_candidates: uniqueUrls([...(input.image_candidates || []), input.image, ...(manualMedia[slug] || [])]),
+      image: input.image || manualMedia[slug] || '',
       aliases: [],
       in_catalog: Boolean(input.in_catalog)
     };
@@ -68,14 +71,10 @@ function registerGame(input) {
   }
   game.year ||= input.year || null;
   game.steam_appid ||= Number(input.steam_appid || input.appid) || null;
-  game.image_candidates = uniqueUrls([
-    ...(game.image_candidates || []),
-    ...(input.image_candidates || []),
-    input.image,
-    ...(manualMedia[slug] || [])
-  ]);
+  game.image ||= input.image || manualMedia[slug] || '';
   game.in_catalog ||= Boolean(input.in_catalog);
-  game.aliases = [...new Set([...(game.aliases || []), title, ...(input.aliases || [])].filter(Boolean).map(canonical))].sort((a,b)=>b.length-a.length);
+  game.aliases = [...new Set([...(game.aliases || []), title, ...(input.aliases || [])]
+    .filter(Boolean).map(canonical))].sort((a, b) => b.length - a.length);
   byTitle.set(canonical(title), game);
   if (game.steam_appid) byAppid.set(game.steam_appid, game);
   return game;
@@ -87,8 +86,8 @@ for (const item of catalog) {
     ...item,
     title: item.title || item.name,
     steam_appid: draft?.identity?.steam_appid || item.steam_appid,
-    image_candidates: [draft?.media?.cover, item.cover, draft?.media?.hero, item.hero],
-    aliases: [item.slug.replace(/-/g,' ')],
+    image: draft?.media?.cover || draft?.media?.hero || item.cover || item.hero || manualMedia[item.slug] || '',
+    aliases: [item.slug.replace(/-/g, ' ')],
     in_catalog: true
   });
 }
@@ -97,7 +96,12 @@ for (const alias of config.aliases || []) registerGame(alias);
 const signals = new Map();
 const statuses = [];
 function ensure(game) {
-  if (!signals.has(game.slug)) signals.set(game.slug,{game,news:0,chart:0,publishers:new Set(),evidence:[]});
+  if (!signals.has(game.slug)) signals.set(game.slug, {
+    game,
+    families: { news: 0, reddit: 0, youtube: 0, twitch: 0, steam_chart: 0 },
+    publishers: new Set(),
+    evidence: []
+  });
   return signals.get(game.slug);
 }
 function resolve(title) {
@@ -107,42 +111,42 @@ function resolve(title) {
     for (const alias of game.aliases || []) {
       const words = alias.split(' ').length;
       if (words === 1 && alias.length < 7) continue;
-      if (value.includes(` ${alias} `) && (!best || alias.length > best.alias.length)) best = {game,alias};
+      if (value.includes(` ${alias} `) && (!best || alias.length > best.alias.length)) best = { game, alias };
     }
   }
   return best?.game || null;
 }
-function recency(date) {
+function recency(date, windowHours = 96, halfLife = 24) {
   const time = Date.parse(date);
   if (!Number.isFinite(time)) return 0;
-  const age = Math.max(0,(now-time)/3_600_000);
-  if (age > 96) return 0;
-  return Math.pow(.5,age/24);
+  const age = Math.max(0, (now - time) / 3_600_000);
+  if (age > windowHours) return 0;
+  return Math.pow(0.5, age / halfLife);
 }
-function xmlTag(block,names) {
+function xmlTag(block, names) {
   for (const name of names) {
-    const match = block.match(new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${name}>`,'i'));
+    const match = block.match(new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${name}>`, 'i'));
     if (match) return decode(match[1]);
   }
   return '';
 }
 function parseFeed(xml) {
   return (xml.match(/<item\b[\s\S]*?<\/item>|<entry\b[\s\S]*?<\/entry>/gi) || []).map(block => ({
-    title:xmlTag(block,['title']), date:xmlTag(block,['pubDate','published','updated']),
-    publisher:xmlTag(block,['source','author','dc:creator']),
-    url:block.match(/<link[^>]+href=["']([^"']+)["']/i)?.[1] || xmlTag(block,['link','guid'])
-  })).filter(item=>item.title);
+    title: xmlTag(block, ['title']),
+    date: xmlTag(block, ['pubDate', 'published', 'updated']),
+    publisher: xmlTag(block, ['source', 'author', 'dc:creator']),
+    url: block.match(/<link[^>]+href=["']([^"']+)["']/i)?.[1] || xmlTag(block, ['link', 'guid'])
+  })).filter(item => item.title);
 }
 function publisherFrom(item, fallback) {
   if (item.publisher) return item.publisher;
-  const suffix = item.title.match(/\s+-\s+([^–—|-]{2,80})$/)?.[1];
-  return suffix || fallback;
+  return item.title.match(/\s+-\s+([^–—|-]{2,80})$/)?.[1] || fallback;
 }
 
 const newsFeeds = [
-  ...(config.sources || []).filter(item=>item.enabled !== false && item.type === 'rss'),
-  {id:'google-news-gaming',name:'Google News Gaming',url:'https://news.google.com/rss/search?q=gaming%20OR%20%22video%20game%22%20when%3A4d&hl=en-US&gl=US&ceid=US%3Aen'},
-  {id:'google-news-console-games',name:'Google News Console Games',url:'https://news.google.com/rss/search?q=PlayStation%20OR%20Xbox%20OR%20Nintendo%20OR%20Rockstar%20Games%20when%3A4d&hl=en-US&gl=US&ceid=US%3Aen'}
+  ...(config.sources || []).filter(item => item.enabled !== false && item.type === 'rss'),
+  { id: 'google-news-gaming', name: 'Google News Gaming', url: 'https://news.google.com/rss/search?q=gaming%20OR%20%22video%20game%22%20when%3A4d&hl=en-US&gl=US&ceid=US%3Aen' },
+  { id: 'google-news-console-games', name: 'Google News Console Games', url: 'https://news.google.com/rss/search?q=PlayStation%20OR%20Xbox%20OR%20Nintendo%20OR%20Rockstar%20Games%20when%3A4d&hl=en-US&gl=US&ceid=US%3Aen' }
 ];
 
 async function collectNews() {
@@ -157,96 +161,238 @@ async function collectNews() {
         const game = resolve(item.title);
         if (!game) continue;
         const row = ensure(game);
-        const publisher = publisherFrom(item, source.name);
         if (row.evidence.some(e => e.url && e.url === item.url)) continue;
-        row.news += freshness;
+        const publisher = publisherFrom(item, source.name);
+        row.families.news += freshness;
         row.publishers.add(publisher);
-        row.evidence.push({source:publisher,title:item.title,url:item.url,observed_at:item.date,family:'news',value:Number(freshness.toFixed(3))});
+        row.evidence.push({ source: publisher, title: item.title, url: item.url, observed_at: item.date, family: 'news', value: Number(freshness.toFixed(3)) });
         matched++;
       }
-      statuses.push({id:source.id,status:'success',items:items.length,matched,duration_ms:Date.now()-started,url:source.url});
+      statuses.push({ id: source.id, status: 'success', items: items.length, matched, duration_ms: Date.now() - started, url: source.url });
     } catch (error) {
-      statuses.push({id:source.id,status:'error',error:error.message,duration_ms:Date.now()-started,url:source.url});
+      statuses.push({ id: source.id, status: 'error', error: error.message, duration_ms: Date.now() - started, url: source.url });
     }
+  }
+}
+
+async function collectReddit() {
+  const started = Date.now();
+  const urls = [
+    'https://www.reddit.com/r/Games/hot.json?limit=100',
+    'https://www.reddit.com/r/gaming/hot.json?limit=100',
+    'https://www.reddit.com/r/pcgaming/hot.json?limit=100',
+    'https://www.reddit.com/r/PS5/hot.json?limit=100',
+    'https://www.reddit.com/r/XboxSeriesX/hot.json?limit=100',
+    'https://www.reddit.com/r/NintendoSwitch/hot.json?limit=100'
+  ];
+  let items = 0;
+  let matched = 0;
+  try {
+    for (const url of urls) {
+      const data = await fetchJSON(url, { headers: { accept: 'application/json' } });
+      for (const child of data?.data?.children || []) {
+        const post = child.data || {};
+        items++;
+        const game = resolve(`${post.title || ''} ${post.link_flair_text || ''}`);
+        if (!game) continue;
+        const age = recency(new Date(Number(post.created_utc || 0) * 1000).toISOString(), 72, 18);
+        if (!age) continue;
+        const engagement = Math.log1p(Math.max(0, Number(post.score || 0))) + 0.6 * Math.log1p(Number(post.num_comments || 0));
+        const value = age * engagement;
+        if (value <= 0) continue;
+        const row = ensure(game);
+        row.families.reddit += value;
+        row.evidence.push({ source: `Reddit r/${post.subreddit}`, title: post.title, url: `https://www.reddit.com${post.permalink || ''}`, family: 'reddit', score: post.score, comments: post.num_comments, value: Number(value.toFixed(3)) });
+        matched++;
+      }
+    }
+    statuses.push({ id: 'reddit-public', status: 'success', items, matched, duration_ms: Date.now() - started, url: urls[0] });
+  } catch (error) {
+    statuses.push({ id: 'reddit-public', status: 'error', error: error.message, duration_ms: Date.now() - started, url: urls[0] });
+  }
+}
+
+async function collectYouTube() {
+  const key = process.env.YOUTUBE_API_KEY;
+  const started = Date.now();
+  if (!key) {
+    statuses.push({ id: 'youtube-popular', status: 'skipped', error: 'YOUTUBE_API_KEY is not configured' });
+    return;
+  }
+  try {
+    let items = 0;
+    let matched = 0;
+    for (const region of ['US', 'GB', 'DE', 'FR', 'BR', 'JP']) {
+      const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&videoCategoryId=20&maxResults=50&regionCode=${region}&key=${encodeURIComponent(key)}`;
+      const data = await fetchJSON(url);
+      for (const video of data.items || []) {
+        items++;
+        const title = video.snippet?.title || '';
+        const game = resolve(`${title} ${(video.snippet?.tags || []).join(' ')}`);
+        if (!game) continue;
+        const views = Number(video.statistics?.viewCount || 0);
+        const comments = Number(video.statistics?.commentCount || 0);
+        const value = Math.log1p(views) + 0.5 * Math.log1p(comments);
+        const row = ensure(game);
+        row.families.youtube += value;
+        row.evidence.push({ source: `YouTube ${region}`, title, url: `https://www.youtube.com/watch?v=${video.id}`, family: 'youtube', views, comments, value: Number(value.toFixed(3)) });
+        matched++;
+      }
+    }
+    statuses.push({ id: 'youtube-popular', status: 'success', items, matched, duration_ms: Date.now() - started });
+  } catch (error) {
+    statuses.push({ id: 'youtube-popular', status: 'error', error: error.message, duration_ms: Date.now() - started });
+  }
+}
+
+async function collectTwitch() {
+  const clientId = process.env.TWITCH_CLIENT_ID;
+  const secret = process.env.TWITCH_CLIENT_SECRET;
+  const started = Date.now();
+  if (!clientId || !secret) {
+    statuses.push({ id: 'twitch-streams', status: 'skipped', error: 'TWITCH_CLIENT_ID/TWITCH_CLIENT_SECRET are not configured' });
+    return;
+  }
+  try {
+    const token = await fetchJSON(`https://id.twitch.tv/oauth2/token?client_id=${encodeURIComponent(clientId)}&client_secret=${encodeURIComponent(secret)}&grant_type=client_credentials`, { method: 'POST' });
+    const data = await fetchJSON('https://api.twitch.tv/helix/streams?first=100', { headers: { Authorization: `Bearer ${token.access_token}`, 'Client-Id': clientId } });
+    let matched = 0;
+    for (const stream of data.data || []) {
+      const game = resolve(stream.game_name);
+      if (!game) continue;
+      const value = Math.log1p(Number(stream.viewer_count || 0));
+      const row = ensure(game);
+      row.families.twitch += value;
+      row.evidence.push({ source: 'Twitch', title: stream.game_name, url: `https://www.twitch.tv/${stream.user_login}`, family: 'twitch', viewers: stream.viewer_count, value: Number(value.toFixed(3)) });
+      matched++;
+    }
+    statuses.push({ id: 'twitch-streams', status: 'success', items: (data.data || []).length, matched, duration_ms: Date.now() - started });
+  } catch (error) {
+    statuses.push({ id: 'twitch-streams', status: 'error', error: error.message, duration_ms: Date.now() - started });
   }
 }
 
 function parseSteam(html) {
   const rows = html.match(/<a[^>]+data-ds-appid="[^"]+"[\s\S]*?<\/a>/gi) || [];
-  return rows.map(row=>({
-    appid:Number((row.match(/data-ds-appid="([^"]+)"/i)?.[1] || '').split(',')[0]),
-    title:decode(row.match(/<span class="title">([\s\S]*?)<\/span>/i)?.[1] || ''),
-    image:row.match(/<img[^>]+src="([^"]+)"/i)?.[1] || ''
-  })).filter(item=>item.appid && item.title);
+  return rows.map(row => ({
+    appid: Number((row.match(/data-ds-appid="([^"]+)"/i)?.[1] || '').split(',')[0]),
+    title: decode(row.match(/<span class="title">([\s\S]*?)<\/span>/i)?.[1] || ''),
+    image: row.match(/<img[^>]+src="([^"]+)"/i)?.[1] || ''
+  })).filter(item => item.appid && item.title);
 }
-
-async function enrichSteamMedia(game, searchImage='') {
-  if (!game?.steam_appid) return;
-  const appid = game.steam_appid;
-  const base = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}`;
-  let apiImages = [];
-  try {
-    const payload = await fetchJSON(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=us&l=english`);
-    const details = payload?.[appid]?.data;
-    apiImages = [details?.capsule_imagev5, details?.header_image, details?.capsule_image];
-  } catch {}
-  game.image_candidates = uniqueUrls([
-    ...(game.image_candidates || []),
-    `${base}/library_600x900.jpg`,
-    `${base}/library_600x900_2x.jpg`,
-    ...apiImages,
-    searchImage,
-    `${base}/header.jpg`,
-    `${base}/capsule_616x353.jpg`
-  ]);
-}
-
 async function collectSteam() {
-  const url='https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=topsellers&infinite=1&cc=us&l=english&json=1';
-  const started=Date.now();
+  const url = 'https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=topsellers&infinite=1&cc=us&l=english&json=1';
+  const started = Date.now();
   try {
-    const items=parseSteam((await fetchJSON(url)).results_html || '');
-    const selected = items.slice(0,50);
-    selected.forEach((item,index)=>{
-      const game=byAppid.get(item.appid) || registerGame({title:item.title,appid:item.appid,image:item.image});
-      const row=ensure(game);
-      row.chart=Math.max(row.chart,1-index/50);
-      row.evidence.push({source:'Steam Top Sellers',title:item.title,url:`https://store.steampowered.com/app/${item.appid}/`,position:index+1,appid:item.appid,family:'steam_chart',value:Number((1-index/50).toFixed(3))});
+    const items = parseSteam((await fetchJSON(url)).results_html || '');
+    items.slice(0, 50).forEach((item, index) => {
+      const game = byAppid.get(item.appid) || registerGame({ title: item.title, appid: item.appid, image: item.image });
+      const row = ensure(game);
+      row.families.steam_chart = Math.max(row.families.steam_chart, 1 - index / 50);
+      row.evidence.push({ source: 'Steam Top Sellers', title: item.title, url: `https://store.steampowered.com/app/${item.appid}/`, position: index + 1, appid: item.appid, family: 'steam_chart', value: Number((1 - index / 50).toFixed(3)) });
     });
-    for (let i=0;i<selected.length;i+=8) {
-      await Promise.all(selected.slice(i,i+8).map(item=>enrichSteamMedia(byAppid.get(item.appid) || byTitle.get(canonical(item.title)), item.image)));
-    }
-    statuses.push({id:'steam-top-sellers',status:'success',items:items.length,matched:items.length,duration_ms:Date.now()-started,url});
-  } catch(error) {statuses.push({id:'steam-top-sellers',status:'error',error:error.message,duration_ms:Date.now()-started,url});}
+    statuses.push({ id: 'steam-top-sellers', status: 'success', items: items.length, matched: items.length, duration_ms: Date.now() - started, url });
+  } catch (error) {
+    statuses.push({ id: 'steam-top-sellers', status: 'error', error: error.message, duration_ms: Date.now() - started, url });
+  }
 }
 
-const started=Date.now();
-await Promise.all([collectNews(),collectSteam()]);
-const rows=[...signals.values()];
-const maxNews=Math.max(...rows.map(row=>row.news),1);
-const excluded=new Set(['steam-deck','steam-machine','valve-index','steam-controller','steam-link']);
-const ranking=rows.map(row=>{
-  if (excluded.has(row.game.slug)) return null;
-  const news=row.news/maxNews;
-  const breadth=Math.min(1,row.publishers.size/5);
-  const chart=row.chart;
-  const discussed=row.publishers.size>=2 && row.news>.08;
-  if (!chart && !discussed) return null;
-  const score=100*(.55*news+.35*chart+.10*breadth);
-  const candidates=uniqueUrls(row.game.image_candidates || []);
-  return {
-    slug:row.game.slug,title:row.game.title,year:row.game.year || null,
-    image:candidates[0] || '',image_candidates:candidates,
-    score:Number(score.toFixed(1)),confidence:Number(Math.min(1,.5+.07*Math.min(row.publishers.size,5)+(chart?.12:0)).toFixed(2)),delta:null,
-    families:[...(row.news?['news']:[]),...(chart?['steam_chart']:[])],signals:{news:row.news,steam_chart:chart},news_sources:row.publishers.size,
-    in_catalog:row.game.in_catalog,evidence:row.evidence.sort((a,b)=>b.value-a.value).slice(0,16)
-  };
-}).filter(Boolean).sort((a,b)=>b.score-a.score || b.confidence-a.confidence).slice(0,30);
+async function imageCandidates(game) {
+  const candidates = [];
+  if (game.image) candidates.push(game.image);
+  if (game.steam_appid) {
+    const appid = game.steam_appid;
+    candidates.push(
+      `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900_2x.jpg`,
+      `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg`
+    );
+    try {
+      const data = await fetchJSON(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=us&l=english`);
+      const details = data?.[appid]?.data;
+      if (details?.capsule_imagev5) candidates.push(details.capsule_imagev5);
+      if (details?.header_image) candidates.push(details.header_image);
+    } catch {}
+    candidates.push(
+      `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/header.jpg`,
+      `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/capsule_616x353.jpg`
+    );
+  }
+  return [...new Set(candidates.filter(Boolean))];
+}
 
-const output={schema_version:5,generated_at:checkedAt,window_hours:96,method:{formula:'55% global discussion + 35% Steam demand + 10% independent publisher breadth',family_weights:{news:.55,steam_chart:.35,breadth:.10},image_fallback:'catalog cover → Steam vertical poster → Steam app details → Steam search image → header/capsule'},ranking,discovered_unmatched:[],source_statuses:statuses};
-fs.mkdirSync(path.join(root,'data','popular'),{recursive:true});
-fs.mkdirSync(path.join(root,'data','parser-runs'),{recursive:true});
-fs.writeFileSync(path.join(root,'data','popular','current.json'),`${JSON.stringify(output,null,2)}\n`);
-const run={parser:'popular',status:ranking.length>=10?'success':'warning',checked_at:checkedAt,duration_ms:Date.now()-started,ranked_count:ranking.length,sources_success:statuses.filter(item=>item.status==='success').length,sources_total:statuses.length,output:'data/popular/current.json',note:'Рейтинг рассчитан; для каждой игры сохранён каскад источников обложки.',source_statuses:statuses};
-fs.writeFileSync(path.join(root,'data','parser-runs','popular.json'),`${JSON.stringify(run,null,2)}\n`);
-console.log(JSON.stringify(run,null,2));
+const started = Date.now();
+await Promise.all([collectNews(), collectReddit(), collectYouTube(), collectTwitch(), collectSteam()]);
+const rows = [...signals.values()];
+const maxima = {};
+for (const family of ['news', 'reddit', 'youtube', 'twitch', 'steam_chart']) {
+  maxima[family] = Math.max(...rows.map(row => row.families[family] || 0), 1);
+}
+const weights = { news: 0.35, reddit: 0.20, youtube: 0.15, twitch: 0.10, steam_chart: 0.15, breadth: 0.05 };
+const excluded = new Set(['steam-deck', 'steam-machine', 'valve-index', 'steam-controller', 'steam-link']);
+const ranking = [];
+for (const row of rows) {
+  if (excluded.has(row.game.slug)) continue;
+  const normalized = {};
+  for (const family of ['news', 'reddit', 'youtube', 'twitch', 'steam_chart']) normalized[family] = (row.families[family] || 0) / maxima[family];
+  const activeCommunityFamilies = ['news', 'reddit', 'youtube', 'twitch'].filter(family => normalized[family] > 0.02);
+  const discussed = row.publishers.size >= 2 || activeCommunityFamilies.length >= 2;
+  const hasDemand = normalized.steam_chart > 0;
+  if (!discussed && !hasDemand) continue;
+  const breadth = Math.min(1, (row.publishers.size + activeCommunityFamilies.length) / 7);
+  const score = 100 * (
+    weights.news * normalized.news +
+    weights.reddit * normalized.reddit +
+    weights.youtube * normalized.youtube +
+    weights.twitch * normalized.twitch +
+    weights.steam_chart * normalized.steam_chart +
+    weights.breadth * breadth
+  );
+  const candidates = await imageCandidates(row.game);
+  ranking.push({
+    slug: row.game.slug,
+    title: row.game.title,
+    year: row.game.year || null,
+    image: candidates[0] || '',
+    image_candidates: candidates,
+    score: Number(score.toFixed(1)),
+    confidence: Number(Math.min(1, 0.45 + 0.08 * activeCommunityFamilies.length + 0.04 * Math.min(row.publishers.size, 5) + (hasDemand ? 0.08 : 0)).toFixed(2)),
+    delta: null,
+    families: ['news', 'reddit', 'youtube', 'twitch', 'steam_chart'].filter(family => row.families[family] > 0),
+    signals: row.families,
+    news_sources: row.publishers.size,
+    in_catalog: row.game.in_catalog,
+    evidence: row.evidence.sort((a, b) => b.value - a.value).slice(0, 20)
+  });
+}
+ranking.sort((a, b) => b.score - a.score || b.confidence - a.confidence);
+
+const output = {
+  schema_version: 6,
+  generated_at: checkedAt,
+  window_hours: 96,
+  method: {
+    formula: '35% news + 20% Reddit + 15% YouTube + 10% Twitch + 15% Steam demand + 5% breadth',
+    family_weights: weights,
+    image_fallback: 'catalog/manual → Steam vertical poster → Steam app details → header/capsule'
+  },
+  ranking: ranking.slice(0, 30),
+  discovered_unmatched: [],
+  source_statuses: statuses
+};
+fs.mkdirSync(path.join(root, 'data', 'popular'), { recursive: true });
+fs.mkdirSync(path.join(root, 'data', 'parser-runs'), { recursive: true });
+fs.writeFileSync(path.join(root, 'data', 'popular', 'current.json'), `${JSON.stringify(output, null, 2)}\n`);
+const run = {
+  parser: 'popular',
+  status: ranking.length >= 10 ? 'success' : 'warning',
+  checked_at: checkedAt,
+  duration_ms: Date.now() - started,
+  ranked_count: ranking.length,
+  sources_success: statuses.filter(item => item.status === 'success').length,
+  sources_total: statuses.length,
+  output: 'data/popular/current.json',
+  note: 'Рейтинг рассчитан по новостям, Reddit, YouTube, Twitch, Steam и широте независимых сигналов.',
+  source_statuses: statuses
+};
+fs.writeFileSync(path.join(root, 'data', 'parser-runs', 'popular.json'), `${JSON.stringify(run, null, 2)}\n`);
+console.log(JSON.stringify(run, null, 2));
