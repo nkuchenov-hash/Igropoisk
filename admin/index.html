@@ -7,19 +7,20 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Админка Игропоиска</title>
-<link rel="stylesheet" href="../assets/design-system.css?v=20260803-5">
-<link rel="stylesheet" href="../assets/design-system-game-v3.css?v=20260803-5">
-<link rel="stylesheet" href="../assets/design-system-admin-responsive.css?v=20260803-5">
+<link rel="stylesheet" href="../assets/design-system.css?v=20260803-8">
+<link rel="stylesheet" href="../assets/design-system-game-v3.css?v=20260803-8">
+<link rel="stylesheet" href="../assets/design-system-admin-responsive.css?v=20260803-8">
+<link rel="stylesheet" href="../assets/admin-home-v2.css?v=20260803-8">
 </head>
 <body>
 <div class="ig-admin-layout">
-<aside class="ig-admin-sidebar" aria-label="Разделы админки"><a class="ig-logo" href="../index.html" style="margin:0 12px 24px">ИГРОПОИСК</a><a class="active" href="#overview">Обзор</a><a href="#game-parser">Данные игры</a><a href="#news-parser">Новости</a><a href="#rating-parser">Рейтинги</a><a href="#review-synthesis">AI-обзоры</a><a href="#rating-audit">Аудит рейтинга</a><a href="./design-system/game-page-v3.html">Дизайн-система v3</a></aside>
-<main class="ig-admin-main" id="overview"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px"><div><div class="ig-kicker">Admin / Data pipelines</div><h1 class="ig-admin-title">Парсеры и расчёты</h1><p class="ig-admin-lead">Здесь видно, откуда получены данные игры, какие новости найдены, как извлечены оценки изданий и из каких источников собран обзор Игропоиска. Каждый результат сохраняет журнал и исходные URL.</p></div><button class="ig-button" id="theme" type="button" aria-label="Переключить тему">☀</button></div>
+<aside class="ig-admin-sidebar" aria-label="Разделы админки"><a class="ig-logo" href="../index.html" style="margin:0 12px 24px">ИГРОПОИСК</a><a class="active" href="#overview">Обзор</a><a href="parsers/popular/">Популярность</a><a href="parsers/game-data/">Данные игры</a><a href="parsers/news/">Новости</a><a href="parsers/ratings/">Рейтинги</a><a href="parsers/review-synthesis/">AI-обзоры</a><a href="#rating-audit">Аудит рейтинга</a><a href="./design-system/game-page-v3.html">Дизайн-система v3</a></aside>
+<main class="ig-admin-main" id="overview"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px"><div><div class="ig-kicker">Admin / Data pipelines</div><h1 class="ig-admin-title">Парсеры и расчёты</h1><p class="ig-admin-lead">Здесь видно, откуда получены данные игры, какие новости найдены, как извлечены оценки изданий, что сейчас обсуждают больше всего и из каких источников собран обзор Игропоиска.</p></div><button class="ig-button" id="theme" type="button" aria-label="Переключить тему">☀</button></div>
 <section class="ig-admin-grid" id="parserCards"></section>
 <section id="rating-audit"><div id="ratingAudit"></div></section>
 <section class="ig-admin-card" id="backendStatus" style="margin-top:18px"></section>
 </main>
 </div>
-<script src="../assets/admin-tools.js?v=20260803-5"></script>
+<script src="../assets/admin-tools.js?v=20260803-8"></script>
 </body>
 </html>
