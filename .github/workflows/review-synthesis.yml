@@ -17,7 +17,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,6 +29,7 @@ jobs:
         run: |
           node --check scripts/prepare-review-research.mjs
           node --check scripts/synthesize-review.mjs
+          node --check scripts/enrich-review-media.mjs
       - name: Discover and validate professional sources
         run: node scripts/prepare-review-research.mjs "${{ inputs.slug }}"
         env:
@@ -42,6 +43,12 @@ jobs:
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
           OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
           OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
+      - name: Build section galleries and reject poor images
+        run: node scripts/enrich-review-media.mjs "${{ inputs.slug }}"
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
+          OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
       - name: Commit research, article and audit logs
         run: |
           git config user.name "igropoisk-editor[bot]"
