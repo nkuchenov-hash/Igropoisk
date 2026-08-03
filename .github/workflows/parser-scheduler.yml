@@ -1,0 +1,46 @@
+name: Central parser scheduler
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '7 * * * *'
+  push:
+    paths:
+      - 'config/parsers/schedule.json'
+      - 'scripts/run-scheduled-parsers.mjs'
+      - '.github/workflows/parser-scheduler.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: central-parser-scheduler
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run due parsers
+        env:
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          REDDIT_ACCESS_TOKEN: ${{ secrets.REDDIT_ACCESS_TOKEN }}
+        run: node scripts/run-scheduled-parsers.mjs
+      - name: Commit parser outputs
+        run: |
+          if git diff --quiet -- data; then
+            echo "No parser output changes"
+            exit 0
+          fi
+          git config user.name "igropoisk-parser[bot]"
+          git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
+          git add data
+          git commit -m "Update scheduled parser outputs"
+          git pull --rebase
+          git push
