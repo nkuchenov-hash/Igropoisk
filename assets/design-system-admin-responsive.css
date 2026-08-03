@@ -1,0 +1,57 @@
+.ig-admin-sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;z-index:40}
+.ig-admin-main{min-width:0}
+.ig-admin-main>div:first-child{min-width:0}
+.ig-admin-card,.ig-admin-card *{min-width:0}
+.ig-admin-card a,.ig-admin-card code,.ig-admin-card dd{overflow-wrap:anywhere;word-break:break-word}
+.ig-admin-card .ig-button{display:inline-flex;align-items:center;justify-content:center;margin-top:14px}
+.ig-table-scroll{width:100%;overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+.ig-admin-mobile-label{display:none}
+
+@media(max-width:1100px){
+  .ig-admin-layout{display:block;min-height:100vh}
+  .ig-admin-sidebar{position:sticky;top:0;height:auto;display:flex!important;align-items:center;gap:6px;padding:10px var(--ig-gutter);overflow-x:auto;overflow-y:hidden;border-right:0;border-bottom:1px solid var(--ig-line);background:color-mix(in srgb,var(--ig-bg) 92%,transparent);backdrop-filter:blur(18px);scrollbar-width:none}
+  .ig-admin-sidebar::-webkit-scrollbar{display:none}
+  .ig-admin-sidebar .ig-logo{flex:0 0 auto;margin:0 12px 0 0!important;font-size:18px}
+  .ig-admin-sidebar a:not(.ig-logo){flex:0 0 auto;padding:9px 11px;white-space:nowrap;border:1px solid transparent}
+  .ig-admin-sidebar a.active{border-color:var(--ig-line);background:var(--ig-surface)}
+  .ig-admin-main{padding:28px var(--ig-gutter) 64px}
+  .ig-admin-main>div:first-child{align-items:center!important}
+  .ig-admin-title{font-size:clamp(36px,7vw,58px)}
+  .ig-admin-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:720px){
+  .ig-admin-sidebar{padding-block:8px;gap:5px}
+  .ig-admin-sidebar .ig-logo{font-size:16px;margin-right:6px!important}
+  .ig-admin-sidebar a:not(.ig-logo){padding:8px 10px;font-size:12px}
+  .ig-admin-main{padding-top:22px;padding-bottom:48px}
+  .ig-admin-main>div:first-child{align-items:flex-start!important;gap:12px!important}
+  .ig-admin-main>div:first-child>div{min-width:0}
+  .ig-admin-main>div:first-child>#theme{flex:0 0 40px;width:40px;height:40px;padding:0}
+  .ig-admin-title{font-size:clamp(34px,11vw,48px);line-height:.96;margin-top:7px}
+  .ig-admin-lead{font-size:14px;line-height:1.55}
+  .ig-admin-grid{grid-template-columns:1fr;gap:10px;margin-top:22px}
+  .ig-admin-card{padding:16px}
+  .ig-admin-card h2{font-size:17px}
+  .ig-admin-card p{font-size:13px}
+  .ig-admin-card .ig-button{width:100%}
+  .mini-stats{grid-template-columns:1fr!important;gap:4px!important}
+  .mini-stats dt{margin-top:8px;font-size:10px;text-transform:uppercase;letter-spacing:.07em}
+  .mini-stats dd{margin:0 0 4px!important}
+  .ig-table-scroll{overflow:visible}
+  .ig-data-table,.ig-data-table tbody{display:block;width:100%}
+  .ig-data-table thead{display:none}
+  .ig-data-table tr{display:grid;gap:8px;padding:14px 0;border-top:1px solid var(--ig-line)}
+  .ig-data-table td{display:grid;grid-template-columns:minmax(94px,34%) minmax(0,1fr);gap:10px;padding:0;border:0;align-items:start;font-size:12px}
+  .ig-data-table td:before{content:attr(data-label);color:var(--ig-muted);font-size:9px;font-weight:800;line-height:1.35;text-transform:uppercase;letter-spacing:.06em}
+  .ig-data-table td a{overflow-wrap:anywhere}
+  #backendStatus{margin-top:12px!important}
+}
+
+@media(max-width:430px){
+  .ig-admin-main>div:first-child{display:grid!important;grid-template-columns:minmax(0,1fr) 40px}
+  .ig-admin-title{font-size:36px}
+  .ig-admin-sidebar{padding-left:10px;padding-right:10px}
+  .ig-admin-card{border-radius:var(--ig-radius-sm)}
+  .ig-data-table td{grid-template-columns:88px minmax(0,1fr)}
+}
