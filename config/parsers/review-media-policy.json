@@ -1,17 +1,23 @@
 {
-  "schema_version": 3,
-  "purpose": "Сделать каждый обзор визуально насыщенным: сначала собрать десятки кадров из нескольких источников, затем отобрать лучшие и распределить их по осмысленным карточкам.",
+  "schema_version": 4,
+  "purpose": "Создавать полноценные редакционные обзоры: содержательный текст и большой набор качественных, неповторяющихся скриншотов, которые поясняют конкретные тезисы статьи.",
   "article_balance": {
-    "minimum_words": 1300,
-    "target_words": 1600,
-    "maximum_words_without_editor_approval": 2200,
-    "minimum_sections": 7,
-    "maximum_sections": 9,
+    "minimum_words": 1800,
+    "target_words": 2300,
+    "maximum_words_without_editor_approval": 3200,
+    "minimum_words_per_section": 180,
+    "target_words_per_section": 240,
+    "minimum_sections": 8,
+    "maximum_sections": 10,
     "minimum_candidate_screenshots": 30,
-    "minimum_approved_screenshots": 18,
+    "minimum_approved_screenshots": 24,
     "minimum_total_screenshots": 18,
-    "minimum_unique_screenshots": 12,
-    "screenshots_per_section": {"minimum": 2, "target": 3, "maximum": 5}
+    "minimum_unique_screenshots": 18,
+    "screenshots_per_section": {
+      "minimum": 2,
+      "target": 3,
+      "maximum": 5
+    }
   },
   "card_behavior": {
     "one_card_per_section": true,
@@ -25,16 +31,21 @@
   },
   "quality_gate": {
     "minimum_width_modern": 1280,
+    "minimum_height_modern": 720,
     "minimum_width_historical": 1024,
+    "minimum_height_historical": 576,
+    "require_known_dimensions": true,
     "allow_640x480_only_when_unique_evidence": false,
     "reject_thumbnail": true,
     "reject_visible_upscale": true,
     "reject_heavy_jpeg_artifacts": true,
     "reject_blur": true,
     "reject_wrong_game_version": true,
+    "reject_duplicate_url": true,
     "reject_duplicate_scene": true,
-    "visual_quality_confidence": 0.78,
-    "semantic_relevance_confidence": 0.78
+    "reject_reuse_across_sections": true,
+    "visual_quality_confidence": 0.82,
+    "semantic_relevance_confidence": 0.8
   },
   "source_policy": {
     "minimum_media_sources": 3,
@@ -49,5 +60,12 @@
     "must_explain_visible_detail": true,
     "must_connect_detail_to_section_claim": true,
     "forbid_generic_caption": true
-  }
+  },
+  "publication_invariants": [
+    "Количество уникальных URL обязано совпадать с общим количеством кадров статьи.",
+    "Один duplicate_group может быть использован не более одного раза во всей статье.",
+    "Кадр без известной ширины и высоты не может попасть в опубликованный обзор.",
+    "Скриншоты не заменяют анализ: статья и каждый её раздел проходят отдельный текстовый gate.",
+    "Нарушение любого правила блокирует генерацию HTML и публикацию обзора."
+  ]
 }
