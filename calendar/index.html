@@ -9,24 +9,10 @@
   <link rel="stylesheet" href="../assets/release-calendar.css?v=20260803-1">
   <link rel="stylesheet" href="../assets/release-calendar-readable.css?v=20260803-1">
 </head>
-<body>
-<header class="site-header release-site-header">
-  <div class="ig-container release-site-header__inner">
-    <a class="release-site-logo" href="../index.html" aria-label="Игропоиск — главное">ИГРОПОИСК</a>
-    <nav class="release-site-nav" aria-label="Основная навигация">
-      <a href="../index.html">Главное</a>
-      <a href="../index.html#search">Игры</a>
-      <a href="../index.html#news">Новости</a>
-      <a class="active" href="./" aria-current="page">Календарь релизов</a>
-      <a href="../index.html#what-to-play">Во что поиграть?</a>
-    </nav>
-    <div class="release-site-actions">
-      <button class="ig-button release-icon-button" id="releaseTheme" type="button" aria-label="Переключить тему">☀</button>
-    </div>
-  </div>
-</header>
+<body class="ig-site-page">
+<header class="ig-site-header" aria-label="Основная навигация"></header>
 
-<main class="ig-container release-page">
+<main class="ig-container release-page ig-page-shell">
   <nav class="release-breadcrumb" aria-label="Хлебные крошки"><a href="../index.html">Главная</a><span>›</span><span>Календарь релизов</span></nav>
 
   <section class="release-intro">
@@ -106,7 +92,6 @@
 </div>
 
 <button id="releaseTheme" type="button" hidden aria-hidden="true" tabindex="-1"></button>
-<script src="../assets/release-header-bridge.js?v=20260803-1"></script>
 <script src="../assets/release-calendar.js?v=20260803-1"></script>
 <script src="../assets/release-calendar-readable.js?v=20260803-1"></script>
 </body>
