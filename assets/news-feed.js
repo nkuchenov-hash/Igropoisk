@@ -89,8 +89,9 @@
     const trustedCount = new Set(mediaNames.filter(name => trustedMedia.has(name))).size;
     const officialMajor = item.type === 'official' && Boolean(item.primarySource);
     const confirmed = item.type === 'confirmed' && trustedCount >= 1;
-    const ranked = item.type === 'ranked' && (Number(item.mediaSourceCount || 0) >= 2 || trustedCount >= 2);
-    return officialMajor || confirmed || ranked || item.importance === 'critical';
+    const ranked = item.type === 'ranked' && trustedCount >= 1 && Number(item.mediaSourceCount || 0) >= 2;
+    const critical = item.importance === 'critical' && trustedCount >= 1;
+    return officialMajor || confirmed || ranked || critical;
   }
   function homeItems(items) {
     const now = Date.now();
