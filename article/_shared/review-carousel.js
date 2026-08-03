@@ -1,6 +1,8 @@
 (function(){
 'use strict';
 
+(function loadUnifiedLayout(){if(document.querySelector('link[data-ig-layout-consistency]'))return;var link=document.createElement('link');link.rel='stylesheet';link.href='/Igropoisk/assets/layout-consistency.css?v=20260803-1';link.setAttribute('data-ig-layout-consistency','');document.head.appendChild(link);}());
+
 function slugFromPath(){var match=location.pathname.match(/\/article\/([^/]+)\/?/);return match?decodeURIComponent(match[1]):'';}
 function canonical(url){try{var value=new URL(url,location.href);value.hash='';value.search='';return value.origin+value.pathname;}catch(error){return String(url||'').split('?')[0].split('#')[0];}}
 function make(tag,className,text){var node=document.createElement(tag);if(className)node.className=className;if(text!=null)node.textContent=text;return node;}
