@@ -15,10 +15,17 @@
         "maximum_scheduled_runs_per_day": 4,
         "estimated_youtube_units_per_day": 24
       },
-      "command": "node scripts/parse-popular.mjs && node scripts/filter-popular.mjs",
+      "publication_policy": {
+        "require_verified_cover_for_every_game": true,
+        "keep_previous_ranking_on_cover_failure": true,
+        "allow_placeholders": false
+      },
+      "command": "node scripts/parse-popular.mjs && node scripts/filter-popular.mjs && node scripts/resolve-popular-covers.mjs",
       "outputs": [
         "data/popular/current.json",
-        "data/parser-runs/popular.json"
+        "data/popular/covers.json",
+        "data/parser-runs/popular.json",
+        "assets/covers/popular"
       ]
     }
   ]
