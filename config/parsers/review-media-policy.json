@@ -1,5 +1,5 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "purpose": "Создавать полноценные журнальные обзоры: подробный текст, широкая адаптивная вёрстка и большой набор качественных уникальных скриншотов с осмысленными комментариями.",
   "article_balance": {
     "minimum_words": 2200,
@@ -14,20 +14,16 @@
     "minimum_approved_screenshots": 40,
     "minimum_total_screenshots": 30,
     "minimum_unique_screenshots": 30,
-    "screenshots_per_section": {
-      "minimum": 3,
-      "target": 4,
-      "maximum": 6
-    }
+    "screenshots_per_section": {"minimum":3,"target":4,"maximum":6}
   },
   "layout_policy": {
     "desktop_three_column_layout": true,
     "left_sticky_table_of_contents": true,
-    "center_reading_column_min_width": 720,
-    "center_reading_column_max_width": 900,
+    "center_reading_column_min_width": 760,
+    "center_reading_column_max_width": 980,
     "right_sticky_metadata_rail": true,
-    "maximum_page_width": 1540,
-    "media_cards_wider_than_text": true,
+    "maximum_page_width": 1600,
+    "media_cards_match_reading_column_width": true,
     "collapse_sidebars_below_px": 1180,
     "single_column_below_px": 760
   },
@@ -58,16 +54,24 @@
     "crawl_historical_archives": true,
     "follow_thumbnail_to_original": true,
     "store_candidate_origin_page": true,
-    "store_direct_image_url": true
+    "store_direct_image_url": true,
+    "download_and_measure_every_candidate": true,
+    "never_trust_declared_dimensions": true
   },
   "quality_gate": {
     "minimum_width_modern": 1600,
     "minimum_height_modern": 900,
     "minimum_width_historical": 1280,
     "minimum_height_historical": 720,
+    "minimum_bytes_modern": 140000,
+    "minimum_bytes_historical": 80000,
+    "maximum_download_bytes": 25000000,
+    "minimum_aspect_ratio": 1.2,
+    "maximum_aspect_ratio": 2.4,
     "require_known_dimensions": true,
-    "allow_lower_resolution_only_when_no_better_copy_exists": true,
-    "lower_resolution_editor_approval_required": true,
+    "require_image_mime_type": true,
+    "require_successful_download": true,
+    "allow_lower_resolution_only_when_no_better_copy_exists": false,
     "reject_thumbnail": true,
     "reject_visible_upscale": true,
     "reject_heavy_jpeg_artifacts": true,
@@ -110,11 +114,11 @@
     "require_return_to_game_top_and_bottom": true
   },
   "publication_invariants": [
+    "Каждый кандидат скачивается и измеряется заново; размеры из метаданных и ответа модели не считаются доказательством.",
+    "Файл без image MIME, реальных размеров, достаточного веса и допустимого соотношения сторон отклоняется до vision-аудита.",
     "Количество уникальных URL обязано совпадать с общим количеством кадров статьи.",
     "Один duplicate_group может быть использован не более одного раза во всей статье.",
-    "Кадр без известной ширины и высоты не может попасть в опубликованный обзор.",
     "Скриншоты не заменяют анализ: статья и каждый её раздел проходят отдельный текстовый gate.",
-    "На широком мониторе статья использует левое оглавление, центральную колонку и правый информационный rail.",
     "Нарушение любого правила блокирует генерацию HTML и публикацию обзора."
   ]
 }
