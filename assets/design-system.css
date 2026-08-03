@@ -12,7 +12,6 @@
   --ig-line-strong:#30414c;
   --ig-rating:#a7d433;
   --ig-accent:#a55cff;
-  --ig-award:#d4a23b;
   --ig-info:#4bc8ff;
   --ig-danger:#f06f72;
   --ig-header:rgba(5,12,17,.94);
@@ -98,8 +97,11 @@ img{max-width:100%}
 .ig-section-tabs button{position:relative;flex:0 0 auto;border:0;background:none;color:var(--ig-text);padding:18px 0;font-size:13px;font-weight:700}
 .ig-section-tabs button.active:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--ig-accent)}
 .ig-rating-bar{height:2px;background:var(--ig-line);position:relative}.ig-rating-bar>span{position:absolute;inset:0 auto 0 0;background:var(--ig-text)}
-.ig-award{color:var(--ig-award)}
 .ig-info-note{padding:12px 14px;border:1px solid var(--ig-line);border-radius:var(--ig-radius-sm);color:var(--ig-muted);font-size:12px}
+/* Awards are source content, not a decorative design token. Render only parsed text/images with source links. */
+.ig-award-source{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--ig-line)}
+.ig-award-source img{width:44px;height:44px;object-fit:contain;border-radius:var(--ig-radius-xs)}
+.ig-award-source small{display:block;color:var(--ig-muted);margin-top:4px}
 @media(min-width:1800px){:root{--ig-container:1760px;--ig-gutter:34px}}
 @media(min-width:2400px){:root{--ig-container:2240px;--ig-gutter:44px}}
 @media(min-width:3200px){:root{--ig-container:2840px;--ig-gutter:56px}}
