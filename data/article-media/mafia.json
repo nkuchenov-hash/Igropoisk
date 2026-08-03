@@ -1,14 +1,12 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "game_slug": "mafia",
-  "updated_at": "2026-08-03T19:14:00Z",
+  "updated_at": "2026-08-03T22:40:00Z",
   "quality_policy": {
-    "visible_images": 21,
-    "unique_images": 21,
-    "minimum_images_per_card": 2,
-    "maximum_images_per_card": 3,
-    "excluded": ["Mafia: Definitive Edition", "GameSpot map 2149072-0001", "duplicate URLs", "query-string duplicates", "repeated scenes", "small preview files"],
-    "note": "Каждый URL и каждая сцена используются в статье только один раз. Карточки строятся общим рендерером обзоров."
+    "selection_basis": "visual quality at rendered size",
+    "removed_patterns": ["_m.jpg", "small previews", "stretched crops", "duplicate scenes"],
+    "prevent_upscaling": true,
+    "note": "The article renderer displays every image at or below its natural dimensions and supports single-image cards when only one clean frame is available."
   },
   "sections": [
     {"id":"form","images":[
@@ -16,17 +14,14 @@
       {"url":"https://cdn.mobygames.com/screenshots/3302492-mafia-windows-a-traditional-damsel-in-distress-situation-swiftly.jpg","width":1280,"height":1024,"alt":"Томми в сюжетной сцене","caption":"Бытовая сцена быстро переходит в действие и подчёркивает линейную драматургию кампании.","source_name":"MobyGames","source_url":"https://www.mobygames.com/game/7190/mafia/screenshots/windows/798849/"}
     ]},
     {"id":"story","images":[
-      {"url":"https://cdn.benchmark.pl/uploads/backend_img/a/fotki_recenzje/6134_mafia_the_city_of_lost/Zdjecie_2_m.jpg","alt":"Разговор персонажей Mafia","caption":"Длинные сцены на движке удерживают внимание на отношениях внутри семьи Сальери.","source_name":"Benchmark.pl","source_url":"https://www.benchmark.pl/testy_i_recenzje/wspominamy-mafia-the-city-of-lost-heaven.html"},
       {"url":"https://cdn.mobygames.com/screenshots/3303827-mafia-windows-the-game-features-unique-loading-screens-for-each-.jpg","width":1280,"height":1024,"alt":"Иллюстрация сюжетной главы","caption":"Отдельные иллюстрации глав усиливают ощущение законченных эпизодов криминальной хроники.","source_name":"MobyGames","source_url":"https://www.mobygames.com/game/7190/mafia/screenshots/windows/798851/"}
     ]},
     {"id":"city","images":[
-      {"url":"https://cdn.mobygames.com/screenshots/3305176-mafia-windows-you-can-just-walk-around-and-watch-stuff-a-train-c.jpg","width":1280,"height":1024,"alt":"Поезд пересекает мост","caption":"Поезда, мосты и удалённые районы создают ощущение функционирующего города без низкокачественной карты поверх экрана.","source_name":"MobyGames","source_url":"https://www.mobygames.com/game/7190/mafia/screenshots/windows/798856/"},
-      {"url":"https://cdn.mobygames.com/screenshots/3304972-mafia-windows-waiting-for-a-train-at-a-station-this-is-not-scrip.jpg","width":1280,"height":1024,"alt":"Железнодорожная станция","caption":"Станция существует вне конкретной миссии и показывает внимание к городской инфраструктуре.","source_name":"MobyGames","source_url":"https://www.mobygames.com/game/7190/mafia/screenshots/windows/798857/"},
-      {"url":"https://cdn.benchmark.pl/uploads/backend_img/a/fotki_recenzje/6134_mafia_the_city_of_lost/Zdjecie_5_m.jpg","alt":"Широкая улица Лост-Хэвена","caption":"Районы читаются по архитектуре, ширине улиц и характеру движения.","source_name":"Benchmark.pl","source_url":"https://www.benchmark.pl/testy_i_recenzje/wspominamy-mafia-the-city-of-lost-heaven.html"}
+      {"url":"https://cdn.mobygames.com/screenshots/3305176-mafia-windows-you-can-just-walk-around-and-watch-stuff-a-train-c.jpg","width":1280,"height":1024,"alt":"Поезд пересекает мост","caption":"Поезда, мосты и удалённые районы создают ощущение функционирующего города.","source_name":"MobyGames","source_url":"https://www.mobygames.com/game/7190/mafia/screenshots/windows/798856/"},
+      {"url":"https://cdn.mobygames.com/screenshots/3304972-mafia-windows-waiting-for-a-train-at-a-station-this-is-not-scrip.jpg","width":1280,"height":1024,"alt":"Железнодорожная станция","caption":"Станция существует вне конкретной миссии и показывает внимание к городской инфраструктуре.","source_name":"MobyGames","source_url":"https://www.mobygames.com/game/7190/mafia/screenshots/windows/798857/"}
     ]},
     {"id":"driving","images":[
       {"url":"https://www.gamespot.com/wp-content/uploads/original/gamespot/images/2002/pc/act/mafia/2149076-0003.jpg","alt":"Автомобиль в движении","caption":"Спидометр, трафик и узкая улица показывают, почему обычная поездка требует внимания.","source_name":"GameSpot","source_url":"https://www.gamespot.com/reviews/mafia-review/1900-2879254/"},
-      {"url":"https://cdn.benchmark.pl/uploads/backend_img/a/fotki_recenzje/6134_mafia_the_city_of_lost/Zdjecie_1_m.jpg","alt":"Вождение автомобиля","caption":"Масса кузова и длинный тормозной путь делают машину самостоятельным игровым объектом.","source_name":"Benchmark.pl","source_url":"https://www.benchmark.pl/testy_i_recenzje/wspominamy-mafia-the-city-of-lost-heaven.html"},
       {"url":"https://cdn.mobygames.com/screenshots/3299854-mafia-windows-ohh-these-effects-are-magnificent-a-false-feeling-.jpg","width":1280,"height":1024,"alt":"Поездка за городом","caption":"За пределами центра меняются свет, ландшафт и условия управления, а не только фон дороги.","source_name":"MobyGames","source_url":"https://www.mobygames.com/game/7190/mafia/screenshots/windows/798859/"}
     ]},
     {"id":"missions","images":[
@@ -39,16 +34,13 @@
       {"url":"https://cdn.mobygames.com/screenshots/3299651-mafia-windows-i-decide-to-smash-some-statues-with-my-trusty-base.jpg","width":1280,"height":1024,"alt":"Томми с бейсбольной битой","caption":"Ближний бой и разрушаемые объекты добавляют миссиям другой темп помимо стрельбы.","source_name":"MobyGames","source_url":"https://www.mobygames.com/game/7190/mafia/screenshots/windows/798860/"}
     ]},
     {"id":"difficulty","images":[
-      {"url":"https://cdn.mobygames.com/screenshots/3304622-mafia-windows-game-over-ive-been-arrested-i-only-killed-four-peo.jpg","alt":"Экран провала после ареста","caption":"Арест или смерть возвращают к контрольной точке, поэтому цена ошибки ощущается буквально.","source_name":"MobyGames","source_url":"https://www.mobygames.com/game/7190/mafia/screenshots/windows/48446/"},
-      {"url":"https://cdn.benchmark.pl/uploads/backend_img/a/fotki_recenzje/6134_mafia_the_city_of_lost/Zdjecie_4_m.jpg","alt":"Напряжённая поездка по городу","caption":"Длинный путь становится особенно болезненным, когда его приходится повторять после неудачи.","source_name":"Benchmark.pl","source_url":"https://www.benchmark.pl/testy_i_recenzje/wspominamy-mafia-the-city-of-lost-heaven.html"}
+      {"url":"https://cdn.mobygames.com/screenshots/3304622-mafia-windows-game-over-ive-been-arrested-i-only-killed-four-peo.jpg","alt":"Экран провала после ареста","caption":"Арест или смерть возвращают к контрольной точке, поэтому цена ошибки ощущается буквально.","source_name":"MobyGames","source_url":"https://www.mobygames.com/game/7190/mafia/screenshots/windows/48446/"}
     ]},
     {"id":"presentation","images":[
-      {"url":"https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/256701735/movie_full.jpg","alt":"Официальный кадр Mafia","caption":"Композиция, свет и приглушённая палитра удерживают атмосферу при старой геометрии.","source_name":"Steam","source_url":"https://store.steampowered.com/app/40990/Mafia/"},
-      {"url":"https://cdn.benchmark.pl/uploads/backend_img/a/fotki_recenzje/6134_mafia_the_city_of_lost/Zdjecie_3_m.jpg","alt":"Атмосферная сцена Mafia","caption":"Режиссура кадра остаётся выразительной там, где разрешение текстур выдаёт возраст игры.","source_name":"Benchmark.pl","source_url":"https://www.benchmark.pl/testy_i_recenzje/wspominamy-mafia-the-city-of-lost-heaven.html"}
+      {"url":"https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/256701735/movie_full.jpg","alt":"Официальный кадр Mafia","caption":"Композиция, свет и приглушённая палитра удерживают атмосферу при старой геометрии.","source_name":"Steam","source_url":"https://store.steampowered.com/app/40990/Mafia/"}
     ]},
     {"id":"versions","images":[
-      {"url":"https://www.gamespot.com/wp-content/uploads/original/gamespot/images/2002/pc/act/mafia/2149079-0004.jpg","alt":"Free Ride Extreme","caption":"Free Ride Extreme превращает знакомый город в площадку для намеренно странных испытаний.","source_name":"GameSpot","source_url":"https://www.gamespot.com/reviews/mafia-review/1900-2879254/"},
-      {"url":"https://cdn.benchmark.pl/uploads/backend_img/a/fotki_recenzje/6134_mafia_the_city_of_lost/Zdjecie_6_m.jpg","alt":"Оригинальная PC-версия Mafia","caption":"Исходная PC-версия сохраняет визуальную цельность сцен и непрерывность пространства.","source_name":"Benchmark.pl","source_url":"https://www.benchmark.pl/testy_i_recenzje/wspominamy-mafia-the-city-of-lost-heaven.html"}
+      {"url":"https://www.gamespot.com/wp-content/uploads/original/gamespot/images/2002/pc/act/mafia/2149079-0004.jpg","alt":"Free Ride Extreme","caption":"Free Ride Extreme превращает знакомый город в площадку для намеренно странных испытаний.","source_name":"GameSpot","source_url":"https://www.gamespot.com/reviews/mafia-review/1900-2879254/"}
     ]}
   ]
 }
