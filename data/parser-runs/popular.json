@@ -1,10 +1,10 @@
 {
   "parser": "popular",
   "status": "success",
-  "checked_at": "2026-08-03T16:41:55.091Z",
-  "duration_ms": 31435,
+  "checked_at": "2026-08-03T20:27:31.623Z",
+  "duration_ms": 5419,
   "ranked_count": 30,
-  "sources_success": 8,
+  "sources_success": 10,
   "sources_total": 12,
   "output": "data/popular/current.json",
   "note": "Опубликовано 30 игровых позиций после удаления оборудования и служебных продуктов.",
@@ -18,7 +18,7 @@
       "id": "reddit-public",
       "status": "error",
       "error": "HTTP 403",
-      "duration_ms": 82,
+      "duration_ms": 31,
       "url": "https://www.reddit.com/r/Games/hot.json?limit=100"
     },
     {
@@ -26,15 +26,15 @@
       "status": "success",
       "items": 50,
       "matched": 50,
-      "duration_ms": 347,
+      "duration_ms": 298,
       "url": "https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=topsellers&infinite=1&cc=us&l=english&json=1"
     },
     {
       "id": "ign-rss",
       "status": "success",
       "items": 20,
-      "matched": 1,
-      "duration_ms": 435,
+      "matched": 2,
+      "duration_ms": 421,
       "url": "https://www.ign.com/rss/articles/feed"
     },
     {
@@ -42,7 +42,7 @@
       "status": "success",
       "items": 50,
       "matched": 7,
-      "duration_ms": 137,
+      "duration_ms": 242,
       "url": "https://www.pcgamer.com/rss/"
     },
     {
@@ -50,52 +50,54 @@
       "status": "success",
       "items": 15,
       "matched": 2,
-      "duration_ms": 274,
+      "duration_ms": 99,
       "url": "https://www.gamespot.com/feeds/mashup/"
     },
     {
       "id": "youtube-popular",
       "status": "success",
-      "items": 296,
+      "items": 295,
       "matched": 25,
-      "duration_ms": 895
+      "duration_ms": 918
     },
     {
       "id": "eurogamer-rss",
       "status": "success",
       "items": 100,
       "matched": 4,
-      "duration_ms": 160,
+      "duration_ms": 232,
       "url": "https://www.eurogamer.net/feed"
     },
     {
       "id": "rps-rss",
       "status": "success",
       "items": 100,
-      "matched": 4,
-      "duration_ms": 337,
+      "matched": 3,
+      "duration_ms": 112,
       "url": "https://www.rockpapershotgun.com/feed"
     },
     {
       "id": "polygon-rss",
       "status": "success",
       "items": 10,
-      "matched": 1,
-      "duration_ms": 725,
+      "matched": 2,
+      "duration_ms": 680,
       "url": "https://www.polygon.com/rss/index.xml"
     },
     {
       "id": "google-news-gaming",
-      "status": "error",
-      "error": "HTTP 503",
-      "duration_ms": 8148,
+      "status": "success",
+      "items": 100,
+      "matched": 2,
+      "duration_ms": 597,
       "url": "https://news.google.com/rss/search?q=gaming%20OR%20%22video%20game%22%20when%3A4d&hl=en-US&gl=US&ceid=US%3Aen"
     },
     {
       "id": "google-news-console-games",
-      "status": "error",
-      "error": "HTTP 503",
-      "duration_ms": 8197,
+      "status": "success",
+      "items": 100,
+      "matched": 6,
+      "duration_ms": 494,
       "url": "https://news.google.com/rss/search?q=PlayStation%20OR%20Xbox%20OR%20Nintendo%20OR%20Rockstar%20Games%20when%3A4d&hl=en-US&gl=US&ceid=US%3Aen"
     }
   ]
