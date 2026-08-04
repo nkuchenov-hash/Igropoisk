@@ -10,8 +10,12 @@
   const catalogBySlug=new Map();
   const catalogByTitle=new Map();
   const steamEnrichment=new Map();
+  const coverCacheKey='igroReleaseCoverChoiceV1';
   let ready=false;
   let queued=false;
+  let coverChoice={};
+
+  try{coverChoice=JSON.parse(localStorage.getItem(coverCacheKey)||'{}')||{}}catch{coverChoice={}}
 
   const clean=value=>String(value||'').trim();
   const canonical=value=>clean(value).normalize('NFKD').toLowerCase()
@@ -29,9 +33,34 @@
     return url.startsWith('assets/')?`../${url}`:url;
   };
 
+  const absolute=value=>{
+    try{return new URL(value,document.baseURI).href}catch{return clean(value)}
+  };
+  const sameUrl=(left,right)=>Boolean(left&&right&&absolute(left)===absolute(right));
   const unique=values=>[...new Set((values||[]).map(normalizeAsset).filter(Boolean))];
 
-  /* Same image quality order as «Сейчас популярно», without moving an unverified URL ahead of a verified release source. */
+  function saveCoverChoice(){
+    try{
+      const entries=Object.entries(coverChoice).slice(-120);
+      coverChoice=Object.fromEntries(entries);
+      localStorage.setItem(coverCacheKey,JSON.stringify(coverChoice));
+    }catch{}
+  }
+
+  function rememberCover(slug,url){
+    const value=normalizeAsset(url);
+    if(!slug||!value||coverChoice[slug]===value)return;
+    delete coverChoice[slug];
+    coverChoice[slug]=value;
+    saveCoverChoice();
+  }
+
+  function forgetCover(slug,url){
+    if(!slug||!coverChoice[slug]||!sameUrl(coverChoice[slug],url))return;
+    delete coverChoice[slug];
+    saveCoverChoice();
+  }
+
   const candidateRank=url=>{
     const value=String(url||'').toLowerCase();
     if(value.startsWith('../assets/covers/popular/')||value.startsWith('../assets/covers/releases/'))return 0;
@@ -91,6 +120,7 @@
   function coverCandidates(game){
     const trusted=unique([
       game?.image?.local_url,
+      coverChoice[game?.slug],
       game?.image?.verified?game?.image?.source_url:'',
       ...(game?.image_candidates||[])
     ]);
@@ -99,7 +129,7 @@
       ...supplementalCandidates(game),
       ...(game?._runtime_image_candidates||[]),
       ...steamCandidates(game?.external_ids?.steam)
-    ]).filter(url=>!trusted.includes(url));
+    ]).filter(url=>!trusted.some(item=>sameUrl(item,url)));
     return [...trusted,...remaining];
   }
 
@@ -107,7 +137,7 @@
     const appid=Number(game?.external_ids?.steam);
     if(!appid)return [];
     if(steamEnrichment.has(appid))return steamEnrichment.get(appid);
-    const request=fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=us&l=english`,{cache:'no-store'})
+    const request=fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=us&l=english`,{cache:'default'})
       .then(response=>response.ok?response.json():null)
       .then(payload=>{
         const data=payload?.[appid]?.data||{};
@@ -134,69 +164,98 @@
     '.release-detail-cover'
   ].join(',');
 
+  const ownerFor=media=>media?.closest('[data-release]');
+  const slugFor=media=>media?.dataset.releaseSlug||ownerFor(media)?.dataset.release||'';
+
   function ensureImage(media,game){
     let image=media.querySelector('img');
     if(!image){
       image=document.createElement('img');
+      image.loading=media.matches('.release-calendar-item__media')?'lazy':'eager';
+      image.decoding='async';
       media.appendChild(image);
     }
-    image.loading='eager';
-    image.decoding='async';
-    image.fetchPriority='high';
-    image.referrerPolicy='no-referrer';
     image.alt=`Обложка ${game.title}`;
     image.hidden=false;
     return image;
   }
 
-  function applyCandidates(media,game,{force=false}={}){
-    const candidates=coverCandidates(game);
-    if(!candidates.length)return;
-    const signature=JSON.stringify(candidates);
-    const image=ensureImage(media,game);
-    if(!force&&media.dataset.coverGuaranteeSignature===signature&&image.getAttribute('src'))return;
-    media.dataset.coverGuaranteeSignature=signature;
-    media.dataset.coverCandidates=signature;
-    media.dataset.releaseSlug=game.slug;
-    media.dataset.coverEnriched='false';
-    media.classList.remove('is-broken');
-    image.dataset.coverIndex='0';
-    image.hidden=false;
-    if(image.getAttribute('src')!==candidates[0])image.src=candidates[0];
-  }
-
   function markLoaded(image){
     const media=image.closest(mediaSelector);
     if(!media)return;
+    const slug=slugFor(media);
     media.classList.remove('is-broken');
     media.dataset.coverReady='true';
     image.hidden=false;
+    rememberCover(slug,image.getAttribute('src')||image.currentSrc);
+  }
+
+  function setCandidate(image,media,candidates,index){
+    if(index<0||index>=candidates.length)return false;
+    media.dataset.coverCandidates=JSON.stringify(candidates);
+    image.dataset.coverIndex=String(index);
+    image.hidden=false;
+    if(!sameUrl(image.getAttribute('src'),candidates[index]))image.src=candidates[index];
+    return true;
+  }
+
+  function applyCandidates(media,game){
+    const candidates=coverCandidates(game);
+    if(!candidates.length)return;
+
+    const image=ensureImage(media,game);
+    const current=image.getAttribute('src')||'';
+    const currentIndex=candidates.findIndex(candidate=>sameUrl(candidate,current));
+
+    media.dataset.coverGuaranteeSignature=JSON.stringify(candidates);
+    media.dataset.coverCandidates=JSON.stringify(candidates);
+    media.dataset.releaseSlug=game.slug;
+    media.classList.remove('is-broken');
+
+    if(image.complete&&image.naturalWidth>0){
+      image.dataset.coverIndex=String(currentIndex>=0?currentIndex:0);
+      markLoaded(image);
+      return;
+    }
+
+    if(current&&!image.complete){
+      image.dataset.coverIndex=String(currentIndex>=0?currentIndex:0);
+      image.hidden=false;
+      return;
+    }
+
+    if(current&&image.complete&&image.naturalWidth===0){
+      forgetCover(game.slug,current);
+      const next=currentIndex>=0?currentIndex+1:0;
+      if(setCandidate(image,media,candidates,next))return;
+      void advanceCover(image,media);
+      return;
+    }
+
+    setCandidate(image,media,candidates,0);
   }
 
   async function advanceCover(image,media){
     let candidates=[];
     try{candidates=JSON.parse(media.dataset.coverCandidates||'[]')}catch{}
-    const current=Math.max(0,Number(image.dataset.coverIndex||0));
-    const next=current+1;
-    if(next<candidates.length){
-      image.dataset.coverIndex=String(next);
-      image.hidden=false;
-      image.src=candidates[next];
-      return;
-    }
 
-    const game=games.get(media.dataset.releaseSlug);
+    const slug=slugFor(media);
+    const failed=image.getAttribute('src')||'';
+    forgetCover(slug,failed);
+
+    const current=Math.max(-1,Number(image.dataset.coverIndex??-1));
+    const next=current+1;
+    if(setCandidate(image,media,candidates,next))return;
+
+    const game=games.get(slug);
     if(game&&media.dataset.coverEnriched!=='true'){
       media.dataset.coverEnriched='true';
       const extra=await enrichFromSteam(game);
       const extended=unique([...candidates,...extra,...steamCandidates(game?.external_ids?.steam)]);
-      const firstNew=extended.findIndex(url=>!candidates.includes(url));
+      const firstNew=extended.findIndex(url=>!candidates.some(existing=>sameUrl(existing,url)));
       if(firstNew>=0){
-        media.dataset.coverCandidates=JSON.stringify(extended);
         media.dataset.coverGuaranteeSignature=JSON.stringify(extended);
-        image.dataset.coverIndex=String(firstNew);
-        image.hidden=false;
-        image.src=extended[firstNew];
+        setCandidate(image,media,extended,firstNew);
         return;
       }
     }
@@ -206,14 +265,28 @@
     image.hidden=true;
   }
 
-  /* Capture before the old one-shot image handler so a failed first URL cannot permanently hide the image. */
+  /* Registered before the renderer: the old one-shot handler never gets to hide a recoverable image. */
   window.addEventListener('error',event=>{
     const image=event.target;
     if(!(image instanceof HTMLImageElement))return;
     const media=image.closest(mediaSelector);
-    if(!media||!media.dataset.coverCandidates)return;
+    if(!media||!ownerFor(media))return;
+
     event.stopPropagation();
     event.stopImmediatePropagation();
+    image.hidden=false;
+
+    if(!ready){
+      image.dataset.coverPending='true';
+      return;
+    }
+
+    if(!media.dataset.coverCandidates){
+      const game=games.get(slugFor(media));
+      if(game)applyCandidates(media,game);
+      return;
+    }
+
     void advanceCover(image,media);
   },true);
 
@@ -243,22 +316,19 @@
     });
   }
 
-  const observer=new MutationObserver(queueDecorate);
-  observer.observe(document.body,{childList:true,subtree:true});
+  new MutationObserver(queueDecorate).observe(document.body,{childList:true,subtree:true});
 
   const readJSON=async url=>{
     try{
-      const response=await fetch(`${url}?v=${Date.now()}`,{cache:'no-store'});
+      const response=await fetch(url,{cache:'default'});
       return response.ok?response.json():null;
     }catch{return null}
   };
 
-  Promise.all([
-    readJSON('../data/releases/current.json'),
+  const extrasPromise=Promise.all([
     readJSON('../data/popular/current.json'),
     readJSON('../data/catalog-visible.json')
-  ]).then(([releasePayload,popularPayload,catalogPayload])=>{
-    (releasePayload?.releases||[]).forEach(game=>games.set(game.slug,game));
+  ]).then(([popularPayload,catalogPayload])=>{
     (popularPayload?.ranking||[]).forEach(item=>{
       if(item.slug)popularBySlug.set(item.slug,item);
       if(item.title)popularByTitle.set(canonical(item.title),item);
@@ -267,7 +337,12 @@
       if(item.slug)catalogBySlug.set(item.slug,item);
       if(item.title||item.name)catalogByTitle.set(canonical(item.title||item.name),item);
     });
+  });
+
+  readJSON('../data/releases/current.json').then(releasePayload=>{
+    (releasePayload?.releases||[]).forEach(game=>games.set(game.slug,game));
     ready=true;
     decorate(document);
-  }).catch(error=>console.warn('Release cover guarantee:',error));
+    return extrasPromise;
+  }).then(()=>decorate(document)).catch(error=>console.warn('Release cover guarantee:',error));
 })();
