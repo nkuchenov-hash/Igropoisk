@@ -1,0 +1,94 @@
+name: News module check
+
+on:
+  push:
+    branches: [phase-b1-news-isolation]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'features/news/**'
+      - 'index.html'
+      - 'assets/home-page.js'
+      - 'assets/home-page.css'
+      - 'assets/home-wide-rails.css'
+      - 'assets/design-system.css'
+      - 'fix.css'
+      - 'scripts/migrate-news-isolation.mjs'
+      - 'scripts/validate-news-module.mjs'
+      - 'scripts/validate-news-boundary.mjs'
+      - '.github/workflows/news-module-check.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: news-module-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout proposed snapshot
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify news JavaScript syntax
+        run: |
+          find features/news scripts -type f \( -name '*.js' -o -name '*.mjs' \) -print0 \
+            | xargs -0 -n1 node --check
+
+      - name: Prove news isolation is fully materialized
+        run: |
+          node scripts/migrate-news-isolation.mjs
+          git diff --exit-code
+
+      - name: Verify news module boundary
+        run: node scripts/validate-news-module.mjs
+
+      - name: Enforce news UI branch scope
+        if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'news-ui/')
+        run: |
+          git diff --name-only "origin/${{ github.base_ref }}...HEAD" \
+            | node scripts/validate-news-boundary.mjs news-ui
+
+      - name: Enforce news content branch scope
+        if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'news-content/')
+        run: |
+          git diff --name-only "origin/${{ github.base_ref }}...HEAD" \
+            | node scripts/validate-news-boundary.mjs news-content
+
+      - name: Verify shared layout contract
+        run: python3 scripts/enforce_layout_contract.py --check
+
+      - name: Verify publication gates
+        run: |
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-editorial-pipeline.mjs
+
+      - name: Reject malformed patches
+        run: git diff --check
+
+  package:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout validated commit
+        uses: actions/checkout@v4
+
+      - name: Package B1 staging snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: igropoisk-phase-b1-news-${{ github.sha }}
+          path: |
+            .
+            !.git/**
+            !.github/**
+          if-no-files-found: error
+          retention-days: 7
