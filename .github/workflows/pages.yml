@@ -28,6 +28,22 @@ jobs:
         run: |
           sed -i 's#</head>#<link rel="stylesheet" href="fix.css"></head>#' index.html
           sed -i 's#</body>#<script src="fix.js"></script></body>#' index.html
+          sed -i 's/class="ig-button" data-auth-link/class="ig-button account-action" data-auth-link/' index.html
+          python3 - <<'PY'
+          from pathlib import Path
+
+          auth_path = Path('assets/auth.js')
+          auth = auth_path.read_text(encoding='utf-8')
+          old = """  const observer=new MutationObserver(syncHeader);
+          const start=()=>{syncHeader();if(document.body)observer.observe(document.body,{childList:true,subtree:true})};"""
+          new = """  const start=()=>{syncHeader()};"""
+          if old not in auth:
+              raise SystemExit('Expected auth header observer block was not found')
+          auth_path.write_text(auth.replace(old, new), encoding='utf-8')
+          PY
+          find . -type f \( -name '*.html' -o -name '*.js' \) -print0 | xargs -0 sed -i -E \
+            's/auth\.js\?v=[0-9-]+/auth.js?v=20260804-4/g'
+          node --check assets/auth.js
 
       - name: Validate and inject release calendar UI
         run: |
