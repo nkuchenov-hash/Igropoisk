@@ -52,16 +52,39 @@ jobs:
       - name: Recalculate final statuses
         if: always()
         run: node scripts/orchestrate-content.mjs --finalize
-      - name: Validate public game structure
+      - name: Validate current public game structure
         if: always()
         run: |
-          if [ -f scripts/validate-design-system.mjs ]; then node scripts/validate-design-system.mjs; fi
+          if [ -f scripts/validate-game-v3.mjs ]; then node scripts/validate-game-v3.mjs; fi
       - name: Commit pipeline results
         if: always()
         run: |
           git config user.name "igropoisk-content[bot]"
           git config user.email "igropoisk-content[bot]@users.noreply.github.com"
-          git add data/content-pipeline data/parser-runs data/parser-output data/drafts data/game-content data/catalog-visible.json data/research data/reviews data/ratings data/media-candidates data/articles data/article-drafts data/article-media game article
-          git diff --cached --quiet || git commit -m "Maintain game pages and reviews"
-          git pull --rebase
-          git push
+          paths=(
+            data/content-pipeline
+            data/parser-runs
+            data/parser-output
+            data/drafts
+            data/game-content
+            data/catalog-visible.json
+            data/research
+            data/reviews
+            data/ratings
+            data/media-candidates
+            data/articles
+            data/article-drafts
+            data/article-media
+            game
+            article
+          )
+          existing=()
+          for path in "${paths[@]}"; do
+            if [ -e "$path" ]; then existing+=("$path"); fi
+          done
+          if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
+          if ! git diff --cached --quiet; then
+            git commit -m "Maintain game pages and reviews"
+            git pull --rebase
+            git push
+          fi
