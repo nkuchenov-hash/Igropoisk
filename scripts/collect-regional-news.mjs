@@ -7,9 +7,21 @@ const feeds = [
   { source: 'StopGame', url: 'https://stopgame.ru/rss/news.xml', language: 'ru', authority: 1.05 },
   { source: 'PlayGround.ru', url: 'https://www.playground.ru/rss/news.xml', language: 'ru', authority: 0.9 }
 ];
+const regionalSeeds = [
+  {
+    source: 'Игромания',
+    language: 'ru',
+    sourceWeight: 1.05,
+    title: 'Atomic Heart выпустили в Steam для игроков из России и ряда стран СНГ',
+    summary: 'Atomic Heart стала доступна в Steam для игроков из России, Казахстана и ряда стран СНГ после прежней эксклюзивности VK Play.',
+    publishedAt: '2026-08-03T00:00:00.000Z',
+    url: 'https://www.igromania.ru/news/167724/atomic-heart-vyipustili-v-steam-dlya-igrokov-iz-rossii-i-kazahstana/',
+    regions: ['cis']
+  }
+];
 const file = 'data/news.json';
 const imageDirectory = 'assets/news';
-const userAgent = 'IgropoiskRegionalNewsBot/1.0 (+https://github.com/nkuchenov-hash/Igropoisk)';
+const userAgent = 'IgropoiskRegionalNewsBot/1.1 (+https://github.com/nkuchenov-hash/Igropoisk)';
 const maxAgeDays = 7;
 
 const regionRules = [
@@ -79,7 +91,10 @@ async function downloadImage(imageUrl,id,articleUrl) {
 
 const payload=JSON.parse(await fs.readFile(file,'utf8'));
 const existing=payload.items||[];
-const gathered=(await Promise.all(feeds.map(async feed=>{try{return parseFeed((await fetchText(feed.url,15000)).text,feed);}catch(error){console.error(`[regional/feed] ${feed.source}: ${error.message}`);return[];}}))).flat();
+const gathered=[
+  ...(await Promise.all(feeds.map(async feed=>{try{return parseFeed((await fetchText(feed.url,15000)).text,feed);}catch(error){console.error(`[regional/feed] ${feed.source}: ${error.message}`);return[];}}))).flat(),
+  ...regionalSeeds.filter(item=>Date.now()-new Date(item.publishedAt).getTime()<=maxAgeDays*864e5)
+];
 const clusters=[];
 for(const item of gathered.sort((a,b)=>new Date(b.publishedAt)-new Date(a.publishedAt))){
   const cluster=clusters.find(c=>similarity(c.items[0].title,item.title)>=0.48&&Math.abs(new Date(c.items[0].publishedAt)-new Date(item.publishedAt))<=72*36e5);
