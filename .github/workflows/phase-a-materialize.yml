@@ -1,0 +1,59 @@
+name: Phase A materialize deployment source
+
+on:
+  push:
+    branches: [phase-a-stabilization]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-a-materialize
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout stabilization branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase-a-stabilization
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Materialize the exact deployed source
+        run: node scripts/materialize-deployment.mjs
+
+      - name: Verify JavaScript syntax
+        run: |
+          node --check assets/auth.js
+          node --check assets/site-header.js
+          node --check assets/layout-contract.js
+          node --check assets/release-home.js
+          node --check assets/release-calendar.js
+          node --check scripts/inject-release-ui.mjs
+          node --check scripts/materialize-deployment.mjs
+
+      - name: Verify layout contract without modifying files
+        run: python3 scripts/enforce_layout_contract.py --check
+
+      - name: Reject malformed patches
+        run: git diff --check
+
+      - name: Commit materialized source files
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Deployment source is already materialized"
+            exit 0
+          fi
+          git config user.name "igropoisk-stabilization[bot]"
+          git config user.email "actions@users.noreply.github.com"
+          git add --all
+          git commit -m "Phase A: materialize deployment output in source"
+          git pull --rebase origin phase-a-stabilization
+          git push origin HEAD:phase-a-stabilization
