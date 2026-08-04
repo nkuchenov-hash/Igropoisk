@@ -45,6 +45,7 @@
 .release-calendar-item__media{
   position:absolute!important;
   inset:0!important;
+  display:block!important;
   border:0!important;
   border-radius:0!important;
 }
@@ -109,4 +110,18 @@
   line-height:1!important;
   pointer-events:none!important;
   text-shadow:0 1px 4px rgba(0,0,0,.98),0 0 10px rgba(0,0,0,.9)!important;
+}
+
+/* Base responsive rules used to hide calendar covers below 980 px. */
+@media(max-width:980px){
+  .release-calendar-item__media{
+    display:block!important;
+  }
+
+  .release-calendar-item,
+  .release-calendar-item__media,
+  .release-calendar-item__media img{
+    height:100%!important;
+    min-height:0!important;
+  }
 }
