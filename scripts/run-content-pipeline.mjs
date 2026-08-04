@@ -28,10 +28,8 @@ for(const task of plan.pages||[]){
 let reviewSucceeded=false;
 for(const task of plan.reviews||[]){
   const slug=task.slug;
-  const required=[`data/drafts/${slug}.json`,`data/ratings/${slug}.json`];
-  const missing=required.filter(file=>!exists(file));
-  if(missing.length){results.push({label:`review:${slug}`,status:'blocked',reason:`missing ${missing.join(', ')}`});continue}
-  const steps=[['research','scripts/prepare-review-research.mjs'],['media-discovery','scripts/discover-review-media.mjs'],['synthesis','scripts/synthesize-review.mjs'],['media-enrichment','scripts/enrich-review-media.mjs'],['validation','scripts/validate-review-output.mjs']];
+  if(!exists(`data/drafts/${slug}.json`)){results.push({label:`review:${slug}`,status:'blocked',reason:`missing data/drafts/${slug}.json`});continue}
+  const steps=[['research','scripts/prepare-review-research.mjs'],['rating','scripts/calculate-ratings-from-research.mjs'],['media-discovery','scripts/discover-review-media.mjs'],['synthesis','scripts/synthesize-review.mjs'],['media-enrichment','scripts/enrich-review-media.mjs'],['validation','scripts/validate-review-output.mjs']];
   let ok=true;
   for(const [label,script] of steps){if(!exists(script)){results.push({label:`${label}:${slug}`,status:'blocked',reason:`missing ${script}`});ok=false;break}if(!run(`${label}:${slug}`,'node',[script,slug])){ok=false;break}}
   if(ok)reviewSucceeded=true;
