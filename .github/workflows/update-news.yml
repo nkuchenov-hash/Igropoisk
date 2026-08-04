@@ -8,6 +8,8 @@ on:
     paths:
       - 'scripts/fetch-news.mjs'
       - 'scripts/postprocess-industry-news.mjs'
+      - 'scripts/boost-regional-news.mjs'
+      - 'scripts/build-home-news.mjs'
       - 'scripts/build-news-events.mjs'
       - '.github/workflows/update-news.yml'
 
@@ -42,18 +44,24 @@ jobs:
       - name: Localize and classify ranked news
         run: node scripts/postprocess-industry-news.mjs
 
+      - name: Add high-impact Russia and CIS events
+        run: node scripts/boost-regional-news.mjs
+
       - name: Rebuild unified news events
         run: node scripts/build-news-events.mjs
 
-      - name: Commit ranked feed images and events
+      - name: Rebuild current homepage news
+        run: node scripts/build-home-news.mjs
+
+      - name: Commit ranked feed images events and homepage feed
         run: |
-          if git diff --quiet -- data/news.json data/news-events.json assets/news; then
-            echo "Ranked feed and event index are current"
+          if git diff --quiet -- data/news.json data/news-events.json data/news-home-ru.json assets/news; then
+            echo "Ranked feed, event index and homepage feed are current"
             exit 0
           fi
           git config user.name "igropoisk-news-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/news.json data/news-events.json assets/news
-          git commit -m "Update daily global gaming news events"
+          git add data/news.json data/news-events.json data/news-home-ru.json assets/news
+          git commit -m "Update daily global and regional gaming news"
           git pull --rebase origin main
           git push origin HEAD:main
