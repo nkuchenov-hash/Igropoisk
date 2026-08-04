@@ -3,13 +3,6 @@ name: Deploy Igropoisk to GitHub Pages
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'assets/news/**'
-      - 'data/news*.json'
-      - 'data/news/**'
-      - 'data/parser-runs/news*.json'
-  schedule:
-    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -18,164 +11,84 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: github-pages-production
+  cancel-in-progress: true
 
 jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact production commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify deployment source is already materialized
+        run: |
+          node scripts/materialize-deployment.mjs
+          git diff --exit-code
+
+      - name: Verify JavaScript syntax
+        run: |
+          find assets scripts -type f \( -name '*.js' -o -name '*.mjs' \) -print0 \
+            | xargs -0 -n1 node --check
+
+      - name: Verify Python syntax and shared layout contract
+        run: |
+          python3 -m py_compile scripts/enforce_layout_contract.py
+          python3 scripts/enforce_layout_contract.py --check
+
+      - name: Verify structured content files
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          errors = []
+          for root in (Path('config'), Path('data')):
+              if not root.exists():
+                  continue
+              for file in root.rglob('*.json'):
+                  try:
+                      json.loads(file.read_text(encoding='utf-8'))
+                  except Exception as error:
+                      errors.append(f'{file}: {error}')
+          if errors:
+              raise SystemExit('Invalid JSON files:\n' + '\n'.join(errors))
+          print('Structured content JSON is valid.')
+          PY
+
+      - name: Verify game and editorial publication gates
+        run: |
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-editorial-pipeline.mjs
+
+      - name: Reject malformed patches
+        run: git diff --check
+
   deploy:
+    needs: verify
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout complete repository history
+      - name: Checkout the same verified commit
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Verify all cancelled-deployment changes are included
-        run: |
-          set -euo pipefail
-          required_commits=(
-            51e415f733e9a13268cb71bef4dd7cee9b3c1056
-            9ad1d5d51b2a6c929efb377ba7e066e3577311b4
-            3164d9dcb2ca43fa63908a2145d6e5edc4de2036
-            59c8c448ef02056a14e0b9f53dce8581bf744f45
-            39566bcad11b3473de1994ab370030cfb52047b8
-            7807c56252d853d6b1469554c87906a2df0677be
-            971a6c39d147afeb821f8f9095cb3b57165265f4
-          )
-          for commit in "${required_commits[@]}"; do
-            git merge-base --is-ancestor "$commit" HEAD || {
-              echo "Required change is missing from deployment snapshot: $commit"
-              exit 1
-            }
-          done
-          python3 - <<'PY'
-          from pathlib import Path
-
-          required = [
-              'index.html',
-              'calendar/index.html',
-              'login/index.html',
-              'register/index.html',
-              'account/index.html',
-              'admin/index.html',
-              'assets/auth.js',
-              'assets/account-page.js',
-              'assets/register-page.js',
-              'assets/admin-page.js',
-              'assets/release-home.js',
-              'assets/release-home.css',
-              'assets/release-calendar.js',
-              'assets/release-calendar-readable.js',
-              'scripts/cache-release-covers.mjs',
-          ]
-          missing = [path for path in required if not Path(path).is_file()]
-          if missing:
-              raise SystemExit('Deployment snapshot is incomplete:\n' + '\n'.join(f'- {path}' for path in missing))
-          print('All consolidated feature files are present.')
-          PY
-
-      - name: Inject repaired UI layer
-        run: |
-          sed -i 's#</head>#<link rel="stylesheet" href="fix.css"></head>#' index.html
-          sed -i 's#</body>#<script src="fix.js"></script></body>#' index.html
-          sed -i 's/class="ig-button" data-auth-link/class="ig-button account-action" data-auth-link/' index.html
-          python3 - <<'PY'
-          from pathlib import Path
-
-          auth_path = Path('assets/auth.js')
-          auth = auth_path.read_text(encoding='utf-8')
-          old = """  const observer=new MutationObserver(syncHeader);
-          const start=()=>{syncHeader();if(document.body)observer.observe(document.body,{childList:true,subtree:true})};"""
-          new = """  const start=()=>{syncHeader()};"""
-          if old in auth:
-              auth_path.write_text(auth.replace(old, new), encoding='utf-8')
-          PY
-          find . -type f \( -name '*.html' -o -name '*.js' \) -print0 | xargs -0 sed -i -E \
-            's/auth\.js\?v=[0-9-]+/auth.js?v=20260804-6/g'
-          node --check assets/auth.js
-
-      - name: Validate and inject release calendar UI
-        run: |
-          node --check scripts/inject-release-ui.mjs
-          node --check assets/release-home.js
-          node --check assets/release-header-bridge.js
-          node --check assets/release-calendar.js
-          node --check assets/release-admin.js
-          node --check assets/release-admin-card.js
-          node scripts/inject-release-ui.mjs
-
-      - name: Enforce shared layout and header contracts
-        run: |
-          node --check assets/site-header.js
-          python3 -m py_compile scripts/enforce_layout_contract.py
-          python3 scripts/enforce_layout_contract.py --write
-          python3 scripts/enforce_layout_contract.py --check
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-
-          errors = []
-          header_css = Path('assets/site-header.css').read_text(encoding='utf-8')
-          wtp_css = Path('assets/what-to-play.css').read_text(encoding='utf-8')
-          calendar_html = Path('calendar/index.html').read_text(encoding='utf-8')
-
-          if "@import url('./site-system.css" not in header_css:
-              errors.append('Shared header must import assets/site-system.css')
-          if 'class="ig-site-header"' not in calendar_html:
-              errors.append('Calendar must use the shared header root')
-          if 'release-site-header' in calendar_html or 'release-header-bridge.js' in calendar_html:
-              errors.append('Calendar contains a page-specific header implementation')
-          if re.search(r'\.site-header(?:__inner)?\s*\{', wtp_css):
-              errors.append('What-to-play may not style the site header')
-          for match in re.finditer(r'\.wtp-(?:layout|results-section)\s*\{([^}]*)\}', wtp_css):
-              if re.search(r'(^|;)\s*(?:width|max-width|margin-inline|margin-left|margin-right|padding-left|padding-right)\s*:', match.group(1)):
-                  errors.append('What-to-play may not override the outer content frame')
-                  break
-
-          if errors:
-              raise SystemExit('\n'.join(f'- {error}' for error in errors))
-          print('Shared page architecture verified.')
-          PY
-          find . -name '*.html' -type f -print0 | xargs -0 sed -i \
-            -e 's/site-header.css?v=20260803-1/site-header.css?v=20260803-2/g' \
-            -e 's/site-header.js?v=20260803-1/site-header.js?v=20260803-2/g'
-
-      - name: Write consolidated deployment marker
-        run: |
-          python3 - <<'PY'
-          import json
-          import os
-          from datetime import datetime, timezone
-
-          marker = {
-              'commit': os.environ['GITHUB_SHA'],
-              'deployedAt': datetime.now(timezone.utc).isoformat(),
-              'snapshot': 'all-cancelled-deployments-consolidated',
-              'includes': [
-                  'home-releases-and-reviews',
-                  'user-registration-and-account',
-                  'admin-role-protection',
-                  'release-calendar-and-cover-cache',
-                  'global-and-regional-news',
-                  'public-login-button',
-              ],
-          }
-          with open('deployment-version.json', 'w', encoding='utf-8') as file:
-              json.dump(marker, file, ensure_ascii=False, indent=2)
-              file.write('\n')
-          PY
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload site
+      - name: Upload exact repository snapshot
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy verified snapshot
         id: deployment
         uses: actions/deploy-pages@v4
