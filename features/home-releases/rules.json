@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "id": "home-releases",
+  "title": "Ближайшие релизы на главной",
+  "status": "active",
+  "source": "data/releases/current.json",
+  "maximum_cards": 12,
+  "sort": ["event_date_ascending", "title_ascending"],
+  "eligibility": {
+    "include_today": true,
+    "include_tbd_after_dated": true,
+    "past_grace_hours": 24,
+    "require_title": true,
+    "require_event": true
+  },
+  "interaction": {
+    "horizontal_scroll": true,
+    "mouse_wheel_scroll": true,
+    "arrow_buttons": true,
+    "calendar_link": "calendar/"
+  },
+  "image_priority": [
+    "image.local_url",
+    "image.source_url",
+    "image_candidates",
+    "steam_library_600x900",
+    "steam_header"
+  ],
+  "editorial_rules": [
+    "На главной показываются только ближайшие ещё не прошедшие события.",
+    "Порядок определяется датой, а не популярностью.",
+    "Карточки прокручиваются только внутри правой части блока.",
+    "Клик по карточке открывает соответствующий релиз в календаре.",
+    "При недоступной обложке перебираются резервные URL; пустая карточка заменяется инициалами."
+  ]
+}
