@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Регистрация пользователя Игропоиска.">
+  <title>Регистрация — Игропоиск</title>
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260804-1">
+  <link rel="stylesheet" href="../assets/account.css?v=20260804-1">
+  <link rel="stylesheet" href="../assets/account-user.css?v=20260804-1">
+  <link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">
+  <link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">
+</head>
+<body>
+<header class="ig-site-header"></header>
+<main class="auth-page">
+  <div class="ig-container auth-shell">
+    <section class="auth-card" aria-labelledby="registerTitle">
+      <div class="auth-card__brand"><div class="auth-card__mark" aria-hidden="true">ИП</div><div><h1 id="registerTitle">Регистрация</h1><p>Создайте профиль Игропоиска</p></div></div>
+      <form class="auth-form" id="registerForm">
+        <label class="auth-field"><span>Имя пользователя</span><input id="registerUsername" autocomplete="username" minlength="3" maxlength="24" required></label>
+        <label class="auth-field"><span>Email</span><input id="registerEmail" type="email" autocomplete="email" required></label>
+        <label class="auth-field"><span>Пароль</span><input id="registerPassword" type="password" autocomplete="new-password" minlength="8" required></label>
+        <label class="auth-field"><span>Повторите пароль</span><input id="registerConfirm" type="password" autocomplete="new-password" minlength="8" required></label>
+        <p class="auth-error" id="registerError" role="alert" aria-live="polite"></p>
+        <button class="auth-submit" id="registerSubmit" type="submit">Зарегистрироваться</button>
+      </form>
+      <div class="auth-switch"><span>Уже есть аккаунт?</span><a href="../login/">Войти</a></div>
+      <p class="auth-note">На временном этапе профиль хранится только в этом браузере.</p>
+    </section>
+  </div>
+</main>
+<script src="../assets/auth.js?v=20260804-2"></script>
+<script src="../assets/register-page.js?v=20260804-1"></script>
+<script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>
+<script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>
+</body>
+</html>
