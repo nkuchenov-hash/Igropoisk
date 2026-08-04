@@ -14,6 +14,8 @@
   <link rel="stylesheet" href="assets/home-wide-rails.css?v=20260803-4">
   <link rel="stylesheet" href="assets/what-to-play.css?v=20260803-7">
   <link rel="stylesheet" href="assets/layout-consistency.css?v=20260803-3">
+  <link rel="stylesheet" href="assets/reviews-of-day/index.css?v=20260804-1">
+  <link rel="stylesheet" href="assets/home-releases/index.css?v=20260804-1">
 </head>
 <body>
 <header class="site-header">
@@ -23,6 +25,7 @@
       <button class="active" data-page="home">Главное</button>
       <button data-page="what-to-play">Во что поиграть?</button>
       <button data-page="search">Поиск игр</button>
+      <a class="release-nav-link" href="calendar/" data-ig-release-nav>Календарь релизов</a>
       <button data-page="news">Новости</button>
     </nav>
     <div class="site-actions">
@@ -39,7 +42,39 @@
   </section>
   <div class="ig-container">
     <section class="section"><div class="section-head"><h2>Сейчас популярно</h2></div><div class="game-row" id="popular"></div></section>
-    <section class="section"><div class="section-head"><h2>Свежие обзоры</h2></div><div class="dashboard"><article class="card feature-card" data-game="the-witcher-3-wild-hunt"><img src="https://cdn.cloudflare.steamstatic.com/steam/apps/292030/library_hero.jpg" alt="The Witcher 3"><div class="card-body"><div class="date">Обзор</div><h3>Почему «Ведьмак 3» всё ещё работает</h3><p>Квесты, герои и устройство мира, которые не устарели спустя годы.</p></div></article><div class="small-list" id="reviews"></div></div></section>
+    <section class="section home-editorial-showcase" data-ig-home-editorial="section">
+      <div class="home-editorial-showcase__grid">
+        <section class="reviews-of-day" aria-labelledby="reviewsOfDayTitle">
+          <div class="home-showcase-heading">
+            <span class="home-showcase-heading__icon" aria-hidden="true">▱</span>
+            <h2 id="reviewsOfDayTitle">Обзоры дня</h2>
+          </div>
+          <div class="reviews-of-day__main" id="reviewsOfDayMain" aria-live="polite">
+            <div class="home-widget-loading">Выбираем обзор…</div>
+          </div>
+          <div id="reviews" hidden></div>
+          <div class="reviews-of-day__rail-shell">
+            <button class="home-rail-button" type="button" data-review-rail="-1" aria-label="Предыдущие обзоры">‹</button>
+            <div class="reviews-of-day__rail" id="reviewsOfDayRail" aria-label="Другие обзоры"></div>
+            <button class="home-rail-button" type="button" data-review-rail="1" aria-label="Следующие обзоры">›</button>
+          </div>
+        </section>
+        <section class="home-releases" aria-labelledby="homeReleasesTitle">
+          <div class="home-showcase-heading home-showcase-heading--split">
+            <span class="home-showcase-heading__icon" aria-hidden="true">□</span>
+            <h2 id="homeReleasesTitle">Ближайшие релизы</h2>
+            <a href="calendar/">Смотреть календарь</a>
+          </div>
+          <div class="home-releases__rail-shell">
+            <button class="home-rail-button" type="button" data-release-rail="-1" aria-label="Предыдущие релизы">‹</button>
+            <div class="home-releases__rail" id="releaseHomeGrid" aria-live="polite">
+              <div class="home-widget-loading">Загружаем ближайшие релизы…</div>
+            </div>
+            <button class="home-rail-button" type="button" data-release-rail="1" aria-label="Следующие релизы">›</button>
+          </div>
+        </section>
+      </div>
+    </section>
     <section class="section"><div class="section-head"><h2>Последние новости</h2></div><div class="news-grid" id="homeNews"></div></section>
   </div>
 </main>
@@ -52,6 +87,8 @@
 <script src="assets/home-page.js?v=20260803-9"></script>
 <script src="assets/home-alignment.js?v=20260803-1"></script>
 <script src="assets/popular-home.js?v=20260803-22"></script>
+<script src="assets/reviews-of-day/index.js?v=20260804-1"></script>
+<script src="assets/home-releases/index.js?v=20260804-1"></script>
 <script src="assets/what-to-play.js?v=20260803-1"></script>
 <script src="assets/news-feed.js?v=20260803-20"></script>
 <script src="assets/news-rail-controls.js?v=20260803-2"></script>
