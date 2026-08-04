@@ -70,6 +70,13 @@ jobs:
       - name: Check patch integrity
         run: git diff --check
 
+  package:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the same validated commit without generated files
+        uses: actions/checkout@v4
+
       - name: Package exact staging snapshot
         uses: actions/upload-artifact@v4
         with:
