@@ -40,7 +40,7 @@
 html,body,#what-to-play,.wtp-shell{width:100%;max-width:100%;overflow-x:hidden}
 #what-to-play *{min-width:0;box-sizing:border-box}
 .wtp-shell{padding:0 0 20px}
-.wtp-layout{display:flex;flex-direction:column;width:100%;padding-left:0;padding-right:0;gap:0}
+.wtp-layout{display:flex;flex-direction:column;gap:0}
 .wtp-chat-card{order:1;width:100%;height:calc(100dvh - var(--ig-header-height));min-height:520px;border-left:0;border-right:0;border-radius:0;box-shadow:none;grid-template-rows:64px minmax(0,1fr) auto}
 .wtp-context{order:2;display:none}
 .wtp-layout::after{display:none}
@@ -62,12 +62,11 @@ html,body,#what-to-play,.wtp-shell{width:100%;max-width:100%;overflow-x:hidden}
 .wtp-form textarea{display:block;width:100%;min-width:0;min-height:48px;max-height:110px;padding:12px 13px;font-size:16px;line-height:1.35}
 .wtp-send{width:48px;min-width:48px;height:48px;font-size:23px}
 .wtp-composer small{display:none}
-.wtp-results-section{width:100%;max-width:100%;padding:24px var(--ig-gutter) 44px}
+.wtp-results-section{padding-top:24px;padding-bottom:44px}
 .wtp-results-head{align-items:stretch;flex-direction:column;gap:12px}
 .wtp-results-head .ig-button{width:100%;min-height:46px}
 .wtp-results{grid-template-columns:minmax(0,1fr);gap:12px}
 .wtp-result{width:100%}
 .wtp-result__actions{display:grid;grid-template-columns:minmax(0,1fr)}
 .wtp-result__actions button{width:100%}
-.site-header__inner{max-width:100%;overflow:hidden}
 }
