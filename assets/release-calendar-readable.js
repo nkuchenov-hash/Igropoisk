@@ -33,7 +33,69 @@
     return `${parts.join(' ')}.`;
   }
 
+  function normalizeLocalCover(value){
+    const url=clean(value);
+    if(!url)return '';
+    return url.startsWith('assets/')?`../${url}`:url;
+  }
+
+  function coverCandidates(game){
+    const steam=game?.external_ids?.steam;
+    return [...new Set([
+      normalizeLocalCover(game?.image?.local_url),
+      clean(game?.image?.source_url),
+      steam?`https://cdn.cloudflare.steamstatic.com/steam/apps/${steam}/library_600x900.jpg`:'',
+      steam?`https://cdn.akamai.steamstatic.com/steam/apps/${steam}/library_600x900.jpg`:'',
+      steam?`https://cdn.cloudflare.steamstatic.com/steam/apps/${steam}/header.jpg`:'',
+      steam?`https://cdn.cloudflare.steamstatic.com/steam/apps/${steam}/capsule_616x353.jpg`:''
+    ].filter(Boolean))];
+  }
+
+  function requiredCover(game){
+    const candidates=coverCandidates(game);
+    return candidates[0]||'';
+  }
+
+  function attachRequiredCover(media,game){
+    if(!media)return;
+    const candidates=coverCandidates(game);
+    media.dataset.coverCandidates=JSON.stringify(candidates);
+    media.classList.remove('is-broken');
+    let image=media.querySelector('img');
+    if(!image){
+      image=document.createElement('img');
+      image.loading='lazy';
+      image.decoding='async';
+      media.appendChild(image);
+    }
+    image.hidden=false;
+    image.alt=`Обложка ${game.title}`;
+    image.dataset.coverIndex='0';
+    if(!image.getAttribute('src')&&candidates[0])image.src=candidates[0];
+  }
+
+  document.addEventListener('error',event=>{
+    const image=event.target;
+    if(!(image instanceof HTMLImageElement))return;
+    const media=image.closest('.release-calendar-item__media');
+    if(!media)return;
+    event.stopImmediatePropagation();
+    const candidates=JSON.parse(media.dataset.coverCandidates||'[]');
+    const current=Math.max(0,Number(image.dataset.coverIndex||0));
+    const next=current+1;
+    if(next<candidates.length){
+      image.dataset.coverIndex=String(next);
+      image.hidden=false;
+      image.src=candidates[next];
+      return;
+    }
+    image.hidden=false;
+    media.classList.add('is-broken');
+  },true);
+
   function decorateCalendarCard(card,game){
+    const media=card.querySelector('.release-calendar-item__media');
+    attachRequiredCover(media,game);
     const content=card.children[1];
     if(!content)return;
     let description=content.querySelector('.release-calendar-item__description');
@@ -47,6 +109,8 @@
     if(description.textContent!==text)description.textContent=text;
     const title=`${game.title}: ${text}`;
     if(card.title!==title)card.title=title;
+    if(!requiredCover(game))card.dataset.coverMissing='true';
+    else delete card.dataset.coverMissing;
   }
 
   function decorateFeedCard(card,game){
