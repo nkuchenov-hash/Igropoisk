@@ -54,12 +54,6 @@ jobs:
           node --check assets/release-admin-card.js
           node scripts/inject-release-ui.mjs
 
-      - name: Cache release covers locally
-        continue-on-error: true
-        run: |
-          node --check scripts/cache-release-covers.mjs
-          node scripts/cache-release-covers.mjs
-
       - name: Enforce shared layout and header contracts
         run: |
           node --check assets/site-header.js
