@@ -54,14 +54,19 @@ for (const item of all) {
 const output = events.map(event => {
   const officialItems = event.items.filter(item => item.official);
   const mediaItems = event.items.filter(item => !item.official);
-  const rankedRepresentative = mediaItems.sort((a, b) => Number(b.trendScore || 0) - Number(a.trendScore || 0))[0];
+  const rankedRepresentative = mediaItems.sort((a, b) => Number(b.globalScore || b.trendScore || 0) - Number(a.globalScore || a.trendScore || 0))[0];
   const officialRepresentative = officialItems.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))[0];
   const representative = rankedRepresentative || officialRepresentative || event.representative;
   const sources = [...new Map(event.items.map(item => [item.url, sourceRef(item)])).values()];
   const mediaSourceCount = new Set(mediaItems.flatMap(item => item.sources || [item.source]).filter(Boolean)).size;
   const discussionMentions = Math.max(0, ...event.items.map(item => Number(item.discussionMentions || 0)));
   const trendScore = Math.max(0, ...event.items.map(item => Number(item.trendScore || 0)));
-  const importance = trendScore >= 400 || mediaSourceCount >= 5 || discussionMentions >= 8 ? 'critical' : mediaSourceCount >= 2 || trendScore >= 180 ? 'major' : 'normal';
+  const globalScore = Math.max(0, ...event.items.map(item => Number(item.globalScore || 0)));
+  const regionalScore = Math.max(0, ...event.items.map(item => Number(item.regionalScore || 0)));
+  const regions = [...new Set(event.items.flatMap(item => Array.isArray(item.regions) ? item.regions : []))];
+  const globalEligible = officialItems.length > 0 || event.items.some(item => item.globalEligible) || mediaSourceCount >= 3 || discussionMentions >= 3 || trendScore >= 450;
+  const regionalEligible = regions.length > 0 && event.items.some(item => item.regionalEligible);
+  const importance = trendScore >= 700 || mediaSourceCount >= 6 || discussionMentions >= 7 ? 'critical' : globalEligible ? 'major' : 'normal';
   const type = officialItems.length && mediaItems.length ? 'confirmed' : officialItems.length ? 'official' : 'ranked';
   const id = createHash('sha1').update(event.items.map(item => item.url).sort().join('|')).digest('hex').slice(0, 16);
   return {
@@ -72,13 +77,14 @@ const output = events.map(event => {
     image: representative.image, imageSourceUrl: representative.imageSourceUrl,
     primaryUrl: (officialRepresentative || representative).url,
     primarySource: (officialRepresentative || representative).source,
-    trendScore, mediaSourceCount, discussionMentions, sources,
-    homeUntil: new Date(new Date(event.publishedAt).getTime() + (importance === 'critical' ? 168 : importance === 'major' ? 72 : type === 'official' ? 36 : 48) * 3600e3).toISOString()
+    trendScore, globalScore, regionalScore, globalEligible, regionalEligible, regions,
+    mediaSourceCount, discussionMentions, sources,
+    homeUntil: globalEligible || regionalEligible ? new Date(new Date(event.publishedAt).getTime() + (importance === 'critical' ? 168 : globalEligible ? 72 : 48) * 3600e3).toISOString() : null
   };
 }).sort((a, b) => {
   const importance = { critical: 3, major: 2, normal: 1 };
-  return importance[b.importance] - importance[a.importance] || b.trendScore - a.trendScore || new Date(b.publishedAt) - new Date(a.publishedAt);
+  return importance[b.importance] - importance[a.importance] || b.globalScore - a.globalScore || b.trendScore - a.trendScore || new Date(b.publishedAt) - new Date(a.publishedAt);
 });
 
-await fs.writeFile(outputPath, `${JSON.stringify({ generatedAt: new Date().toISOString(), model: 'event-first', mergeWindowHours, items: output }, null, 2)}\n`);
-console.log(`[events] built ${output.length} events from ${all.length} articles`);
+await fs.writeFile(outputPath, `${JSON.stringify({ generatedAt: new Date().toISOString(), model: 'event-first-global-plus-region', mergeWindowHours, globalMinimumIndependentSources: 3, items: output }, null, 2)}\n`);
+console.log(`[events] built ${output.length} globally and regionally classified events from ${all.length} articles`);
