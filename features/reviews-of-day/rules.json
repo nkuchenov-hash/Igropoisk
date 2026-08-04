@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "reviews-of-day",
+  "title": "Обзоры дня",
+  "status": "active",
+  "source": "data/home-widgets/reviews-of-day.json",
+  "rotation_hours": 6,
+  "seed_namespace": "igropoisk-reviews-of-day-v1",
+  "minimum_weight": 1,
+  "new_game_weight": 3.2,
+  "year_decay": 0.18,
+  "article_fresh_days": 45,
+  "article_fresh_bonus": 0.7,
+  "eligibility": {
+    "publication_status": "published",
+    "require_source_gate": true,
+    "require_hero": true,
+    "require_article_slug": true
+  },
+  "selection_formula": "weight = max(minimum_weight, new_game_weight - game_age_years × year_decay) × article_freshness × editorial_weight",
+  "interaction": {
+    "one_featured_review": true,
+    "secondary_horizontal_slider": true,
+    "rotation_is_stable_within_slot": true
+  },
+  "editorial_rules": [
+    "Главная карточка выбирается только из опубликованных обзоров, прошедших source gate.",
+    "Вероятность выше у обзоров новых игр, но старые игры не исключаются.",
+    "Выбор стабилен в течение rotation_hours и меняется в следующем временном слоте.",
+    "Остальные опубликованные обзоры выводятся в горизонтальном слайдере.",
+    "Новый обзор добавляется через манифест только после публикации статьи."
+  ]
+}
