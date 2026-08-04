@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "id": "content-pipeline",
+  "title": "Контентный конвейер Игропоиска",
+  "status": "active",
+  "purpose": "Автоматически обнаруживать игры, собирать проверенные страницы, ставить обзоры в очередь и поддерживать опубликованные материалы в актуальном состоянии.",
+  "execution_limits": {
+    "pages_per_run": 2,
+    "reviews_per_run": 1
+  },
+  "page_gate": {
+    "minimum_identity_sources": 2,
+    "minimum_sources": 10,
+    "minimum_features": 4,
+    "minimum_screenshots": 6,
+    "require_official_video_when_available": true,
+    "publish_below_gate": false
+  },
+  "review_gate": {
+    "policy_file": "config/parsers/review-synthesis.json",
+    "publish_below_gate": false
+  },
+  "refresh_cadence_days": {
+    "upcoming_release": 1,
+    "recent_release": 7,
+    "live_service": 7,
+    "published_page": 90,
+    "published_review": 180
+  },
+  "priority": {
+    "upcoming_release": 80,
+    "recent_release": 40,
+    "release_calendar_origin": 25,
+    "missing_page": 70,
+    "missing_review": 60
+  },
+  "outputs": [
+    "data/content-pipeline/registry.json",
+    "data/content-pipeline/queue.json",
+    "data/content-pipeline/status.json",
+    "data/content-pipeline/execution-plan.json",
+    "data/content-pipeline/execution-log.json",
+    "data/parser-runs/content-pipeline.json"
+  ]
+}
