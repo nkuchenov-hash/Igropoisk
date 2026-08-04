@@ -1,0 +1,40 @@
+name: Materialize manual review
+
+on:
+  push:
+    paths:
+      - data/manual-review-builds/*.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: materialize-manual-review
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Materialize review files
+        run: |
+          for file in data/manual-review-builds/*.mjs; do
+            [ -f "$file" ] || continue
+            node "$file"
+          done
+      - name: Commit review files
+        run: |
+          git config user.name "igropoisk-builder"
+          git config user.email "actions@users.noreply.github.com"
+          git add article data
+          git diff --cached --quiet && exit 0
+          git commit -m "Materialize manual review articles"
+          git pull --rebase origin main
+          git push origin HEAD:main
