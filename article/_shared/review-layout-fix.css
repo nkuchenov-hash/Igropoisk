@@ -1,1 +1,19 @@
 @import url('../../assets/design-system-article.css');
+
+/* Shared article structure. Content builders only fill these slots. */
+:root{
+  --ig-article-left:minmax(300px,340px);
+  --ig-article-main:minmax(0,820px);
+  --ig-article-right:minmax(320px,380px);
+  --ig-article-gap:clamp(24px,1.55vw,36px);
+  --ig-article-panel-padding:clamp(28px,1.8vw,42px);
+}
+.article-shell,.article-layout{justify-content:center}
+@media(max-width:1460px){
+  .article-shell,.article-layout{grid-template-columns:minmax(270px,310px) minmax(0,820px)}
+  .article-side--right,.article-right-rail{display:none!important}
+}
+@media(max-width:1040px){
+  .article-shell,.article-layout{display:block}
+  .article-side--left,.article-left-rail{position:static!important;margin-bottom:24px}
+}
