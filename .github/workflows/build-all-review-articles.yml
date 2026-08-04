@@ -39,16 +39,34 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Verify required secret
-        run: test -n "$OPENAI_API_KEY"
-      - name: Build catalog review articles
-        run: node scripts/build-all-review-articles.mjs
-      - name: Commit generated articles and reports
-        if: always()
+      - name: Configure builder identity
         run: |
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
+      - name: Verify required secret
+        run: test -n "$OPENAI_API_KEY"
+      - name: Mark build as running
+        run: |
+          mkdir -p data/parser-runs
+          node -e "const fs=require('fs');fs.writeFileSync('data/parser-runs/review-batch-runtime.json',JSON.stringify({schema_version:1,status:'running',started_at:new Date().toISOString(),workflow_run_id:process.env.GITHUB_RUN_ID,workflow_run_attempt:process.env.GITHUB_RUN_ATTEMPT,head_sha:process.env.GITHUB_SHA,ref:process.env.GITHUB_REF},null,2)+'\n')"
+          git add data/parser-runs/review-batch-runtime.json
+          git commit -m "Mark catalog article build running"
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Build catalog review articles
+        run: node scripts/build-all-review-articles.mjs
+      - name: Mark build result
+        if: always()
+        run: |
+          RESULT="${{ job.status }}"
+          node -e "const fs=require('fs');const p='data/parser-runs/review-batch-runtime.json';let d={schema_version:1};try{d=JSON.parse(fs.readFileSync(p,'utf8'))}catch{};d.status=process.env.RESULT==='success'?'completed':'failed';d.finished_at=new Date().toISOString();d.workflow_run_id=process.env.GITHUB_RUN_ID;fs.writeFileSync(p,JSON.stringify(d,null,2)+'\n')"
+        env:
+          RESULT: ${{ job.status }}
+      - name: Commit generated articles and reports
+        if: always()
+        run: |
           git add data article game
           git diff --cached --quiet && exit 0
           git commit -m "Build catalog review articles"
-          git push
+          git pull --rebase origin main
+          git push origin HEAD:main
