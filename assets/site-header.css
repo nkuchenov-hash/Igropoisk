@@ -70,8 +70,29 @@
   display:grid;
   place-items:center;
 }
+.account-action{
+  min-height:40px;
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  padding:6px 11px;
+  white-space:nowrap;
+}
+.account-action__avatar{
+  display:grid;
+  place-items:center;
+  width:25px;
+  height:25px;
+  border-radius:50%;
+  background:color-mix(in srgb,var(--ig-accent) 20%,var(--ig-surface-3));
+  color:var(--ig-text);
+  font-size:12px;
+  font-weight:900;
+}
 @media(max-width:760px){
   .site-nav{display:none}
+  .account-action__label{display:none}
+  .account-action{width:40px;padding:6px;justify-content:center}
 }
 @media(prefers-reduced-transparency:reduce){
   .site-header{

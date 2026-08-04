@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Личный кабинет пользователя Игропоиска.">
+  <title>Личный кабинет — Игропоиск</title>
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260804-1">
+  <link rel="stylesheet" href="../assets/account.css?v=20260804-1">
+</head>
+<body>
+<header class="ig-site-header"></header>
+<main class="auth-page">
+  <div class="ig-container account-layout">
+    <aside class="account-sidebar">
+      <section class="account-profile">
+        <div class="account-profile__head">
+          <div class="account-profile__avatar" id="accountAvatar" aria-hidden="true">S</div>
+          <div>
+            <h2 id="accountName">Sangrar</h2>
+            <p id="accountGreeting">Аккаунт</p>
+          </div>
+        </div>
+        <div class="account-role" id="accountRole">Администратор</div>
+      </section>
+      <nav class="account-nav" aria-label="Разделы личного кабинета">
+        <button class="active" type="button" data-account-tab="overview">Обзор</button>
+        <button type="button" data-account-tab="games">Мои игры</button>
+        <button type="button" data-account-tab="settings">Настройки</button>
+      </nav>
+      <button class="ig-button account-logout" id="accountLogout" type="button">Выйти</button>
+    </aside>
+
+    <section class="account-main">
+      <div class="account-main__head">
+        <div>
+          <div class="ig-kicker">Личный кабинет</div>
+          <h1>Профиль и управление</h1>
+          <p>Персональные данные, игры и административные инструменты.</p>
+        </div>
+        <span class="account-status">В системе</span>
+      </div>
+
+      <div class="account-panel" data-account-panel="overview">
+        <div class="account-stats">
+          <article class="account-stat"><span>Сохранённые игры</span><strong>0</strong></article>
+          <article class="account-stat"><span>Мои оценки</span><strong>0</strong></article>
+          <article class="account-stat"><span>Списки</span><strong>0</strong></article>
+        </div>
+
+        <section class="account-section" id="adminPanel">
+          <div class="account-section__head">
+            <div>
+              <h2>Администрирование</h2>
+              <p>Инструменты доступны только аккаунту с ролью администратора.</p>
+            </div>
+            <span class="ig-pill">ADMIN</span>
+          </div>
+          <div class="admin-grid">
+            <a class="admin-tool" href="../calendar/">
+              <div><strong>Календарь релизов</strong><span>Просмотр ближайших релизов и текущего календаря.</span></div>
+              <span class="admin-tool__arrow">→</span>
+            </a>
+            <a class="admin-tool" href="../#news">
+              <div><strong>Новости</strong><span>Переход к опубликованной новостной ленте.</span></div>
+              <span class="admin-tool__arrow">→</span>
+            </a>
+            <div class="admin-tool is-disabled" aria-disabled="true">
+              <div><strong>Редактор игр</strong><span>Административный редактор будет подключён отдельным инструментом.</span></div>
+            </div>
+            <div class="admin-tool is-disabled" aria-disabled="true">
+              <div><strong>Обзоры и статьи</strong><span>Управление публикациями будет подключено отдельным инструментом.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="account-section">
+          <div class="account-section__head">
+            <div>
+              <h2>Активность</h2>
+              <p>История действий появится после подключения пользовательских функций.</p>
+            </div>
+          </div>
+          <div class="account-empty">В этом аккаунте пока нет пользовательской активности.</div>
+        </section>
+      </div>
+
+      <div class="account-panel" data-account-panel="games" hidden>
+        <section class="account-section">
+          <div class="account-section__head">
+            <div>
+              <h2>Мои игры</h2>
+              <p>Сохранённые игры, оценки и пользовательские списки.</p>
+            </div>
+          </div>
+          <div class="account-empty">Игры ещё не добавлены. Связь с кнопками сохранения будет подключена следующим этапом.</div>
+        </section>
+      </div>
+
+      <div class="account-panel" data-account-panel="settings" hidden>
+        <section class="account-section">
+          <div class="account-section__head">
+            <div>
+              <h2>Настройки аккаунта</h2>
+              <p>Текущая административная учётная запись: Sangrar.</p>
+            </div>
+          </div>
+          <div class="account-empty">Смена пароля и управление профилем будут доступны после подключения серверной авторизации.</div>
+        </section>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="../assets/auth.js?v=20260804-1"></script>
+<script src="../assets/account-page.js?v=20260804-1"></script>
+</body>
+</html>

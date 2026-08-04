@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Вход в личный кабинет Игропоиска.">
+  <title>Вход — Игропоиск</title>
+  <link rel="stylesheet" href="../assets/design-system.css?v=20260804-1">
+  <link rel="stylesheet" href="../assets/account.css?v=20260804-1">
+</head>
+<body>
+<header class="ig-site-header"></header>
+<main class="auth-page">
+  <div class="ig-container auth-shell">
+    <section class="auth-card" aria-labelledby="loginTitle">
+      <div class="auth-card__brand">
+        <div class="auth-card__mark" aria-hidden="true">ИП</div>
+        <div>
+          <h1 id="loginTitle">Вход</h1>
+          <p>Личный кабинет Игропоиска</p>
+        </div>
+      </div>
+      <p class="auth-card__intro">Введите имя пользователя и пароль.</p>
+      <form class="auth-form" id="loginForm">
+        <label class="auth-field">
+          <span>Имя пользователя</span>
+          <input id="loginUsername" name="username" autocomplete="username" required>
+        </label>
+        <label class="auth-field">
+          <span>Пароль</span>
+          <div class="auth-password">
+            <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+            <button id="passwordToggle" type="button" aria-label="Показать пароль">Показать</button>
+          </div>
+        </label>
+        <label class="auth-check">
+          <input id="loginRemember" type="checkbox">
+          <span>Оставаться в системе на этом устройстве</span>
+        </label>
+        <p class="auth-error" id="loginError" role="alert" aria-live="polite"></p>
+        <button class="auth-submit" id="loginSubmit" type="submit">Войти</button>
+      </form>
+      <p class="auth-note">Сейчас используется временный локальный вход для административной версии. Полноценные пользовательские аккаунты будут подключены вместе с серверной системой.</p>
+    </section>
+  </div>
+</main>
+<script src="../assets/auth.js?v=20260804-1"></script>
+<script src="../assets/login-page.js?v=20260804-1"></script>
+</body>
+</html>

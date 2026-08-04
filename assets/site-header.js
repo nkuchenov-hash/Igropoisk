@@ -110,6 +110,14 @@
     return true;
   }
 
+  function ensureAuthScript(){
+    if(document.querySelector('script[src*="assets/auth.js"]'))return;
+    const script=document.createElement('script');
+    script.src=`${ROOT}assets/auth.js?v=20260804-1`;
+    script.dataset.igAuth='';
+    document.head.appendChild(script);
+  }
+
   document.addEventListener('click',event=>{
     const header=event.target.closest('.site-header[data-ig-shared-header="generated"]');
     if(!header)return;
@@ -148,6 +156,7 @@
   new MutationObserver(queueScan).observe(document.documentElement,{subtree:true,childList:true});
   scan();
   ensureHeader();
+  ensureAuthScript();
   document.documentElement.dataset.theme=storedTheme();
   paintGeneratedTheme();
   updateGeneratedActive();
