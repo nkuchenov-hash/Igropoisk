@@ -113,7 +113,7 @@
   function ensureAuthScript(){
     if(document.querySelector('script[src*="assets/auth.js"]'))return;
     const script=document.createElement('script');
-    script.src=`${ROOT}assets/auth.js?v=20260804-1`;
+    script.src=`${ROOT}assets/auth.js?v=20260804-6`;
     script.dataset.igAuth='';
     document.head.appendChild(script);
   }
