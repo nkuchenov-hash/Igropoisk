@@ -6,6 +6,7 @@ on:
     - cron: '20 2 * * *'
   push:
     paths:
+      - '.github/workflows/content-pipeline.yml'
       - 'config/content-pipeline.json'
       - 'scripts/orchestrate-content.mjs'
       - 'scripts/run-content-pipeline.mjs'
