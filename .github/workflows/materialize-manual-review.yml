@@ -3,7 +3,7 @@ name: Materialize manual review
 on:
   push:
     paths:
-      - data/manual-review-builds/*.mjs
+      - data/manual-review-builds/**
   workflow_dispatch:
 
 permissions:
@@ -25,8 +25,12 @@ jobs:
           node-version: 22
       - name: Materialize review files
         run: |
+          shopt -s nullglob
+          for dir in data/manual-review-builds/*.parts; do
+            cat "$dir"/*.b64part | base64 --decode > /tmp/materialize-review.mjs
+            node /tmp/materialize-review.mjs
+          done
           for file in data/manual-review-builds/*.mjs; do
-            [ -f "$file" ] || continue
             node "$file"
           done
       - name: Commit review files
