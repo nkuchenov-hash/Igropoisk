@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Ближайшие релизы на главной — Игропоиск</title>
+<link rel="stylesheet" href="../../../assets/design-system.css?v=20260803-9">
+<link rel="stylesheet" href="../../../assets/design-system-game-v3.css?v=20260803-8">
+<link rel="stylesheet" href="../../../assets/design-system-parser-admin.css?v=20260803-8">
+<link rel="stylesheet" href="../../../assets/home-widget-admin.css?v=20260804-1">
+</head>
+<body data-home-widget="home-releases">
+<header class="parser-header"><div class="ig-container parser-header__inner"><a class="parser-logo" href="../../">ИГРОПОИСК / ADMIN</a><a class="parser-back" href="../../">← Все инструменты</a><div class="parser-header__actions"><button class="ig-button" id="theme" type="button">☀</button></div></div></header>
+<main class="ig-container home-widget-admin">
+  <div class="home-widget-admin__header"><div><div class="ig-kicker">Главная / Редакционный блок</div><h1 id="widgetTitle">Загрузка…</h1><p>Управляет только выборкой и отображением ближайших релизов в правой части объединённого блока. Данные календаря и сам парсер не изменяет.</p></div><span class="ig-admin-status pending" id="widgetStatus">loading</span></div>
+  <div class="home-widget-admin__grid">
+    <div>
+      <section class="home-widget-admin__card"><h2>Обязательные правила</h2><ul class="home-widget-admin__rules" id="widgetRules"></ul></section>
+      <section class="home-widget-admin__card" style="margin-top:16px"><h2>Правила в репозитории</h2><textarea id="rulesEditor" spellcheck="false"></textarea><div class="home-widget-admin__actions"><button class="ig-button" id="saveDraft" type="button">Сохранить черновик</button><button class="ig-button" id="exportDraft" type="button">Экспорт JSON</button><button class="ig-button" id="resetDraft" type="button">Сбросить</button></div><div class="home-widget-admin__note" id="draftStatus"></div></section>
+    </div>
+    <aside><section class="home-widget-admin__card"><h2>Текущее состояние</h2><div class="home-widget-admin__stats" id="widgetStats"></div></section><section class="home-widget-admin__card" style="margin-top:16px"><h2>Связанные разделы</h2><div class="home-widget-admin__actions"><a class="ig-button" href="../../../calendar/">Открыть календарь</a><a class="ig-button" href="../../parsers/releases/">Открыть парсер</a></div></section></aside>
+  </div>
+</main>
+<script src="../../../assets/home-widget-admin.js?v=20260804-1"></script>
+</body>
+</html>
