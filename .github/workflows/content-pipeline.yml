@@ -10,6 +10,7 @@ on:
       - 'scripts/orchestrate-content.mjs'
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/build-game-page.mjs'
+      - 'scripts/calculate-ratings-from-research.mjs'
       - 'data/catalog-visible.json'
       - 'data/releases/current.json'
 
@@ -36,6 +37,7 @@ jobs:
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/build-game-page.mjs
+          node --check scripts/calculate-ratings-from-research.mjs
       - name: Build registry and execution plan
         run: node scripts/orchestrate-content.mjs
       - name: Build selected pages and reviews
@@ -58,7 +60,7 @@ jobs:
         run: |
           git config user.name "igropoisk-content[bot]"
           git config user.email "igropoisk-content[bot]@users.noreply.github.com"
-          git add data/content-pipeline data/parser-runs data/parser-output data/drafts data/game-content data/catalog-visible.json data/research data/reviews data/media-candidates data/articles data/article-drafts data/article-media game article
+          git add data/content-pipeline data/parser-runs data/parser-output data/drafts data/game-content data/catalog-visible.json data/research data/reviews data/ratings data/media-candidates data/articles data/article-drafts data/article-media game article
           git diff --cached --quiet || git commit -m "Maintain game pages and reviews"
           git pull --rebase
           git push
