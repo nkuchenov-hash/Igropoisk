@@ -6,8 +6,25 @@
     ru: new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long' }),
     en: new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric' })
   };
+  const countryRegions = {
+    RU:'cis',KZ:'cis',BY:'cis',AM:'cis',AZ:'cis',GE:'cis',KG:'cis',MD:'cis',TJ:'cis',TM:'cis',UZ:'cis',
+    US:'north-america',CA:'north-america',MX:'north-america',
+    JP:'japan',KR:'korea',CN:'china',HK:'china',MO:'china',TW:'china',
+    BR:'latam',AR:'latam',CL:'latam',CO:'latam',PE:'latam',
+    AE:'mena',SA:'mena',TR:'mena',IL:'mena',EG:'mena',
+    SG:'sea',MY:'sea',ID:'sea',TH:'sea',VN:'sea',PH:'sea',
+    AU:'oceania',NZ:'oceania',
+    GB:'europe',IE:'europe',FR:'europe',DE:'europe',ES:'europe',IT:'europe',PT:'europe',NL:'europe',BE:'europe',LU:'europe',
+    PL:'europe',CZ:'europe',SK:'europe',HU:'europe',RO:'europe',BG:'europe',GR:'europe',AT:'europe',CH:'europe',NO:'europe',SE:'europe',FI:'europe',DK:'europe',IS:'europe',EE:'europe',LV:'europe',LT:'europe',SI:'europe',HR:'europe',RS:'europe',BA:'europe',ME:'europe',MK:'europe',AL:'europe'
+  };
+  const timezoneCountries = {
+    'Europe/Moscow':'RU','Europe/Minsk':'BY','Asia/Almaty':'KZ','Asia/Yerevan':'AM','Asia/Baku':'AZ','Asia/Tbilisi':'GE',
+    'America/New_York':'US','America/Chicago':'US','America/Denver':'US','America/Los_Angeles':'US','America/Toronto':'CA','America/Vancouver':'CA',
+    'Asia/Tokyo':'JP','Asia/Seoul':'KR','Asia/Shanghai':'CN','Asia/Hong_Kong':'HK','Australia/Sydney':'AU','Pacific/Auckland':'NZ'
+  };
   let allItems = [];
   let activeTag = '';
+  let userRegion = '';
 
   const $ = (selector, root = document) => root.querySelector(selector);
   const escapeHtml = (value = '') => String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
@@ -27,6 +44,41 @@
     return lang === 'ru'
       ? { loading:'Загружаем новости…', unavailable:'Новости временно недоступны.', empty:'По выбранным тегам новостей нет.', search:'Найти игру, студию или тему', all:'Все новости', official:'От разработчиков' }
       : { loading:'Loading news…', unavailable:'News is temporarily unavailable.', empty:'No news matches these tags.', search:'Search games, studios or topics', all:'All news', official:'From developers' };
+  }
+
+  function profileCountry() {
+    const keys = ['igropoisk-profile','igropoisk.user','igropoisk-user','igropoisk-auth','igropoisk.session'];
+    for (const key of keys) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+        const value = JSON.parse(raw);
+        const country = String(value?.country || value?.profile?.country || value?.user?.country || value?.countryCode || '').toUpperCase();
+        if (/^[A-Z]{2}$/.test(country)) return country;
+      } catch {}
+    }
+    return '';
+  }
+
+  function inferredCountry() {
+    const profile = profileCountry();
+    if (profile) return profile;
+    const languages = navigator.languages || [navigator.language || ''];
+    for (const locale of languages) {
+      const country = String(locale).match(/[-_]([A-Za-z]{2})\b/)?.[1]?.toUpperCase();
+      if (country && countryRegions[country]) return country;
+    }
+    try {
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (timezoneCountries[timezone]) return timezoneCountries[timezone];
+      if (timezone?.startsWith('Europe/')) return 'EU';
+    } catch {}
+    return '';
+  }
+
+  function resolveUserRegion() {
+    const country = inferredCountry();
+    return countryRegions[country] || (country === 'EU' ? 'europe' : '');
   }
 
   function valid(item, lang) {
@@ -76,6 +128,7 @@
       summaryRu: item.summaryRu || item.summary || '',
       summaryEn: item.summaryEn || item.summary || '',
       mediaSourceCount: Number(item.mediaSourceCount || item.sourceCount || 1),
+      regions: Array.isArray(item.regions) ? item.regions : [],
       sources: item.sources || [{ name: source, organization: item.organization || item.publisher || '', official }]
     };
   }
@@ -85,6 +138,20 @@
     if (!response.ok) throw new Error(`${path}: ${response.status}`);
     const payload = await response.json();
     return Array.isArray(payload) ? payload : payload.items || [];
+  }
+
+  function isOfficial(item) {
+    return item.type === 'official' || item.official || (item.sources || []).some(source => source.official);
+  }
+
+  function isGlobal(item) {
+    if (isOfficial(item)) return true;
+    if (typeof item.globalEligible === 'boolean') return item.globalEligible;
+    return Number(item.mediaSourceCount || 0) >= 3 || Number(item.discussionMentions || 0) >= 3 || Number(item.trendScore || 0) >= 450;
+  }
+
+  function matchesRegion(item) {
+    return Boolean(userRegion && item.regionalEligible && (item.regions || []).includes(userRegion));
   }
 
   async function loadItems(lang) {
@@ -107,16 +174,17 @@
       const previousQuality = previous ? Number(hasCyrillic(previous.titleRu)) * 100 + Number(previous.mediaSourceCount || 0) * 10 + Number(previous.trendScore || 0) : -1;
       if (!previous || quality > previousQuality) byUrl.set(key, item);
     }
-    return [...byUrl.values()];
+    return [...byUrl.values()].filter(item => isGlobal(item) || matchesRegion(item));
   }
 
   function score(item) {
     const trusted = (item.sources || []).some(source => trustedMedia.has(source.name)) || trustedMedia.has(sourceName(item));
-    const official = item.type === 'official' || item.official || (item.sources || []).some(source => source.official);
-    return Number(item.trendScore || 0)
+    const official = isOfficial(item);
+    return Number(item.globalScore || item.trendScore || 0)
       + Number(item.mediaSourceCount || 0) * 100
       + (official ? 180 : 0)
       + (trusted ? 120 : 0)
+      + (matchesRegion(item) ? Number(item.regionalScore || 180) : 0)
       + Math.max(0, 168 - (Date.now() - new Date(item.publishedAt).getTime()) / 36e5);
   }
 
@@ -168,7 +236,7 @@
       if (activeTag && !tags.includes(activeTag)) return false;
       const haystack = `${text(item,'title',lang)} ${text(item,'summary',lang)} ${tags.join(' ')}`.toLowerCase();
       return !query || haystack.includes(query);
-    }).sort((a,b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    }).sort((a,b) => score(b) - score(a) || new Date(b.publishedAt) - new Date(a.publishedAt));
     page.innerHTML = filtered.length ? filtered.map(item => renderCard(item, false, lang)).join('') : `<div class="empty">${labels(lang).empty}</div>`;
   }
 
@@ -176,13 +244,17 @@
     const lang = language();
     const home = $('#homeNews');
     const page = $('#newsPage');
+    userRegion = resolveUserRegion();
     setState(home, labels(lang).loading);
     setState(page, labels(lang).loading);
     try {
       allItems = await loadItems(lang);
-      const homeItems = [...allItems]
+      const globalItems = allItems.filter(isGlobal).sort((a,b) => score(b) - score(a) || new Date(b.publishedAt) - new Date(a.publishedAt));
+      const globalUrls = new Set(globalItems.slice(0, 12).map(item => item.primaryUrl));
+      const regionalItems = allItems.filter(item => matchesRegion(item) && !globalUrls.has(item.primaryUrl))
         .sort((a,b) => score(b) - score(a) || new Date(b.publishedAt) - new Date(a.publishedAt))
-        .slice(0, 12);
+        .slice(0, 3);
+      const homeItems = [...globalItems.slice(0, 12), ...regionalItems];
       if (home) home.innerHTML = homeItems.length ? homeItems.map(item => renderCard(item, true, lang)).join('') : `<div class="empty">${labels(lang).empty}</div>`;
       if (page) { buildFilters(page, lang); renderArchive(page, lang); }
     } catch (error) {
