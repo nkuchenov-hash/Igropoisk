@@ -1,24 +1,23 @@
-name: Deploy Igropoisk to GitHub Pages
+name: Phase A stability gate
 
 on:
   push:
+    branches: [phase-a-stabilization]
+  pull_request:
     branches: [main]
-  workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: github-pages-production
+  group: phase-a-stability-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  verify:
+  validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout exact production commit
+      - name: Checkout proposed snapshot
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -28,22 +27,22 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Verify deployment source is already materialized
+      - name: Prove deployment does not need runtime rewriting
         run: |
           node scripts/materialize-deployment.mjs
           git diff --exit-code
 
-      - name: Verify JavaScript syntax
+      - name: Check all JavaScript files
         run: |
           find assets scripts -type f \( -name '*.js' -o -name '*.mjs' \) -print0 \
             | xargs -0 -n1 node --check
 
-      - name: Verify Python syntax and shared layout contract
+      - name: Check Python and the layout contract
         run: |
           python3 -m py_compile scripts/enforce_layout_contract.py
           python3 scripts/enforce_layout_contract.py --check
 
-      - name: Verify structured content files
+      - name: Check JSON content integrity
         run: |
           python3 - <<'PY'
           import json
@@ -60,35 +59,31 @@ jobs:
                       errors.append(f'{file}: {error}')
           if errors:
               raise SystemExit('Invalid JSON files:\n' + '\n'.join(errors))
-          print('Structured content JSON is valid.')
+          print('All JSON files are valid.')
           PY
 
-      - name: Verify game and editorial publication gates
+      - name: Check publication gates
         run: |
           node scripts/validate-game-v3.mjs
           node scripts/validate-editorial-pipeline.mjs
 
-      - name: Reject malformed patches
+      - name: Check patch integrity
         run: git diff --check
 
-  deploy:
-    needs: verify
+  package:
+    needs: validate
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout the same verified commit
+      - name: Checkout the same validated commit without generated files
         uses: actions/checkout@v4
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload exact repository snapshot
-        uses: actions/upload-pages-artifact@v3
+      - name: Package exact staging snapshot
+        uses: actions/upload-artifact@v4
         with:
-          path: .
-
-      - name: Deploy verified snapshot
-        id: deployment
-        uses: actions/deploy-pages@v4
+          name: igropoisk-phase-a-staging-${{ github.sha }}
+          path: |
+            .
+            !.git/**
+            !.github/**
+          if-no-files-found: error
+          retention-days: 7
