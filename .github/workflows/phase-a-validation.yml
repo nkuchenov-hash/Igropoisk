@@ -1,0 +1,82 @@
+name: Phase A stability gate
+
+on:
+  push:
+    branches: [phase-a-stabilization]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase-a-stability-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout proposed snapshot
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Prove deployment does not need runtime rewriting
+        run: |
+          node scripts/materialize-deployment.mjs
+          git diff --exit-code
+
+      - name: Check all JavaScript files
+        run: |
+          find assets scripts -type f \( -name '*.js' -o -name '*.mjs' \) -print0 \
+            | xargs -0 -n1 node --check
+
+      - name: Check Python and the layout contract
+        run: |
+          python3 -m py_compile scripts/enforce_layout_contract.py
+          python3 scripts/enforce_layout_contract.py --check
+
+      - name: Check JSON content integrity
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          errors = []
+          for root in (Path('config'), Path('data')):
+              if not root.exists():
+                  continue
+              for file in root.rglob('*.json'):
+                  try:
+                      json.loads(file.read_text(encoding='utf-8'))
+                  except Exception as error:
+                      errors.append(f'{file}: {error}')
+          if errors:
+              raise SystemExit('Invalid JSON files:\n' + '\n'.join(errors))
+          print('All JSON files are valid.')
+          PY
+
+      - name: Check publication gates
+        run: |
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-editorial-pipeline.mjs
+
+      - name: Check patch integrity
+        run: git diff --check
+
+      - name: Package exact staging snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: igropoisk-phase-a-staging-${{ github.sha }}
+          path: |
+            .
+            !.git/**
+            !.github/**
+          if-no-files-found: error
+          retention-days: 7
