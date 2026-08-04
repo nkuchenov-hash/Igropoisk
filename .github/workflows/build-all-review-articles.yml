@@ -1,0 +1,54 @@
+name: Build all review articles
+
+on:
+  workflow_dispatch:
+    inputs:
+      only_slug:
+        description: Optional single game slug
+        required: false
+        type: string
+      batch_limit:
+        description: Optional maximum number of games
+        required: false
+        type: string
+  push:
+    paths:
+      - data/review-build-requests/all-catalog.json
+      - scripts/build-all-review-articles.mjs
+      - config/parsers/review-media-policy.json
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-all-review-articles
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ONLY_SLUG: ${{ inputs.only_slug }}
+      BATCH_LIMIT: ${{ inputs.batch_limit }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify required secret
+        run: test -n "$OPENAI_API_KEY"
+      - name: Build catalog review articles
+        run: node scripts/build-all-review-articles.mjs
+      - name: Commit generated articles and reports
+        if: always()
+        run: |
+          git config user.name "igropoisk-builder"
+          git config user.email "actions@users.noreply.github.com"
+          git add data article game
+          git diff --cached --quiet && exit 0
+          git commit -m "Build catalog review articles"
+          git push
