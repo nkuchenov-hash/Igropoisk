@@ -1,4 +1,4 @@
-/* Compact public calendar: original calendar footprint, larger cards inside each cell. */
+/* Compact public calendar: cards fill every pixel of the original calendar cells. */
 .release-page{padding-top:14px;padding-bottom:72px}
 .release-breadcrumb{margin-bottom:14px;font-size:12px}
 .release-kicker{margin-bottom:6px;font-size:11px}
@@ -47,24 +47,29 @@
 
 .release-weekdays span{padding:9px 8px;font-size:11px}
 .release-calendar-grid{grid-auto-rows:142px}
-.release-day{display:flex;height:142px;min-height:0;flex-direction:column;padding:8px}
-.release-day__number{min-height:22px;margin-bottom:5px;font-size:12px}
-.release-day.is-today .release-day__number>span:first-child{width:24px;height:24px}
-.release-day__count{font-size:9px}
-.release-day-items{position:relative;display:grid;min-height:0;flex:1;grid-template-rows:repeat(2,minmax(0,1fr));gap:4px}
+.release-day{position:relative;display:block;height:142px;min-height:0;padding:0;overflow:hidden}
+.release-day__number{position:absolute;z-index:6;top:6px;left:6px;right:6px;display:flex;align-items:center;justify-content:space-between;min-height:0;margin:0;color:#fff;font-size:12px;font-weight:900;pointer-events:none;text-shadow:0 1px 5px rgba(0,0,0,.95)}
+.release-day__number>span:first-child{display:grid;place-items:center;min-width:24px;height:24px;padding:0 6px;border-radius:999px;background:rgba(8,8,12,.72);box-shadow:0 2px 8px rgba(0,0,0,.28)}
+.release-day.is-today .release-day__number>span:first-child{width:auto;height:24px;background:var(--ig-rating);color:#071017;text-shadow:none}
+.release-day__count{padding:3px 6px;border-radius:999px;background:rgba(8,8,12,.72);color:#fff;font-size:9px;font-weight:900}
+.release-day-items{position:absolute;inset:0;display:grid;min-height:0;grid-template-rows:repeat(2,minmax(0,1fr));gap:1px;background:var(--ig-line)}
 .release-day-items:has(>.release-calendar-item:only-child){grid-template-rows:minmax(0,1fr)}
-.release-calendar-item{height:auto;min-height:0;grid-template-columns:30px minmax(0,1fr);gap:0;align-items:stretch;padding:0;overflow:hidden;border-radius:4px}
-.release-day-items:has(>.release-calendar-item:only-child) .release-calendar-item{grid-template-columns:58px minmax(0,1fr)}
-.release-calendar-item__media{width:100%;height:100%;border-radius:0;border-right:1px solid var(--ig-line)}
-.release-calendar-item__media img{width:100%;height:100%;object-fit:cover}
-.release-calendar-item>span{display:flex;min-width:0;flex-direction:column;align-items:stretch;padding:4px 5px;overflow:hidden;color:var(--ig-text);white-space:normal}
-.release-calendar-item h3{overflow:hidden;margin:0 0 2px;font-size:10px;line-height:1.15;text-overflow:ellipsis;white-space:nowrap}
-.release-day-items:has(>.release-calendar-item:only-child) .release-calendar-item h3{display:-webkit-box;margin-bottom:4px;font-size:12px;line-height:1.2;white-space:normal;text-overflow:clip;-webkit-box-orient:vertical;-webkit-line-clamp:2}
-.release-calendar-item__description{display:-webkit-box!important;overflow:hidden!important;margin:0!important;color:var(--ig-muted)!important;font-size:9px!important;line-height:1.18!important;white-space:normal!important;text-overflow:clip!important;-webkit-box-orient:vertical;-webkit-line-clamp:1}
-.release-day-items:has(>.release-calendar-item:only-child) .release-calendar-item__description{font-size:10px!important;line-height:1.28!important;-webkit-line-clamp:2}
-.release-calendar-item>span>span{display:block;margin-top:auto;overflow:hidden;color:var(--ig-muted);font-size:8.5px;line-height:1.15;text-overflow:ellipsis;white-space:nowrap}
+.release-calendar-item{position:relative;display:block;width:100%;height:100%;min-height:0;padding:0;overflow:hidden;border:0;border-radius:0;background:var(--ig-surface-3);text-align:left}
+.release-calendar-item:hover,.release-calendar-item.is-bookmarked{border:0;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--ig-accent) 82%,transparent)}
+.release-calendar-item__media{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;border:0;border-radius:0;background:var(--ig-surface-3)}
+.release-calendar-item__media img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.release-calendar-item__media.is-broken{background:linear-gradient(145deg,var(--ig-surface-3),var(--ig-bg))}
+.release-calendar-item>span{position:absolute;z-index:2;left:0;right:0;bottom:0;display:flex;min-width:0;flex-direction:column;align-items:stretch;padding:22px 7px 6px;overflow:hidden;background:linear-gradient(180deg,transparent,rgba(5,6,10,.88) 52%,rgba(5,6,10,.97));color:#fff;white-space:normal}
+.release-calendar-item h3{overflow:hidden;margin:0 0 2px;color:#fff;font-size:10px;line-height:1.15;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,.95)}
+.release-calendar-item__description{display:none!important}
+.release-calendar-item>span>span{display:block;overflow:hidden;margin:0;color:rgba(255,255,255,.76);font-size:8.5px;line-height:1.15;text-overflow:ellipsis;white-space:nowrap}
+.release-day-items:has(>.release-calendar-item:only-child) .release-calendar-item>span{padding:34px 9px 8px}
+.release-day-items:has(>.release-calendar-item:only-child) .release-calendar-item h3{display:-webkit-box;margin-bottom:4px;font-size:13px;line-height:1.2;white-space:normal;text-overflow:clip;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.release-day-items:has(>.release-calendar-item:only-child) .release-calendar-item__description{display:-webkit-box!important;overflow:hidden!important;margin:0 0 4px!important;color:rgba(255,255,255,.8)!important;font-size:10px!important;line-height:1.25!important;white-space:normal!important;text-overflow:clip!important;-webkit-box-orient:vertical;-webkit-line-clamp:2}
 .release-day-items:has(>.release-calendar-item:only-child) .release-calendar-item>span>span{font-size:9.5px}
-.release-calendar-more{position:absolute;right:3px;bottom:3px;z-index:2;padding:2px 5px;border-radius:4px;background:color-mix(in srgb,var(--ig-surface) 88%,transparent);font-size:9px;line-height:1.25}
+.release-calendar-more{position:absolute;right:5px;bottom:5px;z-index:7;padding:3px 6px;border:1px solid rgba(255,255,255,.16);border-radius:4px;background:rgba(8,8,12,.82);color:#fff;font-size:9px;line-height:1.25;backdrop-filter:blur(5px)}
+.release-day.is-other .release-calendar-item{filter:saturate(.65) brightness(.72)}
+.release-day.is-other .release-day__number{opacity:.72}
 .release-approximate{padding:18px}
 .release-approximate h3{font-size:15px}
 .release-approximate-chip{padding:8px 11px;font-size:12px}
@@ -109,11 +114,10 @@
 
 @media(max-width:1450px){
   .release-layout{grid-template-columns:minmax(0,1fr) 350px;gap:20px}
-  .release-calendar-item{grid-template-columns:28px minmax(0,1fr)}
-  .release-day-items:has(>.release-calendar-item:only-child) .release-calendar-item{grid-template-columns:54px minmax(0,1fr)}
-  .release-calendar-item>span{padding-inline:4px}
+  .release-calendar-item>span{padding-inline:6px}
   .release-calendar-item h3{font-size:9.5px}
-  .release-calendar-item__description{font-size:8.5px!important}
+  .release-day-items:has(>.release-calendar-item:only-child) .release-calendar-item h3{font-size:12px}
+  .release-day-items:has(>.release-calendar-item:only-child) .release-calendar-item__description{font-size:9.5px!important}
 }
 
 @media(max-width:1180px){
