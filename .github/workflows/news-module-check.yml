@@ -14,6 +14,7 @@ on:
       - 'assets/design-system.css'
       - 'fix.css'
       - 'scripts/migrate-news-isolation.mjs'
+      - 'scripts/smoke-news-browser.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/validate-news-boundary.mjs'
       - '.github/workflows/news-module-check.yml'
@@ -71,6 +72,11 @@ jobs:
         run: |
           node scripts/validate-game-v3.mjs
           node scripts/validate-editorial-pipeline.mjs
+
+      - name: Run news browser smoke test
+        run: |
+          npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+          node scripts/smoke-news-browser.mjs
 
       - name: Reject malformed patches
         run: git diff --check
