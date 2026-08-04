@@ -97,7 +97,13 @@
 
   function mediaFor(image){return image?.closest(mediaSelector)}
   function ownerFor(media){return media?.closest('[data-release]')}
-  function slugFor(media){return media?.dataset.stableSlug||ownerFor(media)?.dataset.release||media?.dataset.coverRelease||''}
+  function slugFor(media){
+    return media?.dataset.stableSlug||
+      ownerFor(media)?.dataset.release||
+      media?.dataset.coverRelease||
+      media?.closest('#releaseModalContent')?.querySelector('[data-modal-bookmark]')?.dataset.modalBookmark||
+      '';
+  }
 
   function readCandidates(image){
     try{return JSON.parse(decodeURIComponent(image.dataset.stableCandidates||''))||[]}catch{return []}
@@ -249,7 +255,7 @@
     const image=event.target;
     if(!(image instanceof HTMLImageElement))return;
     const media=mediaFor(image);
-    if(!media||!ownerFor(media))return;
+    if(!media||!slugFor(media))return;
     event.stopPropagation();
     event.stopImmediatePropagation();
     image.hidden=false;
@@ -279,7 +285,7 @@
       (payload.releases||[]).forEach(game=>games.set(game.slug,game));
       ready=true;
       patch(document);
-      document.querySelectorAll(`${mediaSelector} img[data-stable-pending="true"]`).forEach(image=>{
+      document.querySelectorAll('img[data-stable-pending="true"]').forEach(image=>{
         delete image.dataset.stablePending;
         void advance(image);
       });
