@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Контентный конвейер — Игропоиск</title>
+<link rel="stylesheet" href="../../assets/design-system.css?v=20260803-8">
+<link rel="stylesheet" href="../../assets/design-system-game-v3.css?v=20260803-8">
+<link rel="stylesheet" href="../../assets/design-system-parser-admin.css?v=20260803-8">
+<link rel="stylesheet" href="../../assets/content-pipeline-admin.css?v=20260804-1">
+</head>
+<body>
+<header class="parser-header"><div class="ig-container parser-header__inner"><a class="parser-logo" href="../">ИГРОПОИСК / ADMIN</a><a class="parser-back" href="../">← Все инструменты</a><div class="parser-header__actions"><button class="ig-button" id="theme" type="button">☀</button></div></div></header>
+<main class="ig-container content-pipeline-admin">
+  <div class="content-pipeline-admin__head"><div><div class="ig-kicker">Admin / Content pipeline</div><h1>Контентный конвейер</h1><p>Единый реестр игр, автоматическая очередь страниц и обзоров, реальные publish gate и причины блокировки. Конвейер ничего не публикует ниже установленного порога.</p></div><div><span class="ig-admin-status ok">active</span><div class="ig-muted" id="pipelineUpdated" style="margin-top:8px"></div></div></div>
+  <section class="pipeline-summary" id="pipelineSummary"></section>
+  <div class="pipeline-grid">
+    <section class="pipeline-panel"><h2>Реестр игр</h2><div class="pipeline-controls"><input id="pipelineSearch" type="search" placeholder="Название или slug"><select id="pipelineState"><option value="">Все статусы</option><option value="discovered">Обнаружены</option><option value="collecting">Собираются</option><option value="published">Страница опубликована</option><option value="review_published">Есть обзор</option></select></div><div class="pipeline-table-wrap"><table class="pipeline-table"><thead><tr><th>Игра</th><th>Год</th><th>Статус</th><th>Page gate</th><th>Обзор</th><th>Обновлено</th></tr></thead><tbody id="pipelineRows"></tbody></table></div></section>
+    <aside class="pipeline-panel"><h2>Приоритетная очередь</h2><div class="pipeline-queue" id="pipelineQueue"></div><div style="margin-top:14px"><a class="ig-button" href="https://github.com/nkuchenov-hash/Igropoisk/actions/workflows/content-pipeline.yml" target="_blank" rel="noopener noreferrer">Открыть запуски ↗</a></div></aside>
+  </div>
+</main>
+<script src="../../assets/auth.js?v=20260804-2"></script>
+<script src="../../assets/content-pipeline-admin.js?v=20260804-1"></script>
+</body>
+</html>

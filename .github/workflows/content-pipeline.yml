@@ -1,0 +1,67 @@
+name: Maintain Игропоиск content
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 2 * * *'
+  push:
+    paths:
+      - '.github/workflows/content-pipeline.yml'
+      - 'config/content-pipeline.json'
+      - 'scripts/orchestrate-content.mjs'
+      - 'scripts/run-content-pipeline.mjs'
+      - 'scripts/build-game-page.mjs'
+      - 'scripts/calculate-ratings-from-research.mjs'
+      - 'data/catalog-visible.json'
+      - 'data/releases/current.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: content-pipeline-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate pipeline scripts
+        run: |
+          node --check scripts/orchestrate-content.mjs
+          node --check scripts/run-content-pipeline.mjs
+          node --check scripts/build-game-page.mjs
+          node --check scripts/calculate-ratings-from-research.mjs
+      - name: Build registry and execution plan
+        run: node scripts/orchestrate-content.mjs
+      - name: Build selected pages and reviews
+        run: node scripts/run-content-pipeline.mjs
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
+          OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
+          OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
+          OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
+      - name: Recalculate final statuses
+        if: always()
+        run: node scripts/orchestrate-content.mjs --finalize
+      - name: Validate public game structure
+        if: always()
+        run: |
+          if [ -f scripts/validate-design-system.mjs ]; then node scripts/validate-design-system.mjs; fi
+      - name: Commit pipeline results
+        if: always()
+        run: |
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git add data/content-pipeline data/parser-runs data/parser-output data/drafts data/game-content data/catalog-visible.json data/research data/reviews data/ratings data/media-candidates data/articles data/article-drafts data/article-media game article
+          git diff --cached --quiet || git commit -m "Maintain game pages and reviews"
+          git pull --rebase
+          git push
