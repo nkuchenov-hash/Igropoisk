@@ -2,7 +2,7 @@ name: News module check
 
 on:
   push:
-    branches: [phase-b1-news-isolation, phase-b3-news-content-api]
+    branches: [phase-b1-news-isolation, phase-b3-news-content-api, phase-b4-autonomous-news-pipeline]
   pull_request:
     branches: [main]
     paths:
@@ -13,13 +13,20 @@ on:
       - 'assets/home-wide-rails.css'
       - 'assets/design-system.css'
       - 'fix.css'
+      - 'config/news-pipeline.json'
       - 'scripts/migrate-news-isolation.mjs'
       - 'scripts/smoke-news-browser.mjs'
+      - 'scripts/run-news-pipeline.mjs'
+      - 'scripts/validate-news-pipeline.mjs'
+      - 'scripts/test-news-pipeline.mjs'
       - 'scripts/test-news-content-api.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/validate-news-boundary.mjs'
       - 'scripts/validate-central-design-system.mjs'
       - '.github/workflows/news-module-check.yml'
+      - '.github/workflows/news-pipeline.yml'
+      - '.github/workflows/update-news.yml'
+      - '.github/workflows/update-publisher-news.yml'
 
 permissions:
   contents: read
@@ -52,8 +59,11 @@ jobs:
           node scripts/migrate-news-isolation.mjs
           git diff --exit-code
 
-      - name: Verify News Content API contract
-        run: node scripts/test-news-content-api.mjs
+      - name: Verify News Content API and autonomous pipeline contracts
+        run: |
+          node scripts/test-news-content-api.mjs
+          node scripts/test-news-pipeline.mjs
+          node scripts/validate-news-pipeline.mjs
 
       - name: Verify news module and central component boundary
         run: |
