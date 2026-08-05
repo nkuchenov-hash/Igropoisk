@@ -2,7 +2,7 @@ name: News module check
 
 on:
   push:
-    branches: [phase-b1-news-isolation]
+    branches: [phase-b1-news-isolation, phase-b3-news-content-api]
   pull_request:
     branches: [main]
     paths:
@@ -15,6 +15,7 @@ on:
       - 'fix.css'
       - 'scripts/migrate-news-isolation.mjs'
       - 'scripts/smoke-news-browser.mjs'
+      - 'scripts/test-news-content-api.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/validate-news-boundary.mjs'
       - 'scripts/validate-central-design-system.mjs'
@@ -50,6 +51,9 @@ jobs:
         run: |
           node scripts/migrate-news-isolation.mjs
           git diff --exit-code
+
+      - name: Verify News Content API contract
+        run: node scripts/test-news-content-api.mjs
 
       - name: Verify news module and central component boundary
         run: |
@@ -119,10 +123,10 @@ jobs:
       - name: Checkout validated commit
         uses: actions/checkout@v4
 
-      - name: Package B1 staging snapshot
+      - name: Package news staging snapshot
         uses: actions/upload-artifact@v4
         with:
-          name: igropoisk-phase-b1-news-${{ github.sha }}
+          name: igropoisk-news-module-${{ github.sha }}
           path: |
             .
             !.git/**
