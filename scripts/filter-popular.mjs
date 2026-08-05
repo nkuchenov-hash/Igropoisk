@@ -32,12 +32,12 @@ data.ranking = (data.ranking || []).filter(item => {
     if (steam) item.image = `https://cdn.cloudflare.steamstatic.com/steam/apps/${steam.appid}/library_600x900.jpg`;
   }
   return true;
-}).slice(0, 30);
+}).slice(0, 60);
 
 fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
 try {
   const run = JSON.parse(fs.readFileSync(runFile, 'utf8'));
   run.ranked_count = data.ranking.length;
-  run.note = `Опубликовано ${data.ranking.length} игровых позиций после удаления оборудования и служебных продуктов.`;
+  run.note = `Подготовлено ${data.ranking.length} игровых кандидатов для редакционного отбора после удаления оборудования и служебных продуктов.`;
   fs.writeFileSync(runFile, `${JSON.stringify(run, null, 2)}\n`);
 } catch {}
