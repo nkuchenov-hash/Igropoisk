@@ -39,21 +39,21 @@ function migrateIndex() {
   const newHome = `    <section class="section ig-news ig-news--home" data-news-module="home">
       <div class="section-head">
         <h2>Последние новости</h2>
-        <div class="ig-news__controls" data-news-home-controls aria-label="Управление лентой новостей">
-          <button class="ig-news__control" type="button" data-news-direction="prev" aria-label="Прокрутить новости влево">←</button>
-          <button class="ig-news__control" type="button" data-news-direction="next" aria-label="Прокрутить новости вправо">→</button>
+        <div class="ig-control-group ig-news__controls" data-news-home-controls aria-label="Управление лентой новостей">
+          <button class="ig-icon-button ig-news__control" type="button" data-news-direction="prev" aria-label="Прокрутить новости влево">←</button>
+          <button class="ig-icon-button ig-news__control" type="button" data-news-direction="next" aria-label="Прокрутить новости вправо">→</button>
         </div>
       </div>
-      <div class="ig-news__home-grid" data-news-home aria-live="polite"><div class="ig-news__state">Загружаем новости…</div></div>
+      <div class="ig-news__home-grid" data-news-home aria-live="polite"><div class="ig-empty-state">Загружаем новости…</div></div>
     </section>`;
   html = replaceRequired(html, oldHome, newHome, 'home news widget');
 
   const oldArchive = '<main class="page" id="news"><div class="ig-container news-page"><h1>Новости</h1><div class="news-grid" id="newsPage"></div></div></main>';
   const newArchive = `<main class="page" id="news">
   <div class="ig-container ig-news ig-news--archive" data-news-module="archive">
-    <h1>Новости</h1>
-    <div class="ig-news-toolbar" data-news-toolbar></div>
-    <div class="ig-news__archive-grid" data-news-archive aria-live="polite"><div class="ig-news__state">Загружаем новости…</div></div>
+    <h1 class="ig-page-title">Новости</h1>
+    <div class="ig-toolbar ig-news-toolbar" data-news-toolbar></div>
+    <div class="ig-news__archive-grid" data-news-archive aria-live="polite"><div class="ig-empty-state">Загружаем новости…</div></div>
   </div>
 </main>`;
   html = replaceRequired(html, oldArchive, newArchive, 'news archive page');
@@ -144,4 +144,4 @@ migrateHomePageStyles();
 migrateWideRails();
 migrateDesignSystem();
 migrateFixLayer();
-console.log('News UI is materialized inside features/news without changing content data.');
+console.log('News UI is materialized inside features/news and consumes central components only.');
