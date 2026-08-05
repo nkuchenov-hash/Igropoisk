@@ -1,16 +1,16 @@
-name: Phase A stability gate
+name: Staging and production gate
 
 on:
   push:
-    branches: [phase-a-stabilization]
+    branches: [staging]
   pull_request:
-    branches: [main]
+    branches: [staging, main]
 
 permissions:
   contents: read
 
 concurrency:
-  group: phase-a-stability-${{ github.ref }}
+  group: staging-production-gate-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -25,22 +25,33 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
-      - name: Prove deployment does not need runtime rewriting
+      - name: Verify immutable source and branch boundaries
         run: |
-          node scripts/materialize-deployment.mjs
-          git diff --exit-code
+          node scripts/verify-deployment-source.mjs
+          node scripts/validate-production-boundaries.mjs
+          test -z "$(git status --porcelain)"
 
       - name: Check all JavaScript files
         run: |
-          find assets scripts -type f \( -name '*.js' -o -name '*.mjs' \) -print0 \
+          find assets scripts features -type f \( -name '*.js' -o -name '*.mjs' \) -print0 \
             | xargs -0 -n1 node --check
+
+      - name: Check news, feeds and module contracts
+        run: |
+          node scripts/test-news-content-api.mjs
+          node scripts/test-news-pipeline.mjs
+          node scripts/test-news-pipeline-health.mjs
+          node scripts/validate-news-pipeline.mjs
+          node scripts/validate-news-module.mjs
+          node scripts/validate-home-feeds.mjs
 
       - name: Check Python and the layout contract
         run: |
           python3 -m py_compile scripts/enforce_layout_contract.py
           python3 scripts/enforce_layout_contract.py --check
+          find scripts -type d -name __pycache__ -prune -exec rm -rf {} +
 
       - name: Check JSON content integrity
         run: |
@@ -62,25 +73,39 @@ jobs:
           print('All JSON files are valid.')
           PY
 
-      - name: Check publication gates
+      - name: Check publication gates and patch integrity
         run: |
           node scripts/validate-game-v3.mjs
           node scripts/validate-editorial-pipeline.mjs
+          git diff --check
+          test -z "$(git status --porcelain)"
 
-      - name: Check patch integrity
-        run: git diff --check
-
-  package:
+  browser-smoke:
     needs: validate
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the same validated commit without generated files
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser client
+        run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+      - name: Verify news and home feeds locally
+        run: |
+          node scripts/smoke-news-browser.mjs
+          node scripts/smoke-home-feeds-browser.mjs
+
+  package:
+    needs: [validate, browser-smoke]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the same validated commit
         uses: actions/checkout@v4
 
       - name: Package exact staging snapshot
         uses: actions/upload-artifact@v4
         with:
-          name: igropoisk-phase-a-staging-${{ github.sha }}
+          name: igropoisk-staging-${{ github.sha }}
           path: |
             .
             !.git/**

@@ -2,6 +2,7 @@ name: Materialize manual review
 
 on:
   push:
+    branches: [staging]
     paths:
       - data/manual-review-builds/**
   workflow_dispatch:
@@ -10,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: materialize-manual-review
+  group: materialize-manual-review-staging
   cancel-in-progress: false
 
 jobs:
@@ -19,6 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: staging
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -33,12 +35,12 @@ jobs:
           for file in data/manual-review-builds/*.mjs; do
             node "$file"
           done
-      - name: Commit review files
+      - name: Commit review files to staging
         run: |
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
           git add article data
           git diff --cached --quiet && exit 0
-          git commit -m "Materialize manual review articles"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git commit -m "Materialize manual review articles on staging"
+          git pull --rebase origin staging
+          git push origin HEAD:staging

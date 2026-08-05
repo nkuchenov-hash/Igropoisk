@@ -2,7 +2,7 @@ name: Home feeds check
 
 on:
   pull_request:
-    branches: [main]
+    branches: [staging, main]
     paths:
       - 'assets/popular-home.js'
       - 'assets/home-releases/index.js'
@@ -20,8 +20,7 @@ on:
       - '.github/workflows/home-feeds-check.yml'
       - '.github/workflows/pages.yml'
   push:
-    branches:
-      - phase-c0-popular-releases-stability
+    branches: [staging]
     paths:
       - 'assets/popular-home.js'
       - 'assets/home-releases/index.js'
@@ -38,6 +37,9 @@ on:
       - '.github/workflows/parser-scheduler.yml'
       - '.github/workflows/home-feeds-check.yml'
       - '.github/workflows/pages.yml'
+
+permissions:
+  contents: read
 
 jobs:
   verify:

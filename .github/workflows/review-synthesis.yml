@@ -7,6 +7,7 @@ on:
         description: Exact game slug
         required: true
   push:
+    branches: [staging]
     paths:
       - 'data/review-build-requests/*.json'
 
@@ -14,7 +15,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: review-${{ github.ref }}-${{ github.event_name }}
+  group: review-staging-${{ github.event_name }}
   cancel-in-progress: false
 
 jobs:
@@ -24,6 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: staging
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -81,11 +83,12 @@ jobs:
         run: node scripts/validate-review-output.mjs "${{ steps.target.outputs.slug }}"
       - name: Render static pages for every published review
         run: node scripts/render-review-pages.mjs
-      - name: Commit research, candidates, articles and generated pages
+      - name: Commit research, candidates, articles and generated pages to staging
         run: |
           git config user.name "igropoisk-editor[bot]"
           git config user.email "igropoisk-editor[bot]@users.noreply.github.com"
           git add config/parsers/review-synthesis.json data/research data/reviews data/media-candidates data/articles data/article-drafts data/article-media data/parser-runs data/drafts article
-          git diff --cached --quiet || git commit -m "Build audited review for ${{ steps.target.outputs.slug }}"
-          git pull --rebase
-          git push
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Build audited review for ${{ steps.target.outputs.slug }}"
+          git pull --rebase origin staging
+          git push origin HEAD:staging

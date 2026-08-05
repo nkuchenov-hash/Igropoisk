@@ -1,0 +1,75 @@
+name: Prepare staging promotion
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Optional exact staging SHA to promote
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: prepare-staging-promotion
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact staging snapshot
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify requested SHA and production gates
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: |
+          ACTUAL_SHA="$(git rev-parse HEAD)"
+          if [ -n "$EXPECTED_SHA" ] && [ "$ACTUAL_SHA" != "$EXPECTED_SHA" ]; then
+            echo "Staging is $ACTUAL_SHA, not requested $EXPECTED_SHA"
+            exit 1
+          fi
+          node scripts/verify-deployment-source.mjs
+          node scripts/validate-production-boundaries.mjs
+          node scripts/test-news-content-api.mjs
+          node scripts/test-news-pipeline.mjs
+          node scripts/test-news-pipeline-health.mjs
+          node scripts/validate-news-pipeline.mjs
+          node scripts/validate-news-module.mjs
+          node scripts/validate-home-feeds.mjs
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-editorial-pipeline.mjs
+          python3 scripts/enforce_layout_contract.py --check
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+      - name: Open or refresh the staging-to-main promotion PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch origin main staging
+          AHEAD="$(git rev-list --count origin/main..origin/staging)"
+          if [ "$AHEAD" = "0" ]; then
+            echo "Staging has no commits to promote."
+            exit 0
+          fi
+          SHA="$(git rev-parse origin/staging)"
+          EXISTING="$(gh pr list --base main --head staging --state open --json number --jq '.[0].number // empty')"
+          BODY="Staging snapshot \`$SHA\` passed immutable-source, module, content and publication gates. Merge of this PR is the only action that starts production deployment."
+          if [ -n "$EXISTING" ]; then
+            gh pr edit "$EXISTING" --title "Promote staging to production" --body "$BODY"
+            echo "Updated promotion PR #$EXISTING."
+          else
+            gh pr create --base main --head staging --title "Promote staging to production" --body "$BODY"
+          fi

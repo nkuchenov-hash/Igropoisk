@@ -11,6 +11,7 @@ on:
   schedule:
     - cron: '7 * * * *'
   push:
+    branches: [staging]
     paths:
       - 'config/parsers/schedule.json'
       - 'config/parsers/popular.json'
@@ -35,19 +36,20 @@ on:
       - '.github/workflows/parser-scheduler.yml'
 
 permissions:
-  actions: write
   contents: write
 
 concurrency:
-  group: central-parser-scheduler-${{ github.ref }}
+  group: central-parser-scheduler-staging
   cancel-in-progress: false
 
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout current staging
+        uses: actions/checkout@v4
         with:
+          ref: staging
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
@@ -114,18 +116,19 @@ jobs:
         continue-on-error: true
         run: node scripts/validate-home-feeds.mjs --fresh-hours 18
 
-      - name: Commit validated parser outputs
+      - name: Commit validated parser outputs to staging
         id: publication
-        if: always() && github.ref == 'refs/heads/main' && steps.curation.outcome == 'success' && steps.validation.outcome == 'success'
+        if: always() && steps.curation.outcome == 'success' && steps.validation.outcome == 'success'
         run: |
           git config user.name "igropoisk-parser[bot]"
           git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
 
-          remote_sha="$(git ls-remote origin "refs/heads/$GITHUB_REF_NAME" | cut -f1)"
-          if [ -z "$remote_sha" ] || [ "$remote_sha" != "$GITHUB_SHA" ]; then
+          base_sha="$(git rev-parse HEAD)"
+          remote_sha="$(git ls-remote origin refs/heads/staging | cut -f1)"
+          if [ -z "$remote_sha" ] || [ "$remote_sha" != "$base_sha" ]; then
             echo "published=false" >> "$GITHUB_OUTPUT"
             echo "superseded=true" >> "$GITHUB_OUTPUT"
-            echo "Branch advanced from $GITHUB_SHA to ${remote_sha:-unknown}; stale generated snapshot was not published."
+            echo "Staging advanced from $base_sha to ${remote_sha:-unknown}; stale generated snapshot was not published."
             exit 0
           fi
 
@@ -157,40 +160,17 @@ jobs:
             exit 0
           fi
 
-          git commit -m "Update curated popular and release feeds"
-          git push origin "HEAD:$GITHUB_REF_NAME"
-          published_sha="$(git rev-parse HEAD)"
+          git commit -m "Update curated popular and release feeds on staging"
+          git push origin HEAD:staging
           echo "published=true" >> "$GITHUB_OUTPUT"
-          echo "published_sha=$published_sha" >> "$GITHUB_OUTPUT"
           echo "superseded=false" >> "$GITHUB_OUTPUT"
-
-      - name: Deploy updated production feeds
-        if: steps.publication.outputs.published == 'true' && github.ref == 'refs/heads/main'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          EXPECTED_SHA: ${{ steps.publication.outputs.published_sha }}
-        run: |
-          visible_sha=""
-          for attempt in $(seq 1 30); do
-            visible_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
-            if [ "$visible_sha" = "$EXPECTED_SHA" ]; then
-              break
-            fi
-            sleep 2
-          done
-          if [ "$visible_sha" != "$EXPECTED_SHA" ]; then
-            echo "GitHub API still resolves main to $visible_sha instead of $EXPECTED_SHA"
-            exit 1
-          fi
-          sleep 3
-          gh workflow run pages.yml --ref main
 
       - name: Report parser degradation without blocking valid updates
         if: steps.parsers.outcome == 'failure' && steps.validation.outcome == 'success'
-        run: echo "One or more sources/parsers degraded, but valid popular and release snapshots were curated and remain publishable."
+        run: echo "One or more sources/parsers degraded, but valid staging snapshots remain publishable."
 
-      - name: Report invalid publication
+      - name: Report invalid staging snapshot
         if: steps.curation.outcome == 'failure' || steps.validation.outcome == 'failure'
         run: |
-          echo "Home-feed output is structurally invalid and was not published."
+          echo "Home-feed output is structurally invalid and was not written to staging."
           exit 1

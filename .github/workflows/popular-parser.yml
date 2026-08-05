@@ -8,14 +8,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: popular-games-parser-${{ github.ref }}
+  group: popular-games-parser-staging
   cancel-in-progress: false
 
 jobs:
   dispatch-central-scheduler:
     runs-on: ubuntu-latest
     steps:
-      - name: Run the authoritative curated home-feed pipeline
+      - name: Run the authoritative curated home-feed pipeline against staging
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run parser-scheduler.yml --ref "${GITHUB_REF_NAME}" -f force=true
+        run: gh workflow run parser-scheduler.yml --ref main -f force=true

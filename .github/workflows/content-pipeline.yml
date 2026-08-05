@@ -5,6 +5,7 @@ on:
   schedule:
     - cron: '20 2 * * *'
   push:
+    branches: [staging]
     paths:
       - '.github/workflows/content-pipeline.yml'
       - 'config/content-pipeline.json'
@@ -19,7 +20,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: content-pipeline-${{ github.ref }}
+  group: content-pipeline-staging
   cancel-in-progress: false
 
 jobs:
@@ -29,6 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: staging
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -56,7 +58,7 @@ jobs:
         if: always()
         run: |
           if [ -f scripts/validate-game-v3.mjs ]; then node scripts/validate-game-v3.mjs; fi
-      - name: Commit pipeline results
+      - name: Commit pipeline results to staging
         if: always()
         run: |
           git config user.name "igropoisk-content[bot]"
@@ -84,7 +86,7 @@ jobs:
           done
           if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
           if ! git diff --cached --quiet; then
-            git commit -m "Maintain game pages and reviews"
-            git pull --rebase
-            git push
+            git commit -m "Maintain game pages and reviews on staging"
+            git pull --rebase origin staging
+            git push origin HEAD:staging
           fi

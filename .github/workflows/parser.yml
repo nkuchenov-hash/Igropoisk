@@ -2,7 +2,7 @@ name: Parse and build 50 game pages separately
 
 on:
   push:
-    branches: [main]
+    branches: [staging]
     paths:
       - "parser/**"
       - ".github/workflows/parser.yml"
@@ -14,7 +14,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: igropoisk-50-separate-pages
+  group: igropoisk-50-separate-pages-staging
   cancel-in-progress: false
 
 jobs:
@@ -80,6 +80,8 @@ jobs:
           - "Black Myth: Wukong"
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: staging
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -112,13 +114,16 @@ jobs:
           retention-days: 3
 
   merge-and-publish:
-    name: Merge 50 results and publish pages
+    name: Merge 50 results into staging
     needs: parse-one-game
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -179,14 +184,15 @@ jobs:
                   raise SystemExit(f'Missing page: {page}')
           print(f'Verified {len(rows)} generated pages')
           PY
-      - name: Commit merged data and generated pages
+      - name: Commit merged data and generated pages to staging
         run: |
           git config user.name "igropoisk-bot"
           git config user.email "actions@users.noreply.github.com"
           git add data/ game/
           if git diff --cached --quiet; then
             echo "No generated changes"
-          else
-            git commit -m "Publish pages from 50 separate parser runs"
-            git push
+            exit 0
           fi
+          git commit -m "Publish pages from 50 parser runs to staging"
+          git pull --rebase origin staging
+          git push origin HEAD:staging

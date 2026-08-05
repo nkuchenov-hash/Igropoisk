@@ -1,0 +1,34 @@
+name: Synchronize main into staging
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: synchronize-main-into-staging
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout staging with full history
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+
+      - name: Merge the confirmed production commit into staging
+        run: |
+          git config user.name "igropoisk-staging[bot]"
+          git config user.email "igropoisk-staging[bot]@users.noreply.github.com"
+          git fetch origin main staging
+          if git merge-base --is-ancestor origin/main HEAD; then
+            echo "Staging already contains the current main commit."
+            exit 0
+          fi
+          git merge --no-edit origin/main
+          git push origin HEAD:staging

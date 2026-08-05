@@ -1,8 +1,15 @@
-name: News pipeline staging
+name: News pipeline staging network test
 
 on:
-  push:
-    branches: [phase-b4-autonomous-news-pipeline, phase-b5-news-health]
+  pull_request:
+    branches: [staging, main]
+    paths:
+      - 'config/news-pipeline.json'
+      - 'data/news-sources.json'
+      - 'data/youtube-sources.json'
+      - 'scripts/**news*.mjs'
+      - 'features/news/**'
+      - '.github/workflows/news-pipeline*.yml'
   workflow_dispatch:
 
 permissions:

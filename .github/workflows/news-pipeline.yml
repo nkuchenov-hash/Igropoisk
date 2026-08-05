@@ -17,7 +17,7 @@ on:
   schedule:
     - cron: '23 * * * *'
   push:
-    branches: [main]
+    branches: [staging]
     paths:
       - 'config/news-pipeline.json'
       - 'data/news-sources.json'
@@ -39,25 +39,24 @@ on:
       - '.github/workflows/news-pipeline.yml'
 
 permissions:
-  actions: write
   contents: write
 
 concurrency:
-  group: autonomous-news-pipeline-main
+  group: autonomous-news-pipeline-staging
   cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout current main
+      - name: Checkout current staging
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: staging
           fetch-depth: 0
 
-      - name: Synchronize main before collection
-        run: git pull --ff-only origin main
+      - name: Synchronize staging before collection
+        run: git pull --ff-only origin staging
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -73,7 +72,7 @@ jobs:
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
 
-      - name: Collect validate and prepare one publication snapshot
+      - name: Collect validate and prepare one staging snapshot
         env:
           PIPELINE_FORCE: ${{ inputs.force || github.event.inputs.force || false }}
           NEWS_PIPELINE_REPORT: tmp/news-pipeline-report.json
@@ -85,7 +84,7 @@ jobs:
           node scripts/run-news-pipeline.mjs "${args[@]}"
           git diff --check
 
-      - name: Commit one atomic news snapshot
+      - name: Commit one atomic news snapshot to staging
         id: publication
         run: |
           mapfile -t paths < <(node -e "const c=require('./config/news-pipeline.json'); console.log(c.publication.commit_paths.join('\\n'))")
@@ -97,19 +96,13 @@ jobs:
           fi
           git config user.name "igropoisk-news-pipeline[bot]"
           git config user.email "igropoisk-news-pipeline[bot]@users.noreply.github.com"
-          git commit -m "Publish autonomous news snapshot"
-          git pull --rebase origin main
+          git commit -m "Publish autonomous news snapshot to staging"
+          git pull --rebase origin staging
           node scripts/validate-news-pipeline.mjs --baseline HEAD^
           node scripts/test-news-content-api.mjs
           node scripts/validate-news-module.mjs
-          git push origin HEAD:main
+          git push origin HEAD:staging
           echo "published=true" >> "$GITHUB_OUTPUT"
-
-      - name: Deploy the published snapshot
-        if: steps.publication.outputs.published == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run pages.yml --ref main
 
       - name: Upload pipeline report
         if: always()

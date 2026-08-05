@@ -5,7 +5,6 @@ import crypto from 'node:crypto';
 const root = process.cwd();
 const releaseFile = path.join(root, 'data/releases/current.json');
 const popularFile = path.join(root, 'data/popular/current.json');
-const calendarFile = path.join(root, 'calendar/index.html');
 const outputDir = path.join(root, 'assets/covers/releases');
 const timeoutMs = 18_000;
 
@@ -156,23 +155,6 @@ function primaryDate(record) {
   return event.date || event.date_start || '9999-12-31';
 }
 
-function injectPreloads(records) {
-  if (!fs.existsSync(calendarFile)) return;
-  const today = new Date().toISOString().slice(0, 10);
-  const upcoming = records
-    .filter(record => primaryDate(record) >= today && exists(record.image?.local_url))
-    .sort((a, b) => primaryDate(a).localeCompare(primaryDate(b)))
-    .slice(0, 8);
-  const links = upcoming.map(record =>
-    `  <link rel="preload" as="image" href="../${record.image.local_url}" fetchpriority="high">`
-  ).join('\n');
-  const block = `<!-- ig-release-preloads:start -->\n${links}\n  <!-- ig-release-preloads:end -->`;
-  let html = fs.readFileSync(calendarFile, 'utf8');
-  html = html.replace(/\s*<!-- ig-release-preloads:start -->[\s\S]*?<!-- ig-release-preloads:end -->\s*/g, '\n');
-  html = html.replace('</head>', `${block}\n</head>`);
-  fs.writeFileSync(calendarFile, html, 'utf8');
-}
-
 async function mapPool(items, limit, worker) {
   let cursor = 0;
   const results = new Array(items.length);
@@ -245,7 +227,6 @@ await mapPool(records, 4, async record => {
 });
 
 writeJSON(releaseFile, releasePayload);
-injectPreloads(records);
 
 const today = new Date().toISOString().slice(0, 10);
 const nearest = records
