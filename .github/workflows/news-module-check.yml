@@ -17,6 +17,7 @@ on:
       - 'scripts/smoke-news-browser.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/validate-news-boundary.mjs'
+      - 'scripts/validate-central-design-system.mjs'
       - '.github/workflows/news-module-check.yml'
 
 permissions:
@@ -50,8 +51,10 @@ jobs:
           node scripts/migrate-news-isolation.mjs
           git diff --exit-code
 
-      - name: Verify news module boundary
-        run: node scripts/validate-news-module.mjs
+      - name: Verify news module and central component boundary
+        run: |
+          node scripts/validate-news-module.mjs
+          node scripts/validate-central-design-system.mjs
 
       - name: Enforce news UI branch scope
         if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'news-ui/')
