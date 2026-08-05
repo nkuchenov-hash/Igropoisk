@@ -1,6 +1,6 @@
 {
   "id": "news",
-  "version": 1,
+  "version": 2,
   "enforcement": "strict",
   "roots": {
     "home": "[data-news-module=\"home\"]",
@@ -8,11 +8,23 @@
   },
   "runtime": [
     "features/news/shared/translations-ru.js",
+    "features/news/content-api/index.js",
     "features/news/shared/index.js",
     "features/news/home-widget/index.js",
     "features/news/archive-page/index.js",
     "features/news/styles/index.css"
   ],
+  "contentApi": {
+    "global": "IgropoiskNewsContent",
+    "version": 1,
+    "interface": [
+      "getAll",
+      "getHome",
+      "health",
+      "invalidate"
+    ],
+    "backend": "repository-json"
+  },
   "content": [
     "data/news-events.json",
     "data/news.json",
