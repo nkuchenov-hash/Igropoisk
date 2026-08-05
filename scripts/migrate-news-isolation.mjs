@@ -65,15 +65,30 @@ function migrateIndex() {
 
   const moduleScripts = `
 <script src="features/news/shared/translations-ru.js?v=20260804-1"></script>
-<script src="features/news/shared/index.js?v=20260804-1"></script>
+<script src="features/news/content-api/index.js?v=20260805-1"></script>
+<script src="features/news/shared/index.js?v=20260805-1"></script>
 <script src="features/news/home-widget/index.js?v=20260804-1"></script>
 <script src="features/news/archive-page/index.js?v=20260804-1"></script>`;
+
   if (!html.includes('features/news/shared/index.js')) {
     html = replaceRequired(
       html,
       '<script src="assets/auth.js?v=20260804-6"></script>',
       `${moduleScripts}\n<script src="assets/auth.js?v=20260804-6"></script>`,
       'news module scripts'
+    );
+  } else {
+    if (!html.includes('features/news/content-api/index.js')) {
+      html = replaceRequired(
+        html,
+        '<script src="features/news/shared/index.js?v=20260804-1"></script>',
+        '<script src="features/news/content-api/index.js?v=20260805-1"></script>\n<script src="features/news/shared/index.js?v=20260805-1"></script>',
+        'news content API script'
+      );
+    }
+    html = html.replace(
+      '<script src="features/news/shared/index.js?v=20260804-1"></script>',
+      '<script src="features/news/shared/index.js?v=20260805-1"></script>'
     );
   }
   write(path, html);
@@ -144,4 +159,4 @@ migrateHomePageStyles();
 migrateWideRails();
 migrateDesignSystem();
 migrateFixLayer();
-console.log('News UI is materialized inside features/news and consumes central components only.');
+console.log('News UI is materialized inside features/news and consumes the versioned News Content API plus central components only.');

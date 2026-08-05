@@ -4,6 +4,7 @@ const requiredFiles = [
   'features/news/module.json',
   'features/news/RULES.md',
   'features/news/shared/translations-ru.js',
+  'features/news/content-api/index.js',
   'features/news/shared/index.js',
   'features/news/home-widget/index.js',
   'features/news/archive-page/index.js',
@@ -17,7 +18,7 @@ for (const path of requiredFiles) {
 }
 
 if (!errors.length) {
-  JSON.parse(read('features/news/module.json'));
+  const manifest = JSON.parse(read('features/news/module.json'));
   const index = read('index.html');
   const requiredReferences = [
     'data-news-module="home"',
@@ -26,6 +27,7 @@ if (!errors.length) {
     'data-news-archive',
     'features/news/styles/index.css',
     'features/news/shared/translations-ru.js',
+    'features/news/content-api/index.js',
     'features/news/shared/index.js',
     'features/news/home-widget/index.js',
     'features/news/archive-page/index.js',
@@ -37,6 +39,28 @@ if (!errors.length) {
   requiredReferences.forEach(reference => {
     if (!index.includes(reference)) errors.push(`index.html is missing: ${reference}`);
   });
+
+  const orderedScripts = [
+    'features/news/shared/translations-ru.js',
+    'features/news/content-api/index.js',
+    'features/news/shared/index.js',
+    'features/news/home-widget/index.js',
+    'features/news/archive-page/index.js'
+  ];
+  let previousIndex = -1;
+  for (const script of orderedScripts) {
+    const position = index.indexOf(script);
+    if (position <= previousIndex) errors.push(`News runtime script order is invalid around: ${script}`);
+    previousIndex = position;
+  }
+
+  if (manifest.version < 2) errors.push('News module manifest must use version 2 or newer.');
+  if (manifest.contentApi?.global !== 'IgropoiskNewsContent') errors.push('News module manifest is missing the content API global.');
+  if (manifest.contentApi?.version !== 1) errors.push('News module manifest must declare News Content API version 1.');
+  ['getAll', 'getHome', 'health', 'invalidate'].forEach(method => {
+    if (!manifest.contentApi?.interface?.includes(method)) errors.push(`News module manifest is missing content API method: ${method}`);
+  });
+  if (!manifest.runtime?.includes('features/news/content-api/index.js')) errors.push('News module runtime does not include the content API.');
 
   ['assets/news-feed.js', 'assets/news-rail-controls.js', 'assets/news-click-fix.js', 'assets/news-archive-full.js', 'assets/news-archive-full.css'].forEach(reference => {
     if (index.includes(reference)) errors.push(`Legacy news runtime is still referenced: ${reference}`);
@@ -71,24 +95,39 @@ if (!errors.length) {
     if (!designSystem.includes(token)) errors.push(`Central design system is missing required component: ${token}`);
   });
 
-  const moduleScripts = [
+  const contentApi = read('features/news/content-api/index.js');
+  const presentationScripts = [
     'features/news/shared/index.js',
     'features/news/home-widget/index.js',
     'features/news/archive-page/index.js'
   ].map(read).join('\n');
+  const moduleScripts = `${contentApi}\n${presentationScripts}`;
+
   ['#popular', '#reviews', '.site-header', '#search', '#calendar', 'assets/auth.js'].forEach(token => {
     if (moduleScripts.includes(token)) errors.push(`News runtime touches a foreign surface: ${token}`);
   });
 
   ['ig-card', 'ig-card__media', 'ig-card__body', 'ig-card__meta', 'ig-card__title', 'ig-chip', 'ig-input', 'ig-filter-chip', 'ig-empty-state'].forEach(token => {
-    if (!moduleScripts.includes(token)) errors.push(`News module is not consuming central component: ${token}`);
+    if (!presentationScripts.includes(token)) errors.push(`News presentation is not consuming central component: ${token}`);
   });
 
+  ['data/news-events.json', 'data/news.json', 'data/publisher-news.json', 'data/news-home-ru.json'].forEach(path => {
+    if (!contentApi.includes(path)) errors.push(`News Content API is missing repository backend source: ${path}`);
+    if (presentationScripts.includes(path)) errors.push(`News presentation bypasses the Content API: ${path}`);
+  });
+  if (!contentApi.includes('window.IgropoiskNewsContent')) errors.push('News Content API does not publish its versioned global contract.');
+  ['getAll', 'getHome', 'health', 'invalidate'].forEach(method => {
+    if (!contentApi.includes(method)) errors.push(`News Content API implementation is missing: ${method}`);
+  });
+  if (!presentationScripts.includes('window.IgropoiskNewsContent')) errors.push('News presentation does not consume the Content API.');
+  if (/\bfetch\s*\(/.test(presentationScripts)) errors.push('News presentation performs a direct data fetch instead of using the Content API.');
+  if (/\bnormalize\s*\(/.test(presentationScripts)) errors.push('News presentation duplicates content normalization.');
+
   const dataWrites = /(?:writeFile|appendFile|localStorage\.setItem|sessionStorage\.setItem)/;
-  if (dataWrites.test(moduleScripts)) errors.push('News UI runtime contains a data write operation.');
+  if (dataWrites.test(moduleScripts)) errors.push('News runtime contains a data write operation.');
 }
 
 if (errors.length) {
   throw new Error(`News module validation failed:\n${errors.map(error => `- ${error}`).join('\n')}`);
 }
-console.log('News module boundary and runtime contract verified.');
+console.log('News Content API boundary, presentation runtime and central component contract verified.');
