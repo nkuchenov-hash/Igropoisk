@@ -1,37 +1,35 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "id": "popular",
   "title": "Парсер «Сейчас популярно»",
   "status": "active",
-  "schedule": "Каждые 3 часа",
-  "purpose": "Определять игры, которые получают заметный свежий всплеск внимания сейчас, а не просто имеют большую постоянную аудиторию.",
+  "schedule": "Каждые 6 часов",
+  "purpose": "Определять игры, которые действительно популярны сейчас: по свежему освещению, обсуждению и текущим платформенным чартам, включая игры вне Steam.",
   "method": {
-    "window_hours": 72,
-    "recency_half_life_hours": 18,
-    "minimum_news_sources": 2,
-    "minimum_news_signal": 0.12,
-    "minimum_steam_growth": 0.08,
-    "formula": "popular_score = weighted fresh attention + independent-source breadth bonus",
-    "normalization": "Каждая группа сигналов нормализуется отдельно. Постоянный абсолютный Steam-онлайн не учитывается; учитывается только рост относительно предыдущего запуска.",
-    "publication": "Игра публикуется при заметном освещении минимум в двух независимых изданиях, при двух независимых не-Steam группах сигналов либо при сочетании свежего внешнего интереса и существенного роста Steam-аудитории.",
-    "matching": "Короткие однословные названия не сопоставляются автоматически. Продолжения и игры с римскими/арабскими номерами имеют отдельные алиасы, чтобы упоминания новой части не засчитывались старой.",
+    "window_hours": 96,
+    "recency_half_life_hours": 24,
+    "minimum_news_sources": 3,
+    "formula": "popular_score = weighted fresh attention + live platform demand + independent-source breadth",
+    "normalization": "Каждая группа сигналов нормализуется отдельно. Подтверждённый новостной всплеск требует минимум три независимых издания. Один источник или два случайных перепечатанных материала не считаются достаточным подтверждением.",
+    "publication": "Сначала выбираются игры с тремя независимыми изданиями или несколькими независимыми группами сигналов. Затем список дополняется играми из текущих Steam/Twitch-чартов с внешним подтверждением. Оставшиеся места могут заполняться верхними позициями актуальных платформенных чартов; отсутствие ровно двадцати подтверждённых карточек не блокирует обновление остальных.",
+    "matching": "Кандидаты берутся из каталога, отдельного реестра крупных кроссплатформенных игр, Steam и Twitch. Короткие неоднозначные названия не сопоставляются автоматически. Продолжения имеют отдельные алиасы.",
     "steps": [
-      "Получить материалы и показатели только за актуальное окно 72 часа.",
-      "Точно сопоставить название игры с каталогом и алиасами, отдавая приоритет самым длинным совпадениям.",
-      "Отбросить слабые одиночные упоминания и неоднозначные короткие названия.",
-      "Посчитать число независимых изданий и силу свежих упоминаний.",
-      "Учитывать Twitch, YouTube и Reddit как отдельные независимые группы.",
-      "Для Steam учитывать только заметный рост аудитории относительно предыдущего запуска, а не абсолютный онлайн.",
-      "Разрешать ещё не вышедшим играм попадать в рейтинг по сильному независимому медиасигналу без Steam."
+      "Получить материалы и показатели за актуальное окно 96 часов.",
+      "Сформировать кандидатов из каталога, глобального реестра и текущих платформенных чартов.",
+      "Точно сопоставить названия и алиасы, отдавая приоритет самым длинным совпадениям.",
+      "Считать независимыми именно издания, а не имена авторов и перепечатки одного материала.",
+      "Учитывать Twitch, YouTube и Reddit как отдельные группы живого интереса.",
+      "Использовать Steam и Twitch как платформенные чарты, а не как единственное доказательство редакционного всплеска.",
+      "Обновлять доступные позиции независимо; не блокировать весь список из-за недостающей карточки."
     ]
   },
   "families": [
-    {"id":"news","label":"Игровые издания","weight":0.34,"metric":"свежие упоминания и число независимых изданий"},
-    {"id":"reddit","label":"Reddit","weight":0.14,"metric":"свежие посты, комментарии и score"},
-    {"id":"youtube","label":"YouTube Gaming","weight":0.18,"metric":"просмотры и обсуждение свежих игровых видео"},
-    {"id":"twitch","label":"Twitch","weight":0.20,"metric":"live-зрители и активные трансляции"},
-    {"id":"steam","label":"Steam momentum","weight":0.10,"metric":"рост текущих игроков относительно предыдущего запуска"},
-    {"id":"attention","label":"Общий интерес","weight":0.04,"metric":"дополнительные открытые сигналы"}
+    {"id":"news","label":"Игровые издания","weight":0.3,"metric":"свежие упоминания и число независимых изданий"},
+    {"id":"reddit","label":"Reddit","weight":0.15,"metric":"свежие посты, комментарии и score"},
+    {"id":"youtube","label":"YouTube Gaming","weight":0.15,"metric":"просмотры и обсуждение свежих игровых видео"},
+    {"id":"twitch","label":"Twitch","weight":0.2,"metric":"позиция в текущем чарте категорий Twitch"},
+    {"id":"steam","label":"Steam","weight":0.15,"metric":"позиция в текущем Steam Top Sellers"},
+    {"id":"breadth","label":"Широта интереса","weight":0.05,"metric":"число независимых групп и изданий"}
   ],
   "sources": [
     {"id":"ign-rss","enabled":true,"family":"news","name":"IGN","type":"rss","url":"https://www.ign.com/rss/articles/feed","weight":1},
@@ -40,10 +38,24 @@
     {"id":"eurogamer-rss","enabled":true,"family":"news","name":"Eurogamer","type":"rss","url":"https://www.eurogamer.net/feed","weight":1},
     {"id":"rps-rss","enabled":true,"family":"news","name":"Rock Paper Shotgun","type":"rss","url":"https://www.rockpapershotgun.com/feed","weight":1},
     {"id":"polygon-rss","enabled":true,"family":"news","name":"Polygon","type":"rss","url":"https://www.polygon.com/rss/index.xml","weight":1},
-    {"id":"twitch-streams","enabled":true,"family":"twitch","name":"Twitch Helix — активные трансляции","type":"api","url":"https://api.twitch.tv/helix/streams?first=100","secret_names":["TWITCH_CLIENT_ID","TWITCH_CLIENT_SECRET"],"weight":1},
+    {"id":"twitch-top-games","enabled":true,"family":"twitch","name":"Twitch Helix — топ игровых категорий","type":"api","url":"https://api.twitch.tv/helix/games/top?first=100","secret_names":["TWITCH_CLIENT_ID","TWITCH_CLIENT_SECRET"],"weight":1},
     {"id":"youtube-popular","enabled":true,"family":"youtube","name":"YouTube Data API — Gaming","type":"api","url":"https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&videoCategoryId=20&maxResults=50","secret_names":["YOUTUBE_API_KEY"],"weight":1},
     {"id":"reddit-gaming","enabled":true,"family":"reddit","name":"Reddit — игровые сообщества","type":"api","url":"https://oauth.reddit.com/r/Games+gaming+pcgaming+PS5+XboxSeriesX+NintendoSwitch/new?limit=100","secret_names":["REDDIT_ACCESS_TOKEN"],"weight":1},
-    {"id":"steam-current-players","enabled":true,"family":"steam","name":"Steam — рост текущих игроков","type":"api-template","url":"https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={steam_appid}","weight":1}
+    {"id":"steam-top-sellers","enabled":true,"family":"steam","name":"Steam Top Sellers","type":"http","url":"https://store.steampowered.com/search/?filter=topsellers","weight":1}
+  ],
+  "global_candidates": [
+    {"slug":"roblox","title":"Roblox","aliases":["Roblox"]},
+    {"slug":"genshin-impact","title":"Genshin Impact","aliases":["Genshin","原神"]},
+    {"slug":"fortnite","title":"Fortnite","aliases":["Fortnite Battle Royale"]},
+    {"slug":"minecraft","title":"Minecraft","aliases":["Minecraft Java Edition","Minecraft Bedrock"]},
+    {"slug":"league-of-legends","title":"League of Legends","aliases":["LoL"]},
+    {"slug":"valorant","title":"Valorant","aliases":["VALORANT"]},
+    {"slug":"call-of-duty-warzone","title":"Call of Duty: Warzone","aliases":["Warzone","COD Warzone"]},
+    {"slug":"marvel-rivals","title":"Marvel Rivals","aliases":["MARVEL Rivals"]},
+    {"slug":"overwatch-2","title":"Overwatch 2","aliases":["Overwatch"]},
+    {"slug":"honkai-star-rail","title":"Honkai: Star Rail","aliases":["Honkai Star Rail","HSR"]},
+    {"slug":"apex-legends","title":"Apex Legends","aliases":["Apex"]},
+    {"slug":"pubg-battlegrounds","title":"PUBG: Battlegrounds","aliases":["PUBG","PlayerUnknown's Battlegrounds"]}
   ],
   "aliases": [
     {"slug":"grand-theft-auto-vi","title":"Grand Theft Auto VI","year":2026,"upcoming":true,"aliases":["Grand Theft Auto 6","GTA VI","GTA 6"]},

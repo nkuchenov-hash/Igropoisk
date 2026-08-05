@@ -13,13 +13,17 @@ on:
   push:
     paths:
       - 'config/parsers/schedule.json'
+      - 'config/parsers/popular.json'
       - 'config/parsers/releases.json'
+      - 'config/home-feeds-quality.json'
       - 'data/popular/cover-overrides.json'
       - 'features/home-releases/rules.json'
+      - 'assets/popular-home.js'
       - 'assets/home-releases/index.js'
       - 'scripts/run-scheduled-parsers.mjs'
       - 'scripts/parse-releases.mjs'
       - 'scripts/parse-popular.mjs'
+      - 'scripts/curate-home-feeds.mjs'
       - 'scripts/filter-popular.mjs'
       - 'scripts/resolve-popular-covers.mjs'
       - 'scripts/validate-home-feeds.mjs'
@@ -53,9 +57,12 @@ jobs:
           node --check scripts/run-scheduled-parsers.mjs
           node --check scripts/parse-releases.mjs
           node --check scripts/parse-popular.mjs
+          node --check scripts/curate-home-feeds.mjs
           node --check scripts/filter-popular.mjs
           node --check scripts/resolve-popular-covers.mjs
           node --check scripts/validate-home-feeds.mjs
+          node --check assets/popular-home.js
+          node --check assets/home-releases/index.js
 
       - name: Run due parsers independently
         id: parsers
@@ -71,6 +78,26 @@ jobs:
           mkdir -p assets/covers/releases assets/covers/popular data/release-drafts data/parser-runs
           node scripts/run-scheduled-parsers.mjs
 
+      - name: Curate available snapshots without a cardinality gate
+        id: curation
+        if: always()
+        run: node scripts/curate-home-feeds.mjs
+
+      - name: Preserve editorial audit for inspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-feeds-editorial-audit-${{ github.run_id }}
+          path: |
+            data/home-feeds-quality.json
+            data/popular/current.json
+            data/parser-runs/popular.json
+            data/releases/current.json
+            data/parser-runs/releases.json
+            data/parser-runs/scheduler.json
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Validate publishable home feeds
         id: validation
         if: always()
@@ -79,10 +106,18 @@ jobs:
 
       - name: Commit validated parser outputs
         id: publication
-        if: always() && steps.validation.outcome == 'success'
+        if: always() && github.ref == 'refs/heads/main' && steps.curation.outcome == 'success' && steps.validation.outcome == 'success'
         run: |
           git config user.name "igropoisk-parser[bot]"
           git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
+
+          remote_sha="$(git ls-remote origin "refs/heads/$GITHUB_REF_NAME" | cut -f1)"
+          if [ -z "$remote_sha" ] || [ "$remote_sha" != "$GITHUB_SHA" ]; then
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "superseded=true" >> "$GITHUB_OUTPUT"
+            echo "Branch advanced from $GITHUB_SHA to ${remote_sha:-unknown}; stale generated snapshot was not published."
+            exit 0
+          fi
 
           paths=(
             data/popular/current.json
@@ -94,6 +129,7 @@ jobs:
             data/releases/changes.json
             data/parser-runs/releases.json
             data/parser-runs/scheduler.json
+            data/home-feeds-quality.json
             data/release-drafts
             assets/covers/releases
           )
@@ -106,14 +142,15 @@ jobs:
 
           if git diff --cached --quiet; then
             echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "superseded=false" >> "$GITHUB_OUTPUT"
             echo "Parser snapshots are already current."
             exit 0
           fi
 
-          git commit -m "Update popular and release feeds"
-          git pull --rebase origin "$GITHUB_REF_NAME"
+          git commit -m "Update curated popular and release feeds"
           git push origin "HEAD:$GITHUB_REF_NAME"
           echo "published=true" >> "$GITHUB_OUTPUT"
+          echo "superseded=false" >> "$GITHUB_OUTPUT"
 
       - name: Deploy updated production feeds
         if: steps.publication.outputs.published == 'true' && github.ref == 'refs/heads/main'
@@ -121,8 +158,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run pages.yml --ref main
 
-      - name: Report blocked parser publication
-        if: steps.parsers.outcome == 'failure' || steps.validation.outcome == 'failure'
+      - name: Report parser degradation without blocking valid updates
+        if: steps.parsers.outcome == 'failure' && steps.validation.outcome == 'success'
+        run: echo "One or more sources/parsers degraded, but valid popular and release snapshots were curated and remain publishable."
+
+      - name: Report invalid publication
+        if: steps.curation.outcome == 'failure' || steps.validation.outcome == 'failure'
         run: |
-          echo "Parser publication was blocked or degraded. Validated successful outputs, when available, were preserved."
+          echo "Home-feed output is structurally invalid and was not published."
           exit 1

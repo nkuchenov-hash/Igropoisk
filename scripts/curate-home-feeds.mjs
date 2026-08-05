@@ -1,0 +1,287 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root = process.cwd();
+const read = file => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
+const readOptional = file => {
+  try { return read(file); } catch { return null; }
+};
+const write = (file, value) => {
+  const target = path.join(root, file);
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  fs.writeFileSync(target, `${JSON.stringify(value, null, 2)}\n`);
+};
+
+const config = read('config/home-feeds-quality.json');
+const popular = read('data/popular/current.json');
+const previousPopular = readOptional('data/popular/published.json');
+const releases = read('data/releases/current.json');
+const now = Date.now();
+const checkedAt = new Date(now).toISOString();
+const popularRules = config.popular;
+const confirmedRules = popularRules.confirmed || {};
+const platformRules = popularRules.platform_corroborated || {};
+const fallbackRules = popularRules.fallback || {};
+const maximumCards = Math.max(1, Number(popularRules.maximum_cards || 20));
+const freshWindowMs = Number(popularRules.fresh_signal_hours || popular.window_hours || 96) * 3_600_000;
+const independentFamilies = new Set(platformRules.independent_families || ['news', 'youtube', 'reddit', 'twitch']);
+const liveFamilies = new Set(['youtube', 'reddit', 'twitch']);
+
+const unique = values => [...new Set(values.filter(Boolean))];
+const evidencePosition = (item, family) => {
+  const positions = (item.evidence || [])
+    .filter(evidence => evidence.family === family)
+    .map(evidence => Number(evidence.position))
+    .filter(Number.isFinite);
+  return positions.length ? Math.min(...positions) : null;
+};
+const evidenceIsFresh = evidence => {
+  if (!independentFamilies.has(evidence.family)) return false;
+  const observedAt = Date.parse(evidence.observed_at || evidence.published_at || evidence.date || '');
+  if (Number.isFinite(observedAt)) return observedAt <= now + 300_000 && now - observedAt <= freshWindowMs;
+  return liveFamilies.has(evidence.family);
+};
+const tierOrder = new Map([
+  ['confirmed', 0],
+  ['platform_corroborated', 1],
+  ['platform_chart', 2],
+  ['carryover', 3]
+]);
+
+const popularAudit = [];
+const eligible = [];
+for (const [rankIndex, item] of (popular.ranking || []).entries()) {
+  const confidence = Number(item.confidence || 0);
+  const score = Number(item.score || 0);
+  const freshEvidence = (item.evidence || []).filter(evidenceIsFresh);
+  const freshFamilies = new Set(freshEvidence.map(evidence => evidence.family));
+  const newsPublishers = unique(
+    (item.news_publishers || []).map(value => String(value).trim()).filter(Boolean)
+  );
+  const newsSources = Math.max(Number(item.news_sources || 0), newsPublishers.length);
+  const steamPosition = evidencePosition(item, 'steam_chart');
+  const twitchPosition = evidencePosition(item, 'twitch');
+
+  const confirmedByNews = newsSources >= Number(confirmedRules.minimum_news_publishers || 3);
+  const confirmedByBreadth = freshFamilies.size >= Number(confirmedRules.minimum_independent_families || 2);
+  const confirmed = (
+    (confirmedByNews || confirmedByBreadth) &&
+    confidence >= Number(confirmedRules.minimum_confidence || 0) &&
+    score >= Number(confirmedRules.minimum_score || 0)
+  );
+
+  const corroboratingForSteam = new Set([...freshFamilies].filter(family => family !== 'steam_chart'));
+  const corroboratingForTwitch = new Set([...freshFamilies].filter(family => family !== 'twitch'));
+  const steamCorroborated = Number.isFinite(steamPosition) && (
+    (steamPosition <= Number(platformRules.steam_top_with_one_signal || 20) && corroboratingForSteam.size >= 1) ||
+    (steamPosition <= Number(platformRules.steam_top_with_two_signals || 50) && corroboratingForSteam.size >= 2)
+  );
+  const twitchCorroborated = Number.isFinite(twitchPosition) && (
+    (twitchPosition <= Number(platformRules.twitch_top_with_one_signal || 25) && corroboratingForTwitch.size >= 1) ||
+    (twitchPosition <= Number(platformRules.twitch_top_with_two_signals || 60) && corroboratingForTwitch.size >= 2)
+  );
+  const platformCorroborated = (
+    (steamCorroborated || twitchCorroborated) &&
+    confidence >= Number(platformRules.minimum_confidence || 0) &&
+    score >= Number(platformRules.minimum_score || 0)
+  );
+  const currentPlatformChart = Boolean(
+    fallbackRules.allow_current_platform_charts &&
+    (Number.isFinite(steamPosition) || Number.isFinite(twitchPosition))
+  );
+
+  const tier = confirmed
+    ? 'confirmed'
+    : platformCorroborated
+      ? 'platform_corroborated'
+      : currentPlatformChart
+        ? 'platform_chart'
+        : null;
+  const selectionReason = tier === 'confirmed'
+    ? confirmedByNews
+      ? `Свежие материалы минимум в ${newsSources} независимых изданиях`
+      : `Свежие сигналы в нескольких группах: ${[...freshFamilies].join(', ')}`
+    : tier === 'platform_corroborated'
+      ? `${Number.isFinite(steamPosition) ? `Steam Top ${steamPosition}` : `Twitch Top ${twitchPosition}`} + независимое подтверждение`
+      : tier === 'platform_chart'
+        ? `${Number.isFinite(steamPosition) ? `Steam Top ${steamPosition}` : `Twitch Top ${twitchPosition}`} сейчас`
+        : null;
+
+  const reasons = [];
+  if (!tier) {
+    if (!confirmedByNews) reasons.push(`news_publishers_below_${Number(confirmedRules.minimum_news_publishers || 3)}`);
+    if (!confirmedByBreadth) reasons.push('insufficient_independent_families');
+    if (!Number.isFinite(steamPosition) && !Number.isFinite(twitchPosition)) reasons.push('not_in_current_platform_chart');
+    if (confidence < Number(platformRules.minimum_confidence || 0)) reasons.push('low_confidence');
+    if (score < Number(platformRules.minimum_score || 0)) reasons.push('low_score');
+  }
+
+  const audited = {
+    rank: rankIndex + 1,
+    slug: item.slug,
+    title: item.title,
+    eligible: Boolean(tier),
+    tier,
+    reasons,
+    selection_reason: selectionReason,
+    score,
+    confidence,
+    news_publishers: newsSources,
+    fresh_independent_families: [...freshFamilies],
+    steam_position: steamPosition,
+    twitch_position: twitchPosition,
+    evidence: (item.evidence || []).slice(0, 16).map(evidence => ({
+      family: evidence.family,
+      source: evidence.source,
+      title: evidence.title,
+      observed_at: evidence.observed_at || null,
+      position: Number.isFinite(Number(evidence.position)) ? Number(evidence.position) : null,
+      value: Number.isFinite(Number(evidence.value)) ? Number(evidence.value) : null,
+      url: evidence.url || null
+    }))
+  };
+  popularAudit.push(audited);
+  if (tier) eligible.push({
+    ...item,
+    editorial_tier: tier,
+    editorial_reason: selectionReason,
+    editorial_checked_at: checkedAt
+  });
+}
+
+eligible.sort((left, right) =>
+  (tierOrder.get(left.editorial_tier) ?? 99) - (tierOrder.get(right.editorial_tier) ?? 99) ||
+  Number(right.score || 0) - Number(left.score || 0) ||
+  Number(right.confidence || 0) - Number(left.confidence || 0) ||
+  String(left.title).localeCompare(String(right.title), 'ru')
+);
+
+const selected = eligible.slice(0, maximumCards);
+if (fallbackRules.enabled && selected.length < maximumCards && previousPopular?.ranking?.length) {
+  const previousAgeMs = now - Date.parse(previousPopular.generated_at || '');
+  const previousFreshEnough = Number.isFinite(previousAgeMs) && previousAgeMs <= Number(fallbackRules.maximum_previous_age_hours || 24) * 3_600_000;
+  if (previousFreshEnough) {
+    const selectedSlugs = new Set(selected.map(item => item.slug));
+    for (const item of previousPopular.ranking) {
+      if (selected.length >= maximumCards) break;
+      if (!item?.slug || selectedSlugs.has(item.slug)) continue;
+      selectedSlugs.add(item.slug);
+      selected.push({
+        ...item,
+        editorial_tier: 'carryover',
+        editorial_reason: 'Сохранено из предыдущего свежего snapshot, пока новые источники обновляются',
+        editorial_checked_at: checkedAt
+      });
+    }
+  }
+}
+
+const titleKey = title => {
+  let value = String(title || '').normalize('NFKC').toLowerCase();
+  for (const pattern of config.releases.duplicate_suffix_patterns || []) value = value.replace(new RegExp(pattern, 'i'), '');
+  return value.replace(/[^a-z0-9а-яё]+/gi, ' ').replace(/\s+/g, ' ').trim();
+};
+const excludedPatterns = (config.releases.exclude_title_patterns || []).map(pattern => new RegExp(pattern, 'i'));
+const significantGenres = new Set(config.releases.significant_genres || []);
+const seen = new Map();
+const releaseAudit = [];
+
+for (const game of releases.releases || []) {
+  const reasons = [];
+  const title = String(game.title || '');
+  if (excludedPatterns.some(pattern => pattern.test(title))) reasons.push('non_full_release');
+  const key = titleKey(title);
+  if (seen.has(key)) reasons.push(`duplicate_of:${seen.get(key)}`);
+  else if (key) seen.set(key, game.slug);
+
+  const event = (game.events || [])[0] || {};
+  let quality = 0;
+  if (event.precision === 'exact') quality += 2;
+  else if (event.precision && event.precision !== 'tbd') quality += 1;
+  if ((game.genres || []).some(genre => significantGenres.has(genre))) quality += 1;
+  if (game.developer) quality += 1;
+  if (game.publisher) quality += 1;
+  if (game.editorial?.has_page || game.editorial?.status === 'published') quality += 3;
+  if (game.editorial?.needs_review) quality -= 2;
+  if (reasons.length) quality -= 4;
+
+  const homepageEligible = reasons.length === 0 && quality >= config.releases.minimum_homepage_quality;
+  game.editorial_quality = {
+    homepage_eligible: homepageEligible,
+    quality_score: quality,
+    reasons,
+    checked_at: checkedAt
+  };
+  releaseAudit.push({
+    slug: game.slug,
+    title,
+    homepage_eligible: homepageEligible,
+    quality_score: quality,
+    reasons,
+    precision: event.precision || 'tbd',
+    date: event.date || event.date_start || null,
+    source_ids: event.source_ids || []
+  });
+}
+
+const selectedReleaseAudit = releaseAudit
+  .filter(item => item.homepage_eligible)
+  .slice(0, config.releases.homepage_limit);
+const qualitySnapshot = {
+  schema_version: 5,
+  generated_at: checkedAt,
+  status: selected.length >= maximumCards ? 'complete' : selected.length ? 'partial' : 'empty',
+  popular: {
+    requested_cards: maximumCards,
+    published_cards: selected.length,
+    confirmed_count: selected.filter(item => item.editorial_tier === 'confirmed').length,
+    platform_corroborated_count: selected.filter(item => item.editorial_tier === 'platform_corroborated').length,
+    platform_chart_count: selected.filter(item => item.editorial_tier === 'platform_chart').length,
+    carryover_count: selected.filter(item => item.editorial_tier === 'carryover').length,
+    snapshot_generated_at: popular.generated_at,
+    selected: selected.map(item => ({
+      slug: item.slug,
+      title: item.title,
+      tier: item.editorial_tier,
+      reason: item.editorial_reason,
+      score: item.score,
+      confidence: item.confidence
+    })),
+    audit: popularAudit
+  },
+  releases: {
+    snapshot_generated_at: releases.generated_at,
+    homepage_limit: config.releases.homepage_limit,
+    selected: selectedReleaseAudit,
+    audit: releaseAudit
+  }
+};
+write('data/home-feeds-quality.json', qualitySnapshot);
+
+popular.ranking = selected;
+popular.editorial_quality = {
+  checked_at: checkedAt,
+  requested_cards: maximumCards,
+  published_cards: selected.length,
+  blocking: false,
+  rules: 'three-publishers-or-multi-family-then-platform-corroborated-and-current-chart-fill'
+};
+write('data/popular/current.json', popular);
+write('data/popular/published.json', popular);
+
+releases.editorial_quality = {
+  checked_at: checkedAt,
+  homepage_eligible_count: releaseAudit.filter(item => item.homepage_eligible).length,
+  excluded_count: releaseAudit.filter(item => !item.homepage_eligible).length
+};
+write('data/releases/current.json', releases);
+
+console.log(JSON.stringify({
+  popular_published: selected.length,
+  popular_confirmed: selected.filter(item => item.editorial_tier === 'confirmed').length,
+  popular_platform_corroborated: selected.filter(item => item.editorial_tier === 'platform_corroborated').length,
+  popular_platform_chart: selected.filter(item => item.editorial_tier === 'platform_chart').length,
+  popular_carryover: selected.filter(item => item.editorial_tier === 'carryover').length,
+  releases_homepage_eligible: selectedReleaseAudit.length,
+  blocking: false
+}, null, 2));

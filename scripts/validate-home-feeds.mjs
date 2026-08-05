@@ -47,6 +47,7 @@ const popular = readJson('data/popular/current.json');
 const popularRun = readJson('data/parser-runs/popular.json');
 const releases = readJson('data/releases/current.json');
 const releasesRun = readJson('data/parser-runs/releases.json');
+const quality = readJson('data/home-feeds-quality.json');
 const rules = readJson('features/home-releases/rules.json');
 const indexHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const popularRuntime = fs.readFileSync(path.join(root, 'assets/popular-home.js'), 'utf8');
@@ -54,18 +55,21 @@ const releasesRuntime = fs.readFileSync(path.join(root, 'assets/home-releases/in
 
 if (popular) {
   const ranking = Array.isArray(popular.ranking) ? popular.ranking : [];
-  if (ranking.length < 20) errors.push(`Popular feed contains ${ranking.length} games; at least 20 are required.`);
-  const firstTwenty = ranking.slice(0, 20);
+  if (!ranking.length) errors.push('Popular feed is empty.');
+  if (ranking.length > 20) errors.push(`Popular feed contains ${ranking.length} cards; homepage maximum is 20.`);
   const slugs = new Set();
-  let previousScore = Infinity;
-  for (const [index, item] of firstTwenty.entries()) {
+  let previousTier = -1;
+  const tierOrder = new Map([['confirmed', 0], ['platform_corroborated', 1], ['platform_chart', 2], ['carryover', 3]]);
+  for (const [index, item] of ranking.entries()) {
     if (!item?.slug || !item?.title) errors.push(`Popular item ${index + 1} has no slug or title.`);
     if (slugs.has(item?.slug)) errors.push(`Popular feed contains duplicate slug: ${item.slug}.`);
     slugs.add(item?.slug);
     const score = Number(item?.score);
     if (!Number.isFinite(score)) errors.push(`Popular item ${item?.slug || index + 1} has an invalid score.`);
-    if (score > previousScore + 0.001) errors.push(`Popular feed is not sorted by score at ${item?.slug || index + 1}.`);
-    previousScore = score;
+    const tier = tierOrder.get(item?.editorial_tier);
+    if (!Number.isFinite(tier)) errors.push(`Popular item ${item?.slug || index + 1} has no valid editorial tier.`);
+    if (Number.isFinite(tier) && tier < previousTier) errors.push(`Popular editorial tiers are out of order at ${item?.slug || index + 1}.`);
+    if (Number.isFinite(tier)) previousTier = tier;
     const images = [item?.image, ...(item?.image_candidates || [])].filter(Boolean);
     if (!images.length) errors.push(`Popular item ${item?.slug || index + 1} has no cover candidate.`);
     if (!Array.isArray(item?.evidence) || !item.evidence.length) errors.push(`Popular item ${item?.slug || index + 1} has no evidence.`);
@@ -75,11 +79,17 @@ if (popular) {
 if (!popularRun || !['success', 'partial'].includes(popularRun.status)) {
   errors.push(`Popular parser status is ${popularRun?.status || 'missing'}.`);
 }
+if (!quality || !['complete', 'partial'].includes(quality.status)) {
+  errors.push(`Home-feed quality status is ${quality?.status || 'missing'}.`);
+}
 if (!indexHtml.includes('id="popular"') || !indexHtml.includes('assets/popular-home.js')) {
   errors.push('Homepage is not wired to the popular feed runtime.');
 }
-if (!/REQUIRED_COUNT\s*=\s*20/.test(popularRuntime)) {
-  errors.push('Popular runtime does not enforce the required 20-card publication.');
+if (!/MAXIMUM_COUNT\s*=\s*20/.test(popularRuntime)) {
+  errors.push('Popular runtime does not enforce the 20-card maximum.');
+}
+if (popularRuntime.includes('ranking.length<MAXIMUM_COUNT') || popularRuntime.includes('Expected ${MAXIMUM_COUNT}')) {
+  errors.push('Popular runtime still blocks partial valid rankings.');
 }
 
 if (releases) {
@@ -137,8 +147,9 @@ if (errors.length) {
 console.log(JSON.stringify({
   popular: {
     generated_at: popular?.generated_at || popular?.generatedAt || null,
-    cards: popular?.ranking?.slice(0, 20).length || 0,
-    parser_status: popularRun?.status || null
+    cards: popular?.ranking?.length || 0,
+    parser_status: popularRun?.status || null,
+    quality_status: quality?.status || null
   },
   releases: {
     generated_at: releases?.generated_at || releases?.generatedAt || null,
