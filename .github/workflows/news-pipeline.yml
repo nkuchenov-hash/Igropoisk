@@ -39,6 +39,7 @@ on:
       - '.github/workflows/news-pipeline.yml'
 
 permissions:
+  actions: write
   contents: write
 
 concurrency:
@@ -103,6 +104,12 @@ jobs:
           node scripts/validate-news-module.mjs
           git push origin HEAD:main
           echo "published=true" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy the published snapshot
+        if: steps.publication.outputs.published == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main
 
       - name: Upload pipeline report
         if: always()
