@@ -91,8 +91,8 @@ jobs:
         if: always()
         continue-on-error: true
         run: |
-          node scripts/validate-home-feeds.mjs --fresh-hours 18
           node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('data/home-feeds-quality.json'));const c=JSON.parse(fs.readFileSync('config/home-feeds-quality.json'));if(q.gate?.status!=='pass')throw new Error('Editorial gate is blocked');if(q.popular.selected.length<c.popular.minimum_cards)throw new Error('Fewer than required editorially eligible popular cards');if(!q.releases.selected.length)throw new Error('No editorially eligible releases');"
+          node scripts/validate-home-feeds.mjs --fresh-hours 18
 
       - name: Commit validated parser outputs
         id: publication
