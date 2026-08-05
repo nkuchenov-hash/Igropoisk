@@ -25,7 +25,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Verify immutable production source and automation boundaries
         run: |
@@ -41,6 +41,7 @@ jobs:
       - name: Verify News Content API pipeline health and module boundary
         run: |
           node scripts/test-news-content-api.mjs
+          node scripts/test-news-storage-content-api.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/validate-news-pipeline.mjs
@@ -139,7 +140,7 @@ jobs:
       - name: Install browser client
         run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
 
-      - name: Verify deployed news and read-only health page
+      - name: Verify deployed news uses Object Storage and read-only health works
         env:
           NEWS_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
         run: node scripts/smoke-news-browser.mjs
