@@ -3,10 +3,15 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { generatedAtFromPayload, selectDueGroups, runPipeline } from './run-news-pipeline.mjs';
-import { validateNewsPipeline } from './validate-news-pipeline.mjs';
+import { canonicalSourceUrl, validateNewsPipeline } from './validate-news-pipeline.mjs';
 
 assert.equal(generatedAtFromPayload({ generatedAt: '2026-08-05T00:00:00.000Z' }), Date.parse('2026-08-05T00:00:00.000Z'));
 assert.equal(generatedAtFromPayload({}), 0);
+assert.notEqual(canonicalSourceUrl('https://youtube.com/watch?v=first'), canonicalSourceUrl('https://youtube.com/watch?v=second'));
+assert.equal(
+  canonicalSourceUrl('https://example.com/article?id=7&utm_source=test#fragment'),
+  canonicalSourceUrl('https://example.com/article?id=7')
+);
 
 const schedule = {
   groups: [
@@ -57,7 +62,7 @@ const publicationConfig = {
 };
 fs.writeFileSync(path.join(root, 'config/news-pipeline.json'), JSON.stringify(publicationConfig));
 fs.writeFileSync(path.join(root, 'features/news/module.json'), JSON.stringify({
-  content: ['data/news.json', 'data/publisher-news.json', 'data/news-events.json', 'data/news-home-ru.json'],
+  content: ['data/news.json', 'data/publisher-news.json', 'data/youtube-signals.json', 'data/news-events.json', 'data/news-home-ru.json'],
   contentApi: { global: 'IgropoiskNewsContent' }
 }));
 
@@ -80,12 +85,26 @@ for (const item of [...news, ...official, ...events, ...home]) {
 }
 fs.writeFileSync(path.join(root, 'data/news.json'), JSON.stringify({ generatedAt: '2026-08-05T00:00:00Z', items: news }));
 fs.writeFileSync(path.join(root, 'data/publisher-news.json'), JSON.stringify({ generatedAt: '2026-08-05T00:00:00Z', sourceCount: 10, successfulSourceCount: 5, items: official }));
-fs.writeFileSync(path.join(root, 'data/youtube-signals.json'), JSON.stringify({ generatedAt: '2026-08-05T00:00:00Z', items: [{ title: 'Video', publishedAt: '2026-08-05T00:00:00Z', url: 'https://youtube.com/watch?v=test' }] }));
+const youtubeSignals = [
+  { id: 'first', title: 'Video one', publishedAt: '2026-08-05T00:00:00Z', url: 'https://youtube.com/watch?v=first' },
+  { id: 'second', title: 'Video two', publishedAt: '2026-08-05T00:00:00Z', url: 'https://youtube.com/watch?v=second' }
+];
+fs.writeFileSync(path.join(root, 'data/youtube-signals.json'), JSON.stringify({ generatedAt: '2026-08-05T00:00:00Z', items: youtubeSignals }));
 fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify({ generatedAt: '2026-08-05T00:00:00Z', items: events }));
 fs.writeFileSync(path.join(root, 'data/news-home-ru.json'), JSON.stringify({ generatedAt: '2026-08-05T00:00:00Z', items: home }));
 
 const valid = validateNewsPipeline({ root });
 assert.equal(valid.ok, true, valid.errors.join('\n'));
+
+fs.writeFileSync(path.join(root, 'data/youtube-signals.json'), JSON.stringify({
+  generatedAt: '2026-08-05T00:00:00Z',
+  items: [youtubeSignals[0], { ...youtubeSignals[1], url: 'https://youtube.com/watch?v=first&utm_source=duplicate' }]
+}));
+const duplicate = validateNewsPipeline({ root });
+assert.equal(duplicate.ok, false);
+assert.ok(duplicate.errors.some(error => error.includes('duplicates a source URL')));
+
+fs.writeFileSync(path.join(root, 'data/youtube-signals.json'), JSON.stringify({ generatedAt: '2026-08-05T00:00:00Z', items: youtubeSignals }));
 fs.rmSync(path.join(root, home[0].image));
 const invalid = validateNewsPipeline({ root });
 assert.equal(invalid.ok, false);
