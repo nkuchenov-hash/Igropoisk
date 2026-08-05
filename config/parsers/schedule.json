@@ -1,7 +1,10 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "timezone": "UTC",
   "default_interval_minutes": 60,
+  "post_curation_commands": [
+    "node scripts/resolve-popular-covers.mjs"
+  ],
   "parsers": [
     {
       "id": "popular",
@@ -18,9 +21,10 @@
       "publication_policy": {
         "require_verified_cover_for_every_game": true,
         "keep_previous_ranking_on_cover_failure": true,
-        "allow_placeholders": false
+        "allow_placeholders": false,
+        "curate_before_cover_resolution": true
       },
-      "command": "node scripts/parse-popular.mjs && node scripts/filter-popular.mjs && node scripts/resolve-popular-covers.mjs",
+      "command": "node scripts/parse-popular.mjs && node scripts/filter-popular.mjs",
       "outputs": [
         "data/popular/current.json",
         "data/popular/covers.json",
