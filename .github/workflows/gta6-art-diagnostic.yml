@@ -1,0 +1,19 @@
+name: GTA VI art diagnostic
+
+on:
+  push:
+    branches:
+      - fix-gta6-popular-ranking
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download and inspect official Rockstar artwork package
+        run: |
+          curl -fL --retry 3 -A 'Mozilla/5.0' 'https://media.rockstargames.com/VI/downloads/artwork_wallpapers/GTAVI_Artwork_Wallpapers.zip' -o /tmp/gta6.zip
+          echo "ZIP_BYTES=$(stat -c%s /tmp/gta6.zip)"
+          unzip -l /tmp/gta6.zip | sed -n '1,240p'
