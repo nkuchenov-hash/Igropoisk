@@ -1,34 +1,626 @@
 {
   "schema_version": 1,
   "pipeline": "news",
-  "status": "pending",
-  "generated_at": null,
-  "last_successful_run_at": null,
-  "due_groups": [],
-  "data": {},
+  "status": "degraded",
+  "generated_at": "2026-08-05T10:43:20.285Z",
+  "last_successful_run_at": "2026-08-05T10:40:57.455Z",
+  "due_groups": [
+    "global-media",
+    "official-sources"
+  ],
+  "data": {
+    "data/news.json": {
+      "generated_at": "2026-08-05T10:42:13.284Z",
+      "age_minutes": 1,
+      "count": 37,
+      "minimum": 12
+    },
+    "data/publisher-news.json": {
+      "generated_at": "2026-08-05T10:43:11.147Z",
+      "age_minutes": 0,
+      "count": 20,
+      "minimum": 1
+    },
+    "data/youtube-signals.json": {
+      "generated_at": "2026-08-05T10:43:20.181Z",
+      "age_minutes": 0,
+      "count": 180,
+      "minimum": 0
+    },
+    "data/news-events.json": {
+      "generated_at": "2026-08-05T10:43:20.227Z",
+      "age_minutes": 0,
+      "count": 56,
+      "minimum": 12
+    },
+    "data/news-home-ru.json": {
+      "generated_at": "2026-08-05T10:43:20.256Z",
+      "age_minutes": 0,
+      "count": 12,
+      "minimum": 12
+    }
+  },
   "images": {
-    "referenced": 0,
+    "referenced": 57,
     "missing": 0,
     "missing_files": []
   },
   "sources": {
-    "generated_at": null,
-    "total": 0,
-    "successful": 0,
-    "success_ratio": 0,
-    "status_counts": {},
-    "current_failures": [],
+    "generated_at": "2026-08-05T10:43:11.147Z",
+    "total": 51,
+    "successful": 8,
+    "success_ratio": 0.1569,
+    "status_counts": {
+      "ok": 8,
+      "no-feed": 40,
+      "error": 3
+    },
+    "current_failures": [
+      {
+        "id": "rockstar",
+        "status": "error",
+        "items": 0,
+        "error": "404 Not Found",
+        "consecutive_failures": 1,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": "2026-08-05T10:43:11.147Z"
+      },
+      {
+        "id": "ubisoft",
+        "status": "error",
+        "items": 0,
+        "error": "404 Not Found",
+        "consecutive_failures": 1,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": "2026-08-05T10:43:11.147Z"
+      },
+      {
+        "id": "embracer",
+        "status": "error",
+        "items": 0,
+        "error": "500 Internal Server Error",
+        "consecutive_failures": 1,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": "2026-08-05T10:43:11.147Z"
+      }
+    ],
     "persistent_failures": [],
-    "history": []
+    "history": [
+      {
+        "id": "playstation",
+        "status": "ok",
+        "items": 10,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": "2026-08-05T10:43:11.147Z",
+        "last_failure_at": null
+      },
+      {
+        "id": "xbox",
+        "status": "ok",
+        "items": 10,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": "2026-08-05T10:43:11.147Z",
+        "last_failure_at": null
+      },
+      {
+        "id": "nintendo",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "steam",
+        "status": "ok",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": "2026-08-05T10:43:11.147Z",
+        "last_failure_at": null
+      },
+      {
+        "id": "epic",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "rockstar",
+        "status": "error",
+        "items": 0,
+        "error": "404 Not Found",
+        "consecutive_failures": 1,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": "2026-08-05T10:43:11.147Z"
+      },
+      {
+        "id": "ubisoft",
+        "status": "error",
+        "items": 0,
+        "error": "404 Not Found",
+        "consecutive_failures": 1,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": "2026-08-05T10:43:11.147Z"
+      },
+      {
+        "id": "ea",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "activision",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "blizzard",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "bethesda",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "capcom",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "square-enix",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "bandai-namco",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "sega",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "atlus",
+        "status": "ok",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": "2026-08-05T10:43:11.147Z",
+        "last_failure_at": null
+      },
+      {
+        "id": "cdpr",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "larian",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "remedy",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "paradox",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "devolver",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "focus",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "team17",
+        "status": "ok",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": "2026-08-05T10:43:11.147Z",
+        "last_failure_at": null
+      },
+      {
+        "id": "11bit",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "techland",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "digital-extremes",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "grinding-gear",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "hello-games",
+        "status": "ok",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": "2026-08-05T10:43:11.147Z",
+        "last_failure_at": null
+      },
+      {
+        "id": "riot",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "league",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "valorant",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "minecraft",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "bungie",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "warframe",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "hoyoverse",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "genshin",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "zenless",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "krafton",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "pubg",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "netease",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "tencent",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "embracer",
+        "status": "error",
+        "items": 0,
+        "error": "500 Internal Server Error",
+        "consecutive_failures": 1,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": "2026-08-05T10:43:11.147Z"
+      },
+      {
+        "id": "thq-nordic",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "saber",
+        "status": "ok",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": "2026-08-05T10:43:11.147Z",
+        "last_failure_at": null
+      },
+      {
+        "id": "owlcat",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "warhorse",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "pocketpair",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "fromsoftware",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "kojima",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "anapurna",
+        "status": "no-feed",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": null,
+        "last_failure_at": null
+      },
+      {
+        "id": "raw-fury",
+        "status": "ok",
+        "items": 0,
+        "error": null,
+        "consecutive_failures": 0,
+        "persistent_failure": false,
+        "last_success_at": "2026-08-05T10:43:11.147Z",
+        "last_failure_at": null
+      }
+    ]
   },
   "thresholds": {
     "minimum_official_source_success_ratio": 0.15,
     "persistent_failure_runs": 3,
-    "warning_age_minutes": {},
-    "blocking_age_minutes": {}
+    "warning_age_minutes": {
+      "data/news.json": 2160,
+      "data/publisher-news.json": 120,
+      "data/youtube-signals.json": 120,
+      "data/news-events.json": 120,
+      "data/news-home-ru.json": 120
+    },
+    "blocking_age_minutes": {
+      "data/news.json": 4320,
+      "data/publisher-news.json": 360,
+      "data/youtube-signals.json": 360,
+      "data/news-events.json": 360,
+      "data/news-home-ru.json": 360
+    }
   },
   "warnings": [
-    "Health snapshot будет создан первым автономным запуском pipeline."
+    "data/news-home-ru.json: объём близок к минимальному порогу (12/12)."
   ],
   "blocking_errors": []
 }
