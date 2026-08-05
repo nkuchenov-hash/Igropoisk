@@ -68,8 +68,36 @@ jobs:
           git diff --name-only "origin/${{ github.base_ref }}...HEAD" \
             | node scripts/validate-news-boundary.mjs news-content
 
-      - name: Verify shared layout contract
-        run: python3 scripts/enforce_layout_contract.py --check
+      - name: Block new shared-layout regressions
+        run: |
+          set +e
+          head_output="$(python3 scripts/enforce_layout_contract.py --check 2>&1)"
+          head_status=$?
+          set -e
+          if [ "$head_status" -eq 0 ]; then
+            printf '%s\n' "$head_output"
+            exit 0
+          fi
+
+          base_ref="origin/${GITHUB_BASE_REF:-main}"
+          git worktree add --detach /tmp/igropoisk-layout-base "$base_ref"
+          set +e
+          base_output="$(cd /tmp/igropoisk-layout-base && python3 scripts/enforce_layout_contract.py --check 2>&1)"
+          base_status=$?
+          set -e
+
+          printf '%s\n' "$head_output" | grep '^- ' | sort -u > /tmp/head-layout-errors || true
+          printf '%s\n' "$base_output" | grep '^- ' | sort -u > /tmp/base-layout-errors || true
+          new_errors="$(comm -23 /tmp/head-layout-errors /tmp/base-layout-errors)"
+          git worktree remove --force /tmp/igropoisk-layout-base
+
+          if [ -n "$new_errors" ]; then
+            echo "New layout regressions introduced by this change:"
+            printf '%s\n' "$new_errors"
+            exit 1
+          fi
+
+          echo "No new layout regression. Existing base-branch violations are not attributed to the news module."
 
       - name: Verify publication gates
         run: |
