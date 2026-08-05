@@ -9,6 +9,7 @@ const now = Date.now();
 const checkedAt = new Date(now).toISOString();
 const timeout = 25_000;
 const candidatePoolLimit = 60;
+const targetedSteamNewsLimit = 45;
 
 const canonical = value => String(value || '').normalize('NFKD').toLowerCase()
   .replace(/&amp;/g, ' and ').replace(/[^a-z0-9а-яё]+/gi, ' ').replace(/\s+/g, ' ').trim();
@@ -23,7 +24,7 @@ async function fetchText(url, options = {}) {
     ...options,
     signal: AbortSignal.timeout(timeout),
     headers: {
-      'user-agent': 'Mozilla/5.0 IgropoiskPopularityParser/6.0',
+      'user-agent': 'Mozilla/5.0 IgropoiskPopularityParser/7.0',
       'accept-language': 'en-US,en;q=0.9',
       ...(options.headers || {})
     }
@@ -32,6 +33,19 @@ async function fetchText(url, options = {}) {
   return response.text();
 }
 const fetchJSON = async (url, options = {}) => JSON.parse(await fetchText(url, options));
+async function mapPool(items, limit, worker) {
+  const results = new Array(items.length);
+  let cursor = 0;
+  const runners = Array.from({ length: Math.max(1, limit) }, async () => {
+    while (cursor < items.length) {
+      const index = cursor++;
+      try { results[index] = await worker(items[index], index); }
+      catch (error) { results[index] = { error }; }
+    }
+  });
+  await Promise.all(runners);
+  return results;
+}
 
 const drafts = new Map();
 const draftDir = path.join(root, 'data', 'drafts');
@@ -143,6 +157,22 @@ function publisherFrom(item, fallback) {
   if (item.publisher) return item.publisher;
   return item.title.match(/\s+-\s+([^–—|-]{2,80})$/)?.[1] || fallback;
 }
+function addNewsEvidence(row, item, fallbackSource) {
+  const freshness = recency(item.date);
+  if (!freshness || row.evidence.some(evidence => evidence.url && evidence.url === item.url)) return false;
+  const publisher = publisherFrom(item, fallbackSource);
+  row.families.news += freshness;
+  row.publishers.add(publisher);
+  row.evidence.push({
+    source: publisher,
+    title: item.title,
+    url: item.url,
+    observed_at: item.date,
+    family: 'news',
+    value: Number(freshness.toFixed(3))
+  });
+  return true;
+}
 
 const newsFeeds = [
   ...(config.sources || []).filter(item => item.enabled !== false && item.type === 'rss'),
@@ -157,17 +187,9 @@ async function collectNews() {
       const items = parseFeed(await fetchText(source.url));
       let matched = 0;
       for (const item of items) {
-        const freshness = recency(item.date);
-        if (!freshness) continue;
         const game = resolve(item.title);
         if (!game) continue;
-        const row = ensure(game);
-        if (row.evidence.some(e => e.url && e.url === item.url)) continue;
-        const publisher = publisherFrom(item, source.name);
-        row.families.news += freshness;
-        row.publishers.add(publisher);
-        row.evidence.push({ source: publisher, title: item.title, url: item.url, observed_at: item.date, family: 'news', value: Number(freshness.toFixed(3)) });
-        matched++;
+        if (addNewsEvidence(ensure(game), item, source.name)) matched++;
       }
       statuses.push({ id: source.id, status: 'success', items: items.length, matched, duration_ms: Date.now() - started, url: source.url });
     } catch (error) {
@@ -297,6 +319,41 @@ async function collectSteam() {
     statuses.push({ id: 'steam-top-sellers', status: 'error', error: error.message, duration_ms: Date.now() - started, url });
   }
 }
+function steamPosition(row) {
+  const values = row.evidence.filter(item => item.family === 'steam_chart').map(item => Number(item.position)).filter(Number.isFinite);
+  return values.length ? Math.min(...values) : Number.POSITIVE_INFINITY;
+}
+async function collectTargetedSteamNews() {
+  const started = Date.now();
+  const rows = [...signals.values()]
+    .filter(row => Number.isFinite(steamPosition(row)))
+    .sort((left, right) => steamPosition(left) - steamPosition(right))
+    .slice(0, targetedSteamNewsLimit);
+  const outcomes = await mapPool(rows, 8, async row => {
+    const query = encodeURIComponent(`"${row.game.title}" when:4d`);
+    const url = `https://news.google.com/rss/search?q=${query}&hl=en-US&gl=US&ceid=US%3Aen`;
+    const items = parseFeed(await fetchText(url));
+    let matched = 0;
+    for (const item of items.slice(0, 20)) {
+      const resolved = resolve(item.title);
+      if (resolved?.slug !== row.game.slug) continue;
+      if (addNewsEvidence(row, item, 'Google News targeted')) matched++;
+    }
+    return { items: items.length, matched };
+  });
+  const successful = outcomes.filter(item => item && !item.error);
+  const failed = outcomes.filter(item => item?.error);
+  statuses.push({
+    id: 'google-news-targeted-steam',
+    status: successful.length ? (failed.length ? 'partial' : 'success') : 'error',
+    games_checked: rows.length,
+    games_success: successful.length,
+    games_failed: failed.length,
+    items: successful.reduce((sum, item) => sum + Number(item.items || 0), 0),
+    matched: successful.reduce((sum, item) => sum + Number(item.matched || 0), 0),
+    duration_ms: Date.now() - started
+  });
+}
 
 async function imageCandidates(game) {
   const candidates = [];
@@ -323,6 +380,7 @@ async function imageCandidates(game) {
 
 const started = Date.now();
 await Promise.all([collectNews(), collectReddit(), collectYouTube(), collectTwitch(), collectSteam()]);
+await collectTargetedSteamNews();
 const rows = [...signals.values()];
 const maxima = {};
 for (const family of ['news', 'reddit', 'youtube', 'twitch', 'steam_chart']) {
@@ -368,13 +426,14 @@ for (const row of rows) {
 ranking.sort((a, b) => b.score - a.score || b.confidence - a.confidence);
 
 const output = {
-  schema_version: 7,
+  schema_version: 8,
   generated_at: checkedAt,
   window_hours: 96,
   candidate_pool_limit: candidatePoolLimit,
   method: {
     formula: '35% news + 20% Reddit + 15% YouTube + 10% Twitch + 15% Steam demand + 5% breadth',
     family_weights: weights,
+    targeted_corroboration: `Google News exact-title search for Steam Top ${targetedSteamNewsLimit}`,
     image_fallback: 'catalog/manual → Steam vertical poster → Steam app details → header/capsule'
   },
   ranking: ranking.slice(0, candidatePoolLimit),
@@ -391,7 +450,7 @@ const run = {
   duration_ms: Date.now() - started,
   ranked_count: ranking.length,
   candidate_pool_count: output.ranking.length,
-  sources_success: statuses.filter(item => item.status === 'success').length,
+  sources_success: statuses.filter(item => ['success', 'partial'].includes(item.status)).length,
   sources_total: statuses.length,
   output: 'data/popular/current.json',
   note: `Рассчитано ${ranking.length} позиций; ${output.ranking.length} кандидатов передано редакционному фильтру.`,
