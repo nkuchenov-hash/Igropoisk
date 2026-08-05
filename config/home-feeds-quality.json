@@ -1,5 +1,5 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "popular": {
     "maximum_cards": 20,
     "maximum_snapshot_age_hours": 12,
@@ -9,6 +9,13 @@
       "minimum_score": 3,
       "minimum_news_publishers": 3,
       "minimum_independent_families": 2
+    },
+    "community_dominant": {
+      "minimum_confidence": 0.55,
+      "minimum_score": 8,
+      "minimum_unique_videos": 5,
+      "minimum_unique_channels": 3,
+      "minimum_total_views": 250000
     },
     "platform_corroborated": {
       "minimum_confidence": 0.44,
