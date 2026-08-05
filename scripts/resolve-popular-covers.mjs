@@ -12,7 +12,7 @@ const cache = fs.existsSync(cachePath) ? JSON.parse(fs.readFileSync(cachePath, '
 const overrides = fs.existsSync(overridePath) ? JSON.parse(fs.readFileSync(overridePath, 'utf8')) : {};
 fs.mkdirSync(coverDir, { recursive: true });
 
-const REQUIRED_COUNT = 20;
+const MAX_CANDIDATES = 60;
 const MIN_WIDTH = 500;
 const MIN_HEIGHT = 700;
 const MIN_RATIO = 1.2;
@@ -20,7 +20,8 @@ const OFFICIAL_HOSTS = [
   'steampowered.com', 'steamstatic.com', 'xbox.com', 'playstation.com',
   'nintendo.com', 'epicgames.com', 'gog.com', 'halowaypoint.com',
   'rockstargames.com', 'ubisoft.com', 'ea.com', 'bethesda.net',
-  'bandainamcoent.com', 'capcom.com', 'square-enix-games.com'
+  'bandainamcoent.com', 'capcom.com', 'square-enix-games.com',
+  'roblox.com', 'hoyoverse.com'
 ];
 const BAD_IMAGE_WORDS = /\b(person|people|portrait|headshot|speaker|author|interview|conference|building|office|logo|icon|avatar)\b/i;
 
@@ -67,7 +68,7 @@ async function fetchImage(url) {
   try {
     const response = await fetch(url, {
       signal: AbortSignal.timeout(20000),
-      headers: { 'user-agent': 'Mozilla/5.0 IgropoiskCoverResolver/3.0', accept: 'image/avif,image/webp,image/png,image/jpeg,*/*' }
+      headers: { 'user-agent': 'Mozilla/5.0 IgropoiskCoverResolver/4.0', accept: 'image/avif,image/webp,image/png,image/jpeg,*/*' }
     });
     if (!response.ok) return null;
     const type = response.headers.get('content-type') || '';
@@ -129,17 +130,37 @@ async function steamStorePosterCandidates(appid, item) {
   return [...new Set(urls)];
 }
 
+async function appStoreCandidates(item) {
+  if (!item.global_candidate) return [];
+  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(item.title)}&entity=software&country=us&limit=10`;
+  try {
+    const response = await fetch(url, { signal: AbortSignal.timeout(20000), headers: { 'user-agent': 'IgropoiskCoverResolver/4.0' } });
+    if (!response.ok) return [];
+    const json = await response.json();
+    const exact = (json.results || []).find(result => exactTitle(item.title, result.trackName || ''));
+    if (!exact) return [];
+    return [...new Set([
+      ...(exact.screenshotUrls || []),
+      ...(exact.ipadScreenshotUrls || []),
+      exact.artworkUrl512,
+      exact.artworkUrl100?.replace('100x100', '1024x1024')
+    ].filter(Boolean))];
+  } catch {
+    return [];
+  }
+}
+
 async function wikipediaCandidates(title) {
   const urls = [];
   const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(`intitle:\"${title}\" video game`)}&gsrlimit=8&prop=pageimages|extracts&exintro=1&explaintext=1&piprop=original|thumbnail&pithumbsize=1600&format=json&origin=*`;
   try {
-    const response = await fetch(searchUrl, { signal: AbortSignal.timeout(20000), headers: { 'user-agent': 'IgropoiskCoverResolver/3.0' } });
+    const response = await fetch(searchUrl, { signal: AbortSignal.timeout(20000), headers: { 'user-agent': 'IgropoiskCoverResolver/4.0' } });
     if (response.ok) {
       const json = await response.json();
       for (const page of Object.values(json.query?.pages || {})) {
         const pageTitle = String(page.title || '').replace(/\s*\([^)]*\)\s*$/, '');
         const extract = String(page.extract || '');
-        if (!exactTitle(title, pageTitle) || !/video game|game developed|game published/i.test(extract)) continue;
+        if (!exactTitle(title, pageTitle) || !/video game|game developed|game published|online game platform/i.test(extract)) continue;
         if (page?.original?.source) urls.push(page.original.source);
         if (page?.thumbnail?.source) urls.push(page.thumbnail.source);
       }
@@ -148,7 +169,7 @@ async function wikipediaCandidates(title) {
 
   const commonsUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(`\"${title}\" cover art`)}&gsrnamespace=6&gsrlimit=15&prop=imageinfo&iiprop=url&iiurlwidth=1600&format=json&origin=*`;
   try {
-    const response = await fetch(commonsUrl, { signal: AbortSignal.timeout(20000), headers: { 'user-agent': 'IgropoiskCoverResolver/3.0' } });
+    const response = await fetch(commonsUrl, { signal: AbortSignal.timeout(20000), headers: { 'user-agent': 'IgropoiskCoverResolver/4.0' } });
     if (response.ok) {
       const json = await response.json();
       for (const page of Object.values(json.query?.pages || {})) {
@@ -182,8 +203,9 @@ async function officialPageCandidates(item) {
 }
 
 function explicitPosterCandidates(item) {
-  return [item.image, ...(item.image_candidates || [])]
-    .filter(url => /600x900|cover|poster|box.?art/i.test(String(url || '')));
+  const all = [item.image, ...(item.image_candidates || [])].filter(Boolean);
+  if (item.global_candidate) return all;
+  return all.filter(url => /600x900|cover|poster|box.?art/i.test(String(url || '')));
 }
 
 async function resolve(item) {
@@ -208,6 +230,7 @@ async function resolve(item) {
     ...(Array.isArray(override) ? override : override ? [override] : []),
     ...explicitPosterCandidates(item),
     ...(await steamStorePosterCandidates(appid, item)),
+    ...(await appStoreCandidates(item)),
     ...(await officialPageCandidates(item)),
     ...(await wikipediaCandidates(item.title))
   ];
@@ -232,14 +255,17 @@ async function resolve(item) {
   return null;
 }
 
-const top = (data.ranking || []).slice(0, REQUIRED_COUNT);
+const candidates = (data.ranking || []).slice(0, MAX_CANDIDATES);
 const unresolved = [];
-for (const item of top) {
+let resolvedCount = 0;
+for (const item of candidates) {
   const cover = await resolve(item);
   if (!cover) {
+    item.cover_verified = false;
     unresolved.push(item.title);
     continue;
   }
+  resolvedCount += 1;
   cache[item.slug] = cover;
   item.image = cover.local;
   item.image_candidates = [cover.local];
@@ -250,16 +276,17 @@ for (const item of top) {
 }
 
 fs.writeFileSync(cachePath, `${JSON.stringify(cache, null, 2)}\n`);
-data.ranking = top;
+data.ranking = candidates;
 data.cover_policy = {
-  required_count: REQUIRED_COUNT,
+  maximum_candidates: MAX_CANDIDATES,
+  candidate_count: candidates.length,
   min_width: MIN_WIDTH,
   min_height: MIN_HEIGHT,
   min_ratio: MIN_RATIO,
   identity_check: 'exact-game-title-and-trusted-source',
-  resolved_count: REQUIRED_COUNT - unresolved.length,
+  resolved_count: resolvedCount,
   unresolved
 };
 fs.writeFileSync(rankingPath, `${JSON.stringify(data, null, 2)}\n`);
-console.log(`Resolved ${REQUIRED_COUNT - unresolved.length}/${REQUIRED_COUNT} identity-verified covers.`);
+console.log(`Resolved ${resolvedCount}/${candidates.length} identity-verified covers.`);
 if (unresolved.length) console.warn(`Still unresolved: ${unresolved.join(', ')}`);
