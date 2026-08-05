@@ -1,0 +1,103 @@
+name: GTA VI popular staging
+
+on:
+  push:
+    branches:
+      - fix-gta6-popular-ranking
+
+permissions:
+  contents: write
+
+env:
+  PARSER_FORCE: 'true'
+
+jobs:
+  staging:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix-gta6-popular-ranking
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install parser dependencies
+        run: npm install --no-save --ignore-scripts image-size@2
+
+      - name: Run full network staging
+        env:
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          REDDIT_ACCESS_TOKEN: ${{ secrets.REDDIT_ACCESS_TOKEN }}
+          RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
+        run: |
+          node scripts/run-scheduled-parsers.mjs
+          node scripts/curate-home-feeds.mjs
+          node scripts/validate-home-feeds.mjs --fresh-hours 18
+
+      - name: Assert GTA VI ranking and identity
+        run: |
+          python3 - <<'PY'
+          import json, re
+          from pathlib import Path
+
+          popular = json.loads(Path('data/popular/current.json').read_text())
+          quality = json.loads(Path('data/home-feeds-quality.json').read_text())
+          ranking = popular.get('ranking', [])
+          by_slug = {row.get('slug'): row for row in ranking}
+          if 'grand-theft-auto-vi' not in by_slug:
+              raise SystemExit('GTA VI is still absent from the published ranking')
+          gta6 = by_slug['grand-theft-auto-vi']
+          if not gta6.get('cover_verified'):
+              raise SystemExit('GTA VI official artwork was not verified and localized')
+          if not str(gta6.get('cover_source', '')).startswith('https://www.rockstargames.com/VI/'):
+              raise SystemExit('GTA VI is not using official Rockstar artwork')
+          gta6_index = next(i for i, row in enumerate(ranking) if row.get('slug') == 'grand-theft-auto-vi')
+          gta5_index = next((i for i, row in enumerate(ranking) if row.get('slug') == 'grand-theft-auto-v'), None)
+          if gta5_index is not None and gta6_index >= gta5_index:
+              raise SystemExit(f'GTA VI rank {gta6_index + 1} is not above GTA V rank {gta5_index + 1}')
+
+          audit = {row.get('slug'): row for row in quality.get('popular', {}).get('audit', [])}
+          gta6_audit = audit.get('grand-theft-auto-vi')
+          if not gta6_audit or not gta6_audit.get('eligible') or not gta6_audit.get('publishable'):
+              raise SystemExit('GTA VI is not both relevant and publishable in the editorial audit')
+
+          gta5_audit = audit.get('grand-theft-auto-v', {})
+          polluted = [row.get('title', '') for row in gta5_audit.get('evidence', []) if re.search(r'\b(?:gta\s*6|grand\s+theft\s+auto\s+vi)\b', row.get('title', ''), re.I)]
+          if polluted:
+              raise SystemExit('GTA VI evidence is still assigned to GTA V: ' + ' | '.join(polluted))
+
+          print(json.dumps({
+              'gta6_rank': gta6_index + 1,
+              'gta5_rank': None if gta5_index is None else gta5_index + 1,
+              'gta6_tier': gta6.get('editorial_tier'),
+              'gta6_reason': gta6.get('editorial_reason'),
+              'gta6_cover': gta6.get('image')
+          }, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Upload staging evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: gta6-popular-staging-${{ github.run_id }}
+          path: |
+            data/popular/current.json
+            data/home-feeds-quality.json
+            data/parser-runs/popular.json
+            assets/covers/popular/grand-theft-auto-vi.*
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Remove temporary staging workflow
+        run: |
+          rm .github/workflows/gta6-popular-staging.yml
+          git config user.name "igropoisk-maintenance[bot]"
+          git config user.email "igropoisk-maintenance[bot]@users.noreply.github.com"
+          git add .github/workflows/gta6-popular-staging.yml
+          git commit -m "Убрать временную проверку GTA VI"
+          git push origin HEAD:fix-gta6-popular-ranking
