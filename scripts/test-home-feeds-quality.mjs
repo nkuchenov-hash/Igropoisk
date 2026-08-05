@@ -8,7 +8,7 @@ import {
 
 const rules = {
   weak_families: ['steam_chart'],
-  single_strong_families: ['news', 'reddit', 'youtube', 'twitch'],
+  single_strong_families: ['news', 'reddit', 'youtube', 'twitch', 'launch'],
   allow_single_strong_family: true,
   minimum_community_families: 2,
   minimum_independent_news_sources: 2,
@@ -19,6 +19,10 @@ const rules = {
 const weak = evaluatePopularItem({ families: ['steam_chart'], evidence: [{ family: 'steam_chart' }], news_sources: 0 }, rules);
 assert.equal(weak.eligible, false, 'Steam-only evergreen demand must not be enough.');
 assert.equal(weak.tier, 'rejected');
+
+const launch = evaluatePopularItem({ families: ['steam_chart', 'launch'], evidence: [{ family: 'steam_chart' }, { family: 'launch' }], news_sources: 0 }, rules);
+assert.equal(launch.eligible, true, 'Steam demand may qualify only when an official current launch window is also present.');
+assert.equal(launch.tier, 'corroborated');
 
 const singleStrong = evaluatePopularItem({ families: ['youtube'], evidence: [{ family: 'youtube' }], news_sources: 0 }, rules);
 assert.equal(singleStrong.eligible, true, 'One fresh strong non-commercial signal may fill the lower part of the top 20.');
