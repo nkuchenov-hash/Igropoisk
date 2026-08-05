@@ -8,11 +8,16 @@ const requiredFiles = [
   'features/news/shared/index.js',
   'features/news/home-widget/index.js',
   'features/news/archive-page/index.js',
+  'features/news/admin-health/index.js',
   'features/news/styles/index.css',
+  'admin/news-health/index.html',
+  'data/news-pipeline-health.json',
   'config/news-pipeline.json',
+  'scripts/build-news-pipeline-health.mjs',
   'scripts/run-news-pipeline.mjs',
   'scripts/validate-news-pipeline.mjs',
   'scripts/test-news-pipeline.mjs',
+  'scripts/test-news-pipeline-health.mjs',
   '.github/workflows/news-pipeline.yml',
   '.github/workflows/update-news.yml',
   '.github/workflows/update-publisher-news.yml'
@@ -28,6 +33,8 @@ if (!errors.length) {
   const manifest = JSON.parse(read('features/news/module.json'));
   const pipelineConfig = JSON.parse(read('config/news-pipeline.json'));
   const index = read('index.html');
+  const adminHealthPage = read('admin/news-health/index.html');
+  const adminHealthRuntime = read('features/news/admin-health/index.js');
   const requiredReferences = [
     'data-news-module="home"',
     'data-news-home',
@@ -62,20 +69,24 @@ if (!errors.length) {
     previousIndex = position;
   }
 
-  if (manifest.version < 3) errors.push('News module manifest must use version 3 or newer.');
+  if (manifest.version < 4) errors.push('News module manifest must use version 4 or newer.');
   if (manifest.contentApi?.global !== 'IgropoiskNewsContent') errors.push('News module manifest is missing the content API global.');
   if (manifest.contentApi?.version !== 1) errors.push('News module manifest must declare News Content API version 1.');
   ['getAll', 'getHome', 'health', 'invalidate'].forEach(method => {
     if (!manifest.contentApi?.interface?.includes(method)) errors.push(`News module manifest is missing content API method: ${method}`);
   });
   if (!manifest.runtime?.includes('features/news/content-api/index.js')) errors.push('News module runtime does not include the content API.');
+  if (!manifest.runtime?.includes('features/news/admin-health/index.js')) errors.push('News module runtime does not include the read-only health admin screen.');
 
   const expectedPipeline = {
     config: 'config/news-pipeline.json',
     workflow: '.github/workflows/news-pipeline.yml',
     orchestrator: 'scripts/run-news-pipeline.mjs',
     publicationGate: 'scripts/validate-news-pipeline.mjs',
+    healthBuilder: 'scripts/build-news-pipeline-health.mjs',
+    health: 'data/news-pipeline-health.json',
     test: 'scripts/test-news-pipeline.mjs',
+    healthTest: 'scripts/test-news-pipeline-health.mjs',
     publication: 'single-validated-atomic-commit'
   };
   for (const [key, value] of Object.entries(expectedPipeline)) {
@@ -88,7 +99,10 @@ if (!errors.length) {
   });
   if (!pipelineConfig.rebuild_commands?.includes('node scripts/build-news-events.mjs')) errors.push('News pipeline does not rebuild unified events.');
   if (!pipelineConfig.rebuild_commands?.includes('node scripts/build-home-news.mjs')) errors.push('News pipeline does not rebuild the homepage feed.');
-  ['data/news.json', 'data/publisher-news.json', 'data/youtube-signals.json', 'data/news-events.json', 'data/news-home-ru.json', 'assets/news', 'assets/publisher-news'].forEach(path => {
+  if (pipelineConfig.health?.output_file !== 'data/news-pipeline-health.json') errors.push('News pipeline health output is not canonical.');
+  if (pipelineConfig.health?.command !== 'node scripts/build-news-pipeline-health.mjs') errors.push('News pipeline health builder is not canonical.');
+  if (Number(pipelineConfig.health?.persistent_failure_threshold || 0) < 2) errors.push('Persistent source failure threshold is too low or missing.');
+  ['data/news.json', 'data/publisher-news.json', 'data/youtube-signals.json', 'data/news-events.json', 'data/news-home-ru.json', 'data/news-pipeline-health.json', 'assets/news', 'assets/publisher-news'].forEach(path => {
     if (!pipelineConfig.publication?.commit_paths?.includes(path)) errors.push(`News pipeline atomic commit is missing: ${path}`);
   });
 
@@ -96,6 +110,7 @@ if (!errors.length) {
   if (!canonicalWorkflow.includes("cron: '23 * * * *'")) errors.push('Canonical news pipeline schedule is missing or changed.');
   if (!canonicalWorkflow.includes('workflow_call:')) errors.push('Canonical news pipeline is not reusable by manual aliases.');
   if (!canonicalWorkflow.includes('node scripts/run-news-pipeline.mjs')) errors.push('Canonical workflow does not run the orchestrator.');
+  if (!canonicalWorkflow.includes('node scripts/test-news-pipeline-health.mjs')) errors.push('Canonical workflow does not test the health snapshot.');
   if (!canonicalWorkflow.includes('node scripts/validate-news-pipeline.mjs --baseline HEAD^')) errors.push('Canonical workflow does not revalidate the rebased publication commit.');
   for (const aliasPath of ['.github/workflows/update-news.yml', '.github/workflows/update-publisher-news.yml']) {
     const alias = read(aliasPath);
@@ -132,7 +147,7 @@ if (!errors.length) {
   }
 
   const designSystem = read('assets/design-system.css');
-  ['.ig-card--interactive', '.ig-icon-button', '.ig-input', '.ig-filter-chip', '.ig-empty-state'].forEach(token => {
+  ['.ig-card--interactive', '.ig-icon-button', '.ig-input', '.ig-filter-chip', '.ig-empty-state', '.ig-panel'].forEach(token => {
     if (!designSystem.includes(token)) errors.push(`Central design system is missing required component: ${token}`);
   });
 
@@ -142,10 +157,10 @@ if (!errors.length) {
     'features/news/home-widget/index.js',
     'features/news/archive-page/index.js'
   ].map(read).join('\n');
-  const moduleScripts = `${contentApi}\n${presentationScripts}`;
+  const moduleScripts = `${contentApi}\n${presentationScripts}\n${adminHealthRuntime}`;
 
   ['#popular', '#reviews', '.site-header', '#search', '#calendar', 'assets/auth.js'].forEach(token => {
-    if (moduleScripts.includes(token)) errors.push(`News runtime touches a foreign surface: ${token}`);
+    if (`${contentApi}\n${presentationScripts}`.includes(token)) errors.push(`Public news runtime touches a foreign surface: ${token}`);
   });
 
   ['ig-card', 'ig-card__media', 'ig-card__body', 'ig-card__meta', 'ig-card__title', 'ig-chip', 'ig-input', 'ig-filter-chip', 'ig-empty-state'].forEach(token => {
@@ -164,11 +179,19 @@ if (!errors.length) {
   if (/\bfetch\s*\(/.test(presentationScripts)) errors.push('News presentation performs a direct data fetch instead of using the Content API.');
   if (/\bnormalize\s*\(/.test(presentationScripts)) errors.push('News presentation duplicates content normalization.');
 
+  if (!adminHealthPage.includes('data-news-health-admin')) errors.push('Read-only health admin root is missing.');
+  if (!adminHealthPage.includes('features/news/admin-health/index.js')) errors.push('Read-only health admin runtime is not loaded.');
+  if (!adminHealthPage.includes('assets/auth.js') || !adminHealthPage.includes('assets/admin-page.js')) errors.push('Read-only health admin page is not protected by admin auth.');
+  if (!adminHealthRuntime.includes("requireAuth({role:'admin'")) errors.push('Health admin runtime does not require the admin role.');
+  if (!adminHealthRuntime.includes('data/news-pipeline-health.json')) errors.push('Health admin runtime does not read the canonical snapshot.');
+  if (!adminHealthRuntime.includes("cache:'no-store'")) errors.push('Health admin runtime may display a cached snapshot.');
+
   const dataWrites = /(?:writeFile|appendFile|localStorage\.setItem|sessionStorage\.setItem)/;
-  if (dataWrites.test(moduleScripts)) errors.push('News runtime contains a data write operation.');
+  if (dataWrites.test(contentApi) || dataWrites.test(presentationScripts)) errors.push('Public news runtime contains a data write operation.');
+  if (/(?:writeFile|appendFile|fetch\([^)]*,\s*\{[^}]*method\s*:)/s.test(adminHealthRuntime)) errors.push('Read-only health admin runtime contains a write operation.');
 }
 
 if (errors.length) {
   throw new Error(`News module validation failed:\n${errors.map(error => `- ${error}`).join('\n')}`);
 }
-console.log('News Content API, autonomous pipeline, presentation runtime and central component contract verified.');
+console.log('News Content API autonomous pipeline health read-only admin and central component contract verified.');
