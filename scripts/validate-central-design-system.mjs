@@ -17,6 +17,7 @@ const visualProperty = /^(?:color|background(?:-color|-image)?|border(?:-color|-
 const literalColor = /(?:#[0-9a-f]{3,8}\b|rgba?\(|hsla?\(|\b(?:white|black|red|green|blue|orange|yellow|purple|pink|gray|grey|transparent)\b)/i;
 const visualStateSelector = /:(?:hover|focus|focus-visible|active|visited|disabled|checked|selected)\b/i;
 const localComponentHint = /(?:^|[-_])(card|button|input|select|textarea|chip|tag|toolbar|empty-state|page-title|modal|dialog|panel)(?:$|[-_])/i;
+const permittedDiffExemptions = new Set(['scripts/test-central-design-system.mjs']);
 
 export function validateFeatureCssText(file, css, { allowedCustomPropertyPrefix = null } = {}) {
   const errors = [];
@@ -42,7 +43,18 @@ function classTokens(tag) {
   return match ? match[2].split(/\s+/).filter(Boolean) : [];
 }
 
-export function validateMarkupText(file, source, roles) {
+function matchesCentralClass(value, className) {
+  return value === className
+    || value.startsWith(`${className}--`)
+    || value.startsWith(`${className}__`)
+    || value.startsWith(`${className}\${`);
+}
+
+function usesCentralClass(classes, centralClasses) {
+  return classes.some(value => centralClasses.some(className => matchesCentralClass(value, className)));
+}
+
+export function validateMarkupText(file, source, roles, registeredComponents = Object.values(roles).flat()) {
   const errors = [];
   if (/\bstyle\s*=\s*["']/i.test(source) || /\.style\s*(?:\.|=)/.test(source)) {
     errors.push(`Inline or scripted component styling is forbidden in ${file}`);
@@ -51,17 +63,14 @@ export function validateMarkupText(file, source, roles) {
     const tagName = match[1].toLowerCase();
     const tag = match[0];
     const classes = classTokens(tag);
-    if (tagName === 'button' && !classes.some(value => roles.button.includes(value))) {
+    if (tagName === 'button' && !usesCentralClass(classes, roles.button || [])) {
       errors.push(`Button must use a central component in ${file}: ${tag}`);
     }
-    if (['input', 'select', 'textarea'].includes(tagName) && !classes.some(value => roles.field.includes(value))) {
+    if (['input', 'select', 'textarea'].includes(tagName) && !usesCentralClass(classes, roles.field || [])) {
       errors.push(`Form field must use a central component in ${file}: ${tag}`);
     }
-    if (classes.some(value => localComponentHint.test(value))) {
-      const central = [...roles.button, ...roles.field, ...roles.card, ...roles.panel];
-      if (!classes.some(value => central.includes(value)) && !classes.some(value => /^ig-card__/.test(value))) {
-        errors.push(`Local component-like class lacks a central component in ${file}: ${tag}`);
-      }
+    if (classes.some(value => localComponentHint.test(value)) && !usesCentralClass(classes, registeredComponents)) {
+      errors.push(`Local component-like class lacks a central component in ${file}: ${tag}`);
     }
   }
   return errors;
@@ -101,6 +110,10 @@ function validateRegistry(errors, governance, featureRegistry) {
       if (!seenClasses.has(className)) errors.push(`Role ${role} references an unregistered component: ${className}`);
     }
   }
+  for (const file of governance.diff_exempt_files || []) {
+    if (!permittedDiffExemptions.has(file)) errors.push(`Unapproved design-system diff exemption: ${file}`);
+    if (!fs.existsSync(file)) errors.push(`Design-system diff exemption does not exist: ${file}`);
+  }
 
   if (featureRegistry.default_enforcement !== 'strict') errors.push('New feature modules must default to strict enforcement.');
 
@@ -122,6 +135,7 @@ function validateRegistry(errors, governance, featureRegistry) {
 function validateStrictModule(errors, module, governance) {
   const manifestPath = path.join(module.path, 'module.json');
   const rulesPath = path.join(module.path, 'RULES.md');
+  const registeredComponents = governance.components.map(component => component.class);
   if (!fs.existsSync(manifestPath)) errors.push(`Strict module requires module.json: ${module.path}`);
   if (!fs.existsSync(rulesPath)) errors.push(`Strict module requires RULES.md: ${module.path}`);
   if (fs.existsSync(manifestPath)) {
@@ -134,16 +148,18 @@ function validateStrictModule(errors, module, governance) {
     if (!Array.isArray(manifest.centralComponents) || manifest.centralComponents.length === 0) {
       errors.push(`Strict module must declare consumed centralComponents: ${manifestPath}`);
     } else {
-      const registeredComponents = new Set(governance.components.map(component => component.class));
+      const registeredSet = new Set(registeredComponents);
       for (const className of manifest.centralComponents) {
-        if (!registeredComponents.has(className)) errors.push(`Module consumes an unregistered central component ${className}: ${manifestPath}`);
+        if (!registeredSet.has(className)) errors.push(`Module consumes an unregistered central component ${className}: ${manifestPath}`);
       }
     }
   }
   for (const file of walk(module.path)) {
     const relative = normalize(file);
     if (file.endsWith('.css')) errors.push(...validateFeatureCssText(relative, fs.readFileSync(file, 'utf8'), { allowedCustomPropertyPrefix: `--ig-${module.id}-` }));
-    if (/\.(?:js|mjs|html)$/.test(file)) errors.push(...validateMarkupText(relative, fs.readFileSync(file, 'utf8'), governance.element_roles));
+    if (/\.(?:js|mjs|html)$/.test(file)) {
+      errors.push(...validateMarkupText(relative, fs.readFileSync(file, 'utf8'), governance.element_roles, registeredComponents));
+    }
   }
 }
 
@@ -158,14 +174,19 @@ function validateDiff(errors, base, governance, featureRegistry) {
     ...governance.official_central_extensions,
     ...governance.layout_contract_files
   ]);
+  const exemptFiles = new Set(governance.diff_exempt_files || []);
+  const registeredComponents = governance.components.map(component => component.class);
   for (const [file, lines] of getAddedLines(base)) {
+    if (exemptFiles.has(file)) continue;
     const source = lines.join('\n');
     if (file.endsWith('.css') && !centralFiles.has(file)) {
       const module = featureRegistry.modules.find(candidate => file === candidate.path || file.startsWith(`${candidate.path}/`));
       const allowedCustomPropertyPrefix = module?.enforcement === 'strict' ? `--ig-${module.id}-` : null;
       errors.push(...validateFeatureCssText(file, source, { allowedCustomPropertyPrefix }));
     }
-    if (/\.(?:html|htm|js|mjs)$/.test(file)) errors.push(...validateMarkupText(file, source, governance.element_roles));
+    if (/\.(?:html|htm|js|mjs)$/.test(file)) {
+      errors.push(...validateMarkupText(file, source, governance.element_roles, registeredComponents));
+    }
   }
 }
 
@@ -192,4 +213,4 @@ function main() {
     : 'Central design-system registry and strict modules verified.');
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) main();
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();
