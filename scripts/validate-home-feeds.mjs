@@ -67,7 +67,13 @@ if (popular) {
   if (ranking.length > 20) errors.push(`Popular feed contains ${ranking.length} cards; homepage maximum is 20.`);
   const slugs = new Set();
   let previousTier = -1;
-  const tierOrder = new Map([['confirmed', 0], ['platform_corroborated', 1], ['platform_chart', 2], ['carryover', 3]]);
+  const tierOrder = new Map([
+    ['confirmed', 0],
+    ['community_dominant', 1],
+    ['platform_corroborated', 2],
+    ['platform_chart', 3],
+    ['carryover', 4]
+  ]);
   for (const [index, item] of ranking.entries()) {
     if (!item?.slug || !item?.title) errors.push(`Popular item ${index + 1} has no slug or title.`);
     if (slugs.has(item?.slug)) errors.push(`Popular feed contains duplicate slug: ${item.slug}.`);
