@@ -1,6 +1,6 @@
 {
   "id": "news",
-  "version": 2,
+  "version": 3,
   "enforcement": "strict",
   "roots": {
     "home": "[data-news-module=\"home\"]",
@@ -25,10 +25,20 @@
     ],
     "backend": "repository-json"
   },
+  "pipeline": {
+    "config": "config/news-pipeline.json",
+    "workflow": ".github/workflows/news-pipeline.yml",
+    "orchestrator": "scripts/run-news-pipeline.mjs",
+    "publicationGate": "scripts/validate-news-pipeline.mjs",
+    "test": "scripts/test-news-pipeline.mjs",
+    "schedule": "hourly-with-per-source-cadence",
+    "publication": "single-validated-atomic-commit"
+  },
   "content": [
     "data/news-events.json",
     "data/news.json",
     "data/publisher-news.json",
+    "data/youtube-signals.json",
     "data/news-home-ru.json",
     "assets/news/",
     "assets/publisher-news/"
