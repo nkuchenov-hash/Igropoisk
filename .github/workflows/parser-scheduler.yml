@@ -23,6 +23,7 @@ on:
       - 'scripts/run-scheduled-parsers.mjs'
       - 'scripts/parse-releases.mjs'
       - 'scripts/parse-popular.mjs'
+      - 'scripts/enrich-global-popular-youtube.mjs'
       - 'scripts/curate-home-feeds.mjs'
       - 'scripts/filter-popular.mjs'
       - 'scripts/resolve-popular-covers.mjs'
@@ -57,6 +58,7 @@ jobs:
           node --check scripts/run-scheduled-parsers.mjs
           node --check scripts/parse-releases.mjs
           node --check scripts/parse-popular.mjs
+          node --check scripts/enrich-global-popular-youtube.mjs
           node --check scripts/curate-home-feeds.mjs
           node --check scripts/filter-popular.mjs
           node --check scripts/resolve-popular-covers.mjs
