@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "popular": {
+    "maximum_snapshot_age_hours": 12,
+    "minimum_cards": 20,
+    "minimum_confidence": 0.55,
+    "minimum_score": 4,
+    "minimum_independent_families": 2,
+    "allow_steam_plus_independent_signal": true,
+    "evergreen_requires_fresh_non_steam_signal": true
+  },
+  "releases": {
+    "recent_days": 7,
+    "homepage_limit": 24,
+    "exclude_title_patterns": [
+      "\\bdemo\\b",
+      "\\bprologue\\b",
+      "\\bplaytest\\b",
+      "\\btest server\\b",
+      "\\bbenchmark\\b",
+      "\\bsoundtrack\\b",
+      "\\bartbook\\b",
+      "\\bdedicated server\\b"
+    ],
+    "duplicate_suffix_patterns": [
+      "\\s*[™®]$",
+      "\\s*[-:]?\\s*(demo|prologue|playtest)$"
+    ],
+    "significant_genres": ["Action", "Adventure", "RPG", "Strategy", "Simulation", "Fighting", "Файтинг"],
+    "minimum_homepage_quality": 3
+  }
+}
