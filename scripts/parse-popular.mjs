@@ -8,6 +8,7 @@ const catalog = readJSON('data/catalog-visible.json');
 const now = Date.now();
 const checkedAt = new Date(now).toISOString();
 const timeout = 25_000;
+const candidatePoolLimit = 60;
 
 const canonical = value => String(value || '').normalize('NFKD').toLowerCase()
   .replace(/&amp;/g, ' and ').replace(/[^a-z0-9а-яё]+/gi, ' ').replace(/\s+/g, ' ').trim();
@@ -367,15 +368,16 @@ for (const row of rows) {
 ranking.sort((a, b) => b.score - a.score || b.confidence - a.confidence);
 
 const output = {
-  schema_version: 6,
+  schema_version: 7,
   generated_at: checkedAt,
   window_hours: 96,
+  candidate_pool_limit: candidatePoolLimit,
   method: {
     formula: '35% news + 20% Reddit + 15% YouTube + 10% Twitch + 15% Steam demand + 5% breadth',
     family_weights: weights,
     image_fallback: 'catalog/manual → Steam vertical poster → Steam app details → header/capsule'
   },
-  ranking: ranking.slice(0, 30),
+  ranking: ranking.slice(0, candidatePoolLimit),
   discovered_unmatched: [],
   source_statuses: statuses
 };
@@ -388,10 +390,11 @@ const run = {
   checked_at: checkedAt,
   duration_ms: Date.now() - started,
   ranked_count: ranking.length,
+  candidate_pool_count: output.ranking.length,
   sources_success: statuses.filter(item => item.status === 'success').length,
   sources_total: statuses.length,
   output: 'data/popular/current.json',
-  note: 'Рейтинг рассчитан по новостям, Reddit, YouTube, Twitch, Steam и широте независимых сигналов.',
+  note: `Рассчитано ${ranking.length} позиций; ${output.ranking.length} кандидатов передано редакционному фильтру.`,
   source_statuses: statuses
 };
 fs.writeFileSync(path.join(root, 'data', 'parser-runs', 'popular.json'), `${JSON.stringify(run, null, 2)}\n`);
