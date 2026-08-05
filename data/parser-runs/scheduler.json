@@ -1,19 +1,24 @@
 {
-  "schema_version": 1,
-  "checked_at": "2026-08-05T11:47:27.735Z",
+  "schema_version": 2,
+  "checked_at": "2026-08-05T13:57:39.113Z",
   "forced": true,
-  "status": "success",
+  "status": "partial",
   "summary": {
-    "enabled": 2,
+    "enabled": 3,
     "succeeded": 2,
-    "failed": 0,
+    "failed": 1,
     "skipped": 0
+  },
+  "editorial_quality": {
+    "status": "error",
+    "duration_ms": 38,
+    "error": "Command failed: node scripts/curate-home-feeds.mjs"
   },
   "results": [
     {
       "id": "popular",
       "status": "success",
-      "duration_ms": 13965,
+      "duration_ms": 24967,
       "outputs": [
         "data/popular/current.json",
         "data/popular/covers.json",
@@ -24,7 +29,7 @@
     {
       "id": "releases",
       "status": "success",
-      "duration_ms": 11941,
+      "duration_ms": 28102,
       "outputs": [
         "data/releases/current.json",
         "data/releases/changes.json",
@@ -32,6 +37,12 @@
         "data/release-drafts",
         "assets/covers/releases"
       ]
+    },
+    {
+      "id": "editorial-quality",
+      "status": "error",
+      "duration_ms": 38,
+      "error": "Command failed: node scripts/curate-home-feeds.mjs"
     }
   ]
 }
