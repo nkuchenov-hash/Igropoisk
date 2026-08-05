@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Состояние новостей — Игропоиск</title>
+<link rel="stylesheet" href="../../assets/design-system.css?v=20260803-9">
+<link rel="stylesheet" href="../../assets/design-system-game-v3.css?v=20260803-8">
+<link rel="stylesheet" href="../../assets/design-system-parser-admin.css?v=20260803-8">
+<link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">
+<link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">
+</head>
+<body>
+<header class="parser-header"><div class="ig-container parser-header__inner"><a class="parser-logo" href="../">ИГРОПОИСК / ADMIN</a><a class="parser-back" href="../">← Все инструменты</a><div class="parser-header__actions"><button class="ig-button" id="theme" type="button" aria-label="Переключить тему">☀</button></div></div></header>
+<main class="ig-container parser-main ig-page-shell">
+  <div class="parser-kicker">Admin / News pipeline</div>
+  <h1 class="parser-title ig-page-title">Состояние автономных новостей</h1>
+  <p class="parser-lead">Read-only контроль последнего успешного запуска, свежести данных, изображений и систематически неработающих источников. Этот экран не изменяет JSON, парсеры или публикацию.</p>
+  <div class="parser-layout">
+    <div class="parser-column" data-news-health-admin aria-live="polite"><section class="parser-card ig-card ig-panel"><div class="ig-empty-state">Загрузка health snapshot…</div></section></div>
+    <aside class="parser-column sidebar">
+      <section class="parser-card ig-card ig-panel"><h2>Правило публикации</h2><p>При блокирующей ошибке pipeline не создаёт commit, а production продолжает использовать предыдущий проверенный snapshot.</p></section>
+      <section class="parser-card ig-card ig-panel"><h2>Права экрана</h2><p>Только чтение. Действия запускаются и журналируются исключительно через GitHub Actions.</p></section>
+    </aside>
+  </div>
+</main>
+<script src="../../assets/auth.js?v=20260804-6"></script>
+<script src="../../assets/admin-page.js?v=20260804-1"></script>
+<script src="../../features/news/admin-health/index.js?v=20260805-1"></script>
+<script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>
+<script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>
+</body>
+</html>
