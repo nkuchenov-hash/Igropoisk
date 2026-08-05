@@ -14,6 +14,7 @@ on:
     paths:
       - 'config/parsers/schedule.json'
       - 'config/parsers/releases.json'
+      - 'data/popular/cover-overrides.json'
       - 'features/home-releases/rules.json'
       - 'assets/home-releases/index.js'
       - 'scripts/run-scheduled-parsers.mjs'
@@ -71,12 +72,14 @@ jobs:
           node scripts/run-scheduled-parsers.mjs
 
       - name: Validate publishable home feeds
+        id: validation
         if: always()
+        continue-on-error: true
         run: node scripts/validate-home-feeds.mjs --fresh-hours 18
 
-      - name: Commit successful parser outputs
+      - name: Commit validated parser outputs
         id: publication
-        if: always()
+        if: always() && steps.validation.outcome == 'success'
         run: |
           git config user.name "igropoisk-parser[bot]"
           git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
@@ -118,8 +121,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run pages.yml --ref main
 
-      - name: Report parser failure after preserving successful outputs
-        if: steps.parsers.outcome == 'failure'
+      - name: Report blocked parser publication
+        if: steps.parsers.outcome == 'failure' || steps.validation.outcome == 'failure'
         run: |
-          echo "At least one due parser failed. Successful parser outputs were preserved and committed."
+          echo "Parser publication was blocked or degraded. Validated successful outputs, when available, were preserved."
           exit 1
