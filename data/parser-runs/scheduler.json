@@ -1,26 +1,37 @@
 {
   "schema_version": 1,
-  "checked_at": "2026-08-05T15:24:51.972Z",
-  "forced": false,
+  "checked_at": "2026-08-05T16:11:21.184Z",
+  "forced": true,
   "status": "success",
   "summary": {
     "enabled": 2,
-    "succeeded": 0,
+    "succeeded": 2,
     "failed": 0,
-    "skipped": 2
+    "skipped": 0
   },
   "results": [
     {
       "id": "popular",
-      "status": "skipped",
-      "last_run_at": "2026-08-05T12:12:12.618Z",
-      "next_run_at": "2026-08-05T18:12:12.618Z"
+      "status": "success",
+      "duration_ms": 74493,
+      "outputs": [
+        "data/popular/current.json",
+        "data/popular/covers.json",
+        "data/parser-runs/popular.json",
+        "assets/covers/popular"
+      ]
     },
     {
       "id": "releases",
-      "status": "skipped",
-      "last_run_at": "2026-08-05T11:47:41.730Z",
-      "next_run_at": "2026-08-05T17:47:41.730Z"
+      "status": "success",
+      "duration_ms": 26056,
+      "outputs": [
+        "data/releases/current.json",
+        "data/releases/changes.json",
+        "data/parser-runs/releases.json",
+        "data/release-drafts",
+        "assets/covers/releases"
+      ]
     }
   ]
 }

@@ -1,151 +1,23 @@
 {
-  "schema_version": 6,
-  "generated_at": "2026-08-05T12:12:12.618Z",
+  "schema_version": 7,
+  "generated_at": "2026-08-05T16:11:21.214Z",
   "window_hours": 96,
   "method": {
-    "formula": "35% news + 20% Reddit + 15% YouTube + 10% Twitch + 15% Steam demand + 5% breadth",
+    "formula": "30% news + 15% Reddit + 15% YouTube + 20% Twitch chart + 15% Steam chart + 5% breadth",
     "family_weights": {
-      "news": 0.35,
-      "reddit": 0.2,
+      "news": 0.3,
+      "reddit": 0.15,
       "youtube": 0.15,
-      "twitch": 0.1,
+      "twitch": 0.2,
       "steam_chart": 0.15,
       "breadth": 0.05
     },
-    "image_fallback": "catalog/manual → Steam vertical poster → Steam app details → header/capsule"
+    "news_sources_are_publishers": true,
+    "candidate_universe": "catalog + global candidates + Steam chart + Twitch chart",
+    "image_fallback": "catalog/manual → Twitch box art → Steam vertical poster → Steam app details → Wikipedia image",
+    "global_youtube_search": "Recent exact-title gaming videos from distinct channels over 72 hours"
   },
   "ranking": [
-    {
-      "slug": "big-walk",
-      "title": "Big Walk",
-      "year": null,
-      "image": "assets/covers/popular/big-walk.jpg",
-      "image_candidates": [
-        "assets/covers/popular/big-walk.jpg"
-      ],
-      "score": 57,
-      "confidence": 0.89,
-      "delta": null,
-      "families": [
-        "news",
-        "youtube",
-        "steam_chart"
-      ],
-      "signals": {
-        "news": 4.526900408494699,
-        "reddit": 0,
-        "youtube": 24.960927925312475,
-        "twitch": 0,
-        "steam_chart": 1
-      },
-      "news_sources": 7,
-      "in_catalog": false,
-      "evidence": [
-        {
-          "source": "YouTube BR",
-          "title": "LEVEI MEUS AMIGOS NA TRILHA MALUCA | Big Walk #1",
-          "url": "https://www.youtube.com/watch?v=_NcruHs7x3c",
-          "family": "youtube",
-          "views": 28352,
-          "comments": 130,
-          "value": 12.69
-        },
-        {
-          "source": "YouTube GB",
-          "title": "NIJISANJI EN BIG WALK FULL LOBBY",
-          "url": "https://www.youtube.com/watch?v=TvsFbl6owpY",
-          "family": "youtube",
-          "views": 87112,
-          "comments": 5,
-          "value": 12.271
-        },
-        {
-          "source": "Steam Top Sellers",
-          "title": "Big Walk",
-          "url": "https://store.steampowered.com/app/1478500/",
-          "position": 1,
-          "appid": 1478500,
-          "family": "steam_chart",
-          "value": 1
-        },
-        {
-          "source": "Darryn Bonthuys",
-          "title": "Big Walk&#8217;s Most Important Feature Is Getting Patched",
-          "url": "https://www.gamespot.com/articles/big-walk-most-important-feature-is-getting-patched/",
-          "observed_at": "Wed, 05 Aug 2026 11:27:46 +0000",
-          "family": "news",
-          "value": 0.979
-        },
-        {
-          "source": "Edwin Evans-Thirlwell",
-          "title": "Big Walk isn't an open world hangout sim, it's a secret Predator game, or it would be if House House would quit fixing the voice volume",
-          "url": "https://www.rockpapershotgun.com/big-walk-isnt-an-open-world-hangout-sim-its-a-secret-predator-game-or-it-would-be-if-house-house-would-quit-fixing-the-voice-volume",
-          "observed_at": "Wed, 05 Aug 2026 09:25:20 +0000",
-          "family": "news",
-          "value": 0.923
-        },
-        {
-          "source": "Blair Marnell",
-          "title": "Big Walk Just Hit A Major Milestone On PS Plus",
-          "url": "https://www.gamespot.com/articles/big-walk-just-hit-a-major-milestone-on-ps-plus/",
-          "observed_at": "Tue, 04 Aug 2026 22:42:27 +0000",
-          "family": "news",
-          "value": 0.677
-        },
-        {
-          "source": "clivingston@pcgamer.com (Christopher Livingston)",
-          "title": "One of Big Walk's puzzles is simple to solve but still gave us an existential crisis",
-          "url": "https://www.pcgamer.com/games/puzzle/one-of-big-walks-puzzles-is-simple-to-solve-but-still-gave-us-an-existential-crisis/",
-          "observed_at": "Tue, 04 Aug 2026 19:02:00 +0000",
-          "family": "news",
-          "value": 0.609
-        },
-        {
-          "source": "morgan.park@futurenet.com (Morgan Park)",
-          "title": "Big Walk ignores 'friendslop' trends, and is better for it",
-          "url": "https://www.pcgamer.com/games/puzzle/big-walk-ignores-friendslop-trends-and-is-better-for-it/",
-          "observed_at": "Mon, 03 Aug 2026 21:56:06 +0000",
-          "family": "news",
-          "value": 0.331
-        },
-        {
-          "source": "clivingston@pcgamer.com (Christopher Livingston)",
-          "title": "Communication is the biggest puzzle piece in chill co-op game Big Walk, so don't take any shortcuts by using Discord",
-          "url": "https://www.pcgamer.com/games/puzzle/communication-is-the-biggest-puzzle-piece-in-chill-co-op-game-big-walk-so-dont-take-any-shortcuts-by-using-discord/",
-          "observed_at": "Mon, 03 Aug 2026 13:00:00 +0000",
-          "family": "news",
-          "value": 0.256
-        },
-        {
-          "source": "Chris Schilling",
-          "title": "Big Walk review",
-          "url": "https://www.eurogamer.net/big-walk-review",
-          "observed_at": "Mon, 03 Aug 2026 13:00:00 +0000",
-          "family": "news",
-          "value": 0.256
-        },
-        {
-          "source": "GoNintendo",
-          "title": "REVIEW: Big Walk is a gargantuan step forward for gaming - GoNintendo",
-          "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOeVdmQjhjUlpUZC1EX1BZRjlydE1vdnVqZjZ2S21pRFFnSTVlSm9oVThSTl8yZzdEeTlqRUw1dmtlVGs1NnVHaVdBX3Z4Q2t5M0dBQ3VyQjhWczJ0eDlWdTdURzdnellQZ2NaamduTUd6RDdXcUdXMzJkTVltYlpXX0VzUkg5c1hhUmpfVWpFcDlxbGhSUWk3bA?oc=5",
-          "observed_at": "Mon, 03 Aug 2026 13:02:42 GMT",
-          "family": "news",
-          "value": 0.256
-        },
-        {
-          "source": "Edwin Evans-Thirlwell",
-          "title": "This week in PC games: Beast of Reincarnation, Big Walk, and Marvel Tōkon, plus a round table RPG, some flammable robots, and a flock of lovestruck pigeons",
-          "url": "https://www.rockpapershotgun.com/this-week-in-pc-games-beast-of-reincarnation-big-walk-and-marvel-tokon-plus-a-round-table-rpg-some-flammable-robots-and-a-flock-of-lovestruck-pigeons",
-          "observed_at": "Mon, 03 Aug 2026 10:48:17 +0000",
-          "family": "news",
-          "value": 0.24
-        }
-      ],
-      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1478500/library_600x900_2x.jpg",
-      "cover_verified": true,
-      "cover_width": 600,
-      "cover_height": 900
-    },
     {
       "slug": "gears-of-war-e-day",
       "title": "Gears of War: E-Day",
@@ -154,239 +26,94 @@
       "image_candidates": [
         "assets/covers/popular/gears-of-war-e-day.jpg"
       ],
-      "score": 53.8,
-      "confidence": 0.81,
+      "score": 47.2,
+      "confidence": 0.74,
       "delta": null,
       "families": [
         "news",
         "steam_chart"
       ],
       "signals": {
-        "news": 4.666111421388009,
+        "news": 3.7518009541840787,
         "reddit": 0,
         "youtube": 0,
         "twitch": 0,
-        "steam_chart": 0.92
+        "steam_chart": 0.9
       },
-      "news_sources": 7,
+      "news_sources": 5,
+      "news_publishers": [
+        "Eurogamer",
+        "XBOX Wire",
+        "levelup.com",
+        "Pure Xbox",
+        "PlayDayOne"
+      ],
       "in_catalog": false,
+      "global_candidate": false,
       "evidence": [
         {
-          "source": "GodisaGeek.com",
-          "title": "Xbox Game Pass August 2026 Wave 1 Brings Gears of War: E-Day Beta and 12 New Titles - GodisaGeek.com",
-          "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE16ZDZoS09TQkxNOEt5ZTFEMWRCc3BqU29lMFd0YTVqeXB3LTVnZW9SLTRrSWhZUXljVHMxazhVYWE3dTM4eElKa1c4R0piN2pmbU5IZnZBdmotVDNXRHQ0S2MwWktLT0FFYkpmdEppclo3R3M?oc=5",
-          "observed_at": "Wed, 05 Aug 2026 09:40:24 GMT",
+          "source": "Eurogamer",
+          "publisher_id": "eurogamer",
+          "title": "Gears of War: E-Day's upcoming weekend beta suddenly gets PvP due to fan demand",
+          "url": "https://www.eurogamer.net/gears-of-war-e-day-weekend-beta-pvp-versus",
+          "observed_at": "Wed, 05 Aug 2026 15:30:40 +0000",
           "family": "news",
-          "value": 0.93
+          "value": 0.981
+        },
+        {
+          "source": "levelup.com",
+          "publisher_id": "levelup com",
+          "title": "XBOX Game Pass Ultimate and Premium Subscribers Can Play the Gears of War: E-Day Beta for “Free” Alongside a Stacked Lineup of New Titles - levelup.com",
+          "url": "https://news.google.com/rss/articles/CBMi-wFBVV95cUxQcnJ6REYyQ1pGOExIbEN0ZzVFUnMzbldPaWFyWGxnY1ZBR0lZTEhabkhWUW1hdlJ6TFBaZmU2REZKdXRIcVJmOTB1aFdKamVoSzk0WFIzMDVRcmhOTHRPWGU2V3J2WDJKNndrbFA1eVp4UUxtSzNsSUJEQnZlZGpndElSMko1LXZoZ2VmdmxrWFVwNWdnMVpTd1VRams3eWJtM192MVVkX0ZNS1RFWVZ4V3N1b1o0bDdHeEVDV3QtVFlEOXdNNTFrSDVfSzhJOHR6Ym0yQ25IRHUwR2JZaWI1Q3JmVTVxR3J0WDVnZTU0eUlDN1RUVXVTNlNCdw?oc=5",
+          "observed_at": "Wed, 05 Aug 2026 15:07:11 GMT",
+          "family": "news",
+          "value": 0.97
         },
         {
           "source": "Steam Top Sellers",
           "title": "Gears of War: E-Day",
           "url": "https://store.steampowered.com/app/3010850/",
-          "position": 5,
+          "observed_at": "2026-08-05T16:11:21.214Z",
+          "position": 6,
           "appid": 3010850,
           "family": "steam_chart",
-          "value": 0.92
+          "value": 0.9
         },
         {
           "source": "Pure Xbox",
+          "publisher_id": "pure xbox",
           "title": "Gears Of War: E-Day Preload Now Live Ahead Of Multiplayer Beta - Pure Xbox",
           "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxOUl9ncHFZNU1RbFpSQldVaDFQVVB5NWYxMlRPUjd1ZGg5MHQxR1RHTlE4a2pEWkNyY2NmYmd6NVFkNDZSV01EbjZCSnF2U1ZEUUdvVHN2U0FaOFQ0MG5BUUM3WWF6YldnNzV4MDQwN3F1SmU4cWRzR1ZZMS05RHpBY0Nmd29LWWwzTm5sU1ZKRXlWWUh3R2xXSVQ0RTNSWUhL?oc=5",
           "observed_at": "Wed, 05 Aug 2026 08:19:00 GMT",
           "family": "news",
-          "value": 0.894
+          "value": 0.797
         },
         {
           "source": "PlayDayOne",
+          "publisher_id": "playdayone",
           "title": "Xbox Game Pass August Wave 1 Brings Gears of War: E-Day Open Beta, Date Everything and More - PlayDayOne",
           "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQQUpLU216ZTJOSmk5V3BKQUVhTHVkbVlLaHFLSHE3ZFhyYXNCSnVuTkRNTTgzNGR5bGoxZEVnY2N2X19WMUp0ei14S2VFSGVZcmNBYVFLdVJaaER2Y2pHeDJIUmxSRm5qM0lITE4tcnU4QXJ6Zm52SFprZFJiQnlPdk1Za1luTHFqcS1QMlUtWXBMQ2lDeUtCMjR4bU5sM3FFMGVMU2ZvdVYtQ2EydEpCNThNbU1fNXZLaUFvQVJR?oc=5",
           "observed_at": "Tue, 04 Aug 2026 19:24:53 GMT",
-          "family": "news",
-          "value": 0.616
-        },
-        {
-          "source": "Windows Central",
-          "title": "Drop what you're doing this week — Gears of War: E-Day's multiplayer is dropping on Xbox Game Pass - Windows Central",
-          "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxOREt1UG1QS3hlR3AxZkYtRDM0X3c0YldWSU9TY2VFekEzYm84T2JaSVNwaFhLQnRmdDhNUWJQQVlKWW9wX2hldTRuRDItaHJjb3JTTlh6N0VudlZoUEFSOXc2Rl9MaEVRY1lwSW5QYS1WT0hpdk54OFhxRmVLWnhzbkMzRFZBeU0?oc=5",
-          "observed_at": "Tue, 04 Aug 2026 19:20:00 GMT",
-          "family": "news",
-          "value": 0.614
-        },
-        {
-          "source": "IGN Nordic",
-          "title": "Gears of War: E-Day Open Beta Leads Xbox Game Pass August 2026 Lineup - IGN Nordic",
-          "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPcTIwMGVlQTNlVE9qbXNrUGozQjM0ZWF1RDNSUGQ5MmVWc2dZMkN3bVd2TmVpTzNEWFBRazlWNjBFNDVCT2UwTk1yazkwbmM3U3I3SjZ1R1ctSV9RYkt1cWNUMXdFTmNqRkpQcG52emlVR01FQjNicWlGNGFtM3hUczlQWFZxU0V0eFBkekstaVNWV004SDBfLW4wZ0plUUd3Rmk1NlFkUVJpV1ZueEE?oc=5",
-          "observed_at": "Tue, 04 Aug 2026 15:36:48 GMT",
-          "family": "news",
-          "value": 0.552
-        },
-        {
-          "source": "VICE",
-          "title": "Xbox Game Pass August Update Includes Gears of War E-Day Open Beta Access and Lots More - VICE",
-          "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxPc1NFamNPSUxqRHVjUUNCclMzOXJtejRaMzFRVmx4aW41NklkaWw5R1YwTVFWYnVkdnFhdkMtN1VkYWVzRjJfdVNZRi13Z1U4dXVtR2FjRlJDUUJUSnJ1dmJqNW85WnZKSVV6RXlaNGVhekpaSF9ra2NKQ2ZzSi1uQUF0RFJNbnJRT2NhaEJpVGRUNmY1M2htNUhZZjlzY2xTYkxwaVowc3lpSHd2TWxvS1h1cWVrYk9aaFo5SQ?oc=5",
-          "observed_at": "Tue, 04 Aug 2026 15:26:49 GMT",
           "family": "news",
           "value": 0.549
         },
         {
           "source": "XBOX Wire",
+          "publisher_id": "xbox wire",
           "title": "Coming to XBOX Game Pass: Gears of War: E-Day Open Beta, Cricket 26, Date Everything!, and More - XBOX Wire",
           "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE91dmlmTW4tNUxqcXRuRU1aNWJxRHNPYzZ1a2VIZThvQlRUZXF6YXVOZGNHT01uVlJYMXF5YlFEUlNMYTNqQl9HQ2lYUkxqMVFNWXYzb2pnSzdpQlpmUDRxUFI2V3FpWjFyeHRObFUzVXhrZEt5eTIxNzduZnpZZ9IBgwFBVV95cUxNU08xYlFfNEs0Yk03VDZqdkhhcFdhQmxCMzB0SUl6TGZ2V3VtRDhzVl9OZUFJc3dEYkVxWHVnbjlYc0RUSkdaN2RwblZEbHRYOUpKWk0tNGRlTGpZbE9MenB5RjdIRDRUZjRxeXYzc0I4ZG8wMjIyX2pSVnhnZ2UxVkdabw?oc=5",
           "observed_at": "Tue, 04 Aug 2026 13:00:45 GMT",
           "family": "news",
-          "value": 0.512
+          "value": 0.456
         }
       ],
       "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/3010850/library_600x900_2x.jpg",
       "cover_verified": true,
       "cover_width": 600,
-      "cover_height": 900
-    },
-    {
-      "slug": "halo-campaign-evolved",
-      "title": "Halo: Campaign Evolved",
-      "year": null,
-      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
-      "image_candidates": [
-        "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/2806050/library_600x900_2x.jpg",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/2806050/library_600x900.jpg",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_184x69.jpg?t=1785367749",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2806050/30d8542d35d7919b34e5f5dbe955d04c3f99e6da/header.jpg?t=1785367749",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/2806050/header.jpg",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/2806050/capsule_616x353.jpg"
-      ],
-      "score": 35.5,
-      "confidence": 0.77,
-      "delta": null,
-      "families": [
-        "news",
-        "steam_chart"
-      ],
-      "signals": {
-        "news": 3.303278092324865,
-        "reddit": 0,
-        "youtube": 0,
-        "twitch": 0,
-        "steam_chart": 0.48
-      },
-      "news_sources": 4,
-      "in_catalog": false,
-      "evidence": [
-        {
-          "source": "GamesRadar+",
-          "title": "\"CoD got it. Halo didn't\" – Black Ops 1 and 2 ports battered Halo Campaign Evolved on PlayStation last month, analyst says, because $60 for a \"graphical touch-up\" is a rough sell - GamesRadar+",
-          "url": "https://news.google.com/rss/articles/CBMiswJBVV95cUxQcHpMQnh3SV93SENnUXA2UUdTb0wtYW1menh2SUhVb3NPbU83amhjZWYtN1prLUppaUU2d0VwOUhsRnZBektxSTBwMVY3bEloSUJBUlgwa0U5dk13TkttWWZfTkNUQzAweWVvR1M3V2pJNTNFdndpaFpUMEdqS243Qmt4S0dESkMtUWlfa2hDYmFRNklmdGNsdWsyWDY4TzU1dWVQemlTOHdHVGJLenI4SkhET0M5TFRRUmN1S1U2dEUyVTlhaXJ2VGVUMXVRVTVyZWpDTDE0ZGNURHVVak82UmJhVDFoYklZQnFTb3NiOUQ3bG9lZzFSODVDVVBVVHBlbWRFRnhzbzZwclFNODEzMlN4elc2S0FRNmNIcWhqem1tNnpkVHVBa18xd05QamY5S3Iw?oc=5",
-          "observed_at": "Wed, 05 Aug 2026 11:03:15 GMT",
-          "family": "news",
-          "value": 0.967
-        },
-        {
-          "source": "Pure Xbox",
-          "title": "Halo: Campaign Evolved Is Getting Some Surprising Sales Estimates For Xbox, PC & PS5 - Pure Xbox",
-          "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNMERGVmloVXkxOERESUZrdDBrVUV2dTlIWnFLNElKeWc2c0VWaFdZelAwWkYwZDg1MHc4YUNPVTl3QzFmd0RYLTh6X0dCVWpscU1qZ0FwQzUwRDJDMlN5OUJmazRmUnBVUXVkZGszaHNHV1FuY2hJWUlrYkRSbFdBaUQ4enlnb3QxVm50VmlaOG5sVHhxSVI1Y0VfZnExeUJUdnFpVDZ2NllWSk1mM2gwMkRMOEdCcHIwamJHT0gtcw?oc=5",
-          "observed_at": "Wed, 05 Aug 2026 11:00:00 GMT",
-          "family": "news",
-          "value": 0.966
-        },
-        {
-          "source": "wolfsgamingblog.com",
-          "title": "How Is Halo: Campaign Evolved Selling? Mediocre, Especially On PlayStation - wolfsgamingblog.com",
-          "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQbDdqbW9BODV6T1c5VHdSYk11MWRBZTY1VjFpeHFLbGhVMHVfX0VXYmRlRl9QaVZOZnpNbFBnZktVNFF0R3FuZFUxeFBMZzdiNW0tQnhSVHltdG5kbGdHM3RablkydFRKSEp5V3psV2dvVnBCb1NzZy1iZjhvbXFYVEt1RkhUS3U4WlhYbUljSHI0OEdGZVJBR0dSLWt0SDB2eTM0cUctT09iRFE1VlBXTw?oc=5",
-          "observed_at": "Tue, 04 Aug 2026 23:55:21 GMT",
-          "family": "news",
-          "value": 0.701
-        },
-        {
-          "source": "Cade Onder",
-          "title": "Halo: Campaign Evolved Reportedly Had a Troubled Development That Impacted a Now-Canceled Multiplayer Project",
-          "url": "https://www.ign.com/articles/halo-campaign-evolved-reportedly-had-a-troubled-development-that-impacted-a-now-canceled-multiplayer-project",
-          "observed_at": "Tue, 4 Aug 2026 22:16:11 +0000",
-          "family": "news",
-          "value": 0.669
-        },
-        {
-          "source": "Steam Top Sellers",
-          "title": "Halo: Campaign Evolved",
-          "url": "https://store.steampowered.com/app/2806050/",
-          "position": 27,
-          "appid": 2806050,
-          "family": "steam_chart",
-          "value": 0.48
-        }
-      ]
-    },
-    {
-      "slug": "baldurs-gate-3",
-      "title": "Baldur’s Gate 3",
-      "year": 2023,
-      "image": "assets/covers/popular/baldurs-gate-3.jpg",
-      "image_candidates": [
-        "assets/covers/popular/baldurs-gate-3.jpg"
-      ],
-      "score": 35,
-      "confidence": 0.77,
-      "delta": null,
-      "families": [
-        "news",
-        "steam_chart"
-      ],
-      "signals": {
-        "news": 3.0258911556790133,
-        "reddit": 0,
-        "youtube": 0,
-        "twitch": 0,
-        "steam_chart": 0.5800000000000001
-      },
-      "news_sources": 4,
-      "in_catalog": true,
-      "evidence": [
-        {
-          "source": "KitGuru",
-          "title": "Baldur’s Gate 3 finally joins Xbox Play Anywhere program - KitGuru",
-          "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPSmZ4bHplMktxWGszQS12STBhZ0hPWTBhTUlBV3BXdkpYa3JPUW9KVzR5Y1o2VlVUSUY5UHVJTS1DNjFaSWxYeXpYNDhLTVFHMEgtaWItREJsMkVHZ2lCbGtTS0tpYUJQc1NudFdHUlNacWZVWjBkN21lTlZRMkxVQlVTZHBjRnZYVlI4aFEtQWNYdktuV2ZnWFNwTExSb0w0RHJtM2QtNEhuMjA?oc=5",
-          "observed_at": "Wed, 05 Aug 2026 09:15:07 GMT",
-          "family": "news",
-          "value": 0.918
-        },
-        {
-          "source": "Windows Central",
-          "title": "Larian explains why Baldur's Gate 3 started supporting Xbox's best feature - Windows Central",
-          "url": "https://news.google.com/rss/articles/CBMiiwJBVV95cUxON1V4Wk0wdkZVWDBKN1BiT2stV3hzT3VNTzJNb1A0QjljWDl4SHhMM3RYZzE3R1hKTU1PT1RmcnlHczRnUGFzWEstTVlkMUJySzV4VVlrM3NLSVlkcHU1bG96T3gySGNPT0xyNUg5alpTNVZ6X0ZIYUYtWk5hMmRmbVVMUHBBbms0QzhtdldoSHZtb0xfdlJranN1a0w1dVhPQzcyQTR6Y1NSZmYyMEV4ZWhLQnk1TUpLWHRrUlRPWEo5N0xIODRtX1RNYldoa0JOcE9HYVd3blJ5UUZ1VjcxLTR4QjA4WXFCYkg2cXMzOEFMay02NUdyN3lSUUR1V2FvVDBnRUhtNEVzd2M?oc=5",
-          "observed_at": "Wed, 05 Aug 2026 08:25:26 GMT",
-          "family": "news",
-          "value": 0.897
-        },
-        {
-          "source": "Oisin Kuhnke",
-          "title": "Almost 10,000 people have played Baldur's Gate 3 in a portrait aspect ratio, so join me in figuring out why they'd commit such sacrilege",
-          "url": "https://www.rockpapershotgun.com/almost-10000-people-have-played-baldurs-gate-3-in-a-portrait-aspect-ratio-so-join-me-in-figuring-out-why-theyd-commit-such-sacrilege",
-          "observed_at": "Tue, 04 Aug 2026 20:31:26 +0000",
-          "family": "news",
-          "value": 0.636
-        },
-        {
-          "source": "Steam Top Sellers",
-          "title": "Baldur's Gate 3",
-          "url": "https://store.steampowered.com/app/1086940/",
-          "position": 22,
-          "appid": 1086940,
-          "family": "steam_chart",
-          "value": 0.58
-        },
-        {
-          "source": "joshua.wolens@futurenet.com (Joshua Wolens)",
-          "title": "Larian drops new Baldur's Gate 3 stats and you're all monsters: More non-Durge players killed Alfira than Durge and, worst of all, 9,000 people played on portrait monitors",
-          "url": "https://www.pcgamer.com/games/baldurs-gate/larian-drops-new-baldurs-gate-3-stats-and-youre-all-monsters-more-non-durge-players-killed-alfira-than-durge-and-worst-of-all-9-000-people-played-on-portrait-monitors/",
-          "observed_at": "Tue, 04 Aug 2026 17:03:17 +0000",
-          "family": "news",
-          "value": 0.575
-        }
-      ],
-      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/library_600x900_2x.jpg",
-      "cover_verified": true,
-      "cover_width": 600,
-      "cover_height": 900
+      "cover_height": 900,
+      "editorial_tier": "confirmed",
+      "editorial_reason": "Свежие материалы минимум в 5 независимых изданиях",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
     },
     {
       "slug": "marvel-rivals",
@@ -396,8 +123,8 @@
       "image_candidates": [
         "assets/covers/popular/marvel-rivals.jpg"
       ],
-      "score": 29.1,
-      "confidence": 0.73,
+      "score": 46.7,
+      "confidence": 0.79,
       "delta": null,
       "families": [
         "news",
@@ -405,120 +132,570 @@
         "steam_chart"
       ],
       "signals": {
-        "news": 0.9793997270370934,
+        "news": 3.7552589096993594,
         "reddit": 0,
-        "youtube": 55.33482902400047,
+        "youtube": 52.08567819499339,
         "twitch": 0,
-        "steam_chart": 0.86
+        "steam_chart": 0.8
       },
-      "news_sources": 1,
+      "news_sources": 4,
+      "news_publishers": [
+        "GameSpot",
+        "Eurogamer",
+        "Polygon",
+        "Bleacher Report"
+      ],
       "in_catalog": false,
+      "global_candidate": true,
       "evidence": [
+        {
+          "source": "YouTube US",
+          "title": "The Hood: The World is His | Character Reveal Trailer | Marvel Rivals",
+          "url": "https://www.youtube.com/watch?v=YMweqIzyB7s",
+          "observed_at": "2026-08-04T16:00:00Z",
+          "family": "youtube",
+          "views": 1436876,
+          "comments": 5539,
+          "value": 18.488
+        },
         {
           "source": "YouTube GB",
           "title": "The Hood: The World is His | Character Reveal Trailer | Marvel Rivals",
           "url": "https://www.youtube.com/watch?v=YMweqIzyB7s",
+          "observed_at": "2026-08-04T16:00:00Z",
           "family": "youtube",
-          "views": 1389495,
-          "comments": 5436,
-          "value": 18.445
+          "views": 1436876,
+          "comments": 5539,
+          "value": 18.488
         },
         {
-          "source": "YouTube DE",
-          "title": "The Hood: The World is His | Character Reveal Trailer | Marvel Rivals",
-          "url": "https://www.youtube.com/watch?v=YMweqIzyB7s",
+          "source": "YouTube US",
+          "title": "Marvel Rivals Season 9.5 Patch Notes Are HERE!!!",
+          "url": "https://www.youtube.com/watch?v=XAsYiJO6Ac8",
+          "observed_at": "2026-08-04T19:52:49Z",
           "family": "youtube",
-          "views": 1389495,
-          "comments": 5436,
-          "value": 18.445
+          "views": 112130,
+          "comments": 1058,
+          "value": 15.11
         },
         {
-          "source": "YouTube FR",
-          "title": "The Hood: The World is His | Character Reveal Trailer | Marvel Rivals",
-          "url": "https://www.youtube.com/watch?v=YMweqIzyB7s",
-          "family": "youtube",
-          "views": 1389495,
-          "comments": 5436,
-          "value": 18.445
+          "source": "GameSpot",
+          "publisher_id": "gamespot",
+          "title": "Marvel Rivals Is About To Give Your SSD Some Much-Needed Breathing Room",
+          "url": "https://www.gamespot.com/articles/marvel-rivals-is-about-to-give-your-ssd-some-much-needed-breathing-room/",
+          "observed_at": "Wed, 05 Aug 2026 14:57:54 +0000",
+          "family": "news",
+          "value": 0.965
         },
         {
-          "source": "Dom Peppiatt",
+          "source": "Bleacher Report",
+          "publisher_id": "bleacher report",
+          "title": "WWE's Damian Priest Voices New Character in 'Marvel Rivals' Video Game, Watch Latest Trailer - Bleacher Report",
+          "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxPaklRMkc0emZxbWVSNVd2RmNoLWFSVEdYLXYtc1lsbHd4TnN2czRFYXd5eC1Cc0JzSXVCSVMwVVJEWVdsbkg5Rm5xTVhleHRHR05FaTJab0VDMjVDSDNzU1VPRXJaYl9RVWFoOVJhS01EQXFmZGpORHRuWE5fNXcwenNZZTlieGp0eWZrblFQRjF0d1dOeFBXRGJQYjhTZ3p1OFQ2LWxIVnhOcGRfaURfTGhMT0dxZHFLdm1JNTNPOVhsNkY0TE55QVBR?oc=5",
+          "observed_at": "Wed, 05 Aug 2026 14:51:13 GMT",
+          "family": "news",
+          "value": 0.962
+        },
+        {
+          "source": "Polygon",
+          "publisher_id": "polygon",
+          "title": "Marvel Rivals season 9.5 will finally address a growing issue with NetEase's hero shooter",
+          "url": "https://www.polygon.com/marvel-rivals-season-9-5-file-size-reduction-texture-overhaul/",
+          "observed_at": "Wed, 05 Aug 2026 14:35:33 GMT",
+          "family": "news",
+          "value": 0.955
+        },
+        {
+          "source": "Eurogamer",
+          "publisher_id": "eurogamer",
           "title": "Marvel Rivals’ next update drastically reduces the game’s install size on PC and console",
           "url": "https://www.eurogamer.net/marvel-rivals-file-size-reduction-pc-xbox-playstation",
           "observed_at": "Wed, 05 Aug 2026 11:28:58 +0000",
           "family": "news",
-          "value": 0.979
+          "value": 0.873
         },
         {
           "source": "Steam Top Sellers",
           "title": "Marvel Rivals",
           "url": "https://store.steampowered.com/app/2767030/",
-          "position": 8,
+          "observed_at": "2026-08-05T16:11:21.214Z",
+          "position": 11,
           "appid": 2767030,
           "family": "steam_chart",
-          "value": 0.86
+          "value": 0.8
         }
       ],
       "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/2767030/library_600x900_2x.jpg",
       "cover_verified": true,
       "cover_width": 600,
-      "cover_height": 900
+      "cover_height": 900,
+      "editorial_tier": "confirmed",
+      "editorial_reason": "Свежие материалы минимум в 4 независимых изданиях",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
     },
     {
-      "slug": "mistfall-hunter",
-      "title": "Mistfall Hunter",
+      "slug": "big-walk",
+      "title": "Big Walk",
       "year": null,
-      "image": "assets/covers/popular/mistfall-hunter.jpg",
+      "image": "assets/covers/popular/big-walk.jpg",
       "image_candidates": [
-        "assets/covers/popular/mistfall-hunter.jpg"
+        "assets/covers/popular/big-walk.jpg"
       ],
-      "score": 23.9,
-      "confidence": 0.69,
+      "score": 42.8,
+      "confidence": 0.7,
+      "delta": null,
+      "families": [
+        "news",
+        "youtube",
+        "steam_chart"
+      ],
+      "signals": {
+        "news": 3.0622249134561317,
+        "reddit": 0,
+        "youtube": 13.180798158751813,
+        "twitch": 0,
+        "steam_chart": 1
+      },
+      "news_sources": 4,
+      "news_publishers": [
+        "GameSpot",
+        "Eurogamer",
+        "Rock Paper Shotgun",
+        "Polygon"
+      ],
+      "in_catalog": false,
+      "global_candidate": false,
+      "evidence": [
+        {
+          "source": "YouTube BR",
+          "title": "LEVEI MEUS AMIGOS NA TRILHA MALUCA | Big Walk #1",
+          "url": "https://www.youtube.com/watch?v=_NcruHs7x3c",
+          "observed_at": "2026-08-05T02:32:29Z",
+          "family": "youtube",
+          "views": 42440,
+          "comments": 155,
+          "value": 13.181
+        },
+        {
+          "source": "Steam Top Sellers",
+          "title": "Big Walk",
+          "url": "https://store.steampowered.com/app/1478500/",
+          "observed_at": "2026-08-05T16:11:21.214Z",
+          "position": 1,
+          "appid": 1478500,
+          "family": "steam_chart",
+          "value": 1
+        },
+        {
+          "source": "Polygon",
+          "publisher_id": "polygon",
+          "title": "Big Walk’s Best Feature Is One for the Italians",
+          "url": "https://www.polygon.com/big-walk-hand-gestures/",
+          "observed_at": "Wed, 05 Aug 2026 13:30:11 GMT",
+          "family": "news",
+          "value": 0.925
+        },
+        {
+          "source": "GameSpot",
+          "publisher_id": "gamespot",
+          "title": "Big Walk&#8217;s Most Important Feature Is Getting Patched",
+          "url": "https://www.gamespot.com/articles/big-walk-most-important-feature-is-getting-patched/",
+          "observed_at": "Wed, 05 Aug 2026 11:27:46 +0000",
+          "family": "news",
+          "value": 0.872
+        },
+        {
+          "source": "Rock Paper Shotgun",
+          "publisher_id": "rock paper shotgun",
+          "title": "Big Walk isn't an open world hangout sim, it's a secret Predator game, or it would be if House House would quit fixing the voice volume",
+          "url": "https://www.rockpapershotgun.com/big-walk-isnt-an-open-world-hangout-sim-its-a-secret-predator-game-or-it-would-be-if-house-house-would-quit-fixing-the-voice-volume",
+          "observed_at": "Wed, 05 Aug 2026 09:25:20 +0000",
+          "family": "news",
+          "value": 0.822
+        },
+        {
+          "source": "Eurogamer",
+          "publisher_id": "eurogamer",
+          "title": "Big Walk review",
+          "url": "https://www.eurogamer.net/big-walk-review",
+          "observed_at": "Mon, 03 Aug 2026 13:00:00 +0000",
+          "family": "news",
+          "value": 0.228
+        },
+        {
+          "source": "Rock Paper Shotgun",
+          "publisher_id": "rock paper shotgun",
+          "title": "This week in PC games: Beast of Reincarnation, Big Walk, and Marvel Tōkon, plus a round table RPG, some flammable robots, and a flock of lovestruck pigeons",
+          "url": "https://www.rockpapershotgun.com/this-week-in-pc-games-beast-of-reincarnation-big-walk-and-marvel-tokon-plus-a-round-table-rpg-some-flammable-robots-and-a-flock-of-lovestruck-pigeons",
+          "observed_at": "Mon, 03 Aug 2026 10:48:17 +0000",
+          "family": "news",
+          "value": 0.214
+        }
+      ],
+      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1478500/library_600x900_2x.jpg",
+      "cover_verified": true,
+      "cover_width": 600,
+      "cover_height": 900,
+      "editorial_tier": "confirmed",
+      "editorial_reason": "Свежие материалы минимум в 4 независимых изданиях",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
+    },
+    {
+      "slug": "baldurs-gate-3",
+      "title": "Baldur’s Gate 3",
+      "year": 2023,
+      "image": "assets/covers/popular/baldurs-gate-3.jpg",
+      "image_candidates": [
+        "assets/covers/popular/baldurs-gate-3.jpg"
+      ],
+      "score": 35.2,
+      "confidence": 0.7,
       "delta": null,
       "families": [
         "news",
         "steam_chart"
       ],
       "signals": {
-        "news": 1.2205034405454014,
+        "news": 2.847000842809451,
         "reddit": 0,
         "youtube": 0,
         "twitch": 0,
-        "steam_chart": 0.84
+        "steam_chart": 0.62
       },
-      "news_sources": 2,
-      "in_catalog": false,
+      "news_sources": 4,
+      "news_publishers": [
+        "PC Gamer",
+        "Rock Paper Shotgun",
+        "Windows Central",
+        "Larian Exec On Why Baldur's Gate 3 Now Supports Xbox Play Anywhere - Pure Xbox"
+      ],
+      "in_catalog": true,
+      "global_candidate": false,
       "evidence": [
         {
+          "source": "Larian Exec On Why Baldur's Gate 3 Now Supports Xbox Play Anywhere - Pure Xbox",
+          "publisher_id": "larian exec on why baldur s gate 3 now supports xbox play anywhere pure xbox",
+          "title": "'It Would Make Folks Happy' - Larian Exec On Why Baldur's Gate 3 Now Supports Xbox Play Anywhere - Pure Xbox",
+          "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxPY1h3c3JPVW05WmZXTm9yWXBoSTNNMEdkQUNaZDJSZVV1RTVoMkhyMnJEeG5oLVNEZlVfRmZ6R0tOZkVIck5ZbnU0Y1ZHQTNrcWY4NUcwTU1tRTRWbVVZZ202QmViaEhTUjAydEhXdERnMnBfWXYxbmtrUXpyeFAxX3ZueUVEeDNVSHQwa3hpUXN1OXBhWllrUmhnV0JGUDUxY2lSc0lMTGJ2LTVJOUcwZ3diMTdsT0tJMXR6dVNscUZVTFJrRTA1ZA?oc=5",
+          "observed_at": "Wed, 05 Aug 2026 15:05:00 GMT",
+          "family": "news",
+          "value": 0.969
+        },
+        {
+          "source": "Windows Central",
+          "publisher_id": "windows central",
+          "title": "Larian explains why Baldur's Gate 3 started supporting Xbox's best feature - Windows Central",
+          "url": "https://news.google.com/rss/articles/CBMiiwJBVV95cUxON1V4Wk0wdkZVWDBKN1BiT2stV3hzT3VNTzJNb1A0QjljWDl4SHhMM3RYZzE3R1hKTU1PT1RmcnlHczRnUGFzWEstTVlkMUJySzV4VVlrM3NLSVlkcHU1bG96T3gySGNPT0xyNUg5alpTNVZ6X0ZIYUYtWk5hMmRmbVVMUHBBbms0QzhtdldoSHZtb0xfdlJranN1a0w1dVhPQzcyQTR6Y1NSZmYyMEV4ZWhLQnk1TUpLWHRrUlRPWEo5N0xIODRtX1RNYldoa0JOcE9HYVd3blJ5UUZ1VjcxLTR4QjA4WXFCYkg2cXMzOEFMay02NUdyN3lSUUR1V2FvVDBnRUhtNEVzd2M?oc=5",
+          "observed_at": "Wed, 05 Aug 2026 08:25:26 GMT",
+          "family": "news",
+          "value": 0.799
+        },
+        {
           "source": "Steam Top Sellers",
-          "title": "Mistfall Hunter",
-          "url": "https://store.steampowered.com/app/3282300/",
-          "position": 9,
-          "appid": 3282300,
+          "title": "Baldur's Gate 3",
+          "url": "https://store.steampowered.com/app/1086940/",
+          "observed_at": "2026-08-05T16:11:21.214Z",
+          "position": 20,
+          "appid": 1086940,
           "family": "steam_chart",
-          "value": 0.84
+          "value": 0.62
         },
         {
-          "source": "Levi Winslow",
-          "title": "Mistfall Hunter Has Made Me A Believer In Extraction Games",
-          "url": "https://www.gamespot.com/articles/mistfall-hunter-has-made-me-a-believer-in-extraction-games/",
-          "observed_at": "Tue, 04 Aug 2026 19:41:44 +0000",
+          "source": "Rock Paper Shotgun",
+          "publisher_id": "rock paper shotgun",
+          "title": "Almost 10,000 people have played Baldur's Gate 3 in a portrait aspect ratio, so join me in figuring out why they'd commit such sacrilege",
+          "url": "https://www.rockpapershotgun.com/almost-10000-people-have-played-baldurs-gate-3-in-a-portrait-aspect-ratio-so-join-me-in-figuring-out-why-theyd-commit-such-sacrilege",
+          "observed_at": "Tue, 04 Aug 2026 20:31:26 +0000",
           "family": "news",
-          "value": 0.621
+          "value": 0.567
         },
         {
-          "source": "Pure Xbox",
-          "title": "Poll: What Do You Think Of Mistfall Hunter On Xbox Game Pass? - Pure Xbox",
-          "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNdDlqclFXazA3aHdvZnM5c2lTNEdScDA4NkMzUms5QklHelh2X3ZzQ0hGVGtpQWd5LUdva2NhdjZIaGtKbExQLWlBd3VzbXFRamd5cGFRek93d3JrbUVROFJablpMbmhZay16UXBiQjZjU25kS3VrTGRYUURwWDZ3eUNFOXV1dHZkLUljRm43ejZrMjlDdVZ4dw?oc=5",
-          "observed_at": "Tue, 04 Aug 2026 18:30:00 GMT",
+          "source": "PC Gamer",
+          "publisher_id": "pc gamer",
+          "title": "Larian drops new Baldur's Gate 3 stats and you're all monsters: More non-Durge players killed Alfira than Durge and, worst of all, 9,000 people played on portrait monitors",
+          "url": "https://www.pcgamer.com/games/baldurs-gate/larian-drops-new-baldurs-gate-3-stats-and-youre-all-monsters-more-non-durge-players-killed-alfira-than-durge-and-worst-of-all-9-000-people-played-on-portrait-monitors/",
+          "observed_at": "Tue, 04 Aug 2026 17:03:17 +0000",
           "family": "news",
-          "value": 0.6
+          "value": 0.513
         }
       ],
-      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/3282300/library_600x900_2x.jpg",
+      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/library_600x900_2x.jpg",
       "cover_verified": true,
       "cover_width": 600,
-      "cover_height": 900
+      "cover_height": 900,
+      "editorial_tier": "confirmed",
+      "editorial_reason": "Свежие материалы минимум в 4 независимых изданиях",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
+    },
+    {
+      "slug": "fortnite",
+      "title": "Fortnite",
+      "year": null,
+      "image": "assets/covers/popular/fortnite-official-app.jpg",
+      "image_candidates": [
+        "assets/covers/popular/fortnite-official-app.jpg"
+      ],
+      "score": 33.9,
+      "confidence": 0.92,
+      "delta": null,
+      "families": [
+        "news",
+        "youtube"
+      ],
+      "signals": {
+        "news": 1.7781744542064177,
+        "reddit": 0,
+        "youtube": 168.2862484944709,
+        "twitch": 0,
+        "steam_chart": 0
+      },
+      "news_sources": 2,
+      "news_publishers": [
+        "GameSpot",
+        "GAMINGbible"
+      ],
+      "in_catalog": false,
+      "global_candidate": true,
+      "evidence": [
+        {
+          "source": "YouTube Search",
+          "title": "NO WAY😭❤️ #fortnite #gaming #xenrecruit",
+          "url": "https://www.youtube.com/watch?v=klcMoAAS0SY",
+          "observed_at": "2026-08-02T22:45:09Z",
+          "family": "youtube",
+          "channel_id": "UC1PcbGFipHcjmqcvMgnmVcg",
+          "channel": "TogoZB",
+          "views": 3275140,
+          "comments": 725,
+          "value": 18.296
+        },
+        {
+          "source": "YouTube FR",
+          "title": "La Mise à Jour SPIDER-MAN est Là !",
+          "url": "https://www.youtube.com/watch?v=-iDbbqSK6T4",
+          "observed_at": "2026-08-03T16:01:46Z",
+          "family": "youtube",
+          "views": 482011,
+          "comments": 8114,
+          "value": 17.586
+        },
+        {
+          "source": "YouTube Search",
+          "title": "Fortnite Sprites Are Getting REMOVED 😱",
+          "url": "https://www.youtube.com/watch?v=_4wTe_Kze-4",
+          "observed_at": "2026-08-04T01:23:13Z",
+          "family": "youtube",
+          "channel_id": "UCEOEwGcv5nbL7cRvVnqeKGQ",
+          "channel": "Major Meowzer",
+          "views": 1461242,
+          "comments": 349,
+          "value": 17.124
+        },
+        {
+          "source": "YouTube Search",
+          "title": "Spiderman trivia in Fortnite!",
+          "url": "https://www.youtube.com/watch?v=VJwUZ6HdvJQ",
+          "observed_at": "2026-08-03T17:19:29Z",
+          "family": "youtube",
+          "channel_id": "UCbLcjRG0gcEzFeJynGC2tVw",
+          "channel": "Nick Eh 30 Shorts",
+          "views": 1112944,
+          "comments": 216,
+          "value": 16.612
+        },
+        {
+          "source": "YouTube Search",
+          "title": "Top 5 BEST Spiderman Suits in Fortnite",
+          "url": "https://www.youtube.com/watch?v=2-jwIhbhUiE",
+          "observed_at": "2026-08-03T00:45:33Z",
+          "family": "youtube",
+          "channel_id": "UC8VKBYkfZHx1-jBFQ8wrOLQ",
+          "channel": "Biphilus30",
+          "views": 517812,
+          "comments": 991,
+          "value": 16.607
+        },
+        {
+          "source": "YouTube Search",
+          "title": "Battle Royele Zero Boild 🤣 #fortnite #fortnitefunnymoments #fortnitememes",
+          "url": "https://www.youtube.com/watch?v=FTuDVgJ3Fnw",
+          "observed_at": "2026-08-04T15:00:37Z",
+          "family": "youtube",
+          "channel_id": "UCYaj42uNhZcSGa0IoaUVt6w",
+          "channel": "DiZelFN",
+          "views": 1104690,
+          "comments": 187,
+          "value": 16.533
+        },
+        {
+          "source": "YouTube Search",
+          "title": "4 RARE SPRITE Locations in Fortnite Update!",
+          "url": "https://www.youtube.com/watch?v=5tsV-zV46uA",
+          "observed_at": "2026-08-02T16:23:56Z",
+          "family": "youtube",
+          "channel_id": "UCD-WWj0WqSGQOynNigc5VHw",
+          "channel": "Home Of Games",
+          "views": 802484,
+          "comments": 165,
+          "value": 16.151
+        },
+        {
+          "source": "YouTube Search",
+          "title": "🤯NO le compres a Spiderman en Fortnite!🤯",
+          "url": "https://www.youtube.com/watch?v=8kmGJ_M4rww",
+          "observed_at": "2026-08-03T16:00:28Z",
+          "family": "youtube",
+          "channel_id": "UC7GsMoCYPNNt7vp1ZPlHlXg",
+          "channel": "Código: YAJO",
+          "views": 860080,
+          "comments": 98,
+          "value": 15.962
+        },
+        {
+          "source": "YouTube US",
+          "title": "MY BEST FRIEND IS MOVING AWAY In GTA 5...",
+          "url": "https://www.youtube.com/watch?v=nddMxSNOEts",
+          "observed_at": "2026-08-04T13:00:13Z",
+          "family": "youtube",
+          "views": 292963,
+          "comments": 639,
+          "value": 15.819
+        },
+        {
+          "source": "YouTube US",
+          "title": "Fortnite in 2026 is F*%#ING INSANE",
+          "url": "https://www.youtube.com/watch?v=7ABu1fM-f08",
+          "observed_at": "2026-08-04T22:16:55Z",
+          "family": "youtube",
+          "views": 150486,
+          "comments": 275,
+          "value": 14.732
+        },
+        {
+          "source": "YouTube US",
+          "title": "🔴 LIVE! - NEW MYTHIC SPRITE *IRONMOUSE* and FNCS QUALIFIERS in FORTNITE!",
+          "url": "https://www.youtube.com/watch?v=xkIFd-V8lPU",
+          "observed_at": "2026-08-05T07:47:02Z",
+          "family": "youtube",
+          "views": 330379,
+          "comments": 35,
+          "value": 14.5
+        },
+        {
+          "source": "YouTube GB",
+          "title": "🔴 LIVE! - NEW MYTHIC SPRITE *IRONMOUSE* and FNCS QUALIFIERS in FORTNITE!",
+          "url": "https://www.youtube.com/watch?v=xkIFd-V8lPU",
+          "observed_at": "2026-08-05T07:47:02Z",
+          "family": "youtube",
+          "views": 330379,
+          "comments": 35,
+          "value": 14.5
+        },
+        {
+          "source": "YouTube GB",
+          "title": "We Hosted a Sprite Manhunt Tournament!",
+          "url": "https://www.youtube.com/watch?v=twXkAag7zm4",
+          "observed_at": "2026-08-04T15:00:12Z",
+          "family": "youtube",
+          "views": 119890,
+          "comments": 161,
+          "value": 14.238
+        },
+        {
+          "source": "YouTube DE",
+          "title": "die PAULBERGER XXL VILLA ist FERTIG in Minecraft Helden 3!",
+          "url": "https://www.youtube.com/watch?v=Kmly_E79Xwk",
+          "observed_at": "2026-08-05T10:01:07Z",
+          "family": "youtube",
+          "views": 54579,
+          "comments": 330,
+          "value": 13.808
+        },
+        {
+          "source": "YouTube FR",
+          "title": "Je deviens SPIDERMAN sur FORTNITE !",
+          "url": "https://www.youtube.com/watch?v=IzEDvdo7uPg",
+          "observed_at": "2026-08-04T15:00:29Z",
+          "family": "youtube",
+          "views": 51952,
+          "comments": 145,
+          "value": 13.35
+        },
+        {
+          "source": "YouTube FR",
+          "title": "Le retour des GANTS SPIDERMAN sur FORTNITE.. (c'est trop bien mdrr)",
+          "url": "https://www.youtube.com/watch?v=HJ-v3e1jGUo",
+          "observed_at": "2026-08-04T12:19:00Z",
+          "family": "youtube",
+          "views": 48965,
+          "comments": 153,
+          "value": 13.317
+        },
+        {
+          "source": "YouTube FR",
+          "title": "J'ai Monté ma Team dans le TOP MONDE !",
+          "url": "https://www.youtube.com/watch?v=wPDbHxY_-BU",
+          "observed_at": "2026-08-04T14:31:17Z",
+          "family": "youtube",
+          "views": 39248,
+          "comments": 95,
+          "value": 12.86
+        },
+        {
+          "source": "YouTube FR",
+          "title": "🔴 FNCS LAST CHANCE avec RICO DAY 2 !",
+          "url": "https://www.youtube.com/watch?v=KQZUo-E_pnE",
+          "observed_at": "2026-08-04T19:41:56Z",
+          "family": "youtube",
+          "views": 30246,
+          "comments": 22,
+          "value": 11.885
+        },
+        {
+          "source": "YouTube FR",
+          "title": "🔴 CAST du LAST CHANCE 🏆 WOX a une DERNIÈRE CHANCE de se QUALIFIER à la COUPE DU MONDE 🙏",
+          "url": "https://www.youtube.com/watch?v=VbMFZTMLPro",
+          "observed_at": "2026-08-04T20:20:01Z",
+          "family": "youtube",
+          "views": 29880,
+          "comments": 15,
+          "value": 11.691
+        },
+        {
+          "source": "GameSpot",
+          "publisher_id": "gamespot",
+          "title": "The Ironmouse Sprite Is Live Now In Fortnite, But It Seems There&#8217;s More To Come",
+          "url": "https://www.gamespot.com/articles/the-ironmouse-sprite-is-live-now-in-fortnite-but-it-seems-theres-more-to-come/",
+          "observed_at": "Wed, 05 Aug 2026 13:12:08 +0000",
+          "family": "news",
+          "value": 0.917
+        },
+        {
+          "source": "GAMINGbible",
+          "publisher_id": "gamingbible",
+          "title": "When Fortnite's Chapter 7 Season 4 will launch and what 'Gaming Legends' will include - GAMINGbible",
+          "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQd0pjdFBjN2hGNi1yYTJuQ080RUkwbGdkN29RNlNLTkJtMEloLVVYejBOazVHY0hkX01qSmRIVUV5M0pFeG05NXVoSjhGd0lucVdfSmJ2QTVvMDdZWnFFRGFTVnlLMGY2dlp4dVJ3TUtLYUc2bldUMUM0cnBFQmpqY2NYaHFzMzlWSE0wUFllMGtOeTZZODV4U3FHRDNuM0ZVNW9GYU5UZw?oc=5",
+          "observed_at": "Wed, 05 Aug 2026 11:00:01 GMT",
+          "family": "news",
+          "value": 0.861
+        }
+      ],
+      "youtube_community": {
+        "window_hours": 72,
+        "unique_videos": 9,
+        "unique_channels": 9,
+        "total_views": 9949673,
+        "total_comments": 10880,
+        "checked_at": "2026-08-05T16:11:31.695Z"
+      },
+      "cover_verified": true,
+      "cover_source": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/dd/65/5c/dd655c6b-533c-fd36-bd77-9900cb7aa3f7/AppIcon-0-0-1x_U007epad-0-1-85-220.png/512x512bb.jpg",
+      "cover_width": 512,
+      "cover_height": 512,
+      "cover_kind": "official-platform-app-art",
+      "editorial_tier": "confirmed",
+      "editorial_reason": "Свежие сигналы в нескольких группах: youtube, news",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
     },
     {
       "slug": "grand-theft-auto-v",
@@ -528,117 +705,84 @@
       "image_candidates": [
         "assets/covers/popular/grand-theft-auto-v.jpg"
       ],
-      "score": 22.7,
-      "confidence": 0.65,
+      "score": 15.9,
+      "confidence": 0.61,
       "delta": null,
       "families": [
         "news",
         "youtube"
       ],
       "signals": {
-        "news": 0.7447693114823903,
+        "news": 1.6025177566632556,
         "reddit": 0,
-        "youtube": 123.15355205462106,
+        "youtube": 35.92703261173376,
         "twitch": 0,
         "steam_chart": 0
       },
-      "news_sources": 1,
+      "news_sources": 2,
+      "news_publishers": [
+        "GAMINGbible",
+        "IGN India"
+      ],
       "in_catalog": false,
+      "global_candidate": false,
       "evidence": [
-        {
-          "source": "YouTube US",
-          "title": "MY BEST FRIEND IS MOVING AWAY In GTA 5...",
-          "url": "https://www.youtube.com/watch?v=nddMxSNOEts",
-          "family": "youtube",
-          "views": 277140,
-          "comments": 630,
-          "value": 15.756
-        },
-        {
-          "source": "YouTube US",
-          "title": "Testing CARS vs IMPOSSIBLE TUNNELS!",
-          "url": "https://www.youtube.com/watch?v=UpiyPPQLKVM",
-          "family": "youtube",
-          "views": 214192,
-          "comments": 466,
-          "value": 15.348
-        },
-        {
-          "source": "YouTube GB",
-          "title": "Testing CARS vs IMPOSSIBLE TUNNELS!",
-          "url": "https://www.youtube.com/watch?v=UpiyPPQLKVM",
-          "family": "youtube",
-          "views": 214192,
-          "comments": 466,
-          "value": 15.348
-        },
-        {
-          "source": "YouTube DE",
-          "title": "RACHE AN YAMI in Minecraft Helden 3!",
-          "url": "https://www.youtube.com/watch?v=Zqb3XU-k7gw",
-          "family": "youtube",
-          "views": 151921,
-          "comments": 752,
-          "value": 15.243
-        },
-        {
-          "source": "YouTube BR",
-          "title": "GTA V Online: CORRIDA com a maior RAMPA DE NITRO IMPOSSÍVEL! ",
-          "url": "https://www.youtube.com/watch?v=pdFlV-AWimc",
-          "family": "youtube",
-          "views": 57584,
-          "comments": 81,
-          "value": 13.164
-        },
         {
           "source": "YouTube FR",
           "title": "Je réalise le film le plus ABSURDE de GTA 5 RP",
           "url": "https://www.youtube.com/watch?v=bX64wl631Yw",
+          "observed_at": "2026-08-04T13:29:38Z",
           "family": "youtube",
-          "views": 21998,
-          "comments": 126,
-          "value": 12.421
+          "views": 23773,
+          "comments": 129,
+          "value": 12.51
         },
         {
           "source": "YouTube FR",
-          "title": "TRANSPORT 100% DANGEREUX AVEC UNWIN",
-          "url": "https://www.youtube.com/watch?v=8bpYlpYf210",
+          "title": "PARFAIT DERNIER BRAQUAGE AUREVOIR DE GTA 5 ONLINE",
+          "url": "https://www.youtube.com/watch?v=OLyhglxOaNc",
+          "observed_at": "2026-08-05T05:00:05Z",
           "family": "youtube",
-          "views": 32435,
-          "comments": 48,
-          "value": 12.333
-        },
-        {
-          "source": "YouTube DE",
-          "title": "ADMINS SCHNELL UNTERWEGS! | GTA 5 RP Real Life Online",
-          "url": "https://www.youtube.com/watch?v=Sxq_5d0zxps",
-          "family": "youtube",
-          "views": 38297,
-          "comments": 18,
-          "value": 12.025
+          "views": 18451,
+          "comments": 47,
+          "value": 11.759
         },
         {
           "source": "YouTube FR",
           "title": "Le grand jour est arrivé ! Finn Darrig devient Papa | GTA RP #84",
           "url": "https://www.youtube.com/watch?v=mQnZhH6Pxgw",
+          "observed_at": "2026-08-04T15:00:05Z",
           "family": "youtube",
-          "views": 13900,
-          "comments": 51,
-          "value": 11.515
+          "views": 15738,
+          "comments": 53,
+          "value": 11.658
+        },
+        {
+          "source": "IGN India",
+          "publisher_id": "ign india",
+          "title": "GTA V's Trevor Was a Big F**k You to Haters - IGN India",
+          "url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5wYTNRbGNYQzhYTWhEbHRGVHJqWE1MOEhaSUlrenBucnZnWHVQZ1ExMWl5NUlxMWVRYWtmaUZ4ZjhHWDdrbEN3U1Rod0c3bDlHM0tZR0lqak0xakxzdHR6ekNrV0wyYnRndHM0Ui1iY0xzdl91bFFQcmZqSTU?oc=5",
+          "observed_at": "Wed, 05 Aug 2026 14:00:00 GMT",
+          "family": "news",
+          "value": 0.939
         },
         {
           "source": "GAMINGbible",
+          "publisher_id": "gamingbible",
           "title": "GTA 6 map surfaces in GTA Online in first instance of Rockstar's 'creative' marketing - GAMINGbible",
           "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOejdya0hlMG1DSXBFeE5Pa2tNQTR3cGdYY0s2N01jRDFNVDc3YW14ZVNGRzZPeTNrX0lEa1FhYWZMVmh6N0VMdDdCYk5aYWVsbEwzdDJUdzdMc3RWZWhIZ2FNSW5zalFScG4wRnIyR2xTQW40dFB0S0FxcXFHbmVrMGZuX3BfQnhsSV91UWIwc252bURaaHNSU203ejVSOEtNaWVYbG5n?oc=5",
           "observed_at": "Wed, 05 Aug 2026 02:00:01 GMT",
           "family": "news",
-          "value": 0.745
+          "value": 0.664
         }
       ],
       "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/271590/library_600x900_2x.jpg",
       "cover_verified": true,
       "cover_width": 600,
-      "cover_height": 900
+      "cover_height": 900,
+      "editorial_tier": "confirmed",
+      "editorial_reason": "Свежие сигналы в нескольких группах: youtube, news",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
     },
     {
       "slug": "palworld",
@@ -648,8 +792,8 @@
       "image_candidates": [
         "assets/covers/popular/palworld.jpg"
       ],
-      "score": 22.5,
-      "confidence": 0.73,
+      "score": 15.7,
+      "confidence": 0.58,
       "delta": null,
       "families": [
         "news",
@@ -657,415 +801,551 @@
         "steam_chart"
       ],
       "signals": {
-        "news": 0.22770651534141162,
+        "news": 0.2029471188352609,
         "reddit": 0,
-        "youtube": 52.4972050547861,
+        "youtube": 11.671604695098027,
         "twitch": 0,
-        "steam_chart": 0.8200000000000001
+        "steam_chart": 0.84
       },
       "news_sources": 1,
+      "news_publishers": [
+        "Eurogamer"
+      ],
       "in_catalog": false,
+      "global_candidate": false,
       "evidence": [
-        {
-          "source": "YouTube JP",
-          "title": "【シーズン30アプデ徹底検証！】ラピッドG7スカウトが地獄の強さｗｗ 赤レーザーP2020がレーザービーム過ぎる | Apex Legends",
-          "url": "https://www.youtube.com/watch?v=qmc64vKcMy8",
-          "family": "youtube",
-          "views": 156509,
-          "comments": 289,
-          "value": 14.796
-        },
-        {
-          "source": "YouTube DE",
-          "title": "😍😱ENDLICH gehts in PALWORLD 1.0 REIN mit UNFASSBAREN UPDATES! - Folge 1 | Trymacs",
-          "url": "https://www.youtube.com/watch?v=xvItU9Ha8HU",
-          "family": "youtube",
-          "views": 125378,
-          "comments": 107,
-          "value": 14.08
-        },
-        {
-          "source": "YouTube DE",
-          "title": "🥰😄 PALWORLD ist UNENDLICH GEIL?! Neues RIESEN Projekt mit Zarbex, Rumathra, Metashi & Sebo",
-          "url": "https://www.youtube.com/watch?v=JLc47QuH93c",
-          "family": "youtube",
-          "views": 26523,
-          "comments": 45,
-          "value": 12.1
-        },
         {
           "source": "YouTube DE",
           "title": "NEUE PALS JAGEN & FANGEN! SCHAFFEN WIR DEN 1. OP RAID? | PALWORLD 1.0 | Part 2 | UNCUT",
           "url": "https://www.youtube.com/watch?v=4Jl7nOvC8J4",
+          "observed_at": "2026-08-04T10:03:02Z",
           "family": "youtube",
-          "views": 19402,
-          "comments": 26,
-          "value": 11.521
+          "views": 21396,
+          "comments": 29,
+          "value": 11.672
         },
         {
           "source": "Steam Top Sellers",
           "title": "Palworld",
           "url": "https://store.steampowered.com/app/1623730/",
-          "position": 10,
+          "observed_at": "2026-08-05T16:11:21.214Z",
+          "position": 9,
           "appid": 1623730,
           "family": "steam_chart",
-          "value": 0.82
+          "value": 0.84
         },
         {
-          "source": "Connor Makar",
+          "source": "Eurogamer",
+          "publisher_id": "eurogamer",
           "title": "Palworld Online is a new MMORPG coming to iOS and Android later this year",
           "url": "https://www.eurogamer.net/palworld-online-revealed-mobile-mmorpg",
           "observed_at": "Mon, 03 Aug 2026 08:58:10 +0000",
           "family": "news",
-          "value": 0.228
+          "value": 0.203
         }
       ],
       "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1623730/library_600x900_2x.jpg",
       "cover_verified": true,
       "cover_width": 600,
-      "cover_height": 900
+      "cover_height": 900,
+      "editorial_tier": "confirmed",
+      "editorial_reason": "Свежие сигналы в нескольких группах: youtube, news",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
     },
     {
-      "slug": "grand-theft-auto-vi",
-      "title": "Grand Theft Auto VI",
-      "year": 2026,
-      "image": "https://www.igrandtheftauto.com/content/images/grand-theft-auto-vi-official-cover-art-hi-res.jpg",
+      "slug": "roblox",
+      "title": "Roblox",
+      "year": null,
+      "image": "assets/covers/popular/roblox-official-app.jpg",
       "image_candidates": [
-        "https://www.igrandtheftauto.com/content/images/grand-theft-auto-vi-official-cover-art-hi-res.jpg"
+        "assets/covers/popular/roblox-official-app.jpg"
       ],
-      "score": 18.3,
-      "confidence": 0.65,
+      "score": 35,
+      "confidence": 0.92,
       "delta": null,
       "families": [
         "news",
         "youtube"
       ],
       "signals": {
-        "news": 0.9941477591294708,
+        "news": 0.9203263438234448,
         "reddit": 0,
-        "youtube": 71.60930058997012,
+        "youtube": 613.2256019279498,
         "twitch": 0,
         "steam_chart": 0
       },
       "news_sources": 1,
+      "news_publishers": [
+        "Investing.com"
+      ],
       "in_catalog": false,
+      "global_candidate": true,
       "evidence": [
         {
-          "source": "YouTube FR",
-          "title": "GTA Mais si je Meurs, le Jeu devient Plus Réaliste !",
-          "url": "https://www.youtube.com/watch?v=Pc3rAxc7OzU",
+          "source": "YouTube Search",
+          "title": "Barney Steals All Coffee From Intern In Animal Hospital Animation #roblox #animalhospital #update",
+          "url": "https://www.youtube.com/watch?v=bMyuzzQB1CM",
+          "observed_at": "2026-08-02T22:00:00Z",
           "family": "youtube",
-          "views": 665257,
-          "comments": 1004,
-          "value": 16.864
+          "channel_id": "UC2GG97v74XWcn7iuCrGrqpg",
+          "channel": "Fish Doe",
+          "views": 17699235,
+          "comments": 1188,
+          "value": 20.229
         },
         {
-          "source": "YouTube DE",
-          "title": "Böse Sonne verfolgt mich in GTA 5..😱",
-          "url": "https://www.youtube.com/watch?v=M8joQ-WZWkQ",
+          "source": "YouTube Search",
+          "title": "Intern And Nurse Throw Coffee At Barney In Animal Hospital Animation #roblox #animalhospital #update",
+          "url": "https://www.youtube.com/watch?v=XoZUnO2Wp-4",
+          "observed_at": "2026-08-03T18:00:08Z",
           "family": "youtube",
-          "views": 127236,
-          "comments": 241,
-          "value": 14.498
+          "channel_id": "UC2GG97v74XWcn7iuCrGrqpg",
+          "channel": "Fish Doe",
+          "views": 7393046,
+          "comments": 734,
+          "value": 19.116
         },
         {
-          "source": "YouTube DE",
-          "title": "ich bekomme ADMIN in KEYBOARD ESCAPE!",
-          "url": "https://www.youtube.com/watch?v=0scGTcrKbe8",
+          "source": "YouTube Search",
+          "title": "how YOU can go back to old roblox!🤫",
+          "url": "https://www.youtube.com/watch?v=ZLTLijS92aU",
+          "observed_at": "2026-08-04T06:04:22Z",
           "family": "youtube",
-          "views": 97845,
-          "comments": 149,
-          "value": 13.996
+          "channel_id": "UCl4kvacTslHxoz27xxIFc8Q",
+          "channel": "Electracy",
+          "views": 3423134,
+          "comments": 1060,
+          "value": 18.53
         },
         {
-          "source": "YouTube BR",
-          "title": "O Chefe da MAFIA DESCOBRIU QUE BEIJEI A MULHER DELE! (GTA 5 RP)",
-          "url": "https://www.youtube.com/watch?v=cX2av7DbXk4",
+          "source": "YouTube Search",
+          "title": "The Kid Who Could Phase Through Anything #roblox #viral #shorts",
+          "url": "https://www.youtube.com/watch?v=8WEm8GKMT4w",
+          "observed_at": "2026-08-03T01:21:27Z",
           "family": "youtube",
-          "views": 67091,
-          "comments": 91,
-          "value": 13.375
+          "channel_id": "UCHxRIK_NniHK6WVeYekQ1WQ",
+          "channel": "cannonanimates",
+          "views": 4153259,
+          "comments": 623,
+          "value": 18.457
         },
         {
-          "source": "YouTube FR",
-          "title": "TU as une SŒUR SURPROTECTRICE dans Strongest Battlegrounds",
-          "url": "https://www.youtube.com/watch?v=zswUabFnXlI",
+          "source": "YouTube Search",
+          "title": "SAHABAT mana...                      #roblox #rblx #robloxindonesia #robloxrant #shorts #shortvideo",
+          "url": "https://www.youtube.com/watch?v=K4nRGhE-rIE",
+          "observed_at": "2026-08-04T03:00:09Z",
           "family": "youtube",
-          "views": 56383,
-          "comments": 47,
-          "value": 12.876
+          "channel_id": "UCHss68EUzksvtAOYCYvCSwg",
+          "channel": "VernicBlox",
+          "views": 1822714,
+          "comments": 2111,
+          "value": 18.244
         },
         {
-          "source": "GAMINGbible",
-          "title": "As GTA 6 Trailer 3 looms, Ex-Rockstar dev explains why studios still can't 'catch up' to the 'king' - GAMINGbible",
-          "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxQVXVnNFQyQXd1RklRcWpDdXpTVEpSRG9uNGpmT19GOFowX2EzZmhRRjdNU0FOTU9mSkt3OUlOZzBOajNPLWxQOC1xYzBOZks3YkRObGhFSmJxMDFWOGlsdmtTQVVrQ25xMG5wcm5lZU5NczhaM0xmcXJOOUV1MWJESm11MFhUZw?oc=5",
-          "observed_at": "Wed, 05 Aug 2026 12:00:01 GMT",
-          "family": "news",
-          "value": 0.994
-        }
-      ]
-    },
-    {
-      "slug": "shift-at-midnight",
-      "title": "Shift At Midnight",
-      "year": null,
-      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3722330/19c9e6ec567f975b0b4462b8c84c1a38c74adf0d/capsule_231x87.jpg?t=1785426429",
-      "image_candidates": [
-        "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3722330/19c9e6ec567f975b0b4462b8c84c1a38c74adf0d/capsule_231x87.jpg?t=1785426429",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3722330/library_600x900_2x.jpg",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3722330/library_600x900.jpg",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3722330/19c9e6ec567f975b0b4462b8c84c1a38c74adf0d/capsule_184x69.jpg?t=1785426429",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3722330/759ecea2ffe1ad3819aefdda79e265b8b332bf8f/header.jpg?t=1785426429",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3722330/header.jpg",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3722330/capsule_616x353.jpg"
-      ],
-      "score": 17.4,
-      "confidence": 0.61,
-      "delta": null,
-      "families": [
-        "youtube",
-        "steam_chart"
-      ],
-      "signals": {
-        "news": 0,
-        "reddit": 0,
-        "youtube": 75.1495154616286,
-        "twitch": 0,
-        "steam_chart": 0.5
-      },
-      "news_sources": 0,
-      "in_catalog": false,
-      "evidence": [
+          "source": "YouTube Search",
+          "title": "The Intern Is Hiding a Tiny Anomalie... 😱 | Animal Hospital Roblox #animalhospital #roblox",
+          "url": "https://www.youtube.com/watch?v=9kp8dIaCe8Y",
+          "observed_at": "2026-08-03T12:14:28Z",
+          "family": "youtube",
+          "channel_id": "UCsW6ljnXJN79hfHkvXyt9cA",
+          "channel": "Number Band",
+          "views": 4488019,
+          "comments": 200,
+          "value": 17.969
+        },
+        {
+          "source": "YouTube Search",
+          "title": "Everyone Fell for This Tiny Slime's Tricks! 🤣| Animal Hospital Roblox #animalhospital #roblox",
+          "url": "https://www.youtube.com/watch?v=GA7qmpbCthY",
+          "observed_at": "2026-08-04T12:36:10Z",
+          "family": "youtube",
+          "channel_id": "UCsW6ljnXJN79hfHkvXyt9cA",
+          "channel": "Number Band",
+          "views": 3304681,
+          "comments": 159,
+          "value": 17.548
+        },
+        {
+          "source": "YouTube Search",
+          "title": "NUNCA VAYAS al TOBOGÁN MALDITO con Mandarina en Brookhaven Roblox",
+          "url": "https://www.youtube.com/watch?v=ufHjJSJp15M",
+          "observed_at": "2026-08-03T19:06:27Z",
+          "family": "youtube",
+          "channel_id": "UC-cnbLlplnXA4oc7rR21qzg",
+          "channel": "Lyna",
+          "views": 1070903,
+          "comments": 877,
+          "value": 17.273
+        },
+        {
+          "source": "YouTube Search",
+          "title": "GOHAN VA EN BICI SOLO #shorts #minecraft #roblox #pocoyo",
+          "url": "https://www.youtube.com/watch?v=16Kv2jAIrMI",
+          "observed_at": "2026-08-03T21:39:46Z",
+          "family": "youtube",
+          "channel_id": "UCXof8ZGDpZI7II-I4KSSVCg",
+          "channel": "GeorgitoCraft",
+          "views": 2363209,
+          "comments": 87,
+          "value": 16.914
+        },
         {
           "source": "YouTube GB",
-          "title": "Working A Midnight Shift is a Nightmare",
-          "url": "https://www.youtube.com/watch?v=qJOiCAf2Zns",
+          "title": "ROBLOX SUPER HERO ESCAPE..",
+          "url": "https://www.youtube.com/watch?v=8DFBCzvNhEM",
+          "observed_at": "2026-08-04T14:24:42Z",
           "family": "youtube",
-          "views": 1855739,
-          "comments": 3400,
-          "value": 18.5
+          "views": 407391,
+          "comments": 1122,
+          "value": 16.429
+        },
+        {
+          "source": "YouTube US",
+          "title": "Snowi MOVES BACK HOME in Roblox..",
+          "url": "https://www.youtube.com/watch?v=nTfWWebd3HA",
+          "observed_at": "2026-08-05T00:24:06Z",
+          "family": "youtube",
+          "views": 426802,
+          "comments": 663,
+          "value": 16.213
         },
         {
           "source": "YouTube GB",
-          "title": "Surviving our SHIFT AT MIDNIGHT",
-          "url": "https://www.youtube.com/watch?v=67phuma3PuM",
+          "title": "Snowi MOVES BACK HOME in Roblox..",
+          "url": "https://www.youtube.com/watch?v=nTfWWebd3HA",
+          "observed_at": "2026-08-05T00:24:06Z",
           "family": "youtube",
-          "views": 394442,
-          "comments": 204,
-          "value": 15.547
+          "views": 426802,
+          "comments": 663,
+          "value": 16.213
+        },
+        {
+          "source": "YouTube Search",
+          "title": "Rumi gets scared and jumps on Bacon Hair in Roblox",
+          "url": "https://www.youtube.com/watch?v=Fk5Zvys_eTQ",
+          "observed_at": "2026-08-04T07:00:26Z",
+          "family": "youtube",
+          "channel_id": "UCUkrhGMi_Y6zdBOd2SLgYGw",
+          "channel": "Roblonarium",
+          "views": 2789037,
+          "comments": 12,
+          "value": 16.124
+        },
+        {
+          "source": "YouTube US",
+          "title": "Rivals, But Weapons Are RANDOMIZED...",
+          "url": "https://www.youtube.com/watch?v=SHjOOBzpYSQ",
+          "observed_at": "2026-08-04T14:00:34Z",
+          "family": "youtube",
+          "views": 313564,
+          "comments": 929,
+          "value": 16.073
+        },
+        {
+          "source": "YouTube US",
+          "title": "Testing CARS vs IMPOSSIBLE TUNNELS!",
+          "url": "https://www.youtube.com/watch?v=UpiyPPQLKVM",
+          "observed_at": "2026-08-04T21:18:38Z",
+          "family": "youtube",
+          "views": 280327,
+          "comments": 512,
+          "value": 15.664
+        },
+        {
+          "source": "YouTube GB",
+          "title": "Testing CARS vs IMPOSSIBLE TUNNELS!",
+          "url": "https://www.youtube.com/watch?v=UpiyPPQLKVM",
+          "observed_at": "2026-08-04T21:18:38Z",
+          "family": "youtube",
+          "views": 280327,
+          "comments": 512,
+          "value": 15.664
+        },
+        {
+          "source": "YouTube US",
+          "title": "Buying The BIGGEST NUKE in Roblox",
+          "url": "https://www.youtube.com/watch?v=_A_yKfKDl4I",
+          "observed_at": "2026-08-04T21:00:19Z",
+          "family": "youtube",
+          "views": 245826,
+          "comments": 606,
+          "value": 15.617
+        },
+        {
+          "source": "YouTube GB",
+          "title": "Buying The BIGGEST NUKE in Roblox",
+          "url": "https://www.youtube.com/watch?v=_A_yKfKDl4I",
+          "observed_at": "2026-08-04T21:00:19Z",
+          "family": "youtube",
+          "views": 245826,
+          "comments": 606,
+          "value": 15.617
+        },
+        {
+          "source": "YouTube US",
+          "title": "I ate every FOOD ROBLOX RIVALS SKIN in real life...",
+          "url": "https://www.youtube.com/watch?v=DkvH_apsjwc",
+          "observed_at": "2026-08-05T02:13:30Z",
+          "family": "youtube",
+          "views": 162526,
+          "comments": 1194,
+          "value": 15.542
+        },
+        {
+          "source": "YouTube GB",
+          "title": "I ate every FOOD ROBLOX RIVALS SKIN in real life...",
+          "url": "https://www.youtube.com/watch?v=DkvH_apsjwc",
+          "observed_at": "2026-08-05T02:13:30Z",
+          "family": "youtube",
+          "views": 162526,
+          "comments": 1194,
+          "value": 15.542
         },
         {
           "source": "YouTube FR",
-          "title": "NE TRAVAILLEZ JAMAIS DANS CETTE STATION SERVICE (Shift At Midnight)",
-          "url": "https://www.youtube.com/watch?v=HGIV3tcKNZM",
+          "title": "J'ACHÈTE des THÈMES INTERDITS sur DRESS TO IMPRESS !",
+          "url": "https://www.youtube.com/watch?v=yqw-pzxVjVA",
+          "observed_at": "2026-08-04T15:00:15Z",
           "family": "youtube",
-          "views": 265449,
-          "comments": 143,
-          "value": 14.974
+          "views": 184352,
+          "comments": 892,
+          "value": 15.522
+        },
+        {
+          "source": "YouTube GB",
+          "title": "+1 Keyboard Escape Owner Gave Me ADMIN COMMANDS..",
+          "url": "https://www.youtube.com/watch?v=ael7WdbB-jQ",
+          "observed_at": "2026-08-04T21:45:36Z",
+          "family": "youtube",
+          "views": 194295,
+          "comments": 504,
+          "value": 15.289
+        },
+        {
+          "source": "YouTube US",
+          "title": "I FINALLY GOT THE STRAWBERRY ELEPHANT 🐘🥵",
+          "url": "https://www.youtube.com/watch?v=E0XqBhCht5Y",
+          "observed_at": "2026-08-05T05:12:27Z",
+          "family": "youtube",
+          "views": 1482240,
+          "comments": 5,
+          "value": 15.105
+        },
+        {
+          "source": "YouTube FR",
+          "title": "J’AI CRÉÉ MON PROPRE JEU SATISFAISANT SUR ROBLOX !! (Incroyable)",
+          "url": "https://www.youtube.com/watch?v=FAfLE1Wc-q0",
+          "observed_at": "2026-08-04T10:32:32Z",
+          "family": "youtube",
+          "views": 166111,
+          "comments": 410,
+          "value": 15.03
         },
         {
           "source": "YouTube JP",
-          "title": "「人間じゃない客」が次々と来るガソリンスタンドを経営するホラーゲーム【Shift At Midnight】",
-          "url": "https://www.youtube.com/watch?v=P36-0lIIuVc",
+          "title": "ピンクだけやってくるおかしい動物病院をやってみたら..【ROBLOX】",
+          "url": "https://www.youtube.com/watch?v=mwArOAPqGkg",
+          "observed_at": "2026-08-05T06:59:36Z",
           "family": "youtube",
-          "views": 80492,
-          "comments": 136,
-          "value": 13.756
+          "views": 76859,
+          "comments": 1543,
+          "value": 14.921
+        },
+        {
+          "source": "YouTube BR",
+          "title": "UM DIA MORANDO NO VETERINÁRIO EM BROOKHAVEN ",
+          "url": "https://www.youtube.com/watch?v=PGdToZ5JZjs",
+          "observed_at": "2026-08-04T22:00:01Z",
+          "family": "youtube",
+          "views": 107023,
+          "comments": 687,
+          "value": 14.848
+        },
+        {
+          "source": "YouTube GB",
+          "title": "This ROBLOX MUKBANG GAME is HAUNTED..",
+          "url": "https://www.youtube.com/watch?v=313DIuzE8Ug",
+          "observed_at": "2026-08-04T23:59:01Z",
+          "family": "youtube",
+          "views": 93440,
+          "comments": 698,
+          "value": 14.72
+        },
+        {
+          "source": "YouTube BR",
+          "title": "SUBA A TORRE DE VERITY NESSE JOGO DO ROBLOX",
+          "url": "https://www.youtube.com/watch?v=12t2UoZQ1qA",
+          "observed_at": "2026-08-04T23:00:22Z",
+          "family": "youtube",
+          "views": 107252,
+          "comments": 519,
+          "value": 14.71
+        },
+        {
+          "source": "YouTube BR",
+          "title": "TESTEI 10 SEGREDOS OCULTOS NESSE HOSPITAL DE ANIMAIS COM ANOMALIAS",
+          "url": "https://www.youtube.com/watch?v=_Q6IjioGdEA",
+          "observed_at": "2026-08-04T13:30:14Z",
+          "family": "youtube",
+          "views": 249541,
+          "comments": 82,
+          "value": 14.637
         },
         {
           "source": "YouTube FR",
-          "title": "MASTU GÈRE UNE STATION ESSENCE ET C'EST QUOI CE DÉLIRE (Shift At Midnight)",
-          "url": "https://www.youtube.com/watch?v=ClXSJBh9_Mk",
+          "title": "CACHE-CACHE PEINTURE AVEC 100 JOUEURS !! (Incroyable)",
+          "url": "https://www.youtube.com/watch?v=rgKVCSrfS8E",
+          "observed_at": "2026-08-04T13:48:49Z",
           "family": "youtube",
-          "views": 35232,
-          "comments": 44,
-          "value": 12.373
-        },
-        {
-          "source": "Steam Top Sellers",
-          "title": "Shift At Midnight",
-          "url": "https://store.steampowered.com/app/3722330/",
-          "position": 26,
-          "appid": 3722330,
-          "family": "steam_chart",
-          "value": 0.5
+          "views": 83979,
+          "comments": 266,
+          "value": 14.132
         }
-      ]
-    },
-    {
-      "slug": "cyberpunk-2077",
-      "title": "Cyberpunk 2077",
-      "year": 2020,
-      "image": "assets/covers/popular/cyberpunk-2077.jpg",
-      "image_candidates": [
-        "assets/covers/popular/cyberpunk-2077.jpg"
       ],
-      "score": 15.2,
-      "confidence": 0.65,
-      "delta": null,
-      "families": [
-        "news",
-        "steam_chart"
-      ],
-      "signals": {
-        "news": 0.28233934770956814,
-        "reddit": 0,
-        "youtube": 0,
-        "twitch": 0,
-        "steam_chart": 0.78
+      "youtube_community": {
+        "window_hours": 72,
+        "unique_videos": 10,
+        "unique_channels": 8,
+        "total_views": 48507237,
+        "total_comments": 7051,
+        "checked_at": "2026-08-05T16:11:31.695Z"
       },
-      "news_sources": 1,
-      "in_catalog": true,
-      "evidence": [
-        {
-          "source": "Steam Top Sellers",
-          "title": "Cyberpunk 2077",
-          "url": "https://store.steampowered.com/app/1091500/",
-          "position": 12,
-          "appid": 1091500,
-          "family": "steam_chart",
-          "value": 0.78
-        },
-        {
-          "source": "Jess Kinghorn",
-          "title": "MacBook Neo outperforms Dell XPS 13 in Cyberpunk 2077 benchmark—though I wouldn't recommend gaming on either notebook",
-          "url": "https://www.pcgamer.com/hardware/gaming-laptops/macbook-neo-outperforms-dell-xps-13-in-cyberpunk-2077-benchmark-though-i-wouldnt-recommend-gaming-on-either-notebook/",
-          "observed_at": "Mon, 03 Aug 2026 16:24:56 +0000",
-          "family": "news",
-          "value": 0.282
-        }
-      ],
-      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/library_600x900_2x.jpg",
       "cover_verified": true,
-      "cover_width": 600,
-      "cover_height": 900
+      "cover_source": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/84/da/9684da49-4027-e780-09e8-25d1dcc3950a/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/1024x1024bb.jpg",
+      "cover_width": 1024,
+      "cover_height": 1024,
+      "cover_kind": "official-platform-app-art",
+      "editorial_tier": "community_dominant",
+      "editorial_reason": "26 свежих YouTube-видео от 8 каналов, 54,204,246 просмотров",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
     },
     {
-      "slug": "assassin-s-creed-black-flag-resynced",
-      "title": "Assassin's Creed Black Flag Resynced",
+      "slug": "genshin-impact",
+      "title": "Genshin Impact",
       "year": null,
-      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3751950/e38674a3067b5ac028974bbfb42c835d0cf27122/capsule_231x87.jpg?t=1785858422",
+      "image": "assets/covers/popular/genshin-impact-official-app.jpg",
       "image_candidates": [
-        "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3751950/e38674a3067b5ac028974bbfb42c835d0cf27122/capsule_231x87.jpg?t=1785858422",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3751950/library_600x900_2x.jpg",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3751950/library_600x900.jpg",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751950/e38674a3067b5ac028974bbfb42c835d0cf27122/capsule_184x69.jpg?t=1785858422",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751950/9b046115b1663a4be2b252712328e4f6c162da68/header.jpg?t=1785858422",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3751950/header.jpg",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3751950/capsule_616x353.jpg"
+        "assets/covers/popular/genshin-impact-official-app.jpg"
       ],
-      "score": 14.7,
-      "confidence": 0.69,
+      "score": 31.2,
+      "confidence": 0.92,
       "delta": null,
       "families": [
-        "news",
-        "steam_chart"
-      ],
-      "signals": {
-        "news": 1.02796839345889,
-        "reddit": 0,
-        "youtube": 0,
-        "twitch": 0,
-        "steam_chart": 0.31999999999999995
-      },
-      "news_sources": 2,
-      "in_catalog": false,
-      "evidence": [
-        {
-          "source": "Sherif Saed",
-          "title": "Assassin's Creed Black Flag Resynced patch makes the very important change of letting you hide Edward's blowpipe",
-          "url": "https://www.eurogamer.net/assassins-creed-black-flag-resynced-patch-1-0-6-hide-blowpipe",
-          "observed_at": "Tue, 04 Aug 2026 13:15:18 +0000",
-          "family": "news",
-          "value": 0.515
-        },
-        {
-          "source": "joshua.wolens@futurenet.com (Joshua Wolens)",
-          "title": "Our long Caribbean nightmare is over: You can hide the blow pipe in Assassin's Creed Black Flag Resynced now",
-          "url": "https://www.pcgamer.com/games/assassins-creed/our-long-caribbean-nightmare-is-over-you-can-hide-the-blow-pipe-in-assassins-creed-black-flag-resynced-now/",
-          "observed_at": "Tue, 04 Aug 2026 13:03:43 +0000",
-          "family": "news",
-          "value": 0.513
-        },
-        {
-          "source": "Steam Top Sellers",
-          "title": "Assassin's Creed Black Flag Resynced",
-          "url": "https://store.steampowered.com/app/3751950/",
-          "position": 35,
-          "appid": 3751950,
-          "family": "steam_chart",
-          "value": 0.32
-        }
-      ]
-    },
-    {
-      "slug": "escape-from-tarkov",
-      "title": "Escape from Tarkov",
-      "year": null,
-      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3932890/236dcc64545c082a9f4382757390ce91c474ddbe/capsule_231x87_alt_assets_2.jpg?t=1785782094",
-      "image_candidates": [
-        "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3932890/236dcc64545c082a9f4382757390ce91c474ddbe/capsule_231x87_alt_assets_2.jpg?t=1785782094",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3932890/library_600x900_2x.jpg",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3932890/library_600x900.jpg",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3932890/236dcc64545c082a9f4382757390ce91c474ddbe/capsule_184x69_alt_assets_2.jpg?t=1785782094",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3932890/4dd12ea3b00a4f8b67bfd629f3b9abbf8d5cab05/header_alt_assets_2.jpg?t=1785782094",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3932890/header.jpg",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3932890/capsule_616x353.jpg"
-      ],
-      "score": 14.4,
-      "confidence": 0.61,
-      "delta": null,
-      "families": [
-        "youtube",
-        "steam_chart"
+        "youtube"
       ],
       "signals": {
         "news": 0,
         "reddit": 0,
-        "youtube": 45.5206399148936,
+        "youtube": 106.94400000000002,
         "twitch": 0,
-        "steam_chart": 0.54
+        "steam_chart": 0
       },
       "news_sources": 0,
+      "news_publishers": [],
       "in_catalog": false,
+      "global_candidate": true,
       "evidence": [
         {
-          "source": "YouTube GB",
-          "title": "🔴LIVE | [DROPS TOMORROW] TARKOV SEASONAL | DAY 2 | HutchMF x Lemon | #BUNGULATE",
-          "url": "https://www.youtube.com/watch?v=rUZDk2X6eUo",
+          "source": "YouTube Search",
+          "title": "and people hated on them for it on Twitter #genshinimpact #genshin #hoyoverse #shorts",
+          "url": "https://www.youtube.com/watch?v=XwppW8ZV-Ew",
+          "observed_at": "2026-08-04T12:00:39Z",
           "family": "youtube",
-          "views": 555506,
-          "comments": 48,
-          "value": 15.174
+          "channel_id": "UCGrbuj-nKfEsCBZI4zTZHDw",
+          "channel": "Lemon patch",
+          "views": 696188,
+          "comments": 718,
+          "value": 16.742
         },
         {
-          "source": "YouTube DE",
-          "title": "🔴LIVE | [DROPS TOMORROW] TARKOV SEASONAL | DAY 2 | HutchMF x Lemon | #BUNGULATE",
-          "url": "https://www.youtube.com/watch?v=rUZDk2X6eUo",
+          "source": "YouTube Search",
+          "title": "Proof That Genshin Impact Keeps Improving Their Character Models",
+          "url": "https://www.youtube.com/watch?v=z76Y1xKfP6Y",
+          "observed_at": "2026-08-03T14:51:02Z",
           "family": "youtube",
-          "views": 555506,
-          "comments": 48,
-          "value": 15.174
+          "channel_id": "UCe4z2vR965z9An7VTivrP0Q",
+          "channel": "Takumi",
+          "views": 560872,
+          "comments": 210,
+          "value": 15.913
         },
         {
-          "source": "YouTube FR",
-          "title": "🔴LIVE | [DROPS TOMORROW] TARKOV SEASONAL | DAY 2 | HutchMF x Lemon | #BUNGULATE",
-          "url": "https://www.youtube.com/watch?v=rUZDk2X6eUo",
+          "source": "YouTube Search",
+          "title": "Ronova's Model Is Bad? 😭🙏  #genshinimpact #genshin #nodkrai",
+          "url": "https://www.youtube.com/watch?v=nW1bbQfEnPk",
+          "observed_at": "2026-08-03T18:20:08Z",
           "family": "youtube",
-          "views": 555506,
-          "comments": 48,
-          "value": 15.174
+          "channel_id": "UCU8EcrU-xIRxWwvG5w2NiJA",
+          "channel": "MeowRants",
+          "views": 232853,
+          "comments": 384,
+          "value": 15.335
         },
         {
-          "source": "Steam Top Sellers",
-          "title": "Escape from Tarkov",
-          "url": "https://store.steampowered.com/app/3932890/",
-          "position": 24,
-          "appid": 3932890,
-          "family": "steam_chart",
-          "value": 0.54
+          "source": "YouTube Search",
+          "title": "His ancient AHH NEVER leaving 😭💔 #genshinimpact #hoyocreators #hoyoverse",
+          "url": "https://www.youtube.com/watch?v=Jq0Zz6w2lbA",
+          "observed_at": "2026-08-04T17:12:50Z",
+          "family": "youtube",
+          "channel_id": "UClOThwy7j0yTpUkCPo_JB6w",
+          "channel": "mikatsukitty",
+          "views": 260533,
+          "comments": 204,
+          "value": 15.132
+        },
+        {
+          "source": "YouTube Search",
+          "title": "Almost Every Genshin Archon Has Symbols in Their Eyes",
+          "url": "https://www.youtube.com/watch?v=qs0_wKhlhRE",
+          "observed_at": "2026-08-04T09:35:44Z",
+          "family": "youtube",
+          "channel_id": "UCe4z2vR965z9An7VTivrP0Q",
+          "channel": "Takumi",
+          "views": 315829,
+          "comments": 132,
+          "value": 15.108
+        },
+        {
+          "source": "YouTube Search",
+          "title": "Where is miyabi tail?",
+          "url": "https://www.youtube.com/watch?v=TTOIeXovICQ",
+          "observed_at": "2026-08-03T11:27:44Z",
+          "family": "youtube",
+          "channel_id": "UCvZW7TEOLbKDuRW9SSvzD5w",
+          "channel": "KuroRecap",
+          "views": 192274,
+          "comments": 158,
+          "value": 14.701
+        },
+        {
+          "source": "YouTube Search",
+          "title": "ОНИ УЖЕ В СНЕЖНОЙ В Genshin Impact! #ItAllCanWait #genshinimpact #genshin",
+          "url": "https://www.youtube.com/watch?v=kAXknF8xPZE",
+          "observed_at": "2026-08-04T09:04:43Z",
+          "family": "youtube",
+          "channel_id": "UCWBxmUVS3xwLqrSOLQMB92A",
+          "channel": "Тюлень Аркадий - ItAllCanWait",
+          "views": 192679,
+          "comments": 39,
+          "value": 14.013
         }
-      ]
+      ],
+      "youtube_community": {
+        "window_hours": 72,
+        "unique_videos": 7,
+        "unique_channels": 6,
+        "total_views": 2451228,
+        "total_comments": 1845,
+        "checked_at": "2026-08-05T16:11:31.695Z"
+      },
+      "cover_verified": true,
+      "cover_source": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/fd/a5/bd/fda5bd6d-4ce5-9bd9-1b06-adc46757af8b/AppIcon-0-0-1x_U007epad-0-1-85-220.png/512x512bb.jpg",
+      "cover_width": 512,
+      "cover_height": 512,
+      "cover_kind": "official-platform-app-art",
+      "editorial_tier": "community_dominant",
+      "editorial_reason": "7 свежих YouTube-видео от 6 каналов, 2,451,228 просмотров",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
     },
     {
       "slug": "apex-legendstm",
@@ -1076,7 +1356,7 @@
         "assets/covers/popular/apex-legendstm.jpg"
       ],
       "score": 14.4,
-      "confidence": 0.53,
+      "confidence": 0.45,
       "delta": null,
       "families": [
         "steam_chart"
@@ -1089,12 +1369,15 @@
         "steam_chart": 0.96
       },
       "news_sources": 0,
+      "news_publishers": [],
       "in_catalog": false,
+      "global_candidate": false,
       "evidence": [
         {
           "source": "Steam Top Sellers",
           "title": "Apex Legends™",
           "url": "https://store.steampowered.com/app/1172470/",
+          "observed_at": "2026-08-05T16:11:21.214Z",
           "position": 3,
           "appid": 1172470,
           "family": "steam_chart",
@@ -1104,7 +1387,10 @@
       "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/library_600x900_2x.jpg",
       "cover_verified": true,
       "cover_width": 600,
-      "cover_height": 900
+      "cover_height": 900,
+      "editorial_tier": "platform_chart",
+      "editorial_reason": "Steam Top 3 сейчас",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
     },
     {
       "slug": "counter-strike-2",
@@ -1115,7 +1401,7 @@
         "assets/covers/popular/counter-strike-2.jpg"
       ],
       "score": 14.1,
-      "confidence": 0.53,
+      "confidence": 0.45,
       "delta": null,
       "families": [
         "steam_chart"
@@ -1128,12 +1414,15 @@
         "steam_chart": 0.94
       },
       "news_sources": 0,
+      "news_publishers": [],
       "in_catalog": false,
+      "global_candidate": false,
       "evidence": [
         {
           "source": "Steam Top Sellers",
           "title": "Counter-Strike 2",
           "url": "https://store.steampowered.com/app/730/",
+          "observed_at": "2026-08-05T16:11:21.214Z",
           "position": 4,
           "appid": 730,
           "family": "steam_chart",
@@ -1143,97 +1432,10 @@
       "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/730/library_600x900_2x.jpg",
       "cover_verified": true,
       "cover_width": 600,
-      "cover_height": 900
-    },
-    {
-      "slug": "dead-by-daylight",
-      "title": "Dead by Daylight",
-      "year": null,
-      "image": "assets/covers/popular/dead-by-daylight.jpg",
-      "image_candidates": [
-        "assets/covers/popular/dead-by-daylight.jpg"
-      ],
-      "score": 14,
-      "confidence": 0.61,
-      "delta": null,
-      "families": [
-        "youtube",
-        "steam_chart"
-      ],
-      "signals": {
-        "news": 0,
-        "reddit": 0,
-        "youtube": 15.81612554314621,
-        "twitch": 0,
-        "steam_chart": 0.76
-      },
-      "news_sources": 0,
-      "in_catalog": false,
-      "evidence": [
-        {
-          "source": "YouTube GB",
-          "title": "NEW KILLER! 'THE JUDGMENT'  | Dead by Daylight PTB",
-          "url": "https://www.youtube.com/watch?v=4rm3M-m1EFU",
-          "family": "youtube",
-          "views": 219654,
-          "comments": 1132,
-          "value": 15.816
-        },
-        {
-          "source": "Steam Top Sellers",
-          "title": "Dead by Daylight",
-          "url": "https://store.steampowered.com/app/381210/",
-          "position": 13,
-          "appid": 381210,
-          "family": "steam_chart",
-          "value": 0.76
-        }
-      ],
-      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/381210/library_600x900_2x.jpg",
-      "cover_verified": true,
-      "cover_width": 600,
-      "cover_height": 900
-    },
-    {
-      "slug": "marvel-to-kon-fighting-souls",
-      "title": "MARVEL Tōkon: Fighting Souls",
-      "year": null,
-      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1784908718",
-      "image_candidates": [
-        "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1784908718",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/library_600x900_2x.jpg",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/library_600x900.jpg",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_184x69.jpg?t=1784908718",
-        "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/943fda32c11b3e3f451458ffa95a4adca1f316a4/header.jpg?t=1784908718",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/header.jpg",
-        "https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/capsule_616x353.jpg"
-      ],
-      "score": 13.5,
-      "confidence": 0.53,
-      "delta": null,
-      "families": [
-        "steam_chart"
-      ],
-      "signals": {
-        "news": 0,
-        "reddit": 0,
-        "youtube": 0,
-        "twitch": 0,
-        "steam_chart": 0.9
-      },
-      "news_sources": 0,
-      "in_catalog": false,
-      "evidence": [
-        {
-          "source": "Steam Top Sellers",
-          "title": "MARVEL Tōkon: Fighting Souls",
-          "url": "https://store.steampowered.com/app/3787240/",
-          "position": 6,
-          "appid": 3787240,
-          "family": "steam_chart",
-          "value": 0.9
-        }
-      ]
+      "cover_height": 900,
+      "editorial_tier": "platform_chart",
+      "editorial_reason": "Steam Top 4 сейчас",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
     },
     {
       "slug": "marvels-spider-man-2",
@@ -1244,7 +1446,7 @@
         "assets/covers/popular/marvels-spider-man-2.jpg"
       ],
       "score": 13.2,
-      "confidence": 0.53,
+      "confidence": 0.45,
       "delta": null,
       "families": [
         "steam_chart"
@@ -1257,12 +1459,15 @@
         "steam_chart": 0.88
       },
       "news_sources": 0,
+      "news_publishers": [],
       "in_catalog": true,
+      "global_candidate": false,
       "evidence": [
         {
           "source": "Steam Top Sellers",
           "title": "Marvel's Spider-Man 2",
           "url": "https://store.steampowered.com/app/2651280/",
+          "observed_at": "2026-08-05T16:11:21.214Z",
           "position": 7,
           "appid": 2651280,
           "family": "steam_chart",
@@ -1272,55 +1477,157 @@
       "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/2651280/library_600x900_2x.jpg",
       "cover_verified": true,
       "cover_width": 600,
-      "cover_height": 900
+      "cover_height": 900,
+      "editorial_tier": "platform_chart",
+      "editorial_reason": "Steam Top 7 сейчас",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
     },
     {
-      "slug": "warframe",
-      "title": "Warframe",
+      "slug": "mistfall-hunter",
+      "title": "Mistfall Hunter",
       "year": null,
-      "image": "assets/covers/popular/warframe.jpg",
+      "image": "assets/covers/popular/mistfall-hunter.jpg",
       "image_candidates": [
-        "assets/covers/popular/warframe.jpg"
+        "assets/covers/popular/mistfall-hunter.jpg"
       ],
-      "score": 12,
-      "confidence": 0.57,
+      "score": 12.3,
+      "confidence": 0.45,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
+        "steam_chart": 0.8200000000000001
+      },
+      "news_sources": 0,
+      "news_publishers": [],
+      "in_catalog": false,
+      "global_candidate": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Mistfall Hunter",
+          "url": "https://store.steampowered.com/app/3282300/",
+          "observed_at": "2026-08-05T16:11:21.214Z",
+          "position": 10,
+          "appid": 3282300,
+          "family": "steam_chart",
+          "value": 0.82
+        }
+      ],
+      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/3282300/library_600x900_2x.jpg",
+      "cover_verified": true,
+      "cover_width": 600,
+      "cover_height": 900,
+      "editorial_tier": "platform_chart",
+      "editorial_reason": "Steam Top 10 сейчас",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
+    },
+    {
+      "slug": "final-fantasy-vii-remake-intergrade",
+      "title": "FINAL FANTASY VII REMAKE INTERGRADE",
+      "year": null,
+      "image": "assets/covers/popular/final-fantasy-vii-remake-intergrade.jpg",
+      "image_candidates": [
+        "assets/covers/popular/final-fantasy-vii-remake-intergrade.jpg"
+      ],
+      "score": 11.8,
+      "confidence": 0.58,
       "delta": null,
       "families": [
         "news",
         "steam_chart"
       ],
       "signals": {
-        "news": 0.06410798793275974,
+        "news": 0.9124453280801487,
         "reddit": 0,
         "youtube": 0,
         "twitch": 0,
-        "steam_chart": 0.72
+        "steam_chart": 0.21999999999999997
       },
       "news_sources": 1,
+      "news_publishers": [
+        "9to5Toys"
+      ],
       "in_catalog": false,
+      "global_candidate": false,
+      "evidence": [
+        {
+          "source": "9to5Toys",
+          "publisher_id": "9to5toys",
+          "title": "Game deals: Final Fantasy VII Remake Intergrade for Switch 2 $30, Switch 2 consoles from $400, more - 9to5Toys",
+          "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOWnJ6cnlDUTZ0NktXU1F3d0k4UG04YVZ2M3lWVWY2cGZ3ME5LMzllRW9LNkE2YUdrNWc2ODJMREpOemVsUWJfRkd5QkxoTUstSnRxM2pBY002ZUVDMGNMNXlGQ1BmaXFxQTBtYlVZOVNic3hrZ0JlaWVqSXFmSUlENkpRdTh0YkFjT25WSFVtNTJNX1F2QVRmWTFkVnN1dFgxRE1QUGlR?oc=5",
+          "observed_at": "Wed, 05 Aug 2026 13:01:00 GMT",
+          "family": "news",
+          "value": 0.912
+        },
+        {
+          "source": "Steam Top Sellers",
+          "title": "FINAL FANTASY VII REMAKE INTERGRADE",
+          "url": "https://store.steampowered.com/app/1462040/",
+          "observed_at": "2026-08-05T16:11:21.214Z",
+          "position": 40,
+          "appid": 1462040,
+          "family": "steam_chart",
+          "value": 0.22
+        }
+      ],
+      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1462040/library_600x900_2x.jpg",
+      "cover_verified": true,
+      "cover_width": 600,
+      "cover_height": 900,
+      "editorial_tier": "platform_chart",
+      "editorial_reason": "Steam Top 40 сейчас",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
+    },
+    {
+      "slug": "cyberpunk-2077",
+      "title": "Cyberpunk 2077",
+      "year": 2020,
+      "image": "assets/covers/popular/cyberpunk-2077.jpg",
+      "image_candidates": [
+        "assets/covers/popular/cyberpunk-2077.jpg"
+      ],
+      "score": 11.4,
+      "confidence": 0.45,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
+        "steam_chart": 0.76
+      },
+      "news_sources": 0,
+      "news_publishers": [],
+      "in_catalog": true,
+      "global_candidate": false,
       "evidence": [
         {
           "source": "Steam Top Sellers",
-          "title": "Warframe",
-          "url": "https://store.steampowered.com/app/230410/",
-          "position": 15,
-          "appid": 230410,
+          "title": "Cyberpunk 2077",
+          "url": "https://store.steampowered.com/app/1091500/",
+          "observed_at": "2026-08-05T16:11:21.214Z",
+          "position": 13,
+          "appid": 1091500,
           "family": "steam_chart",
-          "value": 0.72
-        },
-        {
-          "source": "Edwin Evans-Thirlwell",
-          "title": "What if Stop Killing Games win? Anthem, SpaceCraft and Warframe devs on the \"massive undertaking\" of preserving an always-online game",
-          "url": "https://www.rockpapershotgun.com/what-if-stop-killing-games-win-anthem-spacecraft-and-warframe-devs-on-the-massive-undertaking-of-reverse-engineering-an-always-online-game",
-          "observed_at": "Sat, 01 Aug 2026 13:04:59 +0000",
-          "family": "news",
-          "value": 0.064
+          "value": 0.76
         }
       ],
-      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/230410/library_600x900_2x.jpg",
+      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/library_600x900_2x.jpg",
       "cover_verified": true,
       "cover_width": 600,
-      "cover_height": 900
+      "cover_height": 900,
+      "editorial_tier": "platform_chart",
+      "editorial_reason": "Steam Top 13 сейчас",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
     },
     {
       "slug": "marvel-s-spider-man-remastered",
@@ -1331,7 +1638,7 @@
         "assets/covers/popular/marvel-s-spider-man-remastered.jpg"
       ],
       "score": 11.1,
-      "confidence": 0.53,
+      "confidence": 0.45,
       "delta": null,
       "families": [
         "steam_chart"
@@ -1344,12 +1651,15 @@
         "steam_chart": 0.74
       },
       "news_sources": 0,
+      "news_publishers": [],
       "in_catalog": false,
+      "global_candidate": false,
       "evidence": [
         {
           "source": "Steam Top Sellers",
           "title": "Marvel’s Spider-Man Remastered",
           "url": "https://store.steampowered.com/app/1817070/",
+          "observed_at": "2026-08-05T16:11:21.214Z",
           "position": 14,
           "appid": 1817070,
           "family": "steam_chart",
@@ -1359,13 +1669,196 @@
       "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1817070/library_600x900_2x.jpg",
       "cover_verified": true,
       "cover_width": 600,
-      "cover_height": 900
+      "cover_height": 900,
+      "editorial_tier": "platform_chart",
+      "editorial_reason": "Steam Top 14 сейчас",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
+    },
+    {
+      "slug": "warframe",
+      "title": "Warframe",
+      "year": null,
+      "image": "assets/covers/popular/warframe.jpg",
+      "image_candidates": [
+        "assets/covers/popular/warframe.jpg"
+      ],
+      "score": 10.8,
+      "confidence": 0.45,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
+        "steam_chart": 0.72
+      },
+      "news_sources": 0,
+      "news_publishers": [],
+      "in_catalog": false,
+      "global_candidate": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Warframe",
+          "url": "https://store.steampowered.com/app/230410/",
+          "observed_at": "2026-08-05T16:11:21.214Z",
+          "position": 15,
+          "appid": 230410,
+          "family": "steam_chart",
+          "value": 0.72
+        }
+      ],
+      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/230410/library_600x900_2x.jpg",
+      "cover_verified": true,
+      "cover_width": 600,
+      "cover_height": 900,
+      "editorial_tier": "platform_chart",
+      "editorial_reason": "Steam Top 15 сейчас",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
+    },
+    {
+      "slug": "dead-by-daylight",
+      "title": "Dead by Daylight",
+      "year": null,
+      "image": "assets/covers/popular/dead-by-daylight.jpg",
+      "image_candidates": [
+        "assets/covers/popular/dead-by-daylight.jpg"
+      ],
+      "score": 10.5,
+      "confidence": 0.45,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
+        "steam_chart": 0.7
+      },
+      "news_sources": 0,
+      "news_publishers": [],
+      "in_catalog": false,
+      "global_candidate": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Dead by Daylight",
+          "url": "https://store.steampowered.com/app/381210/",
+          "observed_at": "2026-08-05T16:11:21.214Z",
+          "position": 16,
+          "appid": 381210,
+          "family": "steam_chart",
+          "value": 0.7
+        }
+      ],
+      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/381210/library_600x900_2x.jpg",
+      "cover_verified": true,
+      "cover_width": 600,
+      "cover_height": 900,
+      "editorial_tier": "platform_chart",
+      "editorial_reason": "Steam Top 16 сейчас",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
+    },
+    {
+      "slug": "yu-gi-oh-master-duel",
+      "title": "Yu-Gi-Oh! Master Duel",
+      "year": null,
+      "image": "assets/covers/popular/yu-gi-oh-master-duel.jpg",
+      "image_candidates": [
+        "assets/covers/popular/yu-gi-oh-master-duel.jpg"
+      ],
+      "score": 9.9,
+      "confidence": 0.45,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
+        "steam_chart": 0.6599999999999999
+      },
+      "news_sources": 0,
+      "news_publishers": [],
+      "in_catalog": false,
+      "global_candidate": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Yu-Gi-Oh! Master Duel",
+          "url": "https://store.steampowered.com/app/1449850/",
+          "observed_at": "2026-08-05T16:11:21.214Z",
+          "position": 18,
+          "appid": 1449850,
+          "family": "steam_chart",
+          "value": 0.66
+        }
+      ],
+      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1449850/library_600x900_2x.jpg",
+      "cover_verified": true,
+      "cover_width": 600,
+      "cover_height": 900,
+      "editorial_tier": "platform_chart",
+      "editorial_reason": "Steam Top 18 сейчас",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
+    },
+    {
+      "slug": "ready-or-not",
+      "title": "Ready or Not",
+      "year": null,
+      "image": "assets/covers/popular/ready-or-not.jpg",
+      "image_candidates": [
+        "assets/covers/popular/ready-or-not.jpg"
+      ],
+      "score": 9.6,
+      "confidence": 0.45,
+      "delta": null,
+      "families": [
+        "steam_chart"
+      ],
+      "signals": {
+        "news": 0,
+        "reddit": 0,
+        "youtube": 0,
+        "twitch": 0,
+        "steam_chart": 0.64
+      },
+      "news_sources": 0,
+      "news_publishers": [],
+      "in_catalog": false,
+      "global_candidate": false,
+      "evidence": [
+        {
+          "source": "Steam Top Sellers",
+          "title": "Ready or Not",
+          "url": "https://store.steampowered.com/app/1144200/",
+          "observed_at": "2026-08-05T16:11:21.214Z",
+          "position": 19,
+          "appid": 1144200,
+          "family": "steam_chart",
+          "value": 0.64
+        }
+      ],
+      "cover_source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/library_600x900_2x.jpg",
+      "cover_verified": true,
+      "cover_width": 600,
+      "cover_height": 900,
+      "editorial_tier": "platform_chart",
+      "editorial_reason": "Steam Top 19 сейчас",
+      "editorial_checked_at": "2026-08-05T16:13:01.786Z"
     }
   ],
   "discovered_unmatched": [],
   "source_statuses": [
     {
-      "id": "twitch-streams",
+      "id": "twitch-top-games",
       "status": "skipped",
       "error": "TWITCH_CLIENT_ID/TWITCH_CLIENT_SECRET are not configured"
     },
@@ -1373,103 +1866,226 @@
       "id": "reddit-public",
       "status": "error",
       "error": "HTTP 403",
-      "duration_ms": 90,
+      "duration_ms": 58,
       "url": "https://www.reddit.com/r/Games/hot.json?limit=100"
-    },
-    {
-      "id": "steam-top-sellers",
-      "status": "success",
-      "items": 50,
-      "matched": 50,
-      "duration_ms": 276,
-      "url": "https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=topsellers&infinite=1&cc=us&l=english&json=1"
     },
     {
       "id": "ign-rss",
       "status": "success",
       "items": 20,
-      "matched": 1,
-      "duration_ms": 430,
+      "matched": 0,
+      "duration_ms": 232,
       "url": "https://www.ign.com/rss/articles/feed"
     },
     {
       "id": "pcgamer-rss",
       "status": "success",
       "items": 50,
-      "matched": 7,
-      "duration_ms": 275,
+      "matched": 2,
+      "duration_ms": 71,
       "url": "https://www.pcgamer.com/rss/"
+    },
+    {
+      "id": "steam-top-sellers",
+      "status": "success",
+      "items": 50,
+      "matched": 50,
+      "duration_ms": 329,
+      "url": "https://store.steampowered.com/search/results/?query&start=0&count=50&dynamic_data=&sort_by=_ASC&filter=topsellers&infinite=1&cc=us&l=english&json=1"
     },
     {
       "id": "gamespot-rss",
       "status": "success",
       "items": 15,
-      "matched": 3,
-      "duration_ms": 171,
+      "matched": 4,
+      "duration_ms": 186,
       "url": "https://www.gamespot.com/feeds/mashup/"
     },
     {
       "id": "youtube-popular",
       "status": "success",
       "items": 296,
-      "matched": 40,
-      "duration_ms": 891
+      "matched": 136,
+      "duration_ms": 1143
     },
     {
       "id": "eurogamer-rss",
       "status": "success",
       "items": 100,
-      "matched": 6,
-      "duration_ms": 350,
+      "matched": 7,
+      "duration_ms": 1957,
       "url": "https://www.eurogamer.net/feed"
     },
     {
       "id": "rps-rss",
       "status": "success",
       "items": 100,
-      "matched": 6,
-      "duration_ms": 343,
+      "matched": 5,
+      "duration_ms": 269,
       "url": "https://www.rockpapershotgun.com/feed"
     },
     {
       "id": "polygon-rss",
       "status": "success",
       "items": 10,
-      "matched": 0,
-      "duration_ms": 536,
+      "matched": 2,
+      "duration_ms": 313,
       "url": "https://www.polygon.com/rss/index.xml"
     },
     {
       "id": "google-news-gaming",
       "status": "success",
       "items": 100,
-      "matched": 3,
-      "duration_ms": 556,
+      "matched": 5,
+      "duration_ms": 541,
       "url": "https://news.google.com/rss/search?q=gaming%20OR%20%22video%20game%22%20when%3A4d&hl=en-US&gl=US&ceid=US%3Aen"
     },
     {
       "id": "google-news-console-games",
       "status": "success",
       "items": 100,
-      "matched": 13,
-      "duration_ms": 512,
+      "matched": 11,
+      "duration_ms": 505,
       "url": "https://news.google.com/rss/search?q=PlayStation%20OR%20Xbox%20OR%20Nintendo%20OR%20Rockstar%20Games%20when%3A4d&hl=en-US&gl=US&ceid=US%3Aen"
+    },
+    {
+      "id": "youtube-global-search",
+      "status": "success",
+      "candidates": [
+        {
+          "id": "roblox",
+          "status": "success",
+          "matched": 10,
+          "channels": 8,
+          "views": 48507237,
+          "duration_ms": 637
+        },
+        {
+          "id": "genshin-impact",
+          "status": "success",
+          "matched": 7,
+          "channels": 6,
+          "views": 2451228,
+          "duration_ms": 411
+        },
+        {
+          "id": "fortnite",
+          "status": "success",
+          "matched": 9,
+          "channels": 9,
+          "views": 9949673,
+          "duration_ms": 437
+        },
+        {
+          "id": "minecraft",
+          "status": "success",
+          "matched": 10,
+          "channels": 10,
+          "views": 38627958,
+          "duration_ms": 356
+        },
+        {
+          "id": "league-of-legends",
+          "status": "success",
+          "matched": 2,
+          "channels": 2,
+          "views": 382430,
+          "duration_ms": 354
+        },
+        {
+          "id": "valorant",
+          "status": "success",
+          "matched": 8,
+          "channels": 6,
+          "views": 3241507,
+          "duration_ms": 402
+        },
+        {
+          "id": "call-of-duty-warzone",
+          "status": "success",
+          "matched": 7,
+          "channels": 7,
+          "views": 725535,
+          "duration_ms": 431
+        },
+        {
+          "id": "marvel-rivals",
+          "status": "error",
+          "error": "HTTP 429",
+          "duration_ms": 55
+        },
+        {
+          "id": "overwatch-2",
+          "status": "success",
+          "matched": 9,
+          "channels": 4,
+          "views": 2449464,
+          "duration_ms": 367
+        },
+        {
+          "id": "honkai-star-rail",
+          "status": "error",
+          "error": "HTTP 429",
+          "duration_ms": 42
+        },
+        {
+          "id": "apex-legends",
+          "status": "success",
+          "matched": 7,
+          "channels": 6,
+          "views": 1323304,
+          "duration_ms": 350
+        },
+        {
+          "id": "pubg-battlegrounds",
+          "status": "error",
+          "error": "HTTP 429",
+          "duration_ms": 28
+        }
+      ]
     }
   ],
   "cover_policy": {
-    "required_count": 20,
+    "maximum_candidates": 60,
+    "candidate_count": 60,
     "min_width": 500,
     "min_height": 700,
     "min_ratio": 1.2,
     "identity_check": "exact-game-title-and-trusted-source",
-    "resolved_count": 14,
+    "resolved_count": 35,
     "unresolved": [
-      "Halo: Campaign Evolved",
+      "Roblox",
+      "Minecraft",
+      "Fortnite",
+      "Valorant",
+      "Genshin Impact",
+      "Overwatch 2",
+      "Apex Legends",
+      "Call of Duty: Warzone",
       "Grand Theft Auto VI",
-      "Shift At Midnight",
+      "League of Legends",
+      "Halo: Campaign Evolved",
+      "MARVEL Tōkon: Fighting Souls",
       "Assassin's Creed Black Flag Resynced",
+      "Wuthering Waves",
+      "Shift At Midnight",
+      "Korea. IL-2 Series",
+      "Helldivers 2",
       "Escape from Tarkov",
-      "MARVEL Tōkon: Fighting Souls"
+      "Cyberpunk 2077: Phantom Liberty",
+      "Battlefield™ 6",
+      "Zenless Zone Zero",
+      "Elden Ring",
+      "Ragnarok: The New World",
+      "Control",
+      "MECCHA CHAMELEON"
     ]
+  },
+  "editorial_quality": {
+    "checked_at": "2026-08-05T16:13:01.786Z",
+    "requested_cards": 20,
+    "published_cards": 20,
+    "blocking": false,
+    "rules": "three-publishers-or-multi-family-or-strong-youtube-community-then-platform-fill"
   }
 }
