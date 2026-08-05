@@ -1,6 +1,7 @@
 name: Staging and production gate
 
 on:
+  workflow_dispatch:
   push:
     branches: [staging]
   pull_request:
