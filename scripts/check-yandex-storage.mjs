@@ -1,11 +1,12 @@
 import crypto from 'node:crypto';
 
-const endpoint = new URL(process.env.YC_S3_ENDPOINT || 'https://storage.yandexcloud.net');
-const region = process.env.YC_S3_REGION || 'ru-central1';
+const clean = value => String(value || '').trim();
+const endpoint = new URL(clean(process.env.YC_S3_ENDPOINT) || 'https://storage.yandexcloud.net');
+const region = clean(process.env.YC_S3_REGION) || 'ru-central1';
 const service = 's3';
-const accessKeyId = process.env.YC_S3_ACCESS_KEY_ID;
-const secretAccessKey = process.env.YC_S3_SECRET_ACCESS_KEY;
-const bucket = process.env.YC_S3_BUCKET;
+const accessKeyId = clean(process.env.YC_S3_ACCESS_KEY_ID);
+const secretAccessKey = clean(process.env.YC_S3_SECRET_ACCESS_KEY);
+const bucket = clean(process.env.YC_S3_BUCKET);
 
 for (const [name, value] of Object.entries({
   YC_S3_ACCESS_KEY_ID: accessKeyId,
