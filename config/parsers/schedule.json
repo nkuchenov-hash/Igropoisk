@@ -21,7 +21,7 @@
         "allow_placeholders": false,
         "block_on_exact_cardinality": false
       },
-      "command": "node scripts/parse-popular.mjs && node scripts/enrich-global-popular-youtube.mjs && node scripts/filter-popular.mjs && node scripts/resolve-popular-covers.mjs",
+      "command": "node scripts/parse-popular.mjs && node scripts/enrich-global-popular-youtube.mjs && node scripts/filter-popular.mjs && node scripts/resolve-popular-covers.mjs && node scripts/resolve-global-popular-art.mjs",
       "outputs": [
         "data/popular/current.json",
         "data/popular/covers.json",
