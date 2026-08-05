@@ -3,43 +3,58 @@ name: Design system check
 on:
   push:
     paths:
-      - 'assets/**'
+      - '**/*.css'
+      - '**/*.html'
+      - '**/*.htm'
+      - '**/*.js'
+      - '**/*.mjs'
+      - 'config/design-system-components.json'
+      - 'config/feature-modules.json'
       - 'features/**'
-      - 'game/**'
-      - 'article/**'
-      - 'admin/**'
-      - 'backend/**'
-      - 'config/**'
-      - 'data/**'
-      - 'docs/**'
-      - 'skills/**'
-      - 'index.html'
-      - 'scripts/**'
-      - '.github/workflows/**'
+      - 'DESIGN_SYSTEM.md'
+      - 'PROJECT_RULES.md'
+      - 'docs/design-system-governance.md'
+      - '.github/workflows/design-system-check.yml'
   pull_request:
     paths:
-      - 'assets/**'
+      - '**/*.css'
+      - '**/*.html'
+      - '**/*.htm'
+      - '**/*.js'
+      - '**/*.mjs'
+      - 'config/design-system-components.json'
+      - 'config/feature-modules.json'
       - 'features/**'
-      - 'game/**'
-      - 'article/**'
-      - 'admin/**'
-      - 'backend/**'
-      - 'config/**'
-      - 'data/**'
-      - 'docs/**'
-      - 'skills/**'
-      - 'index.html'
-      - 'scripts/**'
-      - '.github/workflows/**'
+      - 'DESIGN_SYSTEM.md'
+      - 'PROJECT_RULES.md'
+      - 'docs/design-system-governance.md'
+      - '.github/workflows/design-system-check.yml'
+
+permissions:
+  contents: read
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: |
+      - name: Verify central components and module governance
+        env:
+          DESIGN_SYSTEM_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          node scripts/test-central-design-system.mjs
+          BASE="$DESIGN_SYSTEM_BASE_SHA"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            BASE="$(git rev-parse HEAD^ 2>/dev/null || true)"
+          fi
+          if [ -n "$BASE" ]; then
+            node scripts/validate-central-design-system.mjs --base "$BASE"
+          else
+            node scripts/validate-central-design-system.mjs
+          fi
           node scripts/validate-game-v3.mjs
-          node scripts/validate-central-design-system.mjs
