@@ -14,6 +14,13 @@ on:
         required: false
         type: boolean
         default: false
+    secrets:
+      YC_S3_ACCESS_KEY_ID:
+        required: true
+      YC_S3_SECRET_ACCESS_KEY:
+        required: true
+      YC_S3_BUCKET:
+        required: true
   schedule:
     - cron: '23 * * * *'
   push:
@@ -35,44 +42,48 @@ on:
       - 'scripts/test-news-pipeline.mjs'
       - 'scripts/test-news-pipeline-health.mjs'
       - 'scripts/test-news-content-api.mjs'
+      - 'scripts/test-news-storage-content-api.mjs'
       - 'scripts/validate-news-module.mjs'
+      - 'scripts/lib/yandex-object-storage.mjs'
+      - 'scripts/publish-news-storage.mjs'
       - '.github/workflows/news-pipeline.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: autonomous-news-pipeline-staging
+  group: autonomous-news-pipeline-object-storage
   cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - name: Checkout current staging
+      - name: Checkout current staging code and fallback snapshot
         uses: actions/checkout@v4
         with:
           ref: staging
-          fetch-depth: 0
-
-      - name: Synchronize staging before collection
-        run: git pull --ff-only origin staging
+          fetch-depth: 1
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      - name: Verify pipeline code before network work
+      - name: Verify pipeline and storage code before network work
         run: |
           node --check scripts/run-news-pipeline.mjs
           node --check scripts/build-news-pipeline-health.mjs
           node --check scripts/validate-news-pipeline.mjs
+          node --check scripts/lib/yandex-object-storage.mjs
+          node --check scripts/publish-news-storage.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
+          node scripts/test-news-storage-content-api.mjs
 
-      - name: Collect validate and prepare one staging snapshot
+      - name: Collect validate and prepare one isolated snapshot
         env:
           PIPELINE_FORCE: ${{ inputs.force || github.event.inputs.force || false }}
           NEWS_PIPELINE_REPORT: tmp/news-pipeline-report.json
@@ -84,25 +95,27 @@ jobs:
           node scripts/run-news-pipeline.mjs "${args[@]}"
           git diff --check
 
-      - name: Commit one atomic news snapshot to staging
-        id: publication
+      - name: Detect whether publication is required
+        id: pipeline
         run: |
-          mapfile -t paths < <(node -e "const c=require('./config/news-pipeline.json'); console.log(c.publication.commit_paths.join('\\n'))")
-          git add -- "${paths[@]}"
-          if git diff --cached --quiet; then
-            echo "published=false" >> "$GITHUB_OUTPUT"
-            echo "News snapshot is already current."
-            exit 0
-          fi
-          git config user.name "igropoisk-news-pipeline[bot]"
-          git config user.email "igropoisk-news-pipeline[bot]@users.noreply.github.com"
-          git commit -m "Publish autonomous news snapshot to staging"
-          git pull --rebase origin staging
-          node scripts/validate-news-pipeline.mjs --baseline HEAD^
-          node scripts/test-news-content-api.mjs
-          node scripts/validate-news-module.mjs
-          git push origin HEAD:staging
-          echo "published=true" >> "$GITHUB_OUTPUT"
+          status=$(node -e "const r=require('./tmp/news-pipeline-report.json'); process.stdout.write(r.status)")
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "Pipeline status: $status"
+
+      - name: Publish immutable news snapshot and switch manifest
+        if: steps.pipeline.outputs.status == 'success'
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/publish-news-storage.mjs
+
+      - name: Prove that the pipeline did not write to GitHub
+        run: |
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/staging)"
+          test -z "$(git status --porcelain --untracked-files=no | grep -E '^.. (features|index\.html|news/|game/|calendar/)' || true)"
 
       - name: Upload pipeline report
         if: always()

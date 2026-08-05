@@ -1,0 +1,88 @@
+name: Verify Yandex content storage
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_snapshot:
+        description: Publish the current validated repository fallback as a new storage snapshot
+        required: false
+        type: boolean
+        default: false
+  push:
+    branches:
+      - feature/news-content-storage
+    paths:
+      - '.github/workflows/yandex-storage-connectivity.yml'
+      - 'scripts/check-yandex-storage.mjs'
+      - 'scripts/lib/yandex-object-storage.mjs'
+      - 'scripts/publish-news-storage.mjs'
+      - 'config/news-pipeline.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-yandex-content-storage
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout isolated feature branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check isolated storage code
+        run: |
+          node --check scripts/lib/yandex-object-storage.mjs
+          node --check scripts/check-yandex-storage.mjs
+          node --check scripts/publish-news-storage.mjs
+
+      - name: Write read and remove a temporary probe
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/check-yandex-storage.mjs
+
+      - name: Prepare a complete news snapshot without changing the live manifest
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/publish-news-storage.mjs --dry-run
+
+      - name: Publish a snapshot only after an explicit manual request
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_snapshot == true
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/publish-news-storage.mjs
+
+      - name: Verify public manifest homepage feed and browser CORS
+        env:
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+        run: |
+          manifest="https://storage.yandexcloud.net/${YC_S3_BUCKET}/news/manifests/current.json?v=${GITHUB_RUN_ID}"
+          curl --fail --silent --show-error "$manifest" -o /tmp/news-manifest.json
+          node -e "const m=require('/tmp/news-manifest.json'); if(m.schemaVersion!==1||m.channel!=='news'||!m.files?.['data/news-home-ru.json']?.url) process.exit(1)"
+          feed=$(node -e "const m=require('/tmp/news-manifest.json'); process.stdout.write(m.files['data/news-home-ru.json'].url)")
+          curl --fail --silent --show-error "$feed?v=${GITHUB_RUN_ID}" -o /tmp/news-home.json
+          node -e "const p=require('/tmp/news-home.json'); const a=Array.isArray(p)?p:p.items; if(!Array.isArray(a)||a.length!==12) process.exit(1)"
+          curl --fail --silent --show-error --head \
+            -H 'Origin: https://nkuchenov-hash.github.io' \
+            "$manifest" -o /tmp/news-headers.txt
+          grep -qi '^access-control-allow-origin: https://nkuchenov-hash.github.io' /tmp/news-headers.txt

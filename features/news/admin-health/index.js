@@ -7,6 +7,9 @@
 
   const root=document.querySelector('[data-news-health-admin]');
   const base=location.pathname.startsWith('/Igropoisk/')?'/Igropoisk/':'/';
+  const manifestUrl='https://storage.yandexcloud.net/igropoisk-content/news/manifests/current.json';
+  let activeHealthUrl=`${base}data/news-pipeline-health.json`;
+  let activeBackend='repository-fallback';
   const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const labels={healthy:'Работает',degraded:'Есть предупреждения',error:'Публикация заблокирована',pending:'Ожидает первого запуска'};
   const date=value=>{
@@ -71,6 +74,7 @@
     const warnings=Array.isArray(health?.warnings)?health.warnings:[];
     const blocking=Array.isArray(health?.blocking_errors)?health.blocking_errors:[];
     root.dataset.newsHealthStatus=health?.status||'missing';
+    root.dataset.newsHealthBackend=activeBackend;
     root.innerHTML=`
       <section class="parser-card ig-card ig-panel">
         <div class="parser-result-head">
@@ -79,6 +83,7 @@
         </div>
         <div class="parser-family-grid">
           <article class="parser-family"><b>Health snapshot</b><span>${esc(age(health?.generated_at))}</span><small>Создан: ${esc(date(health?.generated_at))}</small></article>
+          <article class="parser-family"><b>Источник данных</b><span>${activeBackend==='object-storage'?'Облако':'Резерв'}</span><small>${activeBackend==='object-storage'?'Yandex Object Storage':'Копия из GitHub'}</small></article>
           <article class="parser-family"><b>Источники</b><span>${esc(health?.sources?.successful??0)} / ${esc(health?.sources?.total??0)}</span><small>Успешность: ${esc(percent(health?.sources?.success_ratio))}</small></article>
           <article class="parser-family"><b>Изображения</b><span>${esc(health?.images?.referenced??0)}</span><small>Отсутствуют: ${esc(health?.images?.missing??0)}</small></article>
           <article class="parser-family"><b>Проверенные группы</b><span>${esc(health?.due_groups?.length??0)}</span><small>${esc((health?.due_groups||[]).join(', ')||'—')}</small></article>
@@ -105,17 +110,44 @@
         </div>
         <div class="source-actions">
           <a class="ig-button" href="https://github.com/nkuchenov-hash/Igropoisk/actions/workflows/news-pipeline.yml" target="_blank" rel="noopener noreferrer">Запуски pipeline ↗</a>
-          <a class="ig-button" href="${base}data/news-pipeline-health.json" target="_blank" rel="noopener noreferrer">Открыть JSON ↗</a>
+          <a class="ig-button" href="${esc(activeHealthUrl)}" target="_blank" rel="noopener noreferrer">Открыть JSON ↗</a>
         </div>
       </section>`;
+  }
+
+  async function fetchJson(url){
+    const target=new URL(url,location.href);
+    target.searchParams.set('v',Date.now());
+    const response=await fetch(target,{cache:'no-store'});
+    if(!response.ok)throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  }
+
+  async function loadRemoteHealth(){
+    const manifest=await fetchJson(manifestUrl);
+    if(manifest?.schemaVersion!==1||manifest?.channel!=='news')throw new Error('Некорректный manifest');
+    const candidate=manifest?.files?.['data/news-pipeline-health.json']?.url;
+    if(!candidate)throw new Error('Health snapshot отсутствует в manifest');
+    const url=new URL(candidate);
+    if(url.origin!=='https://storage.yandexcloud.net'||!url.pathname.startsWith(`/igropoisk-content/news/snapshots/${manifest.version}/`))throw new Error('Недоверенный health URL');
+    activeHealthUrl=url.href;
+    activeBackend='object-storage';
+    return fetchJson(url);
   }
 
   async function load(){
     theme();
     try{
-      const response=await fetch(`${base}data/news-pipeline-health.json`,{cache:'no-store'});
-      if(!response.ok)throw new Error(`HTTP ${response.status}`);
-      render(await response.json());
+      let health;
+      try{
+        health=await loadRemoteHealth();
+      }catch(remoteError){
+        console.warn('Remote news health unavailable; using repository fallback.',remoteError);
+        activeHealthUrl=`${base}data/news-pipeline-health.json`;
+        activeBackend='repository-fallback';
+        health=await fetchJson(activeHealthUrl);
+      }
+      render(health);
     }catch(error){
       root.dataset.newsHealthStatus='error';
       root.innerHTML=`<section class="parser-card ig-card ig-panel"><div class="ig-empty-state">Не удалось загрузить read-only health snapshot: ${esc(error.message)}</div></section>`;

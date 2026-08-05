@@ -109,17 +109,25 @@ try {
       && ['ready', 'empty', 'error'].includes(archive?.dataset.newsStatus);
   }, { timeout: 30000 });
 
-  const state = await page.evaluate(() => ({
-    homeStatus: document.querySelector('[data-news-module="home"]')?.dataset.newsStatus || '',
-    archiveStatus: document.querySelector('[data-news-module="archive"]')?.dataset.newsStatus || '',
-    homeCards: document.querySelectorAll('[data-news-home] .ig-news-card').length,
-    archiveCards: document.querySelectorAll('[data-news-archive] .ig-news-card').length,
-    search: Boolean(document.querySelector('[data-news-toolbar] [data-news-search]')),
-    controls: document.querySelectorAll('[data-news-home-controls] [data-news-direction]').length,
-    legacyScripts: [...document.scripts]
-      .map(script => script.src)
-      .filter(source => /news-(feed|click-fix|rail-controls|archive-full)/.test(source))
-  }));
+  const state = await page.evaluate(() => {
+    const apiHealth = window.IgropoiskNewsContent?.health?.() || {};
+    const images = [...document.querySelectorAll('[data-news-module] .ig-news-card img')].map(image => image.src);
+    return {
+      homeStatus: document.querySelector('[data-news-module="home"]')?.dataset.newsStatus || '',
+      archiveStatus: document.querySelector('[data-news-module="archive"]')?.dataset.newsStatus || '',
+      homeCards: document.querySelectorAll('[data-news-home] .ig-news-card').length,
+      archiveCards: document.querySelectorAll('[data-news-archive] .ig-news-card').length,
+      search: Boolean(document.querySelector('[data-news-toolbar] [data-news-search]')),
+      controls: document.querySelectorAll('[data-news-home-controls] [data-news-direction]').length,
+      contentBackend: apiHealth.backend || '',
+      contentVersion: apiHealth.version || '',
+      fallbackReason: apiHealth.fallbackReason || '',
+      storageImages: images.filter(source => source.startsWith('https://storage.yandexcloud.net/igropoisk-content/news/media/')).length,
+      legacyScripts: [...document.scripts]
+        .map(script => script.src)
+        .filter(source => /news-(feed|click-fix|rail-controls|archive-full)/.test(source))
+    };
+  });
 
   state.healthStatus = health.status;
   state.baseUrl = baseUrl;
@@ -131,6 +139,11 @@ try {
   if (!state.search) errors.push('News archive search was not rendered.');
   if (state.controls !== 2) errors.push(`Expected two homepage rail controls, found ${state.controls}.`);
   if (state.legacyScripts.length) errors.push(`Legacy news scripts loaded: ${state.legacyScripts.join(', ')}`);
+  if (remoteBase && state.contentBackend !== 'object-storage') {
+    errors.push(`Production news backend is ${state.contentBackend || 'missing'}: ${state.fallbackReason || 'no fallback reason'}`);
+  }
+  if (remoteBase && !state.contentVersion) errors.push('Production news snapshot version is missing.');
+  if (remoteBase && state.storageImages < 1) errors.push('Production rendered no Object Storage news images.');
   const newsErrors = pageErrors.filter(error => /features\/news|IgropoiskNews|news module/i.test(error));
   if (newsErrors.length) errors.push(...newsErrors);
 
