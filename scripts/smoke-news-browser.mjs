@@ -1,10 +1,10 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
 import puppeteer from 'puppeteer-core';
 
 const root = process.cwd();
+const remoteBase = String(process.env.NEWS_SMOKE_BASE_URL || '').trim();
 const mime = new Map([
   ['.html', 'text/html; charset=utf-8'],
   ['.css', 'text/css; charset=utf-8'],
@@ -38,25 +38,56 @@ function safePath(urlPath) {
   return absolute.startsWith(root) ? absolute : null;
 }
 
-const server = http.createServer((request, response) => {
-  const file = safePath(request.url || '/');
-  if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
-    response.writeHead(404).end('Not found');
-    return;
-  }
-  response.setHeader('Content-Type', mime.get(path.extname(file).toLowerCase()) || 'application/octet-stream');
-  response.setHeader('Cache-Control', 'no-store');
-  fs.createReadStream(file).pipe(response);
-});
+function localServer() {
+  return http.createServer((request, response) => {
+    const file = safePath(request.url || '/');
+    if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
+      response.writeHead(404).end('Not found');
+      return;
+    }
+    response.setHeader('Content-Type', mime.get(path.extname(file).toLowerCase()) || 'application/octet-stream');
+    response.setHeader('Cache-Control', 'no-store');
+    fs.createReadStream(file).pipe(response);
+  });
+}
 
-await new Promise((resolve, reject) => {
-  server.once('error', reject);
-  server.listen(4173, '127.0.0.1', resolve);
-});
+let server = null;
+let baseUrl = remoteBase;
+if (!baseUrl) {
+  server = localServer();
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(4173, '127.0.0.1', resolve);
+  });
+  baseUrl = 'http://127.0.0.1:4173/';
+}
+if (!baseUrl.endsWith('/')) baseUrl += '/';
 
+async function fetchJson(relative) {
+  const response = await fetch(new URL(relative, baseUrl), { cache: 'no-store' });
+  if (!response.ok) throw new Error(`${relative} returned HTTP ${response.status}.`);
+  return response.json();
+}
+
+async function verifyStaticHealth() {
+  const health = await fetchJson('data/news-pipeline-health.json');
+  const errors = [];
+  if (health?.pipeline !== 'news') errors.push('Health snapshot has an invalid pipeline id.');
+  if (!['pending', 'healthy', 'degraded'].includes(health?.status)) errors.push(`Health snapshot status: ${health?.status || 'missing'}.`);
+  if (health?.status !== 'pending' && !health?.last_successful_run_at) errors.push('Health snapshot has no successful run timestamp.');
+  if (Number(health?.images?.missing || 0) > 0) errors.push(`Health snapshot reports ${health.images.missing} missing images.`);
+
+  const adminResponse = await fetch(new URL('admin/news-health/', baseUrl), { cache: 'no-store' });
+  const adminHtml = await adminResponse.text();
+  if (!adminResponse.ok || !adminHtml.includes('data-news-health-admin')) errors.push('Read-only news health admin page is unavailable.');
+  if (errors.length) throw new Error(`News health smoke test failed:\n${errors.map(error => `- ${error}`).join('\n')}`);
+  return health;
+}
+
+const health = await verifyStaticHealth();
 const executablePath = browserPath();
 if (!executablePath) {
-  server.close();
+  if (server) server.close();
   throw new Error('Chrome/Chromium executable was not found.');
 }
 
@@ -70,7 +101,7 @@ try {
   const page = await browser.newPage();
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(String(error?.stack || error)));
-  await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.waitForFunction(() => {
     const home = document.querySelector('[data-news-module="home"]');
     const archive = document.querySelector('[data-news-module="archive"]');
@@ -90,6 +121,8 @@ try {
       .filter(source => /news-(feed|click-fix|rail-controls|archive-full)/.test(source))
   }));
 
+  state.healthStatus = health.status;
+  state.baseUrl = baseUrl;
   const errors = [];
   if (state.homeStatus !== 'ready') errors.push(`Homepage news status: ${state.homeStatus}`);
   if (state.archiveStatus !== 'ready') errors.push(`Archive news status: ${state.archiveStatus}`);
@@ -105,5 +138,5 @@ try {
   console.log(JSON.stringify(state, null, 2));
 } finally {
   await browser.close();
-  await new Promise(resolve => server.close(resolve));
+  if (server) await new Promise(resolve => server.close(resolve));
 }
