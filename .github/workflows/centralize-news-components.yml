@@ -34,6 +34,7 @@ jobs:
           find features/news -type f -name '*.js' -print0 | xargs -0 -n1 node --check
           node scripts/validate-news-module.mjs
           node scripts/validate-central-design-system.mjs
+          npm install --no-save --ignore-scripts puppeteer-core@24.16.0
           node scripts/smoke-news-browser.mjs
           python3 scripts/enforce_layout_contract.py --check
           node scripts/validate-game-v3.mjs
