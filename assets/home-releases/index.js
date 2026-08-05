@@ -2,7 +2,7 @@
 'use strict';
 const rail=document.querySelector('#releaseHomeGrid');
 if(!rail)return;
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
 const initials=title=>String(title||'').split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
 const primaryEvent=game=>(game.events||[]).slice().sort((a,b)=>String(a.date_start||a.date||'9999').localeCompare(String(b.date_start||b.date||'9999')))[0]||{};
 const dateValue=event=>event.date||event.date_start||null;
@@ -36,14 +36,7 @@ const releaseKind=(event,recentDays)=>{
 };
 const candidates=game=>{
   const id=Number(game.external_ids?.steam);
-  return [...new Set([
-    game.image?.local_url,
-    game.image?.source_url,
-    ...(game.image_candidates||[]),
-    id&&`https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/library_600x900.jpg`,
-    id&&`https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/library_600x900.jpg`,
-    id&&`https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/header.jpg`
-  ].filter(Boolean))];
+  return [...new Set([game.image?.local_url,game.image?.source_url,...(game.image_candidates||[]),id&&`https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/library_600x900.jpg`,id&&`https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/library_600x900.jpg`,id&&`https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/header.jpg`].filter(Boolean))];
 };
 const card=(game,kind)=>{
   const event=primaryEvent(game);
@@ -58,21 +51,13 @@ const bindFallbacks=games=>{
     const image=cardElement.querySelector('img');
     if(!game||!image)return;
     const urls=candidates(game);
-    image.addEventListener('error',()=>{
-      const next=Number(image.dataset.coverIndex||0)+1;
-      if(next<urls.length){image.dataset.coverIndex=String(next);image.src=urls[next];return}
-      image.closest('.home-release-card__media')?.classList.add('is-broken');
-      image.remove();
-    });
+    image.addEventListener('error',()=>{const next=Number(image.dataset.coverIndex||0)+1;if(next<urls.length){image.dataset.coverIndex=String(next);image.src=urls[next];return}image.closest('.home-release-card__media')?.classList.add('is-broken');image.remove()});
   });
 };
 const bindRail=()=>{
-  document.querySelectorAll('[data-release-rail]').forEach(button=>{
-    button.onclick=()=>rail.scrollBy({left:Number(button.dataset.releaseRail)*Math.max(320,rail.clientWidth*.82),behavior:'smooth'});
-  });
+  document.querySelectorAll('[data-release-rail]').forEach(button=>{button.onclick=()=>rail.scrollBy({left:Number(button.dataset.releaseRail)*Math.max(320,rail.clientWidth*.82),behavior:'smooth'})});
   rail.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)<=Math.abs(event.deltaX))return;event.preventDefault();rail.scrollBy({left:event.deltaY,behavior:'auto'})},{passive:false});
 };
-
 Promise.all([
   fetch('data/releases/current.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json()}),
   fetch('features/home-releases/rules.json',{cache:'no-store'}).then(response=>response.ok?response.json():{})
@@ -80,23 +65,13 @@ Promise.all([
   const maximum=Math.max(6,Number(rules.maximum_cards||12));
   const recentDays=Math.max(1,Number(rules.recent_release_days||7));
   const maximumRecent=Math.min(maximum,Math.max(0,Number(rules.maximum_recent_cards||4)));
-  const classified=(payload.releases||[]).map(game=>({game,event:primaryEvent(game)}))
-    .map(row=>({...row,kind:releaseKind(row.event,recentDays)}))
-    .filter(row=>row.kind!=='expired');
-
-  const recent=classified.filter(row=>row.kind==='recent')
-    .sort((left,right)=>String(dateEndValue(right.event)||'').localeCompare(String(dateEndValue(left.event)||''))||String(left.game.title).localeCompare(String(right.game.title),'ru'))
-    .slice(0,maximumRecent);
-  const upcoming=classified.filter(row=>row.kind==='upcoming')
-    .sort((left,right)=>String(dateValue(left.event)||'9999').localeCompare(String(dateValue(right.event)||'9999'))||String(left.game.title).localeCompare(String(right.game.title),'ru'));
+  const eligible=(payload.releases||[]).filter(game=>game.editorial_quality?.homepage_eligible!==false);
+  const classified=eligible.map(game=>({game,event:primaryEvent(game)})).map(row=>({...row,kind:releaseKind(row.event,recentDays)})).filter(row=>row.kind!=='expired');
+  const recent=classified.filter(row=>row.kind==='recent').sort((left,right)=>String(dateEndValue(right.event)||'').localeCompare(String(dateEndValue(left.event)||''))||String(left.game.title).localeCompare(String(right.game.title),'ru')).slice(0,maximumRecent);
+  const upcoming=classified.filter(row=>row.kind==='upcoming').sort((left,right)=>String(dateValue(left.event)||'9999').localeCompare(String(dateValue(right.event)||'9999'))||Number(right.game.editorial_quality?.quality_score||0)-Number(left.game.editorial_quality?.quality_score||0)||String(left.game.title).localeCompare(String(right.game.title),'ru'));
   const selected=[...recent,...upcoming].slice(0,maximum);
   const rows=selected.map(row=>row.game);
-
   rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Новые и ожидаемые релизы пока не найдены.</div>';
-  bindFallbacks(rows);
-  bindRail();
-}).catch(error=>{
-  console.warn('Home releases:',error);
-  rail.innerHTML='<div class="home-release-empty">Календарь временно недоступен.</div>';
-});
+  bindFallbacks(rows);bindRail();
+}).catch(error=>{console.warn('Home releases:',error);rail.innerHTML='<div class="home-release-empty">Календарь временно недоступен.</div>'});
 })();
