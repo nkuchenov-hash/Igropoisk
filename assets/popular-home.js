@@ -1,7 +1,7 @@
 (()=>{
 'use strict';
 
-const REQUIRED_COUNT=20;
+const MAXIMUM_COUNT=20;
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const setState=(target,title,text)=>{target.innerHTML=`<div class="popular-state"><strong>${esc(title)}</strong><span>${esc(text)}</span></div>`};
 const reducedMotion=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -221,8 +221,8 @@ async function load(){
     ]);
     if(!popularResponse.ok)throw new Error(`Popularity HTTP ${popularResponse.status}`);
     const data=await popularResponse.json();
-    const ranking=Array.isArray(data.ranking)?data.ranking.slice(0,REQUIRED_COUNT):[];
-    if(ranking.length<REQUIRED_COUNT)throw new Error(`Expected ${REQUIRED_COUNT} games, received ${ranking.length}`);
+    const ranking=Array.isArray(data.ranking)?data.ranking.slice(0,MAXIMUM_COUNT):[];
+    if(!ranking.length)throw new Error('Popularity ranking is empty');
 
     const catalog=catalogResponse.ok?await catalogResponse.json():[];
     const existing=new Set((catalog||[]).map(item=>item.slug));
@@ -243,7 +243,7 @@ async function load(){
 
     const heading=target.closest('.section')?.querySelector('.section-head');
     if(heading){let meta=heading.querySelector('.section-head__meta');if(!meta){meta=document.createElement('div');meta.className='section-head__meta';heading.appendChild(meta)}let note=meta.querySelector('.popular-updated');if(!note){note=document.createElement('span');note.className='section-note popular-updated';meta.prepend(note)}note.textContent=data.generated_at?`Обновлено ${new Date(data.generated_at).toLocaleString('ru-RU')}`:'По данным парсера'}
-  }catch(error){console.warn('Игропоиск: popular feed unavailable',error);setState(target,'Рейтинг временно недоступен','Не удалось загрузить опубликованный топ-20.')}
+  }catch(error){console.warn('Игропоиск: popular feed unavailable',error);setState(target,'Рейтинг временно недоступен','Не удалось загрузить опубликованный рейтинг.')}
 }
 
 load();

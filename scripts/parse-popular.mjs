@@ -22,7 +22,7 @@ async function fetchText(url, options = {}) {
     ...options,
     signal: AbortSignal.timeout(timeout),
     headers: {
-      'user-agent': 'Mozilla/5.0 IgropoiskPopularityParser/6.0',
+      'user-agent': 'Mozilla/5.0 IgropoiskPopularityParser/7.0',
       'accept-language': 'en-US,en;q=0.9',
       ...(options.headers || {})
     }
@@ -64,7 +64,8 @@ function registerGame(input) {
       steam_appid: Number(input.steam_appid || input.appid) || null,
       image: input.image || manualMedia[slug] || '',
       aliases: [],
-      in_catalog: Boolean(input.in_catalog)
+      in_catalog: Boolean(input.in_catalog),
+      global_candidate: Boolean(input.global_candidate)
     };
     games.push(game);
     bySlug.set(slug, game);
@@ -73,6 +74,7 @@ function registerGame(input) {
   game.steam_appid ||= Number(input.steam_appid || input.appid) || null;
   game.image ||= input.image || manualMedia[slug] || '';
   game.in_catalog ||= Boolean(input.in_catalog);
+  game.global_candidate ||= Boolean(input.global_candidate);
   game.aliases = [...new Set([...(game.aliases || []), title, ...(input.aliases || [])]
     .filter(Boolean).map(canonical))].sort((a, b) => b.length - a.length);
   byTitle.set(canonical(title), game);
@@ -91,6 +93,7 @@ for (const item of catalog) {
     in_catalog: true
   });
 }
+for (const candidate of config.global_candidates || []) registerGame({ ...candidate, global_candidate: true });
 for (const alias of config.aliases || []) registerGame(alias);
 
 const signals = new Map();
@@ -99,18 +102,21 @@ function ensure(game) {
   if (!signals.has(game.slug)) signals.set(game.slug, {
     game,
     families: { news: 0, reddit: 0, youtube: 0, twitch: 0, steam_chart: 0 },
-    publishers: new Set(),
+    publishers: new Map(),
     evidence: []
   });
   return signals.get(game.slug);
 }
 function resolve(title) {
-  const value = ` ${canonical(title)} `;
+  const normalized = canonical(title);
+  const exact = byTitle.get(normalized);
+  if (exact) return exact;
+  const value = ` ${normalized} `;
   let best = null;
   for (const game of games) {
     for (const alias of game.aliases || []) {
       const words = alias.split(' ').length;
-      if (words === 1 && alias.length < 7) continue;
+      if (words === 1 && alias.length < 5) continue;
       if (value.includes(` ${alias} `) && (!best || alias.length > best.alias.length)) best = { game, alias };
     }
   }
@@ -134,13 +140,14 @@ function parseFeed(xml) {
   return (xml.match(/<item\b[\s\S]*?<\/item>|<entry\b[\s\S]*?<\/entry>/gi) || []).map(block => ({
     title: xmlTag(block, ['title']),
     date: xmlTag(block, ['pubDate', 'published', 'updated']),
-    publisher: xmlTag(block, ['source', 'author', 'dc:creator']),
     url: block.match(/<link[^>]+href=["']([^"']+)["']/i)?.[1] || xmlTag(block, ['link', 'guid'])
   })).filter(item => item.title);
 }
-function publisherFrom(item, fallback) {
-  if (item.publisher) return item.publisher;
-  return item.title.match(/\s+-\s+([^–—|-]{2,80})$/)?.[1] || fallback;
+function publisherFrom(item, source) {
+  if (String(source.id || '').startsWith('google-news-')) {
+    return item.title.match(/\s+-\s+([^–—|]{2,100})$/)?.[1]?.trim() || source.name;
+  }
+  return source.name;
 }
 
 const newsFeeds = [
@@ -162,10 +169,11 @@ async function collectNews() {
         if (!game) continue;
         const row = ensure(game);
         if (row.evidence.some(e => e.url && e.url === item.url)) continue;
-        const publisher = publisherFrom(item, source.name);
+        const publisher = publisherFrom(item, source);
+        const publisherId = canonical(publisher);
         row.families.news += freshness;
-        row.publishers.add(publisher);
-        row.evidence.push({ source: publisher, title: item.title, url: item.url, observed_at: item.date, family: 'news', value: Number(freshness.toFixed(3)) });
+        if (publisherId) row.publishers.set(publisherId, publisher);
+        row.evidence.push({ source: publisher, publisher_id: publisherId, title: item.title, url: item.url, observed_at: item.date, family: 'news', value: Number(freshness.toFixed(3)) });
         matched++;
       }
       statuses.push({ id: source.id, status: 'success', items: items.length, matched, duration_ms: Date.now() - started, url: source.url });
@@ -195,14 +203,15 @@ async function collectReddit() {
         items++;
         const game = resolve(`${post.title || ''} ${post.link_flair_text || ''}`);
         if (!game) continue;
-        const age = recency(new Date(Number(post.created_utc || 0) * 1000).toISOString(), 72, 18);
+        const observedAt = new Date(Number(post.created_utc || 0) * 1000).toISOString();
+        const age = recency(observedAt, 72, 18);
         if (!age) continue;
         const engagement = Math.log1p(Math.max(0, Number(post.score || 0))) + 0.6 * Math.log1p(Number(post.num_comments || 0));
         const value = age * engagement;
         if (value <= 0) continue;
         const row = ensure(game);
         row.families.reddit += value;
-        row.evidence.push({ source: `Reddit r/${post.subreddit}`, title: post.title, url: `https://www.reddit.com${post.permalink || ''}`, family: 'reddit', score: post.score, comments: post.num_comments, value: Number(value.toFixed(3)) });
+        row.evidence.push({ source: `Reddit r/${post.subreddit}`, title: post.title, url: `https://www.reddit.com${post.permalink || ''}`, observed_at: observedAt, family: 'reddit', score: post.score, comments: post.num_comments, value: Number(value.toFixed(3)) });
         matched++;
       }
     }
@@ -235,7 +244,7 @@ async function collectYouTube() {
         const value = Math.log1p(views) + 0.5 * Math.log1p(comments);
         const row = ensure(game);
         row.families.youtube += value;
-        row.evidence.push({ source: `YouTube ${region}`, title, url: `https://www.youtube.com/watch?v=${video.id}`, family: 'youtube', views, comments, value: Number(value.toFixed(3)) });
+        row.evidence.push({ source: `YouTube ${region}`, title, url: `https://www.youtube.com/watch?v=${video.id}`, observed_at: video.snippet?.publishedAt || checkedAt, family: 'youtube', views, comments, value: Number(value.toFixed(3)) });
         matched++;
       }
     }
@@ -250,25 +259,27 @@ async function collectTwitch() {
   const secret = process.env.TWITCH_CLIENT_SECRET;
   const started = Date.now();
   if (!clientId || !secret) {
-    statuses.push({ id: 'twitch-streams', status: 'skipped', error: 'TWITCH_CLIENT_ID/TWITCH_CLIENT_SECRET are not configured' });
+    statuses.push({ id: 'twitch-top-games', status: 'skipped', error: 'TWITCH_CLIENT_ID/TWITCH_CLIENT_SECRET are not configured' });
     return;
   }
   try {
     const token = await fetchJSON(`https://id.twitch.tv/oauth2/token?client_id=${encodeURIComponent(clientId)}&client_secret=${encodeURIComponent(secret)}&grant_type=client_credentials`, { method: 'POST' });
-    const data = await fetchJSON('https://api.twitch.tv/helix/streams?first=100', { headers: { Authorization: `Bearer ${token.access_token}`, 'Client-Id': clientId } });
+    const data = await fetchJSON('https://api.twitch.tv/helix/games/top?first=100', { headers: { Authorization: `Bearer ${token.access_token}`, 'Client-Id': clientId } });
     let matched = 0;
-    for (const stream of data.data || []) {
-      const game = resolve(stream.game_name);
+    for (const [index, category] of (data.data || []).entries()) {
+      const image = String(category.box_art_url || '').replace('{width}', '600').replace('{height}', '900');
+      const game = resolve(category.name) || registerGame({ title: category.name, image, global_candidate: true });
       if (!game) continue;
-      const value = Math.log1p(Number(stream.viewer_count || 0));
+      game.image ||= image;
+      const value = Math.max(0.01, 1 - index / 100);
       const row = ensure(game);
-      row.families.twitch += value;
-      row.evidence.push({ source: 'Twitch', title: stream.game_name, url: `https://www.twitch.tv/${stream.user_login}`, family: 'twitch', viewers: stream.viewer_count, value: Number(value.toFixed(3)) });
+      row.families.twitch = Math.max(row.families.twitch, value);
+      row.evidence.push({ source: 'Twitch Top Games', title: category.name, url: `https://www.twitch.tv/directory/category/${slugify(category.name)}`, observed_at: checkedAt, position: index + 1, family: 'twitch', value: Number(value.toFixed(3)) });
       matched++;
     }
-    statuses.push({ id: 'twitch-streams', status: 'success', items: (data.data || []).length, matched, duration_ms: Date.now() - started });
+    statuses.push({ id: 'twitch-top-games', status: 'success', items: (data.data || []).length, matched, duration_ms: Date.now() - started });
   } catch (error) {
-    statuses.push({ id: 'twitch-streams', status: 'error', error: error.message, duration_ms: Date.now() - started });
+    statuses.push({ id: 'twitch-top-games', status: 'error', error: error.message, duration_ms: Date.now() - started });
   }
 }
 
@@ -289,7 +300,7 @@ async function collectSteam() {
       const game = byAppid.get(item.appid) || registerGame({ title: item.title, appid: item.appid, image: item.image });
       const row = ensure(game);
       row.families.steam_chart = Math.max(row.families.steam_chart, 1 - index / 50);
-      row.evidence.push({ source: 'Steam Top Sellers', title: item.title, url: `https://store.steampowered.com/app/${item.appid}/`, position: index + 1, appid: item.appid, family: 'steam_chart', value: Number((1 - index / 50).toFixed(3)) });
+      row.evidence.push({ source: 'Steam Top Sellers', title: item.title, url: `https://store.steampowered.com/app/${item.appid}/`, observed_at: checkedAt, position: index + 1, appid: item.appid, family: 'steam_chart', value: Number((1 - index / 50).toFixed(3)) });
     });
     statuses.push({ id: 'steam-top-sellers', status: 'success', items: items.length, matched: items.length, duration_ms: Date.now() - started, url });
   } catch (error) {
@@ -317,6 +328,13 @@ async function imageCandidates(game) {
       `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/capsule_616x353.jpg`
     );
   }
+  if (!candidates.length && game.global_candidate) {
+    try {
+      const summary = await fetchJSON(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(game.title.replace(/\s+/g, '_'))}`);
+      if (summary?.originalimage?.source) candidates.push(summary.originalimage.source);
+      if (summary?.thumbnail?.source) candidates.push(summary.thumbnail.source);
+    } catch {}
+  }
   return [...new Set(candidates.filter(Boolean))];
 }
 
@@ -327,18 +345,18 @@ const maxima = {};
 for (const family of ['news', 'reddit', 'youtube', 'twitch', 'steam_chart']) {
   maxima[family] = Math.max(...rows.map(row => row.families[family] || 0), 1);
 }
-const weights = { news: 0.35, reddit: 0.20, youtube: 0.15, twitch: 0.10, steam_chart: 0.15, breadth: 0.05 };
+const weights = { news: 0.30, reddit: 0.15, youtube: 0.15, twitch: 0.20, steam_chart: 0.15, breadth: 0.05 };
 const excluded = new Set(['steam-deck', 'steam-machine', 'valve-index', 'steam-controller', 'steam-link']);
 const ranking = [];
 for (const row of rows) {
   if (excluded.has(row.game.slug)) continue;
   const normalized = {};
   for (const family of ['news', 'reddit', 'youtube', 'twitch', 'steam_chart']) normalized[family] = (row.families[family] || 0) / maxima[family];
+  const activeFamilies = ['news', 'reddit', 'youtube', 'twitch', 'steam_chart'].filter(family => normalized[family] > 0.01);
+  if (!activeFamilies.length) continue;
   const activeCommunityFamilies = ['news', 'reddit', 'youtube', 'twitch'].filter(family => normalized[family] > 0.02);
-  const discussed = row.publishers.size >= 2 || activeCommunityFamilies.length >= 2;
-  const hasDemand = normalized.steam_chart > 0;
-  if (!discussed && !hasDemand) continue;
-  const breadth = Math.min(1, (row.publishers.size + activeCommunityFamilies.length) / 7);
+  const hasPlatform = normalized.steam_chart > 0 || normalized.twitch > 0;
+  const breadth = Math.min(1, (row.publishers.size + activeCommunityFamilies.length) / 8);
   const score = 100 * (
     weights.news * normalized.news +
     weights.reddit * normalized.reddit +
@@ -355,27 +373,31 @@ for (const row of rows) {
     image: candidates[0] || '',
     image_candidates: candidates,
     score: Number(score.toFixed(1)),
-    confidence: Number(Math.min(1, 0.45 + 0.08 * activeCommunityFamilies.length + 0.04 * Math.min(row.publishers.size, 5) + (hasDemand ? 0.08 : 0)).toFixed(2)),
+    confidence: Number(Math.min(1, 0.35 + 0.09 * activeCommunityFamilies.length + 0.04 * Math.min(row.publishers.size, 6) + (hasPlatform ? 0.1 : 0)).toFixed(2)),
     delta: null,
-    families: ['news', 'reddit', 'youtube', 'twitch', 'steam_chart'].filter(family => row.families[family] > 0),
+    families: activeFamilies,
     signals: row.families,
     news_sources: row.publishers.size,
+    news_publishers: [...row.publishers.values()],
     in_catalog: row.game.in_catalog,
-    evidence: row.evidence.sort((a, b) => b.value - a.value).slice(0, 20)
+    global_candidate: row.game.global_candidate,
+    evidence: row.evidence.sort((a, b) => Number(b.value || 0) - Number(a.value || 0)).slice(0, 24)
   });
 }
-ranking.sort((a, b) => b.score - a.score || b.confidence - a.confidence);
+ranking.sort((a, b) => b.score - a.score || b.confidence - a.confidence || a.title.localeCompare(b.title, 'en'));
 
 const output = {
-  schema_version: 6,
+  schema_version: 7,
   generated_at: checkedAt,
   window_hours: 96,
   method: {
-    formula: '35% news + 20% Reddit + 15% YouTube + 10% Twitch + 15% Steam demand + 5% breadth',
+    formula: '30% news + 15% Reddit + 15% YouTube + 20% Twitch chart + 15% Steam chart + 5% breadth',
     family_weights: weights,
-    image_fallback: 'catalog/manual → Steam vertical poster → Steam app details → header/capsule'
+    news_sources_are_publishers: true,
+    candidate_universe: 'catalog + global candidates + Steam chart + Twitch chart',
+    image_fallback: 'catalog/manual → Twitch box art → Steam vertical poster → Steam app details → Wikipedia image'
   },
-  ranking: ranking.slice(0, 30),
+  ranking: ranking.slice(0, 60),
   discovered_unmatched: [],
   source_statuses: statuses
 };
@@ -384,14 +406,14 @@ fs.mkdirSync(path.join(root, 'data', 'parser-runs'), { recursive: true });
 fs.writeFileSync(path.join(root, 'data', 'popular', 'current.json'), `${JSON.stringify(output, null, 2)}\n`);
 const run = {
   parser: 'popular',
-  status: ranking.length >= 10 ? 'success' : 'warning',
+  status: ranking.length >= 10 ? 'success' : ranking.length ? 'partial' : 'error',
   checked_at: checkedAt,
   duration_ms: Date.now() - started,
   ranked_count: ranking.length,
   sources_success: statuses.filter(item => item.status === 'success').length,
   sources_total: statuses.length,
   output: 'data/popular/current.json',
-  note: 'Рейтинг рассчитан по новостям, Reddit, YouTube, Twitch, Steam и широте независимых сигналов.',
+  note: 'Кандидаты рассчитаны по независимым изданиям, YouTube, Reddit и текущим чартам Twitch/Steam; финальный отбор выполняется отдельным куратором.',
   source_statuses: statuses
 };
 fs.writeFileSync(path.join(root, 'data', 'parser-runs', 'popular.json'), `${JSON.stringify(run, null, 2)}\n`);
