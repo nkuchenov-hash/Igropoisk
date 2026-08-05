@@ -12,6 +12,7 @@ on:
         required: false
         type: string
   push:
+    branches: [staging]
     paths:
       - data/review-build-requests/all-catalog.json
       - scripts/build-all-review-articles.mjs
@@ -21,7 +22,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: build-all-review-articles
+  group: build-all-review-articles-staging
   cancel-in-progress: false
 
 jobs:
@@ -35,6 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: staging
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -45,14 +47,14 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
       - name: Verify required secret
         run: test -n "$OPENAI_API_KEY"
-      - name: Mark build as running
+      - name: Mark build as running on staging
         run: |
           mkdir -p data/parser-runs
-          node -e "const fs=require('fs');fs.writeFileSync('data/parser-runs/review-batch-runtime.json',JSON.stringify({schema_version:1,status:'running',started_at:new Date().toISOString(),workflow_run_id:process.env.GITHUB_RUN_ID,workflow_run_attempt:process.env.GITHUB_RUN_ATTEMPT,head_sha:process.env.GITHUB_SHA,ref:process.env.GITHUB_REF},null,2)+'\n')"
+          node -e "const fs=require('fs');fs.writeFileSync('data/parser-runs/review-batch-runtime.json',JSON.stringify({schema_version:1,status:'running',started_at:new Date().toISOString(),workflow_run_id:process.env.GITHUB_RUN_ID,workflow_run_attempt:process.env.GITHUB_RUN_ATTEMPT,head_sha:process.env.GITHUB_SHA,ref:'staging'},null,2)+'\n')"
           git add data/parser-runs/review-batch-runtime.json
-          git commit -m "Mark catalog article build running"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git commit -m "Mark catalog article build running on staging"
+          git pull --rebase origin staging
+          git push origin HEAD:staging
       - name: Build catalog review articles
         run: node scripts/build-all-review-articles.mjs
       - name: Mark build result
@@ -62,11 +64,11 @@ jobs:
           node -e "const fs=require('fs');const p='data/parser-runs/review-batch-runtime.json';let d={schema_version:1};try{d=JSON.parse(fs.readFileSync(p,'utf8'))}catch{};d.status=process.env.RESULT==='success'?'completed':'failed';d.finished_at=new Date().toISOString();d.workflow_run_id=process.env.GITHUB_RUN_ID;fs.writeFileSync(p,JSON.stringify(d,null,2)+'\n')"
         env:
           RESULT: ${{ job.status }}
-      - name: Commit generated articles and reports
+      - name: Commit generated articles and reports to staging
         if: always()
         run: |
           git add data article game
           git diff --cached --quiet && exit 0
-          git commit -m "Build catalog review articles"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git commit -m "Build catalog review articles on staging"
+          git pull --rebase origin staging
+          git push origin HEAD:staging

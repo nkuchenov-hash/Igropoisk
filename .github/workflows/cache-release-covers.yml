@@ -2,7 +2,7 @@ name: Cache release covers locally
 
 on:
   push:
-    branches: [main]
+    branches: [staging]
     paths:
       - '.github/workflows/cache-release-covers.yml'
       - 'scripts/cache-release-covers.mjs'
@@ -16,17 +16,17 @@ permissions:
   contents: write
 
 concurrency:
-  group: release-cover-cache
+  group: release-cover-cache-staging
   cancel-in-progress: true
 
 jobs:
   cache:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout staging
         uses: actions/checkout@v4
         with:
+          ref: staging
           fetch-depth: 0
 
       - name: Download and verify official covers
@@ -34,14 +34,15 @@ jobs:
           node --check scripts/cache-release-covers.mjs
           node scripts/cache-release-covers.mjs
 
-      - name: Commit local cover snapshot
+      - name: Commit local cover snapshot to staging
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add assets/covers/releases data/releases/current.json calendar/index.html
+          git add assets/covers/releases data/releases/current.json
           if git diff --cached --quiet; then
             echo 'Release covers are already current.'
             exit 0
           fi
-          git commit -m 'Обновить локальные обложки релизов'
-          git push origin HEAD:main
+          git commit -m 'Обновить локальные обложки релизов в staging'
+          git pull --rebase origin staging
+          git push origin HEAD:staging
