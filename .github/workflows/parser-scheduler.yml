@@ -101,6 +101,14 @@ jobs:
           git config user.name "igropoisk-parser[bot]"
           git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
 
+          remote_sha="$(git ls-remote origin "refs/heads/$GITHUB_REF_NAME" | cut -f1)"
+          if [ -z "$remote_sha" ] || [ "$remote_sha" != "$GITHUB_SHA" ]; then
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "superseded=true" >> "$GITHUB_OUTPUT"
+            echo "Branch advanced from $GITHUB_SHA to ${remote_sha:-unknown}; stale generated snapshot will not be rebased or published."
+            exit 0
+          fi
+
           paths=(
             data/popular/current.json
             data/popular/published.json
@@ -124,14 +132,15 @@ jobs:
 
           if git diff --cached --quiet; then
             echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "superseded=false" >> "$GITHUB_OUTPUT"
             echo "Parser snapshots are already current."
             exit 0
           fi
 
           git commit -m "Update curated popular and release feeds"
-          git pull --rebase origin "$GITHUB_REF_NAME"
           git push origin "HEAD:$GITHUB_REF_NAME"
           echo "published=true" >> "$GITHUB_OUTPUT"
+          echo "superseded=false" >> "$GITHUB_OUTPUT"
 
       - name: Deploy updated production feeds
         if: steps.publication.outputs.published == 'true' && github.ref == 'refs/heads/main'
