@@ -8,7 +8,14 @@ const requiredFiles = [
   'features/news/shared/index.js',
   'features/news/home-widget/index.js',
   'features/news/archive-page/index.js',
-  'features/news/styles/index.css'
+  'features/news/styles/index.css',
+  'config/news-pipeline.json',
+  'scripts/run-news-pipeline.mjs',
+  'scripts/validate-news-pipeline.mjs',
+  'scripts/test-news-pipeline.mjs',
+  '.github/workflows/news-pipeline.yml',
+  '.github/workflows/update-news.yml',
+  '.github/workflows/update-publisher-news.yml'
 ];
 const errors = [];
 const read = path => fs.readFileSync(path, 'utf8');
@@ -19,6 +26,7 @@ for (const path of requiredFiles) {
 
 if (!errors.length) {
   const manifest = JSON.parse(read('features/news/module.json'));
+  const pipelineConfig = JSON.parse(read('config/news-pipeline.json'));
   const index = read('index.html');
   const requiredReferences = [
     'data-news-module="home"',
@@ -54,13 +62,46 @@ if (!errors.length) {
     previousIndex = position;
   }
 
-  if (manifest.version < 2) errors.push('News module manifest must use version 2 or newer.');
+  if (manifest.version < 3) errors.push('News module manifest must use version 3 or newer.');
   if (manifest.contentApi?.global !== 'IgropoiskNewsContent') errors.push('News module manifest is missing the content API global.');
   if (manifest.contentApi?.version !== 1) errors.push('News module manifest must declare News Content API version 1.');
   ['getAll', 'getHome', 'health', 'invalidate'].forEach(method => {
     if (!manifest.contentApi?.interface?.includes(method)) errors.push(`News module manifest is missing content API method: ${method}`);
   });
   if (!manifest.runtime?.includes('features/news/content-api/index.js')) errors.push('News module runtime does not include the content API.');
+
+  const expectedPipeline = {
+    config: 'config/news-pipeline.json',
+    workflow: '.github/workflows/news-pipeline.yml',
+    orchestrator: 'scripts/run-news-pipeline.mjs',
+    publicationGate: 'scripts/validate-news-pipeline.mjs',
+    test: 'scripts/test-news-pipeline.mjs',
+    publication: 'single-validated-atomic-commit'
+  };
+  for (const [key, value] of Object.entries(expectedPipeline)) {
+    if (manifest.pipeline?.[key] !== value) errors.push(`News module manifest has invalid pipeline.${key}.`);
+  }
+
+  const groupIds = new Set((pipelineConfig.groups || []).map(group => group.id));
+  ['global-media', 'official-sources'].forEach(id => {
+    if (!groupIds.has(id)) errors.push(`News pipeline config is missing source group: ${id}`);
+  });
+  if (!pipelineConfig.rebuild_commands?.includes('node scripts/build-news-events.mjs')) errors.push('News pipeline does not rebuild unified events.');
+  if (!pipelineConfig.rebuild_commands?.includes('node scripts/build-home-news.mjs')) errors.push('News pipeline does not rebuild the homepage feed.');
+  ['data/news.json', 'data/publisher-news.json', 'data/youtube-signals.json', 'data/news-events.json', 'data/news-home-ru.json', 'assets/news', 'assets/publisher-news'].forEach(path => {
+    if (!pipelineConfig.publication?.commit_paths?.includes(path)) errors.push(`News pipeline atomic commit is missing: ${path}`);
+  });
+
+  const canonicalWorkflow = read('.github/workflows/news-pipeline.yml');
+  if (!canonicalWorkflow.includes("cron: '23 * * * *'")) errors.push('Canonical news pipeline schedule is missing or changed.');
+  if (!canonicalWorkflow.includes('workflow_call:')) errors.push('Canonical news pipeline is not reusable by manual aliases.');
+  if (!canonicalWorkflow.includes('node scripts/run-news-pipeline.mjs')) errors.push('Canonical workflow does not run the orchestrator.');
+  if (!canonicalWorkflow.includes('node scripts/validate-news-pipeline.mjs --baseline HEAD^')) errors.push('Canonical workflow does not revalidate the rebased publication commit.');
+  for (const aliasPath of ['.github/workflows/update-news.yml', '.github/workflows/update-publisher-news.yml']) {
+    const alias = read(aliasPath);
+    if (/\bschedule\s*:/.test(alias)) errors.push(`${aliasPath} still has an independent schedule.`);
+    if (!alias.includes('uses: ./.github/workflows/news-pipeline.yml')) errors.push(`${aliasPath} bypasses the canonical pipeline.`);
+  }
 
   ['assets/news-feed.js', 'assets/news-rail-controls.js', 'assets/news-click-fix.js', 'assets/news-archive-full.js', 'assets/news-archive-full.css'].forEach(reference => {
     if (index.includes(reference)) errors.push(`Legacy news runtime is still referenced: ${reference}`);
@@ -130,4 +171,4 @@ if (!errors.length) {
 if (errors.length) {
   throw new Error(`News module validation failed:\n${errors.map(error => `- ${error}`).join('\n')}`);
 }
-console.log('News Content API boundary, presentation runtime and central component contract verified.');
+console.log('News Content API, autonomous pipeline, presentation runtime and central component contract verified.');
