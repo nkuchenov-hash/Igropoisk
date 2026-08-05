@@ -14,6 +14,13 @@ on:
         required: false
         type: boolean
         default: false
+    secrets:
+      YC_S3_ACCESS_KEY_ID:
+        required: true
+      YC_S3_SECRET_ACCESS_KEY:
+        required: true
+      YC_S3_BUCKET:
+        required: true
   schedule:
     - cron: '23 * * * *'
   push:
@@ -35,6 +42,7 @@ on:
       - 'scripts/test-news-pipeline.mjs'
       - 'scripts/test-news-pipeline-health.mjs'
       - 'scripts/test-news-content-api.mjs'
+      - 'scripts/test-news-storage-content-api.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/publish-news-storage.mjs'
@@ -73,6 +81,7 @@ jobs:
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
+          node scripts/test-news-storage-content-api.mjs
 
       - name: Collect validate and prepare one isolated snapshot
         env:
