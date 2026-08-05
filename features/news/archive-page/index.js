@@ -28,7 +28,7 @@
     }));
     grid.innerHTML = filtered.length
       ? filtered.map(item => api.renderCard(item, { compact: false, lang })).join('')
-      : `<div class="ig-news__state">${api.escapeHtml(copy.empty)}</div>`;
+      : `<div class="ig-empty-state">${api.escapeHtml(copy.empty)}</div>`;
     root.dataset.newsVisibleCount = String(filtered.length);
   }
 
@@ -41,8 +41,8 @@
       .slice(0, 18)
       .map(([tag]) => tag);
 
-    toolbar.innerHTML = `<div class="ig-news-toolbar__top"><input type="search" data-news-search placeholder="${api.escapeHtml(copy.search)}"></div>
-      <div class="ig-news-toolbar__tags"><button class="is-active" type="button" data-news-tag="">${api.escapeHtml(copy.all)}</button>${tags.map(tag => `<button type="button" data-news-tag="${api.escapeHtml(tag)}">${api.escapeHtml(tag)}</button>`).join('')}</div>`;
+    toolbar.innerHTML = `<div><input class="ig-input ig-input--search" type="search" data-news-search placeholder="${api.escapeHtml(copy.search)}"></div>
+      <div class="ig-filter-list"><button class="ig-filter-chip is-active" type="button" data-news-tag="">${api.escapeHtml(copy.all)}</button>${tags.map(tag => `<button class="ig-filter-chip" type="button" data-news-tag="${api.escapeHtml(tag)}">${api.escapeHtml(tag)}</button>`).join('')}</div>`;
 
     toolbar.addEventListener('click', event => {
       const button = event.target.closest('[data-news-tag]');

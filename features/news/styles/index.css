@@ -3,34 +3,12 @@
 .ig-news--home .ig-news__home-grid::-webkit-scrollbar{display:none}
 .ig-news--home .ig-news__home-grid.is-dragging{cursor:grabbing;scroll-snap-type:none}
 .ig-news--home .ig-news-card{flex:0 0 var(--ig-news-home-card);width:var(--ig-news-home-card);scroll-snap-align:start}
-.ig-news--home .ig-news-card__body{min-height:132px}
-.ig-news__controls{display:flex;align-items:center;gap:8px;margin-left:auto}
-.ig-news__control{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--ig-line);border-radius:999px;background:var(--ig-surface);color:var(--ig-text);font:700 18px/1 var(--ig-font);transition:border-color var(--ig-transition),background var(--ig-transition),transform var(--ig-transition)}
-.ig-news__control:hover{border-color:var(--ig-line-strong);background:var(--ig-surface-2)}
-.ig-news__control:active{transform:translateY(1px)}
-.ig-news__control:focus-visible{outline:2px solid var(--ig-accent);outline-offset:2px}
-.ig-news-card{display:flex;min-width:0;flex-direction:column;color:inherit;text-decoration:none}
-.ig-news-card__image{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--ig-surface-2)}
-.ig-news-card__body{display:flex;flex:1;flex-direction:column;padding:14px}
-.ig-news-card__date{margin-bottom:8px;color:var(--ig-muted);font-size:var(--ig-font-min);line-height:1.5}
-.ig-news-card__tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
-.ig-news-card__tags span{display:inline-flex;min-height:24px;align-items:center;padding:4px 8px;border-radius:999px;background:var(--ig-surface-2);color:var(--ig-muted);font-size:var(--ig-font-min);font-weight:700;line-height:1.5}
-.ig-news-card__title{margin:0;font-size:20px;line-height:1.35}
-.ig-news-card__summary{margin:10px 0 0;color:var(--ig-muted);font-size:var(--ig-font-min);line-height:1.5}
-.ig-news__state{grid-column:1/-1;width:100%;padding:24px;color:var(--ig-muted);border:1px dashed var(--ig-line-strong);border-radius:var(--ig-radius-md)}
-.ig-news__state--error{color:var(--ig-danger)}
+.ig-news--home .ig-card__body{min-height:132px}
 .ig-news--archive.ig-container{width:100%!important;max-width:none!important;margin:0!important;padding:48px var(--ig-gutter) 80px!important}
-.ig-news--archive h1{margin:0 0 22px;font:800 clamp(25px,1.65vw,34px)/1 var(--ig-game-display);letter-spacing:-.04em}
 .ig-news--archive .ig-news__archive-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;width:100%;align-items:stretch}
 .ig-news--archive .ig-news-card{width:100%}
-.ig-news-toolbar{display:grid;gap:14px;margin:0 0 24px}
-.ig-news-toolbar__top input{width:min(100%,520px);height:46px;padding:0 15px;border:1px solid var(--ig-line);border-radius:12px;background:var(--ig-surface);color:var(--ig-text);font:inherit}
-.ig-news-toolbar__tags{display:flex;gap:8px;flex-wrap:wrap}
-.ig-news-toolbar__tags button{border:1px solid var(--ig-line);border-radius:999px;background:transparent;color:var(--ig-muted);padding:8px 12px;font:700 12px/1 var(--ig-font);transition:background var(--ig-transition),color var(--ig-transition),border-color var(--ig-transition)}
-.ig-news-toolbar__tags button:hover{color:var(--ig-text);border-color:var(--ig-line-strong)}
-.ig-news-toolbar__tags button.is-active{background:var(--ig-text);border-color:var(--ig-text);color:var(--ig-bg)}
 @media(min-width:1800px){.ig-news{--ig-news-home-card:390px}.ig-news--archive .ig-news__archive-grid{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}}
 @media(min-width:2400px){.ig-news{--ig-news-home-card:420px}}
 @media(min-width:3200px){.ig-news{--ig-news-home-card:440px}}
-@media(max-width:760px){.ig-news{--ig-news-home-card:min(84vw,340px)}.ig-news--home .ig-news__home-grid{gap:11px;padding-bottom:10px}.ig-news--home .ig-news-card__body{min-height:118px}.ig-news__controls{gap:8px}.ig-news__control{width:34px;height:34px;font-size:16px}.ig-news--archive.ig-container{padding:34px 20px 60px!important}.ig-news--archive .ig-news__archive-grid{grid-template-columns:1fr}.ig-news-toolbar__top input{width:100%}}
+@media(max-width:760px){.ig-news{--ig-news-home-card:min(84vw,340px)}.ig-news--home .ig-news__home-grid{gap:11px;padding-bottom:10px}.ig-news--home .ig-card__body{min-height:118px}.ig-news--archive.ig-container{padding:34px 20px 60px!important}.ig-news--archive .ig-news__archive-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.ig-news--home .ig-news__home-grid{scroll-behavior:auto}}

@@ -28,7 +28,11 @@ if (!errors.length) {
     'features/news/shared/translations-ru.js',
     'features/news/shared/index.js',
     'features/news/home-widget/index.js',
-    'features/news/archive-page/index.js'
+    'features/news/archive-page/index.js',
+    'class="ig-icon-button ig-news__control"',
+    'class="ig-toolbar ig-news-toolbar"',
+    'class="ig-page-title"',
+    'class="ig-empty-state"'
   ];
   requiredReferences.forEach(reference => {
     if (!index.includes(reference)) errors.push(`index.html is missing: ${reference}`);
@@ -62,6 +66,11 @@ if (!errors.length) {
     }
   }
 
+  const designSystem = read('assets/design-system.css');
+  ['.ig-card--interactive', '.ig-icon-button', '.ig-input', '.ig-filter-chip', '.ig-empty-state'].forEach(token => {
+    if (!designSystem.includes(token)) errors.push(`Central design system is missing required component: ${token}`);
+  });
+
   const moduleScripts = [
     'features/news/shared/index.js',
     'features/news/home-widget/index.js',
@@ -69,6 +78,10 @@ if (!errors.length) {
   ].map(read).join('\n');
   ['#popular', '#reviews', '.site-header', '#search', '#calendar', 'assets/auth.js'].forEach(token => {
     if (moduleScripts.includes(token)) errors.push(`News runtime touches a foreign surface: ${token}`);
+  });
+
+  ['ig-card', 'ig-card__media', 'ig-card__body', 'ig-card__meta', 'ig-card__title', 'ig-chip', 'ig-input', 'ig-filter-chip', 'ig-empty-state'].forEach(token => {
+    if (!moduleScripts.includes(token)) errors.push(`News module is not consuming central component: ${token}`);
   });
 
   const dataWrites = /(?:writeFile|appendFile|localStorage\.setItem|sessionStorage\.setItem)/;

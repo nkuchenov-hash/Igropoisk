@@ -233,20 +233,20 @@
     const title = escapeHtml(text(item, 'title', lang));
     const summary = escapeHtml(text(item, 'summary', lang));
     const tags = deriveTags(item, lang);
-    return `<a class="card ig-news-card${compact ? ' ig-news-card--compact' : ''}" href="${escapeHtml(item.primaryUrl)}" target="_blank" rel="noopener noreferrer" data-news-external>
-      <img class="ig-news-card__image" src="${escapeHtml(absoluteAsset(item.image))}" alt="${title}" loading="lazy">
-      <div class="card-body ig-news-card__body">
-        <div class="ig-news-card__date">${escapeHtml(formatters[lang].format(new Date(item.publishedAt)))} · ${escapeHtml(sourceName(item))}</div>
-        ${tags.length ? `<div class="ig-news-card__tags">${tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
-        <h3 class="ig-news-card__title">${title}</h3>
-        ${compact || !summary ? '' : `<p class="ig-news-card__summary">${summary}</p>`}
+    return `<a class="ig-card ig-card--interactive ig-news-card${compact ? ' ig-news-card--compact' : ''}" href="${escapeHtml(item.primaryUrl)}" target="_blank" rel="noopener noreferrer" data-news-external>
+      <img class="ig-card__media ig-card__media--landscape" src="${escapeHtml(absoluteAsset(item.image))}" alt="${title}" loading="lazy">
+      <div class="ig-card__body">
+        <div class="ig-card__meta">${escapeHtml(formatters[lang].format(new Date(item.publishedAt)))} · ${escapeHtml(sourceName(item))}</div>
+        ${tags.length ? `<div class="ig-chip-list">${tags.map(tag => `<span class="ig-chip">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+        <h3 class="ig-card__title">${title}</h3>
+        ${compact || !summary ? '' : `<p class="ig-card__summary">${summary}</p>`}
       </div>
     </a>`;
   }
 
   function setState(target, message, kind = '') {
     if (!target) return;
-    target.innerHTML = `<div class="ig-news__state${kind ? ` ig-news__state--${escapeHtml(kind)}` : ''}">${escapeHtml(message)}</div>`;
+    target.innerHTML = `<div class="ig-empty-state${kind ? ` ig-empty-state--${escapeHtml(kind)}` : ''}">${escapeHtml(message)}</div>`;
   }
 
   window.IgropoiskNews = Object.freeze({ absoluteAsset, deriveTags, escapeHtml, isGlobal, labels, language, loadAll, loadHome, matchesRegion, renderCard, score, setState, text, userRegion });

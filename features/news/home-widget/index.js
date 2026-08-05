@@ -70,7 +70,7 @@
       const items = await api.loadHome(lang);
       rail.innerHTML = items.length
         ? items.map(item => api.renderCard(item, { compact: true, lang })).join('')
-        : `<div class="ig-news__state">${api.escapeHtml(copy.empty)}</div>`;
+        : `<div class="ig-empty-state">${api.escapeHtml(copy.empty)}</div>`;
       root.dataset.newsStatus = items.length ? 'ready' : 'empty';
       root.dispatchEvent(new CustomEvent('ig:news:home-ready', { detail: { count: items.length } }));
     } catch (error) {
