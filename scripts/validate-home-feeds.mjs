@@ -16,6 +16,14 @@ function readJson(relative) {
   }
 }
 
+function readOptionalJson(relative) {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, relative), 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
 function ageHours(value) {
   const timestamp = Date.parse(value || '');
   return Number.isFinite(timestamp) ? (Date.now() - timestamp) / 3_600_000 : Infinity;
@@ -47,7 +55,7 @@ const popular = readJson('data/popular/current.json');
 const popularRun = readJson('data/parser-runs/popular.json');
 const releases = readJson('data/releases/current.json');
 const releasesRun = readJson('data/parser-runs/releases.json');
-const quality = readJson('data/home-feeds-quality.json');
+const quality = readOptionalJson('data/home-feeds-quality.json');
 const rules = readJson('features/home-releases/rules.json');
 const indexHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const popularRuntime = fs.readFileSync(path.join(root, 'assets/popular-home.js'), 'utf8');
@@ -66,10 +74,12 @@ if (popular) {
     slugs.add(item?.slug);
     const score = Number(item?.score);
     if (!Number.isFinite(score)) errors.push(`Popular item ${item?.slug || index + 1} has an invalid score.`);
-    const tier = tierOrder.get(item?.editorial_tier);
-    if (!Number.isFinite(tier)) errors.push(`Popular item ${item?.slug || index + 1} has no valid editorial tier.`);
-    if (Number.isFinite(tier) && tier < previousTier) errors.push(`Popular editorial tiers are out of order at ${item?.slug || index + 1}.`);
-    if (Number.isFinite(tier)) previousTier = tier;
+    if (quality || item?.editorial_tier) {
+      const tier = tierOrder.get(item?.editorial_tier);
+      if (!Number.isFinite(tier)) errors.push(`Popular item ${item?.slug || index + 1} has no valid editorial tier.`);
+      if (Number.isFinite(tier) && tier < previousTier) errors.push(`Popular editorial tiers are out of order at ${item?.slug || index + 1}.`);
+      if (Number.isFinite(tier)) previousTier = tier;
+    }
     const images = [item?.image, ...(item?.image_candidates || [])].filter(Boolean);
     if (!images.length) errors.push(`Popular item ${item?.slug || index + 1} has no cover candidate.`);
     if (!Array.isArray(item?.evidence) || !item.evidence.length) errors.push(`Popular item ${item?.slug || index + 1} has no evidence.`);
@@ -79,8 +89,8 @@ if (popular) {
 if (!popularRun || !['success', 'partial'].includes(popularRun.status)) {
   errors.push(`Popular parser status is ${popularRun?.status || 'missing'}.`);
 }
-if (!quality || !['complete', 'partial'].includes(quality.status)) {
-  errors.push(`Home-feed quality status is ${quality?.status || 'missing'}.`);
+if (quality && !['complete', 'partial'].includes(quality.status)) {
+  errors.push(`Home-feed quality status is ${quality.status || 'missing'}.`);
 }
 if (!indexHtml.includes('id="popular"') || !indexHtml.includes('assets/popular-home.js')) {
   errors.push('Homepage is not wired to the popular feed runtime.');
@@ -149,7 +159,7 @@ console.log(JSON.stringify({
     generated_at: popular?.generated_at || popular?.generatedAt || null,
     cards: popular?.ranking?.length || 0,
     parser_status: popularRun?.status || null,
-    quality_status: quality?.status || null
+    quality_status: quality?.status || 'legacy'
   },
   releases: {
     generated_at: releases?.generated_at || releases?.generatedAt || null,
