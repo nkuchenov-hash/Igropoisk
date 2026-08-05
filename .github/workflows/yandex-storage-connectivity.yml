@@ -8,6 +8,9 @@ on:
     paths:
       - '.github/workflows/yandex-storage-connectivity.yml'
       - 'scripts/check-yandex-storage.mjs'
+      - 'scripts/lib/yandex-object-storage.mjs'
+      - 'scripts/publish-news-storage.mjs'
+      - 'config/news-pipeline.json'
 
 permissions:
   contents: read
@@ -19,7 +22,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - name: Checkout isolated feature branch
         uses: actions/checkout@v4
@@ -29,8 +32,11 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Check syntax
-        run: node --check scripts/check-yandex-storage.mjs
+      - name: Check isolated storage code
+        run: |
+          node --check scripts/lib/yandex-object-storage.mjs
+          node --check scripts/check-yandex-storage.mjs
+          node --check scripts/publish-news-storage.mjs
 
       - name: Write read and remove a temporary probe
         env:
@@ -40,3 +46,12 @@ jobs:
           YC_S3_REGION: ru-central1
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
         run: node scripts/check-yandex-storage.mjs
+
+      - name: Prepare a complete news snapshot without publishing it
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/publish-news-storage.mjs --dry-run
