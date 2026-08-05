@@ -1,0 +1,37 @@
+name: Validate automated staging changes
+
+on:
+  workflow_run:
+    workflows:
+      - Synchronize main into staging
+      - Autonomous news pipeline
+      - Central parser scheduler
+      - Cache release covers locally
+      - Maintain Игропоиск content
+      - Parse game data
+      - Parse game news
+      - Parse game awards
+      - Parse critic ratings
+      - Build Игропоиск review
+      - Build all review articles
+      - Materialize manual review
+      - Parse and build 50 game pages separately
+    types: [completed]
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: validate-latest-automated-staging-snapshot
+  cancel-in-progress: true
+
+jobs:
+  dispatch:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate the latest staging commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run phase-a-validation.yml --ref staging

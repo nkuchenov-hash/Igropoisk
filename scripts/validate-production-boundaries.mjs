@@ -15,6 +15,13 @@ if (/materialize-deployment\.mjs|inject-release-ui\.mjs|enforce_layout_contract\
 if (!pages.includes('node scripts/verify-deployment-source.mjs')) fail('Production Pages workflow does not verify immutable source.');
 if (!pages.includes('node scripts/validate-production-boundaries.mjs')) fail('Production Pages workflow does not verify automation boundaries.');
 
+const stagingGate = read('.github/workflows/phase-a-validation.yml');
+if (!stagingGate.includes('workflow_dispatch:')) fail('Staging gate cannot be dispatched after an automated staging write.');
+const stagingWatcher = read('.github/workflows/staging-gate-watch.yml');
+if (!stagingWatcher.includes('workflow_run:') || !stagingWatcher.includes('gh workflow run phase-a-validation.yml --ref staging')) {
+  fail('Automated staging writers are not followed by the full staging gate.');
+}
+
 for (const name of fs.readdirSync(WORKFLOWS).filter(file => /\.ya?ml$/i.test(file))) {
   const relative = `.github/workflows/${name}`;
   const content = read(relative);
@@ -47,4 +54,4 @@ if (errors.length) {
   throw new Error(`Production boundary validation failed:\n${errors.map(error => `- ${error}`).join('\n')}`);
 }
 
-console.log('Production deployment is read-only and automated writers target staging only.');
+console.log('Production is read-only; automated writers target staging and trigger the full staging gate.');
