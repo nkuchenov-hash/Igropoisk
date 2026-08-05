@@ -16,6 +16,7 @@ const now = Date.now();
 const checkedAt = new Date(now).toISOString();
 
 const primaryRules = config.popular.primary || {};
+const directDemandRules = config.popular.direct_demand || {};
 const secondaryRules = config.popular.secondary || {};
 const secondaryFamilies = new Set(secondaryRules.allowed_independent_families || ['news', 'youtube', 'reddit', 'twitch']);
 const liveFamilies = new Set(['youtube', 'reddit', 'twitch']);
@@ -46,10 +47,20 @@ for (const [rankIndex, item] of (popular.ranking || []).entries()) {
   const freshFamilies = new Set(freshEvidence.map(evidence => evidence.family));
   const position = steamPosition(item);
   const hasSteam = Number.isFinite(position);
+
+  const directDemandReasons = [];
+  if (!directDemandRules.enabled) directDemandReasons.push('direct_demand_disabled');
+  if (!hasSteam) directDemandReasons.push('direct_demand_not_in_steam_top_sellers');
+  if (hasSteam && position > Number(directDemandRules.maximum_steam_position || 10)) directDemandReasons.push('direct_demand_position_too_low');
+  if (confidence < Number(directDemandRules.minimum_confidence || 0)) directDemandReasons.push('direct_demand_low_confidence');
+  if (score < Number(directDemandRules.minimum_score || 0)) directDemandReasons.push('direct_demand_low_score');
+  const directDemandEligible = directDemandReasons.length === 0;
+
   const evergreenBlocked = Boolean(
-    config.popular.evergreen_requires_fresh_non_steam_signal &&
+    config.popular.evergreen_requires_fresh_non_steam_signal_unless_top_demand &&
     item.in_catalog &&
-    freshEvidence.length === 0
+    freshEvidence.length === 0 &&
+    !directDemandEligible
   );
 
   const primaryReasons = [];
@@ -60,27 +71,36 @@ for (const [rankIndex, item] of (popular.ranking || []).entries()) {
   const secondaryReasons = [];
   if (!secondaryRules.enabled) secondaryReasons.push('secondary_disabled');
   if (!hasSteam) secondaryReasons.push('secondary_not_in_steam_top_sellers');
-  if (hasSteam && position > Number(secondaryRules.maximum_steam_position || 40)) secondaryReasons.push('secondary_steam_position_too_low');
+  if (hasSteam && position > Number(secondaryRules.maximum_steam_position || 45)) secondaryReasons.push('secondary_steam_position_too_low');
   if (freshEvidence.length < Number(secondaryRules.minimum_independent_evidence || 1)) secondaryReasons.push('secondary_no_fresh_independent_signal');
   if (confidence < Number(secondaryRules.minimum_confidence || 0)) secondaryReasons.push('secondary_low_confidence');
   if (score < Number(secondaryRules.minimum_score || 0)) secondaryReasons.push('secondary_low_score');
 
   const primaryEligible = !evergreenBlocked && primaryReasons.length === 0;
   const secondaryEligible = !evergreenBlocked && secondaryReasons.length === 0;
-  const tier = primaryEligible ? 'primary' : secondaryEligible ? 'steam_corroborated' : null;
+  const tier = primaryEligible
+    ? 'primary'
+    : directDemandEligible
+      ? 'steam_top_demand'
+      : secondaryEligible
+        ? 'steam_corroborated'
+        : null;
   const eligible = Boolean(tier);
   const reasons = eligible
     ? []
     : unique([
-        evergreenBlocked ? 'evergreen_without_fresh_signal' : null,
+        evergreenBlocked ? 'evergreen_without_fresh_signal_or_top_demand' : null,
         ...primaryReasons,
+        ...directDemandReasons,
         ...secondaryReasons
       ]);
   const selectionReason = tier === 'primary'
     ? `Несколько свежих независимых сигналов: ${[...freshFamilies].join(', ')}`
-    : tier === 'steam_corroborated'
-      ? `Steam Top ${position} + свежий независимый сигнал: ${[...freshFamilies].join(', ')}`
-      : null;
+    : tier === 'steam_top_demand'
+      ? `Сильный прямой спрос: Steam Top ${position}`
+      : tier === 'steam_corroborated'
+        ? `Steam Top ${position} + свежий независимый сигнал: ${[...freshFamilies].join(', ')}`
+        : null;
 
   popularAudit.push({
     rank: rankIndex + 1,
@@ -167,7 +187,7 @@ for (const game of releases.releases || []) {
 const selectedPopularAudit = popularAudit.filter(item => item.eligible).slice(0, config.popular.minimum_cards);
 const selectedReleaseAudit = releaseAudit.filter(item => item.homepage_eligible).slice(0, config.releases.homepage_limit);
 const qualitySnapshot = {
-  schema_version: 2,
+  schema_version: 3,
   generated_at: checkedAt,
   gate: {
     status: selectedPopularAudit.length >= config.popular.minimum_cards && selectedReleaseAudit.length > 0 ? 'pass' : 'blocked',
@@ -198,7 +218,6 @@ const qualitySnapshot = {
   }
 };
 
-// The audit snapshot is always written, including when the publication gate blocks the feed.
 write('data/home-feeds-quality.json', qualitySnapshot);
 
 const gateErrors = [];
@@ -213,9 +232,10 @@ popular.editorial_quality = {
   checked_at: checkedAt,
   eligible_count: popularSelected.length,
   primary_count: popularAudit.filter(item => item.tier === 'primary').length,
+  steam_top_demand_count: popularAudit.filter(item => item.tier === 'steam_top_demand').length,
   steam_corroborated_count: popularAudit.filter(item => item.tier === 'steam_corroborated').length,
   rejected_count: popularAudit.filter(item => !item.eligible).length,
-  rules: 'primary-multi-signal-or-steam-top-sellers-plus-fresh-independent-signal'
+  rules: 'multi-signal-or-steam-top-10-direct-demand-or-steam-top-45-plus-fresh-independent-signal'
 };
 write('data/popular/current.json', popular);
 
@@ -230,6 +250,7 @@ write('data/releases/current.json', releases);
 console.log(JSON.stringify({
   popular_eligible: popularSelected.length,
   popular_primary: popularAudit.filter(item => item.tier === 'primary').length,
+  popular_steam_top_demand: popularAudit.filter(item => item.tier === 'steam_top_demand').length,
   popular_steam_corroborated: popularAudit.filter(item => item.tier === 'steam_corroborated').length,
   releases_homepage_eligible: releaseAudit.filter(item => item.homepage_eligible).length
 }, null, 2));
