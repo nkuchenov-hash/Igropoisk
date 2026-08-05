@@ -2,7 +2,7 @@ name: News pipeline staging
 
 on:
   push:
-    branches: [phase-b4-autonomous-news-pipeline]
+    branches: [phase-b4-autonomous-news-pipeline, phase-b5-news-health]
   workflow_dispatch:
 
 permissions:
@@ -29,6 +29,7 @@ jobs:
       - name: Run contract tests
         run: |
           node scripts/test-news-pipeline.mjs
+          node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
           node scripts/validate-news-module.mjs
 
@@ -65,6 +66,7 @@ jobs:
             data/youtube-signals.json
             data/news-events.json
             data/news-home-ru.json
+            data/news-pipeline-health.json
             assets/news
             assets/publisher-news
           if-no-files-found: warn
