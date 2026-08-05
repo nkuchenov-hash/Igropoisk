@@ -3,7 +3,6 @@ name: Deploy Igropoisk to GitHub Pages
 on:
   push:
     branches: [main]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -12,7 +11,7 @@ permissions:
 
 concurrency:
   group: github-pages-production
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   verify:
@@ -28,10 +27,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Verify deployment source is already materialized
+      - name: Verify immutable production source and automation boundaries
         run: |
-          node scripts/materialize-deployment.mjs
-          git diff --exit-code
+          node scripts/verify-deployment-source.mjs
+          node scripts/validate-production-boundaries.mjs
+          test -z "$(git status --porcelain)"
 
       - name: Verify JavaScript syntax
         run: |
@@ -94,8 +94,10 @@ jobs:
           node scripts/validate-game-v3.mjs
           node scripts/validate-editorial-pipeline.mjs
 
-      - name: Reject malformed patches
-        run: git diff --check
+      - name: Reject generated or malformed changes
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain)"
 
   deploy:
     needs: verify
