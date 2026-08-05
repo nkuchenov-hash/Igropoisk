@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "popular": {
     "maximum_snapshot_age_hours": 12,
     "minimum_cards": 20,
@@ -7,12 +7,6 @@
       "minimum_confidence": 0.55,
       "minimum_score": 4,
       "minimum_independent_families": 2
-    },
-    "direct_demand": {
-      "enabled": true,
-      "maximum_steam_position": 15,
-      "minimum_confidence": 0.5,
-      "minimum_score": 10
     },
     "secondary": {
       "enabled": true,
@@ -23,7 +17,7 @@
       "allowed_independent_families": ["news", "youtube", "reddit", "twitch"],
       "fresh_signal_hours": 96
     },
-    "evergreen_requires_fresh_non_steam_signal_unless_top_demand": true
+    "evergreen_requires_fresh_non_steam_signal": true
   },
   "releases": {
     "recent_days": 7,
