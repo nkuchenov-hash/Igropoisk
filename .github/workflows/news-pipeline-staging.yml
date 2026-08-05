@@ -45,7 +45,7 @@ jobs:
           const { execFileSync } = require('node:child_process');
           const config = require('./config/news-pipeline.json');
           const allowed = config.publication.commit_paths;
-          const changed = execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' })
+          const changed = execFileSync('git', ['status', '--porcelain', '--untracked-files=all'], { encoding: 'utf8' })
             .split('\n').filter(Boolean).map(line => line.slice(3));
           const foreign = changed.filter(file => file !== 'tmp/news-pipeline-staging-report.json'
             && !allowed.some(prefix => file === prefix || file.startsWith(`${prefix}/`)));
