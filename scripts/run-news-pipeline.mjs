@@ -33,6 +33,17 @@ export function selectDueGroups(config, { now = Date.now(), force = false, readJ
   return (config.groups || []).filter(group => groupIsDue(group, now, readJson, force));
 }
 
+export function healthNeedsInitialization(config, readJson) {
+  const file = config.health?.output_file;
+  if (!file) return false;
+  try {
+    const health = readJson(file);
+    return !health || health.status === 'pending' || !generatedAtFromPayload(health);
+  } catch {
+    return true;
+  }
+}
+
 function defaultReadJson(file) {
   return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
@@ -49,6 +60,12 @@ function defaultCommandRunner(command) {
 function writeReport(reportPath, report) {
   fs.mkdirSync(path.dirname(reportPath), { recursive: true });
   fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
+}
+
+function healthCommand(config, dueGroups, startedAt) {
+  const command = config.health?.command;
+  if (!command) return null;
+  return `${command} --groups ${dueGroups.map(group => group.id).join(',')} --run-started-at ${startedAt}`;
 }
 
 export function runPipeline({
@@ -68,6 +85,7 @@ export function runPipeline({
     finished_at: null,
     status: 'running',
     forced: force,
+    health_initialization: false,
     due_groups: [],
     stages: []
   };
@@ -88,7 +106,8 @@ export function runPipeline({
   };
 
   try {
-    const dueGroups = selectDueGroups(config, { now, force, readJson });
+    report.health_initialization = healthNeedsInitialization(config, readJson);
+    const dueGroups = selectDueGroups(config, { now, force: force || report.health_initialization, readJson });
     report.due_groups = dueGroups.map(group => group.id);
     if (!dueGroups.length) {
       report.status = 'noop';
@@ -102,7 +121,24 @@ export function runPipeline({
       for (const command of group.commands || []) execute(group.id, command);
     }
     for (const command of config.rebuild_commands || []) execute('rebuild', command);
+
+    const buildHealth = healthCommand(config, dueGroups, startedAt);
+    if (buildHealth) execute('health', buildHealth);
+
     for (const command of config.validation_commands || defaultValidationCommands) execute('validation', command);
+
+    const healthFile = config.health?.output_file;
+    if (healthFile) {
+      try {
+        const health = readJson(healthFile);
+        report.health = {
+          status: health.status,
+          generated_at: health.generated_at,
+          source_success_ratio: health.sources?.success_ratio ?? null,
+          warnings: health.warnings?.length || 0
+        };
+      } catch {}
+    }
 
     report.status = 'success';
     report.finished_at = new Date().toISOString();

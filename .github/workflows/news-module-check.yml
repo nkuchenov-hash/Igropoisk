@@ -2,29 +2,36 @@ name: News module check
 
 on:
   push:
-    branches: [phase-b1-news-isolation, phase-b3-news-content-api, phase-b4-autonomous-news-pipeline]
+    branches: [phase-b1-news-isolation, phase-b3-news-content-api, phase-b4-autonomous-news-pipeline, phase-b5-news-health]
   pull_request:
     branches: [main]
     paths:
       - 'features/news/**'
+      - 'admin/index.html'
+      - 'admin/news-health/**'
       - 'index.html'
       - 'assets/home-page.js'
       - 'assets/home-page.css'
       - 'assets/home-wide-rails.css'
       - 'assets/design-system.css'
+      - 'data/news-pipeline-health.json'
       - 'fix.css'
       - 'config/news-pipeline.json'
       - 'scripts/migrate-news-isolation.mjs'
       - 'scripts/smoke-news-browser.mjs'
+      - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
+      - 'scripts/test-news-pipeline-health.mjs'
       - 'scripts/test-news-content-api.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/validate-news-boundary.mjs'
       - 'scripts/validate-central-design-system.mjs'
       - '.github/workflows/news-module-check.yml'
       - '.github/workflows/news-pipeline.yml'
+      - '.github/workflows/news-pipeline-staging.yml'
+      - '.github/workflows/pages.yml'
       - '.github/workflows/update-news.yml'
       - '.github/workflows/update-publisher-news.yml'
 
@@ -59,10 +66,11 @@ jobs:
           node scripts/migrate-news-isolation.mjs
           git diff --exit-code
 
-      - name: Verify News Content API and autonomous pipeline contracts
+      - name: Verify News Content API autonomous pipeline and health contracts
         run: |
           node scripts/test-news-content-api.mjs
           node scripts/test-news-pipeline.mjs
+          node scripts/test-news-pipeline-health.mjs
           node scripts/validate-news-pipeline.mjs
 
       - name: Verify news module and central component boundary

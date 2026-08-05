@@ -3,6 +3,14 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
+const feedFiles = [
+  'data/news.json',
+  'data/publisher-news.json',
+  'data/youtube-signals.json',
+  'data/news-events.json',
+  'data/news-home-ru.json'
+];
+
 const trackingParameters = new Set([
   'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id',
   'gclid', 'fbclid', 'ref', 'referrer', 'source'
@@ -14,6 +22,10 @@ function readJson(root, file) {
 
 function payloadItems(payload) {
   return Array.isArray(payload) ? payload : Array.isArray(payload?.items) ? payload.items : [];
+}
+
+function payloadGeneratedAt(payload) {
+  return payload?.generatedAt || payload?.generated_at || payload?.checkedAt || payload?.checked_at || null;
 }
 
 function itemUrl(item) {
@@ -79,6 +91,51 @@ function baselinePayload(file, baseline) {
   }
 }
 
+function validateHealth(health, payloads, itemCounts, config, errors) {
+  const healthFile = config.health?.output_file || 'data/news-pipeline-health.json';
+  if (!health || typeof health !== 'object') {
+    errors.push(`${healthFile} is not an object.`);
+    return;
+  }
+  if (health.pipeline !== 'news') errors.push(`${healthFile} has an invalid pipeline id.`);
+  if (health.status === 'pending') {
+    if (health.generated_at || health.last_successful_run_at) errors.push(`${healthFile} pending snapshot cannot claim a successful run.`);
+    return;
+  }
+  if (!['healthy', 'degraded', 'error'].includes(health.status)) errors.push(`${healthFile} has an invalid status: ${health.status}.`);
+  if (health.status === 'error') errors.push(`${healthFile} reports blocking health errors.`);
+  if (!validDate(health.generated_at)) errors.push(`${healthFile} has no valid generated_at.`);
+  if (!validDate(health.last_successful_run_at)) errors.push(`${healthFile} has no valid last_successful_run_at.`);
+  if (!Array.isArray(health.due_groups) || !health.due_groups.length) errors.push(`${healthFile} has no checked source groups.`);
+
+  for (const file of feedFiles) {
+    const metric = health.data?.[file];
+    const payload = payloads.get(file);
+    if (!metric) {
+      errors.push(`${healthFile} does not describe ${file}.`);
+      continue;
+    }
+    if (Number(metric.count) !== Number(itemCounts[file] || 0)) errors.push(`${healthFile} count mismatch for ${file}.`);
+    const sourceGeneratedAt = payloadGeneratedAt(payload);
+    if (sourceGeneratedAt && metric.generated_at !== new Date(sourceGeneratedAt).toISOString()) {
+      errors.push(`${healthFile} generated_at mismatch for ${file}.`);
+    }
+    const blockingAge = Number(config.health?.blocking_age_minutes?.[file] || 0);
+    if (blockingAge && Number(metric.age_minutes) > blockingAge) errors.push(`${healthFile} marks ${file} older than ${blockingAge} minutes.`);
+  }
+
+  const official = payloads.get('data/publisher-news.json') || {};
+  const totalSources = Number(official.sourceCount || official.sourceReport?.length || 0);
+  const successfulSources = Number(official.successfulSourceCount || official.sourceReport?.filter(item => item.status === 'ok').length || 0);
+  if (Number(health.sources?.total) !== totalSources) errors.push(`${healthFile} official source total is inconsistent.`);
+  if (Number(health.sources?.successful) !== successfulSources) errors.push(`${healthFile} official source success count is inconsistent.`);
+  if (!Array.isArray(health.sources?.history)) errors.push(`${healthFile} has no source history.`);
+  if (!Array.isArray(health.sources?.persistent_failures)) errors.push(`${healthFile} has no persistent failure list.`);
+  if (Number(health.images?.missing || 0) !== 0) errors.push(`${healthFile} reports missing images.`);
+  if (!Array.isArray(health.warnings) || !Array.isArray(health.blocking_errors)) errors.push(`${healthFile} has invalid diagnostic lists.`);
+  if (health.blocking_errors?.length) errors.push(`${healthFile} contains blocking errors.`);
+}
+
 export function validateNewsPipeline({ root = process.cwd(), configPath = 'config/news-pipeline.json', baseline = null } = {}) {
   const errors = [];
   const config = readJson(root, configPath);
@@ -98,7 +155,9 @@ export function validateNewsPipeline({ root = process.cwd(), configPath = 'confi
   }
 
   const itemCounts = {};
-  for (const [file, payload] of payloads) {
+  for (const file of feedFiles) {
+    const payload = payloads.get(file);
+    if (!payload) continue;
     const items = validateFeed(root, file, payload, config, errors);
     itemCounts[file] = items.length;
     const previous = baselinePayload(file, baseline);
@@ -130,19 +189,25 @@ export function validateNewsPipeline({ root = process.cwd(), configPath = 'confi
     else if (ratio < minimumRatio) errors.push(`Only ${(ratio * 100).toFixed(1)}% of official sources succeeded; minimum is ${(minimumRatio * 100).toFixed(1)}%.`);
   }
 
+  validateHealth(payloads.get(config.health?.output_file || 'data/news-pipeline-health.json'), payloads, itemCounts, config, errors);
+
   const module = readJson(root, 'features/news/module.json');
   const contentFiles = new Set((module.content || []).filter(value => value.endsWith('.json')));
-  for (const file of ['data/news.json', 'data/publisher-news.json', 'data/youtube-signals.json', 'data/news-events.json', 'data/news-home-ru.json']) {
+  for (const file of [...feedFiles, config.health?.output_file || 'data/news-pipeline-health.json']) {
     if (!contentFiles.has(file)) errors.push(`News pipeline source is absent from module.json: ${file}.`);
   }
   if (!module.contentApi || module.contentApi.global !== 'IgropoiskNewsContent') {
     errors.push('features/news/module.json does not declare IgropoiskNewsContent.');
+  }
+  if (module.pipeline?.health !== (config.health?.output_file || 'data/news-pipeline-health.json')) {
+    errors.push('features/news/module.json does not declare the pipeline health snapshot.');
   }
 
   return {
     ok: errors.length === 0,
     errors,
     counts: itemCounts,
+    health: payloads.get(config.health?.output_file || 'data/news-pipeline-health.json')?.status || 'missing',
     checked_at: new Date().toISOString(),
     baseline
   };
@@ -163,5 +228,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if (!result.ok) {
     throw new Error(`News pipeline publication gate failed:\n${result.errors.map(error => `- ${error}`).join('\n')}`);
   }
-  console.log(`News pipeline publication gate passed: ${JSON.stringify(result.counts)}.`);
+  console.log(`News pipeline publication gate passed: ${JSON.stringify(result.counts)}; health=${result.health}.`);
 }

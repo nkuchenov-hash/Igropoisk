@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "timezone": "UTC",
   "schedule_cron": "23 * * * *",
   "groups": [
@@ -27,13 +27,33 @@
     "node scripts/build-news-events.mjs",
     "node scripts/build-home-news.mjs"
   ],
+  "health": {
+    "output_file": "data/news-pipeline-health.json",
+    "command": "node scripts/build-news-pipeline-health.mjs",
+    "persistent_failure_threshold": 3,
+    "warning_age_minutes": {
+      "data/news.json": 2160,
+      "data/publisher-news.json": 120,
+      "data/youtube-signals.json": 120,
+      "data/news-events.json": 120,
+      "data/news-home-ru.json": 120
+    },
+    "blocking_age_minutes": {
+      "data/news.json": 4320,
+      "data/publisher-news.json": 360,
+      "data/youtube-signals.json": 360,
+      "data/news-events.json": 360,
+      "data/news-home-ru.json": 360
+    }
+  },
   "publication": {
     "required_files": [
       "data/news.json",
       "data/publisher-news.json",
       "data/youtube-signals.json",
       "data/news-events.json",
-      "data/news-home-ru.json"
+      "data/news-home-ru.json",
+      "data/news-pipeline-health.json"
     ],
     "commit_paths": [
       "data/news.json",
@@ -41,6 +61,7 @@
       "data/youtube-signals.json",
       "data/news-events.json",
       "data/news-home-ru.json",
+      "data/news-pipeline-health.json",
       "assets/news",
       "assets/publisher-news"
     ],

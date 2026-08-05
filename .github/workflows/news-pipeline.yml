@@ -29,9 +29,11 @@ on:
       - 'scripts/fetch-youtube-signals.mjs'
       - 'scripts/build-news-events.mjs'
       - 'scripts/build-home-news.mjs'
+      - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
+      - 'scripts/test-news-pipeline-health.mjs'
       - 'scripts/test-news-content-api.mjs'
       - 'scripts/validate-news-module.mjs'
       - '.github/workflows/news-pipeline.yml'
@@ -64,8 +66,10 @@ jobs:
       - name: Verify pipeline code before network work
         run: |
           node --check scripts/run-news-pipeline.mjs
+          node --check scripts/build-news-pipeline-health.mjs
           node --check scripts/validate-news-pipeline.mjs
           node scripts/test-news-pipeline.mjs
+          node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
 
       - name: Collect validate and prepare one publication snapshot
@@ -105,6 +109,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: news-pipeline-report-${{ github.run_id }}
-          path: tmp/news-pipeline-report.json
+          path: |
+            tmp/news-pipeline-report.json
+            data/news-pipeline-health.json
           if-no-files-found: warn
           retention-days: 14

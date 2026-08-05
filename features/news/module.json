@@ -1,10 +1,11 @@
 {
   "id": "news",
-  "version": 3,
+  "version": 4,
   "enforcement": "strict",
   "roots": {
     "home": "[data-news-module=\"home\"]",
-    "archive": "[data-news-module=\"archive\"]"
+    "archive": "[data-news-module=\"archive\"]",
+    "adminHealth": "[data-news-health-admin]"
   },
   "runtime": [
     "features/news/shared/translations-ru.js",
@@ -12,6 +13,7 @@
     "features/news/shared/index.js",
     "features/news/home-widget/index.js",
     "features/news/archive-page/index.js",
+    "features/news/admin-health/index.js",
     "features/news/styles/index.css"
   ],
   "contentApi": {
@@ -30,7 +32,10 @@
     "workflow": ".github/workflows/news-pipeline.yml",
     "orchestrator": "scripts/run-news-pipeline.mjs",
     "publicationGate": "scripts/validate-news-pipeline.mjs",
+    "healthBuilder": "scripts/build-news-pipeline-health.mjs",
+    "health": "data/news-pipeline-health.json",
     "test": "scripts/test-news-pipeline.mjs",
+    "healthTest": "scripts/test-news-pipeline-health.mjs",
     "schedule": "hourly-with-per-source-cadence",
     "publication": "single-validated-atomic-commit"
   },
@@ -40,6 +45,7 @@
     "data/publisher-news.json",
     "data/youtube-signals.json",
     "data/news-home-ru.json",
+    "data/news-pipeline-health.json",
     "assets/news/",
     "assets/publisher-news/"
   ],
@@ -58,6 +64,7 @@
     "ig-chip",
     "ig-chip-list",
     "ig-toolbar",
+    "ig-panel",
     "ig-empty-state",
     "ig-page-title"
   ],
