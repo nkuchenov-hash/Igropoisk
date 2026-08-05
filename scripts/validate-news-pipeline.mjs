@@ -3,6 +3,11 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
+const trackingParameters = new Set([
+  'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id',
+  'gclid', 'fbclid', 'ref', 'referrer', 'source'
+]);
+
 function readJson(root, file) {
   return JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
 }
@@ -13,6 +18,20 @@ function payloadItems(payload) {
 
 function itemUrl(item) {
   return String(item?.primaryUrl || item?.url || '').trim();
+}
+
+export function canonicalSourceUrl(value) {
+  try {
+    const url = new URL(value);
+    url.hash = '';
+    for (const key of [...url.searchParams.keys()]) {
+      if (trackingParameters.has(key.toLowerCase())) url.searchParams.delete(key);
+    }
+    url.searchParams.sort();
+    return url.href;
+  } catch {
+    return String(value || '').trim();
+  }
 }
 
 function validDate(value) {
@@ -29,8 +48,9 @@ function validateFeed(root, file, payload, config, errors) {
     const prefix = `${file} item ${index + 1}`;
     const url = itemUrl(item);
     if (!/^https?:\/\//i.test(url)) errors.push(`${prefix} has no valid source URL.`);
-    if (url && seenUrls.has(url.replace(/[?#].*$/, ''))) errors.push(`${prefix} duplicates a source URL.`);
-    if (url) seenUrls.add(url.replace(/[?#].*$/, ''));
+    const canonicalUrl = canonicalSourceUrl(url);
+    if (url && seenUrls.has(canonicalUrl)) errors.push(`${prefix} duplicates a source URL.`);
+    if (url) seenUrls.add(canonicalUrl);
     if (!validDate(item.publishedAt)) errors.push(`${prefix} has no valid publishedAt.`);
     if (!String(item.titleRu || item.titleEn || item.title || '').trim()) errors.push(`${prefix} has no title.`);
 
@@ -112,8 +132,8 @@ export function validateNewsPipeline({ root = process.cwd(), configPath = 'confi
 
   const module = readJson(root, 'features/news/module.json');
   const contentFiles = new Set((module.content || []).filter(value => value.endsWith('.json')));
-  for (const file of ['data/news.json', 'data/publisher-news.json', 'data/news-events.json', 'data/news-home-ru.json']) {
-    if (!contentFiles.has(file)) errors.push(`News Content API source is absent from module.json: ${file}.`);
+  for (const file of ['data/news.json', 'data/publisher-news.json', 'data/youtube-signals.json', 'data/news-events.json', 'data/news-home-ru.json']) {
+    if (!contentFiles.has(file)) errors.push(`News pipeline source is absent from module.json: ${file}.`);
   }
   if (!module.contentApi || module.contentApi.global !== 'IgropoiskNewsContent') {
     errors.push('features/news/module.json does not declare IgropoiskNewsContent.');
