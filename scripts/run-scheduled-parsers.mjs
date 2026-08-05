@@ -59,7 +59,19 @@ if (fs.existsSync(path.join(root, 'data/popular/current.json')) && fs.existsSync
   const started = Date.now();
   try {
     execSync('node scripts/curate-home-feeds.mjs', { cwd: root, stdio: 'inherit', env: process.env });
-    editorialQuality = { status: 'success', duration_ms: Date.now() - started, output: 'data/home-feeds-quality.json' };
+    const postCuration = [];
+    for (const command of config.post_curation_commands || []) {
+      const commandStarted = Date.now();
+      console.log(`post-curation: running ${command}`);
+      execSync(command, { cwd: root, stdio: 'inherit', env: process.env });
+      postCuration.push({ command, status: 'success', duration_ms: Date.now() - commandStarted });
+    }
+    editorialQuality = {
+      status: 'success',
+      duration_ms: Date.now() - started,
+      output: 'data/home-feeds-quality.json',
+      post_curation: postCuration
+    };
   } catch (error) {
     editorialQuality = { status: 'error', duration_ms: Date.now() - started, error: error.message };
     results.push({ id: 'editorial-quality', ...editorialQuality });
@@ -69,7 +81,7 @@ if (fs.existsSync(path.join(root, 'data/popular/current.json')) && fs.existsSync
 const failed = results.filter(result => result.status === 'error');
 const succeeded = results.filter(result => result.status === 'success');
 const report = {
-  schema_version: 2,
+  schema_version: 3,
   checked_at: checkedAt,
   forced: force,
   status: failed.length ? (succeeded.length ? 'partial' : 'error') : 'success',
