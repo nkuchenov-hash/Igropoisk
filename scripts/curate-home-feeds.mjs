@@ -109,46 +109,50 @@ for (const [rankIndex, item] of (popular.ranking || []).entries()) {
     (Number.isFinite(steamPosition) || Number.isFinite(twitchPosition))
   );
 
-  const tier = !verifiedCover
-    ? null
-    : confirmed
-      ? 'confirmed'
-      : communityDominant
-        ? 'community_dominant'
-        : platformCorroborated
-          ? 'platform_corroborated'
-          : currentPlatformChart
-            ? 'platform_chart'
-            : null;
-  const selectionReason = tier === 'confirmed'
+  const relevanceTier = confirmed
+    ? 'confirmed'
+    : communityDominant
+      ? 'community_dominant'
+      : platformCorroborated
+        ? 'platform_corroborated'
+        : currentPlatformChart
+          ? 'platform_chart'
+          : null;
+  const presentationReady = Boolean(item.image || (item.image_candidates || []).length);
+  const tier = relevanceTier && presentationReady ? relevanceTier : null;
+  const selectionReason = relevanceTier === 'confirmed'
     ? confirmedByNews
       ? `Свежие материалы минимум в ${newsSources} независимых изданиях`
       : `Свежие сигналы в нескольких группах: ${[...freshFamilies].join(', ')}`
-    : tier === 'community_dominant'
+    : relevanceTier === 'community_dominant'
       ? `${youtubeUniqueVideos} свежих YouTube-видео от ${youtubeUniqueChannels} каналов, ${youtubeTotalViews.toLocaleString('en-US')} просмотров`
-      : tier === 'platform_corroborated'
+      : relevanceTier === 'platform_corroborated'
         ? `${Number.isFinite(steamPosition) ? `Steam Top ${steamPosition}` : `Twitch Top ${twitchPosition}`} + независимое подтверждение`
-        : tier === 'platform_chart'
+        : relevanceTier === 'platform_chart'
           ? `${Number.isFinite(steamPosition) ? `Steam Top ${steamPosition}` : `Twitch Top ${twitchPosition}`} сейчас`
           : null;
 
   const reasons = [];
-  if (!verifiedCover) reasons.push('missing_verified_cover');
-  if (!tier) {
+  if (!verifiedCover) reasons.push('unverified_cover_fallback');
+  if (!presentationReady) reasons.push('missing_cover_candidate');
+  if (!relevanceTier) {
     if (!confirmedByNews) reasons.push(`news_publishers_below_${Number(confirmedRules.minimum_news_publishers || 3)}`);
     if (!confirmedByBreadth) reasons.push('insufficient_independent_families');
     if (!communityDominant) reasons.push('community_signal_below_threshold');
     if (!Number.isFinite(steamPosition) && !Number.isFinite(twitchPosition)) reasons.push('not_in_current_platform_chart');
     if (confidence < Number(platformRules.minimum_confidence || 0)) reasons.push('low_confidence');
     if (score < Number(platformRules.minimum_score || 0)) reasons.push('low_score');
+  } else if (!presentationReady) {
+    reasons.push('relevant_but_not_renderable');
   }
 
   const audited = {
     rank: rankIndex + 1,
     slug: item.slug,
     title: item.title,
-    eligible: Boolean(tier),
-    tier,
+    eligible: Boolean(relevanceTier),
+    publishable: Boolean(tier),
+    tier: relevanceTier,
     reasons: unique(reasons),
     selection_reason: selectionReason,
     score,

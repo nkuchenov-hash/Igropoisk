@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "popular",
   "title": "Парсер «Сейчас популярно»",
   "status": "active",
@@ -24,51 +24,329 @@
     ]
   },
   "families": [
-    {"id":"news","label":"Игровые издания","weight":0.3,"metric":"свежие упоминания и число независимых изданий"},
-    {"id":"reddit","label":"Reddit","weight":0.15,"metric":"свежие посты, комментарии и score"},
-    {"id":"youtube","label":"YouTube Gaming","weight":0.15,"metric":"просмотры и обсуждение свежих игровых видео"},
-    {"id":"twitch","label":"Twitch","weight":0.2,"metric":"позиция в текущем чарте категорий Twitch"},
-    {"id":"steam","label":"Steam","weight":0.15,"metric":"позиция в текущем Steam Top Sellers"},
-    {"id":"breadth","label":"Широта интереса","weight":0.05,"metric":"число независимых групп и изданий"}
+    {
+      "id": "news",
+      "label": "Игровые издания",
+      "weight": 0.3,
+      "metric": "свежие упоминания и число независимых изданий"
+    },
+    {
+      "id": "reddit",
+      "label": "Reddit",
+      "weight": 0.15,
+      "metric": "свежие посты, комментарии и score"
+    },
+    {
+      "id": "youtube",
+      "label": "YouTube Gaming",
+      "weight": 0.15,
+      "metric": "просмотры и обсуждение свежих игровых видео"
+    },
+    {
+      "id": "twitch",
+      "label": "Twitch",
+      "weight": 0.2,
+      "metric": "позиция в текущем чарте категорий Twitch"
+    },
+    {
+      "id": "steam",
+      "label": "Steam",
+      "weight": 0.15,
+      "metric": "позиция в текущем Steam Top Sellers"
+    },
+    {
+      "id": "breadth",
+      "label": "Широта интереса",
+      "weight": 0.05,
+      "metric": "число независимых групп и изданий"
+    }
   ],
   "sources": [
-    {"id":"ign-rss","enabled":true,"family":"news","name":"IGN","type":"rss","url":"https://www.ign.com/rss/articles/feed","weight":1},
-    {"id":"pcgamer-rss","enabled":true,"family":"news","name":"PC Gamer","type":"rss","url":"https://www.pcgamer.com/rss/","weight":1},
-    {"id":"gamespot-rss","enabled":true,"family":"news","name":"GameSpot","type":"rss","url":"https://www.gamespot.com/feeds/mashup/","weight":1},
-    {"id":"eurogamer-rss","enabled":true,"family":"news","name":"Eurogamer","type":"rss","url":"https://www.eurogamer.net/feed","weight":1},
-    {"id":"rps-rss","enabled":true,"family":"news","name":"Rock Paper Shotgun","type":"rss","url":"https://www.rockpapershotgun.com/feed","weight":1},
-    {"id":"polygon-rss","enabled":true,"family":"news","name":"Polygon","type":"rss","url":"https://www.polygon.com/rss/index.xml","weight":1},
-    {"id":"twitch-top-games","enabled":true,"family":"twitch","name":"Twitch Helix — топ игровых категорий","type":"api","url":"https://api.twitch.tv/helix/games/top?first=100","secret_names":["TWITCH_CLIENT_ID","TWITCH_CLIENT_SECRET"],"weight":1},
-    {"id":"youtube-popular","enabled":true,"family":"youtube","name":"YouTube Data API — Gaming","type":"api","url":"https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&videoCategoryId=20&maxResults=50","secret_names":["YOUTUBE_API_KEY"],"weight":1},
-    {"id":"reddit-gaming","enabled":true,"family":"reddit","name":"Reddit — игровые сообщества","type":"api","url":"https://oauth.reddit.com/r/Games+gaming+pcgaming+PS5+XboxSeriesX+NintendoSwitch/new?limit=100","secret_names":["REDDIT_ACCESS_TOKEN"],"weight":1},
-    {"id":"steam-top-sellers","enabled":true,"family":"steam","name":"Steam Top Sellers","type":"http","url":"https://store.steampowered.com/search/?filter=topsellers","weight":1}
+    {
+      "id": "ign-rss",
+      "enabled": true,
+      "family": "news",
+      "name": "IGN",
+      "type": "rss",
+      "url": "https://www.ign.com/rss/articles/feed",
+      "weight": 1
+    },
+    {
+      "id": "pcgamer-rss",
+      "enabled": true,
+      "family": "news",
+      "name": "PC Gamer",
+      "type": "rss",
+      "url": "https://www.pcgamer.com/rss/",
+      "weight": 1
+    },
+    {
+      "id": "gamespot-rss",
+      "enabled": true,
+      "family": "news",
+      "name": "GameSpot",
+      "type": "rss",
+      "url": "https://www.gamespot.com/feeds/mashup/",
+      "weight": 1
+    },
+    {
+      "id": "eurogamer-rss",
+      "enabled": true,
+      "family": "news",
+      "name": "Eurogamer",
+      "type": "rss",
+      "url": "https://www.eurogamer.net/feed",
+      "weight": 1
+    },
+    {
+      "id": "rps-rss",
+      "enabled": true,
+      "family": "news",
+      "name": "Rock Paper Shotgun",
+      "type": "rss",
+      "url": "https://www.rockpapershotgun.com/feed",
+      "weight": 1
+    },
+    {
+      "id": "polygon-rss",
+      "enabled": true,
+      "family": "news",
+      "name": "Polygon",
+      "type": "rss",
+      "url": "https://www.polygon.com/rss/index.xml",
+      "weight": 1
+    },
+    {
+      "id": "twitch-top-games",
+      "enabled": true,
+      "family": "twitch",
+      "name": "Twitch Helix — топ игровых категорий",
+      "type": "api",
+      "url": "https://api.twitch.tv/helix/games/top?first=100",
+      "secret_names": [
+        "TWITCH_CLIENT_ID",
+        "TWITCH_CLIENT_SECRET"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "youtube-popular",
+      "enabled": true,
+      "family": "youtube",
+      "name": "YouTube Data API — Gaming",
+      "type": "api",
+      "url": "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&videoCategoryId=20&maxResults=50",
+      "secret_names": [
+        "YOUTUBE_API_KEY"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "reddit-gaming",
+      "enabled": true,
+      "family": "reddit",
+      "name": "Reddit — игровые сообщества",
+      "type": "api",
+      "url": "https://oauth.reddit.com/r/Games+gaming+pcgaming+PS5+XboxSeriesX+NintendoSwitch/new?limit=100",
+      "secret_names": [
+        "REDDIT_ACCESS_TOKEN"
+      ],
+      "weight": 1
+    },
+    {
+      "id": "steam-top-sellers",
+      "enabled": true,
+      "family": "steam",
+      "name": "Steam Top Sellers",
+      "type": "http",
+      "url": "https://store.steampowered.com/search/?filter=topsellers",
+      "weight": 1
+    }
   ],
   "global_candidates": [
-    {"slug":"roblox","title":"Roblox","aliases":["Roblox"]},
-    {"slug":"genshin-impact","title":"Genshin Impact","aliases":["Genshin","原神"]},
-    {"slug":"fortnite","title":"Fortnite","aliases":["Fortnite Battle Royale"]},
-    {"slug":"minecraft","title":"Minecraft","aliases":["Minecraft Java Edition","Minecraft Bedrock"]},
-    {"slug":"league-of-legends","title":"League of Legends","aliases":["LoL"]},
-    {"slug":"valorant","title":"Valorant","aliases":["VALORANT"]},
-    {"slug":"call-of-duty-warzone","title":"Call of Duty: Warzone","aliases":["Warzone","COD Warzone"]},
-    {"slug":"marvel-rivals","title":"Marvel Rivals","aliases":["MARVEL Rivals"]},
-    {"slug":"overwatch-2","title":"Overwatch 2","aliases":["Overwatch"]},
-    {"slug":"honkai-star-rail","title":"Honkai: Star Rail","aliases":["Honkai Star Rail","HSR"]},
-    {"slug":"apex-legends","title":"Apex Legends","aliases":["Apex"]},
-    {"slug":"pubg-battlegrounds","title":"PUBG: Battlegrounds","aliases":["PUBG","PlayerUnknown's Battlegrounds"]}
+    {
+      "slug": "roblox",
+      "title": "Roblox",
+      "aliases": [
+        "Roblox"
+      ]
+    },
+    {
+      "slug": "genshin-impact",
+      "title": "Genshin Impact",
+      "aliases": [
+        "Genshin",
+        "原神"
+      ]
+    },
+    {
+      "slug": "fortnite",
+      "title": "Fortnite",
+      "aliases": [
+        "Fortnite Battle Royale"
+      ]
+    },
+    {
+      "slug": "minecraft",
+      "title": "Minecraft",
+      "aliases": [
+        "Minecraft Java Edition",
+        "Minecraft Bedrock"
+      ]
+    },
+    {
+      "slug": "league-of-legends",
+      "title": "League of Legends",
+      "aliases": [
+        "LoL"
+      ]
+    },
+    {
+      "slug": "valorant",
+      "title": "Valorant",
+      "aliases": [
+        "VALORANT"
+      ]
+    },
+    {
+      "slug": "call-of-duty-warzone",
+      "title": "Call of Duty: Warzone",
+      "aliases": [
+        "Warzone",
+        "COD Warzone"
+      ]
+    },
+    {
+      "slug": "marvel-rivals",
+      "title": "Marvel Rivals",
+      "aliases": [
+        "MARVEL Rivals"
+      ]
+    },
+    {
+      "slug": "overwatch-2",
+      "title": "Overwatch 2",
+      "aliases": [
+        "Overwatch"
+      ]
+    },
+    {
+      "slug": "honkai-star-rail",
+      "title": "Honkai: Star Rail",
+      "aliases": [
+        "Honkai Star Rail",
+        "HSR"
+      ]
+    },
+    {
+      "slug": "apex-legends",
+      "title": "Apex Legends",
+      "aliases": [
+        "Apex"
+      ]
+    },
+    {
+      "slug": "pubg-battlegrounds",
+      "title": "PUBG: Battlegrounds",
+      "aliases": [
+        "PUBG",
+        "PlayerUnknown's Battlegrounds"
+      ]
+    },
+    {
+      "slug": "grand-theft-auto-vi",
+      "title": "Grand Theft Auto VI",
+      "year": 2026,
+      "upcoming": true,
+      "aliases": [
+        "Grand Theft Auto 6",
+        "GTA VI",
+        "GTA 6"
+      ]
+    }
   ],
   "aliases": [
-    {"slug":"grand-theft-auto-vi","title":"Grand Theft Auto VI","year":2026,"upcoming":true,"aliases":["Grand Theft Auto 6","GTA VI","GTA 6"]},
-    {"slug":"grand-theft-auto-v","title":"Grand Theft Auto V","year":2013,"aliases":["GTA V","GTA 5","GTA Online"]},
-    {"slug":"kingdom-come-deliverance-ii","title":"Kingdom Come: Deliverance II","year":2025,"aliases":["Kingdom Come Deliverance 2","Kingdom Come 2","KCD 2","KCD II"]},
-    {"slug":"kingdom-come-deliverance","title":"Kingdom Come: Deliverance","year":2018,"aliases":["Kingdom Come Deliverance","KCD"]},
-    {"slug":"the-witcher-3-wild-hunt","title":"The Witcher 3: Wild Hunt","year":2015,"aliases":["The Witcher 3","Witcher 3","Ведьмак 3"]},
-    {"slug":"doom-eternal","title":"DOOM Eternal","year":2020,"aliases":["Doom Eternal"]},
-    {"slug":"doom","title":"DOOM","year":2016,"aliases":["DOOM 2016","Doom (2016)"]}
+    {
+      "slug": "grand-theft-auto-v",
+      "title": "Grand Theft Auto V",
+      "year": 2013,
+      "aliases": [
+        "GTA V",
+        "GTA 5"
+      ]
+    },
+    {
+      "slug": "kingdom-come-deliverance-ii",
+      "title": "Kingdom Come: Deliverance II",
+      "year": 2025,
+      "aliases": [
+        "Kingdom Come Deliverance 2",
+        "Kingdom Come 2",
+        "KCD 2",
+        "KCD II"
+      ]
+    },
+    {
+      "slug": "kingdom-come-deliverance",
+      "title": "Kingdom Come: Deliverance",
+      "year": 2018,
+      "aliases": [
+        "Kingdom Come Deliverance",
+        "KCD"
+      ]
+    },
+    {
+      "slug": "the-witcher-3-wild-hunt",
+      "title": "The Witcher 3: Wild Hunt",
+      "year": 2015,
+      "aliases": [
+        "The Witcher 3",
+        "Witcher 3",
+        "Ведьмак 3"
+      ]
+    },
+    {
+      "slug": "doom-eternal",
+      "title": "DOOM Eternal",
+      "year": 2020,
+      "aliases": [
+        "Doom Eternal"
+      ]
+    },
+    {
+      "slug": "doom",
+      "title": "DOOM",
+      "year": 2016,
+      "aliases": [
+        "DOOM 2016",
+        "Doom (2016)"
+      ]
+    }
   ],
-  "outputs": ["data/popular/current.json","data/parser-runs/popular.json"],
+  "outputs": [
+    "data/popular/current.json",
+    "data/parser-runs/popular.json"
+  ],
   "examples": [
-    {"label":"Блок на главной","url":"../../../index.html"},
-    {"label":"Текущий JSON рейтинга","url":"../../../data/popular/current.json"}
+    {
+      "label": "Блок на главной",
+      "url": "../../../index.html"
+    },
+    {
+      "label": "Текущий JSON рейтинга",
+      "url": "../../../data/popular/current.json"
+    }
+  ],
+  "disambiguation": [
+    {
+      "prefer_slug": "grand-theft-auto-vi",
+      "prefer_aliases": [
+        "Grand Theft Auto VI",
+        "Grand Theft Auto 6",
+        "GTA VI",
+        "GTA 6"
+      ],
+      "reason": "A numbered sequel mention must outrank GTA V or GTA Online aliases in the same title."
+    }
   ]
 }

@@ -109,9 +109,19 @@ function ensure(game) {
 }
 function resolve(title) {
   const normalized = canonical(title);
+  const value = ` ${normalized} `;
+  for (const rule of config.disambiguation || []) {
+    const matched = (rule.prefer_aliases || [])
+      .map(canonical)
+      .filter(Boolean)
+      .some(alias => value.includes(` ${alias} `));
+    if (matched) {
+      const preferred = bySlug.get(rule.prefer_slug);
+      if (preferred) return preferred;
+    }
+  }
   const exact = byTitle.get(normalized);
   if (exact) return exact;
-  const value = ` ${normalized} `;
   let best = null;
   for (const game of games) {
     for (const alias of game.aliases || []) {
