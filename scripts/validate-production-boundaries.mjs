@@ -18,8 +18,11 @@ if (!pages.includes('node scripts/validate-production-boundaries.mjs')) fail('Pr
 const stagingGate = read('.github/workflows/phase-a-validation.yml');
 if (!stagingGate.includes('workflow_dispatch:')) fail('Staging gate cannot be dispatched after an automated staging write.');
 const stagingWatcher = read('.github/workflows/staging-gate-watch.yml');
-if (!stagingWatcher.includes('workflow_run:') || !stagingWatcher.includes('gh workflow run phase-a-validation.yml --ref staging')) {
-  fail('Automated staging writers are not followed by the full staging gate.');
+if (!stagingWatcher.includes('workflow_run:')
+  || !stagingWatcher.includes('gh workflow run phase-a-validation.yml')
+  || !stagingWatcher.includes('--repo "$GITHUB_REPOSITORY"')
+  || !stagingWatcher.includes('--ref staging')) {
+  fail('Automated staging writers are not followed by the full staging gate in explicit repository context.');
 }
 
 for (const name of fs.readdirSync(WORKFLOWS).filter(file => /\.ya?ml$/i.test(file))) {
