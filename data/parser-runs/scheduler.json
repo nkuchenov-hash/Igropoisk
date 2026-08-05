@@ -1,24 +1,31 @@
 {
-  "schema_version": 2,
-  "checked_at": "2026-08-05T13:57:39.113Z",
+  "schema_version": 3,
+  "checked_at": "2026-08-05T14:34:16.632Z",
   "forced": true,
-  "status": "partial",
+  "status": "success",
   "summary": {
-    "enabled": 3,
+    "enabled": 2,
     "succeeded": 2,
-    "failed": 1,
+    "failed": 0,
     "skipped": 0
   },
   "editorial_quality": {
-    "status": "error",
-    "duration_ms": 38,
-    "error": "Command failed: node scripts/curate-home-feeds.mjs"
+    "status": "success",
+    "duration_ms": 16204,
+    "output": "data/home-feeds-quality.json",
+    "post_curation": [
+      {
+        "command": "node scripts/resolve-popular-covers.mjs",
+        "status": "success",
+        "duration_ms": 16154
+      }
+    ]
   },
   "results": [
     {
       "id": "popular",
       "status": "success",
-      "duration_ms": 24967,
+      "duration_ms": 7914,
       "outputs": [
         "data/popular/current.json",
         "data/popular/covers.json",
@@ -29,7 +36,7 @@
     {
       "id": "releases",
       "status": "success",
-      "duration_ms": 28102,
+      "duration_ms": 27170,
       "outputs": [
         "data/releases/current.json",
         "data/releases/changes.json",
@@ -37,12 +44,6 @@
         "data/release-drafts",
         "assets/covers/releases"
       ]
-    },
-    {
-      "id": "editorial-quality",
-      "status": "error",
-      "duration_ms": 38,
-      "error": "Command failed: node scripts/curate-home-feeds.mjs"
     }
   ]
 }
