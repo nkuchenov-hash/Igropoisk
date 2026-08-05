@@ -46,9 +46,10 @@ jobs:
             echo "Central component migration is already materialized"
             exit 0
           fi
+          git restore --source=HEAD -- .github/workflows/news-module-check.yml .github/workflows/design-system-check.yml
           git config user.name "igropoisk-design-system[bot]"
           git config user.email "actions@users.noreply.github.com"
-          git add assets/design-system.css DESIGN_SYSTEM.md PROJECT_RULES.md index.html features/news scripts/validate-news-module.mjs scripts/validate-central-design-system.mjs .github/workflows/news-module-check.yml .github/workflows/design-system-check.yml
+          git add assets/design-system.css DESIGN_SYSTEM.md PROJECT_RULES.md index.html features/news scripts/validate-news-module.mjs scripts/validate-central-design-system.mjs
           git commit -m "Phase B1: use only central design-system components"
           git pull --rebase origin phase-b1-news-isolation
           git push origin HEAD:phase-b1-news-isolation
