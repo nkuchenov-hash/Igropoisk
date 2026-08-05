@@ -46,6 +46,9 @@ jobs:
           node scripts/validate-news-pipeline.mjs
           node scripts/validate-news-module.mjs
 
+      - name: Verify popular and release feeds
+        run: node scripts/validate-home-feeds.mjs --fresh-hours 18
+
       - name: Verify central design-system governance
         env:
           DESIGN_SYSTEM_BASE_SHA: ${{ github.event.before }}
@@ -137,3 +140,23 @@ jobs:
         env:
           NEWS_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
         run: node scripts/smoke-news-browser.mjs
+
+  home-feeds-production-smoke:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the deployed commit
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install browser client
+        run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+
+      - name: Verify deployed popular and release blocks
+        env:
+          HOME_FEEDS_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: node scripts/smoke-home-feeds-browser.mjs

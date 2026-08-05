@@ -1,15 +1,22 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "home-releases",
-  "title": "Ближайшие релизы на главной",
+  "title": "Новые и ожидаемые релизы на главной",
   "status": "active",
   "source": "data/releases/current.json",
   "maximum_cards": 12,
-  "sort": ["event_date_ascending", "title_ascending"],
+  "maximum_recent_cards": 4,
+  "recent_release_days": 7,
+  "sort": [
+    "recent_release_date_descending",
+    "upcoming_event_date_ascending",
+    "title_ascending"
+  ],
   "eligibility": {
     "include_today": true,
+    "include_recent": true,
+    "include_upcoming": true,
     "include_tbd_after_dated": true,
-    "past_grace_hours": 24,
     "require_title": true,
     "require_event": true
   },
@@ -27,8 +34,9 @@
     "steam_header"
   ],
   "editorial_rules": [
-    "На главной показываются только ближайшие ещё не прошедшие события.",
-    "Порядок определяется датой, а не популярностью.",
+    "Сначала показываются недавно вышедшие игры, затем ближайшие ожидаемые релизы.",
+    "Недавними считаются релизы за последние семь дней.",
+    "Ожидаемые релизы сортируются по ближайшей известной дате; записи без точной даты идут после датированных.",
     "Карточки прокручиваются только внутри правой части блока.",
     "Клик по карточке открывает соответствующий релиз в календаре.",
     "При недоступной обложке перебираются резервные URL; пустая карточка заменяется инициалами."
