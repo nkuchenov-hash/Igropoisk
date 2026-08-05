@@ -1,9 +1,10 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "id": "home-releases",
   "title": "Новые и ожидаемые релизы на главной",
   "status": "active",
   "source": "data/releases/current.json",
+  "quality_source": "data/home-feeds-health.json",
   "maximum_cards": 12,
   "maximum_recent_cards": 4,
   "recent_release_days": 7,
@@ -18,7 +19,9 @@
     "include_upcoming": true,
     "include_tbd_after_dated": true,
     "require_title": true,
-    "require_event": true
+    "require_event": true,
+    "require_quality_selection_when_available": true,
+    "preserve_full_calendar": true
   },
   "interaction": {
     "horizontal_scroll": true,
@@ -34,6 +37,9 @@
     "steam_header"
   ],
   "editorial_rules": [
+    "Полный календарь сохраняет все корректные записи; quality selection применяется только к главной.",
+    "Служебные продукты, демо, прологи, playtest, soundtrack, benchmark, server и SDK не допускаются на главную.",
+    "Разные издания и альтернативные написания одной игры не занимают несколько карточек.",
     "Сначала показываются недавно вышедшие игры, затем ближайшие ожидаемые релизы.",
     "Недавними считаются релизы за последние семь дней.",
     "Ожидаемые релизы сортируются по ближайшей известной дате; записи без точной даты идут после датированных.",

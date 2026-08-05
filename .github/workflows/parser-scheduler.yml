@@ -14,6 +14,7 @@ on:
     paths:
       - 'config/parsers/schedule.json'
       - 'config/parsers/releases.json'
+      - 'config/home-feeds-quality.json'
       - 'data/popular/cover-overrides.json'
       - 'features/home-releases/rules.json'
       - 'assets/home-releases/index.js'
@@ -21,8 +22,12 @@ on:
       - 'scripts/parse-releases.mjs'
       - 'scripts/parse-popular.mjs'
       - 'scripts/filter-popular.mjs'
+      - 'scripts/filter-releases-home.mjs'
+      - 'scripts/home-feeds-quality-lib.mjs'
+      - 'scripts/build-home-feeds-health.mjs'
       - 'scripts/resolve-popular-covers.mjs'
       - 'scripts/validate-home-feeds.mjs'
+      - 'scripts/validate-home-feeds-quality.mjs'
       - '.github/workflows/parser-scheduler.yml'
 
 permissions:
@@ -35,6 +40,7 @@ concurrency:
 
 jobs:
   run:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -54,8 +60,13 @@ jobs:
           node --check scripts/parse-releases.mjs
           node --check scripts/parse-popular.mjs
           node --check scripts/filter-popular.mjs
+          node --check scripts/filter-releases-home.mjs
+          node --check scripts/home-feeds-quality-lib.mjs
+          node --check scripts/build-home-feeds-health.mjs
           node --check scripts/resolve-popular-covers.mjs
           node --check scripts/validate-home-feeds.mjs
+          node --check scripts/validate-home-feeds-quality.mjs
+          node scripts/test-home-feeds-quality.mjs
 
       - name: Run due parsers independently
         id: parsers
@@ -71,15 +82,23 @@ jobs:
           mkdir -p assets/covers/releases assets/covers/popular data/release-drafts data/parser-runs
           node scripts/run-scheduled-parsers.mjs
 
+      - name: Build explainable home feeds health
+        id: quality
+        if: always()
+        continue-on-error: true
+        run: node scripts/build-home-feeds-health.mjs
+
       - name: Validate publishable home feeds
         id: validation
         if: always()
         continue-on-error: true
-        run: node scripts/validate-home-feeds.mjs --fresh-hours 18
+        run: |
+          node scripts/validate-home-feeds.mjs --fresh-hours 12
+          node scripts/validate-home-feeds-quality.mjs
 
       - name: Commit validated parser outputs
         id: publication
-        if: always() && steps.validation.outcome == 'success'
+        if: always() && steps.quality.outcome == 'success' && steps.validation.outcome == 'success'
         run: |
           git config user.name "igropoisk-parser[bot]"
           git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
@@ -96,6 +115,7 @@ jobs:
             data/parser-runs/scheduler.json
             data/release-drafts
             assets/covers/releases
+            data/home-feeds-health.json
           )
 
           existing=()
@@ -110,7 +130,7 @@ jobs:
             exit 0
           fi
 
-          git commit -m "Update popular and release feeds"
+          git commit -m "Update quality-checked popular and release feeds"
           git pull --rebase origin "$GITHUB_REF_NAME"
           git push origin "HEAD:$GITHUB_REF_NAME"
           echo "published=true" >> "$GITHUB_OUTPUT"
@@ -122,7 +142,7 @@ jobs:
         run: gh workflow run pages.yml --ref main
 
       - name: Report blocked parser publication
-        if: steps.parsers.outcome == 'failure' || steps.validation.outcome == 'failure'
+        if: steps.parsers.outcome == 'failure' || steps.quality.outcome == 'failure' || steps.validation.outcome == 'failure'
         run: |
-          echo "Parser publication was blocked or degraded. Validated successful outputs, when available, were preserved."
+          echo "Parser publication was blocked or degraded. Previous verified production snapshots remain available."
           exit 1

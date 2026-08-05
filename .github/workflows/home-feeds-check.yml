@@ -6,35 +6,44 @@ on:
     paths:
       - 'assets/popular-home.js'
       - 'assets/home-releases/index.js'
+      - 'assets/home-feeds-health-admin.js'
+      - 'admin/home-feeds-health/**'
       - 'features/home-releases/rules.json'
       - 'config/parsers/schedule.json'
       - 'config/parsers/releases.json'
+      - 'config/home-feeds-quality.json'
+      - 'data/home-feeds-health.json'
       - 'scripts/parse-popular.mjs'
       - 'scripts/filter-popular.mjs'
       - 'scripts/resolve-popular-covers.mjs'
       - 'scripts/parse-releases.mjs'
+      - 'scripts/filter-releases-home.mjs'
+      - 'scripts/home-feeds-quality-lib.mjs'
+      - 'scripts/build-home-feeds-health.mjs'
+      - 'scripts/test-home-feeds-quality.mjs'
+      - 'scripts/validate-home-feeds-quality.mjs'
       - 'scripts/run-scheduled-parsers.mjs'
       - 'scripts/validate-home-feeds.mjs'
       - 'scripts/smoke-home-feeds-browser.mjs'
+      - 'scripts/smoke-home-feeds-quality.mjs'
       - '.github/workflows/parser-scheduler.yml'
       - '.github/workflows/home-feeds-check.yml'
       - '.github/workflows/pages.yml'
   push:
     branches:
-      - phase-c0-popular-releases-stability
+      - phase-c0-1-home-feeds-quality
     paths:
       - 'assets/popular-home.js'
       - 'assets/home-releases/index.js'
+      - 'assets/home-feeds-health-admin.js'
+      - 'admin/home-feeds-health/**'
       - 'features/home-releases/rules.json'
       - 'config/parsers/schedule.json'
       - 'config/parsers/releases.json'
-      - 'scripts/parse-popular.mjs'
+      - 'config/home-feeds-quality.json'
+      - 'data/home-feeds-health.json'
+      - 'scripts/**home-feeds**'
       - 'scripts/filter-popular.mjs'
-      - 'scripts/resolve-popular-covers.mjs'
-      - 'scripts/parse-releases.mjs'
-      - 'scripts/run-scheduled-parsers.mjs'
-      - 'scripts/validate-home-feeds.mjs'
-      - 'scripts/smoke-home-feeds-browser.mjs'
       - '.github/workflows/parser-scheduler.yml'
       - '.github/workflows/home-feeds-check.yml'
       - '.github/workflows/pages.yml'
@@ -55,15 +64,36 @@ jobs:
       - name: Verify parser and browser code
         run: |
           node --check scripts/run-scheduled-parsers.mjs
+          node --check scripts/filter-popular.mjs
+          node --check scripts/filter-releases-home.mjs
+          node --check scripts/home-feeds-quality-lib.mjs
+          node --check scripts/build-home-feeds-health.mjs
+          node --check scripts/test-home-feeds-quality.mjs
           node --check scripts/validate-home-feeds.mjs
+          node --check scripts/validate-home-feeds-quality.mjs
           node --check scripts/smoke-home-feeds-browser.mjs
+          node --check scripts/smoke-home-feeds-quality.mjs
           node --check assets/home-releases/index.js
+          node --check assets/home-feeds-health-admin.js
+
+      - name: Verify quality contract
+        run: node scripts/test-home-feeds-quality.mjs
+
+      - name: Materialize quality selection from committed snapshots
+        run: |
+          node scripts/filter-popular.mjs
+          node scripts/filter-releases-home.mjs
+          node scripts/build-home-feeds-health.mjs
 
       - name: Verify published data contracts
-        run: node scripts/validate-home-feeds.mjs
+        run: |
+          node scripts/validate-home-feeds.mjs
+          node scripts/validate-home-feeds-quality.mjs
 
       - name: Verify homepage rendering
-        run: node scripts/smoke-home-feeds-browser.mjs
+        run: |
+          node scripts/smoke-home-feeds-browser.mjs
+          node scripts/smoke-home-feeds-quality.mjs
 
       - name: Reject malformed patches
         run: git diff --check

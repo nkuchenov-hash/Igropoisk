@@ -50,7 +50,7 @@ const card=(game,kind)=>{
   const diff=dayDiff(dateValue(event));
   const image=candidates(game)[0]||'';
   const meta=[...(game.genres||[]).slice(0,1),...(event.platforms||[]).slice(0,1)].join(' · ');
-  return `<article class="ig-card ig-card--interactive home-release-card" data-release="${esc(game.slug)}" data-release-kind="${esc(kind)}"><a class="ig-card__part home-release-card__link" href="calendar/#game=${encodeURIComponent(game.slug)}"><div class="ig-card__media home-release-card__media" data-initials="${esc(initials(game.title))}">${image?`<img src="${esc(image)}" alt="Обложка ${esc(game.title)}" loading="eager" decoding="async" data-cover-index="0">`:''}<span class="home-release-card__date ${kind==='recent'||Number.isFinite(diff)&&diff>=0&&diff<=7?'is-near':''}">${esc(dateLabel(event))}</span></div><div class="ig-card__part home-release-card__body"><h3>${esc(game.title)}</h3><div class="ig-card__part home-release-card__meta">${esc(meta)}</div></div></a></article>`;
+  return `<article class="ig-card ig-card--interactive home-release-card" data-release="${esc(game.slug)}" data-release-kind="${esc(kind)}" data-release-quality="${esc(game.home?.category||'legacy')}"><a class="ig-card__part home-release-card__link" href="calendar/#game=${encodeURIComponent(game.slug)}"><div class="ig-card__media home-release-card__media" data-initials="${esc(initials(game.title))}">${image?`<img src="${esc(image)}" alt="Обложка ${esc(game.title)}" loading="eager" decoding="async" data-cover-index="0">`:''}<span class="home-release-card__date ${kind==='recent'||Number.isFinite(diff)&&diff>=0&&diff<=7?'is-near':''}">${esc(dateLabel(event))}</span></div><div class="ig-card__part home-release-card__body"><h3>${esc(game.title)}</h3><div class="ig-card__part home-release-card__meta">${esc(meta)}</div></div></a></article>`;
 };
 const bindFallbacks=games=>{
   rail.querySelectorAll('.home-release-card').forEach(cardElement=>{
@@ -80,9 +80,11 @@ Promise.all([
   const maximum=Math.max(6,Number(rules.maximum_cards||12));
   const recentDays=Math.max(1,Number(rules.recent_release_days||7));
   const maximumRecent=Math.min(maximum,Math.max(0,Number(rules.maximum_recent_cards||4)));
-  const classified=(payload.releases||[]).map(game=>({game,event:primaryEvent(game)}))
+  const sourceRows=payload.releases||[];
+  const qualityReady=sourceRows.some(game=>game.home&&typeof game.home.selected==='boolean');
+  const classified=sourceRows.map(game=>({game,event:primaryEvent(game)}))
     .map(row=>({...row,kind:releaseKind(row.event,recentDays)}))
-    .filter(row=>row.kind!=='expired');
+    .filter(row=>row.kind!=='expired'&&(!qualityReady||row.game.home?.selected===true));
 
   const recent=classified.filter(row=>row.kind==='recent')
     .sort((left,right)=>String(dateEndValue(right.event)||'').localeCompare(String(dateEndValue(left.event)||''))||String(left.game.title).localeCompare(String(right.game.title),'ru'))
@@ -92,6 +94,7 @@ Promise.all([
   const selected=[...recent,...upcoming].slice(0,maximum);
   const rows=selected.map(row=>row.game);
 
+  rail.dataset.releaseQuality=qualityReady?'ready':'legacy';
   rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Новые и ожидаемые релизы пока не найдены.</div>';
   bindFallbacks(rows);
   bindRail();

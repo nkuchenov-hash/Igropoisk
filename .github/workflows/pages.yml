@@ -47,7 +47,10 @@ jobs:
           node scripts/validate-news-module.mjs
 
       - name: Verify popular and release feeds
-        run: node scripts/validate-home-feeds.mjs --fresh-hours 18
+        run: |
+          node scripts/test-home-feeds-quality.mjs
+          node scripts/validate-home-feeds.mjs --fresh-hours 12
+          node scripts/validate-home-feeds-quality.mjs
 
       - name: Verify central design-system governance
         env:
@@ -159,4 +162,6 @@ jobs:
       - name: Verify deployed popular and release blocks
         env:
           HOME_FEEDS_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
-        run: node scripts/smoke-home-feeds-browser.mjs
+        run: |
+          node scripts/smoke-home-feeds-browser.mjs
+          node scripts/smoke-home-feeds-quality.mjs

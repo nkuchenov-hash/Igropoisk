@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "popular": {
+    "required_cards": 20,
+    "maximum_pool": 30,
+    "stale_after_hours": 12,
+    "weak_families": ["steam_chart"],
+    "minimum_community_families": 2,
+    "minimum_independent_news_sources": 2,
+    "minimum_single_family_evidence": 2,
+    "edition_suffix_patterns": [
+      "\\b(?:standard|deluxe|ultimate|premium|complete|collector(?:s)?|digital)\\s+edition\\b.*$",
+      "\\b(?:gold|goty|game of the year)\\s+edition\\b.*$",
+      "\\b(?:bundle|package)\\b.*$"
+    ]
+  },
+  "releases": {
+    "minimum_home_cards": 6,
+    "maximum_home_cards": 12,
+    "recent_days": 7,
+    "soon_days": 120,
+    "stale_after_hours": 12,
+    "excluded_title_patterns": [
+      "\\b(?:demo|demonstration)\\b",
+      "\\bprologue\\b",
+      "\\bplaytest\\b",
+      "\\bbenchmark\\b",
+      "\\bsoundtrack\\b",
+      "\\bdedicated server\\b",
+      "\\bserver tool\\b",
+      "\\bmodding tool\\b",
+      "\\b(?:sdk|editor|toolkit)\\b",
+      "\\bartbook\\b",
+      "\\bwallpaper pack\\b",
+      "\\btest server\\b"
+    ],
+    "edition_suffix_patterns": [
+      "\\b(?:standard|deluxe|ultimate|premium|complete|collector(?:s)?|digital)\\s+edition\\b.*$",
+      "\\b(?:gold|goty|game of the year)\\s+edition\\b.*$",
+      "\\b(?:bundle|package)\\b.*$"
+    ],
+    "aliases": {
+      "marvel-to-kon-fighting-souls": "marvel-tokon-fighting-souls",
+      "star-wars-zero-companytm": "star-wars-zero-company"
+    }
+  }
+}

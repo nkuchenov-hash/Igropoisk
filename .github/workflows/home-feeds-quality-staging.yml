@@ -1,0 +1,89 @@
+name: Home feeds quality staging
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - phase-c0-1-home-feeds-quality
+    paths:
+      - 'config/home-feeds-quality.json'
+      - 'config/parsers/schedule.json'
+      - 'scripts/filter-popular.mjs'
+      - 'scripts/filter-releases-home.mjs'
+      - 'scripts/home-feeds-quality-lib.mjs'
+      - 'scripts/build-home-feeds-health.mjs'
+      - 'scripts/test-home-feeds-quality.mjs'
+      - 'scripts/validate-home-feeds-quality.mjs'
+      - '.github/workflows/home-feeds-quality-staging.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: home-feeds-quality-staging-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  staging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install parser dependencies
+        run: npm install --no-save --ignore-scripts image-size@2
+
+      - name: Verify quality contract
+        run: node scripts/test-home-feeds-quality.mjs
+
+      - name: Run full network staging without publication
+        env:
+          PARSER_FORCE: 'true'
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          REDDIT_ACCESS_TOKEN: ${{ secrets.REDDIT_ACCESS_TOKEN }}
+          RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
+        run: node scripts/run-scheduled-parsers.mjs
+
+      - name: Build and validate explainable selection
+        run: |
+          node scripts/build-home-feeds-health.mjs
+          node scripts/validate-home-feeds.mjs --fresh-hours 12
+          node scripts/validate-home-feeds-quality.mjs
+
+      - name: Report staging scope
+        run: |
+          git status --porcelain --untracked-files=all > /tmp/home-feeds-staging-paths.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          allowed=(
+            'data/popular/', 'data/releases/', 'data/parser-runs/', 'data/release-drafts/',
+            'data/home-feeds-health.json', 'assets/covers/popular/', 'assets/covers/releases/'
+          )
+          bad=[]
+          for line in Path('/tmp/home-feeds-staging-paths.txt').read_text().splitlines():
+              path=line[3:]
+              if ' -> ' in path: path=path.split(' -> ',1)[1]
+              if not any(path==prefix or path.startswith(prefix) for prefix in allowed): bad.append(path)
+          if bad: raise SystemExit('Unexpected staging paths:\n'+'\n'.join(bad))
+          print(Path('/tmp/home-feeds-staging-paths.txt').read_text())
+          PY
+
+      - name: Upload staging report
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-feeds-quality-staging
+          path: |
+            data/home-feeds-health.json
+            data/popular/current.json
+            data/releases/current.json
+            data/parser-runs/popular.json
+            data/parser-runs/releases.json
+            data/parser-runs/scheduler.json
+            /tmp/home-feeds-staging-paths.txt
