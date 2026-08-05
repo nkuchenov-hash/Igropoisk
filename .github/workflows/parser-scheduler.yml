@@ -75,13 +75,24 @@ jobs:
           mkdir -p assets/covers/releases assets/covers/popular data/release-drafts data/parser-runs
           node scripts/run-scheduled-parsers.mjs
 
+      - name: Preserve editorial audit for inspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-feeds-editorial-audit-${{ github.run_id }}
+          path: |
+            data/home-feeds-quality.json
+            data/parser-runs/scheduler.json
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Validate publishable home feeds
         id: validation
         if: always()
         continue-on-error: true
         run: |
           node scripts/validate-home-feeds.mjs --fresh-hours 18
-          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('data/home-feeds-quality.json'));if(q.popular.selected.length<20)throw new Error('Fewer than 20 editorially eligible popular cards');if(!q.releases.selected.length)throw new Error('No editorially eligible releases');"
+          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('data/home-feeds-quality.json'));const c=JSON.parse(fs.readFileSync('config/home-feeds-quality.json'));if(q.gate?.status!=='pass')throw new Error('Editorial gate is blocked');if(q.popular.selected.length<c.popular.minimum_cards)throw new Error('Fewer than required editorially eligible popular cards');if(!q.releases.selected.length)throw new Error('No editorially eligible releases');"
 
       - name: Commit validated parser outputs
         id: publication
