@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "started_at": "2026-08-04T22:08:33.175Z",
-  "finished_at": "2026-08-04T22:08:34.010Z",
+  "started_at": "2026-08-05T05:25:34.367Z",
+  "finished_at": "2026-08-05T05:25:35.023Z",
   "summary": {
     "success": 2,
     "blocked": 2,
@@ -13,8 +13,8 @@
       "command": "node scripts/parse-game-data.mjs beast-of-reincarnation 2001760 Beast of Reincarnation",
       "status": "success",
       "exit_code": 0,
-      "duration_ms": 336,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"beast-of-reincarnation\",\n  \"checked_at\": \"2026-08-04T22:08:33.197Z\",\n  \"duration_ms\": 258,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2001760&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Beast of Reincarnation\",\n    \"developers\": [\n      \"GAME FREAK inc.\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 7,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/beast-of-reincarnation.json\"\n}\n",
+      "duration_ms": 318,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"beast-of-reincarnation\",\n  \"checked_at\": \"2026-08-05T05:25:34.395Z\",\n  \"duration_ms\": 227,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2001760&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Beast of Reincarnation\",\n    \"developers\": [\n      \"GAME FREAK inc.\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 7,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/beast-of-reincarnation.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -22,7 +22,7 @@
       "command": "node scripts/build-game-page.mjs beast-of-reincarnation",
       "status": "blocked",
       "exit_code": 2,
-      "duration_ms": 29,
+      "duration_ms": 43,
       "stdout": "",
       "stderr": "OPENAI_API_KEY is required\n"
     },
@@ -31,8 +31,8 @@
       "command": "node scripts/parse-game-data.mjs big-walk 1478500 Big Walk",
       "status": "success",
       "exit_code": 0,
-      "duration_ms": 439,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"big-walk\",\n  \"checked_at\": \"2026-08-04T22:08:33.567Z\",\n  \"duration_ms\": 362,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1478500&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Big Walk\",\n    \"developers\": [\n      \"House House\"\n    ],\n    \"genres\": [\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\"\n    ],\n    \"screenshots\": 8,\n    \"videos\": 3\n  },\n  \"output\": \"data/parser-output/big-walk.json\"\n}\n",
+      "duration_ms": 257,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"big-walk\",\n  \"checked_at\": \"2026-08-05T05:25:34.762Z\",\n  \"duration_ms\": 160,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1478500&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Big Walk\",\n    \"developers\": [\n      \"House House\"\n    ],\n    \"genres\": [\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\"\n    ],\n    \"screenshots\": 8,\n    \"videos\": 3\n  },\n  \"output\": \"data/parser-output/big-walk.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -40,7 +40,7 @@
       "command": "node scripts/build-game-page.mjs big-walk",
       "status": "blocked",
       "exit_code": 2,
-      "duration_ms": 28,
+      "duration_ms": 33,
       "stdout": "",
       "stderr": "OPENAI_API_KEY is required\n"
     }
