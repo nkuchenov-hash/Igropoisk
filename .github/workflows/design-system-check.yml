@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'assets/**'
+      - 'features/**'
       - 'game/**'
       - 'article/**'
       - 'admin/**'
@@ -18,6 +19,7 @@ on:
   pull_request:
     paths:
       - 'assets/**'
+      - 'features/**'
       - 'game/**'
       - 'article/**'
       - 'admin/**'
@@ -38,4 +40,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node scripts/validate-game-v3.mjs
+      - run: |
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-central-design-system.mjs
