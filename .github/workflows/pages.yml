@@ -68,6 +68,7 @@ jobs:
         run: |
           python3 -m py_compile scripts/enforce_layout_contract.py
           python3 scripts/enforce_layout_contract.py --check
+          find scripts -type d -name __pycache__ -prune -exec rm -rf {} +
 
       - name: Verify structured content files
         run: |
