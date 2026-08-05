@@ -1,0 +1,110 @@
+name: Autonomous news pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Run all source groups regardless of freshness
+        required: false
+        type: boolean
+        default: false
+  workflow_call:
+    inputs:
+      force:
+        required: false
+        type: boolean
+        default: false
+  schedule:
+    - cron: '23 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'config/news-pipeline.json'
+      - 'data/news-sources.json'
+      - 'data/youtube-sources.json'
+      - 'scripts/fetch-news.mjs'
+      - 'scripts/collect-regional-news.mjs'
+      - 'scripts/postprocess-industry-news.mjs'
+      - 'scripts/fetch-publisher-news.mjs'
+      - 'scripts/fetch-youtube-signals.mjs'
+      - 'scripts/build-news-events.mjs'
+      - 'scripts/build-home-news.mjs'
+      - 'scripts/run-news-pipeline.mjs'
+      - 'scripts/validate-news-pipeline.mjs'
+      - 'scripts/test-news-pipeline.mjs'
+      - 'scripts/test-news-content-api.mjs'
+      - 'scripts/validate-news-module.mjs'
+      - '.github/workflows/news-pipeline.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: autonomous-news-pipeline-main
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Synchronize main before collection
+        run: git pull --ff-only origin main
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify pipeline code before network work
+        run: |
+          node --check scripts/run-news-pipeline.mjs
+          node --check scripts/validate-news-pipeline.mjs
+          node scripts/test-news-pipeline.mjs
+          node scripts/test-news-content-api.mjs
+
+      - name: Collect validate and prepare one publication snapshot
+        env:
+          PIPELINE_FORCE: ${{ inputs.force || github.event.inputs.force || false }}
+          NEWS_PIPELINE_REPORT: tmp/news-pipeline-report.json
+        run: |
+          args=()
+          if [ "$PIPELINE_FORCE" = "true" ]; then
+            args+=(--force)
+          fi
+          node scripts/run-news-pipeline.mjs "${args[@]}"
+          git diff --check
+
+      - name: Commit one atomic news snapshot
+        id: publication
+        run: |
+          mapfile -t paths < <(node -e "const c=require('./config/news-pipeline.json'); console.log(c.publication.commit_paths.join('\\n'))")
+          git add -- "${paths[@]}"
+          if git diff --cached --quiet; then
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "News snapshot is already current."
+            exit 0
+          fi
+          git config user.name "igropoisk-news-pipeline[bot]"
+          git config user.email "igropoisk-news-pipeline[bot]@users.noreply.github.com"
+          git commit -m "Publish autonomous news snapshot"
+          git pull --rebase origin main
+          node scripts/validate-news-pipeline.mjs --baseline HEAD^
+          node scripts/test-news-content-api.mjs
+          node scripts/validate-news-module.mjs
+          git push origin HEAD:main
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
+      - name: Upload pipeline report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: news-pipeline-report-${{ github.run_id }}
+          path: tmp/news-pipeline-report.json
+          if-no-files-found: warn
+          retention-days: 14

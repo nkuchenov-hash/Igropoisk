@@ -1,61 +1,13 @@
-name: Update official gaming sources
+name: Manual alias — update official gaming sources
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '11 * * * *'
-  push:
-    paths:
-      - 'data/news-sources.json'
-      - 'data/youtube-sources.json'
-      - 'scripts/fetch-publisher-news.mjs'
-      - 'scripts/fetch-youtube-signals.mjs'
-      - 'scripts/build-news-events.mjs'
-      - '.github/workflows/update-publisher-news.yml'
 
 permissions:
   contents: write
 
-concurrency:
-  group: update-official-gaming-news
-  cancel-in-progress: true
-
 jobs:
-  update-official-news:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: main
-
-      - name: Synchronize main before generating files
-        run: git pull --ff-only origin main
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Fetch official company studio platform and game news
-        run: node scripts/fetch-publisher-news.mjs
-
-      - name: Fetch official gaming YouTube signals
-        run: node scripts/fetch-youtube-signals.mjs
-
-      - name: Rebuild unified news events
-        run: node scripts/build-news-events.mjs
-
-      - name: Commit official feed signals and events
-        run: |
-          if git diff --quiet -- data/publisher-news.json data/youtube-signals.json data/news-events.json assets/publisher-news; then
-            echo "Official feed, YouTube signals and event index are current"
-            exit 0
-          fi
-          git config user.name "igropoisk-official-news-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add data/publisher-news.json data/youtube-signals.json data/news-events.json assets/publisher-news
-          git commit -m "Update official gaming news events and YouTube signals"
-          git pull --rebase origin main
-          git push origin HEAD:main
+  pipeline:
+    uses: ./.github/workflows/news-pipeline.yml
+    with:
+      force: true

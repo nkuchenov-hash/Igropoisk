@@ -1,67 +1,13 @@
-name: Update global and regional gaming news
+name: Manual alias — update gaming news
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '17 5 * * *'
-  push:
-    paths:
-      - 'scripts/fetch-news.mjs'
-      - 'scripts/collect-regional-news.mjs'
-      - 'scripts/postprocess-industry-news.mjs'
-      - 'scripts/build-home-news.mjs'
-      - 'scripts/build-news-events.mjs'
-      - '.github/workflows/update-news.yml'
 
 permissions:
   contents: write
 
-concurrency:
-  group: update-global-gaming-news
-  cancel-in-progress: true
-
 jobs:
-  update-news:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: main
-
-      - name: Synchronize main before generating files
-        run: git pull --ff-only origin main
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Build global gaming-news candidates
-        run: node scripts/fetch-news.mjs
-
-      - name: Backfill regionally significant events from the previous seven days
-        run: node scripts/collect-regional-news.mjs
-
-      - name: Localize and calculate separate global and regional weights
-        run: node scripts/postprocess-industry-news.mjs
-
-      - name: Rebuild unified news events
-        run: node scripts/build-news-events.mjs
-
-      - name: Rebuild current homepage news
-        run: node scripts/build-home-news.mjs
-
-      - name: Commit ranked feed images events and homepage feed
-        run: |
-          if git diff --quiet -- data/news.json data/news-events.json data/news-home-ru.json assets/news; then
-            echo "Global and regional feeds are current"
-            exit 0
-          fi
-          git config user.name "igropoisk-news-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add data/news.json data/news-events.json data/news-home-ru.json assets/news
-          git commit -m "Update global and regional gaming news events"
-          git pull --rebase origin main
-          git push origin HEAD:main
+  pipeline:
+    uses: ./.github/workflows/news-pipeline.yml
+    with:
+      force: true

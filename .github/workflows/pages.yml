@@ -38,9 +38,11 @@ jobs:
           find assets scripts features -type f \( -name '*.js' -o -name '*.mjs' \) -print0 \
             | xargs -0 -n1 node --check
 
-      - name: Verify News Content API and module boundary
+      - name: Verify News Content API pipeline and module boundary
         run: |
           node scripts/test-news-content-api.mjs
+          node scripts/test-news-pipeline.mjs
+          node scripts/validate-news-pipeline.mjs
           node scripts/validate-news-module.mjs
 
       - name: Verify central design-system governance

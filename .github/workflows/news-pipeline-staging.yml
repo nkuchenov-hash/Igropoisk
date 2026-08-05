@@ -1,0 +1,71 @@
+name: News pipeline staging
+
+on:
+  push:
+    branches: [phase-b4-autonomous-news-pipeline]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: news-pipeline-staging-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  full-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout proposed pipeline
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run contract tests
+        run: |
+          node scripts/test-news-pipeline.mjs
+          node scripts/test-news-content-api.mjs
+          node scripts/validate-news-module.mjs
+
+      - name: Run all source groups without publishing
+        env:
+          NEWS_PIPELINE_REPORT: tmp/news-pipeline-staging-report.json
+        run: |
+          node scripts/run-news-pipeline.mjs --force
+          git diff --check
+
+      - name: Verify generated paths are isolated
+        run: |
+          node - <<'NODE'
+          const { execFileSync } = require('node:child_process');
+          const config = require('./config/news-pipeline.json');
+          const allowed = config.publication.commit_paths;
+          const changed = execFileSync('git', ['status', '--porcelain', '--untracked-files=all'], { encoding: 'utf8' })
+            .split('\n').filter(Boolean).map(line => line.slice(3));
+          const foreign = changed.filter(file => file !== 'tmp/news-pipeline-staging-report.json'
+            && !allowed.some(prefix => file === prefix || file.startsWith(`${prefix}/`)));
+          if (foreign.length) throw new Error(`Pipeline changed foreign paths:\n${foreign.join('\n')}`);
+          console.log(`Pipeline changed only approved paths: ${changed.length}.`);
+          NODE
+
+      - name: Upload staging report and snapshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: news-pipeline-staging-${{ github.sha }}
+          path: |
+            tmp/news-pipeline-staging-report.json
+            data/news.json
+            data/publisher-news.json
+            data/youtube-signals.json
+            data/news-events.json
+            data/news-home-ru.json
+            assets/news
+            assets/publisher-news
+          if-no-files-found: warn
+          retention-days: 7
