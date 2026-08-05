@@ -2,23 +2,29 @@
   "schema_version": 1,
   "parser_id": "releases",
   "status": "success",
-  "checked_at": "2026-08-03T22:32:00Z",
-  "generated_at": "2026-08-03T22:32:00Z",
+  "checked_at": "2026-08-05T11:47:41.730Z",
+  "generated_at": "2026-08-05T11:47:41.730Z",
   "output": "data/releases/current.json",
-  "games_found": 8,
-  "changes_found": 1,
-  "drafts_created": 8,
-  "images_downloaded": 0,
-  "images_remote_verified": 8,
-  "conflicts": 2,
-  "note": "Первичный набор создан из официальных магазинных записей; плановый парсер обновит его при следующем запуске.",
+  "games_found": 93,
+  "changes_found": 3,
+  "drafts_created": 93,
+  "images_downloaded": 14,
+  "images_remote_verified": 79,
+  "conflicts": 0,
+  "note": "Календарь обновлён.",
   "sources": [
     {
       "id": "steam-upcoming",
       "status": "success",
-      "items": 8,
-      "matched": 8,
-      "url": "https://store.steampowered.com/search/?filter=comingsoon"
+      "items": 90,
+      "errors": 0,
+      "duration_ms": 1390,
+      "url": "https://store.steampowered.com/search/results/?query&start=0&count=100&dynamic_data=&sort_by=Released_ASC&filter=comingsoon&infinite=1&cc=us&l=english&json=1"
+    },
+    {
+      "id": "rawg-upcoming",
+      "status": "skipped",
+      "error": "RAWG_API_KEY is not configured"
     }
   ]
 }

@@ -21,10 +21,10 @@ const showcaseSection = `
           </div>
         </section>
         <section class="home-releases" aria-labelledby="homeReleasesTitle">
-          <div class="home-showcase-heading home-showcase-heading--split"><span class="home-showcase-heading__icon" aria-hidden="true">□</span><h2 id="homeReleasesTitle">Ближайшие релизы</h2><a href="calendar/">Смотреть календарь</a></div>
+          <div class="home-showcase-heading home-showcase-heading--split"><span class="home-showcase-heading__icon" aria-hidden="true">□</span><h2 id="homeReleasesTitle">Новые и ожидаемые релизы</h2><a href="calendar/">Смотреть календарь</a></div>
           <div class="home-releases__rail-shell">
             <button class="home-rail-button" type="button" data-release-rail="-1" aria-label="Предыдущие релизы">‹</button>
-            <div class="home-releases__rail" id="releaseHomeGrid" aria-live="polite"><div class="home-widget-loading">Загружаем ближайшие релизы…</div></div>
+            <div class="home-releases__rail" id="releaseHomeGrid" aria-live="polite"><div class="home-widget-loading">Загружаем новые и ожидаемые релизы…</div></div>
             <button class="home-rail-button" type="button" data-release-rail="1" aria-label="Следующие релизы">›</button>
           </div>
         </section>
@@ -70,7 +70,7 @@ function injectHomepage() {
 
   const scripts = [
     '<script src="assets/reviews-of-day/index.js?v=20260804-1"></script>',
-    '<script src="assets/home-releases/index.js?v=20260804-1"></script>'
+    '<script src="assets/home-releases/index.js?v=20260805-1"></script>'
   ];
   for (const script of scripts) html = injectBefore(html, '</body>', script);
 

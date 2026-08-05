@@ -1,12 +1,52 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import { execSync } from 'node:child_process';
 
-const config = JSON.parse(fs.readFileSync('config/parsers/schedule.json', 'utf8'));
+const root = process.cwd();
+const configPath = path.join(root, 'config/parsers/schedule.json');
+const reportPath = path.join(root, 'data/parser-runs/scheduler.json');
+const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+const checkedAt = new Date().toISOString();
 const now = Date.now();
+const force = /^(1|true|yes)$/i.test(String(process.env.PARSER_FORCE || ''));
+const results = [];
+
+function git(args, options = {}) {
+  return execSync(`git ${args}`, {
+    cwd: root,
+    stdio: options.stdio || 'pipe',
+    encoding: 'utf8',
+    env: process.env
+  });
+}
+
+function existingOutputs(outputs) {
+  return (outputs || []).filter(output => fs.existsSync(path.join(root, output)));
+}
+
+function restoreOutputs(outputs) {
+  for (const output of (outputs || []).filter(Boolean)) {
+    const quoted = JSON.stringify(output);
+    try {
+      git(`restore --staged --worktree -- ${quoted}`);
+    } catch {
+      // The path can be entirely untracked.
+    }
+    try {
+      git(`clean -fd -- ${quoted}`);
+    } catch (error) {
+      console.error(`Failed to clean incomplete parser output ${output}: ${error.message}`);
+    }
+  }
+}
 
 for (const parser of config.parsers || []) {
-  if (!parser.enabled) continue;
-  const runFile = `data/parser-runs/${parser.id}.json`;
+  if (!parser.enabled) {
+    results.push({ id: parser.id, status: 'disabled' });
+    continue;
+  }
+
+  const runFile = path.join(root, `data/parser-runs/${parser.id}.json`);
   let lastRun = 0;
   try {
     const run = JSON.parse(fs.readFileSync(runFile, 'utf8'));
@@ -14,12 +54,55 @@ for (const parser of config.parsers || []) {
   } catch {}
 
   const intervalMs = Number(parser.interval_minutes || config.default_interval_minutes || 60) * 60_000;
-  const due = !lastRun || now - lastRun >= intervalMs - 5 * 60_000;
+  const due = force || !lastRun || now - lastRun >= intervalMs - 5 * 60_000;
   if (!due) {
-    console.log(`${parser.id}: skipped, next interval not reached`);
+    const nextRunAt = new Date(lastRun + intervalMs).toISOString();
+    console.log(`${parser.id}: skipped, next interval at ${nextRunAt}`);
+    results.push({ id: parser.id, status: 'skipped', last_run_at: lastRun ? new Date(lastRun).toISOString() : null, next_run_at: nextRunAt });
     continue;
   }
 
+  const started = Date.now();
   console.log(`${parser.id}: running ${parser.command}`);
-  execSync(parser.command, { stdio: 'inherit', env: process.env });
+  try {
+    execSync(parser.command, { cwd: root, stdio: 'inherit', env: process.env });
+    results.push({
+      id: parser.id,
+      status: 'success',
+      duration_ms: Date.now() - started,
+      outputs: existingOutputs(parser.outputs)
+    });
+  } catch (error) {
+    console.error(`${parser.id}: failed with exit code ${error.status ?? 'unknown'}`);
+    restoreOutputs(parser.outputs);
+    results.push({
+      id: parser.id,
+      status: 'error',
+      duration_ms: Date.now() - started,
+      error: error.message,
+      outputs_restored: true
+    });
+  }
 }
+
+const failed = results.filter(result => result.status === 'error');
+const succeeded = results.filter(result => result.status === 'success');
+const report = {
+  schema_version: 1,
+  checked_at: checkedAt,
+  forced: force,
+  status: failed.length ? (succeeded.length ? 'partial' : 'error') : 'success',
+  summary: {
+    enabled: results.filter(result => !['disabled'].includes(result.status)).length,
+    succeeded: succeeded.length,
+    failed: failed.length,
+    skipped: results.filter(result => result.status === 'skipped').length
+  },
+  results
+};
+
+fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
+console.log(JSON.stringify(report, null, 2));
+
+if (failed.length) process.exitCode = 1;

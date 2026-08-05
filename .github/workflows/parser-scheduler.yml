@@ -2,17 +2,31 @@ name: Central parser scheduler
 
 on:
   workflow_dispatch:
+    inputs:
+      force:
+        description: Run all enabled parsers regardless of freshness
+        required: false
+        type: boolean
+        default: false
   schedule:
     - cron: '7 * * * *'
   push:
     paths:
       - 'config/parsers/schedule.json'
       - 'config/parsers/releases.json'
+      - 'data/popular/cover-overrides.json'
+      - 'features/home-releases/rules.json'
+      - 'assets/home-releases/index.js'
       - 'scripts/run-scheduled-parsers.mjs'
       - 'scripts/parse-releases.mjs'
+      - 'scripts/parse-popular.mjs'
+      - 'scripts/filter-popular.mjs'
+      - 'scripts/resolve-popular-covers.mjs'
+      - 'scripts/validate-home-feeds.mjs'
       - '.github/workflows/parser-scheduler.yml'
 
 permissions:
+  actions: write
   contents: write
 
 concurrency:
@@ -24,30 +38,91 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      - name: Validate release parser
-        run: node --check scripts/parse-releases.mjs
-      - name: Run due parsers
+          node-version: '22'
+
+      - name: Install parser dependencies
+        run: npm install --no-save --ignore-scripts image-size@2
+
+      - name: Validate parser code
+        run: |
+          node --check scripts/run-scheduled-parsers.mjs
+          node --check scripts/parse-releases.mjs
+          node --check scripts/parse-popular.mjs
+          node --check scripts/filter-popular.mjs
+          node --check scripts/resolve-popular-covers.mjs
+          node --check scripts/validate-home-feeds.mjs
+
+      - name: Run due parsers independently
+        id: parsers
+        continue-on-error: true
         env:
+          PARSER_FORCE: ${{ inputs.force || github.event.inputs.force || github.event_name == 'push' }}
           TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
           TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           REDDIT_ACCESS_TOKEN: ${{ secrets.REDDIT_ACCESS_TOKEN }}
           RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
         run: |
-          mkdir -p assets/covers/releases data/release-drafts
+          mkdir -p assets/covers/releases assets/covers/popular data/release-drafts data/parser-runs
           node scripts/run-scheduled-parsers.mjs
-      - name: Commit parser outputs
+
+      - name: Validate publishable home feeds
+        id: validation
+        if: always()
+        continue-on-error: true
+        run: node scripts/validate-home-feeds.mjs --fresh-hours 18
+
+      - name: Commit validated parser outputs
+        id: publication
+        if: always() && steps.validation.outcome == 'success'
         run: |
-          if [ -z "$(git status --porcelain -- data assets/covers/releases)" ]; then
-            echo "No parser output changes"
-            exit 0
-          fi
           git config user.name "igropoisk-parser[bot]"
           git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
-          git add data assets/covers/releases
-          git commit -m "Update scheduled parser outputs"
-          git pull --rebase
-          git push
+
+          paths=(
+            data/popular/current.json
+            data/popular/published.json
+            data/popular/covers.json
+            data/parser-runs/popular.json
+            assets/covers/popular
+            data/releases/current.json
+            data/releases/changes.json
+            data/parser-runs/releases.json
+            data/parser-runs/scheduler.json
+            data/release-drafts
+            assets/covers/releases
+          )
+
+          existing=()
+          for path in "${paths[@]}"; do
+            if [ -e "$path" ]; then existing+=("$path"); fi
+          done
+          if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
+
+          if git diff --cached --quiet; then
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "Parser snapshots are already current."
+            exit 0
+          fi
+
+          git commit -m "Update popular and release feeds"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy updated production feeds
+        if: steps.publication.outputs.published == 'true' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main
+
+      - name: Report blocked parser publication
+        if: steps.parsers.outcome == 'failure' || steps.validation.outcome == 'failure'
+        run: |
+          echo "Parser publication was blocked or degraded. Validated successful outputs, when available, were preserved."
+          exit 1

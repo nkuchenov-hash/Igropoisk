@@ -1,0 +1,69 @@
+name: Home feeds check
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'assets/popular-home.js'
+      - 'assets/home-releases/index.js'
+      - 'features/home-releases/rules.json'
+      - 'config/parsers/schedule.json'
+      - 'config/parsers/releases.json'
+      - 'scripts/parse-popular.mjs'
+      - 'scripts/filter-popular.mjs'
+      - 'scripts/resolve-popular-covers.mjs'
+      - 'scripts/parse-releases.mjs'
+      - 'scripts/run-scheduled-parsers.mjs'
+      - 'scripts/validate-home-feeds.mjs'
+      - 'scripts/smoke-home-feeds-browser.mjs'
+      - '.github/workflows/parser-scheduler.yml'
+      - '.github/workflows/home-feeds-check.yml'
+      - '.github/workflows/pages.yml'
+  push:
+    branches:
+      - phase-c0-popular-releases-stability
+    paths:
+      - 'assets/popular-home.js'
+      - 'assets/home-releases/index.js'
+      - 'features/home-releases/rules.json'
+      - 'config/parsers/schedule.json'
+      - 'config/parsers/releases.json'
+      - 'scripts/parse-popular.mjs'
+      - 'scripts/filter-popular.mjs'
+      - 'scripts/resolve-popular-covers.mjs'
+      - 'scripts/parse-releases.mjs'
+      - 'scripts/run-scheduled-parsers.mjs'
+      - 'scripts/validate-home-feeds.mjs'
+      - 'scripts/smoke-home-feeds-browser.mjs'
+      - '.github/workflows/parser-scheduler.yml'
+      - '.github/workflows/home-feeds-check.yml'
+      - '.github/workflows/pages.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install validation dependencies
+        run: npm install --no-save --ignore-scripts image-size@2 puppeteer-core@24.16.0
+
+      - name: Verify parser and browser code
+        run: |
+          node --check scripts/run-scheduled-parsers.mjs
+          node --check scripts/validate-home-feeds.mjs
+          node --check scripts/smoke-home-feeds-browser.mjs
+          node --check assets/home-releases/index.js
+
+      - name: Verify published data contracts
+        run: node scripts/validate-home-feeds.mjs
+
+      - name: Verify homepage rendering
+        run: node scripts/smoke-home-feeds-browser.mjs
+
+      - name: Reject malformed patches
+        run: git diff --check

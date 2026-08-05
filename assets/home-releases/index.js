@@ -6,7 +6,11 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&
 const initials=title=>String(title||'').split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
 const primaryEvent=game=>(game.events||[]).slice().sort((a,b)=>String(a.date_start||a.date||'9999').localeCompare(String(b.date_start||b.date||'9999')))[0]||{};
 const dateValue=event=>event.date||event.date_start||null;
-const dayDiff=value=>value?Math.ceil((Date.parse(`${value}T12:00:00Z`)-Date.now())/86400000):null;
+const dateEndValue=event=>event.date_end||event.date||event.date_start||null;
+const utcDay=value=>value?Date.parse(`${value}T12:00:00Z`):null;
+const todayUtc=()=>{const now=new Date();return Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())};
+const dayDiff=value=>{const time=utcDay(value);return Number.isFinite(time)?Math.round((time-todayUtc())/86400000):null};
+const formattedDate=value=>new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(`${value}T12:00:00Z`)).replace('.','');
 const dateLabel=event=>{
   if(event.precision==='tbd')return 'Дата уточняется';
   const value=dateValue(event);
@@ -17,7 +21,18 @@ const dateLabel=event=>{
   const diff=dayDiff(value);
   if(diff===0)return 'Сегодня';
   if(diff===1)return 'Завтра';
-  return new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(`${value}T12:00:00Z`)).replace('.','');
+  if(diff===-1)return 'Релиз вчера';
+  if(Number.isFinite(diff)&&diff<0)return `Релиз ${formattedDate(value)}`;
+  return formattedDate(value);
+};
+const releaseKind=(event,recentDays)=>{
+  const start=utcDay(dateValue(event));
+  const end=utcDay(dateEndValue(event));
+  const today=todayUtc();
+  if(!Number.isFinite(start)&&!Number.isFinite(end))return 'upcoming';
+  if(Number.isFinite(end)&&end<today&&end>=today-recentDays*86400000)return 'recent';
+  if((Number.isFinite(start)&&start>=today)||(Number.isFinite(end)&&end>=today))return 'upcoming';
+  return 'expired';
 };
 const candidates=game=>{
   const id=Number(game.external_ids?.steam);
@@ -30,14 +45,14 @@ const candidates=game=>{
     id&&`https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/header.jpg`
   ].filter(Boolean))];
 };
-const card=game=>{
+const card=(game,kind)=>{
   const event=primaryEvent(game);
   const diff=dayDiff(dateValue(event));
   const image=candidates(game)[0]||'';
   const meta=[...(game.genres||[]).slice(0,1),...(event.platforms||[]).slice(0,1)].join(' · ');
-  return `<article class="home-release-card" data-release="${esc(game.slug)}"><a class="home-release-card__link" href="calendar/#game=${encodeURIComponent(game.slug)}"><div class="home-release-card__media" data-initials="${esc(initials(game.title))}">${image?`<img src="${esc(image)}" alt="Обложка ${esc(game.title)}" loading="eager" decoding="async" data-cover-index="0">`:''}<span class="home-release-card__date ${Number.isFinite(diff)&&diff>=0&&diff<=7?'is-near':''}">${esc(dateLabel(event))}</span></div><div class="home-release-card__body"><h3>${esc(game.title)}</h3><div class="home-release-card__meta">${esc(meta)}</div></div></a></article>`;
+  return `<article class="ig-card ig-card--interactive home-release-card" data-release="${esc(game.slug)}" data-release-kind="${esc(kind)}"><a class="ig-card__part home-release-card__link" href="calendar/#game=${encodeURIComponent(game.slug)}"><div class="ig-card__media home-release-card__media" data-initials="${esc(initials(game.title))}">${image?`<img src="${esc(image)}" alt="Обложка ${esc(game.title)}" loading="eager" decoding="async" data-cover-index="0">`:''}<span class="home-release-card__date ${kind==='recent'||Number.isFinite(diff)&&diff>=0&&diff<=7?'is-near':''}">${esc(dateLabel(event))}</span></div><div class="ig-card__part home-release-card__body"><h3>${esc(game.title)}</h3><div class="ig-card__part home-release-card__meta">${esc(meta)}</div></div></a></article>`;
 };
-const bindFallbacks=(games)=>{
+const bindFallbacks=games=>{
   rail.querySelectorAll('.home-release-card').forEach(cardElement=>{
     const game=games.find(item=>item.slug===cardElement.dataset.release);
     const image=cardElement.querySelector('img');
@@ -62,14 +77,22 @@ Promise.all([
   fetch('data/releases/current.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json()}),
   fetch('features/home-releases/rules.json',{cache:'no-store'}).then(response=>response.ok?response.json():{})
 ]).then(([payload,rules])=>{
-  const now=Date.now()-86400000;
   const maximum=Math.max(6,Number(rules.maximum_cards||12));
-  const rows=(payload.releases||[]).filter(game=>{
-    const event=primaryEvent(game);
-    const end=event.date_end||event.date||event.date_start;
-    return !end||Date.parse(`${end}T23:59:59Z`)>=now;
-  }).sort((left,right)=>String(dateValue(primaryEvent(left))||'9999').localeCompare(String(dateValue(primaryEvent(right))||'9999'))||String(left.title).localeCompare(String(right.title),'ru')).slice(0,maximum);
-  rail.innerHTML=rows.length?rows.map(card).join(''):'<div class="home-release-empty">Ближайшие релизы пока не найдены.</div>';
+  const recentDays=Math.max(1,Number(rules.recent_release_days||7));
+  const maximumRecent=Math.min(maximum,Math.max(0,Number(rules.maximum_recent_cards||4)));
+  const classified=(payload.releases||[]).map(game=>({game,event:primaryEvent(game)}))
+    .map(row=>({...row,kind:releaseKind(row.event,recentDays)}))
+    .filter(row=>row.kind!=='expired');
+
+  const recent=classified.filter(row=>row.kind==='recent')
+    .sort((left,right)=>String(dateEndValue(right.event)||'').localeCompare(String(dateEndValue(left.event)||''))||String(left.game.title).localeCompare(String(right.game.title),'ru'))
+    .slice(0,maximumRecent);
+  const upcoming=classified.filter(row=>row.kind==='upcoming')
+    .sort((left,right)=>String(dateValue(left.event)||'9999').localeCompare(String(dateValue(right.event)||'9999'))||String(left.game.title).localeCompare(String(right.game.title),'ru'));
+  const selected=[...recent,...upcoming].slice(0,maximum);
+  const rows=selected.map(row=>row.game);
+
+  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Новые и ожидаемые релизы пока не найдены.</div>';
   bindFallbacks(rows);
   bindRail();
 }).catch(error=>{
