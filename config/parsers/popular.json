@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "popular",
   "title": "Парсер «Сейчас популярно»",
   "status": "active",
@@ -55,16 +55,19 @@
     {"slug":"overwatch-2","title":"Overwatch 2","aliases":["Overwatch"]},
     {"slug":"honkai-star-rail","title":"Honkai: Star Rail","aliases":["Honkai Star Rail","HSR"]},
     {"slug":"apex-legends","title":"Apex Legends","aliases":["Apex"]},
-    {"slug":"pubg-battlegrounds","title":"PUBG: Battlegrounds","aliases":["PUBG","PlayerUnknown's Battlegrounds"]}
+    {"slug":"pubg-battlegrounds","title":"PUBG: Battlegrounds","aliases":["PUBG","PlayerUnknown's Battlegrounds"]},
+    {"slug":"grand-theft-auto-vi","title":"Grand Theft Auto VI","year":2026,"upcoming":true,"aliases":["Grand Theft Auto 6","GTA VI","GTA 6"]}
   ],
   "aliases": [
-    {"slug":"grand-theft-auto-vi","title":"Grand Theft Auto VI","year":2026,"upcoming":true,"aliases":["Grand Theft Auto 6","GTA VI","GTA 6"]},
-    {"slug":"grand-theft-auto-v","title":"Grand Theft Auto V","year":2013,"aliases":["GTA V","GTA 5","GTA Online"]},
+    {"slug":"grand-theft-auto-v","title":"Grand Theft Auto V","year":2013,"aliases":["GTA V","GTA 5"]},
     {"slug":"kingdom-come-deliverance-ii","title":"Kingdom Come: Deliverance II","year":2025,"aliases":["Kingdom Come Deliverance 2","Kingdom Come 2","KCD 2","KCD II"]},
     {"slug":"kingdom-come-deliverance","title":"Kingdom Come: Deliverance","year":2018,"aliases":["Kingdom Come Deliverance","KCD"]},
     {"slug":"the-witcher-3-wild-hunt","title":"The Witcher 3: Wild Hunt","year":2015,"aliases":["The Witcher 3","Witcher 3","Ведьмак 3"]},
     {"slug":"doom-eternal","title":"DOOM Eternal","year":2020,"aliases":["Doom Eternal"]},
     {"slug":"doom","title":"DOOM","year":2016,"aliases":["DOOM 2016","Doom (2016)"]}
+  ],
+  "disambiguation": [
+    {"prefer_slug":"grand-theft-auto-vi","prefer_aliases":["Grand Theft Auto VI","Grand Theft Auto 6","GTA VI","GTA 6"],"reason":"A numbered sequel mention must outrank GTA V or GTA Online aliases in the same title."}
   ],
   "outputs": ["data/popular/current.json","data/parser-runs/popular.json"],
   "examples": [

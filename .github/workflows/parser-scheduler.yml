@@ -15,6 +15,7 @@ on:
       - 'config/parsers/schedule.json'
       - 'config/parsers/popular.json'
       - 'config/parsers/releases.json'
+      - 'config/parsers/official-popular-art.json'
       - 'config/home-feeds-quality.json'
       - 'data/popular/cover-overrides.json'
       - 'features/home-releases/rules.json'
@@ -25,6 +26,8 @@ on:
       - 'scripts/parse-popular.mjs'
       - 'scripts/enrich-global-popular-youtube.mjs'
       - 'scripts/resolve-global-popular-art.mjs'
+      - 'scripts/resolve-official-popular-packages.mjs'
+      - 'scripts/test-gta6-popular-rules.mjs'
       - 'scripts/curate-home-feeds.mjs'
       - 'scripts/filter-popular.mjs'
       - 'scripts/resolve-popular-covers.mjs'
@@ -61,12 +64,15 @@ jobs:
           node --check scripts/parse-popular.mjs
           node --check scripts/enrich-global-popular-youtube.mjs
           node --check scripts/resolve-global-popular-art.mjs
+          node --check scripts/resolve-official-popular-packages.mjs
+          node --check scripts/test-gta6-popular-rules.mjs
           node --check scripts/curate-home-feeds.mjs
           node --check scripts/filter-popular.mjs
           node --check scripts/resolve-popular-covers.mjs
           node --check scripts/validate-home-feeds.mjs
           node --check assets/popular-home.js
           node --check assets/home-releases/index.js
+          node scripts/test-gta6-popular-rules.mjs
 
       - name: Run due parsers independently
         id: parsers
