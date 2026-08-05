@@ -1,0 +1,42 @@
+name: Verify Yandex content storage
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/news-content-storage
+    paths:
+      - '.github/workflows/yandex-storage-connectivity.yml'
+      - 'scripts/check-yandex-storage.mjs'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-yandex-content-storage
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout isolated feature branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check syntax
+        run: node --check scripts/check-yandex-storage.mjs
+
+      - name: Write read and remove a temporary probe
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/check-yandex-storage.mjs
