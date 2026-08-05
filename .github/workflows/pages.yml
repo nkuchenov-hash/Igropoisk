@@ -35,8 +35,23 @@ jobs:
 
       - name: Verify JavaScript syntax
         run: |
-          find assets scripts -type f \( -name '*.js' -o -name '*.mjs' \) -print0 \
+          find assets scripts features -type f \( -name '*.js' -o -name '*.mjs' \) -print0 \
             | xargs -0 -n1 node --check
+
+      - name: Verify central design-system governance
+        env:
+          DESIGN_SYSTEM_BASE_SHA: ${{ github.event.before }}
+        run: |
+          node scripts/test-central-design-system.mjs
+          BASE="$DESIGN_SYSTEM_BASE_SHA"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            BASE="$(git rev-parse HEAD^ 2>/dev/null || true)"
+          fi
+          if [ -n "$BASE" ]; then
+            node scripts/validate-central-design-system.mjs --base "$BASE"
+          else
+            node scripts/validate-central-design-system.mjs
+          fi
 
       - name: Verify Python syntax and shared layout contract
         run: |
