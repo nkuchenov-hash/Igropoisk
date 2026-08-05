@@ -2,9 +2,9 @@ name: News module check
 
 on:
   push:
-    branches: [phase-b1-news-isolation, phase-b3-news-content-api, phase-b4-autonomous-news-pipeline, phase-b5-news-health]
+    branches: [feature/news-content-storage]
   pull_request:
-    branches: [main]
+    branches: [staging, main]
     paths:
       - 'features/news/**'
       - 'admin/index.html'
@@ -25,11 +25,18 @@ on:
       - 'scripts/test-news-pipeline.mjs'
       - 'scripts/test-news-pipeline-health.mjs'
       - 'scripts/test-news-content-api.mjs'
+      - 'scripts/test-news-storage-content-api.mjs'
+      - 'scripts/check-yandex-storage.mjs'
+      - 'scripts/lib/yandex-object-storage.mjs'
+      - 'scripts/publish-news-storage.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/validate-news-boundary.mjs'
       - 'scripts/validate-central-design-system.mjs'
+      - 'scripts/validate-production-boundaries.mjs'
       - '.github/workflows/news-module-check.yml'
       - '.github/workflows/news-pipeline.yml'
+      - '.github/workflows/yandex-storage-connectivity.yml'
+      - '.github/workflows/staging-gate-watch.yml'
       - '.github/workflows/news-pipeline-staging.yml'
       - '.github/workflows/pages.yml'
       - '.github/workflows/update-news.yml'
@@ -54,7 +61,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Verify news JavaScript syntax
         run: |
@@ -66,12 +73,14 @@ jobs:
           node scripts/migrate-news-isolation.mjs
           git diff --exit-code
 
-      - name: Verify News Content API autonomous pipeline and health contracts
+      - name: Verify news storage content and pipeline contracts
         run: |
           node scripts/test-news-content-api.mjs
+          node scripts/test-news-storage-content-api.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/validate-news-pipeline.mjs
+          node scripts/validate-production-boundaries.mjs
 
       - name: Verify news module and central component boundary
         run: |

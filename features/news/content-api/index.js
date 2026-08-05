@@ -3,6 +3,9 @@
 (() => {
   const scriptUrl = document.currentScript?.src || document.baseURI;
   const siteBase = new URL('../../../', scriptUrl);
+  const storageOrigin = 'https://storage.yandexcloud.net';
+  const storageBucketPath = '/igropoisk-content/';
+  const storageManifestUrl = new URL(`${storageOrigin}${storageBucketPath}news/manifests/current.json`);
   const trustedMedia = new Set(['Игромания', 'StopGame', 'IGN', 'GameSpot', 'Eurogamer', 'VGC', 'PC Gamer', 'GamesRadar+', 'Polygon', 'Rock Paper Shotgun', 'Ars Technica', 'PlayGround.ru']);
   const sourceDefinitions = Object.freeze([
     Object.freeze({ id: 'ranked-events', path: 'data/news-events.json', official: false }),
@@ -10,6 +13,7 @@
     Object.freeze({ id: 'publisher-news', path: 'data/publisher-news.json', official: true })
   ]);
   const curatedFeeds = Object.freeze({ ru: 'data/news-home-ru.json' });
+  const requiredStorageFiles = Object.freeze([...sourceDefinitions.map(source => source.path), ...Object.values(curatedFeeds)]);
   const countryRegions = Object.freeze({
     RU: 'cis', KZ: 'cis', BY: 'cis', AM: 'cis', AZ: 'cis', GE: 'cis', KG: 'cis', MD: 'cis', TJ: 'cis', TM: 'cis', UZ: 'cis',
     US: 'north-america', CA: 'north-america', MX: 'north-america',
@@ -27,7 +31,8 @@
     'Asia/Tokyo': 'JP', 'Asia/Seoul': 'KR', 'Asia/Shanghai': 'CN', 'Asia/Hong_Kong': 'HK', 'Australia/Sydney': 'AU', 'Pacific/Auckland': 'NZ'
   });
   const cache = new Map();
-  let lastHealth = Object.freeze({ status: 'idle', checkedAt: '', sources: Object.freeze([]) });
+  let backendPromise = null;
+  let lastHealth = Object.freeze({ status: 'idle', backend: 'none', version: '', checkedAt: '', sources: Object.freeze([]) });
 
   const hasCyrillic = value => /[А-Яа-яЁё]/.test(value || '');
 
@@ -57,11 +62,22 @@
     return { ...item, titleRu: translated[0], summaryRu: translated[1] };
   }
 
-  function normalize(raw, { official = false, lang = language() } = {}) {
+  function resolveImage(value, mediaBase) {
+    const image = String(value || '').trim();
+    if (!image) return '';
+    try {
+      return new URL(image, mediaBase || siteBase).href;
+    } catch {
+      return '';
+    }
+  }
+
+  function normalize(raw, { official = false, lang = language(), mediaBase = siteBase } = {}) {
     const item = applyTranslation(raw || {}, lang);
     const source = sourceName(item);
     return Object.freeze({
       ...item,
+      image: resolveImage(item.image, mediaBase),
       type: official ? 'official' : (item.type || 'ranked'),
       primaryUrl: item.primaryUrl || item.url || '',
       primarySource: source,
@@ -77,10 +93,21 @@
     });
   }
 
+  function validImage(value) {
+    try {
+      const url = new URL(value, siteBase);
+      if (/\/(?:assets\/(?:news|publisher-news))\/[a-f0-9]{16}\.(?:jpg|jpeg|png|webp|avif|gif)$/i.test(url.pathname)) return true;
+      return url.origin === storageOrigin
+        && url.pathname.startsWith(`${storageBucketPath}news/media/`)
+        && /\/[a-f0-9]{64}\.(?:jpg|jpeg|png|webp|avif|gif)$/i.test(url.pathname);
+    } catch {
+      return false;
+    }
+  }
+
   function valid(item, lang = language()) {
     const date = new Date(item?.publishedAt || '').getTime();
-    return Boolean(item && /^https?:\/\//i.test(item.primaryUrl || '') && Number.isFinite(date) && text(item, 'title', lang)
-      && /^assets\/(news|publisher-news)\/[a-f0-9]{16}\.(jpg|png|webp|avif|gif)$/i.test(item.image || ''));
+    return Boolean(item && /^https?:\/\//i.test(item.primaryUrl || '') && Number.isFinite(date) && text(item, 'title', lang) && validImage(item.image));
   }
 
   function profileCountry() {
@@ -137,12 +164,60 @@
       + Math.max(0, 168 - (Date.now() - new Date(item?.publishedAt).getTime()) / 36e5);
   }
 
-  async function loadJson(path) {
-    const url = new URL(path, siteBase);
-    url.searchParams.set('v', String(Date.now()));
-    const response = await fetch(url, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`${path}: ${response.status}`);
-    const payload = await response.json();
+  async function fetchJson(url, label) {
+    const target = new URL(url);
+    target.searchParams.set('v', String(Date.now()));
+    const response = await fetch(target, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`${label}: ${response.status}`);
+    return response.json();
+  }
+
+  function repositoryBackend() {
+    return Object.freeze({
+      id: 'repository-fallback',
+      version: '',
+      mediaBase: siteBase,
+      files: Object.freeze(Object.fromEntries(requiredStorageFiles.map(file => [file, new URL(file, siteBase).href])))
+    });
+  }
+
+  function validateStorageUrl(value, version) {
+    const url = new URL(value);
+    const expectedPrefix = `${storageBucketPath}news/snapshots/${version}/`;
+    if (url.origin !== storageOrigin || !url.pathname.startsWith(expectedPrefix)) throw new Error('Untrusted news snapshot URL.');
+    return url.href;
+  }
+
+  async function objectStorageBackend({ force = false } = {}) {
+    if (!force && backendPromise) return backendPromise;
+    backendPromise = (async () => {
+      const manifest = await fetchJson(storageManifestUrl, 'news manifest');
+      if (manifest?.schemaVersion !== 1 || manifest?.channel !== 'news' || !/^[\w.-]+$/.test(manifest?.version || '')) {
+        throw new Error('Invalid news manifest.');
+      }
+      const files = {};
+      for (const file of requiredStorageFiles) {
+        const candidate = manifest.files?.[file]?.url;
+        if (!candidate) throw new Error(`News manifest is missing ${file}.`);
+        files[file] = validateStorageUrl(candidate, manifest.version);
+      }
+      return Object.freeze({
+        id: 'object-storage',
+        version: manifest.version,
+        mediaBase: storageManifestUrl,
+        files: Object.freeze(files)
+      });
+    })();
+    try {
+      return await backendPromise;
+    } catch (error) {
+      backendPromise = null;
+      throw error;
+    }
+  }
+
+  async function loadJson(backend, path) {
+    const payload = await fetchJson(backend.files[path], path);
     return Array.isArray(payload) ? payload : (payload.items || []);
   }
 
@@ -161,7 +236,7 @@
     return Object.freeze([...byUrl.values()]);
   }
 
-  function setHealth(results) {
+  function setHealth(results, backend, fallbackReason = '') {
     const sources = sourceDefinitions.map((source, index) => {
       const result = results[index];
       return Object.freeze({
@@ -175,24 +250,40 @@
     const ready = sources.filter(source => source.status === 'ready').length;
     lastHealth = Object.freeze({
       status: ready === sources.length ? 'ready' : (ready ? 'degraded' : 'error'),
+      backend: backend.id,
+      version: backend.version || '',
+      fallbackReason,
       checkedAt: new Date().toISOString(),
       sources: Object.freeze(sources)
     });
+  }
+
+  async function loadAllFrom(backend, lang, { requireComplete = false, fallbackReason = '' } = {}) {
+    const results = await Promise.allSettled(sourceDefinitions.map(async source => {
+      const payload = await loadJson(backend, source.path);
+      return payload
+        .map(item => normalize(item, { official: source.official || item.type === 'official', lang, mediaBase: backend.mediaBase }))
+        .filter(item => valid(item, lang));
+    }));
+    if (requireComplete && results.some(result => result.status === 'rejected')) {
+      throw new Error('Object Storage news snapshot is incomplete.');
+    }
+    setHealth(results, backend, fallbackReason);
+    if (results.every(result => result.status === 'rejected')) throw new Error('All news sources are unavailable.');
+    return deduplicate(results.flatMap(result => result.status === 'fulfilled' ? result.value : []));
   }
 
   async function getAll({ lang = language(), force = false } = {}) {
     const cacheKey = `all:${lang}`;
     if (!force && cache.has(cacheKey)) return cache.get(cacheKey);
     const pending = (async () => {
-      const results = await Promise.allSettled(sourceDefinitions.map(async source => {
-        const payload = await loadJson(source.path);
-        return payload
-          .map(item => normalize(item, { official: source.official || item.type === 'official', lang }))
-          .filter(item => valid(item, lang));
-      }));
-      setHealth(results);
-      if (results.every(result => result.status === 'rejected')) throw new Error('All news sources are unavailable.');
-      return deduplicate(results.flatMap(result => result.status === 'fulfilled' ? result.value : []));
+      try {
+        const backend = await objectStorageBackend({ force });
+        return await loadAllFrom(backend, lang, { requireComplete: true });
+      } catch (storageError) {
+        console.warn('Object Storage news snapshot unavailable; using repository fallback.', storageError);
+        return loadAllFrom(repositoryBackend(), lang, { fallbackReason: String(storageError?.message || storageError) });
+      }
     })();
     cache.set(cacheKey, pending);
     try {
@@ -203,17 +294,28 @@
     }
   }
 
+  async function curatedFrom(backend, path, lang, limit) {
+    return (await loadJson(backend, path))
+      .map(item => normalize(item, { official: Boolean(item.official), lang, mediaBase: backend.mediaBase }))
+      .filter(item => valid(item, lang))
+      .slice(0, limit);
+  }
+
   async function getHome({ lang = language(), region = userRegion(), globalLimit = 12, regionalLimit = 3, force = false } = {}) {
     const curatedPath = curatedFeeds[lang];
     if (curatedPath) {
       try {
-        const curated = (await loadJson(curatedPath))
-          .map(item => normalize(item, { official: Boolean(item.official), lang }))
-          .filter(item => valid(item, lang))
-          .slice(0, globalLimit);
+        const backend = await objectStorageBackend({ force });
+        const curated = await curatedFrom(backend, curatedPath, lang, globalLimit);
         if (curated.length === globalLimit) return Object.freeze(curated);
-      } catch (error) {
-        console.warn('Curated home news feed unavailable.', error);
+      } catch (storageError) {
+        console.warn('Object Storage home news feed unavailable; using repository fallback.', storageError);
+        try {
+          const curated = await curatedFrom(repositoryBackend(), curatedPath, lang, globalLimit);
+          if (curated.length === globalLimit) return Object.freeze(curated);
+        } catch (repositoryError) {
+          console.warn('Repository home news fallback unavailable.', repositoryError);
+        }
       }
     }
     const all = await getAll({ lang, force });
@@ -228,6 +330,7 @@
 
   function invalidate() {
     cache.clear();
+    backendPromise = null;
   }
 
   function health() {
@@ -248,6 +351,7 @@
     score,
     sourceName,
     sources: sourceDefinitions,
+    storageManifest: storageManifestUrl.href,
     text,
     userRegion,
     valid

@@ -8,8 +8,11 @@ on:
       - 'data/news-sources.json'
       - 'data/youtube-sources.json'
       - 'scripts/**news*.mjs'
+      - 'scripts/lib/yandex-object-storage.mjs'
+      - 'scripts/publish-news-storage.mjs'
       - 'features/news/**'
       - '.github/workflows/news-pipeline*.yml'
+      - '.github/workflows/yandex-storage-connectivity.yml'
   workflow_dispatch:
 
 permissions:
@@ -38,7 +41,9 @@ jobs:
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
+          node scripts/test-news-storage-content-api.mjs
           node scripts/validate-news-module.mjs
+          node scripts/validate-production-boundaries.mjs
 
       - name: Run all source groups without publishing
         env:
@@ -46,6 +51,15 @@ jobs:
         run: |
           node scripts/run-news-pipeline.mjs --force
           git diff --check
+
+      - name: Prepare the resulting external snapshot without switching the manifest
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/publish-news-storage.mjs --dry-run
 
       - name: Verify generated paths are isolated
         run: |

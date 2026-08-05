@@ -25,6 +25,20 @@ if (!stagingWatcher.includes('workflow_run:')
   fail('Automated staging writers are not followed by the full staging gate in explicit repository context.');
 }
 
+const newsPipeline = read('.github/workflows/news-pipeline.yml');
+if (newsPipeline.includes('contents: write') || /\bgit\s+push\b/.test(newsPipeline)) {
+  fail('News publication still writes generated content into GitHub.');
+}
+if (!newsPipeline.includes('node scripts/publish-news-storage.mjs')) {
+  fail('News publication does not publish an external immutable snapshot.');
+}
+for (const secret of ['YC_S3_ACCESS_KEY_ID', 'YC_S3_SECRET_ACCESS_KEY', 'YC_S3_BUCKET']) {
+  if (!newsPipeline.includes(`secrets.${secret}`)) fail(`News publication is missing secret ${secret}.`);
+}
+if (stagingWatcher.includes('Autonomous news pipeline')) {
+  fail('External news publication is incorrectly treated as a staging repository write.');
+}
+
 for (const name of fs.readdirSync(WORKFLOWS).filter(file => /\.ya?ml$/i.test(file))) {
   const relative = `.github/workflows/${name}`;
   const content = read(relative);
@@ -57,4 +71,4 @@ if (errors.length) {
   throw new Error(`Production boundary validation failed:\n${errors.map(error => `- ${error}`).join('\n')}`);
 }
 
-console.log('Production is read-only; automated writers target staging and trigger the full staging gate.');
+console.log('Production is read-only; repository writers target staging and news publishes only to external content storage.');

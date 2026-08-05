@@ -42,6 +42,7 @@ jobs:
       - name: Check news, feeds and module contracts
         run: |
           node scripts/test-news-content-api.mjs
+          node scripts/test-news-storage-content-api.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/validate-news-pipeline.mjs
