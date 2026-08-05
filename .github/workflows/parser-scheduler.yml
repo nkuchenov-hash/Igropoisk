@@ -14,12 +14,14 @@ on:
     paths:
       - 'config/parsers/schedule.json'
       - 'config/parsers/releases.json'
+      - 'config/home-feeds-quality.json'
       - 'data/popular/cover-overrides.json'
       - 'features/home-releases/rules.json'
       - 'assets/home-releases/index.js'
       - 'scripts/run-scheduled-parsers.mjs'
       - 'scripts/parse-releases.mjs'
       - 'scripts/parse-popular.mjs'
+      - 'scripts/curate-home-feeds.mjs'
       - 'scripts/filter-popular.mjs'
       - 'scripts/resolve-popular-covers.mjs'
       - 'scripts/validate-home-feeds.mjs'
@@ -53,9 +55,11 @@ jobs:
           node --check scripts/run-scheduled-parsers.mjs
           node --check scripts/parse-releases.mjs
           node --check scripts/parse-popular.mjs
+          node --check scripts/curate-home-feeds.mjs
           node --check scripts/filter-popular.mjs
           node --check scripts/resolve-popular-covers.mjs
           node --check scripts/validate-home-feeds.mjs
+          node --check assets/home-releases/index.js
 
       - name: Run due parsers independently
         id: parsers
@@ -75,7 +79,9 @@ jobs:
         id: validation
         if: always()
         continue-on-error: true
-        run: node scripts/validate-home-feeds.mjs --fresh-hours 18
+        run: |
+          node scripts/validate-home-feeds.mjs --fresh-hours 18
+          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('data/home-feeds-quality.json'));if(q.popular.selected.length<20)throw new Error('Fewer than 20 editorially eligible popular cards');if(!q.releases.selected.length)throw new Error('No editorially eligible releases');"
 
       - name: Commit validated parser outputs
         id: publication
@@ -94,6 +100,7 @@ jobs:
             data/releases/changes.json
             data/parser-runs/releases.json
             data/parser-runs/scheduler.json
+            data/home-feeds-quality.json
             data/release-drafts
             assets/covers/releases
           )
@@ -110,7 +117,7 @@ jobs:
             exit 0
           fi
 
-          git commit -m "Update popular and release feeds"
+          git commit -m "Update curated popular and release feeds"
           git pull --rebase origin "$GITHUB_REF_NAME"
           git push origin "HEAD:$GITHUB_REF_NAME"
           echo "published=true" >> "$GITHUB_OUTPUT"
