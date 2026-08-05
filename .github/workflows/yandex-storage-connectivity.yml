@@ -2,6 +2,12 @@ name: Verify Yandex content storage
 
 on:
   workflow_dispatch:
+    inputs:
+      publish_snapshot:
+        description: Publish the current validated repository fallback as a new storage snapshot
+        required: false
+        type: boolean
+        default: false
   push:
     branches:
       - feature/news-content-storage
@@ -47,7 +53,7 @@ jobs:
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
         run: node scripts/check-yandex-storage.mjs
 
-      - name: Prepare a complete news snapshot
+      - name: Prepare a complete news snapshot without changing the live manifest
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
           YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
@@ -56,7 +62,8 @@ jobs:
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
         run: node scripts/publish-news-storage.mjs --dry-run
 
-      - name: Publish the existing validated fallback as the initial snapshot
+      - name: Publish a snapshot only after an explicit manual request
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_snapshot == true
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
           YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
@@ -65,7 +72,7 @@ jobs:
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
         run: node scripts/publish-news-storage.mjs
 
-      - name: Verify public manifest and homepage feed
+      - name: Verify public manifest homepage feed and browser CORS
         env:
           YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
         run: |
@@ -75,3 +82,7 @@ jobs:
           feed=$(node -e "const m=require('/tmp/news-manifest.json'); process.stdout.write(m.files['data/news-home-ru.json'].url)")
           curl --fail --silent --show-error "$feed?v=${GITHUB_RUN_ID}" -o /tmp/news-home.json
           node -e "const p=require('/tmp/news-home.json'); const a=Array.isArray(p)?p:p.items; if(!Array.isArray(a)||a.length!==12) process.exit(1)"
+          curl --fail --silent --show-error --head \
+            -H 'Origin: https://nkuchenov-hash.github.io' \
+            "$manifest" -o /tmp/news-headers.txt
+          grep -qi '^access-control-allow-origin: https://nkuchenov-hash.github.io' /tmp/news-headers.txt
