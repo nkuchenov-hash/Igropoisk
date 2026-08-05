@@ -1,6 +1,7 @@
 {
   "id": "news",
   "version": 1,
+  "enforcement": "strict",
   "roots": {
     "home": "[data-news-module=\"home\"]",
     "archive": "[data-news-module=\"archive\"]"
@@ -19,6 +20,24 @@
     "data/news-home-ru.json",
     "assets/news/",
     "assets/publisher-news/"
+  ],
+  "centralComponents": [
+    "ig-card",
+    "ig-card--interactive",
+    "ig-card__media",
+    "ig-card__body",
+    "ig-card__meta",
+    "ig-card__title",
+    "ig-card__summary",
+    "ig-button",
+    "ig-icon-button",
+    "ig-input",
+    "ig-filter-chip",
+    "ig-chip",
+    "ig-chip-list",
+    "ig-toolbar",
+    "ig-empty-state",
+    "ig-page-title"
   ],
   "designSystem": {
     "source": "assets/design-system.css",
