@@ -16,14 +16,6 @@ const featured = [
   {slug:'hogwarts-legacy',title:'Hogwarts Legacy',year:2023,genres:['RPG','Приключения'],platforms:['PC','PlayStation','Xbox'],studio:'Avalanche Software',rating:8.4,pop:5900,desc:'Приключение в открытом мире школы чародейства и волшебства.',appid:990080}
 ].map(game => ({...game,cover:`https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appid}/library_600x900.jpg`,hero:`https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appid}/library_hero.jpg`}));
 
-const news = [
-  {date:'2 августа 2026',title:'Крупные игровые релизы и обновления недели',image:featured[0].hero},
-  {date:'1 августа 2026',title:'Что нового готовят крупнейшие студии',image:featured[1].hero},
-  {date:'31 июля 2026',title:'Главные патчи и события в популярных играх',image:featured[2].hero},
-  {date:'30 июля 2026',title:'Самые заметные анонсы последних дней',image:featured[4].hero},
-  {date:'29 июля 2026',title:'Игры, которые получили крупные обновления',image:featured[8].hero}
-];
-
 let catalog = [...featured];
 const featuredBySlug = new Map(featured.map(game => [game.slug, game]));
 
@@ -65,8 +57,6 @@ function gameCard(game) {
 function renderHome() {
   $('#popular').innerHTML = featured.map(gameCard).join('');
   $('#reviews').innerHTML = featured.slice(1,5).map(game => `<article class="card small-card" data-game="${game.slug}"><img src="${game.hero}" alt="${game.title}" loading="lazy"><div><div class="date">30 июля 2026</div><h3>${game.title}</h3></div></article>`).join('');
-  $('#homeNews').innerHTML = news.slice(0,5).map(item => `<article class="card news-card"><img src="${item.image}" alt="" loading="lazy"><div class="card-body"><div class="date">${item.date}</div><h3>${item.title}</h3></div></article>`).join('');
-  $('#newsPage').innerHTML = news.concat(news.slice(0,3)).map(item => `<article class="card news-card"><img src="${item.image}" alt="" loading="lazy"><div class="card-body"><div class="date">${item.date}</div><h3>${item.title}</h3><p>Полноценный материал с контекстом, подтверждёнными данными и ссылками на источники.</p></div></article>`).join('');
 }
 
 function initials(title) {

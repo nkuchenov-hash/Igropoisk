@@ -1,0 +1,28 @@
+{
+  "id": "news",
+  "version": 1,
+  "roots": {
+    "home": "[data-news-module=\"home\"]",
+    "archive": "[data-news-module=\"archive\"]"
+  },
+  "runtime": [
+    "features/news/shared/translations-ru.js",
+    "features/news/shared/index.js",
+    "features/news/home-widget/index.js",
+    "features/news/archive-page/index.js",
+    "features/news/styles/index.css"
+  ],
+  "content": [
+    "data/news-events.json",
+    "data/news.json",
+    "data/publisher-news.json",
+    "data/news-home-ru.json",
+    "assets/news/",
+    "assets/publisher-news/"
+  ],
+  "designSystem": {
+    "source": "assets/design-system.css",
+    "policy": "central-components-only",
+    "localStyles": "composition-only"
+  }
+}
