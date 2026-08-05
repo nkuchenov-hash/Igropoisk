@@ -8,6 +8,7 @@ on:
     paths:
       - 'config/home-feeds-quality.json'
       - 'config/parsers/schedule.json'
+      - 'scripts/parse-popular.mjs'
       - 'scripts/filter-popular.mjs'
       - 'scripts/filter-releases-home.mjs'
       - 'scripts/home-feeds-quality-lib.mjs'
@@ -59,20 +60,22 @@ jobs:
 
       - name: Report staging scope
         run: |
-          git status --porcelain --untracked-files=all > /tmp/home-feeds-staging-paths.txt
+          mkdir -p tmp
+          git status --porcelain --untracked-files=all > tmp/home-feeds-staging-paths.txt
           python3 - <<'PY'
           from pathlib import Path
           allowed=(
             'data/popular/', 'data/releases/', 'data/parser-runs/', 'data/release-drafts/',
-            'data/home-feeds-health.json', 'assets/covers/popular/', 'assets/covers/releases/'
+            'data/home-feeds-health.json', 'assets/covers/popular/', 'assets/covers/releases/',
+            'tmp/home-feeds-staging-paths.txt'
           )
           bad=[]
-          for line in Path('/tmp/home-feeds-staging-paths.txt').read_text().splitlines():
+          for line in Path('tmp/home-feeds-staging-paths.txt').read_text().splitlines():
               path=line[3:]
               if ' -> ' in path: path=path.split(' -> ',1)[1]
               if not any(path==prefix or path.startswith(prefix) for prefix in allowed): bad.append(path)
           if bad: raise SystemExit('Unexpected staging paths:\n'+'\n'.join(bad))
-          print(Path('/tmp/home-feeds-staging-paths.txt').read_text())
+          print(Path('tmp/home-feeds-staging-paths.txt').read_text())
           PY
 
       - name: Upload staging report
@@ -86,4 +89,4 @@ jobs:
             data/parser-runs/popular.json
             data/parser-runs/releases.json
             data/parser-runs/scheduler.json
-            /tmp/home-feeds-staging-paths.txt
+            tmp/home-feeds-staging-paths.txt
