@@ -8,6 +8,8 @@ import {
 
 const rules = {
   weak_families: ['steam_chart'],
+  single_strong_families: ['news', 'reddit', 'youtube', 'twitch'],
+  allow_single_strong_family: true,
   minimum_community_families: 2,
   minimum_independent_news_sources: 2,
   minimum_single_family_evidence: 2,
@@ -16,9 +18,21 @@ const rules = {
 
 const weak = evaluatePopularItem({ families: ['steam_chart'], evidence: [{ family: 'steam_chart' }], news_sources: 0 }, rules);
 assert.equal(weak.eligible, false, 'Steam-only evergreen demand must not be enough.');
+assert.equal(weak.tier, 'rejected');
+
+const singleStrong = evaluatePopularItem({ families: ['youtube'], evidence: [{ family: 'youtube' }], news_sources: 0 }, rules);
+assert.equal(singleStrong.eligible, true, 'One fresh strong non-commercial signal may fill the lower part of the top 20.');
+assert.equal(singleStrong.tier, 'corroborated');
 
 const newsSpike = evaluatePopularItem({ families: ['news', 'steam_chart'], evidence: [{ family: 'news' }, { family: 'news' }], news_sources: 2 }, rules);
 assert.equal(newsSpike.eligible, true, 'Independent news coverage must qualify as a current spike.');
+assert.equal(newsSpike.tier, 'confirmed');
+
+const ranked = filterPopularRanking([
+  { slug: 'confirmed', title: 'Confirmed', score: 7, families: ['news'], news_sources: 2, evidence: [{ family: 'news' }, { family: 'news' }] },
+  { slug: 'corroborated', title: 'Corroborated', score: 20, families: ['youtube'], news_sources: 0, evidence: [{ family: 'youtube' }] }
+], rules);
+assert.equal(ranked.accepted[0].slug, 'confirmed', 'Confirmed items must rank before single-source corroborated items.');
 
 const deduped = filterPopularRanking([
   { slug: 'game', title: 'Game', score: 10, families: ['news'], news_sources: 2, evidence: [{ family: 'news' }, { family: 'news' }] },

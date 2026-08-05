@@ -22,6 +22,7 @@ export function popularCanonicalKey(item, rules = {}) {
 export function evaluatePopularItem(item, rules = {}) {
   const families = [...new Set((item.families || []).filter(Boolean))];
   const weakFamilies = new Set(rules.weak_families || ['steam_chart']);
+  const strongFamilies = new Set(rules.single_strong_families || ['news', 'reddit', 'youtube', 'twitch']);
   const communityFamilies = families.filter(family => !weakFamilies.has(family));
   const newsSources = number(item.news_sources);
   const evidenceCount = (item.evidence || []).length;
@@ -29,20 +30,30 @@ export function evaluatePopularItem(item, rules = {}) {
   const independentNews = newsSources >= number(rules.minimum_independent_news_sources || 2);
   const repeatedSingleFamily = communityFamilies.length === 1
     && evidenceFamilyCount(item, communityFamilies[0]) >= number(rules.minimum_single_family_evidence || 2);
+  const singleStrongFamily = rules.allow_single_strong_family !== false
+    && communityFamilies.length === 1
+    && strongFamilies.has(communityFamilies[0])
+    && evidenceFamilyCount(item, communityFamilies[0]) >= 1;
   const weakOnly = communityFamilies.length === 0;
-  const currentSpike = !weakOnly && (multiFamily || independentNews || repeatedSingleFamily);
+  const currentSpike = !weakOnly && (multiFamily || independentNews || repeatedSingleFamily || singleStrongFamily);
+  const tier = multiFamily || independentNews || repeatedSingleFamily
+    ? 'confirmed'
+    : singleStrongFamily ? 'corroborated' : 'rejected';
   const warnings = [];
   if (weakOnly) warnings.push('Только слабый коммерческий сигнал без обсуждения.');
-  if (!weakOnly && !currentSpike) warnings.push('Недостаточно независимых подтверждений текущего всплеска.');
+  if (!weakOnly && !currentSpike) warnings.push('Недостаточно свежих подтверждений текущего всплеска.');
+  if (singleStrongFamily && tier === 'corroborated') warnings.push('Один сильный свежий сигнал; позиция допускается ниже подтверждённых несколькими источниками.');
 
   let reason = 'Недостаточно подтверждений.';
   if (multiFamily) reason = `Одновременный всплеск в ${communityFamilies.length} независимых группах сигналов.`;
   else if (independentNews) reason = `Материалы минимум ${newsSources} независимых изданий.`;
   else if (repeatedSingleFamily) reason = `Несколько свежих подтверждений в группе «${communityFamilies[0]}».`;
+  else if (singleStrongFamily) reason = `Свежий сильный сигнал в группе «${communityFamilies[0]}»; коммерческий спрос не является единственным основанием.`;
   if (currentSpike && families.includes('steam_chart')) reason += ' Дополнительно подтверждено текущим спросом Steam.';
 
   return {
     eligible: currentSpike,
+    tier,
     canonical_key: popularCanonicalKey(item, rules),
     current_spike: currentSpike,
     evidence_families: families,
@@ -72,6 +83,11 @@ export function filterPopularRanking(ranking, rules = {}) {
     seen.add(quality.canonical_key);
     accepted.push(enriched);
   }
+  accepted.sort((left, right) => {
+    const tierWeight = { confirmed: 0, corroborated: 1 };
+    const tierDelta = (tierWeight[left.quality?.tier] ?? 9) - (tierWeight[right.quality?.tier] ?? 9);
+    return tierDelta || number(right.score) - number(left.score) || String(left.title).localeCompare(String(right.title), 'ru');
+  });
   return { accepted, rejected };
 }
 

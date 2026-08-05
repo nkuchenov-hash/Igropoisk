@@ -2,52 +2,16 @@ name: Popular games parser
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'scripts/parse-popular.mjs'
-      - 'scripts/filter-popular.mjs'
-      - 'scripts/resolve-popular-covers.mjs'
-      - 'data/popular/cover-overrides.json'
-      - 'config/parsers/popular.json'
-      - '.github/workflows/popular-parser.yml'
 
 permissions:
-  contents: write
-
-concurrency:
-  group: popular-games-parser
-  cancel-in-progress: false
+  actions: write
+  contents: read
 
 jobs:
-  parse:
+  run-central-scheduler:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Install cover validation dependency
-        run: npm install --no-save image-size@2
-      - name: Build complete candidate publication
+      - name: Run the canonical parser scheduler
         env:
-          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
-          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
-          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-          REDDIT_ACCESS_TOKEN: ${{ secrets.REDDIT_ACCESS_TOKEN }}
-        run: |
-          node scripts/parse-popular.mjs
-          node scripts/filter-popular.mjs
-          node scripts/resolve-popular-covers.mjs
-          cp data/popular/current.json data/popular/published.json
-      - name: Commit complete publication only
-        run: |
-          if git diff --quiet -- data/popular/current.json data/popular/published.json data/popular/covers.json data/parser-runs/popular.json assets/covers/popular; then
-            echo "No popularity changes"
-            exit 0
-          fi
-          git config user.name "igropoisk-parser[bot]"
-          git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
-          git add data/popular/current.json data/popular/published.json data/popular/covers.json data/parser-runs/popular.json assets/covers/popular
-          git commit -m "Publish complete 20-game popular feed"
-          git pull --rebase
-          git push
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run parser-scheduler.yml --ref main -f force=true
