@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "timezone": "UTC",
   "default_interval_minutes": 60,
   "parsers": [
@@ -9,18 +9,19 @@
       "interval_minutes": 360,
       "quota_policy": {
         "mode": "free_tier_safe",
-        "youtube_method": "videos.list",
+        "youtube_methods": ["videos.list", "search.list"],
         "youtube_regions_per_run": 6,
-        "youtube_calls_per_run": 6,
+        "global_candidate_searches_per_run": 12,
         "maximum_scheduled_runs_per_day": 4,
-        "estimated_youtube_units_per_day": 24
+        "estimated_youtube_units_per_day": 4824
       },
       "publication_policy": {
-        "require_verified_cover_for_every_game": true,
-        "keep_previous_ranking_on_cover_failure": true,
-        "allow_placeholders": false
+        "require_verified_cover_for_every_published_game": true,
+        "keep_previous_cards_when_sources_temporarily_degrade": true,
+        "allow_placeholders": false,
+        "block_on_exact_cardinality": false
       },
-      "command": "node scripts/parse-popular.mjs && node scripts/filter-popular.mjs && node scripts/resolve-popular-covers.mjs",
+      "command": "node scripts/parse-popular.mjs && node scripts/enrich-global-popular-youtube.mjs && node scripts/filter-popular.mjs && node scripts/resolve-popular-covers.mjs",
       "outputs": [
         "data/popular/current.json",
         "data/popular/covers.json",
