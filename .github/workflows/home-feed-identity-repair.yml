@@ -1,0 +1,52 @@
+name: One-time home feed identity repair
+
+on:
+  push:
+    branches: [hotfix/home-feed-identity-dedupe]
+    paths:
+      - .github/workflows/home-feed-identity-repair.yml
+      - scripts/curate-home-feeds.mjs
+      - scripts/lib/home-feed-identity.mjs
+      - scripts/validate-home-feeds.mjs
+      - config/parsers/popular.json
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact repair branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Use latest verified production feed as bounded fallback
+        run: |
+          git fetch origin main --depth=1
+          git show origin/main:data/popular/current.json > data/popular/published.json
+
+      - name: Recurate and validate canonical identities
+        run: |
+          node scripts/curate-home-feeds.mjs
+          node scripts/validate-home-feeds.mjs
+          git diff --check
+
+      - name: Commit deterministic repaired datasets
+        run: |
+          if git diff --quiet -- data/popular/current.json data/popular/published.json data/home-feeds-quality.json data/releases/current.json; then
+            echo 'No repaired dataset changes were required.'
+            exit 0
+          fi
+          git config user.name 'igropoisk-parser[bot]'
+          git config user.email 'igropoisk-parser[bot]@users.noreply.github.com'
+          git add data/popular/current.json data/popular/published.json data/home-feeds-quality.json data/releases/current.json
+          git commit -m 'Repair duplicate game identities in home feeds'
+          git push origin HEAD:hotfix/home-feed-identity-dedupe
