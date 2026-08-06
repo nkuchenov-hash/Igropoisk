@@ -5,12 +5,14 @@ on:
     branches: [staging, main]
     paths:
       - 'services/content-api/**'
+      - '.github/workflows/news-content-ledger-check.yml'
       - '.github/workflows/news-shadow-runtime.yml'
       - 'docs/news-shadow-runtime.md'
   push:
     branches: [staging, main]
     paths:
       - 'services/content-api/**'
+      - '.github/workflows/news-content-ledger-check.yml'
       - '.github/workflows/news-shadow-runtime.yml'
       - 'docs/news-shadow-runtime.md'
   workflow_dispatch:
@@ -99,7 +101,7 @@ jobs:
           git fetch origin "$BASE_REF"
           CHANGED="$(git diff --name-only "origin/$BASE_REF...HEAD")"
           echo "$CHANGED"
-          if echo "$CHANGED" | grep -Ev '^(services/content-api/|docs/news-shadow-runtime\.md$|\.github/workflows/news-shadow-runtime\.yml$)' | grep -q .; then
+          if echo "$CHANGED" | grep -Ev '^(services/content-api/|docs/news-shadow-runtime\.md$|\.github/workflows/news-content-ledger-check\.yml$|\.github/workflows/news-shadow-runtime\.yml$)' | grep -q .; then
             echo 'Phase B3 changed files outside the approved boundary.'
             exit 1
           fi
