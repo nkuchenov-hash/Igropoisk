@@ -1,6 +1,6 @@
 {
-  "schema_version": 6,
-  "generated_at": "2026-08-06T15:48:47.634Z",
+  "schema_version": 7,
+  "generated_at": "2026-08-06T16:00:29.692Z",
   "status": "complete",
   "popular": {
     "requested_cards": 20,
@@ -8,8 +8,8 @@
     "confirmed_count": 8,
     "community_dominant_count": 3,
     "platform_corroborated_count": 3,
-    "platform_chart_count": 6,
-    "carryover_count": 0,
+    "platform_chart_count": 5,
+    "carryover_count": 1,
     "snapshot_generated_at": "2026-08-06T12:14:03.042Z",
     "selected": [
       {
@@ -141,14 +141,6 @@
         "confidence": 0.45
       },
       {
-        "slug": "apex-legendstm",
-        "title": "Apex Legends™",
-        "tier": "platform_chart",
-        "reason": "Steam Top 5 сейчас",
-        "score": 13.8,
-        "confidence": 0.45
-      },
-      {
         "slug": "marvels-spider-man-2",
         "title": "Marvel’s Spider-Man 2",
         "tier": "platform_chart",
@@ -170,6 +162,14 @@
         "tier": "platform_chart",
         "reason": "Steam Top 11 сейчас",
         "score": 12,
+        "confidence": 0.45
+      },
+      {
+        "slug": "dead-by-daylight",
+        "title": "Dead by Daylight",
+        "tier": "carryover",
+        "reason": "Сохранено из предыдущего свежего snapshot, пока новые источники обновляются",
+        "score": 10.8,
         "confidence": 0.45
       }
     ],
@@ -1958,9 +1958,11 @@
         "slug": "apex-legendstm",
         "title": "Apex Legends™",
         "eligible": true,
-        "publishable": true,
+        "publishable": false,
         "tier": "platform_chart",
-        "reasons": [],
+        "reasons": [
+          "duplicate_of:apex-legends"
+        ],
         "selection_reason": "Steam Top 5 сейчас",
         "score": 13.8,
         "confidence": 0.45,
@@ -2090,13 +2092,21 @@
   "releases": {
     "snapshot_generated_at": "2026-08-06T12:14:53.266Z",
     "homepage_limit": 24,
+    "minimum_homepage_quality": 7,
     "selected": [
       {
         "slug": "beast-of-reincarnation",
         "title": "Beast of Reincarnation",
         "homepage_eligible": true,
-        "quality_score": 8,
+        "quality_score": 10,
         "reasons": [],
+        "signals": [
+          "published_page"
+        ],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-03",
         "source_ids": [
@@ -2107,8 +2117,15 @@
         "slug": "big-walk",
         "title": "Big Walk",
         "homepage_eligible": true,
-        "quality_score": 5,
+        "quality_score": 10,
         "reasons": [],
+        "signals": [
+          "current_popular"
+        ],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-04",
         "source_ids": [
@@ -2116,267 +2133,22 @@
         ]
       },
       {
-        "slug": "a-very-simple-idle-game",
-        "title": "A Very Simple Idle Game",
+        "slug": "marvel-to-kon-fighting-souls",
+        "title": "MARVEL Tōkon: Fighting Souls",
         "homepage_eligible": true,
-        "quality_score": 3,
+        "quality_score": 9,
         "reasons": [],
+        "signals": [
+          "current_popular"
+        ],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
-        "date": "2026-08-05",
+        "date": "2026-08-06",
         "source_ids": [
-          "steam:4965540"
-        ]
-      },
-      {
-        "slug": "akatori",
-        "title": "Akatori",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:1442520"
-        ]
-      },
-      {
-        "slug": "aooni2",
-        "title": "Aooni2",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:4226580"
-        ]
-      },
-      {
-        "slug": "asteroid-m-12",
-        "title": "Asteroid M-12",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:4411770"
-        ]
-      },
-      {
-        "slug": "big-bad-pharma",
-        "title": "Big Bad Pharma",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:4953610"
-        ]
-      },
-      {
-        "slug": "big-golden-rock",
-        "title": "Big Golden Rock",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:4832030"
-        ]
-      },
-      {
-        "slug": "blast-off-summer-showdown",
-        "title": "Blast Off! Summer Showdown",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:4960110"
-        ]
-      },
-      {
-        "slug": "block-block-block",
-        "title": "Block Block Block",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:3375490"
-        ]
-      },
-      {
-        "slug": "brimir-pilgrimage-to-the-heart",
-        "title": "Brimir: Pilgrimage to the Heart",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:4958780"
-        ]
-      },
-      {
-        "slug": "cargo-please",
-        "title": "Cargo, Please!",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:4160920"
-        ]
-      },
-      {
-        "slug": "cat-chaos",
-        "title": "Cat Chaos",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:3417940"
-        ]
-      },
-      {
-        "slug": "cat-crisis",
-        "title": "Cat Crisis",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:4743970"
-        ]
-      },
-      {
-        "slug": "changeable-guardian-estique",
-        "title": "Changeable Guardian ESTIQUE",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:4078160"
-        ]
-      },
-      {
-        "slug": "derby-heroines-run-bet-win",
-        "title": "Derby Heroines: Run, Bet, Win!",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:4940330"
-        ]
-      },
-      {
-        "slug": "drag-n-dungeon",
-        "title": "Drag'N Dungeon",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:3753150"
-        ]
-      },
-      {
-        "slug": "dude-simulator-my-apologies",
-        "title": "Dude Simulator: My Apologies",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:4801740"
-        ]
-      },
-      {
-        "slug": "emergency-call-the-firefighting-simulation-3",
-        "title": "Emergency Call - The Firefighting Simulation 3",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:3447070"
-        ]
-      },
-      {
-        "slug": "gloopalaxy",
-        "title": "GLOOPALAXY",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:3496970"
-        ]
-      },
-      {
-        "slug": "gnomebegone",
-        "title": "GnomeBeGone",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:4757440"
-        ]
-      },
-      {
-        "slug": "gods-gore",
-        "title": "Gods & Gore",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:4300870"
-        ]
-      },
-      {
-        "slug": "gunstoppable",
-        "title": "Gunstoppable",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:3724710"
-        ]
-      },
-      {
-        "slug": "i-m-no-demonlord",
-        "title": "I'm No Demonlord",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
-        "precision": "exact",
-        "date": "2026-08-05",
-        "source_ids": [
-          "steam:3258560"
+          "steam:3787240"
         ]
       }
     ],
@@ -2385,8 +2157,15 @@
         "slug": "beast-of-reincarnation",
         "title": "Beast of Reincarnation",
         "homepage_eligible": true,
-        "quality_score": 8,
+        "quality_score": 10,
         "reasons": [],
+        "signals": [
+          "published_page"
+        ],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-03",
         "source_ids": [
@@ -2397,8 +2176,15 @@
         "slug": "big-walk",
         "title": "Big Walk",
         "homepage_eligible": true,
-        "quality_score": 5,
+        "quality_score": 10,
         "reasons": [],
+        "signals": [
+          "current_popular"
+        ],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-04",
         "source_ids": [
@@ -2408,9 +2194,18 @@
       {
         "slug": "a-very-simple-idle-game",
         "title": "A Very Simple Idle Game",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2420,9 +2215,18 @@
       {
         "slug": "akatori",
         "title": "Akatori",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2432,9 +2236,18 @@
       {
         "slug": "aooni2",
         "title": "Aooni2",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2444,9 +2257,18 @@
       {
         "slug": "asteroid-m-12",
         "title": "Asteroid M-12",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2456,9 +2278,18 @@
       {
         "slug": "big-bad-pharma",
         "title": "Big Bad Pharma",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2468,9 +2299,18 @@
       {
         "slug": "big-golden-rock",
         "title": "Big Golden Rock",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2480,9 +2320,18 @@
       {
         "slug": "blast-off-summer-showdown",
         "title": "Blast Off! Summer Showdown",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2492,9 +2341,18 @@
       {
         "slug": "block-block-block",
         "title": "Block Block Block",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2504,9 +2362,18 @@
       {
         "slug": "brimir-pilgrimage-to-the-heart",
         "title": "Brimir: Pilgrimage to the Heart",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2516,9 +2383,18 @@
       {
         "slug": "cargo-please",
         "title": "Cargo, Please!",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2528,9 +2404,18 @@
       {
         "slug": "cat-chaos",
         "title": "Cat Chaos",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2540,9 +2425,18 @@
       {
         "slug": "cat-crisis",
         "title": "Cat Crisis",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2552,9 +2446,18 @@
       {
         "slug": "changeable-guardian-estique",
         "title": "Changeable Guardian ESTIQUE",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2565,8 +2468,17 @@
         "slug": "cleaning-up-the-puzzle-gallery",
         "title": "Cleaning Up The Puzzle Gallery",
         "homepage_eligible": false,
-        "quality_score": 2,
-        "reasons": [],
+        "quality_score": 4,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2576,9 +2488,18 @@
       {
         "slug": "derby-heroines-run-bet-win",
         "title": "Derby Heroines: Run, Bet, Win!",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2588,9 +2509,18 @@
       {
         "slug": "drag-n-dungeon",
         "title": "Drag'N Dungeon",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2600,9 +2530,18 @@
       {
         "slug": "dude-simulator-my-apologies",
         "title": "Dude Simulator: My Apologies",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2612,9 +2551,18 @@
       {
         "slug": "emergency-call-the-firefighting-simulation-3",
         "title": "Emergency Call - The Firefighting Simulation 3",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2624,9 +2572,18 @@
       {
         "slug": "gloopalaxy",
         "title": "GLOOPALAXY",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2636,9 +2593,18 @@
       {
         "slug": "gnomebegone",
         "title": "GnomeBeGone",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2648,9 +2614,18 @@
       {
         "slug": "gods-gore",
         "title": "Gods & Gore",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2660,9 +2635,18 @@
       {
         "slug": "gunstoppable",
         "title": "Gunstoppable",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2672,9 +2656,18 @@
       {
         "slug": "i-m-no-demonlord",
         "title": "I'm No Demonlord",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2684,9 +2677,18 @@
       {
         "slug": "is-the-vat-utopia-or-dystopia",
         "title": "Is the Vat Utopia or Dystopia?",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2696,9 +2698,18 @@
       {
         "slug": "lost-found-a-this-bed-we-made-story",
         "title": "Lost & Found: A This Bed We Made Story",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2708,9 +2719,18 @@
       {
         "slug": "mapgod",
         "title": "MapGod",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2720,9 +2740,18 @@
       {
         "slug": "mazey-village",
         "title": "Mazey Village",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2732,9 +2761,18 @@
       {
         "slug": "pack-my-order",
         "title": "Pack my Order",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2744,9 +2782,18 @@
       {
         "slug": "patriotmemoirs",
         "title": "PatriotMemoirs",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2756,9 +2803,18 @@
       {
         "slug": "prison-life-sim-2026-survival",
         "title": "Prison Life Sim 2026 - Survival",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2769,10 +2825,18 @@
         "slug": "quarantine-zombies-prologue",
         "title": "Quarantine Zombies - Prologue",
         "homepage_eligible": false,
-        "quality_score": -1,
+        "quality_score": 5,
         "reasons": [
-          "non_full_release"
+          "non_full_release",
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
         ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2782,9 +2846,18 @@
       {
         "slug": "ranchbound",
         "title": "Ranchbound",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2794,9 +2867,18 @@
       {
         "slug": "route16r",
         "title": "ROUTE16R",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2806,9 +2888,18 @@
       {
         "slug": "route16turbo",
         "title": "ROUTE16TURBO",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2819,8 +2910,17 @@
         "slug": "ryuukotoba-flowing-words",
         "title": "RyuuKotoba/Flowing Words",
         "homepage_eligible": false,
-        "quality_score": 2,
-        "reasons": [],
+        "quality_score": 4,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2830,9 +2930,18 @@
       {
         "slug": "scp-foundation-universe-horror",
         "title": "SCP Foundation: Universe Horror",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2842,9 +2951,18 @@
       {
         "slug": "sento-survivor-slip-grab-and-bathe-in-glory",
         "title": "SENTO SURVIVOR : Slip, Grab, and Bathe in Glory!",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2854,9 +2972,18 @@
       {
         "slug": "shroud-of-the-woods",
         "title": "Shroud of the Woods",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2866,9 +2993,18 @@
       {
         "slug": "storm-seas",
         "title": "Storm Seas",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2879,10 +3015,18 @@
         "slug": "tattoo-shop-simulator-prologue",
         "title": "Tattoo Shop Simulator : Prologue",
         "homepage_eligible": false,
-        "quality_score": -1,
+        "quality_score": 5,
         "reasons": [
-          "non_full_release"
+          "non_full_release",
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
         ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2892,9 +3036,18 @@
       {
         "slug": "the-division-resurgence",
         "title": "The Division Resurgence",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2904,9 +3057,18 @@
       {
         "slug": "the-ref-football-referee-simulator",
         "title": "THE REF - Football Referee Simulator",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2916,9 +3078,18 @@
       {
         "slug": "the-syndicate-classified-operations",
         "title": "The Syndicate: Classified Operations",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2928,9 +3099,18 @@
       {
         "slug": "typing-show",
         "title": "Typing Show",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2940,9 +3120,18 @@
       {
         "slug": "uncanny-tales-the-watcher",
         "title": "Uncanny Tales: The Watcher",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2952,9 +3141,18 @@
       {
         "slug": "unicycle-together",
         "title": "Unicycle Together",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2965,10 +3163,18 @@
         "slug": "venusville-prologue",
         "title": "Venusville - Prologue",
         "homepage_eligible": false,
-        "quality_score": -1,
+        "quality_score": 5,
         "reasons": [
-          "non_full_release"
+          "non_full_release",
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
         ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-05",
         "source_ids": [
@@ -2978,9 +3184,17 @@
       {
         "slug": "4am",
         "title": "4am",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -2990,9 +3204,17 @@
       {
         "slug": "approximately-up",
         "title": "Approximately Up",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3002,9 +3224,18 @@
       {
         "slug": "area-survivors",
         "title": "Area Survivors",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3015,8 +3246,17 @@
         "slug": "axion-racer",
         "title": "Axion Racer",
         "homepage_eligible": false,
-        "quality_score": 2,
-        "reasons": [],
+        "quality_score": 4,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3026,9 +3266,17 @@
       {
         "slug": "blackdoor",
         "title": "Blackdoor",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3038,9 +3286,17 @@
       {
         "slug": "bonereader",
         "title": "BONEREADER",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3050,9 +3306,17 @@
       {
         "slug": "capy-castaway",
         "title": "Capy Castaway",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3062,9 +3326,17 @@
       {
         "slug": "castle-of-smash",
         "title": "Castle of Smash",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3074,9 +3346,17 @@
       {
         "slug": "castleon",
         "title": "CastleOn",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3086,9 +3366,17 @@
       {
         "slug": "cellar-keeper",
         "title": "Cellar Keeper",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3099,8 +3387,17 @@
         "slug": "chronime-puzzle-dogs",
         "title": "Chronime Puzzle: Dogs",
         "homepage_eligible": false,
-        "quality_score": 2,
-        "reasons": [],
+        "quality_score": 4,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3110,9 +3407,18 @@
       {
         "slug": "critternauts",
         "title": "Critternauts",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3122,9 +3428,18 @@
       {
         "slug": "cs-manager",
         "title": "CS Manager",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3134,9 +3449,17 @@
       {
         "slug": "deadliest-pigeon",
         "title": "Deadliest Pigeon",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3146,9 +3469,18 @@
       {
         "slug": "desktop-gremlins",
         "title": "Desktop Gremlins",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3158,9 +3490,17 @@
       {
         "slug": "diaspora",
         "title": "Diaspora",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3170,9 +3510,18 @@
       {
         "slug": "dig-dig-die",
         "title": "Dig, Dig, Die",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3182,9 +3531,17 @@
       {
         "slug": "echobreaker",
         "title": "Echobreaker",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3194,9 +3551,18 @@
       {
         "slug": "echoes-of-kyria",
         "title": "Echoes of Kyria",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3206,9 +3572,17 @@
       {
         "slug": "emit-embrace-beyond-time",
         "title": "EMIT:Embrace Beyond Time",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3218,9 +3592,17 @@
       {
         "slug": "fantasy-network",
         "title": "Fantasy Network",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3230,9 +3612,17 @@
       {
         "slug": "fobia-fights",
         "title": "Fobia Fights",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3242,9 +3632,18 @@
       {
         "slug": "football-fictional-world-simulator",
         "title": "Football Fictional World Simulator",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3254,9 +3653,18 @@
       {
         "slug": "frog-roll",
         "title": "Frog & Roll",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3266,9 +3674,18 @@
       {
         "slug": "gravitron",
         "title": "Gravitron",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3278,9 +3695,17 @@
       {
         "slug": "grim-axiom",
         "title": "Grim Axiom",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3290,9 +3715,17 @@
       {
         "slug": "heroes-of-the-triangle-mask-rush",
         "title": "Heroes of the Triangle: Mask Rush",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3302,9 +3735,17 @@
       {
         "slug": "hololive-fantasy-battle",
         "title": "Hololive Fantasy Battle",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3314,9 +3755,17 @@
       {
         "slug": "iron-nest-heavy-turret-simulator",
         "title": "IRON NEST: Heavy Turret Simulator",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3326,9 +3775,17 @@
       {
         "slug": "jkrobots",
         "title": "JKRobots",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3338,9 +3795,17 @@
       {
         "slug": "kubb",
         "title": "KUBB",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3350,9 +3815,17 @@
       {
         "slug": "last-ascender",
         "title": "Last Ascender",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3362,9 +3835,17 @@
       {
         "slug": "legend-of-deepshade-the-shattered-seal",
         "title": "Legend of Deepshade: The Shattered Seal",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3374,9 +3855,17 @@
       {
         "slug": "lilm-living-language-model",
         "title": "LiLM: Living language model",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3387,8 +3876,15 @@
         "slug": "marvel-to-kon-fighting-souls",
         "title": "MARVEL Tōkon: Fighting Souls",
         "homepage_eligible": true,
-        "quality_score": 5,
+        "quality_score": 9,
         "reasons": [],
+        "signals": [
+          "current_popular"
+        ],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3399,10 +3895,18 @@
         "slug": "marvel-tokon-fighting-souls",
         "title": "MARVEL Tōkon: Fighting Souls",
         "homepage_eligible": false,
-        "quality_score": -1,
+        "quality_score": 9,
         "reasons": [
-          "duplicate_of:marvel-to-kon-fighting-souls"
+          "duplicate_of:marvel-to-kon-fighting-souls",
+          "needs_review"
         ],
+        "signals": [
+          "current_popular"
+        ],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3412,9 +3916,17 @@
       {
         "slug": "meowmi-city-cat-chaos",
         "title": "MEOWMI: City Cat Chaos",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3424,9 +3936,17 @@
       {
         "slug": "mind-inc",
         "title": "Mind Inc",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 4,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3436,9 +3956,17 @@
       {
         "slug": "mindscape",
         "title": "Mindscape",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3448,9 +3976,17 @@
       {
         "slug": "montabi",
         "title": "Montabi",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3460,9 +3996,17 @@
       {
         "slug": "neophyte-protocol",
         "title": "Neophyte Protocol",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3472,9 +4016,18 @@
       {
         "slug": "obitt-escape-from-the-room",
         "title": "OBITT Escape from the room",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3484,9 +4037,17 @@
       {
         "slug": "one-stroke-hunter",
         "title": "One Stroke Hunter",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3496,9 +4057,17 @@
       {
         "slug": "penbeat",
         "title": "Penbeat",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 4,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3508,9 +4077,17 @@
       {
         "slug": "perdido-na-mina",
         "title": "Perdido na Mina",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3520,9 +4097,17 @@
       {
         "slug": "pick-ball",
         "title": "Pick Ball",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3532,9 +4117,18 @@
       {
         "slug": "pigeon-a-love-story",
         "title": "Pigeon: A Love Story",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3544,9 +4138,17 @@
       {
         "slug": "rancher-a-new-life",
         "title": "Rancher: A new life",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3556,9 +4158,17 @@
       {
         "slug": "rekindled",
         "title": "Rekindled",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3568,9 +4178,18 @@
       {
         "slug": "restory-chill-electronics-repairs",
         "title": "ReStory: Chill Electronics Repairs",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3580,9 +4199,17 @@
       {
         "slug": "runt",
         "title": "RUNT",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3592,9 +4219,17 @@
       {
         "slug": "shell-heroes-awesome-island",
         "title": "Shell Heroes: Awesome Island",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3604,9 +4239,17 @@
       {
         "slug": "sovereign-tower",
         "title": "Sovereign Tower",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3616,9 +4259,17 @@
       {
         "slug": "spiritstead",
         "title": "Spiritstead",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3628,9 +4279,18 @@
       {
         "slug": "stamped",
         "title": "STAMPED",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3640,9 +4300,17 @@
       {
         "slug": "star-haul-tycoon",
         "title": "Star Haul Tycoon",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3652,9 +4320,18 @@
       {
         "slug": "summoner-s-gambit",
         "title": "Summoner's Gambit",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3664,9 +4341,17 @@
       {
         "slug": "super-shout-showdown",
         "title": "Super Shout Showdown",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3676,9 +4361,17 @@
       {
         "slug": "supersubmarine",
         "title": "SuperSubmarine",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3688,9 +4381,17 @@
       {
         "slug": "swordoria",
         "title": "Swordoria",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3700,9 +4401,18 @@
       {
         "slug": "take-that-hill",
         "title": "Take That Hill",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3712,9 +4422,17 @@
       {
         "slug": "talespinner",
         "title": "Talespinner",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3724,9 +4442,17 @@
       {
         "slug": "the-forbidden-tomes-of-olipos",
         "title": "The Forbidden Tomes of Olipos",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3736,9 +4462,17 @@
       {
         "slug": "the-skin-stapler",
         "title": "The Skin Stapler",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3748,9 +4482,17 @@
       {
         "slug": "thrice-a-dice",
         "title": "Thrice-a-dice",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3760,9 +4502,17 @@
       {
         "slug": "tiana-s-fishing-diary",
         "title": "Tiana's Fishing Diary",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 4,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3772,9 +4522,18 @@
       {
         "slug": "tk-punk-gold",
         "title": "TK Punk Gold",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3784,9 +4543,18 @@
       {
         "slug": "tomb-of-chacal",
         "title": "Tomb of Chacal",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3796,9 +4564,17 @@
       {
         "slug": "tung",
         "title": "TUNG",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3808,9 +4584,17 @@
       {
         "slug": "up-little-one",
         "title": "Up, Little One",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3820,9 +4604,17 @@
       {
         "slug": "war-pawns",
         "title": "War Pawns",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3832,9 +4624,17 @@
       {
         "slug": "watch-the-edge-honey",
         "title": "Watch The Edge Honey!",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3844,9 +4644,17 @@
       {
         "slug": "we-junk-artists",
         "title": "We, Junk Artists",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 4,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3856,9 +4664,18 @@
       {
         "slug": "yellowcreek-stories-the-cabin-watcher",
         "title": "Yellowcreek Stories - The Cabin Watcher",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3868,9 +4685,17 @@
       {
         "slug": "yuhtzee",
         "title": "Yuhtzee",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 4,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3880,9 +4705,17 @@
       {
         "slug": "3-japan-stigmatized-property",
         "title": "日本事故物件監視協会3 -Japan Stigmatized Property-",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-06",
         "source_ids": [
@@ -3892,9 +4725,17 @@
       {
         "slug": "acrodrift-fpv-drone-simulator",
         "title": "ACRODRIFT: FPV Drone Simulator",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -3904,9 +4745,17 @@
       {
         "slug": "amnesia-bullet",
         "title": "Amnesia Bullet",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -3916,9 +4765,17 @@
       {
         "slug": "chrome-fist",
         "title": "Chrome Fist",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -3928,9 +4785,17 @@
       {
         "slug": "could-you-be-a-gal-master",
         "title": "Could You Be a Gal Master?",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -3940,9 +4805,17 @@
       {
         "slug": "frozen-ship",
         "title": "Frozen Ship",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -3952,9 +4825,17 @@
       {
         "slug": "gaslamp-cases-9-the-ghost-of-autmaton-city",
         "title": "Gaslamp Cases 9: The Ghost of Autmaton City",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 4,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -3964,9 +4845,17 @@
       {
         "slug": "h-p-supernatural-event-archives",
         "title": "H.P Supernatural Event Archives",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -3976,9 +4865,17 @@
       {
         "slug": "life-of-a-thug",
         "title": "Life of a Thug",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -3988,9 +4885,17 @@
       {
         "slug": "magic-monsters",
         "title": "MAGIC & MONSTERS",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4000,9 +4905,17 @@
       {
         "slug": "minky",
         "title": "Minky",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4012,9 +4925,17 @@
       {
         "slug": "molluscarium",
         "title": "Molluscarium",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4024,9 +4945,17 @@
       {
         "slug": "musicrab",
         "title": "Musicrab",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4036,9 +4965,17 @@
       {
         "slug": "okugafuchi-shopping-arcade",
         "title": "OKUGAFUCHI Shopping Arcade",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4048,9 +4985,17 @@
       {
         "slug": "pets-therapy-desktop-pets",
         "title": "Pets Therapy - Desktop Pets",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 4,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4060,9 +5005,17 @@
       {
         "slug": "smelly-bubbles",
         "title": "Smelly Bubbles",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 4,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4072,9 +5025,17 @@
       {
         "slug": "tetro-battle",
         "title": "Tetro Battle",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4084,9 +5045,17 @@
       {
         "slug": "the-castle-of-dr-hoot",
         "title": "The Castle of Dr. Hoot",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4096,9 +5065,17 @@
       {
         "slug": "tide-of-tactics",
         "title": "Tide Of Tactics",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4108,9 +5085,17 @@
       {
         "slug": "tower-defence-back-to-the-roots-2",
         "title": "Tower Defence: Back to the roots 2",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4120,9 +5105,17 @@
       {
         "slug": "toy-shop-tidy-up",
         "title": "Toy Shop Tidy Up",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4132,9 +5125,17 @@
       {
         "slug": "welcome-to-desal",
         "title": "Welcome to Desal",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4144,9 +5145,17 @@
       {
         "slug": "worship-demon",
         "title": "Worship Demon",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-07",
         "source_ids": [
@@ -4156,9 +5165,18 @@
       {
         "slug": "resonance-a-plague-tale-legacy",
         "title": "Resonance: A Plague Tale Legacy",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-27",
         "source_ids": [
@@ -4169,8 +5187,17 @@
         "slug": "star-wars-zero-company",
         "title": "STAR WARS Zero Company",
         "homepage_eligible": false,
-        "quality_score": 2,
-        "reasons": [],
+        "quality_score": 4,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-27",
         "source_ids": [
@@ -4180,9 +5207,18 @@
       {
         "slug": "star-wars-zero-companytm",
         "title": "STAR WARS Zero Company™",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "duplicate_of:star-wars-zero-company",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-08-27",
         "source_ids": [
@@ -4192,9 +5228,17 @@
       {
         "slug": "the-blood-of-dawnwalker",
         "title": "The Blood of Dawnwalker",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-09-02",
         "source_ids": [
@@ -4204,9 +5248,18 @@
       {
         "slug": "onimusha-way-of-the-sword",
         "title": "Onimusha: Way of the Sword",
-        "homepage_eligible": true,
-        "quality_score": 3,
-        "reasons": [],
+        "homepage_eligible": false,
+        "quality_score": 5,
+        "reasons": [
+          "needs_review",
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-09-03",
         "source_ids": [
@@ -4216,9 +5269,17 @@
       {
         "slug": "silent-hill-townfall",
         "title": "SILENT HILL: Townfall",
-        "homepage_eligible": true,
+        "homepage_eligible": false,
         "quality_score": 5,
-        "reasons": [],
+        "reasons": [
+          "no_homepage_relevance_signal",
+          "quality_below_7"
+        ],
+        "signals": [],
+        "source_families": [
+          "official_store"
+        ],
+        "independent_source_count": 0,
         "precision": "exact",
         "date": "2026-09-23",
         "source_ids": [
