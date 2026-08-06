@@ -38,6 +38,7 @@ jobs:
         run: |
           find assets scripts features -type f \( -name '*.js' -o -name '*.mjs' \) -print0 \
             | xargs -0 -n1 node --check
+          node scripts/test-automation-publish-guard.mjs
 
       - name: Check news, feeds and module contracts
         run: |
@@ -49,11 +50,14 @@ jobs:
           node scripts/validate-news-module.mjs
           node scripts/validate-home-feeds.mjs
 
-      - name: Check Python and the layout contract
+      - name: Check Python, safe page generation and layout contract
         run: |
+          python3 -m py_compile parser/build_pages_safe.py
+          python3 -m py_compile scripts/test_safe_game_page_builder.py
+          python3 scripts/test_safe_game_page_builder.py
           python3 -m py_compile scripts/enforce_layout_contract.py
           python3 scripts/enforce_layout_contract.py --check
-          find scripts -type d -name __pycache__ -prune -exec rm -rf {} +
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
 
       - name: Check JSON content integrity
         run: |
