@@ -63,6 +63,7 @@ const indexHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const popularRuntime = fs.readFileSync(path.join(root, 'assets/popular-home.js'), 'utf8');
 const releasesRuntime = fs.readFileSync(path.join(root, 'assets/home-releases/index.js'), 'utf8');
 const duplicateSuffixPatterns = qualityRules?.releases?.duplicate_suffix_patterns || [];
+const minimumReleaseQuality = Math.max(1, Number(qualityRules?.releases?.minimum_homepage_quality || 7));
 
 if (popular) {
   const ranking = Array.isArray(popular.ranking) ? popular.ranking : [];
@@ -128,9 +129,9 @@ if (releases) {
   const identities = new Map();
   const today = new Date();
   const todayStart = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
-  const recentDays = Math.max(1, Number(rules?.recent_release_days || 7));
   let upcoming = 0;
   let tbd = 0;
+  let homepageEligible = 0;
 
   for (const [index, game] of rows.entries()) {
     if (!game?.slug || !game?.title) errors.push(`Release item ${index + 1} has no slug or title.`);
@@ -161,6 +162,23 @@ if (releases) {
     const images = [game?.image?.local_url, game?.image?.source_url, ...(game?.image_candidates || [])].filter(Boolean);
     if (!images.length) errors.push(`Release item ${game.slug} has no cover candidate.`);
 
+    const editorialQuality = game?.editorial_quality || {};
+    if (editorialQuality.homepage_eligible === true) {
+      homepageEligible += 1;
+      if (Number(editorialQuality.quality_score || 0) < minimumReleaseQuality) {
+        errors.push(`Homepage release ${game.slug} is below quality threshold ${minimumReleaseQuality}.`);
+      }
+      if ((editorialQuality.reasons || []).length) {
+        errors.push(`Homepage release ${game.slug} has blocking reasons: ${editorialQuality.reasons.join(', ')}.`);
+      }
+      if (!(editorialQuality.signals || []).length) {
+        errors.push(`Homepage release ${game.slug} has no relevance signal.`);
+      }
+      if (game?.editorial?.needs_review || game?.editorial?.status === 'needs_review') {
+        errors.push(`Homepage release ${game.slug} still requires editorial review.`);
+      }
+    }
+
     const start = dateTime(eventStart(event));
     const end = dateTime(eventEnd(event), true);
     if (!start && !end) tbd += 1;
@@ -168,18 +186,28 @@ if (releases) {
   }
 
   if (upcoming + tbd < 1) errors.push('Release feed has no expected releases.');
+  if (homepageEligible < 1) errors.push('Release feed has no editorially eligible homepage release.');
+  if (Number(releases?.editorial_quality?.homepage_eligible_count) !== homepageEligible) {
+    errors.push(`Release editorial summary mismatch: expected ${homepageEligible}, found ${releases?.editorial_quality?.homepage_eligible_count}.`);
+  }
+  const selectedQualitySlugs = new Set((quality?.releases?.selected || []).map(item => item.slug));
+  for (const game of rows.filter(item => item?.editorial_quality?.homepage_eligible === true).slice(0, Number(qualityRules?.releases?.homepage_limit || 24))) {
+    if (!selectedQualitySlugs.has(game.slug) && selectedQualitySlugs.size) {
+      errors.push(`Eligible homepage release ${game.slug} is absent from the quality snapshot selection.`);
+    }
+  }
   requireFresh('Release feed', releases.generated_at || releases.generatedAt);
 }
 if (!releasesRun || !['success', 'partial'].includes(releasesRun.status)) {
   errors.push(`Release parser status is ${releasesRun?.status || 'missing'}.`);
 }
-if (!rules || rules.schema_version < 2 || !rules.eligibility?.include_recent || !rules.eligibility?.include_upcoming) {
-  errors.push('Home release rules do not explicitly include both recent and upcoming releases.');
+if (!rules || rules.schema_version < 3 || !rules.eligibility?.include_recent || !rules.eligibility?.include_upcoming || rules.eligibility?.require_editorial_quality !== true) {
+  errors.push('Home release rules do not require editorial quality for both recent and upcoming releases.');
 }
 if (!indexHtml.includes('id="releaseHomeGrid"') || !indexHtml.includes('assets/home-releases/index.js')) {
   errors.push('Homepage is not wired to the release feed runtime.');
 }
-for (const token of ['recent_release_days', "kind==='recent'", "kind==='upcoming'"]) {
+for (const token of ['recent_release_days', "kind==='recent'", "kind==='upcoming'", 'homepage_eligible===true']) {
   if (!releasesRuntime.includes(token)) errors.push(`Home release runtime is missing required logic: ${token}.`);
 }
 
@@ -197,8 +225,10 @@ console.log(JSON.stringify({
   releases: {
     generated_at: releases?.generated_at || releases?.generatedAt || null,
     games: releases?.releases?.length || 0,
+    homepage_eligible: Number(releases?.editorial_quality?.homepage_eligible_count || 0),
     parser_status: releasesRun?.status || null,
     recent_window_days: Number(rules?.recent_release_days || 7),
-    maximum_cards: Number(rules?.maximum_cards || 12)
+    maximum_cards: Number(rules?.maximum_cards || 12),
+    minimum_quality: minimumReleaseQuality
   }
 }, null, 2));
