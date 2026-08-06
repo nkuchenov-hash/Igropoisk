@@ -16,13 +16,17 @@ const pool = createPool({ applicationName: 'igropoisk-news-content-api-test' });
 let server;
 let baseUrl;
 
-before(async () => {
-  await runMigrations(pool);
+async function resetDatabase() {
   await pool.query(`
     TRUNCATE shadow_sync_runs, parser_errors, parser_runs, publications, news_event_sources,
       news_events, media_assets, sources, content_revisions
     RESTART IDENTITY CASCADE
   `);
+}
+
+before(async () => {
+  await runMigrations(pool);
+  await resetDatabase();
   await importSnapshot({
     pool,
     file: fixture,
@@ -42,6 +46,7 @@ before(async () => {
 
 after(async () => {
   await new Promise(resolve => server.close(resolve));
+  await resetDatabase();
   await pool.end();
 });
 
