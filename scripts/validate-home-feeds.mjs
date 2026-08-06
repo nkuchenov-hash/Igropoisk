@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { normalizeGameIdentity } from './lib/home-feed-identity.mjs';
 
 const root = process.cwd();
 const args = process.argv.slice(2);
@@ -56,16 +57,19 @@ const popularRun = readJson('data/parser-runs/popular.json');
 const releases = readJson('data/releases/current.json');
 const releasesRun = readJson('data/parser-runs/releases.json');
 const quality = readOptionalJson('data/home-feeds-quality.json');
+const qualityRules = readJson('config/home-feeds-quality.json');
 const rules = readJson('features/home-releases/rules.json');
 const indexHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const popularRuntime = fs.readFileSync(path.join(root, 'assets/popular-home.js'), 'utf8');
 const releasesRuntime = fs.readFileSync(path.join(root, 'assets/home-releases/index.js'), 'utf8');
+const duplicateSuffixPatterns = qualityRules?.releases?.duplicate_suffix_patterns || [];
 
 if (popular) {
   const ranking = Array.isArray(popular.ranking) ? popular.ranking : [];
   if (!ranking.length) errors.push('Popular feed is empty.');
   if (ranking.length > 20) errors.push(`Popular feed contains ${ranking.length} cards; homepage maximum is 20.`);
   const slugs = new Set();
+  const identities = new Map();
   let previousTier = -1;
   const tierOrder = new Map([
     ['confirmed', 0],
@@ -78,6 +82,15 @@ if (popular) {
     if (!item?.slug || !item?.title) errors.push(`Popular item ${index + 1} has no slug or title.`);
     if (slugs.has(item?.slug)) errors.push(`Popular feed contains duplicate slug: ${item.slug}.`);
     slugs.add(item?.slug);
+
+    const identity = normalizeGameIdentity(item?.title, duplicateSuffixPatterns);
+    const existingIdentity = identity ? identities.get(identity) : null;
+    if (existingIdentity) {
+      errors.push(`Popular feed contains duplicate game identity: ${item.title} (${item.slug}) duplicates ${existingIdentity.title} (${existingIdentity.slug}).`);
+    } else if (identity) {
+      identities.set(identity, { slug: item.slug, title: item.title });
+    }
+
     const score = Number(item?.score);
     if (!Number.isFinite(score)) errors.push(`Popular item ${item?.slug || index + 1} has an invalid score.`);
     if (quality || item?.editorial_tier) {
@@ -112,6 +125,7 @@ if (releases) {
   const rows = Array.isArray(releases.releases) ? releases.releases : [];
   if (rows.length < 6) errors.push(`Release feed contains ${rows.length} games; at least 6 are required.`);
   const slugs = new Set();
+  const identities = new Map();
   const today = new Date();
   const todayStart = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
   const recentDays = Math.max(1, Number(rules?.recent_release_days || 7));
@@ -122,6 +136,19 @@ if (releases) {
     if (!game?.slug || !game?.title) errors.push(`Release item ${index + 1} has no slug or title.`);
     if (slugs.has(game?.slug)) errors.push(`Release feed contains duplicate slug: ${game.slug}.`);
     slugs.add(game?.slug);
+
+    const identity = normalizeGameIdentity(game?.title, duplicateSuffixPatterns);
+    const existingIdentity = identity ? identities.get(identity) : null;
+    if (existingIdentity) {
+      const expectedReason = `duplicate_of:${existingIdentity.slug}`;
+      const editorialReasons = game?.editorial_quality?.reasons || [];
+      if (game?.editorial_quality?.homepage_eligible !== false || !editorialReasons.includes(expectedReason)) {
+        errors.push(`Release identity duplicate is not safely excluded: ${game.title} (${game.slug}) duplicates ${existingIdentity.title} (${existingIdentity.slug}).`);
+      }
+    } else if (identity) {
+      identities.set(identity, { slug: game.slug, title: game.title });
+    }
+
     const event = Array.isArray(game?.events) ? game.events[0] : null;
     if (!event) {
       errors.push(`Release item ${game?.slug || index + 1} has no event.`);
