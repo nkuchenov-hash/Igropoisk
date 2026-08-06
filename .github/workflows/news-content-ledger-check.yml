@@ -1,0 +1,97 @@
+name: News content ledger check
+
+on:
+  push:
+    branches:
+      - feature/news-content-ledger
+    paths:
+      - 'services/content-api/**'
+      - 'schemas/news.schema.json'
+      - 'docs/architecture/phase-b2-news-content-ledger.md'
+      - '.github/workflows/news-content-ledger-check.yml'
+  pull_request:
+    branches:
+      - staging
+      - main
+    paths:
+      - 'services/content-api/**'
+      - 'schemas/news.schema.json'
+      - 'docs/architecture/phase-b2-news-content-ledger.md'
+      - '.github/workflows/news-content-ledger-check.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: news-content-ledger-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: igropoisk
+          POSTGRES_PASSWORD: igropoisk
+          POSTGRES_DB: igropoisk
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U igropoisk -d igropoisk"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://igropoisk:igropoisk@127.0.0.1:5432/igropoisk
+      PGSSL_MODE: disable
+
+    steps:
+      - name: Checkout isolated branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install isolated service dependencies
+        run: npm install --prefix services/content-api --ignore-scripts --no-audit --no-fund
+
+      - name: Verify JavaScript syntax
+        run: |
+          find services/content-api/src services/content-api/test -type f -name '*.mjs' -print0 \
+            | xargs -0 -n1 node --check
+
+      - name: Run relational ledger tests
+        run: npm --prefix services/content-api test
+
+      - name: Import the current repository snapshot in shadow mode
+        run: |
+          npm --prefix services/content-api run migrate
+          npm --prefix services/content-api run import:snapshot -- \
+            --file ../../data/news-events.json \
+            --snapshot-version repository-${GITHUB_SHA} \
+            --manifest-url https://storage.yandexcloud.net/igropoisk-content/news/manifests/current.json
+          npm --prefix services/content-api run verify
+
+      - name: Enforce the Phase B2 file boundary
+        run: |
+          git fetch origin staging --depth=1
+          base=$(git merge-base origin/staging HEAD)
+          changed=$(git diff --name-only "$base"...HEAD)
+          echo "$changed"
+          unexpected=$(printf '%s\n' "$changed" | grep -Ev '^(services/content-api/|schemas/news\.schema\.json$|docs/architecture/phase-b2-news-content-ledger\.md$|\.github/workflows/news-content-ledger-check\.yml$)' || true)
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected files outside the Phase B2 boundary:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+      - name: Prove checks did not modify the repository
+        run: git diff --exit-code
