@@ -74,9 +74,9 @@ jobs:
             --snapshot-version "ci-${GITHUB_SHA}" \
             --manifest-url https://storage.yandexcloud.net/igropoisk-content/news/manifests/current.json
 
-      - name: Verify live, readiness and read-only boundaries
+      - name: Verify live, readiness, read-only and graceful shutdown boundaries
         run: |
-          npm start --prefix services/content-api > /tmp/content-api.log 2>&1 &
+          node services/content-api/src/start.mjs > /tmp/content-api.log 2>&1 &
           PID=$!
           trap 'kill -TERM "$PID" 2>/dev/null || true' EXIT
           for attempt in $(seq 1 30); do
@@ -89,6 +89,8 @@ jobs:
             --request POST http://127.0.0.1:8080/v1/news)" = "405"
           kill -TERM "$PID"
           wait "$PID"
+          trap - EXIT
+          grep '"event":"content_api_shutdown"' /tmp/content-api.log
 
       - name: Build production container
         run: docker build -f services/content-api/Dockerfile -t igropoisk-content-api:${GITHUB_SHA} .
