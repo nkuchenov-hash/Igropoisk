@@ -1,8 +1,12 @@
 export function normalizeGameIdentity(value, suffixPatterns = []) {
-  let normalized = String(value || '').normalize('NFKC').toLowerCase();
+  let normalized = String(value || '').trim();
   for (const pattern of suffixPatterns) normalized = normalized.replace(new RegExp(pattern, 'i'), '');
-  return normalized
+  normalized = normalized
     .replace(/[™®]/g, '')
+    .replace(/(?:\(tm\)|\(r\))$/i, '')
+    .normalize('NFKC')
+    .toLowerCase();
+  return normalized
     .replace(/&amp;/g, ' and ')
     .replace(/[^a-z0-9а-яё]+/gi, ' ')
     .replace(/\s+/g, ' ')
