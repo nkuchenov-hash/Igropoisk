@@ -13,6 +13,7 @@ on:
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/build-game-page.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
+      - 'scripts/validate-automation-publish-diff.mjs'
       - 'data/catalog-visible.json'
       - 'data/releases/current.json'
 
@@ -34,13 +35,14 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
       - name: Validate pipeline scripts
         run: |
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/build-game-page.mjs
           node --check scripts/calculate-ratings-from-research.mjs
+          node --check scripts/validate-automation-publish-diff.mjs
       - name: Build registry and execution plan
         run: node scripts/orchestrate-content.mjs
       - name: Build selected pages and reviews
@@ -58,11 +60,8 @@ jobs:
         if: always()
         run: |
           if [ -f scripts/validate-game-v3.mjs ]; then node scripts/validate-game-v3.mjs; fi
-      - name: Commit pipeline results to staging
-        if: always()
+      - name: Stage and validate isolated pipeline results
         run: |
-          git config user.name "igropoisk-content[bot]"
-          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
           paths=(
             data/content-pipeline
             data/parser-runs
@@ -85,6 +84,11 @@ jobs:
             if [ -e "$path" ]; then existing+=("$path"); fi
           done
           if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
+          node scripts/validate-automation-publish-diff.mjs --profile content-pipeline
+      - name: Commit pipeline results to staging
+        run: |
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
           if ! git diff --cached --quiet; then
             git commit -m "Maintain game pages and reviews on staging"
             git pull --rebase origin staging
