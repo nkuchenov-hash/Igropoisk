@@ -17,29 +17,32 @@ jobs:
   repair:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout exact repair branch
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+      - name: Checkout exact repair branch without external actions
+        run: |
+          git clone --no-tags "https://github.com/${GITHUB_REPOSITORY}.git" repo
+          cd repo
+          git checkout --detach "$GITHUB_SHA"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 
       - name: Use latest verified production feed as bounded fallback
+        working-directory: repo
         run: |
           git fetch origin main --depth=1
           git show origin/main:data/popular/current.json > data/popular/published.json
 
       - name: Recurate and validate canonical identities
+        working-directory: repo
         run: |
+          node --version
           node scripts/curate-home-feeds.mjs
           node scripts/validate-home-feeds.mjs
           git diff --check
 
       - name: Commit deterministic repaired datasets
+        working-directory: repo
         run: |
           if git diff --quiet -- data/popular/current.json data/popular/published.json data/home-feeds-quality.json data/releases/current.json; then
             echo 'No repaired dataset changes were required.'
