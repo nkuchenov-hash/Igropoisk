@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "started_at": "2026-08-05T12:12:13.728Z",
-  "finished_at": "2026-08-05T12:12:14.380Z",
+  "started_at": "2026-08-06T05:27:27.796Z",
+  "finished_at": "2026-08-06T05:27:28.647Z",
   "summary": {
     "success": 2,
     "blocked": 2,
@@ -9,38 +9,38 @@
   },
   "results": [
     {
-      "label": "parse:a-very-simple-idle-game",
-      "command": "node scripts/parse-game-data.mjs a-very-simple-idle-game 4965540 A Very Simple Idle Game",
+      "label": "parse:3-japan-stigmatized-property",
+      "command": "node scripts/parse-game-data.mjs 3-japan-stigmatized-property 4611990 日本事故物件監視協会3 -Japan Stigmatized Property-",
       "status": "success",
       "exit_code": 0,
-      "duration_ms": 320,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"a-very-simple-idle-game\",\n  \"checked_at\": \"2026-08-05T12:12:13.754Z\",\n  \"duration_ms\": 204,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4965540&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"A Very Simple Idle Game\",\n    \"developers\": [\n      \"NooGames\"\n    ],\n    \"genres\": [\n      \"Indie\",\n      \"Simulation\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/a-very-simple-idle-game.json\"\n}\n",
+      "duration_ms": 388,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"3-japan-stigmatized-property\",\n  \"checked_at\": \"2026-08-06T05:27:27.825Z\",\n  \"duration_ms\": 290,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4611990&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"日本事故物件監視協会3 -Japan Stigmatized Property-\",\n    \"developers\": [\n      \"日本事故物件監視協会\"\n    ],\n    \"genres\": [\n      \"Adventure\",\n      \"Casual\",\n      \"Indie\",\n      \"Simulation\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\"\n    ],\n    \"screenshots\": 9,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/3-japan-stigmatized-property.json\"\n}\n",
       "stderr": ""
     },
     {
-      "label": "page:a-very-simple-idle-game",
-      "command": "node scripts/build-game-page.mjs a-very-simple-idle-game",
+      "label": "page:3-japan-stigmatized-property",
+      "command": "node scripts/build-game-page.mjs 3-japan-stigmatized-property",
       "status": "blocked",
       "exit_code": 2,
-      "duration_ms": 26,
+      "duration_ms": 34,
       "stdout": "",
       "stderr": "OPENAI_API_KEY is required\n"
     },
     {
-      "label": "parse:akatori",
-      "command": "node scripts/parse-game-data.mjs akatori 1442520 Akatori",
+      "label": "parse:4am",
+      "command": "node scripts/parse-game-data.mjs 4am 4963870 4am",
       "status": "success",
       "exit_code": 0,
-      "duration_ms": 277,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"akatori\",\n  \"checked_at\": \"2026-08-05T12:12:14.099Z\",\n  \"duration_ms\": 200,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1442520&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Akatori\",\n    \"developers\": [\n      \"Contrast Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 11,\n    \"videos\": 3\n  },\n  \"output\": \"data/parser-output/akatori.json\"\n}\n",
+      "duration_ms": 388,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"4am\",\n  \"checked_at\": \"2026-08-06T05:27:28.252Z\",\n  \"duration_ms\": 279,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4963870&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"4am\",\n    \"developers\": [\n      \"Studio Marigold\"\n    ],\n    \"genres\": [\n      \"Adventure\",\n      \"Indie\",\n      \"Simulation\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/4am.json\"\n}\n",
       "stderr": ""
     },
     {
-      "label": "page:akatori",
-      "command": "node scripts/build-game-page.mjs akatori",
+      "label": "page:4am",
+      "command": "node scripts/build-game-page.mjs 4am",
       "status": "blocked",
       "exit_code": 2,
-      "duration_ms": 27,
+      "duration_ms": 36,
       "stdout": "",
       "stderr": "OPENAI_API_KEY is required\n"
     }
