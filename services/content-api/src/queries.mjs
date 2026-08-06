@@ -1,3 +1,5 @@
+import { latestShadowSync, serializeShadowSync } from './runtime-state.mjs';
+
 function newsSelect() {
   return `
     SELECT
@@ -125,14 +127,25 @@ export async function ledgerHealth(pool) {
       MAX(updated_at) AS last_content_update
     FROM news_events
   `);
-  const publication = await currentPublication(pool, 'news');
+  const [publication, latestSyncRow] = await Promise.all([
+    currentPublication(pool, 'news'),
+    latestShadowSync(pool, 'news')
+  ]);
+  const latestSync = serializeShadowSync(latestSyncRow);
+  const synchronized = Boolean(
+    latestSync
+    && latestSync.status === 'exact'
+    && latestSync.sourceDigest === latestSync.ledgerDigest
+    && latestSync.sourceItemCount === latestSync.ledgerItemCount
+  );
   const row = result.rows[0];
   return {
-    status: 'ready',
+    status: publication && synchronized ? 'ready' : 'not_ready',
     database: 'postgresql',
     publishedCount: row.published_count,
     quarantineCount: row.quarantine_count,
     lastContentUpdate: row.last_content_update?.toISOString?.() || row.last_content_update || null,
-    publication
+    publication,
+    latestSync
   };
 }

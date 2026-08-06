@@ -1,0 +1,111 @@
+name: News shadow runtime check
+
+on:
+  pull_request:
+    branches: [staging, main]
+    paths:
+      - 'services/content-api/**'
+      - '.github/workflows/news-shadow-runtime.yml'
+      - 'docs/news-shadow-runtime.md'
+  push:
+    branches: [staging, main]
+    paths:
+      - 'services/content-api/**'
+      - '.github/workflows/news-shadow-runtime.yml'
+      - 'docs/news-shadow-runtime.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: news-shadow-runtime-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: igropoisk
+          POSTGRES_USER: igropoisk
+          POSTGRES_PASSWORD: shadow-ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U igropoisk -d igropoisk"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql://igropoisk:shadow-ci@127.0.0.1:5432/igropoisk
+      CONTENT_RUNTIME_MODE: shadow
+      CONTENT_READ_SOURCE: object_storage
+      ALLOWED_ORIGINS: https://nkuchenov-hash.github.io
+      SERVICE_VERSION: ${{ github.sha }}
+    steps:
+      - name: Checkout isolated runtime branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install isolated service dependencies
+        working-directory: services/content-api
+        run: npm install --ignore-scripts --no-package-lock
+
+      - name: Verify syntax and unit/integration tests
+        run: |
+          find services/content-api/src services/content-api/test -type f -name '*.mjs' -print0 | xargs -0 -n1 node --check
+          npm test --prefix services/content-api
+
+      - name: Migrate, import and prove exact shadow parity
+        run: |
+          npm run sync:shadow --prefix services/content-api -- \
+            --file ../../data/news-events.json \
+            --snapshot-version "ci-${GITHUB_SHA}" \
+            --manifest-url https://storage.yandexcloud.net/igropoisk-content/news/manifests/current.json
+
+      - name: Verify live, readiness and read-only boundaries
+        run: |
+          npm start --prefix services/content-api > /tmp/content-api.log 2>&1 &
+          PID=$!
+          trap 'kill -TERM "$PID" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            curl --fail --silent http://127.0.0.1:8080/ready >/tmp/ready.json && break
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8080/live | grep '"status":"alive"'
+          curl --fail --silent http://127.0.0.1:8080/health | grep '"status":"ready"'
+          test "$(curl --silent --output /tmp/post.json --write-out '%{http_code}' \
+            --request POST http://127.0.0.1:8080/v1/news)" = "405"
+          kill -TERM "$PID"
+          wait "$PID"
+
+      - name: Build production container
+        run: docker build -f services/content-api/Dockerfile -t igropoisk-content-api:${GITHUB_SHA} .
+
+      - name: Enforce Phase B3 path boundary
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch origin "$BASE_REF"
+          CHANGED="$(git diff --name-only "origin/$BASE_REF...HEAD")"
+          echo "$CHANGED"
+          if echo "$CHANGED" | grep -Ev '^(services/content-api/|docs/news-shadow-runtime\.md$|\.github/workflows/news-shadow-runtime\.yml$)' | grep -q .; then
+            echo 'Phase B3 changed files outside the approved boundary.'
+            exit 1
+          fi
+
+      - name: Prove checks left repository clean
+        run: |
+          rm -rf services/content-api/node_modules services/content-api/package-lock.json
+          git diff --check
+          test -z "$(git status --porcelain)"
