@@ -1,6 +1,6 @@
 {
   "name": "@igropoisk/news-content-api",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -9,8 +9,10 @@
   "scripts": {
     "migrate": "node src/migrate.mjs",
     "import:snapshot": "node src/import-snapshot.mjs",
+    "compare:snapshot": "node src/compare-snapshot.mjs",
+    "sync:shadow": "node src/sync-shadow.mjs",
     "verify": "node src/check-ledger.mjs",
-    "start": "node src/server.mjs",
+    "start": "node src/start.mjs",
     "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
