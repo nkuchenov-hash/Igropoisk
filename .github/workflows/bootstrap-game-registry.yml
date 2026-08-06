@@ -1,11 +1,9 @@
 name: Bootstrap canonical game registry
 
 on:
-  push:
-    branches: [feat/unified-game-registry-lifecycle]
-    paths:
-      - '.game-registry-bootstrap/**'
-      - '.github/workflows/bootstrap-game-registry.yml'
+  pull_request:
+    branches: [staging]
+    types: [opened, reopened, synchronize]
 
 permissions:
   contents: write
@@ -16,6 +14,7 @@ concurrency:
 
 jobs:
   bootstrap:
+    if: github.head_ref == 'feat/unified-game-registry-lifecycle'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
