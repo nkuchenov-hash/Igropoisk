@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-08-05T23:00:00.000Z",
+  "items": [
+    {
+      "id": "fixture-official-1",
+      "type": "official",
+      "importance": "major",
+      "official": true,
+      "titleRu": "Официальная тестовая новость",
+      "titleEn": "Official fixture news",
+      "summaryRu": "Проверка автономной записи новости в реляционный журнал.",
+      "summaryEn": "Relational ledger fixture.",
+      "publishedAt": "2026-08-05T22:00:00.000Z",
+      "image": "https://storage.yandexcloud.net/igropoisk-content/news/media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg",
+      "primaryUrl": "https://example.com/official-news",
+      "primarySource": "Example Studio",
+      "globalEligible": true,
+      "mediaSourceCount": 1,
+      "sources": [
+        {
+          "name": "Example Studio",
+          "organization": "Example Studio",
+          "kind": "publisher",
+          "url": "https://example.com/official-news",
+          "official": true,
+          "publishedAt": "2026-08-05T22:00:00.000Z"
+        }
+      ],
+      "homeUntil": "2026-08-08T22:00:00.000Z"
+    },
+    {
+      "id": "fixture-media-2",
+      "type": "ranked",
+      "importance": "normal",
+      "titleRu": "Тестовая новость из нескольких источников",
+      "titleEn": "Multi-source fixture news",
+      "summaryRu": "Проверка связей между событием и источниками.",
+      "publishedAt": "2026-08-05T21:00:00.000Z",
+      "image": "https://storage.yandexcloud.net/igropoisk-content/news/media/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.webp",
+      "primaryUrl": "https://media.example.com/news",
+      "primarySource": "Media Example",
+      "mediaSourceCount": 2,
+      "sources": [
+        {
+          "name": "Media Example",
+          "organization": "Media Example",
+          "kind": "media",
+          "url": "https://media.example.com/news",
+          "publishedAt": "2026-08-05T21:00:00.000Z"
+        },
+        {
+          "name": "Second Example",
+          "organization": "Second Example",
+          "kind": "media",
+          "url": "https://second.example.com/news",
+          "publishedAt": "2026-08-05T21:05:00.000Z"
+        }
+      ]
+    }
+  ]
+}
