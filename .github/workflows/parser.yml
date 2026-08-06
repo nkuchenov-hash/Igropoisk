@@ -5,6 +5,7 @@ on:
     branches: [staging]
     paths:
       - "parser/**"
+      - "scripts/validate-automation-publish-diff.mjs"
       - ".github/workflows/parser.yml"
   workflow_dispatch:
   schedule:
@@ -93,8 +94,6 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
         run: python parser/collect_v2.py --limit 1 --only "${{ matrix.game }}"
-      - name: Build page for this game if gate passed
-        run: python parser/build_pages.py
       - name: Create safe artifact name
         id: artifact
         shell: python
@@ -103,13 +102,11 @@ jobs:
           name = re.sub(r'[^a-z0-9]+', '-', "${{ matrix.game }}".lower()).strip('-')
           with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as f:
               f.write(f'name={name}\n')
-      - name: Upload this game's result
+      - name: Upload this game's parser data
         uses: actions/upload-artifact@v4
         with:
           name: game-${{ steps.artifact.outputs.name }}
-          path: |
-            data/
-            game/
+          path: data/
           if-no-files-found: error
           retention-days: 3
 
@@ -124,6 +121,9 @@ jobs:
         with:
           ref: staging
           fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -132,67 +132,118 @@ jobs:
         with:
           pattern: game-*
           path: parsed-results
-      - name: Merge passed games and drafts
+      - name: Merge only newly passed games; preserve current publications
         run: |
           python - <<'PY'
           import json, pathlib, shutil
+
           root = pathlib.Path('parsed-results')
-          public = []
-          seen = set()
+          public_path = pathlib.Path('data/public/games.json')
+          try:
+              current = json.loads(public_path.read_text(encoding='utf-8'))
+              if not isinstance(current, list):
+                  raise ValueError('current public games must be an array')
+          except FileNotFoundError:
+              current = []
+
+          public_by_slug = {}
+          order = []
+          for game in current:
+              slug = game.get('identity', {}).get('slug')
+              if not slug or not game.get('publication', {}).get('gate_passed'):
+                  continue
+              if slug not in public_by_slug:
+                  order.append(slug)
+              public_by_slug[slug] = game
+
+          newly_published = []
           drafts_out = pathlib.Path('data/drafts')
           drafts_out.mkdir(parents=True, exist_ok=True)
           reports = []
-          for p in root.rglob('games.json'):
+
+          for path in root.rglob('games.json'):
               try:
-                  rows = json.loads(p.read_text(encoding='utf-8'))
+                  rows = json.loads(path.read_text(encoding='utf-8'))
               except Exception:
                   continue
-              for g in rows:
-                  if not g.get('publication', {}).get('gate_passed'):
+              if not isinstance(rows, list):
+                  continue
+              for game in rows:
+                  if not game.get('publication', {}).get('gate_passed'):
                       continue
-                  slug = g.get('identity', {}).get('slug')
-                  if slug and slug not in seen:
-                      seen.add(slug)
-                      public.append(g)
-          for p in root.rglob('drafts/*.json'):
-              shutil.copy2(p, drafts_out / p.name)
-          for p in root.rglob('parser-report.json'):
+                  slug = game.get('identity', {}).get('slug')
+                  if not slug:
+                      continue
+                  if slug not in public_by_slug:
+                      order.append(slug)
+                  public_by_slug[slug] = game
+                  newly_published.append(slug)
+
+          for path in root.rglob('drafts/*.json'):
+              shutil.copy2(path, drafts_out / path.name)
+
+          for path in root.rglob('parser-report.json'):
               try:
-                  reports.append(json.loads(p.read_text(encoding='utf-8')))
+                  reports.append(json.loads(path.read_text(encoding='utf-8')))
               except Exception:
                   pass
-          pathlib.Path('data/public').mkdir(parents=True, exist_ok=True)
-          pathlib.Path('data/public/games.json').write_text(
-              json.dumps(public, ensure_ascii=False, indent=2), encoding='utf-8'
+
+          public = [public_by_slug[slug] for slug in order]
+          public_path.parent.mkdir(parents=True, exist_ok=True)
+          public_path.write_text(
+              json.dumps(public, ensure_ascii=False, indent=2),
+              encoding='utf-8',
           )
           pathlib.Path('data/parser-report-50.json').write_text(
-              json.dumps({'runs': reports, 'published': len(public)}, ensure_ascii=False, indent=2), encoding='utf-8'
+              json.dumps(
+                  {
+                      'runs': reports,
+                      'published_now': len(set(newly_published)),
+                      'published_total': len(public),
+                  },
+                  ensure_ascii=False,
+                  indent=2,
+              ),
+              encoding='utf-8',
           )
-          print(f'Merged {len(public)} publishable games from 50 separate parser runs')
+          print(
+              f'Accepted {len(set(newly_published))} newly publishable games; '
+              f'preserved total={len(public)}'
+          )
           PY
-      - name: Generate all passed pages
-        run: python parser/build_pages.py
-      - name: Verify physical page files
+      - name: Upsert passed pages without deleting existing game files
+        run: python parser/build_pages_safe.py
+      - name: Verify current public pages and protected runtime
         run: |
           python - <<'PY'
           import json, pathlib
+
+          shared = pathlib.Path('game/_shared')
+          if not shared.is_dir():
+              raise SystemExit('Protected game/_shared runtime is missing')
+
           rows = json.loads(pathlib.Path('data/public/games.json').read_text(encoding='utf-8'))
           for game in rows:
+              if not game.get('publication', {}).get('gate_passed'):
+                  continue
               slug = game['identity']['slug']
               page = pathlib.Path('game') / slug / 'index.html'
               if not page.exists():
                   raise SystemExit(f'Missing page: {page}')
-          print(f'Verified {len(rows)} generated pages')
+          print(f'Verified {len(rows)} retained or generated public game records')
           PY
-      - name: Commit merged data and generated pages to staging
+      - name: Stage and validate the isolated publisher diff
+        run: |
+          git add -- data/public/games.json data/public/catalog.json data/parser-report-50.json data/drafts game
+          node scripts/validate-automation-publish-diff.mjs --profile parser-50
+      - name: Commit safe merged data and generated pages to staging
         run: |
           git config user.name "igropoisk-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/ game/
           if git diff --cached --quiet; then
             echo "No generated changes"
             exit 0
           fi
-          git commit -m "Publish pages from 50 parser runs to staging"
+          git commit -m "Safely upsert pages from 50 parser runs on staging"
           git pull --rebase origin staging
           git push origin HEAD:staging
