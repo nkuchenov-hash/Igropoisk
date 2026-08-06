@@ -164,3 +164,20 @@ jobs:
         env:
           HOME_FEEDS_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
         run: node scripts/smoke-home-feeds-browser.mjs
+
+  game-runtime-production-smoke:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the deployed commit
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify deployed game pages and protected shared runtime
+        env:
+          GAME_RUNTIME_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: node scripts/smoke-game-runtime.mjs
