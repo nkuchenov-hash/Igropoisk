@@ -6,6 +6,7 @@ ENV NODE_ENV=production \
     PORT=8080
 
 WORKDIR /app
+RUN apk add --no-cache postgresql-client
 COPY services/content-api/package.json ./package.json
 RUN npm install --omit=dev --ignore-scripts --no-package-lock && npm cache clean --force
 COPY services/content-api/migrations ./migrations

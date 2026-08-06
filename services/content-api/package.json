@@ -1,9 +1,11 @@
 {
   "name": "@igropoisk/news-content-api",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "migrate": "node src/migrate.mjs",
     "import:snapshot": "node src/import-snapshot.mjs",
@@ -12,7 +14,11 @@
     "sync:remote": "node src/sync-remote.mjs",
     "verify": "node src/check-ledger.mjs",
     "start": "node src/start.mjs",
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "backup": "node src/backup-ledger.mjs",
+    "restore": "node src/restore-ledger.mjs"
   },
-  "dependencies": { "pg": "8.22.0" }
+  "dependencies": {
+    "pg": "8.22.0"
+  }
 }
