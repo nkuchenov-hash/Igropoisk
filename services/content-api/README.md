@@ -1,32 +1,16 @@
 # News Content API
 
-The service stores the normalized news ledger in PostgreSQL and exposes a read-only HTTP API. It is deliberately isolated from the static production reader: production continues to consume the Yandex Object Storage snapshot until a separate canary cutover is approved.
-
-## Commands
+This isolated PostgreSQL service stores the normalized news ledger and exposes a read-only API. Production still reads Yandex Object Storage until a separate canary cutover is approved.
 
 ```bash
 npm install --ignore-scripts --no-package-lock
 npm run sync:shadow -- --file ../../data/news-events.json
+npm run sync:remote -- --report ../../tmp/news-shadow-sync-report.json
 npm start
 ```
 
-Required runtime configuration:
+`sync:remote` uses only the published `data/news-events.json` selected by the canonical current manifest. Before PostgreSQL is changed it verifies HTTPS, host allowlist, canonical bucket/key/version paths, GitHub commit and run provenance, exact bytes, SHA-256, JSON, and the news-event contract. Redirects, URL credentials/query strings/fragments, alternate hosts, mutable keys, oversized bodies, and digest drift fail closed. The temporary snapshot is mode `0600`, removed after synchronization, and the optional report records immutable provenance and parity.
 
-- `DATABASE_URL` — PostgreSQL connection string;
-- `CONTENT_RUNTIME_MODE` — `shadow` by default, then optionally `canary` or `live`;
-- `CONTENT_READ_SOURCE` — `object_storage` by default; shadow mode forbids `content_api`;
-- `ALLOWED_ORIGINS` — comma-separated browser origins;
-- `PORT`, `HOST`, `SHUTDOWN_GRACE_MS`, `MAX_SYNC_AGE_SECONDS`, `SHADOW_WRITE_ENABLED`, `SERVICE_VERSION` — optional runtime controls.
+Remote controls: `NEWS_MANIFEST_URL`, `SNAPSHOT_ALLOWED_HOSTS`, `SNAPSHOT_FETCH_TIMEOUT_MS`, `MANIFEST_MAX_BYTES`, `SNAPSHOT_MAX_BYTES`, and `NEWS_SHADOW_SYNC_REPORT`. PostgreSQL and runtime controls remain `DATABASE_URL`, `PGSSL_MODE`, `CONTENT_RUNTIME_MODE`, `CONTENT_READ_SOURCE`, `MAX_SYNC_AGE_SECONDS`, `ALLOWED_ORIGINS`, `PORT`, `HOST`, and `SHUTDOWN_GRACE_MS`.
 
-## Endpoints
-
-- `GET /live`
-- `GET /ready`
-- `GET /health`
-- `GET /v1/news`
-- `GET /v1/news/:id`
-- `GET /v1/publications/current`
-
-The service rejects every HTTP write method. `/ready` is successful only after a publication exists and the latest independently computed shadow comparison is exact. Canary/live startup is additionally blocked when the latest exact sync is stale or a newer drift result exists. Migrations run before the server starts. SIGTERM and SIGINT stop the listener, close idle connections, drain active requests, and close the PostgreSQL pool.
-
-See `docs/news-shadow-runtime.md` for synchronization, cutover, and rollback rules.
+Endpoints: `GET /live`, `/ready`, `/health`, `/v1/news`, `/v1/news/:id`, and `/v1/publications/current`. Every HTTP write method is rejected. Canary/live readiness requires a fresh exact shadow comparison. Object Storage remains the rollback source.
