@@ -7,8 +7,14 @@ on:
       - 'assets/popular-home.js'
       - 'assets/home-releases/index.js'
       - 'features/home-releases/rules.json'
+      - 'config/home-feeds-quality.json'
       - 'config/parsers/schedule.json'
       - 'config/parsers/releases.json'
+      - 'config/parsers/popular.json'
+      - 'scripts/curate-home-feeds.mjs'
+      - 'scripts/lib/home-feed-identity.mjs'
+      - 'scripts/lib/home-release-quality.mjs'
+      - 'scripts/test-home-feed-quality.mjs'
       - 'scripts/parse-popular.mjs'
       - 'scripts/filter-popular.mjs'
       - 'scripts/resolve-popular-covers.mjs'
@@ -25,8 +31,14 @@ on:
       - 'assets/popular-home.js'
       - 'assets/home-releases/index.js'
       - 'features/home-releases/rules.json'
+      - 'config/home-feeds-quality.json'
       - 'config/parsers/schedule.json'
       - 'config/parsers/releases.json'
+      - 'config/parsers/popular.json'
+      - 'scripts/curate-home-feeds.mjs'
+      - 'scripts/lib/home-feed-identity.mjs'
+      - 'scripts/lib/home-release-quality.mjs'
+      - 'scripts/test-home-feed-quality.mjs'
       - 'scripts/parse-popular.mjs'
       - 'scripts/filter-popular.mjs'
       - 'scripts/resolve-popular-covers.mjs'
@@ -57,9 +69,14 @@ jobs:
       - name: Verify parser and browser code
         run: |
           node --check scripts/run-scheduled-parsers.mjs
+          node --check scripts/curate-home-feeds.mjs
+          node --check scripts/lib/home-feed-identity.mjs
+          node --check scripts/lib/home-release-quality.mjs
+          node --check scripts/test-home-feed-quality.mjs
           node --check scripts/validate-home-feeds.mjs
           node --check scripts/smoke-home-feeds-browser.mjs
           node --check assets/home-releases/index.js
+          node scripts/test-home-feed-quality.mjs
 
       - name: Verify published data contracts
         run: node scripts/validate-home-feeds.mjs
