@@ -33,13 +33,14 @@ export function createNewsServer({
   runtime = {
     mode: process.env.CONTENT_RUNTIME_MODE || 'shadow',
     readSource: process.env.CONTENT_READ_SOURCE || 'object_storage',
-    version: process.env.SERVICE_VERSION || 'development'
+    version: process.env.SERVICE_VERSION || 'development',
+    maxSyncAgeMs: Number.POSITIVE_INFINITY
   }
 } = {}) {
   return http.createServer(async (request, response) => {
     const origin = request.headers.origin;
     if (origin && allowedOrigins.has(origin)) {
-      response.setHeader('Access-Control-Alow-Origin', origin);
+      response.setHeader('Access-Control-Allow-Origin', origin);
       response.setHeader('Vary', 'Origin');
     }
 
@@ -59,7 +60,10 @@ export function createNewsServer({
 
     try {
       if (url.pathname === '/health' || url.pathname === '/ready') {
-        const health = await ledgerHealth(pool);
+        const health = await ledgerHealth(pool, {
+          requireFreshSync: runtime.readSource === 'content_api' || ['canary', 'live'].includes(runtime.mode),
+          maxSyncAgeMs: runtime.maxSyncAgeMs ?? Number.POSITIVE_INFINITY
+        });
         const status = health.status === 'ready' ? 200 : 503;
         return json(response, status, {
           ...health,
@@ -83,7 +87,7 @@ export function createNewsServer({
         return json(response, 200, { items, meta: { limit, offset, count: items.length } }, request.method);
       }
 
-      const match = url.pathname.match(/^\/V1\/news\/([^/]+)$/i);
+      const match = url.pathname.match(/^\/v1\/news\/([^/]+)$/);
       if (match) {
         const item = await getPublishedNews(pool, decodeURIComponent(match[1]));
         return item

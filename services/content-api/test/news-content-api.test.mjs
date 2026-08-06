@@ -6,6 +6,7 @@ import { compareSnapshot } from '../src/compare-snapshot.mjs';
 import { createPool } from '../src/database.mjs';
 import { importSnapshot } from '../src/import-snapshot.mjs';
 import { runMigrations } from '../src/migrate.mjs';
+import { ledgerHealth } from '../src/queries.mjs';
 import { recordRuntimeState } from '../src/runtime-state.mjs';
 import { normalizeNewsEvent } from '../src/news-record.mjs';
 import { createNewsServer } from '../src/server.mjs';
@@ -108,6 +109,23 @@ test('shadow comparison proves independent per-item parity', async () => {
   assert.equal(report.sourceDigest, report.ledgerDigest);
   const stored = await pool.query('SELECT status FROM shadow_sync_runs ORDER BY id DESC LIMIT 1');
   assert.equal(stored.rows[0].status, 'exact');
+});
+
+
+test('canary readiness expires when the latest exact sync becomes stale', async () => {
+  await pool.query(`
+    UPDATE shadow_sync_runs
+    SET finished_at = NOW() - INTERVAL '2 hours'
+    WHERE id = (SELECT id FROM shadow_sync_runs ORDER BY id DESC LIMIT 1)
+  `);
+  const health = await ledgerHealth(pool, { requireFreshSync: true, maxSyncAgeMs: 60_000 });
+  assert.equal(health.status, 'not_ready');
+  assert.equal(health.latestSync.fresh, false);
+
+  await compareSnapshot({ pool, file: fixture });
+  const recovered = await ledgerHealth(pool, { requireFreshSync: true, maxSyncAgeMs: 60_000 });
+  assert.equal(recovered.status, 'ready');
+  assert.equal(recovered.latestSync.fresh, true);
 });
 
 

@@ -15,7 +15,8 @@ const server = createNewsServer({
   runtime: {
     mode: config.runtimeMode,
     readSource: config.readSource,
-    version: config.serviceVersion
+    version: config.serviceVersion,
+    maxSyncAgeMs: config.maxSyncAgeMs
   }
 });
 
