@@ -1,3 +1,5 @@
+import { latestShadowSync, serializeShadowSync } from './runtime-state.mjs';
+
 function newsSelect() {
   return `
     SELECT
@@ -117,7 +119,10 @@ export async function currentPublication(pool, channel = 'news') {
   };
 }
 
-export async function ledgerHealth(pool) {
+export async function ledgerHealth(pool, {
+  requireFreshSync = false,
+  maxSyncAgeMs = Number.POSITIVE_INFINITY
+} = {}) {
   const result = await pool.query(`
     SELECT
       COUNT(*) FILTER (WHERE status = 'published')::INTEGER AS published_count,
@@ -125,14 +130,34 @@ export async function ledgerHealth(pool) {
       MAX(updated_at) AS last_content_update
     FROM news_events
   `);
-  const publication = await currentPublication(pool, 'news');
+  const [publication, latestSyncRow] = await Promise.all([
+    currentPublication(pool, 'news'),
+    latestShadowSync(pool, 'news')
+  ]);
+  const serializedSync = serializeShadowSync(latestSyncRow);
+  const synchronized = Boolean(
+    serializedSync
+    && serializedSync.status === 'exact'
+    && serializedSync.sourceDigest === serializedSync.ledgerDigest
+    && serializedSync.sourceItemCount === serializedSync.ledgerItemCount
+  );
+  const syncFinishedAtMs = serializedSync?.finishedAt ? new Date(serializedSync.finishedAt).getTime() : Number.NaN;
+  const syncAgeMs = Number.isFinite(syncFinishedAtMs) ? Date.now() - syncFinishedAtMs : null;
+  const fresh = !requireFreshSync || Boolean(
+    synchronized
+    && Number.isFinite(syncAgeMs)
+    && syncAgeMs >= 0
+    && syncAgeMs <= maxSyncAgeMs
+  );
+  const latestSync = serializedSync ? { ...serializedSync, ageMs: syncAgeMs, fresh } : null;
   const row = result.rows[0];
   return {
-    status: 'ready',
+    status: publication && synchronized && fresh ? 'ready' : 'not_ready',
     database: 'postgresql',
     publishedCount: row.published_count,
     quarantineCount: row.quarantine_count,
     lastContentUpdate: row.last_content_update?.toISOString?.() || row.last_content_update || null,
-    publication
+    publication,
+    latestSync
   };
 }
