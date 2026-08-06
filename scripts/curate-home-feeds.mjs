@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { normalizeGameIdentity } from './lib/home-feed-identity.mjs';
 
 const root = process.cwd();
 const read = file => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
@@ -27,6 +28,7 @@ const maximumCards = Math.max(1, Number(popularRules.maximum_cards || 20));
 const freshWindowMs = Number(popularRules.fresh_signal_hours || popular.window_hours || 96) * 3_600_000;
 const independentFamilies = new Set(platformRules.independent_families || ['news', 'youtube', 'reddit', 'twitch']);
 const liveFamilies = new Set(['youtube', 'reddit', 'twitch']);
+const duplicateSuffixPatterns = config.releases.duplicate_suffix_patterns || [];
 
 const unique = values => [...new Set(values.filter(Boolean))];
 const evidencePosition = (item, family) => {
@@ -193,16 +195,36 @@ eligible.sort((left, right) =>
   String(left.title).localeCompare(String(right.title), 'ru')
 );
 
-const selected = eligible.slice(0, maximumCards);
+const deduplicatedEligible = [];
+const eligibleIdentities = new Map();
+for (const item of eligible) {
+  const identity = normalizeGameIdentity(item.title, duplicateSuffixPatterns);
+  const existing = identity ? eligibleIdentities.get(identity) : null;
+  if (existing) {
+    const audit = popularAudit.find(row => row.slug === item.slug);
+    if (audit) {
+      audit.publishable = false;
+      audit.reasons = unique([...(audit.reasons || []), `duplicate_of:${existing.slug}`]);
+    }
+    continue;
+  }
+  if (identity) eligibleIdentities.set(identity, item);
+  deduplicatedEligible.push(item);
+}
+
+const selected = deduplicatedEligible.slice(0, maximumCards);
 if (fallbackRules.enabled && selected.length < maximumCards && previousPopular?.ranking?.length) {
   const previousAgeMs = now - Date.parse(previousPopular.generated_at || '');
   const previousFreshEnough = Number.isFinite(previousAgeMs) && previousAgeMs <= Number(fallbackRules.maximum_previous_age_hours || 24) * 3_600_000;
   if (previousFreshEnough) {
     const selectedSlugs = new Set(selected.map(item => item.slug));
+    const selectedIdentities = new Set(selected.map(item => normalizeGameIdentity(item.title, duplicateSuffixPatterns)).filter(Boolean));
     for (const item of previousPopular.ranking) {
       if (selected.length >= maximumCards) break;
-      if (!item?.slug || selectedSlugs.has(item.slug) || !item.cover_verified || !item.image) continue;
+      const identity = normalizeGameIdentity(item?.title, duplicateSuffixPatterns);
+      if (!item?.slug || selectedSlugs.has(item.slug) || (identity && selectedIdentities.has(identity)) || !item.cover_verified || !item.image) continue;
       selectedSlugs.add(item.slug);
+      if (identity) selectedIdentities.add(identity);
       selected.push({
         ...item,
         editorial_tier: 'carryover',
@@ -213,11 +235,7 @@ if (fallbackRules.enabled && selected.length < maximumCards && previousPopular?.
   }
 }
 
-const titleKey = title => {
-  let value = String(title || '').normalize('NFKC').toLowerCase();
-  for (const pattern of config.releases.duplicate_suffix_patterns || []) value = value.replace(new RegExp(pattern, 'i'), '');
-  return value.replace(/[^a-z0-9а-яё]+/gi, ' ').replace(/\s+/g, ' ').trim();
-};
+const titleKey = title => normalizeGameIdentity(title, duplicateSuffixPatterns);
 const excludedPatterns = (config.releases.exclude_title_patterns || []).map(pattern => new RegExp(pattern, 'i'));
 const significantGenres = new Set(config.releases.significant_genres || []);
 const seen = new Map();
@@ -302,7 +320,7 @@ popular.editorial_quality = {
   requested_cards: maximumCards,
   published_cards: selected.length,
   blocking: false,
-  rules: 'three-publishers-or-multi-family-or-strong-youtube-community-then-platform-fill'
+  rules: 'three-publishers-or-multi-family-or-strong-youtube-community-then-platform-fill-with-canonical-identity-deduplication'
 };
 write('data/popular/current.json', popular);
 write('data/popular/published.json', popular);
