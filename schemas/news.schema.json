@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://igropoisk.example/schemas/news.schema.json",
+  "title": "Игропоиск news snapshot",
+  "type": "object",
+  "required": ["generatedAt", "items"],
+  "properties": {
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/newsEvent" }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "source": {
+      "type": "object",
+      "required": ["name", "url"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "organization": { "type": "string" },
+        "kind": { "type": "string" },
+        "url": { "type": "string", "format": "uri", "pattern": "^https?://" },
+        "official": { "type": "boolean" },
+        "publishedAt": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": true
+    },
+    "newsEvent": {
+      "type": "object",
+      "required": ["id", "titleRu", "publishedAt", "primaryUrl", "image"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["draft", "quarantine", "published", "archived"] },
+        "type": { "type": "string" },
+        "importance": { "type": "string" },
+        "official": { "type": "boolean" },
+        "titleRu": { "type": "string", "minLength": 1 },
+        "titleEn": { "type": "string" },
+        "summaryRu": { "type": "string" },
+        "summaryEn": { "type": "string" },
+        "body": { "type": "array" },
+        "publishedAt": { "type": "string", "format": "date-time" },
+        "homeUntil": { "type": "string", "format": "date-time" },
+        "homepageUntil": { "type": "string", "format": "date-time" },
+        "primaryUrl": { "type": "string", "format": "uri", "pattern": "^https?://" },
+        "primarySource": { "type": "string" },
+        "image": { "type": "string", "minLength": 1 },
+        "imageSourceUrl": { "type": "string" },
+        "game_ids": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "regions": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/source" }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}
