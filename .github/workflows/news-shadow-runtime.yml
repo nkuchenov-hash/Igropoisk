@@ -95,7 +95,43 @@ jobs:
       - name: Build production container
         run: docker build -f services/content-api/Dockerfile -t igropoisk-content-api:${GITHUB_SHA} .
 
-      - name: Enforce Phase B3 path boundary
+      - name: Prove backup and separate-database restore
+        run: |
+          BACKUP_DIR="${RUNNER_TEMP}/news-ledger-backup"
+          mkdir -p "$BACKUP_DIR"
+          chmod 777 "$BACKUP_DIR"
+          docker run --rm --network host \
+            -e DATABASE_URL="$DATABASE_URL" \
+            -e PGSSL_MODE=disable \
+            -v "$BACKUP_DIR:/backup" \
+            igropoisk-content-api:${GITHUB_SHA} \
+            npm run backup -- --output /backup/news-ledger.dump --manifest /backup/news-ledger.manifest.json --label "ci-${GITHUB_SHA}"
+
+          docker run --rm --network host -e PGPASSWORD=shadow-ci postgres:17-alpine sh -euc '
+            dropdb --if-exists -h 127.0.0.1 -U igropoisk igropoisk_restore
+            createdb -h 127.0.0.1 -U igropoisk igropoisk_restore
+          '
+
+          docker run --rm --network host \
+            -e DATABASE_URL=postgresql://igropoisk:shadow-ci@127.0.0.1:5432/igropoisk_restore \
+            -e PGSSL_MODE=disable \
+            -v "$BACKUP_DIR:/backup" \
+            igropoisk-content-api:${GITHUB_SHA} \
+            npm run restore -- --backup /backup/news-ledger.dump --manifest /backup/news-ledger.manifest.json --report /backup/restore-report.json
+
+          docker run --rm --network host \
+            -e DATABASE_URL=postgresql://igropoisk:shadow-ci@127.0.0.1:5432/igropoisk_restore \
+            -e PGSSL_MODE=disable \
+            -v "$PWD/data:/input:ro" \
+            igropoisk-content-api:${GITHUB_SHA} \
+            npm run compare:snapshot -- --file /input/news-events.json --no-record
+
+          test "$(stat -c '%a' "$BACKUP_DIR/news-ledger.dump")" = "600"
+          test "$(stat -c '%a' "$BACKUP_DIR/news-ledger.manifest.json")" = "600"
+          test "$(stat -c '%a' "$BACKUP_DIR/restore-report.json")" = "600"
+          rm -rf "$BACKUP_DIR"
+
+      - name: Enforce Phase B5 path boundary
         if: github.event_name == 'pull_request'
         env:
           BASE_REF: ${{ github.base_ref }}
@@ -104,7 +140,7 @@ jobs:
           CHANGED="$(git diff --name-only "origin/$BASE_REF...HEAD")"
           echo "$CHANGED"
           if echo "$CHANGED" | grep -Ev '^(services/content-api/|docs/news-shadow-runtime\.md$|\.github/workflows/news-content-ledger-check\.yml$|\.github/workflows/news-shadow-runtime\.yml$)' | grep -q .; then
-            echo 'Phase B3 changed files outside the approved boundary.'
+            echo 'Phase B5 changed files outside the approved boundary.'
             exit 1
           fi
 
