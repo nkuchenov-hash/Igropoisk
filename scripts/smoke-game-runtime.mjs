@@ -15,10 +15,15 @@ const checks = [
   {
     path: 'game/_shared/game-page-v3.css',
     type: /css/i,
-    markers: ['.game-page'],
+    markers: ['.hero-media-shell', '.lower-grid', '.similar-row'],
   },
   {
     path: 'game/_shared/game-shell.js',
+    type: /javascript/i,
+    markers: ['game-page.css', 'game-page.js'],
+  },
+  {
+    path: 'game/_shared/game-page.js',
     type: /javascript/i,
     markers: ['game-page-v3-bootstrap.js'],
   },
