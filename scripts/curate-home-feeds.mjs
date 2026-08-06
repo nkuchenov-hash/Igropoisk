@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { normalizeGameIdentity } from './lib/home-feed-identity.mjs';
+import { evaluateHomeReleaseQuality } from './lib/home-release-quality.mjs';
 
 const root = process.cwd();
 const read = file => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
@@ -238,41 +239,45 @@ if (fallbackRules.enabled && selected.length < maximumCards && previousPopular?.
 const titleKey = title => normalizeGameIdentity(title, duplicateSuffixPatterns);
 const excludedPatterns = (config.releases.exclude_title_patterns || []).map(pattern => new RegExp(pattern, 'i'));
 const significantGenres = new Set(config.releases.significant_genres || []);
+const minimumReleaseQuality = Math.max(1, Number(config.releases.minimum_homepage_quality || 7));
+const popularIdentities = new Set(selected.map(item => titleKey(item.title)).filter(Boolean));
 const seen = new Map();
 const releaseAudit = [];
 
 for (const game of releases.releases || []) {
-  const reasons = [];
+  const preflightReasons = [];
   const title = String(game.title || '');
-  if (excludedPatterns.some(pattern => pattern.test(title))) reasons.push('non_full_release');
+  if (excludedPatterns.some(pattern => pattern.test(title))) preflightReasons.push('non_full_release');
   const key = titleKey(title);
-  if (seen.has(key)) reasons.push(`duplicate_of:${seen.get(key)}`);
+  if (seen.has(key)) preflightReasons.push(`duplicate_of:${seen.get(key)}`);
   else if (key) seen.set(key, game.slug);
 
-  const event = (game.events || [])[0] || {};
-  let quality = 0;
-  if (event.precision === 'exact') quality += 2;
-  else if (event.precision && event.precision !== 'tbd') quality += 1;
-  if ((game.genres || []).some(genre => significantGenres.has(genre))) quality += 1;
-  if (game.developer) quality += 1;
-  if (game.publisher) quality += 1;
-  if (game.editorial?.has_page || game.editorial?.status === 'published') quality += 3;
-  if (game.editorial?.needs_review) quality -= 2;
-  if (reasons.length) quality -= 4;
-
-  const homepageEligible = reasons.length === 0 && quality >= config.releases.minimum_homepage_quality;
+  const evaluated = evaluateHomeReleaseQuality(game, {
+    popularIdentities,
+    significantGenres,
+    minimumQuality: minimumReleaseQuality,
+    duplicateSuffixPatterns,
+    checkedAt
+  });
+  const reasons = unique([...preflightReasons, ...(evaluated.reasons || [])]);
+  const homepageEligible = evaluated.homepage_eligible && preflightReasons.length === 0;
   game.editorial_quality = {
+    ...evaluated,
     homepage_eligible: homepageEligible,
-    quality_score: quality,
     reasons,
     checked_at: checkedAt
   };
+
+  const event = (game.events || [])[0] || {};
   releaseAudit.push({
     slug: game.slug,
     title,
     homepage_eligible: homepageEligible,
-    quality_score: quality,
+    quality_score: evaluated.quality_score,
     reasons,
+    signals: evaluated.signals,
+    source_families: evaluated.source_families,
+    independent_source_count: evaluated.independent_source_count,
     precision: event.precision || 'tbd',
     date: event.date || event.date_start || null,
     source_ids: event.source_ids || []
@@ -281,11 +286,16 @@ for (const game of releases.releases || []) {
 
 const selectedReleaseAudit = releaseAudit
   .filter(item => item.homepage_eligible)
+  .sort((left, right) =>
+    Number(right.quality_score || 0) - Number(left.quality_score || 0) ||
+    String(left.date || '9999').localeCompare(String(right.date || '9999')) ||
+    String(left.title).localeCompare(String(right.title), 'ru')
+  )
   .slice(0, config.releases.homepage_limit);
 const qualitySnapshot = {
-  schema_version: 6,
+  schema_version: 7,
   generated_at: checkedAt,
-  status: selected.length >= maximumCards ? 'complete' : selected.length ? 'partial' : 'empty',
+  status: selected.length >= maximumCards && selectedReleaseAudit.length ? 'complete' : selected.length || selectedReleaseAudit.length ? 'partial' : 'empty',
   popular: {
     requested_cards: maximumCards,
     published_cards: selected.length,
@@ -308,6 +318,7 @@ const qualitySnapshot = {
   releases: {
     snapshot_generated_at: releases.generated_at,
     homepage_limit: config.releases.homepage_limit,
+    minimum_homepage_quality: minimumReleaseQuality,
     selected: selectedReleaseAudit,
     audit: releaseAudit
   }
@@ -328,7 +339,9 @@ write('data/popular/published.json', popular);
 releases.editorial_quality = {
   checked_at: checkedAt,
   homepage_eligible_count: releaseAudit.filter(item => item.homepage_eligible).length,
-  excluded_count: releaseAudit.filter(item => !item.homepage_eligible).length
+  excluded_count: releaseAudit.filter(item => !item.homepage_eligible).length,
+  minimum_homepage_quality: minimumReleaseQuality,
+  required_relevance_signals: config.releases.required_relevance_signals || []
 };
 write('data/releases/current.json', releases);
 
