@@ -190,10 +190,24 @@ if (releases) {
   if (Number(releases?.editorial_quality?.homepage_eligible_count) !== homepageEligible) {
     errors.push(`Release editorial summary mismatch: expected ${homepageEligible}, found ${releases?.editorial_quality?.homepage_eligible_count}.`);
   }
-  const selectedQualitySlugs = new Set((quality?.releases?.selected || []).map(item => item.slug));
-  for (const game of rows.filter(item => item?.editorial_quality?.homepage_eligible === true).slice(0, Number(qualityRules?.releases?.homepage_limit || 24))) {
-    if (!selectedQualitySlugs.has(game.slug) && selectedQualitySlugs.size) {
-      errors.push(`Eligible homepage release ${game.slug} is absent from the quality snapshot selection.`);
+
+  const selectedQuality = quality?.releases?.selected || [];
+  const selectedLimit = Math.min(homepageEligible, Number(qualityRules?.releases?.homepage_limit || 24));
+  if (selectedQuality.length !== selectedLimit) {
+    errors.push(`Release quality snapshot selection contains ${selectedQuality.length} rows; expected ${selectedLimit}.`);
+  }
+  const releaseBySlug = new Map(rows.map(game => [game.slug, game]));
+  const selectedQualitySlugs = new Set();
+  for (const selected of selectedQuality) {
+    if (!selected?.slug || selectedQualitySlugs.has(selected.slug)) {
+      errors.push(`Release quality snapshot has an invalid or duplicate selected slug: ${selected?.slug || 'missing'}.`);
+      continue;
+    }
+    selectedQualitySlugs.add(selected.slug);
+    const game = releaseBySlug.get(selected.slug);
+    if (!game) errors.push(`Release quality snapshot references missing release: ${selected.slug}.`);
+    else if (game?.editorial_quality?.homepage_eligible !== true) {
+      errors.push(`Release quality snapshot includes ineligible release: ${selected.slug}.`);
     }
   }
   requireFresh('Release feed', releases.generated_at || releases.generatedAt);
