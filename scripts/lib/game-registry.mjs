@@ -10,6 +10,7 @@ export const ARTICLE_TYPES = Object.freeze([
   'development_history','technical','update_or_dlc'
 ]);
 export const GAME_KINDS = Object.freeze(['game','remake','remaster','dlc','expansion','edition','collection','unknown']);
+export const EMBEDDED_GAME_KINDS = Object.freeze(['edition','remaster','dlc','expansion']);
 export const SOURCE_TRUST = Object.freeze({
   official_site: 100,
   official_platform_store: 90,
@@ -60,6 +61,11 @@ export function inferKind(candidate = {}) {
   if (REMASTER_WORD.test(title)) return 'remaster';
   if (/\b(deluxe|ultimate|gold|complete|collector'?s)\b/iu.test(title)) return 'edition';
   return 'game';
+}
+
+export function isEmbeddedGameKind(value) {
+  const kind = typeof value === 'string' ? value : inferKind(value ?? {});
+  return EMBEDDED_GAME_KINDS.includes(kind);
 }
 
 export function stableGameId(candidate = {}) {
@@ -140,6 +146,7 @@ export function createGameEntity(candidate = {}, options = {}) {
   const aliases = new Set([title, ...(candidate.aliases ?? []), ...(candidate.alternativeTitles ?? [])].filter(Boolean));
   const source = candidate.source ?? {type: 'automated_inference', name: candidate.discoverySource ?? 'unknown'};
   const status = GAME_STATUSES.includes(candidate.status) ? candidate.status : 'discovered';
+  const kind = inferKind(candidate);
   return {
     schemaVersion: 'game-entity/v1',
     id: candidate.id ?? candidate.gameId ?? stableGameId(candidate),
@@ -150,7 +157,7 @@ export function createGameEntity(candidate = {}, options = {}) {
       abbreviations: fieldValue(candidate.abbreviations ?? [], source, {now, confidence: candidate.confidence ?? 0.5}),
       originalTitle: fieldValue(candidate.originalTitle ?? candidate.original_title ?? null, source, {now, confidence: candidate.confidence ?? 0.5}),
       series: fieldValue(candidate.series ?? null, source, {now, confidence: candidate.confidence ?? 0.5}),
-      kind: fieldValue(inferKind(candidate), source, {now, confidence: candidate.confidence ?? 0.7})
+      kind: fieldValue(kind, source, {now, confidence: candidate.confidence ?? 0.7})
     },
     externalIds: normalizeExternalIds(candidate.externalIds ?? candidate.external_ids ?? candidate),
     fields: {},
@@ -160,6 +167,11 @@ export function createGameEntity(candidate = {}, options = {}) {
       series: candidate.relations?.series ?? [],
       baseGameId: candidate.relations?.baseGameId ?? null,
       relatedGameIds: candidate.relations?.relatedGameIds ?? []
+    },
+    variants: [],
+    presentation: {
+      standalonePage: candidate.standalonePage === true || !isEmbeddedGameKind(kind),
+      embeddedTab: isEmbeddedGameKind(kind) ? 'editions' : null
     },
     discovery: [{
       source: sourceDescriptor(source),
@@ -487,10 +499,12 @@ export function validateForPublication(entity, options = {}) {
   const errors = [];
   const title = entity.identity?.canonicalTitle?.value;
   const slug = entity.identity?.slug?.value;
+  const kind = entity.identity?.kind?.value ?? 'unknown';
   if (!title) errors.push('identity.canonicalTitle');
   if (!slug) errors.push('identity.slug');
   if (entity.workflow?.status === 'needs_review') errors.push('workflow.needs_review');
   if (entity.workflow?.status === 'merged_into_another_game') errors.push('workflow.merged');
+  if (isEmbeddedGameKind(kind) && entity.presentation?.standalonePage !== true) errors.push('embedded_content_requires_base_game');
   if ((entity.conflicts ?? []).length) errors.push('unresolved_conflicts');
   if (!options.allowNoRelease && !(entity.releases ?? []).some(item => item.date?.value || item.status === 'released')) errors.push('release_confirmation');
   const hasDescription = Boolean(entity.fields?.description?.value || entity.fields?.shortDescription?.value);
