@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { buildCandidates, buildPublicCalendar, validateCalendar } from './lib/release-calendar-policy.mjs';
+import { migrateRepository } from './lib/game-registry-migration.mjs';
+import { attachCanonicalGameIdsToPublicCalendar, linkReleaseCandidatesToRegistry } from './lib/release-game-registry-adapter.mjs';
 
 const ROOT = process.cwd();
 const paths = {
@@ -55,8 +57,17 @@ const rawCandidates = buildCandidates({
   officialClaims: Array.isArray(claimsDoc?.claims) ? claimsDoc.claims : [],
   policy,
 });
-const candidates = deduplicateCandidates(rawCandidates);
-const publicCalendar = buildPublicCalendar(candidates, generatedAt);
+const deduplicatedCandidates = deduplicateCandidates(rawCandidates);
+const registryMigration = migrateRepository(ROOT, {
+  dryRun: true,
+  now: generatedAt,
+  baseCommit: process.env.GITHUB_SHA || null,
+  publicBaseUrl: '/game',
+});
+const linkage = linkReleaseCandidatesToRegistry(deduplicatedCandidates, registryMigration.registry);
+const candidates = linkage.candidates;
+let publicCalendar = buildPublicCalendar(candidates, generatedAt);
+publicCalendar = attachCanonicalGameIdsToPublicCalendar(publicCalendar, candidates);
 const errors = validateCalendar({ candidates, publicCalendar, policy });
 const candidateDocument = {
   schema_version: 2,
@@ -75,6 +86,10 @@ const report = {
     console_authority: ['Official platform stores', 'publisher/developer sites', 'official announcements via config/release-official-claims.json'],
   },
   statistics: publicCalendar.statistics,
+  game_registry_linkage: {
+    canonical_games_considered: registryMigration.report.canonicalGames,
+    ...linkage.statistics,
+  },
   validation_errors: errors,
 };
 await Promise.all([
