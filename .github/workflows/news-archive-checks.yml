@@ -1,0 +1,42 @@
+name: News archive checks
+
+on:
+  pull_request:
+    branches: [staging]
+    paths:
+      - 'features/news/**'
+      - 'admin/parsers/news/**'
+      - 'config/news-pipeline.json'
+      - 'data/news-game-*.json'
+      - 'scripts/build-news-events.mjs'
+      - 'scripts/normalize-news-records.mjs'
+      - 'scripts/lib/news-game-linker.mjs'
+      - 'scripts/test-news-archive.mjs'
+      - 'scripts/test-news-game-linker.mjs'
+      - '.github/workflows/news-archive-checks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify chronological archive and game links
+        run: |
+          node --check features/news/archive-page/model.js
+          node --check features/news/archive-page/index.js
+          node --check features/news/shared/index.js
+          node --check features/news/admin-game-links/index.js
+          node --check scripts/lib/news-game-linker.mjs
+          node --check scripts/normalize-news-records.mjs
+          node --check scripts/build-news-events.mjs
+          node scripts/test-news-archive.mjs
+          node scripts/test-news-game-linker.mjs
+          node scripts/test-news-content-api.mjs
+          node scripts/validate-news-module.mjs

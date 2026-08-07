@@ -92,7 +92,10 @@ export function parseAddedLines(diff) {
 }
 
 function getAddedLines(base) {
-  const diff = execFileSync('git', ['diff', '--unified=0', '--no-color', `${base}...HEAD`, '--'], { encoding: 'utf8' });
+  const diff = execFileSync('git', ['diff', '--unified=0', '--no-color', `${base}...HEAD`, '--'], {
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024
+  });
   return parseAddedLines(diff);
 }
 

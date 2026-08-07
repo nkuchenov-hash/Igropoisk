@@ -24,6 +24,7 @@
     }
   ],
   "rebuild_commands": [
+    "node scripts/normalize-news-records.mjs",
     "node scripts/build-news-events.mjs",
     "node scripts/build-home-news.mjs"
   ],
@@ -53,6 +54,9 @@
       "data/youtube-signals.json",
       "data/news-events.json",
       "data/news-home-ru.json",
+      "data/news-game-review.json",
+      "data/news-game-aliases.json",
+      "data/news-game-overrides.json",
       "data/news-pipeline-health.json"
     ],
     "commit_paths": [
@@ -61,6 +65,9 @@
       "data/youtube-signals.json",
       "data/news-events.json",
       "data/news-home-ru.json",
+      "data/news-game-review.json",
+      "data/news-game-aliases.json",
+      "data/news-game-overrides.json",
       "data/news-pipeline-health.json",
       "assets/news",
       "assets/publisher-news"
