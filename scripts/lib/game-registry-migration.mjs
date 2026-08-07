@@ -209,6 +209,28 @@ function enrichFromRaw(entity, candidate, now) {
   }
 }
 
+function candidateYear(candidate = {}) {
+  return Number(candidate.releaseYear ?? candidate.year ?? String(candidate.releaseDate ?? candidate.release_date ?? candidate.releases?.[0]?.date ?? '').match(/(?:19|20)\d{2}/)?.[0] ?? 0);
+}
+
+function entityYear(entity = {}) {
+  return Number(String(entity.releases?.[0]?.date?.value ?? '').match(/(?:19|20)\d{2}/)?.[0] ?? 0);
+}
+
+function safeExactSlugTarget(api, candidate) {
+  const slug = String(candidate.slug ?? '').trim();
+  if (!slug) return null;
+  const entity = api.findBySlug(slug);
+  if (!entity || entity.workflow?.status === 'merged_into_another_game') return null;
+  const existingYear = entityYear(entity);
+  const incomingYear = candidateYear(candidate);
+  if (existingYear && incomingYear && existingYear !== incomingYear) return null;
+  const existingKind = entity.identity?.kind?.value ?? 'unknown';
+  const incomingKind = inferKind(candidate);
+  if (existingKind !== 'unknown' && incomingKind !== 'unknown' && existingKind !== incomingKind) return null;
+  return entity;
+}
+
 function assertUniqueActiveSlugs(registry) {
   const bySlug = new Map();
   for (const entity of Object.values(registry.games ?? {})) {
@@ -264,7 +286,9 @@ export function migrateRepository(root, options = {}) {
   const duplicatePairs = [];
   for (const {origin, candidate} of candidates) {
     sourceCounts[origin] = (sourceCounts[origin] ?? 0) + 1;
-    const result = api.registerCandidate(candidate, {now, actor: 'migration'});
+    const slugTarget = safeExactSlugTarget(api, candidate);
+    const resolvedCandidate = slugTarget ? { ...candidate, gameId: slugTarget.id } : candidate;
+    const result = api.registerCandidate(resolvedCandidate, {now, actor: 'migration'});
     decisions[result.decision] = (decisions[result.decision] ?? 0) + 1;
     if (result.entity) enrichFromRaw(result.entity, candidate, now);
     if (result.decision === 'matched') duplicatePairs.push({gameId: result.entity.id, slug: result.entity.identity.slug.value, reason: result.reasons});
