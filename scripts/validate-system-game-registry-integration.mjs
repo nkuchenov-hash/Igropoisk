@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { migrateRepository } from './lib/game-registry-migration.mjs';
 import { isEmbeddedGameKind } from './lib/game-registry.mjs';
-import { findVariantOwner, resolveSystemGameIdentity } from './lib/system-game-registry-adapter.mjs';
+import { findVariantOwner, registerPopularCandidates, resolveSystemGameIdentity } from './lib/system-game-registry-adapter.mjs';
 
 const root = process.cwd();
 const readJson = relative => JSON.parse(fs.readFileSync(path.join(root, relative), 'utf8'));
@@ -17,7 +17,12 @@ try {
   console.error(error?.stack || error);
   process.exit(2);
 }
-const registry = migration.registry;
+const popularPaths = ['data/popular/current.json', 'data/popular/published.json'].filter(relative => fs.existsSync(path.join(root, relative)));
+const popularSnapshots = popularPaths.map(readJson);
+const popularDiscovery = registerPopularCandidates(migration.registry, popularSnapshots);
+const registry = popularDiscovery.registry;
+for (const issue of popularDiscovery.issues) fail('popular_discovery_failed', issue);
+
 const catalog = readJson('data/catalog-visible.json');
 const catalogBySlug = new Map();
 const catalogIds = new Set();
@@ -44,9 +49,9 @@ for (const [index, item] of catalog.entries()) {
   catalogBySlug.set(item.slug, item);
 }
 
-for (const relative of ['data/popular/current.json', 'data/popular/published.json']) {
-  if (!fs.existsSync(path.join(root, relative))) continue;
-  const snapshot = readJson(relative);
+for (let snapshotIndex = 0; snapshotIndex < popularPaths.length; snapshotIndex += 1) {
+  const relative = popularPaths[snapshotIndex];
+  const snapshot = popularSnapshots[snapshotIndex];
   for (const [index, item] of (snapshot.ranking ?? []).entries()) {
     if (!item.game_id) {
       fail('popular_missing_game_id', {file: relative, index, slug: item.slug ?? null});
@@ -102,7 +107,9 @@ for (const game of Object.values(registry.games ?? {})) {
 
 const summary = {
   schema_version: 1,
-  canonical_games: migration.report.canonicalGames,
+  canonical_games: Object.keys(registry.games ?? {}).filter(id => registry.games[id]?.workflow?.status !== 'merged_into_another_game').length,
+  migration_canonical_games: migration.report.canonicalGames,
+  popular_discovery: {created: popularDiscovery.created, matched: popularDiscovery.matched},
   embedded_content: migration.report.embeddedContent,
   catalog_games: catalog.length,
   errors
