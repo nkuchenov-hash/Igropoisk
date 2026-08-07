@@ -251,10 +251,10 @@
     const image = item.image ? `<img class="ig-card__media ig-card__media--landscape ig-news-story__image" src="${escapeHtml(absoluteAsset(item.image))}" alt="${title}" loading="lazy">` : '';
     return `<article class="ig-panel ig-news-story" data-news-story="${escapeHtml(item.id || '')}">
       <a class="ig-button ig-news-story__back" href="${escapeHtml(new URL('?page=news', siteBase).href)}">${escapeHtml(copy.backToNews)}</a>
+      <h1 class="ig-page-title ig-news-story__title">${title}</h1>
+      ${summary ? `<p class="article-lead ig-news-story__lead">${summary}</p>` : ''}
+      <div class="ig-news-story__meta"><a href="${sourceUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(copy.source)}: ${source} ↗</a><span>·</span><span>${date}</span></div>
       ${types.length ? `<div class="ig-chip-list ig-news-story__types">${types.map(tag => `<span class="ig-chip">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
-      <h1 class="ig-news-story__title">${title}</h1>
-      ${summary ? `<p class="ig-news-story__lead">${summary}</p>` : ''}
-      <div class="ig-news-story__meta"><span>${date}</span><span>·</span><a href="${sourceUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(copy.source)}: ${source} ↗</a></div>
       ${games ? `<div class="ig-chip-list ig-news-story__games">${games}</div>` : ''}
       ${image}
     </article>`;
