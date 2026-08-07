@@ -12,10 +12,17 @@ function fixture(){
   write('data/catalog-visible.json',[
     {title:'The Witcher 3™: Wild Hunt',slug:'the-witcher-3-wild-hunt',year:2015},
     {title:'Mafia',slug:'mafia',year:2002},
-    {title:'Mafia: Definitive Edition',slug:'mafia-definitive-edition',year:2020},
+    {title:'Mafia II',slug:'mafia-ii',year:2010},
     {title:'Mafia III',slug:'mafia-iii',year:2016,steam_appid:360430},
-    {title:'Mafia III: Definitive Edition',slug:'mafia-iii-definitive-edition',year:2020,steam_appid:360430}
+    {title:'Mafia: Definitive Edition',slug:'mafia-definitive-edition',year:2020},
+    {title:'Mafia II: Definitive Edition',slug:'mafia-ii-definitive-edition',year:2020},
+    {title:'Mafia III: Definitive Edition',slug:'mafia-iii-definitive-edition',year:2020,steam_appid:360430},
+    {title:'Mafia: The Old Country',slug:'mafia-the-old-country',year:2025}
   ]);
+  write('data/game-series.json',{schema_version:1,series:[{id:'mafia',title:'Mafia',members:[
+    {slug:'mafia',order:1},{slug:'mafia-ii',order:2},{slug:'mafia-iii',order:3},
+    {slug:'mafia-definitive-edition',order:4,relation:'remake'},{slug:'mafia-the-old-country',order:5}
+  ]}]});
   write('data/content-pipeline/registry.json',{items:[
     {title:'The Witcher 3: Wild Hunt',slug:'the-witcher-3-wild-hunt',state:'collecting'},
     {title:'Unknown',slug:'unknown',state:'discovered'}
@@ -54,10 +61,15 @@ test('migration is idempotent, preserves real remakes and embeds editions',()=>{
   assert.equal(mafiaIII.articles.some(article=>article.title==='Definitive Edition review'),false,'Edition article must not leak into the main review section');
   assert.equal(active.some(game=>game.identity.slug.value==='mafia-iii-definitive-edition'),false,'Edition must not be a separate active game');
 
-  const sections=buildGamePageSections(a.registry);
+  const sections=buildGamePageSections(a.registry,{root});
   assert.equal(sections.games['mafia-iii'].variants[0].slug,'mafia-iii-definitive-edition');
   assert.equal(sections.redirects['mafia-iii-definitive-edition'].target_slug,'mafia-iii');
   assert.equal(sections.redirects['mafia-iii-definitive-edition'].target_hash,'editions');
+  const mafiaSeries=sections.games['mafia-iii'].series;
+  assert.equal(mafiaSeries.series_id,'mafia');
+  assert.deepEqual(mafiaSeries.members.map(item=>item.slug),['mafia','mafia-ii','mafia-iii','mafia-definitive-edition','mafia-the-old-country']);
+  assert.equal(mafiaSeries.members.some(item=>item.slug==='mafia-iii-definitive-edition'),false,'Embedded editions must not appear as games in the franchise navigation');
+  assert.equal(mafiaSeries.members.find(item=>item.slug==='mafia-iii').current,true);
 });
 
 test('existing page is retained and shared runtime is not modified',()=>{
