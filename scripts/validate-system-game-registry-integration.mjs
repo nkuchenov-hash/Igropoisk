@@ -68,6 +68,39 @@ for (let snapshotIndex = 0; snapshotIndex < popularPaths.length; snapshotIndex +
   }
 }
 
+const homepagePath = path.join(root, 'index.html');
+if (fs.existsSync(homepagePath)) {
+  const homepage = fs.readFileSync(homepagePath, 'utf8');
+  const legacyRuntimeIndex = homepage.indexOf('src="fix.js"');
+  const canonicalRuntimeIndex = homepage.indexOf('src="assets/site-shell.js');
+  if (canonicalRuntimeIndex < 0) fail('homepage_missing_canonical_game_runtime');
+  if (legacyRuntimeIndex >= 0 && canonicalRuntimeIndex >= 0 && canonicalRuntimeIndex < legacyRuntimeIndex) {
+    fail('homepage_canonical_game_runtime_precedes_legacy_runtime');
+  }
+}
+
+const whatToPlayPath = path.join(root, 'assets/what-to-play.js');
+if (fs.existsSync(whatToPlayPath)) {
+  const source = fs.readFileSync(whatToPlayPath, 'utf8');
+  const slugs = [...source.matchAll(/\bslug\s*:\s*['"]([^'"]+)['"]/g)].map(match => match[1]);
+  for (const slug of new Set(slugs)) {
+    const variantOwner = findVariantOwner(registry, {slug});
+    if (variantOwner) {
+      fail('what_to_play_embedded_variant', {slug, base_game_id: variantOwner.entity.id, variant_id: variantOwner.variant.id});
+      continue;
+    }
+    const resolution = resolveSystemGameIdentity({slug}, registry);
+    if (!resolution.entity) {
+      fail('what_to_play_unresolved_game', {slug});
+      continue;
+    }
+    const kind = resolution.entity.identity?.kind?.value ?? 'unknown';
+    if (isEmbeddedGameKind(kind) || resolution.entity.presentation?.standalonePage === false) {
+      fail('what_to_play_nonstandalone_game', {slug, game_id: resolution.game_id, kind});
+    }
+  }
+}
+
 const gameRoot = path.join(root, 'game');
 if (fs.existsSync(gameRoot)) {
   for (const entry of fs.readdirSync(gameRoot, {withFileTypes: true})) {
