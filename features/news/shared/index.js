@@ -187,7 +187,7 @@
     const summary = escapeHtml(text(item, 'summary', lang));
     const games = renderGameTags(item, { lang });
     const image = item.image ? `<img class="ig-news-entry__image" src="${escapeHtml(absoluteAsset(item.image))}" alt="" loading="lazy">` : '';
-    return `<article class="ig-news-entry" data-news-id="${escapeHtml(item.id || '')}">
+    return `<article class="ig-news-entry ig-news-card" data-news-id="${escapeHtml(item.id || '')}">
       ${image}
       <div class="ig-news-entry__body">
         <div class="ig-card__meta"><time datetime="${escapeHtml(item.publishedAt)}">${escapeHtml(publicationTime(item, lang))}</time> · ${escapeHtml(sourceName(item))}</div>
