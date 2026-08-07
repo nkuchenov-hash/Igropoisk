@@ -14,12 +14,14 @@ on:
       - 'scripts/build-top-250.mjs'
       - 'scripts/validate-top-250.mjs'
       - 'scripts/run-top-250-review-pilot.mjs'
+      - 'scripts/probe-review-provider.mjs'
       - 'top-250/**'
       - 'assets/top-250.*'
       - '.github/workflows/top-250-review-pilot.yml'
 
 permissions:
   contents: write
+  models: read
 
 jobs:
   build-pilot:
@@ -31,6 +33,7 @@ jobs:
       OPENAI_MODEL: gpt-5
       OPENAI_RESEARCH_MODEL: gpt-5
       TARGET_REVIEWS: ${{ inputs.target_reviews || '10' }}
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,20 +42,38 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Build Top-250 and review pilot
-        run: node scripts/run-top-250-review-pilot.mjs --limit=20 --target="$TARGET_REVIEWS"
-      - name: Validate Top-250
+      - name: Build canonical Top-250 snapshot
+        run: node scripts/build-top-250.mjs --limit=20
+      - name: Validate Top-250 snapshot
         run: node scripts/validate-top-250.mjs
+      - name: Probe keyless review provider
+        id: provider
+        continue-on-error: true
+        run: node scripts/probe-review-provider.mjs
+      - name: Build Top-250 review pilot with OpenAI provider
+        id: pilot
+        if: env.OPENAI_API_KEY != ''
+        continue-on-error: true
+        run: node scripts/run-top-250-review-pilot.mjs --limit=20 --target="$TARGET_REVIEWS"
       - name: Validate Registry integration
         run: node scripts/validate-system-game-registry-integration.mjs
-      - name: Commit generated pilot content
+      - name: Commit generated snapshot and diagnostics
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/top-250 data/popular data/catalog-visible.json data/drafts data/reviews data/research data/ratings data/article-media data/articles data/game-content data/parser-output data/parser-runs game article
+          git add data/top-250 data/popular data/catalog-visible.json data/drafts data/reviews data/research data/ratings data/article-media data/articles data/game-content data/parser-output data/parser-runs game article || true
           if git diff --cached --quiet; then
             echo "No generated changes"
             exit 0
           fi
-          git commit -m "content: generate Top-250 review pilot [top250-generated]"
+          git commit -m "content: update Top-250 pilot diagnostics [top250-generated]"
           git push origin HEAD:${GITHUB_REF_NAME}
+      - name: Require a working review provider
+        if: env.OPENAI_API_KEY == '' && steps.provider.outcome != 'success'
+        run: |
+          echo "No OPENAI_API_KEY and keyless GitHub Models + web-search fallback is unavailable."
+          exit 2
+      - name: Require OpenAI pilot target when OpenAI is configured
+        if: env.OPENAI_API_KEY != '' && steps.pilot.outcome != 'success'
+        run: exit 2
