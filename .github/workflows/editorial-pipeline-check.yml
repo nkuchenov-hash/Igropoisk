@@ -62,8 +62,16 @@ jobs:
           node --check assets/parser-method.js
           node --check article/_shared/review-article.js
       - name: Validate canonical editorial identity adapter
+        shell: bash
         run: |
-          node scripts/test-editorial-game-registry-adapter.mjs
+          set +e
+          node scripts/test-editorial-game-registry-adapter.mjs 2>&1 | tee /tmp/editorial-registry-test.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            message=$(tail -c 12000 /tmp/editorial-registry-test.log | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
+            echo "::error title=Editorial Registry adapter test::$message"
+            exit "$status"
+          fi
           node scripts/canonicalize-all-editorial-game-ids.mjs
       - name: Validate editorial data
         run: node scripts/validate-editorial-pipeline.mjs
