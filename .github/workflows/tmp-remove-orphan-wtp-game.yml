@@ -1,0 +1,41 @@
+name: Temporary remove orphan WTP game
+
+on:
+  push:
+    branches: ['feat/game-registry-final-audit']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tmp-remove-orphan-wtp-game
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/game-registry-final-audit
+          fetch-depth: 0
+      - name: Remove only orphan INSIDE candidate
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('assets/what-to-play.js')
+          text = p.read_text()
+          needle = "    {slug:'inside',title:'INSIDE',appid:304430,rating:8.9,platforms:['PC','PlayStation','Xbox','Switch'],genres:['приключения','головоломка'],moods:['атмосфера','подумать','на один вечер'],session:'короткая',length:'короткая',modes:['один'],traits:['линейная игра','без лишних слов','сильная атмосфера'],avoid:[],warning:'Мрачная и тревожная атмосфера может подойти не всем.'}\n"
+          if needle not in text:
+              raise SystemExit('Exact INSIDE candidate not found')
+          text = text.replace(needle, '', 1)
+          p.write_text(text)
+          PY
+      - name: Commit only WTP identity cleanup
+        run: |
+          git config user.name "igropoisk-registry-sync[bot]"
+          git config user.email "igropoisk-registry-sync[bot]@users.noreply.github.com"
+          git add -- assets/what-to-play.js
+          git diff --cached --check
+          git commit -m "Remove orphan INSIDE recommendation identity"
+          git push origin HEAD:feat/game-registry-final-audit
