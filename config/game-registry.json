@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "game-registry-config/v1",
+  "transitionMode": true,
+  "storage": {
+    "github": [
+      "code",
+      "small declarative configuration",
+      "transition snapshots and migration reports"
+    ],
+    "postgresql": [
+      "canonical game entities",
+      "field provenance",
+      "workflow state",
+      "articles",
+      "audit log",
+      "revisions"
+    ],
+    "objectStorage": [
+      "covers",
+      "hero images",
+      "screenshots",
+      "research attachments",
+      "generated publication artifacts"
+    ]
+  },
+  "sourceTrust": [
+    "official_site",
+    "official_platform_store",
+    "official_press_release",
+    "structured_database",
+    "professional_publication",
+    "platform_store",
+    "automated_inference"
+  ],
+  "publication": {
+    "mode": "non_destructive_upsert",
+    "protectedPaths": [
+      "game/_shared/**"
+    ],
+    "emptyRunIsNoop": true,
+    "partialRunPreservesUnrelatedGames": true,
+    "requiresValidationGate": true,
+    "productionSwitchEnabled": false
+  },
+  "adapters": {
+    "connected": [
+      "catalog-visible",
+      "public-games",
+      "content-pipeline-registry",
+      "game-content",
+      "drafts",
+      "parser-output",
+      "published-pages",
+      "reviews",
+      "articles",
+      "news-articles",
+      "research",
+      "review-research",
+      "article-drafts",
+      "release-calendar",
+      "popular"
+    ],
+    "contractOnly": [
+      "official-game-sites",
+      "publisher-sites",
+      "playstation-store",
+      "microsoft-store",
+      "nintendo-store",
+      "igdb",
+      "rawg",
+      "manual-admin"
+    ]
+  }
+}

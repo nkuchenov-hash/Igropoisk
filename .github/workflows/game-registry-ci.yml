@@ -1,0 +1,46 @@
+name: Game Registry CI
+on:
+  push:
+    branches: ['feat/unified-game-registry-lifecycle']
+  pull_request:
+    paths:
+      - 'scripts/lib/game-registry*.mjs'
+      - 'scripts/migrate-game-registry.mjs'
+      - 'scripts/build-game-page-from-registry.mjs'
+      - 'scripts/validate-game-registry-pages.mjs'
+      - 'scripts/orchestrate-content.mjs'
+      - 'scripts/run-content-pipeline.mjs'
+      - 'tests/game-registry*.test.mjs'
+      - 'config/game-registry.json'
+      - 'admin/games/**'
+      - 'docs/game-registry-architecture.md'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Unit and migration tests
+        run: node --test tests/game-registry.test.mjs tests/game-registry-migration.test.mjs
+      - name: Existing safe publisher tests
+        run: |
+          python3 scripts/test_safe_game_page_builder.py
+          node scripts/test-automation-publish-guard.mjs
+      - name: All game pages use the shared runtime
+        run: node scripts/validate-game-registry-pages.mjs
+      - name: Repository migration dry run
+        run: node scripts/migrate-game-registry.mjs --root . --write --registry-out /tmp/game-registry.json --report-out /tmp/game-registry-report.json --base-commit "$GITHUB_SHA"
+      - name: Verify protected runtime unchanged
+        run: git diff --exit-code -- game/_shared
+      - name: Verify migration does not modify source catalog
+        run: git diff --exit-code -- data/catalog-visible.json data/public data/content-pipeline data/game-content data/drafts data/parser-output content game
+      - name: Migration summary
+        run: cat /tmp/game-registry-report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: game-registry-migration-report
+          path: /tmp/game-registry-report.json
