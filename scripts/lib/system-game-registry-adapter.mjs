@@ -117,7 +117,7 @@ export function canonicalCatalogRecord(record, registry) {
   if (resolution.variant || isEmbeddedGameKind(kind) || resolution.entity.presentation?.standalonePage === false) {
     return {record: null, resolution: {...resolution, status: 'embedded_variant', reason: 'not_a_standalone_catalog_game'}};
   }
-  const year = releaseYear(resolution.entity) ?? Number(record.year) || null;
+  const year = releaseYear(resolution.entity) ?? (Number(record.year) || null);
   return {
     record: {
       ...clone(record),
