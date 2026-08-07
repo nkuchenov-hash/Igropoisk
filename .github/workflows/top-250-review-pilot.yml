@@ -1,0 +1,58 @@
+name: Top-250 review pilot
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_reviews:
+        description: Reviews that must pass the full pipeline
+        required: false
+        default: '10'
+  push:
+    branches:
+      - feat/top-250-review-pilot
+    paths:
+      - 'scripts/build-top-250.mjs'
+      - 'scripts/validate-top-250.mjs'
+      - 'scripts/run-top-250-review-pilot.mjs'
+      - 'top-250/**'
+      - 'assets/top-250.*'
+      - '.github/workflows/top-250-review-pilot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-pilot:
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[top250-generated]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_MODEL: gpt-5
+      OPENAI_RESEARCH_MODEL: gpt-5
+      TARGET_REVIEWS: ${{ inputs.target_reviews || '10' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build Top-250 and review pilot
+        run: node scripts/run-top-250-review-pilot.mjs --limit=20 --target="$TARGET_REVIEWS"
+      - name: Validate Top-250
+        run: node scripts/validate-top-250.mjs
+      - name: Validate Registry integration
+        run: node scripts/validate-system-game-registry-integration.mjs
+      - name: Commit generated pilot content
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/top-250 data/popular data/catalog-visible.json data/drafts data/reviews data/research data/ratings data/article-media data/articles data/game-content data/parser-output data/parser-runs game article
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+            exit 0
+          fi
+          git commit -m "content: generate Top-250 review pilot [top250-generated]"
+          git push origin HEAD:${GITHUB_REF_NAME}
