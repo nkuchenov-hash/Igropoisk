@@ -70,7 +70,7 @@
             <span class="ig-muted">${group.items.length}</span>
           </header>
           <div class="ig-news-day__items">${group.items.map(item => api.renderArchiveItem(item, { lang })).join('')}</div>
-          ${index < groups.length - 1 ? '<hr class="ig-news-day__divider">' : ''}
+          ${index < groups.length - 1 ? '<div class="ig-tabs ig-news-day__divider" aria-hidden="true"></div>' : ''}
         </section>`).join('')
       : `<div class="ig-empty-state">${api.escapeHtml(copy.empty)}</div>`;
     root.dataset.newsVisibleCount = String(filtered.length);
@@ -88,10 +88,10 @@
   function buildToolbar() {
     const games = availableGames(items);
     if (activeGame && !games.some(game => game.slug === activeGame)) activeGame = '';
-    toolbar.innerHTML = `<div class="ig-news-toolbar__search"><input class="ig-input ig-input--search" type="search" data-news-search placeholder="${api.escapeHtml(copy.search)}"></div>
-      <div class="ig-news-toolbar__game">
+    toolbar.innerHTML = `<div class="ig-news-controls__search"><input class="ig-input ig-input--search" type="search" data-news-search placeholder="${api.escapeHtml(copy.search)}"></div>
+      <div class="ig-news-controls__game">
         <label class="ig-muted" for="news-game-filter">${api.escapeHtml(copy.gameFilter)}</label>
-        <select class="ig-input ig-filter-chip" id="news-game-filter" data-news-game-filter>
+        <select class="ig-input" id="news-game-filter" data-news-game-filter>
           <option value="">${api.escapeHtml(copy.all)}</option>
           ${games.map(game => `<option value="${api.escapeHtml(game.slug)}"${game.slug === activeGame ? ' selected' : ''}>${api.escapeHtml(game.title)}</option>`).join('')}
         </select>

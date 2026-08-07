@@ -51,17 +51,23 @@
     }
     list.innerHTML = review.map(item => {
       const selected = selectedGames(item.id);
+      const noGame = overrides.items?.[item.id]?.status === 'no-game';
       const candidateText = (item.candidates || []).map(candidate => `${candidate.name}: ${candidate.reason}`).join('; ');
       return `<article class="parser-preview" data-news-review-item="${escapeHtml(item.id)}">
         <strong>${escapeHtml(item.titleRu || item.titleEn || item.id)}</strong>
         <small>${escapeHtml(item.publishedAt || '')}</small>
         <p>${escapeHtml(candidateText || (item.reasons || []).join(', ') || 'Требуется редакционная проверка')}</p>
         <label>Канонические игры
-          <select class="ig-button" multiple size="5" data-news-review-games>
+          <select class="ig-input" multiple size="5" data-news-review-games>
             ${catalog.map(game => `<option value="${escapeHtml(game.slug)}"${selected.has(game.slug) ? ' selected' : ''}>${escapeHtml(game.title)}</option>`).join('')}
           </select>
         </label>
-        <label><input type="checkbox" data-news-review-no-game${overrides.items?.[item.id]?.status === 'no-game' ? ' checked' : ''}> Подтвердить, что игра не определена</label>
+        <label>Статус привязки
+          <select class="ig-input" data-news-review-no-game>
+            <option value=""${noGame ? '' : ' selected'}>Не подтверждено отсутствие игры</option>
+            <option value="no-game"${noGame ? ' selected' : ''}>Подтвердить: игра не определена</option>
+          </select>
+        </label>
         <div class="source-actions">
           <a class="ig-button" href="${escapeHtml(item.primaryUrl || '#')}" target="_blank" rel="noopener noreferrer">Открыть источник</a>
           <a class="ig-button" href="../game-data/?news=${encodeURIComponent(item.id)}">Создать или привязать страницу игры</a>
@@ -75,8 +81,9 @@
     const items = { ...(overrides.items || {}) };
     root.querySelectorAll('[data-news-review-item]').forEach(card => {
       const id = card.dataset.newsReviewItem;
-      const games = [...card.querySelector('[data-news-review-games]').selectedOptions].map(option => option.value);
-      const noGame = card.querySelector('[data-news-review-no-game]').checked;
+      const selected = [...card.querySelector('[data-news-review-games]').selectedOptions].map(option => option.value);
+      const noGame = card.querySelector('[data-news-review-no-game]').value === 'no-game';
+      const games = noGame ? [] : selected;
       if (!games.length && !noGame) {
         delete items[id];
         return;
