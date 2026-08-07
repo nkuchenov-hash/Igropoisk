@@ -1,9 +1,11 @@
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { buildGameReviewQueue, canonicalSourceUrl, enrichNewsItems } from './lib/news-game-linker.mjs';
 
 const rankedPath = 'data/news.json';
 const officialPath = 'data/publisher-news.json';
 const outputPath = 'data/news-events.json';
+const reviewPath = 'data/news-game-review.json';
 const mergeWindowHours = 96;
 
 const stopWords = new Set(['the','a','an','and','or','for','to','of','in','on','with','from','at','by','is','are','was','were','will','this','that','new','news','game','games','gaming','и','в','на','с','к','из','для','о','от','по','за','что','как','это','новый','новая','новые','игра','игры']);
@@ -23,6 +25,23 @@ function sourceRef(item) {
     url: item.url, official: Boolean(item.official), publishedAt: item.publishedAt
   };
 }
+function itemGameSlugs(item) {
+  return new Set((Array.isArray(item?.games) ? item.games : []).map(game => typeof game === 'string' ? game : game?.slug).filter(Boolean));
+}
+function sharesGame(left, right) {
+  const a = itemGameSlugs(left);
+  const b = itemGameSlugs(right);
+  for (const slug of a) if (b.has(slug)) return true;
+  return Boolean(left.game && right.game && normalize(left.game) === normalize(right.game));
+}
+function uniqueGames(items) {
+  const games = new Map();
+  items.flatMap(item => Array.isArray(item.games) ? item.games : []).forEach(game => {
+    const normalized = typeof game === 'string' ? { slug: game, title: game } : game;
+    if (normalized?.slug) games.set(normalized.slug, normalized);
+  });
+  return [...games.values()];
+}
 
 const [ranked, official] = await Promise.all([readItems(rankedPath), readItems(officialPath)]);
 const all = [
@@ -38,7 +57,7 @@ for (const item of all) {
     const hours = Math.abs(new Date(item.publishedAt) - new Date(event.publishedAt)) / 36e5;
     if (hours > mergeWindowHours) continue;
     const score = similarity(item, event.representative);
-    const sameGame = item.game && event.game && normalize(item.game) === normalize(event.game);
+    const sameGame = sharesGame(item, event.representative);
     const threshold = sameGame ? 0.42 : 0.58;
     if (score >= threshold && score > bestScore) { best = event; bestScore = score; }
   }
@@ -57,7 +76,8 @@ const output = events.map(event => {
   const rankedRepresentative = mediaItems.sort((a, b) => Number(b.globalScore || b.trendScore || 0) - Number(a.globalScore || a.trendScore || 0))[0];
   const officialRepresentative = officialItems.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))[0];
   const representative = rankedRepresentative || officialRepresentative || event.representative;
-  const sources = [...new Map(event.items.map(item => [item.url, sourceRef(item)])).values()];
+  const newestItem = [...event.items].sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))[0];
+  const sources = [...new Map(event.items.map(item => [canonicalSourceUrl(item.url), sourceRef(item)])).values()];
   const mediaSourceCount = new Set(mediaItems.flatMap(item => item.sources || [item.source]).filter(Boolean)).size;
   const discussionMentions = Math.max(0, ...event.items.map(item => Number(item.discussionMentions || 0)));
   const trendScore = Math.max(0, ...event.items.map(item => Number(item.trendScore || 0)));
@@ -68,12 +88,17 @@ const output = events.map(event => {
   const regionalEligible = regions.length > 0 && event.items.some(item => item.regionalEligible);
   const importance = trendScore >= 700 || mediaSourceCount >= 6 || discussionMentions >= 7 ? 'critical' : globalEligible ? 'major' : 'normal';
   const type = officialItems.length && mediaItems.length ? 'confirmed' : officialItems.length ? 'official' : 'ranked';
-  const id = createHash('sha1').update(event.items.map(item => item.url).sort().join('|')).digest('hex').slice(0, 16);
+  const id = createHash('sha1').update(event.items.map(item => canonicalSourceUrl(item.url)).sort().join('|')).digest('hex').slice(0, 16);
   return {
     id, type, importance, official: officialItems.length > 0,
     titleRu: representative.titleRu || representative.title || '', titleEn: representative.titleEn || representative.title || '',
     summaryRu: representative.summaryRu || representative.summary || '', summaryEn: representative.summaryEn || representative.summary || '',
-    publishedAt: event.publishedAt, game: event.game || representative.game || '',
+    publishedAt: event.publishedAt,
+    publishedDay: newestItem?.publishedDay,
+    publishedLocalTime: newestItem?.publishedLocalTime,
+    publicationTimeZone: newestItem?.publicationTimeZone,
+    game: event.game || representative.game || '',
+    games: uniqueGames(event.items),
     image: representative.image, imageSourceUrl: representative.imageSourceUrl,
     primaryUrl: (officialRepresentative || representative).url,
     primarySource: (officialRepresentative || representative).source,
@@ -86,5 +111,8 @@ const output = events.map(event => {
   return importance[b.importance] - importance[a.importance] || b.globalScore - a.globalScore || b.trendScore - a.trendScore || new Date(b.publishedAt) - new Date(a.publishedAt);
 });
 
-await fs.writeFile(outputPath, `${JSON.stringify({ generatedAt: new Date().toISOString(), model: 'event-first-global-plus-region', mergeWindowHours, globalMinimumIndependentSources: 3, items: output }, null, 2)}\n`);
-console.log(`[events] built ${output.length} globally and regionally classified events from ${all.length} articles`);
+const enriched = await enrichNewsItems(output);
+const generatedAt = new Date().toISOString();
+await fs.writeFile(outputPath, `${JSON.stringify({ generatedAt, model: 'event-first-global-plus-region', mergeWindowHours, globalMinimumIndependentSources: 3, items: enriched }, null, 2)}\n`);
+await fs.writeFile(reviewPath, `${JSON.stringify(buildGameReviewQueue(enriched, { generatedAt }), null, 2)}\n`);
+console.log(`[events] built ${enriched.length} globally and regionally classified events from ${all.length} articles; ${enriched.filter(item => item.gameReviewStatus === 'needs-review').length} require game review`);
