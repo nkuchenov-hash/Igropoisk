@@ -13,6 +13,7 @@
     ru: new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long' }),
     en: new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric' })
   };
+  const timeFormatters = new Map();
 
   const escapeHtml = (value = '') => String(value)
     .replaceAll('&', '&amp;')
@@ -28,8 +29,28 @@
 
   function labels(lang) {
     return lang === 'ru'
-      ? { loading: 'Загружаем новости…', unavailable: 'Новости временно недоступны.', empty: 'По выбранным параметрам новостей нет.', search: 'Найти игру, студию или тему', all: 'Все новости', official: 'От разработчиков' }
-      : { loading: 'Loading news…', unavailable: 'News is temporarily unavailable.', empty: 'No news matches the selected filters.', search: 'Search games, studios or topics', all: 'All news', official: 'From developers' };
+      ? {
+          loading: 'Загружаем новости…',
+          unavailable: 'Новости временно недоступны.',
+          empty: 'По выбранным параметрам новостей нет.',
+          search: 'Поиск по заголовку или тексту',
+          all: 'Все игры',
+          official: 'От разработчиков',
+          gameFilter: 'Фильтр по игре',
+          allNewsAboutGame: 'Все новости об игре',
+          openGame: 'Открыть страницу игры'
+        }
+      : {
+          loading: 'Loading news…',
+          unavailable: 'News is temporarily unavailable.',
+          empty: 'No news matches the selected filters.',
+          search: 'Search headlines or summaries',
+          all: 'All games',
+          official: 'From developers',
+          gameFilter: 'Filter by game',
+          allNewsAboutGame: 'All news about this game',
+          openGame: 'Open game page'
+        };
   }
 
   function text(item, field, lang) {
@@ -56,12 +77,29 @@
     return contentApi.sourceName(item);
   }
 
+  function resolvedGames(item) {
+    const source = Array.isArray(item?.games) ? item.games : [];
+    const seen = new Set();
+    return source.flatMap(game => {
+      const normalized = typeof game === 'string' ? { slug: game, title: game } : game;
+      const slug = String(normalized?.slug || '').trim().toLowerCase();
+      if (!slug || seen.has(slug)) return [];
+      seen.add(slug);
+      return [{
+        slug,
+        title: String(normalized?.title || slug),
+        pageExists: normalized?.pageExists !== false && Boolean(normalized?.pageUrl),
+        pageUrl: normalized?.pageExists !== false && normalized?.pageUrl ? String(normalized.pageUrl) : '',
+        manual: Boolean(normalized?.manual)
+      }];
+    });
+  }
+
   function deriveTags(item, lang) {
     const body = `${text(item, 'title', lang)} ${text(item, 'summary', lang)}`.toLowerCase();
-    const tags = [];
-    if (item.game) tags.push(item.game);
+    const tags = resolvedGames(item).map(game => game.title);
     const organization = item.organization || item.publisher || item.sources?.find(source => source.official)?.organization;
-    if (organization && organization !== item.game) tags.push(organization);
+    if (organization && !tags.includes(organization)) tags.push(organization);
     const groups = lang === 'ru'
       ? [
           ['Релизы', /релиз|вышел|вышла|выходит|дата выхода|ранн.*доступ|снимут с продажи/],
@@ -107,6 +145,59 @@
     </a>`;
   }
 
+  function publicationTime(item, lang = language()) {
+    if (item?.publishedLocalTime && /^\d{1,2}:\d{2}$/.test(item.publishedLocalTime)) return item.publishedLocalTime;
+    const timeZone = item?.publicationTimeZone || 'Europe/Moscow';
+    const key = `${lang}:${timeZone}`;
+    if (!timeFormatters.has(key)) {
+      try {
+        timeFormatters.set(key, new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+          timeZone
+        }));
+      } catch {
+        timeFormatters.set(key, new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+          timeZone: 'UTC'
+        }));
+      }
+    }
+    return timeFormatters.get(key).format(new Date(item.publishedAt));
+  }
+
+  function renderGameTags(item, { lang = language() } = {}) {
+    const copy = labels(lang);
+    return resolvedGames(item).map(game => {
+      const title = escapeHtml(game.title);
+      if (!game.pageExists) return `<span class="ig-chip ig-news-game-tag ig-news-game-unlinked" title="${escapeHtml(lang === 'ru' ? 'Страница игры ещё не создана' : 'Game page is not available yet')}">${title}</span>`;
+      const pageUrl = escapeHtml(new URL(game.pageUrl, siteBase).href);
+      return `<span class="ig-chip ig-news-game-tag" data-news-game-tag="${escapeHtml(game.slug)}">
+        <a class="ig-news-game-link" href="${pageUrl}" title="${escapeHtml(copy.openGame)}">${title}</a>
+        <button class="ig-icon-button ig-news-game-filter" type="button" data-news-game-filter-button="${escapeHtml(game.slug)}" aria-label="${escapeHtml(`${copy.allNewsAboutGame}: ${game.title}`)}">⌕</button>
+      </span>`;
+    }).join('');
+  }
+
+  function renderArchiveItem(item, { lang = language() } = {}) {
+    const title = escapeHtml(text(item, 'title', lang));
+    const summary = escapeHtml(text(item, 'summary', lang));
+    const games = renderGameTags(item, { lang });
+    const image = item.image ? `<img class="ig-card__media ig-card__media--landscape ig-news-entry__image" src="${escapeHtml(absoluteAsset(item.image))}" alt="" loading="lazy">` : '';
+    return `<article class="ig-card__body ig-news-entry ig-news-card" data-news-id="${escapeHtml(item.id || '')}">
+      ${image}
+      <div class="ig-news-entry__body">
+        <div class="ig-card__meta"><time datetime="${escapeHtml(item.publishedAt)}">${escapeHtml(publicationTime(item, lang))}</time> · ${escapeHtml(sourceName(item))}</div>
+        <h3 class="ig-card__title ig-news-entry__title"><a href="${escapeHtml(item.primaryUrl)}" target="_blank" rel="noopener noreferrer" data-news-external>${title}</a></h3>
+        ${summary ? `<p class="ig-card__summary ig-news-entry__summary">${summary}</p>` : ''}
+        ${games ? `<div class="ig-chip-list ig-news-entry__games">${games}</div>` : ''}
+      </div>
+    </article>`;
+  }
+
   function setState(target, message, kind = '') {
     if (!target) return;
     target.innerHTML = `<div class="ig-empty-state${kind ? ` ig-empty-state--${escapeHtml(kind)}` : ''}">${escapeHtml(message)}</div>`;
@@ -123,7 +214,11 @@
     loadAll,
     loadHome,
     matchesRegion,
+    publicationTime,
+    renderArchiveItem,
     renderCard,
+    renderGameTags,
+    resolvedGames,
     score,
     setState,
     text,

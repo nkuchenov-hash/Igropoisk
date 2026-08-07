@@ -1,19 +1,22 @@
 {
   "id": "news",
-  "version": 5,
+  "version": 6,
   "enforcement": "strict",
   "roots": {
     "home": "[data-news-module=\"home\"]",
     "archive": "[data-news-module=\"archive\"]",
-    "adminHealth": "[data-news-health-admin]"
+    "adminHealth": "[data-news-health-admin]",
+    "adminGameLinks": "[data-news-game-review-admin]"
   },
   "runtime": [
     "features/news/shared/translations-ru.js",
     "features/news/content-api/index.js",
     "features/news/shared/index.js",
     "features/news/home-widget/index.js",
+    "features/news/archive-page/model.js",
     "features/news/archive-page/index.js",
     "features/news/admin-health/index.js",
+    "features/news/admin-game-links/index.js",
     "features/news/styles/index.css"
   ],
   "contentApi": {
@@ -38,6 +41,8 @@
     "healthBuilder": "scripts/build-news-pipeline-health.mjs",
     "health": "data/news-pipeline-health.json",
     "test": "scripts/test-news-pipeline.mjs",
+    "archiveTest": "scripts/test-news-archive.mjs",
+    "gameLinkTest": "scripts/test-news-game-linker.mjs",
     "healthTest": "scripts/test-news-pipeline-health.mjs",
     "schedule": "hourly-with-per-source-cadence",
     "publication": "external-immutable-snapshot-with-atomic-manifest"
@@ -48,6 +53,9 @@
     "data/publisher-news.json",
     "data/youtube-signals.json",
     "data/news-home-ru.json",
+    "data/news-game-review.json",
+    "data/news-game-aliases.json",
+    "data/news-game-overrides.json",
     "data/news-pipeline-health.json",
     "assets/news/",
     "assets/publisher-news/"

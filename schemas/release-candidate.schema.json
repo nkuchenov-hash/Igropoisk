@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://igropoisk.example/schemas/release-candidate.schema.json",
+  "title": "Igropoisk release candidate",
+  "type": "object",
+  "required": ["id", "slug", "title", "events", "sources", "significance", "moderation"],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "slug": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1},
+    "release_type": {"enum": ["full", "early_access", "expansion", "dlc"]},
+    "events": {"type": "array", "items": {"$ref": "#/$defs/event"}},
+    "sources": {"type": "array", "items": {"$ref": "#/$defs/source"}},
+    "significance": {
+      "type": "object",
+      "required": ["score", "signals"],
+      "properties": {"score": {"type": "number"}, "signals": {"type": "array", "items": {"type": "string"}}}
+    },
+    "moderation": {
+      "type": "object",
+      "required": ["status", "automatic_reasons", "locked_fields"],
+      "properties": {
+        "status": {"enum": ["published", "review", "rejected"]},
+        "rejection_reason": {"type": ["string", "null"]},
+        "automatic_reasons": {"type": "array", "items": {"type": "string"}},
+        "publication_forbidden": {"type": "boolean"},
+        "locked_fields": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  },
+  "$defs": {
+    "event": {
+      "type": "object",
+      "required": ["id", "precision", "region", "platforms", "source_ids", "platform_confirmations"],
+      "properties": {
+        "id": {"type": "string"},
+        "date": {"type": ["string", "null"], "format": "date"},
+        "date_start": {"type": ["string", "null"], "format": "date"},
+        "date_end": {"type": ["string", "null"], "format": "date"},
+        "precision": {"enum": ["exact", "month", "quarter", "year", "tbd"]},
+        "region": {"type": "string"},
+        "platforms": {"type": "array", "items": {"enum": ["PC", "PlayStation 5", "PlayStation 4", "Xbox Series X|S", "Xbox One", "Nintendo Switch 2", "Nintendo Switch"]}},
+        "source_ids": {"type": "array", "items": {"type": "string"}},
+        "platform_confirmations": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}}}
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": ["id", "family", "title"],
+      "properties": {
+        "id": {"type": "string"},
+        "family": {"type": "string"},
+        "title": {"type": "string"},
+        "url": {"type": ["string", "null"], "format": "uri"}
+      }
+    }
+  }
+}
