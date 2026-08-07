@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Игры — админка Игропоиска</title>
+<link rel="stylesheet" href="../../assets/design-system.css?v=20260803-8">
+<link rel="stylesheet" href="../../assets/design-system-admin-responsive.css?v=20260803-8">
+<link rel="stylesheet" href="../../assets/admin-home-v2.css?v=20260803-8">
+  <link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">
+  <link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">
+</head>
+<body><div class="ig-admin-layout">
+<aside class="ig-admin-sidebar" aria-label="Разделы админки"><a class="ig-logo" href="../index.html">ИГРОПОИСК</a><a href="../">Обзор</a><a class="active" href="./">Игры</a><a href="../content-pipeline/">Контентный конвейер</a></aside>
+<main class="ig-admin-main"><div class="ig-kicker">Admin / Canonical Game Registry</div><h1 class="ig-admin-title">Единый центр игр</h1><p class="ig-admin-lead">Канонические сущности, источники, полнота, конфликты, возможные дубли, очередь и история решений.</p>
+<div id="mode" class="ig-panel">Загрузка реестра…</div><section id="summary" class="ig-admin-grid" aria-label="Сводка"></section>
+<div class="ig-toolbar"><input class="ig-input" id="search" type="search" placeholder="Название, slug или ID"><select class="ig-input" id="status"><option value="">Все статусы</option></select><select class="ig-input" id="page"><option value="">Все страницы</option></select><select class="ig-input" id="conflict"><option value="">Все конфликты</option><option value="yes">Есть конфликты</option><option value="no">Без конфликтов</option></select></div>
+<div class="ig-card ig-admin-card ig-table-scroll"><table class="ig-data-table"><thead><tr><th>Игра</th><th>Статус</th><th>Полнота</th><th>Приоритет</th><th>Источники / конфликты</th><th>Действия</th></tr></thead><tbody id="rows"></tbody></table></div>
+</main></div><script src="../../assets/auth.js?v=20260804-6"></script><script type="module" src="./app.js"></script>
+  <script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>
+  <script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>
+</body></html>
