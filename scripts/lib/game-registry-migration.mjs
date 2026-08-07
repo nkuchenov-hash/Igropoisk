@@ -234,7 +234,8 @@ function candidateYear(candidate = {}) {
 function entityYear(entity = {}) {
   return Number(String(entity.releases?.[0]?.date?.value ?? '').match(/(?:19|20)\d{2}/)?.[0] ?? 0);
 }
-function effectiveEntityKind(entity = {}) {
+function effectiveEntityKind(entity = null) {
+  if (!entity) return 'unknown';
   const stored = entity.identity?.kind?.value ?? 'unknown';
   if (stored && stored !== 'unknown') return stored;
   return migrationKind({title: entity.identity?.canonicalTitle?.value ?? entity.identity?.slug?.value ?? ''});
