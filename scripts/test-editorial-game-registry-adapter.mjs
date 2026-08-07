@@ -23,6 +23,23 @@ for (const slug of expectedSlugs) {
 
 const mafiaByExternal = resolveEditorialGame({ steam_appid: 40990 }, { root, loaded });
 const mafiaBySlug = resolveEditorialGame({ slug: 'mafia' }, { root, loaded });
+if (mafiaByExternal.game_id !== mafiaBySlug.game_id) {
+  const summarize = id => {
+    const entity = loaded.registry.games[id];
+    return {
+      id,
+      title: entity?.identity?.canonicalTitle?.value,
+      slug: entity?.identity?.slug?.value,
+      aliases: entity?.identity?.aliases?.value,
+      kind: entity?.identity?.kind?.value,
+      externalIds: entity?.externalIds,
+      releases: (entity?.releases || []).map(item => item?.date?.value),
+      discovery: entity?.discovery,
+      status: entity?.workflow?.status
+    };
+  };
+  console.error(JSON.stringify({ canonical_identity_split: { by_slug: summarize(mafiaBySlug.game_id), by_steam: summarize(mafiaByExternal.game_id) } }, null, 2));
+}
 assert.equal(mafiaByExternal.game_id, mafiaBySlug.game_id, 'Steam ID and slug must resolve to the same Mafia entity');
 assert.throws(() => resolveEditorialGame({ slug: '__definitely-not-a-real-game__' }, { root, loaded }), /Cannot resolve editorial game/);
 
