@@ -25,6 +25,12 @@ const listJsonRecursive = directory => {
 };
 const source = (name, type = 'automated_inference', url = null) => ({name, type, url});
 
+function migrationKind(candidate = {}) {
+  const rawTitle = candidate.canonicalTitle ?? candidate.title ?? candidate.name ?? candidate.slug ?? '';
+  const normalizedTitle = String(rawTitle).replace(/[-_]+/g, ' ');
+  return inferKind({ ...candidate, kind: undefined, type: undefined, title: normalizedTitle });
+}
+
 function canonicalSeedId(candidate = {}) {
   const external = normalizeExternalIds(candidate.externalIds ?? candidate.external_ids ?? candidate);
   const identifiers = [
@@ -36,9 +42,11 @@ function canonicalSeedId(candidate = {}) {
   const strongest = identifiers.find(([, value]) => value !== null && value !== undefined && String(value).trim() !== '');
   const basis = strongest
     ? `${strongest[0]}:${strongest[1]}`
-    : `${normalizeAlias(candidate.canonicalTitle ?? candidate.title ?? candidate.name ?? candidate.slug)}:${candidate.releaseYear ?? candidate.year ?? ''}:${inferKind(candidate)}`;
+    : `${normalizeAlias(candidate.canonicalTitle ?? candidate.title ?? candidate.name ?? candidate.slug)}:${candidate.releaseYear ?? candidate.year ?? ''}:${migrationKind(candidate)}`;
   return `game_${crypto.createHash('sha256').update(basis).digest('hex').slice(0, 20)}`;
 }
+
+function seeded(candidate) { return { ...candidate, kind: migrationKind(candidate), id: canonicalSeedId(candidate) }; }
 
 function toRows(payload) {
   if (!payload) return [];
@@ -51,57 +59,44 @@ function toRows(payload) {
 }
 
 function flattenGameContent(payload, file) {
-  return Object.entries(payload?.games ?? {}).map(([slug, game]) => {
-    const candidate = {
-      ...game, slug,
-      title: game.identity?.title ?? game.title ?? slug,
-      steamAppId: game.identity?.steam_appid ?? game.external_ids?.steam ?? null,
-      source: source(`game-content:${path.basename(file)}`, 'manual'),
-      discoveryReason: 'migrated_curated_game_content',
-      pageStatus: game.publication?.status === 'published' ? 'published' : 'page_draft',
-      status: game.publication?.status === 'published' ? 'published' : 'enriching',
-      statusReason: 'curated game-content record', raw: game
-    };
-    return { ...candidate, id: canonicalSeedId(candidate) };
-  });
+  return Object.entries(payload?.games ?? {}).map(([slug, game]) => seeded({
+    ...game, slug, title: game.identity?.title ?? game.title ?? slug,
+    steamAppId: game.identity?.steam_appid ?? game.external_ids?.steam ?? null,
+    source: source(`game-content:${path.basename(file)}`, 'manual'), discoveryReason: 'migrated_curated_game_content',
+    pageStatus: game.publication?.status === 'published' ? 'published' : 'page_draft',
+    status: game.publication?.status === 'published' ? 'published' : 'enriching', statusReason: 'curated game-content record', raw: game
+  }));
 }
 
 function candidateFromCatalog(item) {
-  const candidate = {
-    title: item.title ?? item.name,
-    slug: item.slug ?? slugify(item.title ?? item.name),
-    year: item.year ?? null, steamAppId: item.steam_appid ?? null,
-    source: source('data/catalog-visible.json', 'manual'),
+  return seeded({
+    title: item.title ?? item.name, slug: item.slug ?? slugify(item.title ?? item.name), year: item.year ?? null,
+    steamAppId: item.steam_appid ?? null, source: source('data/catalog-visible.json', 'manual'),
     discoveryReason: 'migrated_visible_catalog', status: 'identified', statusReason: 'present in visible catalog'
-  };
-  return { ...candidate, id: canonicalSeedId(candidate) };
+  });
 }
 
 function candidateFromPipeline(item) {
-  const candidate = {
-    title: item.game_title ?? item.slug ?? item.title ?? item.name,
-    slug: item.slug, year: item.year ?? null, steamAppId: item.steam_appid ?? null,
-    source: source('data/content-pipeline/registry.json', 'automated_inference'),
+  return seeded({
+    title: item.game_title ?? item.slug ?? item.title ?? item.name, slug: item.slug, year: item.year ?? null,
+    steamAppId: item.steam_appid ?? null, source: source('data/content-pipeline/registry.json', 'automated_inference'),
     discoveryReason: `migrated_content_pipeline:${item.origin ?? 'unknown'}`,
     status: item.state === 'published' || item.state === 'review_published' ? 'published' : item.state === 'collecting' ? 'enriching' : 'discovered',
     statusReason: `legacy pipeline state: ${item.state ?? 'unknown'}`,
     pageStatus: item.page?.gate_passed ? 'published' : item.page?.curated ? 'page_draft' : 'not_started', raw: item
-  };
-  return { ...candidate, id: canonicalSeedId(candidate) };
+  });
 }
 
 function candidateFromLoose(item, origin, confidence = 0.45) {
   const title = item.title ?? item.name ?? item.identity?.title ?? item.slug;
   if (!title) return null;
-  const candidate = {
+  return seeded({
     title, slug: item.slug ?? slugify(title), aliases: item.aliases ?? item.alternative_titles ?? [],
     externalIds: normalizeExternalIds(item.externalIds ?? item.external_ids ?? item.identity ?? item),
     releases: item.events ?? item.releases ?? (item.release_date ? [{date: item.release_date, platform: item.platform ?? null}] : []),
     source: source(origin, origin.includes('release') ? 'platform_store' : 'automated_inference'),
-    discoveryReason: `migrated_${origin.replace(/[^a-z0-9]+/gi, '_')}`, confidence,
-    status: 'discovered', statusReason: `discovered in ${origin}`, raw: item
-  };
-  return { ...candidate, id: canonicalSeedId(candidate) };
+    discoveryReason: `migrated_${origin.replace(/[^a-z0-9]+/gi, '_')}`, confidence, status: 'discovered', statusReason: `discovered in ${origin}`, raw: item
+  });
 }
 
 function scanPublishedPages(root) {
@@ -110,14 +105,10 @@ function scanPublishedPages(root) {
   return fs.readdirSync(gameRoot, {withFileTypes: true})
     .filter(entry => entry.isDirectory() && entry.name !== '_shared')
     .filter(entry => fs.existsSync(path.join(gameRoot, entry.name, 'index.html')))
-    .map(entry => {
-      const candidate = {
-        title: entry.name, slug: entry.name, source: source(`game/${entry.name}/index.html`, 'manual'),
-        discoveryReason: 'migrated_published_page', status: 'published', statusReason: 'existing published page',
-        pageStatus: 'published', confidence: 0.75
-      };
-      return { ...candidate, id: canonicalSeedId(candidate) };
-    });
+    .map(entry => seeded({
+      title: entry.name, slug: entry.name, source: source(`game/${entry.name}/index.html`, 'manual'),
+      discoveryReason: 'migrated_published_page', status: 'published', statusReason: 'existing published page', pageStatus: 'published', confidence: 0.75
+    }));
 }
 
 function scanCandidates(root) {
@@ -137,8 +128,7 @@ function scanCandidates(root) {
   ]) {
     const files = recursive ? listJsonRecursive(path.join(root, directory)) : listJson(path.join(root, directory));
     for (const file of files) {
-      const payload = readJson(file);
-      const rows = toRows(payload).length ? toRows(payload) : [payload].filter(Boolean);
+      const payload = readJson(file); const rows = toRows(payload).length ? toRows(payload) : [payload].filter(Boolean);
       add(origin, rows.map(item => candidateFromLoose(item, `${origin}:${path.relative(root, file)}`)));
     }
   }
@@ -157,35 +147,36 @@ function enrichFromRaw(entity, candidate, now) {
   set('subgenres', raw.classification?.subgenres ?? raw.subgenres); set('technicalModes', raw.classification?.modes ?? raw.modes);
   set('description', raw.editorial?.integrated_description ?? raw.description); set('shortDescription', raw.editorial?.short_description ?? raw.short_description);
   set('ageRatings', raw.age_ratings ?? raw.ageRatings); set('systemRequirements', raw.system_requirements ?? raw.systemRequirements); set('officialLinks', raw.official_links ?? raw.links);
-  if (raw.media && !entity.media.length) {
-    for (const [kind, value] of Object.entries(raw.media)) for (const media of Array.isArray(value) ? value : [value]) {
-      if (!media) continue;
-      entity.media.push({
-        id: `media_${crypto.createHash('sha1').update(`${entity.id}:${kind}:${JSON.stringify(media)}`).digest('hex').slice(0,12)}`,
-        kind, url: typeof media === 'string' ? media : media.url ?? null,
-        objectKey: typeof media === 'object' ? media.objectKey ?? media.object_key ?? null : null,
-        checksum: typeof media === 'object' ? media.checksum ?? null : null,
-        source: src, fetchedAt: now, revisions: []
-      });
-    }
+  if (raw.media && !entity.media.length) for (const [kind, value] of Object.entries(raw.media)) for (const media of Array.isArray(value) ? value : [value]) {
+    if (!media) continue;
+    entity.media.push({
+      id: `media_${crypto.createHash('sha1').update(`${entity.id}:${kind}:${JSON.stringify(media)}`).digest('hex').slice(0,12)}`,
+      kind, url: typeof media === 'string' ? media : media.url ?? null,
+      objectKey: typeof media === 'object' ? media.objectKey ?? media.object_key ?? null : null,
+      checksum: typeof media === 'object' ? media.checksum ?? null : null, source: src, fetchedAt: now, revisions: []
+    });
   }
   if (candidate.year && !entity.releases.length) entity.releases.push({
-    id: `release_year_${candidate.year}`, platform: fieldValue(null, src, {now, confidence: 0.3}),
-    region: fieldValue('global', src, {now, confidence: 0.3}), date: fieldValue(String(candidate.year), src, {now, confidence: 0.35}), precision: 'year', status: 'released'
+    id: `release_year_${candidate.year}`, platform: fieldValue(null, src, {now, confidence: 0.3}), region: fieldValue('global', src, {now, confidence: 0.3}),
+    date: fieldValue(String(candidate.year), src, {now, confidence: 0.35}), precision: 'year', status: 'released'
   });
-  if (candidate.pageStatus === 'published') {
-    entity.workflow.pageStatus = 'published'; entity.workflow.status = 'published'; entity.workflow.statusReason = candidate.statusReason;
-  } else if (candidate.pageStatus === 'page_draft' && entity.workflow.pageStatus !== 'published') entity.workflow.pageStatus = 'page_draft';
+  if (candidate.pageStatus === 'published') { entity.workflow.pageStatus = 'published'; entity.workflow.status = 'published'; entity.workflow.statusReason = candidate.statusReason; }
+  else if (candidate.pageStatus === 'page_draft' && entity.workflow.pageStatus !== 'published') entity.workflow.pageStatus = 'page_draft';
 }
 
 function candidateYear(candidate = {}) {
   return Number(candidate.releaseYear ?? candidate.year ?? String(candidate.releaseDate ?? candidate.release_date ?? candidate.releases?.[0]?.date ?? '').match(/(?:19|20)\d{2}/)?.[0] ?? 0);
 }
 function entityYear(entity = {}) { return Number(String(entity.releases?.[0]?.date?.value ?? '').match(/(?:19|20)\d{2}/)?.[0] ?? 0); }
+function effectiveEntityKind(entity = {}) {
+  const stored = entity.identity?.kind?.value ?? 'unknown';
+  const inferred = migrationKind({ title: entity.identity?.canonicalTitle?.value ?? entity.identity?.slug?.value ?? '' });
+  return inferred !== 'game' ? inferred : stored;
+}
 function compatibleIdentity(entity, candidate) {
   const existingYear = entityYear(entity); const incomingYear = candidateYear(candidate);
   if (existingYear && incomingYear && existingYear !== incomingYear) return false;
-  const existingKind = entity.identity?.kind?.value ?? 'unknown'; const incomingKind = inferKind(candidate);
+  const existingKind = effectiveEntityKind(entity); const incomingKind = migrationKind(candidate);
   return existingKind === 'unknown' || incomingKind === 'unknown' || existingKind === incomingKind;
 }
 function safeExactSlugTarget(api, candidate) {
@@ -194,13 +185,12 @@ function safeExactSlugTarget(api, candidate) {
   return entity && entity.workflow?.status !== 'merged_into_another_game' && compatibleIdentity(entity, candidate) ? entity : null;
 }
 function externalIdentityTargets(api, candidate) {
-  const external = normalizeExternalIds(candidate.externalIds ?? candidate.external_ids ?? candidate);
-  const targets = [];
+  const external = normalizeExternalIds(candidate.externalIds ?? candidate.external_ids ?? candidate); const targets = [];
   for (const [kind, value] of [['steamAppId',external.steamAppId],['igdbId',external.igdbId],['rawgId',external.rawgId]]) {
     if (!value) continue; const entity = api.findByExternalId(kind, value); if (entity) targets.push(entity);
   }
-  for (const [kind, values] of [['playstation',external.playstation],['xbox',external.xbox],['nintendo',external.nintendo]]) {
-    for (const value of values || []) { const entity = api.findByExternalId(kind, value); if (entity) targets.push(entity); }
+  for (const [kind, values] of [['playstation',external.playstation],['xbox',external.xbox],['nintendo',external.nintendo]]) for (const value of values || []) {
+    const entity = api.findByExternalId(kind, value); if (entity) targets.push(entity);
   }
   return [...new Map(targets.map(entity => [entity.id, entity])).values()];
 }
@@ -210,9 +200,10 @@ function bridgeIdentityIfSafe(api, candidate, now) {
   if (!externalTargets.length) return slugTarget;
   if (externalTargets.length > 1) throw new Error(`Candidate bridges canonical slug ${candidate.slug} to multiple external entities: ${externalTargets.map(entity => entity.id).join(', ')}`);
   const externalTarget = externalTargets[0];
-  if (!compatibleIdentity(externalTarget, candidate)) throw new Error(`Canonical slug/external-ID conflict for ${candidate.slug}: ${slugTarget.id} vs ${externalTarget.id}`);
   const slugYear = entityYear(slugTarget); const externalYear = entityYear(externalTarget);
   if (slugYear && externalYear && slugYear !== externalYear) throw new Error(`Canonical slug/external-ID year conflict for ${candidate.slug}: ${slugYear} vs ${externalYear}`);
+  const slugKind = effectiveEntityKind(slugTarget); const externalKind = effectiveEntityKind(externalTarget);
+  if (slugKind !== 'unknown' && externalKind !== 'unknown' && slugKind !== externalKind) throw new Error(`Canonical slug/external-ID kind conflict for ${candidate.slug}: ${slugKind} vs ${externalKind}`);
   const sourceWorkflow = structuredClone(externalTarget.workflow ?? {});
   const merged = api.mergeGames(externalTarget.id, slugTarget.id, {now, actor:'migration', reason:'canonical_slug_external_id_bridge'});
   if (sourceWorkflow.pageStatus === 'published') merged.workflow.pageStatus = 'published';
@@ -223,8 +214,7 @@ function assertUniqueActiveIdentity(registry) {
   const slugs = new Map(); const external = new Map();
   for (const entity of Object.values(registry.games ?? {})) {
     if (entity.workflow?.status === 'merged_into_another_game') continue;
-    const slug = String(entity.identity?.slug?.value ?? '').trim();
-    if (slug) { const ids=slugs.get(slug)??[]; ids.push(entity.id); slugs.set(slug,ids); }
+    const slug = String(entity.identity?.slug?.value ?? '').trim(); if (slug) { const ids=slugs.get(slug)??[]; ids.push(entity.id); slugs.set(slug,ids); }
     for (const [kind, raw] of Object.entries(entity.externalIds ?? {})) for (const value of Array.isArray(raw) ? raw : [raw]) {
       if (value === null || value === undefined || value === '') continue;
       const key=`${kind}:${value}`; const ids=external.get(key)??[]; ids.push(entity.id); external.set(key,ids);
@@ -242,8 +232,7 @@ function attachArticles(root, registry) {
     ['content/articles/games','igropoisk_review'],['content/reviews/games','professional_review']
   ]) for (const file of listJsonRecursive(path.join(root, directory))) {
     const payload = readJson(file); const records = toRows(payload).length ? toRows(payload) : [payload].filter(Boolean);
-    const payloadGameId = payload?.game_id ?? payload?.gameId ?? payload?.game?.game_id ?? null;
-    const payloadSlug = payload?.game_slug ?? payload?.game?.slug ?? null;
+    const payloadGameId = payload?.game_id ?? payload?.gameId ?? payload?.game?.game_id ?? null; const payloadSlug = payload?.game_slug ?? payload?.game?.slug ?? null;
     for (const record of records) {
       const gameId = record.game_id ?? record.gameId ?? record.game?.game_id ?? payloadGameId;
       const slug = record.game_slug ?? record.game?.slug ?? payloadSlug ?? record.slug ?? path.basename(file, '.json');
@@ -260,21 +249,17 @@ function attachArticles(root, registry) {
 }
 
 export function migrateRepository(root, options = {}) {
-  const now = options.now ?? new Date().toISOString();
-  const registry = createRegistry({generatedAt: now}); const api = new GameRegistryApi(registry, {publicBaseUrl: options.publicBaseUrl ?? '/game'});
-  const candidates = scanCandidates(root); const decisions = {created: 0, matched: 0, needs_review: 0}; const sourceCounts = {}; const duplicatePairs = [];
+  const now = options.now ?? new Date().toISOString(); const registry = createRegistry({generatedAt: now});
+  const api = new GameRegistryApi(registry, {publicBaseUrl: options.publicBaseUrl ?? '/game'}); const candidates = scanCandidates(root);
+  const decisions = {created: 0, matched: 0, needs_review: 0}; const sourceCounts = {}; const duplicatePairs = [];
   for (const {origin, candidate} of candidates) {
-    sourceCounts[origin] = (sourceCounts[origin] ?? 0) + 1;
-    bridgeIdentityIfSafe(api, candidate, now);
-    const slugTarget = safeExactSlugTarget(api, candidate);
-    const resolvedCandidate = slugTarget ? { ...candidate, gameId: slugTarget.id } : candidate;
-    const result = api.registerCandidate(resolvedCandidate, {now, actor: 'migration'});
-    decisions[result.decision] = (decisions[result.decision] ?? 0) + 1;
+    sourceCounts[origin] = (sourceCounts[origin] ?? 0) + 1; bridgeIdentityIfSafe(api, candidate, now);
+    const slugTarget = safeExactSlugTarget(api, candidate); const resolvedCandidate = slugTarget ? { ...candidate, gameId: slugTarget.id } : candidate;
+    const result = api.registerCandidate(resolvedCandidate, {now, actor: 'migration'}); decisions[result.decision] = (decisions[result.decision] ?? 0) + 1;
     if (result.entity) enrichFromRaw(result.entity, candidate, now);
     if (result.decision === 'matched') duplicatePairs.push({gameId: result.entity.id, slug: result.entity.identity.slug.value, reason: result.reasons});
   }
-  assertUniqueActiveIdentity(registry); rebuildIndexes(registry);
-  const articleStats = attachArticles(root, registry);
+  assertUniqueActiveIdentity(registry); rebuildIndexes(registry); const articleStats = attachArticles(root, registry);
   for (const entity of Object.values(registry.games)) {
     const releaseYear = Number(String(entity.releases?.[0]?.date?.value ?? '').match(/\d{4}/)?.[0] ?? 0); const currentYear = new Date(now).getUTCFullYear(); const partialPage = entity.workflow.pageStatus === 'page_draft';
     calculatePriority(entity, {
@@ -283,14 +268,12 @@ export function migrateRepository(root, options = {}) {
       partialPage, explicitRequest: ['the-witcher-3-wild-hunt','elden-ring'].includes(entity.identity.slug.value)
     }, {now});
     if (entity.workflow.status !== 'published') {
-      const required = ['developers','publishers','platforms','genres','description'];
-      const missing = required.filter(key => !entity.fields[key]?.value || (Array.isArray(entity.fields[key].value) && !entity.fields[key].value.length));
+      const required = ['developers','publishers','platforms','genres','description']; const missing = required.filter(key => !entity.fields[key]?.value || (Array.isArray(entity.fields[key].value) && !entity.fields[key].value.length));
       if (!missing.length && entity.media.length && entity.releases.length) { entity.workflow.status = 'ready_for_page'; entity.workflow.statusReason = 'migration completeness gate passed'; }
       else if (entity.workflow.status !== 'needs_review') { entity.workflow.status = 'enriching'; entity.workflow.statusReason = `missing: ${missing.join(', ') || 'confirmed media or release'}`; }
     }
   }
-  const games = Object.values(registry.games);
-  const statusCounts = Object.fromEntries([...new Set(games.map(item => item.workflow.status))].sort().map(status => [status, games.filter(item => item.workflow.status === status).length]));
+  const games = Object.values(registry.games); const statusCounts = Object.fromEntries([...new Set(games.map(item => item.workflow.status))].sort().map(status => [status, games.filter(item => item.workflow.status === status).length]));
   const articleQueue = games
     .filter(item => ['ready_for_page','page_draft','published'].includes(item.workflow.status) || item.workflow.pageStatus === 'published')
     .filter(item => !item.articles.some(article => article.type === 'igropoisk_review' && article.status === 'published'))
@@ -299,15 +282,10 @@ export function migrateRepository(root, options = {}) {
   const report = {
     schemaVersion: 'game-registry-migration-report/v1', generatedAt: now, dryRun: options.dryRun !== false,
     sourceRecords: candidates.length, canonicalGames: games.length, duplicateSourceRecords: decisions.matched, ambiguousCases: registry.reviewQueue.length,
-    publishedPages: games.filter(item => item.workflow.pageStatus === 'published').length,
-    readyForPage: games.filter(item => item.workflow.status === 'ready_for_page').length,
+    publishedPages: games.filter(item => item.workflow.pageStatus === 'published').length, readyForPage: games.filter(item => item.workflow.status === 'ready_for_page').length,
     awaitingSources: games.filter(item => ['discovered','identified','enriching','needs_review'].includes(item.workflow.status)).length,
     statuses: statusCounts, articles: articleStats, articleQueue, sources: sourceCounts,
-    examples: {
-      published: games.find(item => item.workflow.pageStatus === 'published')?.id ?? null,
-      draft: games.find(item => item.workflow.pageStatus === 'page_draft' || item.workflow.status === 'ready_for_page')?.id ?? null,
-      ambiguous: registry.reviewQueue[0]?.id ?? null
-    },
+    examples: { published: games.find(item => item.workflow.pageStatus === 'published')?.id ?? null, draft: games.find(item => item.workflow.pageStatus === 'page_draft' || item.workflow.status === 'ready_for_page')?.id ?? null, ambiguous: registry.reviewQueue[0]?.id ?? null },
     sourceFingerprint: crypto.createHash('sha256').update(JSON.stringify({sourceCounts, candidates: candidates.map(item => [item.origin,item.candidate.slug,item.candidate.steamAppId])})).digest('hex'),
     recoveryPoint: {baseCommit: options.baseCommit ?? null, originalsModified: false, sourceFilesDeleted: false}, duplicateExamples: duplicatePairs.slice(0, 20)
   };
@@ -315,9 +293,7 @@ export function migrateRepository(root, options = {}) {
 }
 
 export function writeMigrationArtifacts(root, result, options = {}) {
-  const registryOut = path.resolve(root, options.registryOut ?? 'data/game-registry/registry.transition.json');
-  const reportOut = path.resolve(root, options.reportOut ?? 'data/game-registry/migration-report.json');
-  for (const file of [registryOut, reportOut]) fs.mkdirSync(path.dirname(file), {recursive: true});
-  fs.writeFileSync(registryOut, `${JSON.stringify(result.registry, null, 2)}\n`); fs.writeFileSync(reportOut, `${JSON.stringify(result.report, null, 2)}\n`);
-  return {registryOut, reportOut};
+  const registryOut = path.resolve(root, options.registryOut ?? 'data/game-registry/registry.transition.json'); const reportOut = path.resolve(root, options.reportOut ?? 'data/game-registry/migration-report.json');
+  for (const file of [registryOut, reportOut]) fs.mkdirSync(path.dirname(file), {recursive:true});
+  fs.writeFileSync(registryOut, `${JSON.stringify(result.registry, null, 2)}\n`); fs.writeFileSync(reportOut, `${JSON.stringify(result.report, null, 2)}\n`); return {registryOut, reportOut};
 }
