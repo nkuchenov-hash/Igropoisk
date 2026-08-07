@@ -24,6 +24,7 @@ const listJsonRecursive = directory => {
   return files;
 };
 const source = (name, type = 'automated_inference', url = null) => ({name, type, url});
+const DERIVATIVE_KINDS = new Set(['edition', 'remaster']);
 
 function migrationKind(candidate = {}) {
   const rawTitle = candidate.canonicalTitle ?? candidate.title ?? candidate.name ?? candidate.slug ?? '';
@@ -173,6 +174,11 @@ function effectiveEntityKind(entity = {}) {
   const inferred = migrationKind({ title: entity.identity?.canonicalTitle?.value ?? entity.identity?.slug?.value ?? '' });
   return inferred !== 'game' ? inferred : stored;
 }
+function exactSlugTarget(api, candidate) {
+  const slug = String(candidate.slug ?? '').trim();
+  const entity = slug ? api.findBySlug(slug) : null;
+  return entity && entity.workflow?.status !== 'merged_into_another_game' ? entity : null;
+}
 function compatibleIdentity(entity, candidate) {
   const existingYear = entityYear(entity); const incomingYear = candidateYear(candidate);
   if (existingYear && incomingYear && existingYear !== incomingYear) return false;
@@ -180,9 +186,8 @@ function compatibleIdentity(entity, candidate) {
   return existingKind === 'unknown' || incomingKind === 'unknown' || existingKind === incomingKind;
 }
 function safeExactSlugTarget(api, candidate) {
-  const slug = String(candidate.slug ?? '').trim(); if (!slug) return null;
-  const entity = api.findBySlug(slug);
-  return entity && entity.workflow?.status !== 'merged_into_another_game' && compatibleIdentity(entity, candidate) ? entity : null;
+  const entity = exactSlugTarget(api, candidate);
+  return entity && compatibleIdentity(entity, candidate) ? entity : null;
 }
 function externalIdentityTargets(api, candidate) {
   const external = normalizeExternalIds(candidate.externalIds ?? candidate.external_ids ?? candidate); const targets = [];
@@ -194,16 +199,66 @@ function externalIdentityTargets(api, candidate) {
   }
   return [...new Map(targets.map(entity => [entity.id, entity])).values()];
 }
+function looksLikeDerivativeOf(derivative, base, candidate) {
+  const derivativeKind = migrationKind(candidate);
+  if (!DERIVATIVE_KINDS.has(derivativeKind)) return false;
+  const derivativeSlug = String(derivative.identity?.slug?.value ?? candidate.slug ?? '');
+  const baseSlug = String(base.identity?.slug?.value ?? '');
+  if (!derivativeSlug || !baseSlug || derivativeSlug === baseSlug) return false;
+  return derivativeSlug.startsWith(`${baseSlug}-`);
+}
+function unlinkSharedExternalIds(derivative, base, candidate, now) {
+  const incoming = normalizeExternalIds(candidate.externalIds ?? candidate.external_ids ?? candidate);
+  for (const key of ['steamAppId','igdbId','rawgId']) {
+    const value = incoming[key];
+    if (value && base.externalIds?.[key] && String(base.externalIds[key]) === String(value) && String(derivative.externalIds?.[key] ?? '') === String(value)) {
+      derivative.externalIds[key] = null;
+    }
+  }
+  for (const key of ['playstation','xbox','nintendo']) {
+    const baseValues = new Set(base.externalIds?.[key] ?? []);
+    const shared = new Set((incoming[key] ?? []).filter(value => baseValues.has(value)));
+    if (shared.size) derivative.externalIds[key] = (derivative.externalIds?.[key] ?? []).filter(value => !shared.has(value));
+  }
+  derivative.relations ??= {series: [], baseGameId: null, relatedGameIds: []};
+  derivative.relations.baseGameId = base.id;
+  base.relations ??= {series: [], baseGameId: null, relatedGameIds: []};
+  base.relations.relatedGameIds = [...new Set([...(base.relations.relatedGameIds ?? []), derivative.id])];
+  derivative.auditLog?.push({at: now, action: 'shared_external_identity_assigned_to_base_game', actor: 'migration', baseGameId: base.id});
+  base.auditLog?.push({at: now, action: 'derivative_game_linked', actor: 'migration', derivativeGameId: derivative.id});
+}
+function withoutExternalIdsOwnedByOtherGames(api, candidate, target) {
+  const incoming = normalizeExternalIds(candidate.externalIds ?? candidate.external_ids ?? candidate);
+  const clean = {...incoming};
+  for (const key of ['steamAppId','igdbId','rawgId']) {
+    const value = incoming[key]; if (!value) continue;
+    const owner = api.findByExternalId(key, value);
+    if (owner && owner.id !== target.id) clean[key] = null;
+  }
+  for (const key of ['playstation','xbox','nintendo']) {
+    clean[key] = (incoming[key] ?? []).filter(value => {
+      const owner = api.findByExternalId(key, value);
+      return !owner || owner.id === target.id;
+    });
+  }
+  return {...candidate, externalIds: clean};
+}
 function bridgeIdentityIfSafe(api, candidate, now) {
-  const slugTarget = safeExactSlugTarget(api, candidate); if (!slugTarget) return null;
+  const slugTarget = exactSlugTarget(api, candidate); if (!slugTarget) return null;
   const externalTargets = externalIdentityTargets(api, candidate).filter(entity => entity.id !== slugTarget.id);
-  if (!externalTargets.length) return slugTarget;
+  if (!externalTargets.length) return safeExactSlugTarget(api, candidate);
   if (externalTargets.length > 1) throw new Error(`Candidate bridges canonical slug ${candidate.slug} to multiple external entities: ${externalTargets.map(entity => entity.id).join(', ')}`);
   const externalTarget = externalTargets[0];
   const slugYear = entityYear(slugTarget); const externalYear = entityYear(externalTarget);
-  if (slugYear && externalYear && slugYear !== externalYear) throw new Error(`Canonical slug/external-ID year conflict for ${candidate.slug}: ${slugYear} vs ${externalYear}`);
   const slugKind = effectiveEntityKind(slugTarget); const externalKind = effectiveEntityKind(externalTarget);
-  if (slugKind !== 'unknown' && externalKind !== 'unknown' && slugKind !== externalKind) throw new Error(`Canonical slug/external-ID kind conflict for ${candidate.slug}: ${slugKind} vs ${externalKind}`);
+  if ((slugYear && externalYear && slugYear !== externalYear) || (slugKind !== 'unknown' && externalKind !== 'unknown' && slugKind !== externalKind)) {
+    if (looksLikeDerivativeOf(slugTarget, externalTarget, candidate)) {
+      unlinkSharedExternalIds(slugTarget, externalTarget, candidate, now);
+      rebuildIndexes(api.registry);
+      return slugTarget;
+    }
+    throw new Error(`Canonical slug/external-ID conflict for ${candidate.slug}: ${slugTarget.id} (${slugYear || '?'},${slugKind}) vs ${externalTarget.id} (${externalYear || '?'},${externalKind})`);
+  }
   const sourceWorkflow = structuredClone(externalTarget.workflow ?? {});
   const merged = api.mergeGames(externalTarget.id, slugTarget.id, {now, actor:'migration', reason:'canonical_slug_external_id_bridge'});
   if (sourceWorkflow.pageStatus === 'published') merged.workflow.pageStatus = 'published';
@@ -253,8 +308,12 @@ export function migrateRepository(root, options = {}) {
   const api = new GameRegistryApi(registry, {publicBaseUrl: options.publicBaseUrl ?? '/game'}); const candidates = scanCandidates(root);
   const decisions = {created: 0, matched: 0, needs_review: 0}; const sourceCounts = {}; const duplicatePairs = [];
   for (const {origin, candidate} of candidates) {
-    sourceCounts[origin] = (sourceCounts[origin] ?? 0) + 1; bridgeIdentityIfSafe(api, candidate, now);
-    const slugTarget = safeExactSlugTarget(api, candidate); const resolvedCandidate = slugTarget ? { ...candidate, gameId: slugTarget.id } : candidate;
+    sourceCounts[origin] = (sourceCounts[origin] ?? 0) + 1;
+    const bridgeTarget = bridgeIdentityIfSafe(api, candidate, now);
+    const slugTarget = bridgeTarget ?? safeExactSlugTarget(api, candidate);
+    const resolvedCandidate = slugTarget
+      ? { ...withoutExternalIdsOwnedByOtherGames(api, candidate, slugTarget), gameId: slugTarget.id }
+      : candidate;
     const result = api.registerCandidate(resolvedCandidate, {now, actor: 'migration'}); decisions[result.decision] = (decisions[result.decision] ?? 0) + 1;
     if (result.entity) enrichFromRaw(result.entity, candidate, now);
     if (result.decision === 'matched') duplicatePairs.push({gameId: result.entity.id, slug: result.entity.identity.slug.value, reason: result.reasons});
