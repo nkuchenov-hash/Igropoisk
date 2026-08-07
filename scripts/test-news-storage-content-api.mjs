@@ -24,7 +24,7 @@ const item = (id, url, overrides = {}) => ({
 
 const curated = Array.from({ length: 12 }, (_, index) => item(`home-${index}`, `https://example.test/home/${index}`));
 const storageFiles = {
-  'data/news-events.json': [item('event', 'https://example.test/event')],
+  'data/news-events.json': [item('event', 'https://example.test/event', { globalEligible: true })],
   'data/news.json': [item('legacy', 'https://example.test/legacy')],
   'data/publisher-news.json': [item('official', 'https://example.test/official', { type: 'official' })],
   'data/news-home-ru.json': curated
@@ -36,7 +36,7 @@ const manifest = {
   files: Object.fromEntries(Object.keys(storageFiles).map(file => [file, { url: `${storageRoot}${file}` }]))
 };
 const repositoryFiles = {
-  '/Igropoisk/data/news-events.json': [item('fallback-event', 'https://example.test/fallback-event', { image: 'assets/news/1111111111111111.jpg' })],
+  '/Igropoisk/data/news-events.json': [item('fallback-event', 'https://example.test/fallback-event', { image: 'assets/news/1111111111111111.jpg', globalEligible: true })],
   '/Igropoisk/data/news.json': [],
   '/Igropoisk/data/publisher-news.json': [],
   '/Igropoisk/data/news-home-ru.json': Array.from({ length: 12 }, (_, index) => item(
@@ -84,7 +84,8 @@ vm.runInContext(source, context, { filename: 'features/news/content-api/index.js
 
 const api = context.window.IgropoiskNewsContent;
 const primary = await api.getAll({ lang: 'ru' });
-assert.equal(primary.length, 3);
+assert.equal(primary.length, 1, 'The merged event stream must be authoritative over raw storage feeds.');
+assert.equal(primary[0].id, 'event');
 assert.equal(api.health().backend, 'object-storage');
 assert.equal(api.health().version, version);
 assert.ok(primary.every(entry => entry.image.startsWith('https://storage.yandexcloud.net/igropoisk-content/news/media/')));
@@ -102,4 +103,4 @@ assert.equal(api.health().backend, 'repository-fallback');
 assert.match(api.health().fallbackReason, /news manifest: 503/);
 assert.ok(requested.some(url => url.includes('/Igropoisk/data/news-events.json')));
 
-console.log('News Object Storage primary and repository fallback test passed.');
+console.log('News Object Storage editorial event stream and repository fallback test passed.');

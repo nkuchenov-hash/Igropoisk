@@ -33,7 +33,7 @@ const curated = Array.from({ length: 12 }, (_, index) => item(
 
 const payloads = new Map([
   ['/Igropoisk/data/news-events.json', [
-    item('eventa', 'https://example.test/story/a', { mediaSourceCount: 3, trendScore: 500 }),
+    item('eventa', 'https://example.test/story/a', { mediaSourceCount: 3, trendScore: 500, globalEligible: true }),
     item('regional', 'https://example.test/story/regional', {
       titleRu: 'Региональная новость',
       summaryRu: 'Региональное описание',
@@ -41,6 +41,13 @@ const payloads = new Map([
       regions: ['cis'],
       regionalScore: 250,
       image: 'assets/news/1111111111111111.jpg'
+    }),
+    item('quiet', 'https://example.test/story/quiet', {
+      titleRu: 'Малозначимая новость',
+      summaryRu: 'Без общественного сигнала',
+      mediaSourceCount: 0,
+      globalEligible: false,
+      image: 'assets/news/4444444444444444.jpg'
     }),
     item('invalid', 'https://example.test/story/invalid', { titleRu: 'Ошибка', image: 'remote.jpg' })
   ]],
@@ -110,9 +117,11 @@ assert.ok(Object.isFrozen(api));
 assert.ok(Object.isFrozen(api.sources));
 
 const all = await api.getAll({ lang: 'ru' });
-assert.equal(all.length, 3, 'Invalid records and duplicate URLs must be removed.');
+assert.equal(all.length, 2, 'The public feed must use the event stream and exclude quiet or invalid records.');
 assert.equal(all.find(entry => entry.primaryUrl.endsWith('/a')).titleRu, 'Переведённая новость');
-assert.equal(all.find(entry => entry.primaryUrl.endsWith('/official')).type, 'official');
+assert.ok(all.some(entry => entry.primaryUrl.endsWith('/regional')), 'The user region must admit relevant regional events.');
+assert.ok(!all.some(entry => entry.primaryUrl.endsWith('/quiet')), 'Quiet events must stay out of the public feed.');
+assert.ok(!all.some(entry => entry.primaryUrl.endsWith('/official')), 'Raw publisher records must not bypass event selection.');
 assert.ok(Object.isFrozen(all));
 assert.equal(api.health().status, 'ready');
 assert.equal(api.health().sources.length, 3);
@@ -122,13 +131,14 @@ await api.getAll({ lang: 'ru' });
 assert.equal(requested.length, afterFirstLoad, 'Repeated reads must use the API cache.');
 
 const home = await api.getHome({ lang: 'ru' });
-assert.equal(home.length, 12, 'The existing curated home feed must remain authoritative.');
+assert.equal(home.length, 12, 'The curated home feed must keep its fixed size.');
 assert.equal(home[0].titleRu, 'Подборка 0');
+assert.ok(home.some(entry => entry.primaryUrl.endsWith('/regional')), 'Regional relevance must be mixed into the home feed.');
 
 failedPaths.add('/Igropoisk/data/news.json');
 api.invalidate();
 const degraded = await api.getAll({ lang: 'ru', force: true });
-assert.equal(degraded.length, 3, 'One unavailable source must not disable the whole news feed.');
+assert.equal(degraded.length, 2, 'An unavailable legacy source must not alter the authoritative event feed.');
 assert.equal(api.health().status, 'degraded');
 assert.equal(api.health().sources.find(source => source.id === 'legacy-news').status, 'error');
 
@@ -138,4 +148,4 @@ api.invalidate();
 await assert.rejects(() => api.getAll({ lang: 'ru', force: true }), /All news sources are unavailable/);
 assert.equal(api.health().status, 'error');
 
-console.log('News Content API contract test passed.');
+console.log('News Content API editorial-selection contract test passed.');

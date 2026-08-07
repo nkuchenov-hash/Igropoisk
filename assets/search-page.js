@@ -23,7 +23,7 @@ const featured=[
 const featuredBySlug=new Map(featured.map(game=>[game.slug,game]));
 
 let catalog=[...featured];
-let selectedGenres=new Set(['RPG','Экшен']);
+let selectedGenres=new Set();
 let resultView='list';
 
 const markup=`
@@ -45,7 +45,9 @@ const markup=`
     </aside>
     <section class="search-main">
       <header class="search-title-row"><div><h1>Поиск игр</h1><p class="results-count" id="count">Найдено игр: 0</p></div><button class="ig-button filter-toggle" id="filterToggle" type="button">Фильтры</button></header>
-      <label class="search-query"><input id="query" type="search" placeholder="Название игры, жанр или студия"><span aria-hidden="true">⌕</span></label>
+      <label class="search-query"><input class="ig-input ig-input--search" id="query" type="search" list="gameSearchSuggestions" autocomplete="off" placeholder="Начните вводить название игры — варианты появятся сразу"><span aria-hidden="true">⌕</span></label>
+      <datalist id="gameSearchSuggestions"></datalist>
+      <p class="ig-muted">Живой поиск работает по названию и студии. Можно сразу выбрать предложенную игру.</p>
       <div class="search-toolbar"><div class="quick-filters" aria-label="Быстрые фильтры">
         <select id="quickPlatform" aria-label="Платформа"><option value="">Платформа</option><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Nintendo Switch</option></select>
         <select id="quickGenre" aria-label="Жанр"><option value="">Жанр</option><option>RPG</option><option>Экшен</option><option>Стратегия</option><option>Приключения</option><option>Шутер</option><option>Хоррор</option><option>Гонки</option></select>
@@ -67,6 +69,7 @@ const markup=`
 const searchPage=document.querySelector('#search');
 if(!searchPage)return;
 searchPage.innerHTML=markup;
+$$('.f-platform').forEach(input=>{input.checked=false});
 
 function initials(title){return title.split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase()}
 function platformCode(platform){return({PC:'PC',PlayStation:'PS',Xbox:'XB','Nintendo Switch':'NS'}[platform]||platform.slice(0,2).toUpperCase())}
@@ -75,6 +78,7 @@ function getRange(fromSelector,toSelector){let from=Number($(fromSelector).value
 function syncRangePair(rangeFrom,rangeTo,numberFrom,numberTo,labelFrom,labelTo){const[from,to]=getRange(rangeFrom,rangeTo);$(rangeFrom).value=from;$(rangeTo).value=to;if(numberFrom)$(numberFrom).value=from;if(numberTo)$(numberTo).value=to;$(labelFrom).textContent=Number(from).toFixed(rangeFrom.includes('year')?0:1);$(labelTo).textContent=Number(to).toFixed(rangeTo.includes('year')?0:1)}
 function renderGenreChips(){const target=$('#selectedGenres');target.innerHTML=[...selectedGenres].map(genre=>`<button type="button" data-remove-genre="${escapeHtml(genre)}">${escapeHtml(genre)} <span>×</span></button>`).join('')+'<button class="genre-add" type="button" data-open-genre aria-label="Добавить жанр">+</button>'}
 function updateCounts(){['PC','PlayStation','Xbox','Nintendo Switch'].forEach(platform=>{const count=catalog.filter(game=>(game.platforms||[]).includes(platform)).length;const node=$(`[data-platform-count="${platform}"]`);if(node)node.textContent=count})}
+function updateLiveSuggestions(){const target=$('#gameSearchSuggestions');if(!target)return;const query=$('#query').value.trim().toLowerCase();const ranked=[...catalog].filter(game=>!query||game.title.toLowerCase().includes(query)||(game.studio||'').toLowerCase().includes(query)).sort((a,b)=>{if(query){const aPrefix=a.title.toLowerCase().startsWith(query),bPrefix=b.title.toLowerCase().startsWith(query);if(aPrefix!==bPrefix)return Number(bPrefix)-Number(aPrefix)}return(b.pop||b.year||0)-(a.pop||a.year||0)}).slice(0,8);target.innerHTML=ranked.map(game=>`<option value="${escapeHtml(game.title)}" label="${escapeHtml([game.year,game.studio].filter(Boolean).join(' · '))}"></option>`).join('')}
 
 function filteredCatalog(){
   const query=$('#query').value.trim().toLowerCase();
@@ -102,15 +106,16 @@ function resultCard(game,index){
 }
 function renderResults(){syncRangePair('#yearFrom','#yearTo',null,null,'#yearFromLabel','#yearToLabel');syncRangePair('#ratingFrom','#ratingTo','#ratingFromNumber','#ratingToNumber','#ratingFromLabel','#ratingToLabel');syncRangePair('#userRatingFrom','#userRatingTo','#userRatingFromNumber','#userRatingToNumber','#userRatingFromLabel','#userRatingToLabel');const filtered=filteredCatalog();$('#count').textContent=`Найдено игр: ${filtered.length}`;$('#applyCount').textContent=filtered.length;const target=$('#results');target.dataset.view=resultView;target.innerHTML=filtered.length?filtered.map(resultCard).join(''):'<div class="empty">По выбранным условиям игр нет.</div>'}
 function bindRange(rangeFrom,rangeTo,numberFrom,numberTo){[rangeFrom,rangeTo].forEach(selector=>$(selector).addEventListener('input',renderResults));if(numberFrom)$(numberFrom).addEventListener('input',()=>{$(rangeFrom).value=$(numberFrom).value;renderResults()});if(numberTo)$(numberTo).addEventListener('input',()=>{$(rangeTo).value=$(numberTo).value;renderResults()})}
-function resetFilters(){$$('.f-platform').forEach(input=>{input.checked=input.value==='PC'});selectedGenres=new Set(['RPG','Экшен']);$('#genreSelect').value='';$('#yearFrom').value=$('#yearFrom').min;$('#yearTo').value=2026;$('#ratingFrom').value=0;$('#ratingTo').value=10;$('#userRatingFrom').value=0;$('#userRatingTo').value=10;$('#query').value='';['#quickPlatform','#quickGenre','#quickYear','#quickRating','#quickPrice','#quickLanguage'].forEach(selector=>$(selector).value='');$('#sort').value='popularity';renderGenreChips();renderResults()}
+function resetFilters(){$$('.f-platform').forEach(input=>{input.checked=false});selectedGenres=new Set();$('#genreSelect').value='';$('#yearFrom').value=$('#yearFrom').min;$('#yearTo').value=2026;$('#ratingFrom').value=0;$('#ratingTo').value=10;$('#userRatingFrom').value=0;$('#userRatingTo').value=10;$('#query').value='';['#quickPlatform','#quickGenre','#quickYear','#quickRating','#quickPrice','#quickLanguage'].forEach(selector=>$(selector).value='');$('#sort').value='popularity';renderGenreChips();updateLiveSuggestions();renderResults()}
 function bind(){
-  $('#query').addEventListener('input',renderResults);$$('.f-platform').forEach(input=>input.addEventListener('input',renderResults));['#quickPlatform','#quickGenre','#quickYear','#quickRating','#sort'].forEach(selector=>$(selector).addEventListener('change',renderResults));bindRange('#yearFrom','#yearTo');bindRange('#ratingFrom','#ratingTo','#ratingFromNumber','#ratingToNumber');bindRange('#userRatingFrom','#userRatingTo','#userRatingFromNumber','#userRatingToNumber');
+  $('#query').addEventListener('input',()=>{updateLiveSuggestions();renderResults()});$$('.f-platform').forEach(input=>input.addEventListener('input',renderResults));['#quickPlatform','#quickGenre','#quickYear','#quickRating','#sort'].forEach(selector=>$(selector).addEventListener('change',renderResults));bindRange('#yearFrom','#yearTo');bindRange('#ratingFrom','#ratingTo','#ratingFromNumber','#ratingToNumber');bindRange('#userRatingFrom','#userRatingTo','#userRatingFromNumber','#userRatingToNumber');
   $('#genreSelect').addEventListener('change',event=>{if(event.target.value){selectedGenres.add(event.target.value);event.target.value='';renderGenreChips();renderResults()}});
   $('#selectedGenres').addEventListener('click',event=>{const remove=event.target.closest('[data-remove-genre]');if(remove){selectedGenres.delete(remove.dataset.removeGenre);renderGenreChips();renderResults();return}if(event.target.closest('[data-open-genre]'))$('#genreSelect').focus()});
   $('#resetFilters').addEventListener('click',resetFilters);$('#applyFilters').addEventListener('click',()=>{$('#filters').classList.remove('open');$('#results').scrollIntoView({behavior:'smooth',block:'start'})});$('#filterToggle').addEventListener('click',()=>$('#filters').classList.toggle('open'));
   $$('.view-switch button').forEach(button=>button.addEventListener('click',()=>{resultView=button.dataset.view;$$('.view-switch button').forEach(item=>item.classList.toggle('active',item===button));renderResults()}));
   $('#results').addEventListener('click',event=>{const bookmark=event.target.closest('.result-bookmark');if(bookmark){event.preventDefault();event.stopPropagation();const active=bookmark.getAttribute('aria-pressed')==='true';bookmark.setAttribute('aria-pressed',String(!active))}});
+  $$('[data-page="search"]').forEach(trigger=>trigger.addEventListener('click',()=>window.setTimeout(()=>$('#query')?.focus({preventScroll:true}),0)));
 }
-async function loadCatalog(){try{const response=await fetch(`data/catalog-visible.json?v=${Date.now()}`,{cache:'no-store'});if(!response.ok)throw new Error(`Catalog HTTP ${response.status}`);const visible=await response.json();catalog=visible.map(item=>featuredBySlug.get(item.slug)||{...item,genres:[],platforms:[],studio:'',rating:0,userRating:0,votes:0,pop:item.year,desc:''})}catch(error){console.warn('Игропоиск: search catalog unavailable',error);catalog=[...featured]}const years=catalog.map(game=>Number(game.year)).filter(Number.isFinite);const minYear=Math.min(...years,2000);$('#yearFrom').min=minYear;$('#yearFrom').value=minYear;updateCounts();renderResults()}
-renderGenreChips();bind();renderResults();loadCatalog();
+async function loadCatalog(){try{const response=await fetch(`data/catalog-visible.json?v=${Date.now()}`,{cache:'no-store'});if(!response.ok)throw new Error(`Catalog HTTP ${response.status}`);const visible=await response.json();catalog=visible.map(item=>featuredBySlug.get(item.slug)||{...item,genres:[],platforms:[],studio:'',rating:0,userRating:0,votes:0,pop:item.year,desc:''})}catch(error){console.warn('Игропоиск: search catalog unavailable',error);catalog=[...featured]}const years=catalog.map(game=>Number(game.year)).filter(Number.isFinite);const minYear=Math.min(...years,2000);$('#yearFrom').min=minYear;$('#yearFrom').value=minYear;updateCounts();updateLiveSuggestions();renderResults()}
+renderGenreChips();bind();updateLiveSuggestions();renderResults();loadCatalog();
 })();
