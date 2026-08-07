@@ -26,6 +26,7 @@
     const lang = api.language();
     const copy = api.labels(lang);
     let items = [];
+    let homeItems = [];
     let activeGame = model.filterFromSearch(window.location.search);
     let activeType = new URLSearchParams(window.location.search).get('type') || '';
     let activeStory = new URLSearchParams(window.location.search).get('story') || '';
@@ -72,7 +73,7 @@
     }
 
     function renderStory() {
-      const item = items.find(candidate => String(candidate.id || '') === activeStory);
+      const item = [...items, ...homeItems].find(candidate => String(candidate.id || '') === activeStory);
       if (!item) {
         activeStory = '';
         updateUrl({ story: '' });
@@ -172,6 +173,7 @@
       api.setState(feed, copy.loading);
       try {
         items = await api.loadAll(lang);
+        homeItems = activeStory ? await api.loadHome(lang).catch(() => []) : [];
         buildToolbar();
         renderFeed();
         root.dataset.newsStatus = items.length ? 'ready' : 'empty';
