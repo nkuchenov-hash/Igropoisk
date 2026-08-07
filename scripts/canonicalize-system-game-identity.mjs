@@ -6,6 +6,7 @@ import { bindPopularSnapshot, projectPublicCatalog } from './lib/system-game-reg
 
 const root = process.cwd();
 const write = process.argv.includes('--write');
+const popularOnly = process.argv.includes('--popular-only');
 const readJson = relative => JSON.parse(fs.readFileSync(path.join(root, relative), 'utf8'));
 const writeJson = (relative, value) => fs.writeFileSync(path.join(root, relative), `${JSON.stringify(value, null, 2)}\n`);
 const same = (left, right) => JSON.stringify(left) === JSON.stringify(right);
@@ -15,15 +16,17 @@ const registry = migration.registry;
 const changes = [];
 const blocking = [];
 
-const catalogPath = 'data/catalog-visible.json';
-const catalog = readJson(catalogPath);
-const projectedCatalog = projectPublicCatalog(catalog, registry);
-for (const issue of projectedCatalog.issues) {
-  if (['unresolved'].includes(issue.status)) blocking.push({file: catalogPath, ...issue});
-}
-if (!same(catalog, projectedCatalog.records)) {
-  changes.push({file: catalogPath, before: catalog.length, after: projectedCatalog.records.length});
-  if (write) writeJson(catalogPath, projectedCatalog.records);
+if (!popularOnly) {
+  const catalogPath = 'data/catalog-visible.json';
+  const catalog = readJson(catalogPath);
+  const projectedCatalog = projectPublicCatalog(catalog, registry);
+  for (const issue of projectedCatalog.issues) {
+    if (issue.status === 'unresolved') blocking.push({file: catalogPath, ...issue});
+  }
+  if (!same(catalog, projectedCatalog.records)) {
+    changes.push({file: catalogPath, before: catalog.length, after: projectedCatalog.records.length});
+    if (write) writeJson(catalogPath, projectedCatalog.records);
+  }
 }
 
 for (const relative of ['data/popular/current.json', 'data/popular/published.json']) {
@@ -42,6 +45,7 @@ for (const relative of ['data/popular/current.json', 'data/popular/published.jso
 const report = {
   schema_version: 1,
   mode: write ? 'write' : 'check',
+  scope: popularOnly ? 'popular' : 'system',
   canonical_games: migration.report.canonicalGames,
   embedded_content: migration.report.embeddedContent,
   changes,
