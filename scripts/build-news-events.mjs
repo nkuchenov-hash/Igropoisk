@@ -18,6 +18,30 @@ function similarity(a, b) {
   let common = 0; for (const token of left) if (right.has(token)) common += 1;
   return common / Math.min(left.size, right.size);
 }
+function cleanSummary(value = '') {
+  let text = String(value)
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\[\s*(?:…|\.\.\.)\s*\]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  text = text
+    .replace(/\s+The post\s+[\s\S]*?\s+appeared first on\s+[\s\S]*$/i, '')
+    .replace(/\s+(?:Сообщение|Публикация)\s+[\s\S]*?\s+впервые\s+появил(?:ось|ась)\s+на\s+[\s\S]*$/i, '')
+    .trim();
+  if (text.length <= 520) return text;
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
+  let result = '';
+  for (const sentence of sentences.slice(0, 3)) {
+    if ((result + sentence).trim().length > 520) break;
+    result = `${result} ${sentence}`.trim();
+  }
+  if (result.length >= 120) return result;
+  return `${text.slice(0, 517).trimEnd()}…`;
+}
 async function readItems(path) { try { const payload = JSON.parse(await fs.readFile(path, 'utf8')); return Array.isArray(payload) ? payload : payload.items || []; } catch { return []; } }
 function sourceRef(item) {
   return {
@@ -84,15 +108,24 @@ const output = events.map(event => {
   const globalScore = Math.max(0, ...event.items.map(item => Number(item.globalScore || 0)));
   const regionalScore = Math.max(0, ...event.items.map(item => Number(item.regionalScore || 0)));
   const regions = [...new Set(event.items.flatMap(item => Array.isArray(item.regions) ? item.regions : []))];
-  const globalEligible = officialItems.length > 0 || event.items.some(item => item.globalEligible) || mediaSourceCount >= 3 || discussionMentions >= 3 || trendScore >= 450;
-  const regionalEligible = regions.length > 0 && event.items.some(item => item.regionalEligible);
-  const importance = trendScore >= 700 || mediaSourceCount >= 6 || discussionMentions >= 7 ? 'critical' : globalEligible ? 'major' : 'normal';
+  const mediaSignal = mediaSourceCount >= 2 || discussionMentions >= 3 || trendScore >= 450 || globalScore >= 450;
+  const confirmedOfficialSignal = officialItems.length > 0 && (mediaSourceCount >= 1 || discussionMentions >= 2 || trendScore >= 300 || globalScore >= 300);
+  const rankedGlobalSignal = event.items.some(item => !item.official && item.globalEligible === true);
+  const globalEligible = mediaSignal || confirmedOfficialSignal || rankedGlobalSignal;
+  const regionalEligible = regions.length > 0 && event.items.some(item => item.regionalEligible) && regionalScore > 0;
+  const publicEligible = globalEligible || regionalEligible;
+  const importance = trendScore >= 700 || mediaSourceCount >= 6 || discussionMentions >= 7 || globalScore >= 700
+    ? 'critical'
+    : globalEligible || regionalScore >= 250
+      ? 'major'
+      : 'normal';
+  const editorialScore = globalScore + trendScore + mediaSourceCount * 120 + discussionMentions * 80 + regionalScore + (officialItems.length ? 80 : 0);
   const type = officialItems.length && mediaItems.length ? 'confirmed' : officialItems.length ? 'official' : 'ranked';
   const id = createHash('sha1').update(event.items.map(item => canonicalSourceUrl(item.url)).sort().join('|')).digest('hex').slice(0, 16);
   return {
-    id, type, importance, official: officialItems.length > 0,
+    id, type, importance, official: officialItems.length > 0, publicEligible, editorialScore,
     titleRu: representative.titleRu || representative.title || '', titleEn: representative.titleEn || representative.title || '',
-    summaryRu: representative.summaryRu || representative.summary || '', summaryEn: representative.summaryEn || representative.summary || '',
+    summaryRu: cleanSummary(representative.summaryRu || representative.summary || ''), summaryEn: cleanSummary(representative.summaryEn || representative.summary || ''),
     publishedAt: event.publishedAt,
     publishedDay: newestItem?.publishedDay,
     publishedLocalTime: newestItem?.publishedLocalTime,
@@ -104,15 +137,18 @@ const output = events.map(event => {
     primarySource: (officialRepresentative || representative).source,
     trendScore, globalScore, regionalScore, globalEligible, regionalEligible, regions,
     mediaSourceCount, discussionMentions, sources,
-    homeUntil: globalEligible || regionalEligible ? new Date(new Date(event.publishedAt).getTime() + (importance === 'critical' ? 168 : globalEligible ? 72 : 48) * 3600e3).toISOString() : null
+    homeUntil: publicEligible ? new Date(new Date(event.publishedAt).getTime() + (importance === 'critical' ? 168 : globalEligible ? 72 : 48) * 3600e3).toISOString() : null
   };
 }).sort((a, b) => {
   const importance = { critical: 3, major: 2, normal: 1 };
-  return importance[b.importance] - importance[a.importance] || b.globalScore - a.globalScore || b.trendScore - a.trendScore || new Date(b.publishedAt) - new Date(a.publishedAt);
+  return Number(b.publicEligible) - Number(a.publicEligible)
+    || importance[b.importance] - importance[a.importance]
+    || b.editorialScore - a.editorialScore
+    || new Date(b.publishedAt) - new Date(a.publishedAt);
 });
 
 const enriched = await enrichNewsItems(output);
 const generatedAt = new Date().toISOString();
-await fs.writeFile(outputPath, `${JSON.stringify({ generatedAt, model: 'event-first-global-plus-region', mergeWindowHours, globalMinimumIndependentSources: 3, items: enriched }, null, 2)}\n`);
+await fs.writeFile(outputPath, `${JSON.stringify({ generatedAt, model: 'event-first-editorial-selection-plus-region', mergeWindowHours, globalMinimumIndependentSources: 2, items: enriched }, null, 2)}\n`);
 await fs.writeFile(reviewPath, `${JSON.stringify(buildGameReviewQueue(enriched, { generatedAt }), null, 2)}\n`);
-console.log(`[events] built ${enriched.length} globally and regionally classified events from ${all.length} articles; ${enriched.filter(item => item.gameReviewStatus === 'needs-review').length} require game review`);
+console.log(`[events] built ${enriched.length} events; ${enriched.filter(item => item.publicEligible).length} passed public editorial selection; ${enriched.filter(item => item.gameReviewStatus === 'needs-review').length} require game review`);

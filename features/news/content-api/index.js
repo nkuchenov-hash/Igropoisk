@@ -149,16 +149,21 @@
   }
 
   function isGlobal(item) {
-    if (isOfficial(item)) return true;
     if (typeof item?.globalEligible === 'boolean') return item.globalEligible;
-    return Number(item?.mediaSourceCount || 0) >= 3 || Number(item?.discussionMentions || 0) >= 3 || Number(item?.trendScore || 0) >= 450;
+    const mediaSources = Number(item?.mediaSourceCount || 0);
+    const discussions = Number(item?.discussionMentions || 0);
+    const trend = Number(item?.trendScore || 0);
+    const global = Number(item?.globalScore || 0);
+    if (isOfficial(item)) return mediaSources >= 1 || discussions >= 2 || trend >= 300 || global >= 300;
+    return mediaSources >= 2 || discussions >= 3 || trend >= 450 || global >= 450;
   }
 
   function score(item, region = userRegion()) {
     const trusted = (item?.sources || []).some(source => trustedMedia.has(source.name)) || trustedMedia.has(sourceName(item));
-    return Number(item?.globalScore || item?.trendScore || 0)
+    return Number(item?.editorialScore || 0)
+      + Number(item?.globalScore || item?.trendScore || 0)
       + Number(item?.mediaSourceCount || 0) * 100
-      + (isOfficial(item) ? 180 : 0)
+      + (isOfficial(item) ? 80 : 0)
       + (trusted ? 120 : 0)
       + (matchesRegion(item, region) ? Number(item?.regionalScore || 180) : 0)
       + Math.max(0, 168 - (Date.now() - new Date(item?.publishedAt).getTime()) / 36e5);
@@ -258,6 +263,11 @@
     });
   }
 
+  function publicEventItems(items, region = userRegion()) {
+    return items.filter(item => isGlobal(item) || matchesRegion(item, region))
+      .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  }
+
   async function loadAllFrom(backend, lang, { requireComplete = false, fallbackReason = '' } = {}) {
     const results = await Promise.allSettled(sourceDefinitions.map(async source => {
       const payload = await loadJson(backend, source.path);
@@ -270,11 +280,14 @@
     }
     setHealth(results, backend, fallbackReason);
     if (results.every(result => result.status === 'rejected')) throw new Error('All news sources are unavailable.');
-    return deduplicate(results.flatMap(result => result.status === 'fulfilled' ? result.value : []));
+    const eventItems = results[0]?.status === 'fulfilled' ? results[0].value : [];
+    if (eventItems.length) return Object.freeze(publicEventItems(deduplicate(eventItems)));
+    const fallback = deduplicate(results.slice(1).flatMap(result => result.status === 'fulfilled' ? result.value : []));
+    return Object.freeze(publicEventItems(fallback));
   }
 
   async function getAll({ lang = language(), force = false } = {}) {
-    const cacheKey = `all:${lang}`;
+    const cacheKey = `all:${lang}:${userRegion()}`;
     if (!force && cache.has(cacheKey)) return cache.get(cacheKey);
     const pending = (async () => {
       try {
@@ -301,18 +314,34 @@
       .slice(0, limit);
   }
 
+  function mixRegional(curated, all, region, globalLimit, regionalLimit) {
+    if (!region || regionalLimit <= 0) return Object.freeze(curated.slice(0, globalLimit));
+    const curatedUrls = new Set(curated.map(item => item.primaryUrl));
+    const regional = all.filter(item => matchesRegion(item, region) && !curatedUrls.has(item.primaryUrl))
+      .sort((a, b) => score(b, region) - score(a, region) || new Date(b.publishedAt) - new Date(a.publishedAt))
+      .slice(0, regionalLimit);
+    if (!regional.length) return Object.freeze(curated.slice(0, globalLimit));
+    return Object.freeze([...curated.slice(0, Math.max(0, globalLimit - regional.length)), ...regional]);
+  }
+
   async function getHome({ lang = language(), region = userRegion(), globalLimit = 12, regionalLimit = 3, force = false } = {}) {
     const curatedPath = curatedFeeds[lang];
     if (curatedPath) {
       try {
         const backend = await objectStorageBackend({ force });
         const curated = await curatedFrom(backend, curatedPath, lang, globalLimit);
-        if (curated.length === globalLimit) return Object.freeze(curated);
+        if (curated.length === globalLimit) {
+          const all = region ? await getAll({ lang, force }) : [];
+          return mixRegional(curated, all, region, globalLimit, regionalLimit);
+        }
       } catch (storageError) {
         console.warn('Object Storage home news feed unavailable; using repository fallback.', storageError);
         try {
           const curated = await curatedFrom(repositoryBackend(), curatedPath, lang, globalLimit);
-          if (curated.length === globalLimit) return Object.freeze(curated);
+          if (curated.length === globalLimit) {
+            const all = region ? await getAll({ lang, force }) : [];
+            return mixRegional(curated, all, region, globalLimit, regionalLimit);
+          }
         } catch (repositoryError) {
           console.warn('Repository home news fallback unavailable.', repositoryError);
         }
@@ -325,7 +354,7 @@
     const regionalItems = all.filter(item => matchesRegion(item, region) && !globalUrls.has(item.primaryUrl))
       .sort((a, b) => score(b, region) - score(a, region) || new Date(b.publishedAt) - new Date(a.publishedAt))
       .slice(0, regionalLimit);
-    return Object.freeze([...globalItems.slice(0, globalLimit), ...regionalItems]);
+    return Object.freeze([...globalItems.slice(0, Math.max(0, globalLimit - regionalItems.length)), ...regionalItems]);
   }
 
   function invalidate() {
