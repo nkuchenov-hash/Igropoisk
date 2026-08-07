@@ -1,0 +1,46 @@
+html{scrollbar-gutter:stable}
+
+.release-intro__stats{flex-basis:420px}
+.release-intro__stats div{min-width:0}
+.release-intro__stats span{font-size:16px;line-height:1.25;letter-spacing:0;text-transform:none;overflow-wrap:anywhere;text-wrap:balance}
+
+.release-breadcrumb,
+.release-kicker,
+.release-view-tabs button,
+.release-quick-filters label>span,
+.release-quick-filters select,
+.release-period-nav .ig-button,
+.release-result-count,
+.release-rail-head a,
+.release-change strong,
+.release-change span,
+.release-rail-note strong,
+.release-rail-note p,
+.release-list-item p,
+.release-feed-card p,
+.release-empty,
+.release-filter-sheet__panel,
+.release-modal__panel,
+.release-check span,
+.release-filter-sheet__panel footer button,
+.release-detail-copy>p,
+.release-detail-copy li,
+.release-detail-platforms,
+.release-detail-label,
+.release-detail-source-list a{font-size:16px}
+
+.release-upcoming-item h3,
+.release-approximate h3,
+.release-approximate-chip,
+.release-list-date span{font-size:16px}
+
+.release-list-date small,
+.release-upcoming-item span{font-size:14px}
+
+@media(max-width:760px){
+  .release-intro__stats{width:100%;flex-basis:auto;grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+@media(max-width:520px){
+  .release-intro__stats{grid-template-columns:1fr}
+}
