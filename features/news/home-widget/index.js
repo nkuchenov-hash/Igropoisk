@@ -14,6 +14,17 @@
   let startX = 0;
   let startScroll = 0;
 
+  function ensureArchiveLink() {
+    const head = root.querySelector('.section-head');
+    if (!head || head.querySelector('[data-news-all-link]')) return;
+    const link = document.createElement('a');
+    link.className = 'ig-button ig-news__all-link';
+    link.dataset.newsAllLink = 'true';
+    link.href = api.storyUrl({ id: '' }).replace(/([?&])story=(?:&|$)/, '$1').replace(/[?&]$/, '');
+    link.textContent = copy.allNews;
+    head.appendChild(link);
+  }
+
   function bindControls() {
     if (!controls || controls.dataset.newsBound === 'true') return;
     controls.dataset.newsBound = 'true';
@@ -80,6 +91,7 @@
     }
   }
 
+  ensureArchiveLink();
   bindControls();
   bindMouseDrag();
   render();
