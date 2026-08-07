@@ -156,6 +156,8 @@ async function merge() {
     items
   };
   await fs.writeFile(eventsPath, `${JSON.stringify(payload, null, 2)}\n`);
+  await fs.rm(snapshotPath, { force: true });
+  await fs.rm(backupRoot, { recursive: true, force: true });
   console.log(`[news/history] ${current.length} current events; ${historical.length} historical retained; ${publicCount} public across archive`);
 }
 
