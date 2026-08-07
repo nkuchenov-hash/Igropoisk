@@ -33,9 +33,24 @@ test('remake, remaster and original are not silently merged', () => {
   assert.equal(compareIdentity(remaster,{title:'Resident Evil 2',kind:'game'}).decision,'ambiguous');
 });
 
-test('DLC is not merged with its base game', () => {
+test('DLC is not merged with its base game by generic identity matching', () => {
   const base=createGameEntity({title:'Elden Ring',kind:'game',source:official});
   assert.notEqual(compareIdentity(base,{title:'Elden Ring: Shadow of the Erdtree',kind:'dlc'}).decision,'match');
+});
+
+test('edition, remaster, DLC and expansion cannot publish as standalone games by default', () => {
+  for (const kind of ['edition','remaster','dlc','expansion']) {
+    const entity=createGameEntity({title:`Embedded ${kind}`,kind,source:official,releases:[{date:'2026-01-01'}],media:{cover:'cover.jpg'}});
+    entity.fields.description=fieldValue('Description',official,{confidence:1});
+    entity.workflow.status='published';
+    entity.workflow.pageStatus='published';
+    const gate=validateForPublication(entity);
+    assert.equal(gate.passed,false,`${kind} must not publish as a separate game`);
+    assert.ok(gate.errors.includes('embedded_content_requires_base_game'));
+  }
+  const remake=createGameEntity({title:'Real Remake',kind:'remake',source:official,releases:[{date:'2026-01-01'}],media:{cover:'cover.jpg'}});
+  remake.fields.description=fieldValue('Description',official,{confidence:1});
+  assert.equal(validateForPublication(remake).errors.includes('embedded_content_requires_base_game'),false,'A remake may remain a standalone canonical game');
 });
 
 test('manual field lock wins over automated enrichment', () => {
@@ -71,7 +86,7 @@ test('publication gate blocks incomplete pages', () => {
 });
 
 test('publication gate accepts confirmed complete data', () => {
-  const entity=createGameEntity({title:'Complete',source:official,releases:[{date:'2026-01-01',platform:'PC'}],media:{cover:'cover.jpg'}});
+  const entity=createGameEntity({title:'Ready Game',source:official,releases:[{date:'2026-01-01',platform:'PC'}],media:{cover:'cover.jpg'}});
   entity.fields.description=fieldValue('Description',official,{confidence:1});
   assert.equal(validateForPublication(entity).passed,true);
 });
@@ -99,7 +114,6 @@ test('manual merge can be undone', () => {
   api.undoMerge(source.id,{actor:'editor'});
   assert.equal(source.workflow.status,'needs_review');
 });
-
 
 test('professional score aggregation normalizes scales and excludes user or sponsored scores', () => {
   const result=aggregateProfessionalScores([

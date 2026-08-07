@@ -7,6 +7,7 @@ on:
       - feat/editorial-release-calendar
     paths:
       - "scripts/lib/release-calendar-policy.mjs"
+      - "scripts/lib/release-game-registry-adapter.mjs"
       - "scripts/materialize-release-calendar.mjs"
       - "scripts/validate-release-calendar.mjs"
       - "scripts/test-release-calendar-policy.mjs"
@@ -21,6 +22,7 @@ on:
     paths:
       - "scripts/**release-calendar**"
       - "scripts/lib/release-calendar-policy.mjs"
+      - "scripts/lib/release-game-registry-adapter.mjs"
       - "config/release-calendar.json"
       - "config/release-official-claims.json"
       - "data/release-candidates/**"
@@ -76,11 +78,14 @@ jobs:
           const fs = require('fs');
           const report = JSON.parse(fs.readFileSync('data/releases/materialization-report.json', 'utf8'));
           const s = report.statistics || {};
+          const g = report.game_registry_linkage || {};
           console.log('## Release calendar materialization');
           console.log(`- Raw candidates: **${s.raw_candidates || 0}**`);
           console.log(`- Published: **${s.published || 0}**`);
           console.log(`- Review: **${s.review || 0}**`);
           console.log(`- Rejected: **${s.rejected || 0}**`);
+          console.log(`- Canonical Game Registry matches: **${g.matched || 0}**`);
+          console.log(`- Registry review/unresolved: **${(g.needs_review || 0) + (g.unresolved || 0)}**`);
           console.log(`- Maximum exact releases in one day: **${s.max_exact_releases_in_one_day || 0}**`);
           for (const day of s.dense_days || []) console.log(`  - ${day.date}: ${day.count}`);
           NODE

@@ -33,6 +33,10 @@ on:
       - 'scripts/filter-popular.mjs'
       - 'scripts/resolve-popular-covers.mjs'
       - 'scripts/validate-home-feeds.mjs'
+      - 'scripts/canonicalize-system-game-identity.mjs'
+      - 'scripts/lib/system-game-registry-adapter.mjs'
+      - 'scripts/lib/game-registry.mjs'
+      - 'scripts/lib/game-registry-migration.mjs'
       - '.github/workflows/parser-scheduler.yml'
 
 permissions:
@@ -72,6 +76,8 @@ jobs:
           node --check scripts/filter-popular.mjs
           node --check scripts/resolve-popular-covers.mjs
           node --check scripts/validate-home-feeds.mjs
+          node --check scripts/canonicalize-system-game-identity.mjs
+          node --check scripts/lib/system-game-registry-adapter.mjs
           node --check assets/popular-home.js
           node --check assets/home-releases/index.js
           node scripts/test-gta6-popular-rules.mjs
@@ -95,6 +101,11 @@ jobs:
         if: always()
         run: node scripts/curate-home-feeds.mjs
 
+      - name: Bind Popular snapshots to canonical Game Registry ids
+        id: identity
+        if: always() && steps.curation.outcome == 'success'
+        run: node scripts/canonicalize-system-game-identity.mjs --write --popular-only
+
       - name: Preserve editorial audit for inspection
         if: always()
         uses: actions/upload-artifact@v4
@@ -103,6 +114,7 @@ jobs:
           path: |
             data/home-feeds-quality.json
             data/popular/current.json
+            data/popular/published.json
             data/parser-runs/popular.json
             data/releases/current.json
             data/parser-runs/releases.json
@@ -112,13 +124,13 @@ jobs:
 
       - name: Validate publishable home feeds
         id: validation
-        if: always()
+        if: always() && steps.identity.outcome == 'success'
         continue-on-error: true
         run: node scripts/validate-home-feeds.mjs --fresh-hours 18
 
       - name: Commit validated parser outputs to staging
         id: publication
-        if: always() && steps.curation.outcome == 'success' && steps.validation.outcome == 'success'
+        if: always() && steps.curation.outcome == 'success' && steps.identity.outcome == 'success' && steps.validation.outcome == 'success'
         run: |
           git config user.name "igropoisk-parser[bot]"
           git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
@@ -170,7 +182,7 @@ jobs:
         run: echo "One or more sources/parsers degraded, but valid staging snapshots remain publishable."
 
       - name: Report invalid staging snapshot
-        if: steps.curation.outcome == 'failure' || steps.validation.outcome == 'failure'
+        if: steps.curation.outcome == 'failure' || steps.identity.outcome == 'failure' || steps.validation.outcome == 'failure'
         run: |
           echo "Home-feed output is structurally invalid and was not written to staging."
           exit 1

@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { loadCanonicalNewsCatalog } from './news-game-registry-adapter.mjs';
 
 const TRACKING_QUERY = /^(utm_|fbclid$|gclid$|yclid$|ref$|source$)/i;
 const DAY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -64,10 +65,6 @@ async function readJson(file, fallback) {
   }
 }
 
-function gameRule(rules, slug) {
-  return rules?.games?.[slug] || {};
-}
-
 function normalizeExternalIds(value = {}) {
   return Object.fromEntries(Object.entries(value || {})
     .map(([provider, id]) => [String(provider).toLowerCase(), String(id).trim()])
@@ -96,32 +93,7 @@ export function publicationFieldsInTimeZone(value, { timeZone = 'Europe/Moscow',
 }
 
 export async function loadGameCatalog({ root = process.cwd() } = {}) {
-  const catalogPath = path.join(root, 'data/catalog-visible.json');
-  const aliasesPath = path.join(root, 'data/news-game-aliases.json');
-  const [catalogPayload, rules] = await Promise.all([
-    readJson(catalogPath, []),
-    readJson(aliasesPath, { schemaVersion: 1, games: {}, series: {} })
-  ]);
-  const catalog = Array.isArray(catalogPayload) ? catalogPayload : (catalogPayload.items || []);
-  const games = [];
-  for (const item of catalog) {
-    const slug = String(item?.slug || '').trim();
-    const title = String(item?.title || '').trim();
-    if (!slug || !title) continue;
-    const rule = gameRule(rules, slug);
-    const pagePath = path.join(root, 'game', slug, 'index.html');
-    const pageExists = await fs.access(pagePath).then(() => true).catch(() => false);
-    games.push(Object.freeze({
-      slug,
-      title,
-      pageExists,
-      pageUrl: pageExists ? `game/${slug}/` : '',
-      aliases: Object.freeze([...new Set([title, ...(rule.aliases || [])].map(String).filter(Boolean))]),
-      abbreviations: Object.freeze([...new Set((rule.abbreviations || []).map(String).filter(Boolean))]),
-      externalIds: Object.freeze(normalizeExternalIds({ ...(item.externalIds || {}), ...(rule.externalIds || {}) }))
-    }));
-  }
-  return Object.freeze({ games: Object.freeze(games), rules: Object.freeze(rules) });
+  return loadCanonicalNewsCatalog({ root });
 }
 
 function createIndexes(catalog) {
@@ -170,6 +142,7 @@ function itemOverride(item, overrides) {
 
 function publicGame(game, { manual = false, matchedBy = 'automatic' } = {}) {
   return Object.freeze({
+    gameId: game.gameId,
     slug: game.slug,
     title: game.title,
     pageExists: game.pageExists,
@@ -177,6 +150,15 @@ function publicGame(game, { manual = false, matchedBy = 'automatic' } = {}) {
     manual,
     matchedBy
   });
+}
+
+function reviewCandidate(name, reason, games = []) {
+  return {
+    name,
+    reason,
+    possibleGameIds: [...new Set(games.map(game => game.gameId).filter(Boolean))],
+    possibleGameSlugs: [...new Set(games.map(game => game.slug).filter(Boolean))]
+  };
 }
 
 export function resolveNewsGames(item, catalog, overrides = { items: {} }) {
@@ -189,27 +171,27 @@ export function resolveNewsGames(item, catalog, overrides = { items: {} }) {
   if (manual) {
     for (const slug of manual.games || []) {
       const game = indexes.bySlug.get(String(slug));
-      if (game) resolved.set(game.slug, publicGame(game, { manual: true, matchedBy: 'manual' }));
-      else candidates.push({ name: String(slug), reason: 'manual-game-not-found', possibleGameSlugs: [] });
+      if (game) resolved.set(game.gameId, publicGame(game, { manual: true, matchedBy: 'manual' }));
+      else candidates.push(reviewCandidate(String(slug), 'manual-game-not-found'));
     }
     if (manual.status === 'no-game') reasons.add('manual-no-game');
   } else {
     const externalIds = normalizeExternalIds(item?.externalGameIds || item?.gameIds || {});
     Object.entries(externalIds).forEach(([provider, id]) => {
       const game = indexes.external.get(`${provider}:${id}`);
-      if (game) resolved.set(game.slug, publicGame(game, { matchedBy: `external:${provider}` }));
+      if (game) resolved.set(game.gameId, publicGame(game, { matchedBy: `external:${provider}` }));
     });
 
     for (const name of explicitNames(item)) {
       const matches = indexes.alias.get(normalizeName(name)) || [];
-      const slugs = [...new Set(matches.map(match => match.game.slug))];
-      if (slugs.length === 1) {
-        const game = indexes.bySlug.get(slugs[0]);
-        resolved.set(game.slug, publicGame(game, { matchedBy: 'explicit-name' }));
-      } else if (slugs.length > 1) {
-        candidates.push({ name, reason: 'ambiguous-explicit-name', possibleGameSlugs: slugs });
+      const games = [...new Map(matches.map(match => [match.game.gameId, match.game])).values()];
+      if (games.length === 1) {
+        const game = games[0];
+        resolved.set(game.gameId, publicGame(game, { matchedBy: 'explicit-name' }));
+      } else if (games.length > 1) {
+        candidates.push(reviewCandidate(name, 'ambiguous-explicit-name', games));
       } else {
-        candidates.push({ name, reason: 'unknown-explicit-game', possibleGameSlugs: [] });
+        candidates.push(reviewCandidate(name, 'unknown-explicit-game'));
       }
     }
 
@@ -222,12 +204,12 @@ export function resolveNewsGames(item, catalog, overrides = { items: {} }) {
     for (const { phrase, matches, abbreviation } of matchedPhrases) {
       if (acceptedPhrases.some(longer => exactTextContains(longer, phrase))) continue;
       acceptedPhrases.push(phrase);
-      const slugs = [...new Set(matches.map(match => match.game.slug))];
-      if (slugs.length === 1) {
-        const game = indexes.bySlug.get(slugs[0]);
-        resolved.set(game.slug, publicGame(game, { matchedBy: abbreviation ? 'abbreviation' : 'official-or-alias' }));
+      const games = [...new Map(matches.map(match => [match.game.gameId, match.game])).values()];
+      if (games.length === 1) {
+        const game = games[0];
+        resolved.set(game.gameId, publicGame(game, { matchedBy: abbreviation ? 'abbreviation' : 'official-or-alias' }));
       } else {
-        candidates.push({ name: matches[0]?.source || phrase, reason: 'ambiguous-alias', possibleGameSlugs: slugs });
+        candidates.push(reviewCandidate(matches[0]?.source || phrase, 'ambiguous-alias', games));
       }
     }
 
@@ -235,12 +217,12 @@ export function resolveNewsGames(item, catalog, overrides = { items: {} }) {
       const normalizedSeries = normalizeName(seriesName);
       if (!normalizedSeries || !exactTextContains(body, normalizedSeries)) continue;
       if ([...resolved.values()].some(game => exactTextContains(normalizeName(game.title), normalizedSeries))) continue;
-      const possible = [...new Set((seriesSlugs || []).map(String).filter(slug => indexes.bySlug.has(slug)))];
-      if (possible.length === 1) {
-        const game = indexes.bySlug.get(possible[0]);
-        resolved.set(game.slug, publicGame(game, { matchedBy: 'series' }));
-      } else if (possible.length > 1) {
-        candidates.push({ name: seriesName, reason: 'ambiguous-series', possibleGameSlugs: possible });
+      const games = [...new Map((seriesSlugs || []).map(String).map(slug => indexes.bySlug.get(slug)).filter(Boolean).map(game => [game.gameId, game])).values()];
+      if (games.length === 1) {
+        const game = games[0];
+        resolved.set(game.gameId, publicGame(game, { matchedBy: 'series' }));
+      } else if (games.length > 1) {
+        candidates.push(reviewCandidate(seriesName, 'ambiguous-series', games));
       }
     }
   }
@@ -258,6 +240,7 @@ export function resolveNewsGames(item, catalog, overrides = { items: {} }) {
 
   return Object.freeze({
     games: Object.freeze(games),
+    gameIds: Object.freeze(games.map(game => game.gameId)),
     gameCandidates: Object.freeze(candidates.map(candidate => Object.freeze(candidate))),
     gameReviewStatus: status,
     gameReviewReasons: Object.freeze([...reasons])
@@ -314,6 +297,7 @@ export function buildGameReviewQueue(items = [], { generatedAt = new Date().toIS
       titleEn: item.titleEn || item.title || '',
       publishedAt: item.publishedAt,
       games: item.games || [],
+      gameIds: item.gameIds || [],
       candidates: item.gameCandidates || [],
       reasons: item.gameReviewReasons || []
     }));
