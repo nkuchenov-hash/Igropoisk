@@ -86,7 +86,7 @@ test('publication gate blocks incomplete pages', () => {
 });
 
 test('publication gate accepts confirmed complete data', () => {
-  const entity=createGameEntity({title:'Complete',source:official,releases:[{date:'2026-01-01',platform:'PC'}],media:{cover:'cover.jpg'}});
+  const entity=createGameEntity({title:'Ready Game',source:official,releases:[{date:'2026-01-01',platform:'PC'}],media:{cover:'cover.jpg'}});
   entity.fields.description=fieldValue('Description',official,{confidence:1});
   assert.equal(validateForPublication(entity).passed,true);
 });
