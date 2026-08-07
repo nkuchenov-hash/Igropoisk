@@ -51,6 +51,8 @@ jobs:
           node --check scripts/enrich-review-media.mjs
           node --check scripts/validate-review-output.mjs
           node --check scripts/render-review-pages.mjs
+          node --check scripts/canonicalize-editorial-game-id.mjs
+          node --check scripts/lib/editorial-game-registry-adapter.mjs
           node --check article/_shared/review-carousel.js
       - name: Synchronize text, media and layout gates
         run: node scripts/sync-review-policy.mjs
@@ -60,6 +62,8 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
           OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
+      - name: Bind research to canonical Game Registry identity
+        run: node scripts/canonicalize-editorial-game-id.mjs "${{ steps.target.outputs.slug }}"
       - name: Discover a broad screenshot corpus
         run: node scripts/discover-review-media.mjs "${{ steps.target.outputs.slug }}"
         env:
@@ -73,6 +77,8 @@ jobs:
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
           OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
           OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
+      - name: Bind synthesized artifacts to canonical Game Registry identity
+        run: node scripts/canonicalize-editorial-game-id.mjs "${{ steps.target.outputs.slug }}"
       - name: Measure, deduplicate and build screenshot carousels
         run: node scripts/enrich-review-media.mjs "${{ steps.target.outputs.slug }}"
         env:
@@ -81,6 +87,8 @@ jobs:
           OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
       - name: Enforce article depth, dimensions and zero duplicates
         run: node scripts/validate-review-output.mjs "${{ steps.target.outputs.slug }}"
+      - name: Re-bind generated media/report artifacts to canonical identity
+        run: node scripts/canonicalize-editorial-game-id.mjs "${{ steps.target.outputs.slug }}"
       - name: Render static pages for every published review
         run: node scripts/render-review-pages.mjs
       - name: Commit research, candidates, articles and generated pages to staging
