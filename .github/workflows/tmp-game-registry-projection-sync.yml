@@ -1,0 +1,37 @@
+name: Temporary Game Registry projection sync
+
+on:
+  push:
+    branches: ['feat/game-registry-system-integration']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tmp-game-registry-projection-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/game-registry-system-integration
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build canonical projections
+        run: node scripts/canonicalize-system-game-identity.mjs --write
+      - name: Commit only canonical identity projections
+        run: |
+          git config user.name "igropoisk-registry-sync[bot]"
+          git config user.email "igropoisk-registry-sync[bot]@users.noreply.github.com"
+          git add -- data/catalog-visible.json data/popular/current.json data/popular/published.json
+          if git diff --cached --quiet; then
+            echo "Canonical projections already committed."
+            exit 0
+          fi
+          git commit -m "Bind public game identities to Game Registry"
+          git push origin HEAD:feat/game-registry-system-integration
