@@ -32,9 +32,11 @@ if (blocking.length) {
 const ranking = (bound.snapshot.ranking || []).slice(0, limit).map((item, index) => {
   const slug = item.canonical_slug || item.slug;
   const articleJson = `data/articles/${slug}.json`;
+  const pilotJson = `data/pilot-reviews/${slug}.json`;
   const articlePage = `article/${slug}/index.html`;
   const gamePage = `game/${slug}/index.html`;
-  const reviewPublished = exists(articleJson) && exists(articlePage);
+  const reviewDataExists = exists(articleJson) || exists(pilotJson);
+  const reviewPublished = reviewDataExists && exists(articlePage);
   return {
     rank: index + 1,
     game_id: item.game_id,
@@ -47,8 +49,9 @@ const ranking = (bound.snapshot.ranking || []).slice(0, limit).map((item, index)
     delta: item.delta ?? null,
     game_url: exists(gamePage) ? `/Igropoisk/game/${encodeURIComponent(slug)}/` : null,
     review: {
-      status: reviewPublished ? 'published' : exists(articleJson) ? 'ready_to_render' : 'pending',
-      url: reviewPublished ? `/Igropoisk/article/${encodeURIComponent(slug)}/` : null
+      status: reviewPublished ? 'published' : reviewDataExists ? 'ready_to_render' : 'pending',
+      url: reviewPublished ? `/Igropoisk/article/${encodeURIComponent(slug)}/` : null,
+      pipeline: exists(pilotJson) ? 'keyless-pilot' : exists(articleJson) ? 'strict' : null
     }
   };
 });
