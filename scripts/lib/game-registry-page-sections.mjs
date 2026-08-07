@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 const EMBEDDED_LABELS = Object.freeze({
   edition: 'Издание',
   remaster: 'Ремастер',
@@ -42,7 +45,7 @@ function imageOf(game = {}) {
   return null;
 }
 
-function seriesDescriptor(game = {}) {
+function entitySeriesDescriptor(game = {}) {
   const value = game.identity?.series?.value;
   if (!value) return null;
   if (typeof value === 'string') return {id: value, title: value, order: null, relation: null};
@@ -58,28 +61,64 @@ function seriesDescriptor(game = {}) {
   };
 }
 
-function buildSeries(registry = {}) {
+function loadSeriesCatalog(options = {}) {
+  if (options.seriesCatalog) return options.seriesCatalog;
+  const root = path.resolve(options.root ?? process.cwd());
+  const file = path.join(root, 'data/game-series.json');
+  try {
+    const value = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return value && Array.isArray(value.series) ? value : {series: []};
+  } catch {
+    return {series: []};
+  }
+}
+
+function memberView(game, descriptor = {}) {
+  const slug = String(game.identity?.slug?.value ?? '').trim();
+  return {
+    game_id: game.id,
+    slug,
+    title: String(game.identity?.canonicalTitle?.value ?? slug),
+    year: yearOf(game),
+    kind: game.identity?.kind?.value ?? 'game',
+    relation: descriptor.relation ?? null,
+    order: Number.isFinite(Number(descriptor.order)) ? Number(descriptor.order) : null,
+    image: imageOf(game)
+  };
+}
+
+function buildSeries(registry = {}, options = {}) {
   const groups = new Map();
+  const assigned = new Set();
+  const catalog = loadSeriesCatalog(options);
+
+  for (const definition of catalog.series ?? []) {
+    const id = String(definition?.id ?? '').trim();
+    const title = String(definition?.title ?? definition?.name ?? id).trim();
+    if (!id || !title) continue;
+    const group = {id, title, members: []};
+    for (const member of definition.members ?? []) {
+      const slug = String(member?.slug ?? '').trim();
+      const gameId = registry.indexes?.slug?.[slug];
+      const game = gameId ? registry.games?.[gameId] : null;
+      if (!game || game.workflow?.status === 'merged_into_another_game' || game.presentation?.standalonePage === false) continue;
+      group.members.push(memberView(game, member));
+      assigned.add(game.id);
+    }
+    if (group.members.length) groups.set(id, group);
+  }
+
   for (const game of Object.values(registry.games ?? {})) {
-    if (game.workflow?.status === 'merged_into_another_game') continue;
-    if (game.presentation?.standalonePage === false) continue;
-    const descriptor = seriesDescriptor(game);
-    const slug = String(game.identity?.slug?.value ?? '').trim();
-    if (!descriptor || !slug) continue;
+    if (game.workflow?.status === 'merged_into_another_game' || game.presentation?.standalonePage === false || assigned.has(game.id)) continue;
+    const descriptor = entitySeriesDescriptor(game);
+    if (!descriptor) continue;
     const group = groups.get(descriptor.id) ?? {id: descriptor.id, title: descriptor.title, members: []};
-    group.members.push({
-      game_id: game.id,
-      slug,
-      title: String(game.identity?.canonicalTitle?.value ?? slug),
-      year: yearOf(game),
-      kind: game.identity?.kind?.value ?? 'game',
-      relation: descriptor.relation,
-      order: descriptor.order,
-      image: imageOf(game)
-    });
+    group.members.push(memberView(game, descriptor));
     groups.set(descriptor.id, group);
   }
+
   for (const group of groups.values()) {
+    group.members = [...new Map(group.members.map(member => [member.game_id, member])).values()];
     group.members.sort((a,b) => {
       if (a.order !== null || b.order !== null) return (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER) || (a.year ?? 9999) - (b.year ?? 9999) || a.title.localeCompare(b.title);
       return (a.year ?? 9999) - (b.year ?? 9999) || a.title.localeCompare(b.title);
@@ -88,17 +127,19 @@ function buildSeries(registry = {}) {
   return groups;
 }
 
-export function buildGamePageSections(registry = {}) {
+export function buildGamePageSections(registry = {}, options = {}) {
   const games = {};
   const redirects = {};
-  const series = buildSeries(registry);
+  const series = buildSeries(registry, options);
+  const seriesByGameId = new Map();
+  for (const group of series.values()) for (const member of group.members) seriesByGameId.set(member.game_id, group);
+
   for (const game of Object.values(registry.games ?? {})) {
     if (game.workflow?.status === 'merged_into_another_game') continue;
     const slug = String(game.identity?.slug?.value ?? '').trim();
     if (!slug) continue;
     const variants = (game.variants ?? []).filter(variant => variant?.slug && variant?.id).map(variantView);
-    const descriptor = seriesDescriptor(game);
-    const seriesGroup = descriptor ? series.get(descriptor.id) ?? null : null;
+    const seriesGroup = seriesByGameId.get(game.id) ?? null;
     if (!variants.length && !seriesGroup) continue;
     games[slug] = {
       game_id: game.id,
