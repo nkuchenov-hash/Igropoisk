@@ -1,4 +1,4 @@
-import { isEmbeddedGameKind, normalizeExternalIds, normalizeAlias } from './game-registry.mjs';
+import { GameRegistryApi, inferKind, isEmbeddedGameKind, normalizeExternalIds, normalizeAlias } from './game-registry.mjs';
 
 const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
 
@@ -11,18 +11,6 @@ function activeEntity(registry, gameId) {
 
 function canonicalSlug(entity) {
   return String(entity?.identity?.slug?.value ?? '').trim();
-}
-
-function canonicalTitle(entity) {
-  return String(entity?.identity?.canonicalTitle?.value ?? '').trim();
-}
-
-function releaseYear(entity) {
-  for (const release of entity?.releases ?? []) {
-    const match = String(release?.date?.value ?? '').match(/(?:19|20)\d{2}/);
-    if (match) return Number(match[0]);
-  }
-  return null;
 }
 
 export function findVariantOwner(registry, selector = {}) {
@@ -110,6 +98,54 @@ export function resolveSystemGameIdentity(record = {}, registry = {}) {
   return {status: 'unresolved', entity: null, variant: null, game_id: null, canonical_slug: null, variant_id: null, reason: byAlias.length > 1 ? 'ambiguous_alias' : 'not_found'};
 }
 
+export function registerPopularCandidates(registry = {}, snapshots = []) {
+  const api = new GameRegistryApi(registry);
+  const issues = [];
+  let created = 0;
+  let matched = 0;
+
+  for (const snapshot of snapshots.filter(Boolean)) {
+    for (const [index, item] of (snapshot.ranking ?? []).entries()) {
+      const existing = resolveSystemGameIdentity(item, api.registry);
+      if (existing.entity && existing.status !== 'mismatch') {
+        matched += 1;
+        continue;
+      }
+      if (existing.status === 'mismatch') {
+        issues.push({index, slug: item?.slug ?? null, game_id: item?.game_id ?? null, status: 'mismatch', reason: existing.reason, expected_game_id: existing.game_id});
+        continue;
+      }
+      const kind = inferKind(item);
+      if (isEmbeddedGameKind(kind)) {
+        issues.push({index, slug: item?.slug ?? null, game_id: item?.game_id ?? null, status: 'unresolved', reason: 'embedded_popular_candidate_requires_base_game', kind});
+        continue;
+      }
+      const title = item.title ?? item.name ?? item.slug;
+      if (!title || !item.slug) {
+        issues.push({index, slug: item?.slug ?? null, game_id: item?.game_id ?? null, status: 'unresolved', reason: 'popular_candidate_missing_identity'});
+        continue;
+      }
+      const result = api.registerCandidate({
+        gameId: item.game_id ?? undefined,
+        title,
+        slug: item.slug,
+        steamAppId: item.identity?.steam_appid ?? item.steam_appid ?? item.appid ?? null,
+        igdbId: item.identity?.igdb_id ?? item.igdb_id ?? null,
+        rawgId: item.identity?.rawg_id ?? item.rawg_id ?? null,
+        source: {type: 'automated_inference', name: 'popular-feed'},
+        discoveryReason: 'popular_feed_identity',
+        status: 'discovered',
+        statusReason: 'discovered in Popular ranking',
+        confidence: 0.45
+      }, {actor: 'popular-registry-adapter'});
+      if (result.decision === 'created') created += 1;
+      else if (result.decision === 'matched') matched += 1;
+      else issues.push({index, slug: item.slug, game_id: item.game_id ?? null, status: 'unresolved', reason: 'popular_candidate_needs_review'});
+    }
+  }
+  return {registry: api.registry, issues, created, matched};
+}
+
 export function canonicalCatalogRecord(record, registry) {
   const resolution = resolveSystemGameIdentity(record, registry);
   if (!resolution.entity) return {record: null, resolution};
@@ -117,12 +153,11 @@ export function canonicalCatalogRecord(record, registry) {
   if (resolution.variant || isEmbeddedGameKind(kind) || resolution.entity.presentation?.standalonePage === false) {
     return {record: null, resolution: {...resolution, status: 'embedded_variant', reason: 'not_a_standalone_catalog_game'}};
   }
-  const year = releaseYear(resolution.entity) ?? (Number(record.year) || null);
   return {
     record: {
       ...clone(record),
-      title: canonicalTitle(resolution.entity) || record.title,
-      year,
+      title: record.title ?? resolution.entity.identity?.canonicalTitle?.value ?? record.slug,
+      year: record.year ?? null,
       slug: canonicalSlug(resolution.entity),
       game_id: resolution.entity.id
     },
