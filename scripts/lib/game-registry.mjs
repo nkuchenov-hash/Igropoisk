@@ -32,8 +32,8 @@ export function isoNow(clock = Date) {
 
 export function normalizeText(value) {
   return String(value ?? '')
-    .normalize('NFKD')
     .replace(/[™®©]/gu, '')
+    .normalize('NFKD')
     .replace(/[’‘]/gu, "'")
     .replace(/[–—]/gu, '-')
     .replace(/[^\p{L}\p{N}]+/gu, ' ')
@@ -47,8 +47,8 @@ export function normalizeAlias(value, {stripCommercialEdition = false} = {}) {
 }
 
 export function slugify(value) {
-  const ascii = String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
-  return ascii.toLowerCase().replace(/[™®©]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const ascii = String(value ?? '').replace(/[™®©]/g, '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+  return ascii.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
 export function inferKind(candidate = {}) {
@@ -67,9 +67,10 @@ export function stableGameId(candidate = {}) {
   const strongest = [
     ['igdb', external.igdbId], ['rawg', external.rawgId], ['steam', external.steamAppId],
     ['playstation', external.playstation], ['xbox', external.xbox], ['nintendo', external.nintendo]
-  ].find(([, value]) => value !== null && value !== undefined && value !== '');
+  ].find(([, value]) => Array.isArray(value) ? value.length > 0 : value !== null && value !== undefined && value !== '');
+  const strongestValue = Array.isArray(strongest?.[1]) ? strongest[1].join(',') : strongest?.[1];
   const basis = strongest
-    ? `${strongest[0]}:${strongest[1]}`
+    ? `${strongest[0]}:${strongestValue}`
     : `${normalizeAlias(candidate.canonicalTitle ?? candidate.title ?? candidate.name)}:${candidate.releaseYear ?? candidate.year ?? ''}:${inferKind(candidate)}`;
   return `game_${crypto.createHash('sha256').update(basis).digest('hex').slice(0, 20)}`;
 }
@@ -355,6 +356,15 @@ export class GameRegistryApi {
     return [...(entity?.articles ?? [])].sort((a,b) => Number(b.type === 'igropoisk_review') - Number(a.type === 'igropoisk_review'));
   }
   registerCandidate(candidate, options = {}) {
+    const explicitId = candidate.gameId ?? candidate.game_id ?? (String(candidate.id ?? '').startsWith('game_') ? candidate.id : null);
+    if (explicitId) {
+      const existing = this.findById(String(explicitId));
+      if (existing) {
+        const entity = mergeEntityCandidate(existing, candidate, options);
+        rebuildIndexes(this.registry);
+        return {decision: 'matched', entity, reasons: ['canonical_game_id']};
+      }
+    }
     const comparisons = Object.values(this.registry.games).map(entity => ({entity, ...compareIdentity(entity, candidate)}));
     const matches = comparisons.filter(item => item.decision === 'match').sort((a,b) => b.confidence - a.confidence);
     const ambiguous = comparisons.filter(item => item.decision === 'ambiguous');
