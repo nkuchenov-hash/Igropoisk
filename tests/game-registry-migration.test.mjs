@@ -15,7 +15,7 @@ function fixture(){
     {title:'Mafia II',slug:'mafia-ii',year:2010},
     {title:'Mafia III',slug:'mafia-iii',year:2016,steam_appid:360430},
     {title:'Mafia: Definitive Edition',slug:'mafia-definitive-edition',year:2020},
-    {title:'Mafia II: Definitive Edition',slug:'mafia-ii-definitive-edition',year:2020},
+    {title:'Mafia II: Definitive Edition',slug:'mafia-ii-definitive-edition',year:2020,platforms:['PC','PS4']},
     {title:'Mafia III: Definitive Edition',slug:'mafia-iii-definitive-edition',year:2020,steam_appid:360430},
     {title:'Mafia: The Old Country',slug:'mafia-the-old-country',year:2025}
   ]);
@@ -51,21 +51,37 @@ test('migration is idempotent, preserves real remakes and embeds editions',()=>{
   assert.ok(slugs.includes('mafia'));
   assert.ok(slugs.includes('mafia-definitive-edition'));
   assert.notEqual(a.registry.indexes.slug.mafia,a.registry.indexes.slug['mafia-definitive-edition'],'A true remake remains a separate game');
+  assert.equal(active.some(game=>['edition','remaster','dlc','expansion'].includes(game.identity.kind.value)),false,'Embedded content kinds must never be standalone canonical games');
 
   const mafiaIII=a.registry.games[a.registry.indexes.slug['mafia-iii']];
   assert.ok(mafiaIII,'Base Mafia III must exist');
   const edition=(mafiaIII.variants||[]).find(item=>item.slug==='mafia-iii-definitive-edition');
   assert.ok(edition,'Definitive Edition must be embedded under Mafia III');
+  assert.equal(edition.schemaVersion,'game-variant/v1');
+  assert.equal(edition.baseGameId,mafiaIII.id);
   assert.equal(edition.pagePolicy,'embedded');
+  assert.deepEqual(edition.platforms,['PC']);
+  assert.ok(edition.releases.some(release=>String(release.date).includes('2020')),'Edition-specific release data stays on the child entity');
   assert.equal(edition.articles.length,1,'Edition-specific article must stay on the edition/DLC section');
   assert.equal(mafiaIII.articles.some(article=>article.title==='Definitive Edition review'),false,'Edition article must not leak into the main review section');
   assert.equal(active.some(game=>game.identity.slug.value==='mafia-iii-definitive-edition'),false,'Edition must not be a separate active game');
 
+  const mafiaII=a.registry.games[a.registry.indexes.slug['mafia-ii']];
+  const mafiaIIEdition=(mafiaII.variants||[]).find(item=>item.slug==='mafia-ii-definitive-edition');
+  assert.ok(mafiaIIEdition,'Unambiguous Definitive Edition title must attach to its base game even without a shared external ID');
+  assert.deepEqual(mafiaIIEdition.platforms,['PC','PS4']);
+  assert.equal(active.some(game=>game.identity.slug.value==='mafia-ii-definitive-edition'),false);
+
   const sections=buildGamePageSections(a.registry,{root});
-  assert.equal(sections.games['mafia-iii'].variants[0].slug,'mafia-iii-definitive-edition');
+  const mafiaIIISection=sections.games['mafia-iii'];
+  const editionSection=mafiaIIISection.variants.find(item=>item.slug==='mafia-iii-definitive-edition');
+  assert.equal(sections.schema_version,3);
+  assert.equal(editionSection.schema_version,'game-variant/v1');
+  assert.equal(editionSection.base_game_id,mafiaIII.id);
+  assert.deepEqual(editionSection.platforms,['PC']);
   assert.equal(sections.redirects['mafia-iii-definitive-edition'].target_slug,'mafia-iii');
   assert.equal(sections.redirects['mafia-iii-definitive-edition'].target_hash,'editions');
-  const mafiaSeries=sections.games['mafia-iii'].series;
+  const mafiaSeries=mafiaIIISection.series;
   assert.equal(mafiaSeries.series_id,'mafia');
   assert.deepEqual(mafiaSeries.members.map(item=>item.slug),['mafia','mafia-ii','mafia-iii','mafia-definitive-edition','mafia-the-old-country']);
   assert.equal(mafiaSeries.members.some(item=>item.slug==='mafia-iii-definitive-edition'),false,'Embedded editions must not appear as games in the franchise navigation');

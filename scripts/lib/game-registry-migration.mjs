@@ -90,7 +90,8 @@ function candidateFromCatalog(item) {
     source: source('data/catalog-visible.json', 'manual'),
     discoveryReason: 'migrated_visible_catalog',
     status: 'identified',
-    statusReason: 'present in visible catalog'
+    statusReason: 'present in visible catalog',
+    raw: item
   });
 }
 
@@ -281,6 +282,39 @@ function variantRelease(candidate = {}) {
   const date = candidate.releaseDate ?? candidate.release_date ?? raw.release?.date ?? raw.release?.date_text ?? candidate.releases?.[0]?.date ?? candidate.year ?? null;
   return date === null || date === undefined || date === '' ? null : String(date);
 }
+function scalarValue(value) {
+  return value && typeof value === 'object' && Object.hasOwn(value, 'value') ? value.value : value;
+}
+function variantReleases(candidate = {}) {
+  const raw = candidate.raw ?? {};
+  const sourceRows = candidate.releases ?? candidate.events ?? raw.releases ?? raw.events ?? raw.release ?? candidate.release ?? [];
+  const rows = (Array.isArray(sourceRows) ? sourceRows : [sourceRows]).filter(Boolean);
+  if (!rows.length) {
+    const release = variantRelease(candidate);
+    return release ? [{date: release, platform: null, region: 'global', precision: /^\d{4}$/.test(release) ? 'year' : 'unknown', status: 'released'}] : [];
+  }
+  return rows.map((release, index) => {
+    const item = typeof release === 'string' ? {date: release} : release;
+    const date = scalarValue(item.date ?? item.date_start ?? item.release_date ?? item.date_text ?? null);
+    const platform = scalarValue(item.platform ?? null);
+    const region = scalarValue(item.region ?? 'global');
+    const precision = item.precision ?? (date && /^\d{4}$/.test(String(date)) ? 'year' : date ? 'day' : 'unknown');
+    return {
+      id: item.id ?? `variant_release_${index}_${crypto.createHash('sha1').update(JSON.stringify(item)).digest('hex').slice(0, 8)}`,
+      date: date === null || date === undefined || date === '' ? null : String(date),
+      platform: platform === null || platform === undefined || platform === '' ? null : String(platform),
+      region: region === null || region === undefined || region === '' ? null : String(region),
+      precision,
+      status: item.status ?? 'released'
+    };
+  }).filter(item => item.date || item.platform);
+}
+function variantPlatforms(candidate = {}, releases = []) {
+  const raw = candidate.raw ?? {};
+  const explicit = raw.classification?.platforms ?? raw.platforms ?? candidate.platforms ?? candidate.platform ?? [];
+  const values = [...(Array.isArray(explicit) ? explicit : [explicit]), ...releases.map(release => release.platform)];
+  return [...new Set(values.filter(Boolean).map(String))].sort();
+}
 function variantId(baseId, candidate = {}) {
   const basis = `${baseId}:${migrationKind(candidate)}:${candidate.slug ?? normalizeAlias(candidate.title ?? candidate.name ?? '')}`;
   return `variant_${crypto.createHash('sha256').update(basis).digest('hex').slice(0, 18)}`;
@@ -294,6 +328,20 @@ function findVariantOwner(registry, slug) {
   }
   return null;
 }
+function embeddedBaseAliasCandidates(candidate = {}) {
+  const title = String(candidate.title ?? candidate.name ?? candidate.raw?.identity?.title ?? '').trim();
+  if (!title) return [];
+  const values = new Set();
+  const stripped = title
+    .replace(/\s*[:\-–—]?\s*(?:definitive\s+edition|remaster(?:ed)?|hd\s+collection|anniversary\s+edition|deluxe\s+edition|ultimate\s+edition|gold\s+edition|complete\s+edition|collector'?s\s+edition|digital\s+deluxe\s+edition|goty|game\s+of\s+the\s+year\s+edition)\s*$/iu, '')
+    .trim();
+  if (stripped && normalizeAlias(stripped) !== normalizeAlias(title)) values.add(stripped);
+  if (['dlc','expansion'].includes(migrationKind(candidate)) && title.includes(':')) {
+    const prefix = title.split(':')[0].trim();
+    if (prefix) values.add(prefix);
+  }
+  return [...values];
+}
 function attachEmbeddedVariant(base, candidate, now) {
   base.variants ??= [];
   const raw = candidate.raw ?? {};
@@ -302,23 +350,33 @@ function attachEmbeddedVariant(base, candidate, now) {
   const id = variantId(base.id, {...candidate, slug, title});
   const existing = base.variants.find(item => item.id === id || (slug && item.slug === slug));
   const externalIds = normalizeExternalIds(candidate.externalIds ?? candidate.external_ids ?? candidate);
+  const releases = variantReleases(candidate);
+  const platforms = variantPlatforms(candidate, releases);
   const src = candidate.source ?? source('unknown');
   const next = existing ?? {
+    schemaVersion: 'game-variant/v1',
     id,
+    baseGameId: base.id,
     kind: migrationKind(candidate),
     title,
     slug,
-    release: variantRelease(candidate),
+    release: releases[0]?.date ?? variantRelease(candidate),
+    releases,
+    platforms,
     description: raw.editorial?.short_description ?? raw.editorial?.integrated_description ?? candidate.description ?? '',
     externalIds,
     sources: [],
     articles: [],
     pagePolicy: 'embedded'
   };
+  next.schemaVersion = 'game-variant/v1';
+  next.baseGameId = base.id;
   next.kind = migrationKind(candidate);
   next.title = title || next.title;
   next.slug = slug || next.slug;
-  next.release = variantRelease(candidate) ?? next.release;
+  next.releases = [...new Map([...(next.releases ?? []), ...releases].map(item => [`${item.date ?? ''}:${item.platform ?? ''}:${item.region ?? ''}:${item.status ?? ''}`, item])).values()];
+  next.platforms = [...new Set([...(next.platforms ?? []), ...platforms])].sort();
+  next.release = next.releases[0]?.date ?? variantRelease(candidate) ?? next.release;
   next.description = raw.editorial?.short_description ?? raw.editorial?.integrated_description ?? candidate.description ?? next.description ?? '';
   next.externalIds = {
     ...next.externalIds,
@@ -354,7 +412,14 @@ function embeddedBaseTarget(api, registry, candidate) {
   const external = externalIdentityTargets(api, candidate).filter(entity => !EMBEDDED_KINDS.has(effectiveEntityKind(entity)));
   if (external.length === 1) return external[0];
   if (external.length > 1) throw new Error(`Embedded content ${candidate.slug ?? candidate.title} matches multiple base games: ${external.map(item => item.id).join(', ')}`);
+  const aliasTargets = uniqueEntities(embeddedBaseAliasCandidates(candidate).flatMap(alias => api.findByExactAlias(alias)))
+    .filter(entity => !EMBEDDED_KINDS.has(effectiveEntityKind(entity)));
+  if (aliasTargets.length === 1) return aliasTargets[0];
+  if (aliasTargets.length > 1) throw new Error(`Embedded content ${candidate.slug ?? candidate.title} matches multiple base games by title: ${aliasTargets.map(item => item.id).join(', ')}`);
   return null;
+}
+function uniqueEntities(entities = []) {
+  return [...new Map(entities.filter(Boolean).map(entity => [entity.id, entity])).values()];
 }
 function queueEmbeddedReview(registry, candidate, now) {
   const key = `${candidate.slug ?? candidate.title ?? 'embedded'}:${migrationKind(candidate)}`;
@@ -410,8 +475,11 @@ function bridgePrimaryIdentityIfSafe(api, candidate, now) {
 function assertUniqueActiveIdentity(registry) {
   const slugs = new Map();
   const external = new Map();
+  const standaloneEmbedded = [];
   for (const entity of Object.values(registry.games ?? {})) {
     if (entity.workflow?.status === 'merged_into_another_game') continue;
+    const kind = effectiveEntityKind(entity);
+    if (EMBEDDED_KINDS.has(kind)) standaloneEmbedded.push({gameId: entity.id, slug: entity.identity?.slug?.value ?? null, kind});
     const slug = String(entity.identity?.slug?.value ?? '').trim();
     if (slug) {
       const ids = slugs.get(slug) ?? [];
@@ -430,7 +498,9 @@ function assertUniqueActiveIdentity(registry) {
   }
   const slugCollisions = [...slugs.entries()].filter(([,ids]) => ids.length > 1).map(([slug,ids]) => ({slug,gameIds:ids.sort()}));
   const externalCollisions = [...external.entries()].filter(([,ids]) => ids.length > 1).map(([externalId,ids]) => ({externalId,gameIds:ids.sort()}));
-  if (slugCollisions.length || externalCollisions.length) throw new Error(`Canonical Game Registry contains duplicate active identity: ${JSON.stringify({slugCollisions,externalCollisions})}`);
+  if (slugCollisions.length || externalCollisions.length || standaloneEmbedded.length) {
+    throw new Error(`Canonical Game Registry identity invariant failed: ${JSON.stringify({slugCollisions,externalCollisions,standaloneEmbedded})}`);
+  }
 }
 
 function articleTarget(registry, record, payload, file) {
@@ -443,7 +513,7 @@ function articleTarget(registry, record, payload, file) {
     const directId = registry.indexes.slug?.[slug];
     game = directId ? registry.games?.[directId] ?? null : null;
   }
-  const variantId = record.variant_id ?? record.variantId ?? payload?.variant_id ?? payload?.variantId ?? null;
+  const variantId = record.variant_id ?? record.variantId ?? record.child_id ?? record.childId ?? payload?.variant_id ?? payload?.variantId ?? payload?.child_id ?? payload?.childId ?? null;
   if (game && variantId) variant = (game.variants ?? []).find(item => item.id === variantId) ?? null;
   if (!variant && slug) {
     const owner = findVariantOwner(registry, slug);
@@ -513,7 +583,7 @@ export function migrateRepository(root, options = {}) {
     const embedded = handleEmbeddedCandidate(api, registry, candidate, now);
     if (embedded.handled) {
       decisions[embedded.decision] = (decisions[embedded.decision] ?? 0) + 1;
-      if (embedded.entity) enrichFromRaw(embedded.entity, candidate, now);
+      if (embedded.entity && !embedded.variant) enrichFromRaw(embedded.entity, candidate, now);
       if (embedded.decision === 'matched') duplicatePairs.push({gameId: embedded.entity.id, slug: embedded.entity.identity.slug.value, reason: embedded.reasons});
       continue;
     }
@@ -597,6 +667,6 @@ export function writeMigrationArtifacts(root, result, options = {}) {
   for (const file of [registryOut, reportOut, pageSectionsOut]) fs.mkdirSync(path.dirname(file), {recursive: true});
   fs.writeFileSync(registryOut, `${JSON.stringify(result.registry, null, 2)}\n`);
   fs.writeFileSync(reportOut, `${JSON.stringify(result.report, null, 2)}\n`);
-  fs.writeFileSync(pageSectionsOut, `${JSON.stringify(buildGamePageSections(result.registry), null, 2)}\n`);
+  fs.writeFileSync(pageSectionsOut, `${JSON.stringify(buildGamePageSections(result.registry, {root}), null, 2)}\n`);
   return {registryOut, reportOut, pageSectionsOut};
 }

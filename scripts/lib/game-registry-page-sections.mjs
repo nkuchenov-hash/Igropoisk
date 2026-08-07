@@ -19,15 +19,36 @@ function articleView(article = {}) {
   };
 }
 
-function variantView(variant = {}) {
+function releaseView(release = {}) {
+  const unwrap = value => value && typeof value === 'object' && Object.hasOwn(value, 'value') ? value.value : value;
   return {
+    date: unwrap(release.date) ?? null,
+    platform: unwrap(release.platform) ?? null,
+    region: unwrap(release.region) ?? null,
+    precision: release.precision ?? null,
+    status: release.status ?? null
+  };
+}
+
+function variantView(variant = {}, gameId = null) {
+  const releases = (variant.releases ?? []).map(releaseView).filter(release => release.date || release.platform);
+  const platforms = [...new Set([
+    ...(variant.platforms ?? []),
+    ...releases.map(release => release.platform)
+  ].filter(Boolean).map(String))];
+  return {
+    schema_version: variant.schemaVersion ?? 'game-variant/v1',
     variant_id: variant.id,
+    base_game_id: variant.baseGameId ?? gameId,
     kind: variant.kind,
     kind_label: EMBEDDED_LABELS[variant.kind] ?? variant.kind,
     title: variant.title,
     slug: variant.slug,
-    release: variant.release ?? null,
+    release: variant.release ?? releases[0]?.date ?? null,
+    releases,
+    platforms,
     description: variant.description ?? '',
+    external_ids: variant.externalIds ?? {},
     articles: (variant.articles ?? []).filter(article => article.status === 'published').map(articleView)
   };
 }
@@ -138,7 +159,7 @@ export function buildGamePageSections(registry = {}, options = {}) {
     if (game.workflow?.status === 'merged_into_another_game') continue;
     const slug = String(game.identity?.slug?.value ?? '').trim();
     if (!slug) continue;
-    const variants = (game.variants ?? []).filter(variant => variant?.slug && variant?.id).map(variantView);
+    const variants = (game.variants ?? []).filter(variant => variant?.slug && variant?.id).map(variant => variantView(variant, game.id));
     const seriesGroup = seriesByGameId.get(game.id) ?? null;
     if (!variants.length && !seriesGroup) continue;
     games[slug] = {
@@ -160,7 +181,7 @@ export function buildGamePageSections(registry = {}, options = {}) {
     }
   }
   return {
-    schema_version: 2,
+    schema_version: 3,
     generated_at: registry.generatedAt ?? null,
     games,
     redirects

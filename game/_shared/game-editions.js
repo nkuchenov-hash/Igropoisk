@@ -13,13 +13,22 @@ function articleMarkup(article){
   return `<a href="${esc(article.url)}"><small>${esc(source)}</small><b>${esc(title)}</b><span>Открыть материал →</span></a>`;
 }
 
+function variantMeta(item){
+  const releases=Array.isArray(item?.releases)?item.releases:[];
+  const releaseDates=[...new Set(releases.map(release=>release?.date).filter(Boolean).map(String))];
+  const platforms=Array.isArray(item?.platforms)?item.platforms.filter(Boolean).map(String):[];
+  return [releaseDates.join(' · ')||item?.release||null,[...new Set(platforms)].join(', ')||null].filter(Boolean).join(' · ');
+}
+
 function variantMarkup(item,isModern){
   const articles=Array.isArray(item.articles)?item.articles:[];
   const articleClass=isModern?'ig-card ig-external-review':'ig-card material';
+  const panelClass=isModern?'ig-panel game-panel':'ig-panel panel';
   const articlesMarkup=articles.length
     ? `<div class="${isModern?'ig-external-review-grid':'materials'}">${articles.map(article=>`<article class="${articleClass}">${articleMarkup(article)}</article>`).join('')}</div>`
     : '<div class="ig-empty-state">Отдельных материалов об этом издании пока нет.</div>';
-  return `<article class="${isModern?'ig-panel game-panel':'ig-panel panel'}" data-variant-id="${esc(item.variant_id)}"><small>${esc(item.kind_label||item.kind||'Edition / DLC')}</small><h2>${esc(item.title||item.slug)}</h2>${item.release?`<p>${esc(item.release)}</p>`:''}${item.description?`<p>${esc(item.description)}</p>`:''}${articlesMarkup}</article>`;
+  const meta=variantMeta(item);
+  return `<article class="${panelClass}" data-variant-id="${esc(item.variant_id)}"><small>${esc(item.kind_label||item.kind||'Edition / DLC')}</small><h2>${esc(item.title||item.slug)}</h2>${meta?`<p>${esc(meta)}</p>`:''}${item.description?`<p>${esc(item.description)}</p>`:''}${articlesMarkup}</article>`;
 }
 
 function seriesMemberMarkup(item,isModern){
