@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Игры — админка Игропоиска</title>
+<link rel="stylesheet" href="../../assets/design-system.css?v=20260803-8">
+<link rel="stylesheet" href="../../assets/design-system-admin-responsive.css?v=20260803-8">
+<link rel="stylesheet" href="../../assets/admin-home-v2.css?v=20260803-8">
+<style>
+  .games-toolbar{display:grid;grid-template-columns:minmax(220px,1fr) repeat(3,minmax(150px,220px));gap:12px;margin:18px 0}.games-toolbar input,.games-toolbar select{width:100%;padding:11px 12px;border:1px solid var(--ig-border,#34344a);border-radius:10px;background:var(--ig-surface,#171722);color:inherit}.games-table{width:100%;border-collapse:collapse}.games-table th,.games-table td{text-align:left;padding:12px;border-bottom:1px solid var(--ig-border,#34344a);vertical-align:top}.games-table th{position:sticky;top:0;background:var(--ig-bg,#0f0f17);z-index:2}.status-reason{max-width:360px;color:var(--ig-text-muted,#a5a5b6);font-size:.9rem}.meter{height:6px;background:#2c2c3a;border-radius:999px;overflow:hidden}.meter span{display:block;height:100%;background:currentColor}.games-actions{display:flex;gap:8px;flex-wrap:wrap}.games-actions button{font:inherit}.games-actions button[disabled]{opacity:.45;cursor:not-allowed}.transition-note{padding:12px 14px;border:1px solid var(--ig-border,#34344a);border-radius:12px;color:var(--ig-text-muted,#a5a5b6)}@media(max-width:900px){.games-toolbar{grid-template-columns:1fr 1fr}.games-table{display:block;overflow:auto}}
+</style>
+</head>
+<body><div class="ig-admin-layout">
+<aside class="ig-admin-sidebar" aria-label="Разделы админки"><a class="ig-logo" href="../index.html">ИГРОПОИСК</a><a href="../">Обзор</a><a class="active" href="./">Игры</a><a href="../content-pipeline/">Контентный конвейер</a></aside>
+<main class="ig-admin-main"><div class="ig-kicker">Admin / Canonical Game Registry</div><h1 class="ig-admin-title">Единый центр игр</h1><p class="ig-admin-lead">Канонические сущности, источники, полнота, конфликты, возможные дубли, очередь и история решений.</p>
+<div id="mode" class="transition-note">Загрузка реестра…</div><section id="summary" class="ig-admin-grid" aria-label="Сводка"></section>
+<div class="games-toolbar"><input id="search" type="search" placeholder="Название, slug или ID"><select id="status"><option value="">Все статусы</option></select><select id="page"><option value="">Все страницы</option></select><select id="conflict"><option value="">Все конфликты</option><option value="yes">Есть конфликты</option><option value="no">Без конфликтов</option></select></div>
+<div class="ig-admin-card" style="overflow:auto"><table class="games-table"><thead><tr><th>Игра</th><th>Статус</th><th>Полнота</th><th>Приоритет</th><th>Источники / конфликты</th><th>Действия</th></tr></thead><tbody id="rows"></tbody></table></div>
+</main></div><script src="../../assets/auth.js?v=20260804-6"></script><script type="module" src="./app.js"></script></body></html>
