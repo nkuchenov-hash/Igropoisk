@@ -61,7 +61,14 @@
     }
 
     function filteredItems() {
-      return model.filterByGame(items, activeGame).filter(item => !activeType || api.deriveTypeTags(item, lang).includes(activeType));
+      const query = (toolbar.querySelector('[data-news-search]')?.value || '').trim().toLowerCase();
+      return model.filterByGame(items, activeGame).filter(item => {
+        if (activeType && !api.deriveTypeTags(item, lang).includes(activeType)) return false;
+        if (!query) return true;
+        const gameTitles = api.resolvedGames(item).map(game => game.title).join(' ');
+        const haystack = `${api.text(item, 'title', lang)} ${api.text(item, 'summary', lang)} ${gameTitles}`.toLowerCase();
+        return haystack.includes(query);
+      });
     }
 
     function renderStory() {
@@ -136,8 +143,10 @@
             <option value="">${api.escapeHtml(copy.all)}</option>
             ${games.map(game => `<option value="${api.escapeHtml(game.slug)}"${game.slug === activeGame ? ' selected' : ''}>${api.escapeHtml(game.title)}</option>`).join('')}
           </select>
-        </div>`;
+        </div>
+        <div class="ig-news-controls__search"><input class="ig-input ig-input--search" type="search" data-news-search placeholder="${api.escapeHtml(copy.search)}"></div>`;
       toolbar.querySelector('[data-news-game-filter]').addEventListener('change', event => setGameFilter(event.target.value));
+      toolbar.querySelector('[data-news-search]').addEventListener('input', renderFeed);
       toolbar.querySelectorAll('[data-news-type-filter]').forEach(button => button.addEventListener('click', () => setTypeFilter(button.dataset.newsTypeFilter || '')));
     }
 
