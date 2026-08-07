@@ -91,7 +91,7 @@
     toolbar.innerHTML = `<div class="ig-news-controls__search"><input class="ig-input ig-input--search" type="search" data-news-search placeholder="${api.escapeHtml(copy.search)}"></div>
       <div class="ig-news-controls__game">
         <label class="ig-muted" for="news-game-filter">${api.escapeHtml(copy.gameFilter)}</label>
-        <select class="ig-input" id="news-game-filter" data-news-game-filter>
+        <select class="ig-input ig-filter-chip" id="news-game-filter" data-news-game-filter>
           <option value="">${api.escapeHtml(copy.all)}</option>
           ${games.map(game => `<option value="${api.escapeHtml(game.slug)}"${game.slug === activeGame ? ' selected' : ''}>${api.escapeHtml(game.title)}</option>`).join('')}
         </select>
