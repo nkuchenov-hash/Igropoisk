@@ -39,6 +39,7 @@ jobs:
           find assets scripts features -type f \( -name '*.js' -o -name '*.mjs' \) -print0 \
             | xargs -0 -n1 node --check
           node scripts/test-automation-publish-guard.mjs
+          node scripts/test-home-feed-quality.mjs
 
       - name: Check news, feeds and module contracts
         run: |

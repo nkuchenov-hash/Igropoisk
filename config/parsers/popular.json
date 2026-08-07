@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "id": "popular",
   "title": "Парсер «Сейчас популярно»",
   "status": "active",
@@ -12,7 +12,7 @@
     "formula": "popular_score = weighted fresh attention + live platform demand + independent-source breadth",
     "normalization": "Каждая группа сигналов нормализуется отдельно. Подтверждённый новостной всплеск требует минимум три независимых издания. Один источник или два случайных перепечатанных материала не считаются достаточным подтверждением.",
     "publication": "Сначала выбираются игры с тремя независимыми изданиями или несколькими независимыми группами сигналов. Затем список дополняется играми из текущих Steam/Twitch-чартов с внешним подтверждением. Оставшиеся места могут заполняться верхними позициями актуальных платформенных чартов; отсутствие ровно двадцати подтверждённых карточек не блокирует обновление остальных.",
-    "matching": "Кандидаты берутся из каталога, отдельного реестра крупных кроссплатформенных игр, Steam и Twitch. Короткие неоднозначные названия не сопоставляются автоматически. Продолжения имеют отдельные алиасы.",
+    "matching": "Кандидаты берутся из каталога, отдельного реестра крупных кроссплатформенных игр, Steam и Twitch. Короткие неоднозначные названия не сопоставляются автоматически. Продолжения имеют отдельные алиасы. Варианты названий с товарными знаками должны указывать на ту же каноническую игру.",
     "steps": [
       "Получить материалы и показатели за актуальное окно 96 часов.",
       "Сформировать кандидатов из каталога, глобального реестра и текущих платформенных чартов.",
@@ -59,6 +59,7 @@
     {"slug":"grand-theft-auto-vi","title":"Grand Theft Auto VI","year":2026,"upcoming":true,"aliases":["Grand Theft Auto 6","GTA VI","GTA 6"]}
   ],
   "aliases": [
+    {"slug":"apex-legends","title":"Apex Legends™","aliases":["Apex Legends","Apex"]},
     {"slug":"grand-theft-auto-v","title":"Grand Theft Auto V","year":2013,"aliases":["GTA V","GTA 5"]},
     {"slug":"kingdom-come-deliverance-ii","title":"Kingdom Come: Deliverance II","year":2025,"aliases":["Kingdom Come Deliverance 2","Kingdom Come 2","KCD 2","KCD II"]},
     {"slug":"kingdom-come-deliverance","title":"Kingdom Come: Deliverance","year":2018,"aliases":["Kingdom Come Deliverance","KCD"]},
