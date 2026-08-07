@@ -236,11 +236,8 @@ function entityYear(entity = {}) {
 }
 function effectiveEntityKind(entity = {}) {
   const stored = entity.identity?.kind?.value ?? 'unknown';
-  const evidence = migrationKind({
-    title: entity.identity?.canonicalTitle?.value ?? entity.identity?.slug?.value ?? '',
-    kind: stored
-  });
-  return evidence !== 'game' ? evidence : stored;
+  if (stored && stored !== 'unknown') return stored;
+  return migrationKind({title: entity.identity?.canonicalTitle?.value ?? entity.identity?.slug?.value ?? ''});
 }
 function compatibleIdentity(entity, candidate) {
   const existingYear = entityYear(entity);
@@ -439,8 +436,10 @@ function handleEmbeddedCandidate(api, registry, candidate, now) {
   if (!EMBEDDED_KINDS.has(kind)) return {handled: false, candidate};
 
   const slugTarget = exactSlugTarget(api, candidate);
-  if (slugTarget && !EMBEDDED_KINDS.has(effectiveEntityKind(slugTarget)) && compatibleIdentity(slugTarget, candidate)) {
-    return {handled: false, candidate: {...candidate, gameId: slugTarget.id, kind: effectiveEntityKind(slugTarget)}};
+  const slugTargetKind = effectiveEntityKind(slugTarget);
+  const sameYear = !slugTarget || !entityYear(slugTarget) || !candidateYear(candidate) || entityYear(slugTarget) === candidateYear(candidate);
+  if (slugTarget && !EMBEDDED_KINDS.has(slugTargetKind) && (compatibleIdentity(slugTarget, candidate) || (slugTargetKind === 'remake' && sameYear))) {
+    return {handled: false, candidate: {...candidate, gameId: slugTarget.id, kind: slugTargetKind}};
   }
 
   const base = embeddedBaseTarget(api, registry, candidate);
