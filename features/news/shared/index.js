@@ -35,10 +35,15 @@
           empty: 'По выбранным параметрам новостей нет.',
           search: 'Поиск по заголовку или тексту',
           all: 'Все игры',
+          allTypes: 'Все темы',
+          allNews: 'Все новости',
           official: 'От разработчиков',
-          gameFilter: 'Фильтр по игре',
+          gameFilter: 'Игра',
+          typeFilter: 'Темы новостей',
           allNewsAboutGame: 'Все новости об игре',
-          openGame: 'Открыть страницу игры'
+          openGame: 'Открыть страницу игры',
+          backToNews: '← Все новости',
+          source: 'Источник'
         }
       : {
           loading: 'Loading news…',
@@ -46,10 +51,15 @@
           empty: 'No news matches the selected filters.',
           search: 'Search headlines or summaries',
           all: 'All games',
+          allTypes: 'All topics',
+          allNews: 'All news',
           official: 'From developers',
-          gameFilter: 'Filter by game',
+          gameFilter: 'Game',
+          typeFilter: 'News topics',
           allNewsAboutGame: 'All news about this game',
-          openGame: 'Open game page'
+          openGame: 'Open game page',
+          backToNews: '← All news',
+          source: 'Source'
         };
   }
 
@@ -95,19 +105,41 @@
     });
   }
 
-  function deriveTags(item, lang) {
-    const body = `${text(item, 'title', lang)} ${text(item, 'summary', lang)}`.toLowerCase();
-    const tags = resolvedGames(item).map(game => game.title);
-    const organization = item.organization || item.publisher || item.sources?.find(source => source.official)?.organization;
-    if (organization && !tags.includes(organization)) tags.push(organization);
-    const groups = lang === 'ru'
+  function typeDefinitions(lang) {
+    return lang === 'ru'
       ? [
           ['Релизы', /релиз|вышел|вышла|выходит|дата выхода|ранн.*доступ|снимут с продажи/],
           ['Обновления', /патч|обновлен|хотфикс|сезон|update|драйвер|перерабатывает/],
           ['Анонсы', /анонс|представил|трейлер|показал|direct/],
           ['DLC', /\bdlc\b|дополнен|expansion/],
           ['Индустрия', /студи|издател|увольнен|закрыт|поглощен|продаж|директор|компания/],
-          ['Технологии', /движок|график|видеокарт|драйвер|unreal|unity|oled|желез|\bai\b/],
+          ['Технологии', /движок|график|видеокарт|драйвер|unreal|unity|oled|желез|\bai\b/]
+        ]
+      : [
+          ['Releases', /release|launch|early access/],
+          ['Updates', /patch|update|hotfix|season|driver/],
+          ['Announcements', /announce|trailer|reveal|direct/],
+          ['DLC', /\bdlc\b|expansion/],
+          ['Industry', /studio|publisher|layoff|acquisition|sales|director/],
+          ['Technology', /engine|graphics|gpu|driver|unreal|unity|oled|\bai\b/]
+        ];
+  }
+
+  function deriveTypeTags(item, lang = language()) {
+    const body = `${text(item, 'title', lang)} ${text(item, 'summary', lang)}`.toLowerCase();
+    const tags = typeDefinitions(lang).flatMap(([tag, pattern]) => pattern.test(body) ? [tag] : []);
+    if (contentApi.isOfficial(item)) tags.push(labels(lang).official);
+    return [...new Set(tags)].slice(0, 3);
+  }
+
+  function deriveTags(item, lang) {
+    const body = `${text(item, 'title', lang)} ${text(item, 'summary', lang)}`.toLowerCase();
+    const tags = resolvedGames(item).map(game => game.title);
+    const organization = item.organization || item.publisher || item.sources?.find(source => source.official)?.organization;
+    if (organization && !tags.includes(organization)) tags.push(organization);
+    typeDefinitions(lang).forEach(([tag, pattern]) => { if (pattern.test(body)) tags.push(tag); });
+    const genres = lang === 'ru'
+      ? [
           ['RPG', /\brpg\b|ролевая|ролевой/],
           ['Стратегии', /стратег|\brts\b/],
           ['Шутеры', /шутер|shoot/],
@@ -115,9 +147,9 @@
           ['Хорроры', /хоррор|horror|silent hill/]
         ]
       : [
-          ['Releases', /release|launch|early access/], ['Updates', /patch|update|hotfix|season|driver/], ['Announcements', /announce|trailer|reveal|direct/], ['DLC', /\bdlc\b|expansion/], ['Industry', /studio|publisher|layoff|acquisition|sales|director/], ['Technology', /engine|graphics|gpu|driver|unreal|unity|oled|\bai\b/], ['RPG', /\brpg\b/], ['Strategy', /strategy|\brts\b/], ['Shooters', /shooter/], ['Simulation', /simulator/], ['Horror', /horror/]
+          ['RPG', /\brpg\b/], ['Strategy', /strategy|\brts\b/], ['Shooters', /shooter/], ['Simulation', /simulator/], ['Horror', /horror/]
         ];
-    groups.forEach(([tag, pattern]) => { if (pattern.test(body)) tags.push(tag); });
+    genres.forEach(([tag, pattern]) => { if (pattern.test(body)) tags.push(tag); });
     if (contentApi.isOfficial(item)) tags.push(labels(lang).official);
     return [...new Set(tags)].slice(0, 5);
   }
@@ -130,17 +162,24 @@
     return contentApi.getHome({ lang });
   }
 
+  function storyUrl(item) {
+    const url = new URL(siteBase.href);
+    url.searchParams.set('page', 'news');
+    url.searchParams.set('story', String(item?.id || ''));
+    return url.href;
+  }
+
   function renderCard(item, { compact = false, lang = language() } = {}) {
     const title = escapeHtml(text(item, 'title', lang));
     const summary = escapeHtml(text(item, 'summary', lang));
-    const tags = deriveTags(item, lang);
-    return `<a class="ig-card ig-card--interactive ig-news-card${compact ? ' ig-news-card--compact' : ''}" href="${escapeHtml(item.primaryUrl)}" target="_blank" rel="noopener noreferrer" data-news-external>
+    const tags = deriveTypeTags(item, lang);
+    return `<a class="ig-card ig-card--interactive ig-news-card${compact ? ' ig-news-card--compact' : ''}" href="${escapeHtml(storyUrl(item))}" data-news-story-link>
       <img class="ig-card__media ig-card__media--landscape" src="${escapeHtml(absoluteAsset(item.image))}" alt="${title}" loading="lazy">
       <div class="ig-card__body">
-        <div class="ig-card__meta">${escapeHtml(formatters[lang].format(new Date(item.publishedAt)))} · ${escapeHtml(sourceName(item))}</div>
         ${tags.length ? `<div class="ig-chip-list">${tags.map(tag => `<span class="ig-chip">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
         <h3 class="ig-card__title">${title}</h3>
         ${compact || !summary ? '' : `<p class="ig-card__summary">${summary}</p>`}
+        <div class="ig-card__meta">${escapeHtml(formatters[lang].format(new Date(item.publishedAt)))} · ${escapeHtml(sourceName(item))}</div>
       </div>
     </a>`;
   }
@@ -186,15 +225,38 @@
     const title = escapeHtml(text(item, 'title', lang));
     const summary = escapeHtml(text(item, 'summary', lang));
     const games = renderGameTags(item, { lang });
+    const types = deriveTypeTags(item, lang);
     const image = item.image ? `<img class="ig-card__media ig-card__media--landscape ig-news-entry__image" src="${escapeHtml(absoluteAsset(item.image))}" alt="" loading="lazy">` : '';
-    return `<article class="ig-card__body ig-news-entry ig-news-card" data-news-id="${escapeHtml(item.id || '')}">
+    return `<article class="ig-card ig-news-entry ig-news-card" data-news-id="${escapeHtml(item.id || '')}">
       ${image}
-      <div class="ig-news-entry__body">
-        <div class="ig-card__meta"><time datetime="${escapeHtml(item.publishedAt)}">${escapeHtml(publicationTime(item, lang))}</time> · ${escapeHtml(sourceName(item))}</div>
-        <h3 class="ig-card__title ig-news-entry__title"><a href="${escapeHtml(item.primaryUrl)}" target="_blank" rel="noopener noreferrer" data-news-external>${title}</a></h3>
+      <div class="ig-card__body ig-news-entry__body">
+        ${types.length ? `<div class="ig-chip-list ig-news-entry__types">${types.map(tag => `<span class="ig-chip">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+        <h3 class="ig-card__title ig-news-entry__title"><a href="${escapeHtml(storyUrl(item))}" data-news-story-link>${title}</a></h3>
         ${summary ? `<p class="ig-card__summary ig-news-entry__summary">${summary}</p>` : ''}
+        <div class="ig-card__meta"><time datetime="${escapeHtml(item.publishedAt)}">${escapeHtml(publicationTime(item, lang))}</time> · ${escapeHtml(sourceName(item))}</div>
         ${games ? `<div class="ig-chip-list ig-news-entry__games">${games}</div>` : ''}
       </div>
+    </article>`;
+  }
+
+  function renderStory(item, { lang = language() } = {}) {
+    const copy = labels(lang);
+    const title = escapeHtml(text(item, 'title', lang));
+    const summary = escapeHtml(text(item, 'summary', lang));
+    const types = deriveTypeTags(item, lang);
+    const games = renderGameTags(item, { lang });
+    const source = escapeHtml(sourceName(item));
+    const sourceUrl = escapeHtml(item.primaryUrl || '');
+    const date = escapeHtml(formatters[lang].format(new Date(item.publishedAt)));
+    const image = item.image ? `<img class="ig-card__media ig-card__media--landscape ig-news-story__image" src="${escapeHtml(absoluteAsset(item.image))}" alt="${title}" loading="lazy">` : '';
+    return `<article class="ig-panel ig-news-story" data-news-story="${escapeHtml(item.id || '')}">
+      <a class="ig-button ig-news-story__back" href="${escapeHtml(new URL('?page=news', siteBase).href)}">${escapeHtml(copy.backToNews)}</a>
+      ${types.length ? `<div class="ig-chip-list ig-news-story__types">${types.map(tag => `<span class="ig-chip">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+      <h1 class="ig-news-story__title">${title}</h1>
+      ${summary ? `<p class="ig-news-story__lead">${summary}</p>` : ''}
+      <div class="ig-news-story__meta"><span>${date}</span><span>·</span><a href="${sourceUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(copy.source)}: ${source} ↗</a></div>
+      ${games ? `<div class="ig-chip-list ig-news-story__games">${games}</div>` : ''}
+      ${image}
     </article>`;
   }
 
@@ -207,6 +269,7 @@
     absoluteAsset,
     content: contentApi,
     deriveTags,
+    deriveTypeTags,
     escapeHtml,
     isGlobal,
     labels,
@@ -218,9 +281,12 @@
     renderArchiveItem,
     renderCard,
     renderGameTags,
+    renderStory,
     resolvedGames,
     score,
     setState,
+    sourceName,
+    storyUrl,
     text,
     userRegion
   });
