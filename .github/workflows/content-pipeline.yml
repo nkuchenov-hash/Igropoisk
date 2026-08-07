@@ -14,8 +14,12 @@ on:
       - 'scripts/build-game-page.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/validate-automation-publish-diff.mjs'
+      - 'scripts/lib/game-registry*.mjs'
       - 'data/catalog-visible.json'
+      - 'data/game-series.json'
       - 'data/releases/current.json'
+      - 'data/reviews/**'
+      - 'data/articles/**'
 
 permissions:
   contents: write
@@ -43,6 +47,9 @@ jobs:
           node --check scripts/build-game-page.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/validate-automation-publish-diff.mjs
+          node --check scripts/lib/game-registry.mjs
+          node --check scripts/lib/game-registry-migration.mjs
+          node --check scripts/lib/game-registry-page-sections.mjs
       - name: Build registry and execution plan
         run: node scripts/orchestrate-content.mjs
       - name: Build selected pages and reviews
@@ -64,6 +71,7 @@ jobs:
         run: |
           paths=(
             data/content-pipeline
+            data/game-registry
             data/parser-runs
             data/parser-output
             data/drafts

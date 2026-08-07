@@ -57,6 +57,8 @@ jobs:
           git push origin HEAD:staging
       - name: Build catalog review articles
         run: node scripts/build-all-review-articles.mjs
+      - name: Bind editorial artifacts to canonical Game Registry IDs
+        run: node scripts/canonicalize-all-editorial-game-ids.mjs --write
       - name: Mark build result
         if: always()
         run: |

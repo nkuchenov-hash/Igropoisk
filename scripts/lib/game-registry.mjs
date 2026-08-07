@@ -10,6 +10,7 @@ export const ARTICLE_TYPES = Object.freeze([
   'development_history','technical','update_or_dlc'
 ]);
 export const GAME_KINDS = Object.freeze(['game','remake','remaster','dlc','expansion','edition','collection','unknown']);
+export const EMBEDDED_GAME_KINDS = Object.freeze(['edition','remaster','dlc','expansion']);
 export const SOURCE_TRUST = Object.freeze({
   official_site: 100,
   official_platform_store: 90,
@@ -32,8 +33,8 @@ export function isoNow(clock = Date) {
 
 export function normalizeText(value) {
   return String(value ?? '')
-    .normalize('NFKD')
     .replace(/[™®©]/gu, '')
+    .normalize('NFKD')
     .replace(/[’‘]/gu, "'")
     .replace(/[–—]/gu, '-')
     .replace(/[^\p{L}\p{N}]+/gu, ' ')
@@ -47,8 +48,8 @@ export function normalizeAlias(value, {stripCommercialEdition = false} = {}) {
 }
 
 export function slugify(value) {
-  const ascii = String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
-  return ascii.toLowerCase().replace(/[™®©]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const ascii = String(value ?? '').replace(/[™®©]/g, '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+  return ascii.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
 export function inferKind(candidate = {}) {
@@ -62,14 +63,20 @@ export function inferKind(candidate = {}) {
   return 'game';
 }
 
+export function isEmbeddedGameKind(value) {
+  const kind = typeof value === 'string' ? value : inferKind(value ?? {});
+  return EMBEDDED_GAME_KINDS.includes(kind);
+}
+
 export function stableGameId(candidate = {}) {
   const external = normalizeExternalIds(candidate.externalIds ?? candidate.external_ids ?? candidate);
   const strongest = [
     ['igdb', external.igdbId], ['rawg', external.rawgId], ['steam', external.steamAppId],
     ['playstation', external.playstation], ['xbox', external.xbox], ['nintendo', external.nintendo]
-  ].find(([, value]) => value !== null && value !== undefined && value !== '');
+  ].find(([, value]) => Array.isArray(value) ? value.length > 0 : value !== null && value !== undefined && value !== '');
+  const strongestValue = Array.isArray(strongest?.[1]) ? strongest[1].join(',') : strongest?.[1];
   const basis = strongest
-    ? `${strongest[0]}:${strongest[1]}`
+    ? `${strongest[0]}:${strongestValue}`
     : `${normalizeAlias(candidate.canonicalTitle ?? candidate.title ?? candidate.name)}:${candidate.releaseYear ?? candidate.year ?? ''}:${inferKind(candidate)}`;
   return `game_${crypto.createHash('sha256').update(basis).digest('hex').slice(0, 20)}`;
 }
@@ -139,6 +146,7 @@ export function createGameEntity(candidate = {}, options = {}) {
   const aliases = new Set([title, ...(candidate.aliases ?? []), ...(candidate.alternativeTitles ?? [])].filter(Boolean));
   const source = candidate.source ?? {type: 'automated_inference', name: candidate.discoverySource ?? 'unknown'};
   const status = GAME_STATUSES.includes(candidate.status) ? candidate.status : 'discovered';
+  const kind = inferKind(candidate);
   return {
     schemaVersion: 'game-entity/v1',
     id: candidate.id ?? candidate.gameId ?? stableGameId(candidate),
@@ -149,7 +157,7 @@ export function createGameEntity(candidate = {}, options = {}) {
       abbreviations: fieldValue(candidate.abbreviations ?? [], source, {now, confidence: candidate.confidence ?? 0.5}),
       originalTitle: fieldValue(candidate.originalTitle ?? candidate.original_title ?? null, source, {now, confidence: candidate.confidence ?? 0.5}),
       series: fieldValue(candidate.series ?? null, source, {now, confidence: candidate.confidence ?? 0.5}),
-      kind: fieldValue(inferKind(candidate), source, {now, confidence: candidate.confidence ?? 0.7})
+      kind: fieldValue(kind, source, {now, confidence: candidate.confidence ?? 0.7})
     },
     externalIds: normalizeExternalIds(candidate.externalIds ?? candidate.external_ids ?? candidate),
     fields: {},
@@ -159,6 +167,11 @@ export function createGameEntity(candidate = {}, options = {}) {
       series: candidate.relations?.series ?? [],
       baseGameId: candidate.relations?.baseGameId ?? null,
       relatedGameIds: candidate.relations?.relatedGameIds ?? []
+    },
+    variants: [],
+    presentation: {
+      standalonePage: candidate.standalonePage === true || !isEmbeddedGameKind(kind),
+      embeddedTab: isEmbeddedGameKind(kind) ? 'editions' : null
     },
     discovery: [{
       source: sourceDescriptor(source),
@@ -355,6 +368,15 @@ export class GameRegistryApi {
     return [...(entity?.articles ?? [])].sort((a,b) => Number(b.type === 'igropoisk_review') - Number(a.type === 'igropoisk_review'));
   }
   registerCandidate(candidate, options = {}) {
+    const explicitId = candidate.gameId ?? candidate.game_id ?? (String(candidate.id ?? '').startsWith('game_') ? candidate.id : null);
+    if (explicitId) {
+      const existing = this.findById(String(explicitId));
+      if (existing) {
+        const entity = mergeEntityCandidate(existing, candidate, options);
+        rebuildIndexes(this.registry);
+        return {decision: 'matched', entity, reasons: ['canonical_game_id']};
+      }
+    }
     const comparisons = Object.values(this.registry.games).map(entity => ({entity, ...compareIdentity(entity, candidate)}));
     const matches = comparisons.filter(item => item.decision === 'match').sort((a,b) => b.confidence - a.confidence);
     const ambiguous = comparisons.filter(item => item.decision === 'ambiguous');
@@ -477,10 +499,12 @@ export function validateForPublication(entity, options = {}) {
   const errors = [];
   const title = entity.identity?.canonicalTitle?.value;
   const slug = entity.identity?.slug?.value;
+  const kind = entity.identity?.kind?.value ?? 'unknown';
   if (!title) errors.push('identity.canonicalTitle');
   if (!slug) errors.push('identity.slug');
   if (entity.workflow?.status === 'needs_review') errors.push('workflow.needs_review');
   if (entity.workflow?.status === 'merged_into_another_game') errors.push('workflow.merged');
+  if (isEmbeddedGameKind(kind) && entity.presentation?.standalonePage !== true) errors.push('embedded_content_requires_base_game');
   if ((entity.conflicts ?? []).length) errors.push('unresolved_conflicts');
   if (!options.allowNoRelease && !(entity.releases ?? []).some(item => item.date?.value || item.status === 'released')) errors.push('release_confirmation');
   const hasDescription = Boolean(entity.fields?.description?.value || entity.fields?.shortDescription?.value);

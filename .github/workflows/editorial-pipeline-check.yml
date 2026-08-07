@@ -6,6 +6,11 @@ on:
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/synthesize-review.mjs'
       - 'scripts/enrich-review-media.mjs'
+      - 'scripts/canonicalize-editorial-game-id.mjs'
+      - 'scripts/canonicalize-all-editorial-game-ids.mjs'
+      - 'scripts/test-editorial-game-registry-adapter.mjs'
+      - 'scripts/lib/editorial-game-registry-adapter.mjs'
+      - 'scripts/lib/game-registry*.mjs'
       - 'skills/review-synthesizer/**'
       - 'config/parsers/review-synthesis.json'
       - 'data/articles/**'
@@ -16,6 +21,25 @@ on:
       - 'article/_shared/**'
       - 'article/**/index.html'
       - '.github/workflows/editorial-pipeline-check.yml'
+      - '.github/workflows/review-synthesis.yml'
+      - '.github/workflows/build-all-review-articles.yml'
+  pull_request:
+    branches: [staging]
+    paths:
+      - 'scripts/prepare-review-research.mjs'
+      - 'scripts/synthesize-review.mjs'
+      - 'scripts/enrich-review-media.mjs'
+      - 'scripts/canonicalize-editorial-game-id.mjs'
+      - 'scripts/canonicalize-all-editorial-game-ids.mjs'
+      - 'scripts/test-editorial-game-registry-adapter.mjs'
+      - 'scripts/lib/editorial-game-registry-adapter.mjs'
+      - 'scripts/lib/game-registry*.mjs'
+      - 'data/articles/**'
+      - 'data/reviews/**'
+      - 'data/research/**'
+      - '.github/workflows/editorial-pipeline-check.yml'
+      - '.github/workflows/review-synthesis.yml'
+      - '.github/workflows/build-all-review-articles.yml'
   workflow_dispatch:
 
 jobs:
@@ -25,13 +49,21 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
       - name: Check JavaScript syntax
         run: |
           node --check scripts/prepare-review-research.mjs
           node --check scripts/synthesize-review.mjs
           node --check scripts/enrich-review-media.mjs
+          node --check scripts/canonicalize-editorial-game-id.mjs
+          node --check scripts/canonicalize-all-editorial-game-ids.mjs
+          node --check scripts/test-editorial-game-registry-adapter.mjs
+          node --check scripts/lib/editorial-game-registry-adapter.mjs
           node --check assets/parser-method.js
           node --check article/_shared/review-article.js
+      - name: Validate canonical editorial identity adapter
+        run: |
+          node scripts/test-editorial-game-registry-adapter.mjs
+          node scripts/canonicalize-all-editorial-game-ids.mjs
       - name: Validate editorial data
         run: node scripts/validate-editorial-pipeline.mjs
