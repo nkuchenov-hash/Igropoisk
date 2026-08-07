@@ -114,7 +114,7 @@
       activeType = String(type || '');
       activeStory = '';
       toolbar.querySelectorAll('[data-news-type-filter]').forEach(button => {
-        button.classList.toggle('active', button.dataset.newsTypeFilter === activeType);
+        button.classList.toggle('is-active', button.dataset.newsTypeFilter === activeType);
         button.setAttribute('aria-pressed', button.dataset.newsTypeFilter === activeType ? 'true' : 'false');
       });
       updateUrl({ type: activeType, story: '' });
@@ -126,9 +126,9 @@
       const types = availableTypes(items);
       if (activeGame && !games.some(game => game.slug === activeGame)) activeGame = '';
       if (activeType && !types.some(([tag]) => tag === activeType)) activeType = '';
-      toolbar.innerHTML = `<div class="ig-news-controls__types" aria-label="${api.escapeHtml(copy.typeFilter)}">
-          <button class="ig-button${activeType ? '' : ' active'}" type="button" data-news-type-filter="" aria-pressed="${activeType ? 'false' : 'true'}">${api.escapeHtml(copy.allTypes)}</button>
-          ${types.map(([tag, count]) => `<button class="ig-button${tag === activeType ? ' active' : ''}" type="button" data-news-type-filter="${api.escapeHtml(tag)}" aria-pressed="${tag === activeType ? 'true' : 'false'}">${api.escapeHtml(tag)} <span class="ig-muted">${count}</span></button>`).join('')}
+      toolbar.innerHTML = `<div class="ig-filter-list ig-news-controls__types" aria-label="${api.escapeHtml(copy.typeFilter)}">
+          <button class="ig-filter-chip${activeType ? '' : ' is-active'}" type="button" data-news-type-filter="" aria-pressed="${activeType ? 'false' : 'true'}">${api.escapeHtml(copy.allTypes)}</button>
+          ${types.map(([tag, count]) => `<button class="ig-filter-chip${tag === activeType ? ' is-active' : ''}" type="button" data-news-type-filter="${api.escapeHtml(tag)}" aria-pressed="${tag === activeType ? 'true' : 'false'}">${api.escapeHtml(tag)} <span>${count}</span></button>`).join('')}
         </div>
         <div class="ig-news-controls__game">
           <label class="ig-muted" for="news-game-filter">${api.escapeHtml(copy.gameFilter)}</label>
