@@ -3,111 +3,35 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="description" content="Календарь выхода игр: подтверждённые даты, платформы, переносы и страницы будущих релизов на Игропоиске.">
+  <meta name="description" content="Редакционный календарь заметных релизов игр с подтверждёнными платформами и датами.">
   <title>Календарь релизов — Игропоиск</title>
   <link rel="stylesheet" href="../assets/design-system.css?v=20260803-9">
   <link rel="stylesheet" href="../assets/release-calendar.css?v=20260803-1">
   <link rel="stylesheet" href="../assets/release-calendar-readable.css?v=20260804-2">
   <link rel="stylesheet" href="../assets/release-calendar-cell-fill.css?v=20260804-2">
-<!-- ig-release-preloads:start -->
-  <link rel="preload" as="image" href="../assets/covers/releases/a-very-simple-idle-game.jpg" fetchpriority="high">
-  <link rel="preload" as="image" href="../assets/covers/releases/akatori.jpg" fetchpriority="high">
-  <link rel="preload" as="image" href="../assets/covers/releases/aooni2.jpg" fetchpriority="high">
-  <link rel="preload" as="image" href="../assets/covers/releases/asteroid-m-12.jpg" fetchpriority="high">
-  <link rel="preload" as="image" href="../assets/covers/releases/big-bad-pharma.jpg" fetchpriority="high">
-  <link rel="preload" as="image" href="../assets/covers/releases/big-golden-rock.jpg" fetchpriority="high">
-  <link rel="preload" as="image" href="../assets/covers/releases/blast-off-summer-showdown.jpg" fetchpriority="high">
-  <link rel="preload" as="image" href="../assets/covers/releases/block-block-block.jpg" fetchpriority="high">
-  <!-- ig-release-preloads:end -->
   <link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">
   <link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">
 </head>
 <body class="ig-site-page">
 <header class="ig-site-header" aria-label="Основная навигация"></header>
-
 <main class="ig-container release-page ig-page-shell">
   <nav class="release-breadcrumb" aria-label="Хлебные крошки"><a href="../index.html">Главная</a><span>›</span><span>Календарь релизов</span></nav>
-
   <section class="release-intro">
-    <div>
-      <div class="release-kicker">Даты, переносы и новые анонсы</div>
-      <h1>Календарь релизов</h1>
-      <p>Следи за предстоящими играми, фильтруй их по платформам и жанрам и открывай страницы релизов по мере подготовки редакцией.</p>
-    </div>
-    <div class="release-intro__stats" aria-label="Статистика календаря">
-      <div><strong id="releaseTotal">—</strong><span>релизов</span></div>
-      <div><strong id="releaseExact">—</strong><span>точных дат</span></div>
-      <div><strong id="releaseReview">—</strong><span>на проверке</span></div>
-    </div>
+    <div><div class="release-kicker">Отобрано редакцией</div><h1>Календарь релизов</h1><p>Только заметные игры и крупные дополнения. Даты привязаны к конкретной платформе и подтверждающему источнику.</p></div>
+    <div class="release-intro__stats" aria-label="Статистика календаря"><div><strong id="releaseTotal">—</strong><span>игр</span></div><div><strong id="releaseExact">—</strong><span>точных событий</span></div><div><strong id="releaseReview">—</strong><span>непроверенных публично</span></div></div>
   </section>
-
   <section class="release-command-bar" aria-label="Управление календарём">
-    <div class="release-view-tabs" role="tablist" aria-label="Режим отображения">
-      <button class="active" type="button" data-view="calendar" role="tab" aria-selected="true">Календарь</button>
-      <button type="button" data-view="list" role="tab" aria-selected="false">Список</button>
-      <button type="button" data-view="feed" role="tab" aria-selected="false">Лента</button>
-    </div>
-    <div class="release-quick-filters">
-      <label><span>Платформа</span><select id="releasePlatform"><option value="">Все платформы</option></select></label>
-      <label><span>Жанр</span><select id="releaseGenre"><option value="">Все жанры</option></select></label>
-      <label><span>Точность</span><select id="releasePrecision"><option value="">Любая дата</option><option value="exact">Точная дата</option><option value="month">Месяц</option><option value="quarter">Квартал</option><option value="year">Год</option><option value="tbd">Дата неизвестна</option></select></label>
-      <button class="ig-button release-filter-button" id="openReleaseFilters" type="button">Все фильтры <span aria-hidden="true">≡</span></button>
-    </div>
+    <div class="release-view-tabs ig-tabs" role="tablist" aria-label="Режим отображения"><button class="ig-action active" type="button" data-view="calendar" role="tab" aria-selected="true">Календарь</button><button class="ig-action" type="button" data-view="list" role="tab" aria-selected="false">Список</button><button class="ig-action" type="button" data-view="feed" role="tab" aria-selected="false">Лента</button></div>
+    <div class="release-quick-filters"><label><span>Платформа</span><select class="ig-input" id="releasePlatform"><option value="">Все платформы</option></select></label><label><span>Жанр</span><select class="ig-input" id="releaseGenre"><option value="">Все жанры</option></select></label><label><span>Точность</span><select class="ig-input" id="releasePrecision"><option value="">Любая подтверждённая дата</option><option value="exact">Точная дата</option><option value="month">Месяц</option><option value="quarter">Квартал</option><option value="year">Год</option></select></label></div>
   </section>
-
   <div class="release-layout">
-    <section class="release-main" aria-label="Релизы">
-      <header class="release-period-bar">
-        <div class="release-period-nav">
-          <button class="ig-button release-icon-button" id="releasePrev" type="button" aria-label="Предыдущий месяц">‹</button>
-          <h2 id="releasePeriodTitle">—</h2>
-          <button class="ig-button release-icon-button" id="releaseNext" type="button" aria-label="Следующий месяц">›</button>
-          <button class="ig-button" id="releaseToday" type="button">Сегодня</button>
-        </div>
-        <div class="release-result-count" id="releaseResultCount">Загрузка…</div>
-      </header>
-      <div id="releaseView" aria-live="polite"></div>
-    </section>
-
-    <aside class="release-rail">
-      <section class="release-rail-card">
-        <div class="release-rail-head"><h2>Скоро выйдут</h2><a href="#releaseView">Смотреть все</a></div>
-        <div class="release-upcoming" id="releaseUpcoming"></div>
-      </section>
-      <section class="release-rail-card">
-        <div class="release-rail-head"><h2>Изменения дат</h2></div>
-        <div class="release-changes" id="releaseChanges"></div>
-      </section>
-      <section class="release-rail-card release-rail-note">
-        <span class="release-source-dot"></span>
-        <div><strong>Дата всегда со ссылкой на источник</strong><p>При переносе прежнее значение сохраняется в истории, а спорные данные отправляются на проверку.</p></div>
-      </section>
-    </aside>
+    <section class="release-main" aria-label="Релизы"><header class="release-period-bar"><div class="release-period-nav"><button class="ig-button release-icon-button" id="releasePrev" type="button" aria-label="Предыдущий месяц">‹</button><h2 id="releasePeriodTitle">—</h2><button class="ig-button release-icon-button" id="releaseNext" type="button" aria-label="Следующий месяц">›</button><button class="ig-button" id="releaseToday" type="button">Сегодня</button></div><div class="release-result-count" id="releaseResultCount">Загрузка…</div></header><div id="releaseView" aria-live="polite"></div></section>
+    <aside class="release-rail"><section class="ig-card release-rail-card"><div class="release-rail-head"><h2>Скоро выйдут</h2><a href="#releaseView">Смотреть все</a></div><div class="release-upcoming" id="releaseUpcoming"></div></section><section class="ig-card release-rail-card"><div class="release-rail-head"><h2>Изменения дат</h2></div><div class="release-changes" id="releaseChanges"></div></section><section class="ig-card release-rail-card release-rail-note"><span class="release-source-dot"></span><div><strong>Steam подтверждает только PC</strong><p>Консольные даты допускаются из официальных магазинов, сайтов издателей и официальных анонсов.</p></div></section></aside>
   </div>
 </main>
-
-<div class="release-filter-sheet" id="releaseFilterSheet" hidden>
-  <button class="release-filter-sheet__backdrop" type="button" data-close-filters aria-label="Закрыть фильтры"></button>
-  <section class="release-filter-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="releaseFilterTitle">
-    <header><div><span>Фильтры</span><h2 id="releaseFilterTitle">Уточнить календарь</h2></div><button class="ig-button release-icon-button" type="button" data-close-filters aria-label="Закрыть">×</button></header>
-    <div class="release-filter-group"><h3>Страница игры</h3><label class="release-check"><input id="filterHasPage" type="checkbox"><span>Только с опубликованной страницей</span></label><label class="release-check"><input id="filterNeedsReview" type="checkbox"><span>Только требующие проверки</span></label></div>
-    <div class="release-filter-group"><h3>Тип релиза</h3><label class="release-check"><input type="checkbox" value="full" name="releaseType" checked><span>Полная версия</span></label><label class="release-check"><input type="checkbox" value="early_access" name="releaseType" checked><span>Ранний доступ</span></label><label class="release-check"><input type="checkbox" value="dlc" name="releaseType" checked><span>DLC и дополнения</span></label></div>
-    <footer><button class="ig-button" id="resetReleaseFilters" type="button">Сбросить</button><button class="release-primary-button" type="button" data-close-filters>Показать релизы</button></footer>
-  </section>
-</div>
-
-<div class="release-modal" id="releaseModal" hidden>
-  <button class="release-modal__backdrop" type="button" data-close-release aria-label="Закрыть карточку игры"></button>
-  <article class="release-modal__panel" role="dialog" aria-modal="true" aria-labelledby="releaseModalTitle">
-    <button class="ig-button release-modal__close" type="button" data-close-release aria-label="Закрыть">×</button>
-    <div id="releaseModalContent"></div>
-  </article>
-</div>
-
-<button id="releaseTheme" type="button" hidden aria-hidden="true" tabindex="-1"></button>
-<script src="../assets/release-calendar.js?v=20260804-3"></script>
-<script src="../assets/release-calendar-readable.js?v=20260804-3"></script>
-  <script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>
-  <script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>
+<div class="ig-panel release-modal" id="releaseModal" hidden><button class="ig-button release-modal__backdrop" type="button" data-close-release aria-label="Закрыть карточку игры"></button><article class="ig-card release-modal__panel" role="dialog" aria-modal="true" aria-labelledby="releaseModalTitle"><button class="ig-button release-modal__close" type="button" data-close-release aria-label="Закрыть">×</button><div id="releaseModalContent"></div></article></div>
+<script src="../assets/release-calendar.js?v=20260806-1"></script>
+<script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>
+<script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>
 </body>
 </html>

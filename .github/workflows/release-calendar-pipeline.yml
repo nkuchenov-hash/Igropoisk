@@ -1,0 +1,95 @@
+name: Editorial release calendar
+
+on:
+  push:
+    branches:
+      - staging
+      - feat/editorial-release-calendar
+    paths:
+      - "scripts/lib/release-calendar-policy.mjs"
+      - "scripts/materialize-release-calendar.mjs"
+      - "scripts/validate-release-calendar.mjs"
+      - "scripts/test-release-calendar-policy.mjs"
+      - "scripts/parse-releases.mjs"
+      - "config/release-calendar.json"
+      - "config/release-official-claims.json"
+      - "data/releases/current.json"
+      - "data/release-candidates/editorial.json"
+      - ".github/workflows/release-calendar-pipeline.yml"
+  pull_request:
+    branches: [staging]
+    paths:
+      - "scripts/**release-calendar**"
+      - "scripts/lib/release-calendar-policy.mjs"
+      - "config/release-calendar.json"
+      - "config/release-official-claims.json"
+      - "data/release-candidates/**"
+      - "data/releases/public.json"
+      - "assets/release-calendar.js"
+      - "assets/release-admin.js"
+      - "calendar/**"
+      - "admin/parsers/releases/**"
+  workflow_dispatch:
+    inputs:
+      refresh_discovery:
+        description: "Refresh Steam/RAWG candidates before materialization"
+        required: false
+        default: true
+        type: boolean
+  schedule:
+    - cron: "37 3 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: editorial-release-calendar-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Policy regression tests
+        run: node scripts/test-release-calendar-policy.mjs
+      - name: Refresh raw discovery for scheduled/manual validation
+        if: ${{ (github.event_name == 'schedule') || (github.event_name == 'workflow_dispatch' && inputs.refresh_discovery) }}
+        env:
+          RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
+        run: node scripts/parse-releases.mjs
+      - name: Build candidate database and public calendar
+        run: node scripts/materialize-release-calendar.mjs
+      - name: Validate public boundary
+        run: node scripts/validate-release-calendar.mjs
+      - name: Publish statistics in workflow summary
+        shell: bash
+        run: |
+          node - <<'NODE' >> "$GITHUB_STEP_SUMMARY"
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('data/releases/materialization-report.json', 'utf8'));
+          const s = report.statistics || {};
+          console.log('## Release calendar materialization');
+          console.log(`- Raw candidates: **${s.raw_candidates || 0}**`);
+          console.log(`- Published: **${s.published || 0}**`);
+          console.log(`- Review: **${s.review || 0}**`);
+          console.log(`- Rejected: **${s.rejected || 0}**`);
+          console.log(`- Maximum exact releases in one day: **${s.max_exact_releases_in_one_day || 0}**`);
+          for (const day of s.dense_days || []) console.log(`  - ${day.date}: ${day.count}`);
+          NODE
+      - name: Upload materialized data
+        uses: actions/upload-artifact@v4
+        with:
+          name: editorial-release-calendar-${{ github.run_id }}
+          path: |
+            data/release-candidates/current.json
+            data/releases/public.json
+            data/releases/materialization-report.json
+          retention-days: 14
