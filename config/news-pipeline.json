@@ -25,7 +25,9 @@
   ],
   "rebuild_commands": [
     "node scripts/normalize-news-records.mjs",
+    "node scripts/preserve-news-history.mjs --snapshot",
     "node scripts/build-news-events.mjs",
+    "node scripts/preserve-news-history.mjs --merge",
     "node scripts/build-home-news.mjs"
   ],
   "health": {
