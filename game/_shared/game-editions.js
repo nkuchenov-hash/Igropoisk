@@ -18,8 +18,32 @@ function variantMarkup(item,isModern){
   const articleClass=isModern?'ig-external-review':'material';
   const articlesMarkup=articles.length
     ? `<div class="${isModern?'ig-external-review-grid':'materials'}">${articles.map(article=>`<article class="${articleClass}">${articleMarkup(article)}</article>`).join('')}</div>`
-    : '<div class="empty-state">Отдельных материалов об этом издании пока нет.</div>';
+    : '<p>Отдельных материалов об этом издании пока нет.</p>';
   return `<article class="${isModern?'game-panel':'panel'}" data-variant-id="${esc(item.variant_id)}"><small>${esc(item.kind_label||item.kind||'Edition / DLC')}</small><h2>${esc(item.title||item.slug)}</h2>${item.release?`<p>${esc(item.release)}</p>`:''}${item.description?`<p>${esc(item.description)}</p>`:''}${articlesMarkup}</article>`;
+}
+
+function seriesMemberMarkup(item,isModern){
+  const href=`../${encodeURIComponent(item.slug)}/`;
+  const meta=[item.year,item.kind==='remake'?'ремейк':null].filter(Boolean).join(' · ');
+  if(!isModern){
+    return `<a class="material" href="${href}"${item.current?' aria-current="page"':''}><small>${esc(meta)}</small><h3>${esc(item.title)}</h3></a>`;
+  }
+  const media=item.image?`<div class="ig-game-card-wide__media"><img src="${esc(item.image)}" alt="${esc(item.title)}" loading="lazy"></div>`:'';
+  return `<a class="ig-game-card-wide" href="${href}"${item.current?' aria-current="page"':''}>${media}<div class="ig-game-card-wide__body"><b>${esc(item.title)}</b><span>${esc(meta)}</span></div></a>`;
+}
+
+function installSeries(sectionData,isModern){
+  const series=sectionData?.series;
+  const members=Array.isArray(series?.members)?series.members:[];
+  if(!series||members.length<2||document.querySelector('[data-game-series]'))return;
+  const overview=document.querySelector('#overview');
+  if(!overview)return;
+  const block=document.createElement(isModern?'section':'article');
+  block.dataset.gameSeries=series.series_id||series.title;
+  block.className=isModern?'game-panel similar-panel':'panel';
+  block.innerHTML=`<h2>Серия ${esc(series.title)}</h2><div class="${isModern?'similar-row':'materials'}">${members.map(item=>seriesMemberMarkup(item,isModern)).join('')}</div>`;
+  const target=isModern?(overview.querySelector('.lower-grid')||overview):(overview.querySelector('.grid')||overview);
+  target.appendChild(block);
 }
 
 function activateEditions(button,section,isModern){
@@ -30,17 +54,9 @@ function activateEditions(button,section,isModern){
   if(location.hash!=='#editions')history.replaceState(null,'','#editions');
 }
 
-async function install(sectionData){
-  let nav=null;
-  for(let attempt=0;attempt<80&&!nav;attempt+=1){
-    nav=document.querySelector('.game-tabs,.tabs');
-    if(!nav)await sleep(50);
-  }
-  if(!nav)return;
-  if(nav.querySelector('[data-tab="editions"]'))return;
-  const isModern=nav.classList.contains('game-tabs');
+function installEditions(sectionData,nav,isModern){
   const variants=Array.isArray(sectionData?.variants)?sectionData.variants:[];
-  if(!variants.length)return;
+  if(!variants.length||nav.querySelector('[data-tab="editions"]'))return;
 
   const button=document.createElement('button');
   button.type='button';
@@ -59,6 +75,18 @@ async function install(sectionData){
 
   button.addEventListener('click',()=>activateEditions(button,section,isModern));
   if(location.hash==='#editions')activateEditions(button,section,isModern);
+}
+
+async function install(sectionData){
+  let nav=null;
+  for(let attempt=0;attempt<80&&!nav;attempt+=1){
+    nav=document.querySelector('.game-tabs,.tabs');
+    if(!nav)await sleep(50);
+  }
+  if(!nav)return;
+  const isModern=nav.classList.contains('game-tabs');
+  installSeries(sectionData,isModern);
+  installEditions(sectionData,nav,isModern);
 }
 
 async function run(){
