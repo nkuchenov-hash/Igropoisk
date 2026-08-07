@@ -63,7 +63,7 @@ jobs:
       - name: Policy regression tests
         run: node scripts/test-release-calendar-policy.mjs
       - name: Refresh raw discovery for scheduled/manual validation
-        if: ${{ (github.event_name == 'schedule') || (github.event_name == 'workflow_dispatch' && inputs.refresh_discovery) }}
+        if: ${{ github.event_name == 'pull_request' || (github.event_name == 'schedule') || (github.event_name == 'workflow_dispatch' && inputs.refresh_discovery) }}
         env:
           RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
         run: node scripts/parse-releases.mjs
