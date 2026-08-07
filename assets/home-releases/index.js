@@ -80,7 +80,9 @@ Promise.all([
   const maximum=Math.max(6,Number(rules.maximum_cards||12));
   const recentDays=Math.max(1,Number(rules.recent_release_days||7));
   const maximumRecent=Math.min(maximum,Math.max(0,Number(rules.maximum_recent_cards||4)));
-  const classified=(payload.releases||[]).map(game=>({game,event:primaryEvent(game)}))
+  const classified=(payload.releases||[])
+    .filter(game=>game.editorial_quality?.homepage_eligible===true)
+    .map(game=>({game,event:primaryEvent(game)}))
     .map(row=>({...row,kind:releaseKind(row.event,recentDays)}))
     .filter(row=>row.kind!=='expired');
 
@@ -92,7 +94,7 @@ Promise.all([
   const selected=[...recent,...upcoming].slice(0,maximum);
   const rows=selected.map(row=>row.game);
 
-  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Новые и ожидаемые релизы пока не найдены.</div>';
+  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Проверенные новые и ожидаемые релизы пока не найдены.</div>';
   bindFallbacks(rows);
   bindRail();
 }).catch(error=>{

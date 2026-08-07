@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { normalizeGameIdentity } from './lib/home-feed-identity.mjs';
+import { evaluateHomeReleaseQuality } from './lib/home-release-quality.mjs';
 
 const root = process.cwd();
 const read = file => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
@@ -27,6 +29,7 @@ const maximumCards = Math.max(1, Number(popularRules.maximum_cards || 20));
 const freshWindowMs = Number(popularRules.fresh_signal_hours || popular.window_hours || 96) * 3_600_000;
 const independentFamilies = new Set(platformRules.independent_families || ['news', 'youtube', 'reddit', 'twitch']);
 const liveFamilies = new Set(['youtube', 'reddit', 'twitch']);
+const duplicateSuffixPatterns = config.releases.duplicate_suffix_patterns || [];
 
 const unique = values => [...new Set(values.filter(Boolean))];
 const evidencePosition = (item, family) => {
@@ -193,16 +196,36 @@ eligible.sort((left, right) =>
   String(left.title).localeCompare(String(right.title), 'ru')
 );
 
-const selected = eligible.slice(0, maximumCards);
+const deduplicatedEligible = [];
+const eligibleIdentities = new Map();
+for (const item of eligible) {
+  const identity = normalizeGameIdentity(item.title, duplicateSuffixPatterns);
+  const existing = identity ? eligibleIdentities.get(identity) : null;
+  if (existing) {
+    const audit = popularAudit.find(row => row.slug === item.slug);
+    if (audit) {
+      audit.publishable = false;
+      audit.reasons = unique([...(audit.reasons || []), `duplicate_of:${existing.slug}`]);
+    }
+    continue;
+  }
+  if (identity) eligibleIdentities.set(identity, item);
+  deduplicatedEligible.push(item);
+}
+
+const selected = deduplicatedEligible.slice(0, maximumCards);
 if (fallbackRules.enabled && selected.length < maximumCards && previousPopular?.ranking?.length) {
   const previousAgeMs = now - Date.parse(previousPopular.generated_at || '');
   const previousFreshEnough = Number.isFinite(previousAgeMs) && previousAgeMs <= Number(fallbackRules.maximum_previous_age_hours || 24) * 3_600_000;
   if (previousFreshEnough) {
     const selectedSlugs = new Set(selected.map(item => item.slug));
+    const selectedIdentities = new Set(selected.map(item => normalizeGameIdentity(item.title, duplicateSuffixPatterns)).filter(Boolean));
     for (const item of previousPopular.ranking) {
       if (selected.length >= maximumCards) break;
-      if (!item?.slug || selectedSlugs.has(item.slug) || !item.cover_verified || !item.image) continue;
+      const identity = normalizeGameIdentity(item?.title, duplicateSuffixPatterns);
+      if (!item?.slug || selectedSlugs.has(item.slug) || (identity && selectedIdentities.has(identity)) || !item.cover_verified || !item.image) continue;
       selectedSlugs.add(item.slug);
+      if (identity) selectedIdentities.add(identity);
       selected.push({
         ...item,
         editorial_tier: 'carryover',
@@ -213,48 +236,48 @@ if (fallbackRules.enabled && selected.length < maximumCards && previousPopular?.
   }
 }
 
-const titleKey = title => {
-  let value = String(title || '').normalize('NFKC').toLowerCase();
-  for (const pattern of config.releases.duplicate_suffix_patterns || []) value = value.replace(new RegExp(pattern, 'i'), '');
-  return value.replace(/[^a-z0-9а-яё]+/gi, ' ').replace(/\s+/g, ' ').trim();
-};
+const titleKey = title => normalizeGameIdentity(title, duplicateSuffixPatterns);
 const excludedPatterns = (config.releases.exclude_title_patterns || []).map(pattern => new RegExp(pattern, 'i'));
 const significantGenres = new Set(config.releases.significant_genres || []);
+const minimumReleaseQuality = Math.max(1, Number(config.releases.minimum_homepage_quality || 7));
+const popularIdentities = new Set(selected.map(item => titleKey(item.title)).filter(Boolean));
 const seen = new Map();
 const releaseAudit = [];
 
 for (const game of releases.releases || []) {
-  const reasons = [];
+  const preflightReasons = [];
   const title = String(game.title || '');
-  if (excludedPatterns.some(pattern => pattern.test(title))) reasons.push('non_full_release');
+  if (excludedPatterns.some(pattern => pattern.test(title))) preflightReasons.push('non_full_release');
   const key = titleKey(title);
-  if (seen.has(key)) reasons.push(`duplicate_of:${seen.get(key)}`);
+  if (seen.has(key)) preflightReasons.push(`duplicate_of:${seen.get(key)}`);
   else if (key) seen.set(key, game.slug);
 
-  const event = (game.events || [])[0] || {};
-  let quality = 0;
-  if (event.precision === 'exact') quality += 2;
-  else if (event.precision && event.precision !== 'tbd') quality += 1;
-  if ((game.genres || []).some(genre => significantGenres.has(genre))) quality += 1;
-  if (game.developer) quality += 1;
-  if (game.publisher) quality += 1;
-  if (game.editorial?.has_page || game.editorial?.status === 'published') quality += 3;
-  if (game.editorial?.needs_review) quality -= 2;
-  if (reasons.length) quality -= 4;
-
-  const homepageEligible = reasons.length === 0 && quality >= config.releases.minimum_homepage_quality;
+  const evaluated = evaluateHomeReleaseQuality(game, {
+    popularIdentities,
+    significantGenres,
+    minimumQuality: minimumReleaseQuality,
+    duplicateSuffixPatterns,
+    checkedAt
+  });
+  const reasons = unique([...preflightReasons, ...(evaluated.reasons || [])]);
+  const homepageEligible = evaluated.homepage_eligible && preflightReasons.length === 0;
   game.editorial_quality = {
+    ...evaluated,
     homepage_eligible: homepageEligible,
-    quality_score: quality,
     reasons,
     checked_at: checkedAt
   };
+
+  const event = (game.events || [])[0] || {};
   releaseAudit.push({
     slug: game.slug,
     title,
     homepage_eligible: homepageEligible,
-    quality_score: quality,
+    quality_score: evaluated.quality_score,
     reasons,
+    signals: evaluated.signals,
+    source_families: evaluated.source_families,
+    independent_source_count: evaluated.independent_source_count,
     precision: event.precision || 'tbd',
     date: event.date || event.date_start || null,
     source_ids: event.source_ids || []
@@ -263,11 +286,16 @@ for (const game of releases.releases || []) {
 
 const selectedReleaseAudit = releaseAudit
   .filter(item => item.homepage_eligible)
+  .sort((left, right) =>
+    Number(right.quality_score || 0) - Number(left.quality_score || 0) ||
+    String(left.date || '9999').localeCompare(String(right.date || '9999')) ||
+    String(left.title).localeCompare(String(right.title), 'ru')
+  )
   .slice(0, config.releases.homepage_limit);
 const qualitySnapshot = {
-  schema_version: 6,
+  schema_version: 7,
   generated_at: checkedAt,
-  status: selected.length >= maximumCards ? 'complete' : selected.length ? 'partial' : 'empty',
+  status: selected.length >= maximumCards && selectedReleaseAudit.length ? 'complete' : selected.length || selectedReleaseAudit.length ? 'partial' : 'empty',
   popular: {
     requested_cards: maximumCards,
     published_cards: selected.length,
@@ -290,6 +318,7 @@ const qualitySnapshot = {
   releases: {
     snapshot_generated_at: releases.generated_at,
     homepage_limit: config.releases.homepage_limit,
+    minimum_homepage_quality: minimumReleaseQuality,
     selected: selectedReleaseAudit,
     audit: releaseAudit
   }
@@ -302,7 +331,7 @@ popular.editorial_quality = {
   requested_cards: maximumCards,
   published_cards: selected.length,
   blocking: false,
-  rules: 'three-publishers-or-multi-family-or-strong-youtube-community-then-platform-fill'
+  rules: 'three-publishers-or-multi-family-or-strong-youtube-community-then-platform-fill-with-canonical-identity-deduplication'
 };
 write('data/popular/current.json', popular);
 write('data/popular/published.json', popular);
@@ -310,7 +339,9 @@ write('data/popular/published.json', popular);
 releases.editorial_quality = {
   checked_at: checkedAt,
   homepage_eligible_count: releaseAudit.filter(item => item.homepage_eligible).length,
-  excluded_count: releaseAudit.filter(item => !item.homepage_eligible).length
+  excluded_count: releaseAudit.filter(item => !item.homepage_eligible).length,
+  minimum_homepage_quality: minimumReleaseQuality,
+  required_relevance_signals: config.releases.required_relevance_signals || []
 };
 write('data/releases/current.json', releases);
 

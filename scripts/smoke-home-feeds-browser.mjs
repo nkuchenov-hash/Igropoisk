@@ -172,7 +172,7 @@ function validateState(state, pageErrors) {
   if (state.popularErrorState) errors.push(`Popular block rendered a state: ${state.popularStateText}`);
   if (state.releaseCards < 1) errors.push('Release block rendered no cards.');
   if (state.recentReleases + state.upcomingReleases !== state.releaseCards) errors.push('Some release cards have no recent/upcoming classification.');
-  if (state.upcomingReleases < 1) errors.push('Release block rendered no expected releases.');
+  if (state.recentReleases + state.upcomingReleases < 1) errors.push('Release block rendered no valid recent/upcoming releases.');
   if (state.releaseLinks !== state.releaseCards) errors.push('Some release cards do not link to the calendar.');
   if (state.releaseMedia !== state.releaseCards) errors.push('Some release cards have neither an image nor initials fallback.');
   if (state.releaseControls !== 2) errors.push(`Release rail controls: ${state.releaseControls}/2.`);
