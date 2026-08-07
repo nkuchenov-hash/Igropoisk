@@ -8,6 +8,7 @@
       "interval_minutes": 1440,
       "freshness_file": "data/news.json",
       "commands": [
+        "node scripts/preserve-news-history.mjs --snapshot",
         "node scripts/fetch-news.mjs",
         "node scripts/collect-regional-news.mjs",
         "node scripts/postprocess-industry-news.mjs"
@@ -18,6 +19,7 @@
       "interval_minutes": 60,
       "freshness_file": "data/publisher-news.json",
       "commands": [
+        "node scripts/preserve-news-history.mjs --snapshot",
         "node scripts/fetch-publisher-news.mjs",
         "node scripts/fetch-youtube-signals.mjs"
       ]
@@ -25,7 +27,6 @@
   ],
   "rebuild_commands": [
     "node scripts/normalize-news-records.mjs",
-    "node scripts/preserve-news-history.mjs --snapshot",
     "node scripts/build-news-events.mjs",
     "node scripts/preserve-news-history.mjs --merge",
     "node scripts/build-home-news.mjs"
