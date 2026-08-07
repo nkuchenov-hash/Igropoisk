@@ -19,8 +19,8 @@ for (const slug of ['alpha-game', 'beta-game', 'control']) {
   await fs.writeFile(path.join(root, 'game', slug, 'index.html'), '<!doctype html>');
 }
 await fs.writeFile(path.join(root, 'data/catalog-visible.json'), JSON.stringify([
-  { slug: 'alpha-game', title: 'Alpha Game', externalIds: { steam: 101 } },
-  { slug: 'beta-game', title: 'Beta Game', externalIds: { steam: 202 } },
+  { slug: 'alpha-game', title: 'Alpha Game', steam_appid: 101 },
+  { slug: 'beta-game', title: 'Beta Game', steam_appid: 202 },
   { slug: 'control', title: 'Control' },
   { slug: 'future-game', title: 'Future Game' }
 ]));
@@ -39,22 +39,31 @@ await fs.writeFile(path.join(root, 'data/news-game-overrides.json'), JSON.string
 }));
 
 const catalog = await loadGameCatalog({ root });
+assert.equal(catalog.canonicalRegistry, true, 'News catalog must come from the canonical Game Registry.');
+assert.equal(catalog.games.length, 4);
+assert.equal(new Set(catalog.games.map(game => game.gameId)).size, 4, 'Every news target must have one canonical game ID.');
+
 const one = resolveNewsGames({ id: 'one', title: 'Alpha Game получила обновление' }, catalog);
 assert.deepEqual(one.games.map(game => game.slug), ['alpha-game']);
+assert.equal(one.gameIds[0], one.games[0].gameId);
+assert.match(one.games[0].gameId, /^game_/);
 assert.equal(one.games[0].pageUrl, 'game/alpha-game/');
 
 const multiple = resolveNewsGames({ id: 'multiple', title: 'Alpha Game и Beta Game появятся на выставке' }, catalog);
 assert.deepEqual(multiple.games.map(game => game.slug).sort(), ['alpha-game', 'beta-game']);
+assert.equal(multiple.gameIds.length, 2);
 
 const abbreviation = resolveNewsGames({ id: 'abbr', title: 'AG1 выйдет осенью' }, catalog);
 assert.deepEqual(abbreviation.games.map(game => game.slug), ['alpha-game']);
 
 const external = resolveNewsGames({ id: 'external', title: 'Большое обновление', externalGameIds: { steam: 202 } }, catalog);
 assert.deepEqual(external.games.map(game => game.slug), ['beta-game']);
+assert.equal(external.games[0].gameId, catalog.games.find(game => game.slug === 'beta-game').gameId);
 
 const ambiguous = resolveNewsGames({ id: 'ambiguous', title: 'Новости Shared Alias' }, catalog);
 assert.equal(ambiguous.games.length, 0, 'Ambiguous series/alias must not create a false public link.');
 assert.equal(ambiguous.gameReviewStatus, 'needs-review');
+assert.equal(ambiguous.gameCandidates.some(candidate => candidate.possibleGameIds.length === 2), true, 'Review candidates must carry canonical IDs.');
 
 const singleWord = resolveNewsGames({ id: 'word', title: 'Developers improve control settings' }, catalog);
 assert.equal(singleWord.games.length, 0, 'A generic one-word occurrence must not link the game Control.');
@@ -62,6 +71,7 @@ assert.equal(singleWord.games.length, 0, 'A generic one-word occurrence must not
 const missingPage = resolveNewsGames({ id: 'missing', game: 'Future Game', title: 'Future Project announced' }, catalog);
 assert.equal(missingPage.games[0].pageExists, false);
 assert.equal(missingPage.games[0].pageUrl, '', 'Missing game pages must never produce public links.');
+assert.match(missingPage.games[0].gameId, /^game_/);
 assert.equal(missingPage.gameReviewStatus, 'needs-review');
 
 const manual = resolveNewsGames({ id: 'manual', title: 'Unclear project' }, catalog, {
@@ -69,6 +79,7 @@ const manual = resolveNewsGames({ id: 'manual', title: 'Unclear project' }, cata
 });
 assert.deepEqual(manual.games.map(game => game.slug), ['beta-game']);
 assert.equal(manual.games[0].manual, true);
+assert.match(manual.games[0].gameId, /^game_/);
 assert.equal(manual.gameReviewStatus, 'manual');
 
 const enriched = await enrichNewsItems([
@@ -77,7 +88,9 @@ const enriched = await enrichNewsItems([
 ], { root, catalog });
 assert.equal(enriched[0].publishedDay, '2026-08-06');
 assert.deepEqual(enriched[0].games.map(game => game.slug), ['beta-game'], 'Repository override must survive every enrichment run.');
+assert.deepEqual(enriched[0].gameIds, [enriched[0].games[0].gameId]);
 assert.equal(buildGameReviewQueue(enriched).count, 1);
+assert.equal(buildGameReviewQueue(enriched).items[0].gameIds.length, 1);
 
 const merged = mergeExistingNewsItems(
   [{ id: 'stable', url: 'https://example.test/story?id=7&utm_source=old', title: 'Old', firstSeenAt: '2026-08-01T00:00:00Z' }],
@@ -94,4 +107,4 @@ assert.equal(canonicalSourceUrl('https://example.test/story?utm_source=x&id=7#to
 assert.deepEqual(publicationFieldsInTimeZone('2026-08-05T22:30:00Z', { timeZone: 'Europe/Moscow' }).publishedDay, '2026-08-06');
 
 await fs.rm(root, { recursive: true, force: true });
-console.log('News game entity linking, ambiguity, page existence, deduplication and manual override tests passed.');
+console.log('News canonical Game Registry linking, ambiguity, page existence, deduplication and manual override tests passed.');
