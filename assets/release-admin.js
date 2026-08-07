@@ -1,70 +1,31 @@
 (()=>{
 'use strict';
-const $=(selector,root=document)=>root.querySelector(selector);
-const $$=(selector,root=document)=>[...root.querySelectorAll(selector)];
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-const state={releases:[],changes:[],run:null,status:''};
-const primaryEvent=game=>(game.events||[])[0]||{};
-const imageUrl=game=>{const local=game.image?.local_url;if(local)return local.startsWith('assets/')?`../../../${local}`:local;return game.image?.source_url||''};
-const dateLabel=event=>{
-  if(event.precision==='tbd'||!(event.date||event.date_start))return 'Дата уточняется';
-  const value=event.date||event.date_start;const d=new Date(`${value}T12:00:00Z`);
-  if(event.precision==='year')return `${d.getUTCFullYear()} год`;
-  if(event.precision==='quarter')return `${Math.floor(d.getUTCMonth()/3)+1} квартал ${d.getUTCFullYear()}`;
-  if(event.precision==='month')return new Intl.DateTimeFormat('ru-RU',{month:'long',year:'numeric',timeZone:'UTC'}).format(d);
-  return new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(d);
-};
-const statusLabel=status=>({discovered:'Обнаружено',needs_review:'Требует проверки',draft:'Черновик',ready:'Готово',published:'Опубликовано'}[status]||'Черновик');
-const sourceLabel=status=>({success:'Работает',partial:'Частично',error:'Ошибка',skipped:'Пропущен'}[status]||status||'Нет данных');
-const imageStatus=game=>game.image?.status==='downloaded_verified'||game.image?.verified?{className:'ok',label:game.image?.status==='downloaded_verified'?'Скачано и проверено':'Официальная обложка'}:{className:'warning',label:'Нужна проверка'};
-
-function metrics(){
-  const rows=state.releases;const values=[
-    ['Всего релизов',rows.length,'is-accent'],
-    ['Требуют проверки',rows.filter(game=>game.editorial?.needs_review).length,''],
-    ['Черновики',rows.filter(game=>game.editorial?.status==='draft').length,''],
-    ['Готовы',rows.filter(game=>game.editorial?.status==='ready').length,''],
-    ['Опубликованы',rows.filter(game=>game.editorial?.status==='published').length,'']
-  ];
-  $('#releaseAdminMetrics').innerHTML=values.map(([label,value,className])=>`<article class="release-admin-metric ${className}"><span>${esc(label)}</span><strong>${esc(value)}</strong></article>`).join('');
-}
-function tabs(){
-  const statuses=[['','Все'],['needs_review','На проверке'],['draft','Черновики'],['ready','Готовы'],['published','Опубликованы']];
-  $('#releaseAdminTabs').innerHTML=statuses.map(([value,label])=>{const count=value?state.releases.filter(game=>game.editorial?.status===value).length:state.releases.length;return `<button class="${state.status===value?'active':''}" type="button" data-status-tab="${esc(value)}">${esc(label)} · ${count}</button>`}).join('');
-}
-function row(game){
-  const event=primaryEvent(game);const image=imageStatus(game);const source=(game.sources||[])[0];const status=game.editorial?.status||'draft';const readiness=Number(game.editorial?.readiness||0);
-  return `<tr><td><div class="release-admin-game"><div class="release-admin-game__cover">${imageUrl(game)?`<img src="${esc(imageUrl(game))}" alt="" loading="lazy">`:''}</div><div><strong>${esc(game.title)}</strong><small>${esc(game.developer||'Разработчик не указан')}</small></div></div></td><td><div class="release-admin-date"><strong>${esc(dateLabel(event))}</strong><span>${esc((event.platforms||[]).join(' · ')||'Платформы уточняются')}</span></div></td><td><div class="release-admin-source-count"><strong>${(game.sources||[]).length}</strong><span>${esc(source?.title||'Нет источника')}<br>${esc(source?.family||'')}</span></div></td><td><span class="release-admin-image-status ${image.className}">${esc(image.label)}</span></td><td><span class="release-admin-page-status ${esc(status)}">${esc(statusLabel(status))}</span><div class="release-admin-readiness" aria-label="Готовность ${readiness}%"><span style="width:${Math.max(0,Math.min(100,readiness))}%"></span></div></td><td><div class="release-admin-row-actions"><a href="../../../calendar/#game=${encodeURIComponent(game.slug)}" target="_blank">Проверить</a>${source?.url?`<a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">Источник ↗</a>`:''}</div></td></tr>`;
-}
-function renderRows(){
-  const query=$('#releaseAdminSearch').value.trim().toLowerCase();const selected=$('#releaseAdminStatus').value||state.status;
-  const rows=state.releases.filter(game=>(!selected||game.editorial?.status===selected)&&(!query||`${game.title} ${game.developer||''} ${game.publisher||''}`.toLowerCase().includes(query)));
-  $('#releaseAdminRows').innerHTML=rows.length?rows.map(row).join(''):`<tr><td colspan="6"><div class="release-admin-empty">По выбранным условиям записей нет.</div></td></tr>`;
-  $$('#releaseAdminRows img').forEach(img=>img.addEventListener('error',()=>img.hidden=true,{once:true}));
-}
-function renderChanges(){
-  const rows=state.changes.slice(0,12);
-  $('#releaseAdminChanges').innerHTML=rows.length?rows.map(change=>`<article class="release-admin-change"><span class="release-admin-change__dot ${esc(change.severity||'')}"></span><div><strong>${esc(change.title||change.game_slug)}</strong><p>${esc(change.type==='delayed'?'Дата выхода перенесена':change.type==='date_changed'?'Изменена дата или точность периода':change.type==='new_release'?'Найден новый релиз':change.type==='missing_from_source'?'Запись исчезла из источника':change.new_value||'Обновлены данные')}</p></div><time>${esc(change.detected_at?new Intl.DateTimeFormat('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(change.detected_at)):'—')}</time></article>`).join(''):'<div class="release-admin-empty">Изменений пока нет.</div>';
-}
-function renderSources(){
-  const sources=state.run?.sources||[];
-  $('#releaseAdminRunStatus').textContent=sourceLabel(state.run?.status);
-  $('#releaseAdminSources').innerHTML=sources.length?sources.map(source=>`<article class="release-admin-source"><div><strong>${esc(source.id)}</strong><span>${esc(source.items??0)} записей · ${esc(source.duration_ms?`${source.duration_ms} мс`:'время не указано')}${source.error?` · ${esc(source.error)}`:''}</span></div><b class="${esc(source.status||'')}">${esc(sourceLabel(source.status))}</b></article>`).join(''):'<div class="release-admin-empty">Журнал источников ещё не создан.</div>';
-}
-function bind(){
-  $('#releaseAdminSearch').addEventListener('input',renderRows);$('#releaseAdminStatus').addEventListener('change',()=>{state.status='';tabs();renderRows()});
-  $('#releaseAdminTabs').addEventListener('click',event=>{const button=event.target.closest('[data-status-tab]');if(!button)return;state.status=button.dataset.statusTab;$('#releaseAdminStatus').value='';tabs();renderRows()});
-  const theme=$('#releaseAdminTheme');const root=document.documentElement;root.dataset.theme=localStorage.getItem('igroTheme')||'dark';const paint=()=>theme.textContent=root.dataset.theme==='light'?'☾':'☀';paint();theme.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='light'?'dark':'light';localStorage.setItem('igroTheme',root.dataset.theme);paint()});
-}
-async function load(){
-  try{
-    const [releaseResponse,changeResponse,runResponse]=await Promise.all([fetch('../../../data/releases/current.json',{cache:'no-store'}),fetch('../../../data/releases/changes.json',{cache:'no-store'}),fetch('../../../data/parser-runs/releases.json',{cache:'no-store'})]);
-    if(!releaseResponse.ok)throw new Error(`HTTP ${releaseResponse.status}`);
-    state.releases=(await releaseResponse.json()).releases||[];
-    if(changeResponse.ok)state.changes=(await changeResponse.json()).changes||[];
-    if(runResponse.ok)state.run=await runResponse.json();
-    metrics();tabs();renderRows();renderChanges();renderSources();bind();
-  }catch(error){console.error(error);$('#releaseAdminRows').innerHTML='<tr><td colspan="6"><div class="release-admin-empty">Не удалось загрузить очередь релизов.</div></td></tr>';}
-}
-load();
+const $=(s,r=document)=>r.querySelector(s); const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const STORAGE='igroReleaseEditorialDraft';
+const state={candidates:[],report:{},base:{schema_version:1,updated_at:null,decisions:{}},local:{},tab:'all'};
+const decisionFor=c=>state.local[c.id]||state.local[c.slug]||state.base.decisions?.[c.id]||state.base.decisions?.[c.slug]||null;
+const statusOf=c=>decisionFor(c)?.decision||c.moderation?.status||'review';
+const eventOf=c=>(c.events||[])[0]||{};
+const sourceNames=c=>(c.sources||[]).map(s=>s.title||s.family).filter(Boolean);
+const platforms=c=>[...new Set((c.events||[]).flatMap(e=>e.platforms||[]))];
+const reasons=c=>[c.moderation?.rejection_reason,...(c.moderation?.automatic_reasons||[])].filter(Boolean);
+const save=()=>localStorage.setItem(STORAGE,JSON.stringify(state.local));
+function updateDecision(candidate, patch){state.local[candidate.id]={...(decisionFor(candidate)||{}),...(state.local[candidate.id]||{}),...patch,updated_at:new Date().toISOString()};save();render()}
+function badge(status){return `<span class="release-admin-status release-admin-status--${esc(status)}">${status==='published'?'Опубликован':status==='rejected'?'Отклонён':'На проверке'}</span>`}
+function metrics(){const counts={published:0,review:0,rejected:0};state.candidates.forEach(c=>counts[statusOf(c)]++);const raw=state.candidates.length;$('#releaseAdminMetrics').innerHTML=`<article><span>Найдено</span><strong>${raw}</strong></article><article><span>Опубликовано</span><strong>${counts.published}</strong></article><article><span>На проверке</span><strong>${counts.review}</strong></article><article><span>Отклонено</span><strong>${counts.rejected}</strong></article>`;$('#releaseAdminTabs').innerHTML=[['all','Все',raw],['published','Опубликованные',counts.published],['review','Проверка',counts.review],['rejected','Отклонённые',counts.rejected]].map(([key,label,count])=>`<button type="button" class="ig-action ${state.tab===key?'active':''}" data-tab="${key}">${label} <span>${count}</span></button>`).join('');$$('[data-tab]').forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab;render()})}
+function filtered(){const q=($('#releaseAdminSearch')?.value||'').trim().toLowerCase(),select=$('#releaseAdminStatus')?.value||'';return state.candidates.filter(c=>{const status=statusOf(c);return(state.tab==='all'||status===state.tab)&&(!select||status===select)&&(!q||`${c.title} ${c.slug} ${c.developer||''} ${c.publisher||''}`.toLowerCase().includes(q))})}
+function eventLabel(c){const e=eventOf(c);return e.date||e.date_start||'Дата уточняется'}
+function row(c){const status=statusOf(c),signals=c.significance?.signals||[],decision=decisionFor(c),why=reasons(c);return `<tr data-candidate="${esc(c.id)}"><td><div class="release-admin-game"><strong>${esc(c.title)}</strong>${badge(status)}<small>${esc(c.release_type||'full')} · score ${Number(c.significance?.score||0)}</small>${why.length?`<small>${esc(why.join(' · '))}</small>`:''}</div></td><td><strong>${esc(eventLabel(c))}</strong><small>${esc(platforms(c).join(' · ')||'нет подтверждённых платформ')}</small></td><td><div class="release-admin-source-stack">${sourceNames(c).slice(0,4).map(x=>`<span>${esc(x)}</span>`).join('')||'<span>Нет источников</span>'}</div></td><td>${c.image?.local_url||c.image?.source_url?`<img class="release-admin-cover" src="${esc(c.image.local_url?`../../../${c.image.local_url}`:c.image.source_url)}" alt="">`:'—'}</td><td><div class="release-admin-signal-stack">${signals.map(x=>`<span>${esc(x)}</span>`).join('')||'<span>Нет сигналов</span>'}</div></td><td><div class="release-admin-row-actions"><button class="ig-action" type="button" data-action="publish" data-id="${esc(c.id)}">Публиковать</button><button class="ig-action" type="button" data-action="review" data-id="${esc(c.id)}">Проверить</button><button class="ig-action" type="button" data-action="reject" data-id="${esc(c.id)}">Отклонить</button><button class="ig-action" type="button" data-action="edit" data-id="${esc(c.id)}">Дата/платформы</button>${decision?'<small>есть ручное решение</small>':''}</div></td></tr>`}
+function renderRows(){const rows=filtered();$('#releaseAdminRows').innerHTML=rows.map(row).join('')||'<tr><td colspan="6">Нет кандидатов по выбранным условиям.</td></tr>';$$('[data-action]').forEach(b=>b.onclick=()=>handle(b.dataset.action,b.dataset.id));$$('.release-admin-cover').forEach(img=>img.addEventListener('error',()=>img.hidden=true,{once:true}))}
+function handle(action,id){const c=state.candidates.find(x=>x.id===id);if(!c)return;if(action==='publish')updateDecision(c,{decision:'published',publication_forbidden:false,rejection_reason:null,locked_fields:['decision']});if(action==='review')updateDecision(c,{decision:'review',publication_forbidden:false,locked_fields:['decision']});if(action==='reject'){const reason=prompt('Причина отклонения','editorial rejection');if(reason===null)return;updateDecision(c,{decision:'rejected',publication_forbidden:true,rejection_reason:reason||'editorial rejection',locked_fields:['decision','publication_forbidden']})}if(action==='edit')editEvent(c)}
+function editEvent(c){const e=eventOf(c),date=prompt('Дата YYYY-MM-DD (пусто — без изменения)',e.date||e.date_start||'');if(date===null)return;const p=prompt('Платформы через запятую',platforms(c).join(', '));if(p===null)return;const platformsNext=p.split(',').map(x=>x.trim()).filter(Boolean);const override={event_id:e.id||`manual:${c.slug}`,date:date||e.date||null,date_start:date||e.date_start||null,date_end:date||e.date_end||null,precision:date?'exact':e.precision||'tbd',region:e.region||'worldwide',platforms:platformsNext.length?platformsNext:e.platforms||[],source_ids:e.source_ids||[]};updateDecision(c,{decision:statusOf(c),event_overrides:[override],locked_fields:['events']})}
+function changes(){const entries=Object.entries(state.local);$('#releaseAdminChanges').innerHTML=entries.length?entries.map(([id,d])=>`<article><strong>${esc(state.candidates.find(c=>c.id===id)?.title||id)}</strong><span>${esc(d.decision||'изменено')} · ${esc((d.locked_fields||[]).join(', ')||'решение')}</span></article>`).join(''):'<div class="release-admin-empty">Локальных редакционных решений нет.</div>'}
+function sources(){const s=state.report.statistics||{};$('#releaseAdminRunStatus').textContent=state.report.generated_at?'Готово':'Нет отчёта';$('#releaseAdminSources').innerHTML=`<article><span>Сырые кандидаты</span><strong>${s.raw_candidates??state.candidates.length}</strong></article><article><span>Публичные</span><strong>${s.published??'—'}</strong></article><article><span>Проверка</span><strong>${s.review??'—'}</strong></article><article><span>Отклонено</span><strong>${s.rejected??'—'}</strong></article>`}
+function render(){metrics();renderRows();changes();sources()}
+function exportJson(){const merged={...state.base,updated_at:new Date().toISOString(),decisions:{...(state.base.decisions||{}),...state.local}};const blob=new Blob([JSON.stringify(merged,null,2)+'\n'],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='editorial.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),0)}
+async function importJson(file){try{const doc=JSON.parse(await file.text());if(!doc||typeof doc.decisions!=='object')throw new Error('decisions missing');state.local={...state.local,...doc.decisions};save();render()}catch(err){alert(`Не удалось импортировать editorial.json: ${err.message}`)}}
+async function init(){try{const [c,e,r]=await Promise.all([fetch('../../../data/release-candidates/current.json',{cache:'no-store'}),fetch('../../../data/release-candidates/editorial.json',{cache:'no-store'}),fetch('../../../data/releases/materialization-report.json',{cache:'no-store'})]);const candidateDoc=c.ok?await c.json():{candidates:[]};state.candidates=candidateDoc.candidates||[];state.base=e.ok?await e.json():state.base;state.report=r.ok?await r.json():{};try{state.local=JSON.parse(localStorage.getItem(STORAGE)||'{}')}catch{state.local={}}render()}catch(err){console.error(err);$('#releaseAdminRows').innerHTML='<tr><td colspan="6">Не удалось загрузить базу кандидатов.</td></tr>'}}
+$('#releaseAdminSearch')?.addEventListener('input',renderRows);$('#releaseAdminStatus')?.addEventListener('change',renderRows);$('#exportReleaseEditorial')?.addEventListener('click',exportJson);$('#resetReleaseEditorial')?.addEventListener('click',()=>{if(confirm('Удалить только локальные, ещё не экспортированные решения?')){state.local={};save();render()}});$('#importReleaseEditorial')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(f)importJson(f);e.target.value='' });
+init();
 })();
