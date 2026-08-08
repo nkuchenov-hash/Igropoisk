@@ -21,7 +21,7 @@
         "allow_placeholders": false,
         "block_on_exact_cardinality": false
       },
-      "command": "node scripts/test-gta6-popular-rules.mjs && node scripts/parse-popular.mjs && node scripts/enrich-global-popular-youtube.mjs && node scripts/filter-popular.mjs && node scripts/resolve-popular-covers.mjs && node scripts/resolve-global-popular-art.mjs && node scripts/resolve-official-popular-packages.mjs",
+      "command": "node scripts/test-gta6-popular-rules.mjs && node scripts/parse-popular.mjs && node scripts/enrich-global-popular-youtube.mjs && node scripts/filter-popular.mjs && node scripts/resolve-popular-covers.mjs && node scripts/resolve-global-popular-art.mjs && node scripts/resolve-official-popular-packages.mjs && node scripts/canonicalize-system-game-identity.mjs --popular-only --write",
       "outputs": [
         "data/popular/current.json",
         "data/popular/covers.json",
