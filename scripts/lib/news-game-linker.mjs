@@ -4,6 +4,7 @@ import { loadCanonicalNewsCatalog } from './news-game-registry-adapter.mjs';
 
 const TRACKING_QUERY = /^(utm_|fbclid$|gclid$|yclid$|ref$|source$)/i;
 const DAY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const GENERIC_SINGLE_WORD_GAME_TITLES = new Set(['control']);
 
 export function normalizeName(value = '') {
   return String(value)
@@ -120,6 +121,18 @@ function exactTextContains(haystack, needle) {
   return ` ${haystack} `.includes(` ${needle} `);
 }
 
+function escapeRegExp(value = '') {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function exactCaseTitleContains(title, source) {
+  const normalized = normalizeName(source);
+  if (!normalized || normalized.includes(' ') || GENERIC_SINGLE_WORD_GAME_TITLES.has(normalized)) return false;
+  const candidate = String(source || '').trim();
+  if (!candidate || candidate.length < 4) return false;
+  return new RegExp(`(^|[^\\p{L}\\p{N}])${escapeRegExp(candidate)}(?=$|[^\\p{L}\\p{N}])`, 'u').test(String(title || ''));
+}
+
 function explicitNames(item) {
   const values = [];
   if (typeof item?.game === 'string' && item.game.trim()) values.push(item.game.trim());
@@ -195,19 +208,25 @@ export function resolveNewsGames(item, catalog, overrides = { items: {} }) {
       }
     }
 
-    const body = normalizeName(`${item?.titleRu || ''} ${item?.titleEn || ''} ${item?.title || ''} ${item?.summaryRu || ''} ${item?.summaryEn || ''} ${item?.summary || ''}`);
+    const title = [item?.titleRu, item?.titleEn, item?.title].filter(Boolean).map(String).join(' · ');
+    const body = normalizeName(`${title} ${item?.summaryRu || ''} ${item?.summaryEn || ''} ${item?.summary || ''}`);
     const matchedPhrases = [...indexes.alias.entries()]
-      .map(([phrase, matches]) => ({ phrase, matches, abbreviation: matches.some(match => match.kind === 'abbreviation') }))
-      .filter(entry => (entry.phrase.split(' ').length >= 2 || entry.abbreviation) && exactTextContains(body, entry.phrase))
+      .map(([phrase, matches]) => ({
+        phrase,
+        matches,
+        abbreviation: matches.some(match => match.kind === 'abbreviation'),
+        singleWordHeadline: !phrase.includes(' ') && matches.some(match => exactCaseTitleContains(title, match.source))
+      }))
+      .filter(entry => ((entry.phrase.split(' ').length >= 2 || entry.abbreviation) && exactTextContains(body, entry.phrase)) || entry.singleWordHeadline)
       .sort((a, b) => b.phrase.length - a.phrase.length);
     const acceptedPhrases = [];
-    for (const { phrase, matches, abbreviation } of matchedPhrases) {
+    for (const { phrase, matches, abbreviation, singleWordHeadline } of matchedPhrases) {
       if (acceptedPhrases.some(longer => exactTextContains(longer, phrase))) continue;
       acceptedPhrases.push(phrase);
       const games = [...new Map(matches.map(match => [match.game.gameId, match.game])).values()];
       if (games.length === 1) {
         const game = games[0];
-        resolved.set(game.gameId, publicGame(game, { matchedBy: abbreviation ? 'abbreviation' : 'official-or-alias' }));
+        resolved.set(game.gameId, publicGame(game, { matchedBy: abbreviation ? 'abbreviation' : singleWordHeadline ? 'headline-single-word' : 'official-or-alias' }));
       } else {
         candidates.push(reviewCandidate(matches[0]?.source || phrase, 'ambiguous-alias', games));
       }
