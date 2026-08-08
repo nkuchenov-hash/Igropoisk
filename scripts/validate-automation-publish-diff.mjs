@@ -16,6 +16,7 @@ const PROFILES = {
     prefixes: [
       'data/content-pipeline/',
       'data/game-registry/',
+      'data/top-250/',
       'data/parser-runs/',
       'data/parser-output/',
       'data/drafts/',
