@@ -15,6 +15,7 @@ const PROFILES = {
     exact: new Set(['data/catalog-visible.json']),
     prefixes: [
       'data/content-pipeline/',
+      'data/game-registry/',
       'data/parser-runs/',
       'data/parser-output/',
       'data/drafts/',
