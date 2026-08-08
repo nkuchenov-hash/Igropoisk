@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "generated_at": "2026-08-07T15:26:56.114Z",
+  "generated_at": "2026-08-08T00:53:48.587Z",
   "releases": [
     {
       "id": "steam:2001760",
@@ -28,8 +28,8 @@
         "height": 900,
         "verified": true,
         "source_id": "steam:2001760",
-        "status": "deployment_cached",
-        "error": "HTTP 404",
+        "status": "remote_fallback",
+        "error": "Image too small: 8048 bytes",
         "content_type": "image/jpeg",
         "bytes": 8048,
         "sha256": "e43beb252418e9c791f9d20a3ed4c36eaca9a7465b7129b6e0c021a5648d3bbc"
@@ -66,7 +66,7 @@
           "priority": 90,
           "title": "Steam",
           "url": "https://store.steampowered.com/app/2001760/",
-          "checked_at": "2026-08-06T12:14:53.266Z",
+          "checked_at": "2026-08-07T16:08:37.365Z",
           "date_claim": "Aug 3, 2026",
           "status": "success"
         }
@@ -76,14 +76,13 @@
         "has_page": true
       },
       "significance": {
-        "score": 103,
+        "score": 65,
         "signals": [
-          "home_quality_gate",
           "igropoisk_page",
-          "known_developer_or_publisher",
           "published_page"
         ]
-      }
+      },
+      "game_id": "game_829e32334ee5548e2da7"
     },
     {
       "id": "steam:1478500",
@@ -146,7 +145,7 @@
           "priority": 90,
           "title": "Steam",
           "url": "https://store.steampowered.com/app/1478500/",
-          "checked_at": "2026-08-06T12:14:53.266Z",
+          "checked_at": "2026-08-07T16:08:37.365Z",
           "date_claim": "Aug 4, 2026",
           "status": "success"
         }
@@ -156,49 +155,130 @@
         "has_page": false
       },
       "significance": {
-        "score": 56,
+        "score": 46,
         "signals": [
           "current_popular",
-          "home_quality_gate",
-          "known_developer_or_publisher"
+          "steam_popular_new"
         ]
-      }
+      },
+      "game_id": "game_278b396092bcf615e14a"
     },
     {
-      "id": "steam:3787240",
-      "slug": "marvel-to-kon-fighting-souls",
-      "title": "MARVEL Tōkon: Fighting Souls",
+      "id": "steam:4927490",
+      "slug": "cleaning-up-the-puzzle-gallery",
+      "title": "Cleaning Up The Puzzle Gallery",
       "aliases": [],
       "release_type": "full",
       "genres": [
-        "Action",
-        "Casual"
+        "Casual",
+        "Indie"
       ],
-      "developer": "ARC SYSTEM WORKS CO., LTD",
-      "publisher": "PlayStation Publishing LLC",
+      "developer": "Th3GameStudio",
+      "publisher": "Th3GameStudio",
       "external_ids": {
-        "steam": 3787240,
+        "steam": 4927490,
         "igdb": null,
         "rawg": null
       },
       "image": {
-        "source_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1784908718",
-        "local_url": "assets/covers/releases/marvel-to-kon-fighting-souls.jpg",
+        "source_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4927490/1c28f6b2fa171dd8a4fd3d5e9be7a20a53ff124f/header.jpg?t=1785393280",
+        "local_url": "assets/covers/releases/cleaning-up-the-puzzle-gallery.jpg",
         "kind": "official_store_cover",
         "width": 600,
         "height": 900,
         "verified": true,
-        "source_id": "steam:3787240",
-        "status": "deployment_cached",
+        "source_id": "steam:4927490",
+        "status": "downloaded_verified",
         "error": "HTTP 404",
         "content_type": "image/jpeg",
-        "bytes": 10071,
-        "sha256": "37327e1f1db291c45e24ffd05de64260d796be19f366cf98bbbe6f7c09b4fb96"
+        "bytes": 37054,
+        "sha256": "f5280e83f0ed55facb14b80f609d8200395b05a4199f6fdf527348d42e2f28ab"
       },
       "page_url": null,
       "events": [
         {
-          "id": "marvel-to-kon-fighting-souls:worldwide:2026-08-06",
+          "id": "cleaning-up-the-puzzle-gallery:worldwide:2026-08-05",
+          "date": "2026-08-05",
+          "date_start": "2026-08-05",
+          "date_end": "2026-08-05",
+          "precision": "exact",
+          "raw_date": "Aug 5, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:4927490"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:4927490"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:4927490",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/4927490/",
+          "checked_at": "2026-08-05T11:47:41.730Z",
+          "date_claim": "Aug 5, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      },
+      "game_id": "game_e354a976fc5fb7ed4f5f"
+    },
+    {
+      "id": "steam:3904850",
+      "slug": "approximately-up",
+      "title": "Approximately Up",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Adventure",
+        "Indie",
+        "Simulation"
+      ],
+      "developer": "Approximately Games",
+      "publisher": "Approximately Games",
+      "external_ids": {
+        "steam": 3904850,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3904850/d91f2e97c92cb98f97b3c773ff1e2d84bf6bc127/header.jpg?t=1784541527",
+        "local_url": "assets/covers/releases/approximately-up.jpg",
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:3904850",
+        "status": "downloaded_verified",
+        "error": "HTTP 404",
+        "content_type": "image/jpeg",
+        "bytes": 40901,
+        "sha256": "cb8763ff434bf623b9d091bb787e23cf0afc6169e8a30f0bb57a595f4ab46671"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "approximately-up:worldwide:2026-08-06",
           "date": "2026-08-06",
           "date_start": "2026-08-06",
           "date_end": "2026-08-06",
@@ -211,22 +291,22 @@
           "status": "confirmed",
           "confidence": 0.97,
           "source_ids": [
-            "steam:3787240"
+            "steam:3904850"
           ],
           "platform_confirmations": {
             "PC": [
-              "steam:3787240"
+              "steam:3904850"
             ]
           }
         }
       ],
       "sources": [
         {
-          "id": "steam:3787240",
+          "id": "steam:3904850",
           "family": "official_store",
           "priority": 90,
           "title": "Steam",
-          "url": "https://store.steampowered.com/app/3787240/",
+          "url": "https://store.steampowered.com/app/3904850/",
           "checked_at": "2026-08-06T12:14:53.266Z",
           "date_claim": "Aug 6, 2026",
           "status": "success"
@@ -237,33 +317,2855 @@
         "has_page": false
       },
       "significance": {
-        "score": 36,
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      },
+      "game_id": "game_075121f980c215ddf480"
+    },
+    {
+      "id": "steam:4935510",
+      "slug": "cellar-keeper",
+      "title": "Cellar Keeper",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Casual",
+        "Indie",
+        "Simulation"
+      ],
+      "developer": "EgoTrampoline",
+      "publisher": "EgoTrampoline",
+      "external_ids": {
+        "steam": 4935510,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4935510/98cf035be05fa9fc70fe7e7480f76e1cbb1fd7aa/capsule_184x69.jpg?t=1785712413",
+        "local_url": "assets/covers/releases/cellar-keeper.jpg",
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:4935510",
+        "status": "remote_fallback",
+        "error": "Image too small: 9727 bytes",
+        "content_type": "image/jpeg",
+        "bytes": 9727,
+        "sha256": "6619bc87f52456bca1e266f979e3c1eb50486777d8b65d81d9b9b972aba136c8"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "cellar-keeper:worldwide:2026-08-06",
+          "date": "2026-08-06",
+          "date_start": "2026-08-06",
+          "date_end": "2026-08-06",
+          "precision": "exact",
+          "raw_date": "Aug 6, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:4935510"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:4935510"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:4935510",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/4935510/",
+          "checked_at": "2026-08-06T12:14:53.266Z",
+          "date_claim": "Aug 6, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      },
+      "game_id": "game_2f0ec9e981ba538fd5e2"
+    },
+    {
+      "id": "steam:2950790",
+      "slug": "iron-nest-heavy-turret-simulator",
+      "title": "IRON NEST: Heavy Turret Simulator",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Indie",
+        "Simulation"
+      ],
+      "developer": "Nick Nieuwoudt",
+      "publisher": "Nick Nieuwoudt",
+      "external_ids": {
+        "steam": 2950790,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2950790/e6c9e990560078611472e5dab98e79a405ed33f4/header.jpg?t=1786026301",
+        "local_url": "assets/covers/releases/iron-nest-heavy-turret-simulator.jpg",
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:2950790",
+        "status": "downloaded_verified",
+        "error": "HTTP 404",
+        "content_type": "image/jpeg",
+        "bytes": 35891,
+        "sha256": "5069e51f346436d00f8938180fae9b67372ac09d4db7779da3fed92c27938aa0"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "iron-nest-heavy-turret-simulator:worldwide:2026-08-06",
+          "date": "2026-08-06",
+          "date_start": "2026-08-06",
+          "date_end": "2026-08-06",
+          "precision": "exact",
+          "raw_date": "Aug 6, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:2950790"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:2950790"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:2950790",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/2950790/",
+          "checked_at": "2026-08-06T12:14:53.266Z",
+          "date_claim": "Aug 6, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 46,
         "signals": [
           "current_popular",
-          "home_quality_gate"
+          "steam_popular_new"
+        ]
+      },
+      "game_id": "game_c074659d494cbb2475ac"
+    },
+    {
+      "id": "steam:3141630",
+      "slug": "montabi",
+      "title": "Montabi",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Indie",
+        "Strategy"
+      ],
+      "developer": "Mankibo",
+      "publisher": "Akupara Games",
+      "external_ids": {
+        "steam": 3141630,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3141630/library_600x900.jpg",
+        "local_url": "assets/covers/releases/montabi.jpg",
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:3141630",
+        "status": "downloaded_verified",
+        "content_type": "image/jpeg",
+        "bytes": 61762,
+        "sha256": "415dbd3fe5072c9002f3d66fa70188e47f06437082803f0df93e3cf2cda19f0e"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "montabi:worldwide:2026-08-06",
+          "date": "2026-08-06",
+          "date_start": "2026-08-06",
+          "date_end": "2026-08-06",
+          "precision": "exact",
+          "raw_date": "Aug 6, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:3141630"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:3141630"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:3141630",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/3141630/",
+          "checked_at": "2026-08-06T12:14:53.266Z",
+          "date_claim": "Aug 6, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      },
+      "game_id": "game_49e6fcbfb916ec6ab046"
+    },
+    {
+      "id": "steam:3812600",
+      "slug": "restory-chill-electronics-repairs",
+      "title": "ReStory: Chill Electronics Repairs",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Indie",
+        "Simulation"
+      ],
+      "developer": "Mandragora",
+      "publisher": "tinyBuild",
+      "external_ids": {
+        "steam": 3812600,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3812600/fcf913006c05b4afafbfd25388bf4e3fe8bb1f04/capsule_184x69.jpg?t=1786026413",
+        "local_url": "assets/covers/releases/restory-chill-electronics-repairs.jpg",
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:3812600",
+        "status": "remote_fallback",
+        "error": "Image too small: 9402 bytes",
+        "content_type": "image/jpeg",
+        "bytes": 9402,
+        "sha256": "e00b2527844894cf4a32afa4a529147a1fda14cd46c94c7daa6ad62908b81f7b"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "restory-chill-electronics-repairs:worldwide:2026-08-06",
+          "date": "2026-08-06",
+          "date_start": "2026-08-06",
+          "date_end": "2026-08-06",
+          "precision": "exact",
+          "raw_date": "Aug 6, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:3812600"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:3812600"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:3812600",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/3812600/",
+          "checked_at": "2026-08-06T12:14:53.266Z",
+          "date_claim": "Aug 6, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 46,
+        "signals": [
+          "current_popular",
+          "steam_popular_new"
+        ]
+      },
+      "game_id": "game_27c53ac27a71a79b0f74"
+    },
+    {
+      "id": "steam:4113940",
+      "slug": "sovereign-tower",
+      "title": "Sovereign Tower",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Indie",
+        "RPG"
+      ],
+      "developer": "WILD WITS GAMES",
+      "publisher": "Curve Games",
+      "external_ids": {
+        "steam": 4113940,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4113940/408159be5360f8c996555fd821b992e7a79ba755/header.jpg?t=1785767062",
+        "local_url": "assets/covers/releases/sovereign-tower.jpg",
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:4113940",
+        "status": "downloaded_verified",
+        "error": "HTTP 404",
+        "content_type": "image/jpeg",
+        "bytes": 49215,
+        "sha256": "78f2aa85ece066f0229829ddc2c9148f3a5dd351c7f0fada12be3dee83c5c883"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "sovereign-tower:worldwide:2026-08-06",
+          "date": "2026-08-06",
+          "date_start": "2026-08-06",
+          "date_end": "2026-08-06",
+          "precision": "exact",
+          "raw_date": "Aug 6, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:4113940"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:4113940"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:4113940",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/4113940/",
+          "checked_at": "2026-08-06T12:14:53.266Z",
+          "date_claim": "Aug 6, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      },
+      "game_id": "game_0a99358aada1dae826b5"
+    },
+    {
+      "id": "steam:4310610",
+      "slug": "the-skin-stapler",
+      "title": "The Skin Stapler",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Indie"
+      ],
+      "developer": "Tainted Pact",
+      "publisher": "Assemble Entertainment",
+      "external_ids": {
+        "steam": 4310610,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4310610/a88405d191c7ce851e8b7c01177ee16936ffe7da/capsule_184x69.jpg?t=1786022411",
+        "local_url": "assets/covers/releases/the-skin-stapler.jpg",
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:4310610",
+        "status": "remote_fallback",
+        "error": "Image too small: 9524 bytes",
+        "content_type": "image/jpeg",
+        "bytes": 9524,
+        "sha256": "081b21d91a1ddd4900f2017de0ebc730bf6521631b807b141e1053faa9181141"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "the-skin-stapler:worldwide:2026-08-06",
+          "date": "2026-08-06",
+          "date_start": "2026-08-06",
+          "date_end": "2026-08-06",
+          "precision": "exact",
+          "raw_date": "Aug 6, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:4310610"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:4310610"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:4310610",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/4310610/",
+          "checked_at": "2026-08-06T12:14:53.266Z",
+          "date_claim": "Aug 6, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      },
+      "game_id": "game_b9a2438f70a4c652dfee"
+    },
+    {
+      "id": "steam:4145350",
+      "slug": "alice-and-the-devil-s-prison",
+      "title": "Alice and the Devil's Prison",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Adventure",
+        "Indie",
+        "Simulation"
+      ],
+      "developer": "Tsukki's Tea Party",
+      "publisher": "OTAKU Plan",
+      "external_ids": {
+        "steam": 4145350,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/4145350/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:4145350",
+        "status": "remote_fallback",
+        "error": "HTTP 404"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "alice-and-the-devil-s-prison:worldwide:2026-08-07",
+          "date": "2026-08-07",
+          "date_start": "2026-08-07",
+          "date_end": "2026-08-07",
+          "precision": "exact",
+          "raw_date": "Aug 7, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:4145350"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:4145350"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:4145350",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/4145350/",
+          "checked_at": "2026-08-08T00:53:21.276Z",
+          "date_claim": "Aug 7, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      },
+      "game_id": "game_5197783eb78405741142"
+    },
+    {
+      "id": "steam:3423990",
+      "slug": "frozen-ship",
+      "title": "Frozen Ship",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Strategy",
+        "Early Access"
+      ],
+      "developer": "Nionetix",
+      "publisher": "Nionetix",
+      "external_ids": {
+        "steam": 3423990,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3423990/library_600x900.jpg",
+        "local_url": "assets/covers/releases/frozen-ship.jpg",
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:3423990",
+        "status": "downloaded_verified",
+        "content_type": "image/jpeg",
+        "bytes": 47008,
+        "sha256": "2fd3935019ec8136b15e37679e6f84132ea60997ca6175a0f69a19ea8d3e562e"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "frozen-ship:worldwide:2026-08-07",
+          "date": "2026-08-07",
+          "date_start": "2026-08-07",
+          "date_end": "2026-08-07",
+          "precision": "exact",
+          "raw_date": "Aug 7, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:3423990"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:3423990"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:3423990",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/3423990/",
+          "checked_at": "2026-08-06T12:14:53.266Z",
+          "date_claim": "Aug 7, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      },
+      "game_id": "game_7f536da0c2dc12e0fc7d"
+    },
+    {
+      "id": "steam:1067360",
+      "slug": "pax-autocratica",
+      "title": "Pax Autocratica",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Indie",
+        "Simulation",
+        "Early Access"
+      ],
+      "developer": "Multiverse",
+      "publisher": "Multiverse",
+      "external_ids": {
+        "steam": 1067360,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900.jpg",
+        "local_url": "assets/covers/releases/pax-autocratica.jpg",
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:1067360",
+        "status": "downloaded_verified",
+        "content_type": "image/jpeg",
+        "bytes": 71861,
+        "sha256": "2a2dcb7c36fd252ffa2301c77da29c2c14ebd99efc08ea40f229cca8200e96f4"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "pax-autocratica:worldwide:2026-08-10",
+          "date": "2026-08-10",
+          "date_start": "2026-08-10",
+          "date_end": "2026-08-10",
+          "precision": "exact",
+          "raw_date": "Aug 10, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:1067360"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:1067360"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:1067360",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/1067360/",
+          "checked_at": "2026-08-08T00:53:21.276Z",
+          "date_claim": "Aug 10, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      },
+      "game_id": "game_2a7ceb637cbcf1a28770"
+    },
+    {
+      "id": "steam:2075800",
+      "slug": "star-wars-zero-companytm",
+      "title": "STAR WARS Zero Company™",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Strategy"
+      ],
+      "developer": "Bit Reactor",
+      "publisher": "Electronic Arts",
+      "external_ids": {
+        "steam": 2075800,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2075800/2c7d5dad080c4888faaa03c4a955136c50f5bfae/header.jpg?t=1786038839",
+        "local_url": "assets/covers/releases/star-wars-zero-companytm.jpg",
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:2075800",
+        "status": "downloaded_verified",
+        "error": "HTTP 404",
+        "content_type": "image/jpeg",
+        "bytes": 44403,
+        "sha256": "25fa5d33326fdfb5db62136309d82f79a3106de8d31871d9594af4708f7f06ae"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "star-wars-zero-companytm:worldwide:2026-08-27",
+          "date": "2026-08-27",
+          "date_start": "2026-08-27",
+          "date_end": "2026-08-27",
+          "precision": "exact",
+          "raw_date": "Aug 27, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:2075800"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:2075800"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:2075800",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/2075800/",
+          "checked_at": "2026-08-07T16:08:37.365Z",
+          "date_claim": "Aug 27, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      },
+      "game_id": "game_893f3fa56939e0298c64"
+    },
+    {
+      "id": "steam:3167920",
+      "slug": "low-budget-repairs",
+      "title": "Low-Budget Repairs",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Indie",
+        "Simulation"
+      ],
+      "developer": "Gray2RGB",
+      "publisher": "Simplicity Games",
+      "external_ids": {
+        "steam": 3167920,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3167920/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:3167920",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "low-budget-repairs:worldwide:2026-08-13",
+          "date": "2026-08-13",
+          "date_start": "2026-08-13",
+          "date_end": "2026-08-13",
+          "precision": "exact",
+          "raw_date": "Aug 13, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:3167920"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:3167920"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:3167920",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/3167920/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 13, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:3562580",
+      "slug": "agefield-high-rock-the-school",
+      "title": "Agefield High: Rock the School",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie"
+      ],
+      "developer": "Refugium Games",
+      "publisher": "Refugium Games",
+      "external_ids": {
+        "steam": 3562580,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3562580/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:3562580",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "agefield-high-rock-the-school:worldwide:2026-08-12",
+          "date": "2026-08-12",
+          "date_start": "2026-08-12",
+          "date_end": "2026-08-12",
+          "precision": "exact",
+          "raw_date": "Aug 12, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:3562580"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:3562580"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:3562580",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/3562580/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 12, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:3079210",
+      "slug": "hell-let-loose-vietnam",
+      "title": "Hell Let Loose: Vietnam",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Massively Multiplayer",
+        "Simulation",
+        "Strategy"
+      ],
+      "developer": "Expression Games",
+      "publisher": "Team17",
+      "external_ids": {
+        "steam": 3079210,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3079210/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:3079210",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "hell-let-loose-vietnam:worldwide:2026-08-13",
+          "date": "2026-08-13",
+          "date_start": "2026-08-13",
+          "date_end": "2026-08-13",
+          "precision": "exact",
+          "raw_date": "Aug 13, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:3079210"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:3079210"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:3079210",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/3079210/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 13, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:974480",
+      "slug": "echoes-of-mystralia",
+      "title": "Echoes of Mystralia",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie",
+        "RPG",
+        "Early Access"
+      ],
+      "developer": "Borealys Games",
+      "publisher": "Borealys Games",
+      "external_ids": {
+        "steam": 974480,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/974480/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:974480",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "echoes-of-mystralia:worldwide:2026-08-11",
+          "date": "2026-08-11",
+          "date_start": "2026-08-11",
+          "date_end": "2026-08-11",
+          "precision": "exact",
+          "raw_date": "Aug 11, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:974480"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:974480"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:974480",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/974480/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 11, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:2584270",
+      "slug": "mortal-shell-ii",
+      "title": "Mortal Shell II",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "RPG"
+      ],
+      "developer": "Cold Symmetry",
+      "publisher": "Playstack",
+      "external_ids": {
+        "steam": 2584270,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/2584270/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:2584270",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "mortal-shell-ii:worldwide:2026-08-20",
+          "date": "2026-08-20",
+          "date_start": "2026-08-20",
+          "date_end": "2026-08-20",
+          "precision": "exact",
+          "raw_date": "Aug 20, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:2584270"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:2584270"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:2584270",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/2584270/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 20, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:4246860",
+      "slug": "security-51",
+      "title": "Security 51",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Adventure",
+        "Indie",
+        "Simulation"
+      ],
+      "developer": "Alawar",
+      "publisher": "Alawar",
+      "external_ids": {
+        "steam": 4246860,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/4246860/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:4246860",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "security-51:worldwide:2026-08-12",
+          "date": "2026-08-12",
+          "date_start": "2026-08-12",
+          "date_end": "2026-08-12",
+          "precision": "exact",
+          "raw_date": "Aug 12, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:4246860"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:4246860"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:4246860",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/4246860/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 12, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:4656000",
+      "slug": "bombanana",
+      "title": "BOMBANANA!",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Casual",
+        "Indie"
+      ],
+      "developer": "Lefto Studio",
+      "publisher": "TARK",
+      "external_ids": {
+        "steam": 4656000,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/4656000/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:4656000",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "bombanana:worldwide:2026-08-01",
+          "date": "2026-08-01",
+          "date_start": "2026-08-01",
+          "date_end": "2026-08-01",
+          "precision": "exact",
+          "raw_date": "August 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:4656000"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:4656000"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:4656000",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/4656000/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "August 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:4796830",
+      "slug": "we-are-so-dead",
+      "title": "WE ARE SO DEAD",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Adventure",
+        "Casual",
+        "Indie",
+        "RPG",
+        "Simulation",
+        "Strategy"
+      ],
+      "developer": "REAL PLAYERS",
+      "publisher": "REAL PLAYERS",
+      "external_ids": {
+        "steam": 4796830,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/4796830/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:4796830",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "we-are-so-dead:worldwide:2026-08-17",
+          "date": "2026-08-17",
+          "date_start": "2026-08-17",
+          "date_end": "2026-08-17",
+          "precision": "exact",
+          "raw_date": "Aug 17, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:4796830"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:4796830"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:4796830",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/4796830/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 17, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:4934370",
+      "slug": "tv-archive-tidy-up-together",
+      "title": "TV Archive: Tidy Up Together",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Casual",
+        "Indie",
+        "Simulation"
+      ],
+      "developer": "Games Together",
+      "publisher": "Games Together",
+      "external_ids": {
+        "steam": 4934370,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/4934370/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:4934370",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "tv-archive-tidy-up-together:worldwide:2026-08-14",
+          "date": "2026-08-14",
+          "date_start": "2026-08-14",
+          "date_end": "2026-08-14",
+          "precision": "exact",
+          "raw_date": "Aug 14, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:4934370"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:4934370"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:4934370",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/4934370/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 14, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:1733690",
+      "slug": "mandate-order",
+      "title": "Mandate Order",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Indie",
+        "Simulation",
+        "Strategy",
+        "Early Access"
+      ],
+      "developer": "Digital Sky",
+      "publisher": "Digital Sky",
+      "external_ids": {
+        "steam": 1733690,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1733690/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:1733690",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "mandate-order:worldwide:2026-08-11",
+          "date": "2026-08-11",
+          "date_start": "2026-08-11",
+          "date_end": "2026-08-11",
+          "precision": "exact",
+          "raw_date": "Aug 11, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:1733690"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:1733690"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:1733690",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/1733690/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 11, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:3394840",
+      "slug": "clawed",
+      "title": "Clawed",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Adventure"
+      ],
+      "developer": "Flatrock Games",
+      "publisher": "Flatrock Games",
+      "external_ids": {
+        "steam": 3394840,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3394840/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:3394840",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "clawed:worldwide:2026-08-13",
+          "date": "2026-08-13",
+          "date_start": "2026-08-13",
+          "date_end": "2026-08-13",
+          "precision": "exact",
+          "raw_date": "Aug 13, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:3394840"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:3394840"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:3394840",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/3394840/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 13, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:1574480",
+      "slug": "agent-64-spies-never-die",
+      "title": "Agent 64: Spies Never Die",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie"
+      ],
+      "developer": "Replicant D6",
+      "publisher": "Replicant D6",
+      "external_ids": {
+        "steam": 1574480,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1574480/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:1574480",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "agent-64-spies-never-die:worldwide:2026-08-11",
+          "date": "2026-08-11",
+          "date_start": "2026-08-11",
+          "date_end": "2026-08-11",
+          "precision": "exact",
+          "raw_date": "Aug 11, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:1574480"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:1574480"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:1574480",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/1574480/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 11, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:3929470",
+      "slug": "warhounds",
+      "title": "Warhounds",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "RPG",
+        "Strategy"
+      ],
+      "developer": "Everplay DMCC",
+      "publisher": "Brightika, Inc.",
+      "external_ids": {
+        "steam": 3929470,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3929470/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:3929470",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "warhounds:worldwide:2026-08-11",
+          "date": "2026-08-11",
+          "date_start": "2026-08-11",
+          "date_end": "2026-08-11",
+          "precision": "exact",
+          "raw_date": "Aug 11, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:3929470"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:3929470"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:3929470",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/3929470/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 11, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:4948000",
+      "slug": "moo-who",
+      "title": "Moo Who?",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Casual",
+        "Indie"
+      ],
+      "developer": "SAT Productions",
+      "publisher": "SAT Productions",
+      "external_ids": {
+        "steam": 4948000,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/4948000/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:4948000",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "moo-who:worldwide:2026-08-21",
+          "date": "2026-08-21",
+          "date_start": "2026-08-21",
+          "date_end": "2026-08-21",
+          "precision": "exact",
+          "raw_date": "Aug 21, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:4948000"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:4948000"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:4948000",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/4948000/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 21, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:1648360",
+      "slug": "luminary",
+      "title": "Luminary",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie",
+        "RPG",
+        "Early Access"
+      ],
+      "developer": "Refractive Entertainment",
+      "publisher": "Refractive Entertainment",
+      "external_ids": {
+        "steam": 1648360,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1648360/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:1648360",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "luminary:worldwide:2026-08-11",
+          "date": "2026-08-11",
+          "date_start": "2026-08-11",
+          "date_end": "2026-08-11",
+          "precision": "exact",
+          "raw_date": "Aug 11, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:1648360"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:1648360"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:1648360",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/1648360/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 11, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:3091140",
+      "slug": "lootbound",
+      "title": "Lootbound",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Adventure",
+        "Casual",
+        "Indie",
+        "RPG",
+        "Strategy"
+      ],
+      "developer": "ArtDock",
+      "publisher": "Dreland Enterprises",
+      "external_ids": {
+        "steam": 3091140,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3091140/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:3091140",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "lootbound:worldwide:2026-08-14",
+          "date": "2026-08-14",
+          "date_start": "2026-08-14",
+          "date_end": "2026-08-14",
+          "precision": "exact",
+          "raw_date": "Aug 14, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:3091140"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:3091140"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:3091140",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/3091140/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 14, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:4317690",
+      "slug": "crimson-moon",
+      "title": "Crimson Moon",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Adventure",
+        "RPG"
+      ],
+      "developer": "ProbablyMonsters",
+      "publisher": "ProbablyMonsters",
+      "external_ids": {
+        "steam": 4317690,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/4317690/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:4317690",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "crimson-moon:worldwide:2026-09-01",
+          "date": "2026-09-01",
+          "date_start": "2026-09-01",
+          "date_end": "2026-09-01",
+          "precision": "exact",
+          "raw_date": "Sep 1, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:4317690"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:4317690"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:4317690",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/4317690/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Sep 1, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_upcoming"
+        ]
+      }
+    },
+    {
+      "id": "steam:4450620",
+      "slug": "grain-rot",
+      "title": "GRAIN ROT",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Indie",
+        "Simulation"
+      ],
+      "developer": "Beck & Branch Games",
+      "publisher": "Neem Interactive",
+      "external_ids": {
+        "steam": 4450620,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/4450620/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:4450620",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "grain-rot:worldwide:2026-08-07",
+          "date": "2026-08-07",
+          "date_start": "2026-08-07",
+          "date_end": "2026-08-07",
+          "precision": "exact",
+          "raw_date": "Aug 7, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:4450620"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:4450620"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:4450620",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/4450620/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 7, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      }
+    },
+    {
+      "id": "steam:4369130",
+      "slug": "chop-chop-inc",
+      "title": "Chop Chop Inc.",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Adventure"
+      ],
+      "developer": "NullRef Entertainment",
+      "publisher": "rokaplay select",
+      "external_ids": {
+        "steam": 4369130,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/4369130/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:4369130",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "chop-chop-inc:worldwide:2026-08-07",
+          "date": "2026-08-07",
+          "date_start": "2026-08-07",
+          "date_end": "2026-08-07",
+          "precision": "exact",
+          "raw_date": "Aug 7, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:4369130"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:4369130"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:4369130",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/4369130/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 7, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      }
+    },
+    {
+      "id": "steam:2285550",
+      "slug": "doloc-town",
+      "title": "Doloc Town",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Adventure",
+        "Casual",
+        "Indie",
+        "RPG",
+        "Simulation"
+      ],
+      "developer": "RedSaw Games Studio",
+      "publisher": "Logoi Games",
+      "external_ids": {
+        "steam": 2285550,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/2285550/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:2285550",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "doloc-town:worldwide:2026-08-05",
+          "date": "2026-08-05",
+          "date_start": "2026-08-05",
+          "date_end": "2026-08-05",
+          "precision": "exact",
+          "raw_date": "Aug 5, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:2285550"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:2285550"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:2285550",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/2285550/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 5, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      }
+    },
+    {
+      "id": "steam:2142790",
+      "slug": "fields-of-mistria",
+      "title": "Fields of Mistria",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Indie",
+        "RPG",
+        "Simulation"
+      ],
+      "developer": "NPC Studio",
+      "publisher": "NPC Studio",
+      "external_ids": {
+        "steam": 2142790,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/2142790/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:2142790",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "fields-of-mistria:worldwide:2026-08-05",
+          "date": "2026-08-05",
+          "date_start": "2026-08-05",
+          "date_end": "2026-08-05",
+          "precision": "exact",
+          "raw_date": "Aug 5, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:2142790"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:2142790"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:2142790",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/2142790/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 5, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      }
+    },
+    {
+      "id": "steam:247970",
+      "slug": "korea-il-2-series",
+      "title": "Korea. IL-2 Series",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Simulation"
+      ],
+      "developer": " 1C Game Studios",
+      "publisher": "FOR-GAMES CR LTD",
+      "external_ids": {
+        "steam": 247970,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/247970/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:247970",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "korea-il-2-series:worldwide:2026-08-04",
+          "date": "2026-08-04",
+          "date_start": "2026-08-04",
+          "date_end": "2026-08-04",
+          "precision": "exact",
+          "raw_date": "Aug 4, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:247970"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:247970"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:247970",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/247970/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Aug 4, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      }
+    },
+    {
+      "id": "steam:2059170",
+      "slug": "quasimorph",
+      "title": "Quasimorph",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie",
+        "RPG",
+        "Simulation",
+        "Strategy"
+      ],
+      "developer": "Magnum Scriptum",
+      "publisher": "HypeTrain Digital",
+      "external_ids": {
+        "steam": 2059170,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/2059170/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:2059170",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "quasimorph:worldwide:2026-07-31",
+          "date": "2026-07-31",
+          "date_start": "2026-07-31",
+          "date_end": "2026-07-31",
+          "precision": "exact",
+          "raw_date": "Jul 31, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:2059170"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:2059170"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:2059170",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/2059170/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Jul 31, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      }
+    },
+    {
+      "id": "steam:1368140",
+      "slug": "corsair-cove",
+      "title": "Corsair Cove",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Simulation",
+        "Strategy"
+      ],
+      "developer": "Limbic Entertainment",
+      "publisher": "Hooded Horse",
+      "external_ids": {
+        "steam": 1368140,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1368140/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:1368140",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "corsair-cove:worldwide:2026-07-31",
+          "date": "2026-07-31",
+          "date_start": "2026-07-31",
+          "date_end": "2026-07-31",
+          "precision": "exact",
+          "raw_date": "Jul 31, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:1368140"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:1368140"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:1368140",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/1368140/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Jul 31, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      }
+    },
+    {
+      "id": "steam:3293260",
+      "slug": "waterpark-simulator",
+      "title": "Waterpark Simulator",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Casual",
+        "Indie",
+        "Simulation"
+      ],
+      "developer": "CayPlay",
+      "publisher": "CayPlay",
+      "external_ids": {
+        "steam": 3293260,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3293260/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:3293260",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "waterpark-simulator:worldwide:2026-07-31",
+          "date": "2026-07-31",
+          "date_start": "2026-07-31",
+          "date_end": "2026-07-31",
+          "precision": "exact",
+          "raw_date": "Jul 31, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:3293260"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:3293260"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:3293260",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/3293260/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Jul 31, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
+        ]
+      }
+    },
+    {
+      "id": "steam:2436940",
+      "slug": "sephiria",
+      "title": "Sephiria",
+      "aliases": [],
+      "release_type": "full",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie",
+        "RPG"
+      ],
+      "developer": "TEAM HORAY",
+      "publisher": "TEAM HORAY",
+      "external_ids": {
+        "steam": 2436940,
+        "igdb": null,
+        "rawg": null
+      },
+      "image": {
+        "source_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/2436940/library_600x900.jpg",
+        "local_url": null,
+        "kind": "official_store_cover",
+        "width": 600,
+        "height": 900,
+        "verified": true,
+        "source_id": "steam:2436940",
+        "status": "remote_verified"
+      },
+      "page_url": null,
+      "events": [
+        {
+          "id": "sephiria:worldwide:2026-07-31",
+          "date": "2026-07-31",
+          "date_start": "2026-07-31",
+          "date_end": "2026-07-31",
+          "precision": "exact",
+          "raw_date": "Jul 31, 2026",
+          "region": "worldwide",
+          "platforms": [
+            "PC"
+          ],
+          "status": "confirmed",
+          "confidence": 0.97,
+          "source_ids": [
+            "steam:2436940"
+          ],
+          "platform_confirmations": {
+            "PC": [
+              "steam:2436940"
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "id": "steam:2436940",
+          "family": "official_store",
+          "priority": 90,
+          "title": "Steam",
+          "url": "https://store.steampowered.com/app/2436940/",
+          "checked_at": "2026-08-08T00:53:48.587Z",
+          "date_claim": "Jul 31, 2026",
+          "status": "success"
+        }
+      ],
+      "editorial": {
+        "status": "published",
+        "has_page": false
+      },
+      "significance": {
+        "score": 28,
+        "signals": [
+          "steam_popular_new"
         ]
       }
     }
   ],
   "statistics": {
-    "raw_candidates": 151,
-    "published": 3,
-    "review": 144,
+    "raw_candidates": 332,
+    "published": 40,
+    "review": 288,
     "rejected": 4,
-    "max_exact_releases_in_one_day": 1,
+    "max_exact_releases_in_one_day": 7,
     "dense_days": [
       {
-        "date": "2026-08-03",
-        "count": 1
+        "date": "2026-08-06",
+        "count": 7
+      },
+      {
+        "date": "2026-08-11",
+        "count": 5
+      },
+      {
+        "date": "2026-07-31",
+        "count": 4
+      },
+      {
+        "date": "2026-08-07",
+        "count": 4
+      },
+      {
+        "date": "2026-08-05",
+        "count": 3
+      },
+      {
+        "date": "2026-08-13",
+        "count": 3
       },
       {
         "date": "2026-08-04",
-        "count": 1
+        "count": 2
       },
       {
-        "date": "2026-08-06",
+        "date": "2026-08-12",
+        "count": 2
+      },
+      {
+        "date": "2026-08-14",
+        "count": 2
+      },
+      {
+        "date": "2026-08-01",
         "count": 1
       }
-    ]
+    ],
+    "personalized": 0
+  },
+  "personalized_releases": [],
+  "personalization": {
+    "model": "user-context-region-v1",
+    "minimum_region_score": 160,
+    "client_minimum_score": 90
   }
 }
