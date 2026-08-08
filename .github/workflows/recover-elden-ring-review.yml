@@ -1,0 +1,32 @@
+name: Recover Elden Ring review payloads
+
+on:
+  push:
+    branches:
+      - fix/recover-elden-ring-mafia-build
+    paths:
+      - scripts/recover-manual-review-payloads.mjs
+      - .github/workflows/recover-elden-ring-review.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Recover payloads
+        run: node scripts/recover-manual-review-payloads.mjs elden-ring
+      - name: Inspect recovered files
+        run: |
+          find .tmp-recovered-review/elden-ring -type f -maxdepth 6 -print
+          for f in $(find .tmp-recovered-review/elden-ring -type f); do echo "--- $f"; file "$f"; wc -c "$f"; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: elden-ring-recovered-review
+          path: .tmp-recovered-review/elden-ring
