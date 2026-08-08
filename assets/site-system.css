@@ -21,7 +21,7 @@
 
 /* Universal lightweight navigation variants built on registered components. */
 .ig-button.ig-text-link,
-.ig-chip.ig-hashtag-link{
+.ig-chip.ig-hashtag{
   display:inline-flex;
   align-items:center;
   width:auto;
@@ -32,10 +32,20 @@
   border-radius:0;
   background:none;
   box-shadow:none;
-  color:var(--ig-accent);
-  font-weight:750;
   text-decoration:none;
   transition:color var(--ig-transition),transform var(--ig-transition);
+}
+.ig-button.ig-text-link{
+  color:var(--ig-accent);
+  font-weight:750;
+}
+.ig-chip.ig-hashtag{
+  font-size:14px;
+  font-weight:500;
+  white-space:nowrap;
+}
+.ig-chip.ig-hashtag-link{
+  color:var(--ig-accent);
 }
 .ig-button.ig-text-link:hover,
 .ig-button.ig-text-link:focus-visible,
@@ -48,9 +58,6 @@
 .ig-button.ig-text-link:active,
 .ig-chip.ig-hashtag-link:active{
   transform:translateY(1px);
-}
-.ig-chip.ig-hashtag-link{
-  white-space:nowrap;
 }
 
 /* Every standalone page uses the same site canvas. */
