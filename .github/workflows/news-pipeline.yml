@@ -37,6 +37,7 @@ on:
       - 'scripts/fetch-publisher-news.mjs'
       - 'scripts/fetch-youtube-signals.mjs'
       - 'scripts/build-news-events.mjs'
+      - 'scripts/resolve-news-game-context.mjs'
       - 'scripts/build-home-news.mjs'
       - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
@@ -46,9 +47,11 @@ on:
       - 'scripts/test-news-content-api.mjs'
       - 'scripts/test-news-storage-content-api.mjs'
       - 'scripts/test-news-game-linker.mjs'
+      - 'scripts/test-news-game-context-resolver.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/lib/news-game-linker.mjs'
       - 'scripts/lib/news-game-registry-adapter.mjs'
+      - 'scripts/lib/news-game-context-resolver.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/publish-news-storage.mjs'
       - '.github/workflows/news-pipeline.yml'
@@ -81,6 +84,8 @@ jobs:
           node --check scripts/run-news-pipeline.mjs
           node --check scripts/build-news-pipeline-health.mjs
           node --check scripts/validate-news-pipeline.mjs
+          node --check scripts/resolve-news-game-context.mjs
+          node --check scripts/lib/news-game-context-resolver.mjs
           node --check scripts/lib/yandex-object-storage.mjs
           node --check scripts/publish-news-storage.mjs
           node scripts/test-news-pipeline.mjs
@@ -88,6 +93,7 @@ jobs:
           node scripts/test-news-content-api.mjs
           node scripts/test-news-storage-content-api.mjs
           node scripts/test-news-game-linker.mjs
+          node scripts/test-news-game-context-resolver.mjs
 
       - name: Collect validate and prepare one isolated snapshot
         env:
