@@ -61,8 +61,8 @@ jobs:
         run: node scripts/canonicalize-system-game-identity.mjs --write
       - name: System-wide canonical identity gate
         run: node scripts/validate-system-game-registry-integration.mjs
-      - name: Verify canonical projections are committed
-        run: git diff --exit-code -- data/catalog-visible.json data/popular/current.json data/popular/published.json
+      - name: Verify source-owned catalog projection is committed
+        run: git diff --exit-code -- data/catalog-visible.json
       - name: Migration summary
         run: cat /tmp/game-registry-report.json
       - name: Preserve canonicalized snapshots for diagnostics
