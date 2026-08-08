@@ -5,16 +5,14 @@ const NON_GAME_ENTITIES = new Set([
   'playstation','playstation 4','playstation 5','ps4','ps5','nintendo','nintendo switch','nintendo switch 2',
   'steam','steam deck','microsoft','microsoft gaming','sony','sony interactive entertainment',
   'epic games','epic games store','valve','ubisoft','electronic arts','ea','activision','blizzard',
-  'bethesda','id software','bioware','larian','capcom','sega','konami','bandai namco','take two','take-two',
+  'bethesda','bethesda softworks','id software','bioware','larian','capcom','sega','konami','bandai namco',
+  'take two','take-two','thq nordic','halo studios','tarsier studios','rockstar games','warner bros games',
   'ign','pc gamer','gamespot','eurogamer','vgc','polygon','gamesradar','rock paper shotgun','playground',
   'unreal engine','unreal engine 5','unity','summer game fest','the game awards'
 ]);
 const GENERIC_SINGLE_WORD = new Set(['control','inside','prey','rust','journey','stray','anthem']);
-const LEADING_NOISE = new Set([
-  'the','a','an','new','first','after','before','why','how','what','when','where','this','that','these','those',
-  'developers','developer','studio','studios','publisher','publishers','microsoft','xbox','playstation','nintendo','sony'
-]);
-const JOINERS = new Set(['of','the','and','to','for','vs','vs.','part']);
+const ORGANIZATION_SUFFIX = /\b(?:studio|studios|software|interactive|entertainment|publishing|publisher|games|nordic)\b$/i;
+const GITHUB_MODELS_ENDPOINT = 'https://models.github.ai/inference/chat/completions';
 
 export function normalizeGameContext(value = '') {
   return String(value)
@@ -24,10 +22,6 @@ export function normalizeGameContext(value = '') {
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
-}
-
-function exactContains(haystack, needle) {
-  return Boolean(needle) && ` ${haystack} `.includes(` ${needle} `);
 }
 
 function urlText(value = '') {
@@ -47,93 +41,42 @@ function contextText(item = {}) {
   };
 }
 
-function cleanCandidate(value = '') {
-  return String(value)
-    .replace(/[“”«»"()[\]{}]/g, ' ')
-    .replace(/^[\s:;,.!?–—-]+|[\s:;,.!?–—-]+$/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+function exactContains(haystack, needle) {
+  return Boolean(needle) && ` ${haystack} `.includes(` ${needle} `);
 }
 
-function usefulCandidate(value = '') {
-  const candidate = cleanCandidate(value);
-  const normalized = normalizeGameContext(candidate);
-  if (!normalized || normalized.length < 4 || normalized.length > 80) return false;
-  if (NON_GAME_ENTITIES.has(normalized)) return false;
-  const words = normalized.split(' ').filter(Boolean);
-  if (!words.length || words.length > 7) return false;
-  if (words.length === 1 && (LEADING_NOISE.has(words[0]) || words[0].length < 4)) return false;
-  if (words.length > 1 && words.every(word => LEADING_NOISE.has(word) || JOINERS.has(word))) return false;
-  return true;
+function organizationLike(value = '') {
+  const normalized = normalizeGameContext(value);
+  return NON_GAME_ENTITIES.has(normalized) || ORGANIZATION_SUFFIX.test(String(value).trim());
 }
 
-function titleCandidates(value = '') {
-  const text = String(value || '');
-  const matches = [];
-  const rx = /(?:\b(?:[A-Z0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9'’:+.-]*|[A-Z0-9]{2,})\b(?:\s+(?:(?:[A-Z0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9'’:+.-]*|[A-Z0-9]{2,})|of|the|and|to|for|vs\.?|Part)){0,5})/gu;
-  for (const match of text.matchAll(rx)) {
-    const value = cleanCandidate(match[0]);
-    if (usefulCandidate(value)) matches.push(value);
-  }
-  return matches;
-}
-
-function compactCandidateVariants(value = '') {
-  const words = cleanCandidate(value).split(/\s+/).filter(Boolean);
-  const variants = [];
-  for (let length = Math.min(6, words.length); length >= 1; length -= 1) {
-    for (let start = 0; start + length <= words.length; start += 1) {
-      const part = words.slice(start, start + length).join(' ');
-      if (usefulCandidate(part)) variants.push(part);
-    }
-  }
-  return variants;
-}
-
-export function extractNewsGameQueries(item = {}) {
-  const sourceTitles = [item.titleEn, item.title, item.titleRu].filter(Boolean).map(String);
-  const candidates = [];
-  for (const source of sourceTitles) {
-    for (const phrase of titleCandidates(source)) candidates.push(...compactCandidateVariants(phrase));
-  }
-  const seen = new Set();
-  return candidates
-    .filter(candidate => {
-      const key = normalizeGameContext(candidate);
-      if (!key || seen.has(key) || NON_GAME_ENTITIES.has(key)) return false;
-      seen.add(key);
-      return true;
-    })
-    .sort((a, b) => {
-      const aw = normalizeGameContext(a).split(' ').length;
-      const bw = normalizeGameContext(b).split(' ').length;
-      return bw - aw || b.length - a.length;
-    })
-    .slice(0, 8);
-}
-
-function evidenceFor(item, gameTitle, query = '') {
+function evidenceFor(item, gameTitle) {
   const ctx = contextText(item);
   const game = normalizeGameContext(gameTitle);
-  const queryKey = normalizeGameContext(query);
   const words = game.split(' ').filter(Boolean);
   const title = exactContains(ctx.title, game);
   const summary = exactContains(ctx.summary, game);
   const url = exactContains(ctx.url, game);
-  const exactQuery = Boolean(queryKey) && queryKey === game;
   const genericSingle = words.length === 1 && GENERIC_SINGLE_WORD.has(game);
-  let score = Number(title) * 120 + Number(url) * 90 + Number(summary) * 55 + Number(exactQuery) * 30;
-  if (title && summary) score += 25;
-  if (title && url) score += 20;
-  if (words.length >= 2) score += Math.min(20, words.length * 4);
-  if (genericSingle) score -= 100;
-  return { title, summary, url, exactQuery, genericSingle, score };
+  const score = Number(title) * 120 + Number(summary) * 60 + Number(url) * 90 + (title && summary ? 25 : 0) + (title && url ? 20 : 0);
+  return { title, summary, url, genericSingle, score };
+}
+
+function groundedCandidate(item, gameTitle, confidence = 0) {
+  if (!gameTitle || organizationLike(gameTitle)) return null;
+  const evidence = evidenceFor(item, gameTitle);
+  const words = normalizeGameContext(gameTitle).split(' ').filter(Boolean);
+  if (!words.length || words.length > 10) return null;
+  if (!(evidence.title || evidence.summary || evidence.url)) return null;
+  if (evidence.genericSingle && !(evidence.title && (evidence.summary || evidence.url))) return null;
+  if (Number(confidence) < 0.78) return null;
+  return evidence;
 }
 
 function externalGame(title, openCriticId, method, confidence, evidence) {
   const normalized = normalizeGameContext(title);
   const slug = normalized.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '');
-  const stable = crypto.createHash('sha1').update(`opencritic:${openCriticId || normalized}`).digest('hex').slice(0, 16);
+  const stable = crypto.createHash('sha1').update(`news-game:${openCriticId || normalized}`).digest('hex').slice(0, 16);
   return Object.freeze({
     gameId: `news_game_${stable}`,
     slug: slug || `game-${stable}`,
@@ -142,11 +85,60 @@ function externalGame(title, openCriticId, method, confidence, evidence) {
     pageUrl: '',
     manual: false,
     matchedBy: method,
-    verifiedExternal: true,
+    verifiedExternal: Boolean(openCriticId),
     externalIds: openCriticId ? Object.freeze({ opencritic: String(openCriticId) }) : Object.freeze({}),
     resolutionConfidence: confidence,
     resolutionEvidence: Object.freeze(evidence)
   });
+}
+
+function parseJsonObject(value = '') {
+  const text = String(value || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  try { return JSON.parse(text); } catch { return null; }
+}
+
+async function identifyPrimaryGameWithModel(item, { fetchImpl, githubToken, model }) {
+  if (!githubToken || typeof fetchImpl !== 'function') return null;
+  const article = {
+    title_en: item.titleEn || item.title || '',
+    title_ru: item.titleRu || '',
+    summary_en: item.summaryEn || item.summary || '',
+    summary_ru: item.summaryRu || '',
+    source_url: item.primaryUrl || item.url || ''
+  };
+  const prompt = `Determine the ONE primary video game this news article is actually about.\n\nRules:\n- Return the base/main game, not the name of an update, DLC, expansion, mode, event, studio, publisher, platform, person, quotation, or comparison game.\n- If the article is primarily industry/platform/business/general news and not about one specific video game, game_title must be null.\n- If another game is only mentioned as a comparison, inspiration, previous work, or franchise reference, do not choose it.\n- For an article about an expansion/update, identify the base game when the supplied text supports it.\n- Preserve the most specific supported game title (including subtitle after a colon) rather than a shorter fragment.\n- Use only the supplied article fields. Never invent a title.\n\nReturn ONLY JSON: {"game_title":string|null,"relation":"primary_game"|"dlc_or_update"|"industry_or_platform"|"ambiguous","confidence":number}.\nARTICLE=${JSON.stringify(article)}`;
+  try {
+    const response = await fetchImpl(GITHUB_MODELS_ENDPOINT, {
+      method: 'POST',
+      signal: AbortSignal.timeout(12000),
+      headers: {
+        authorization: `Bearer ${githubToken}`,
+        'content-type': 'application/json',
+        accept: 'application/vnd.github+json'
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: 'You are a precise video-game entity resolver. Output valid JSON only.' },
+          { role: 'user', content: prompt }
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0,
+        max_tokens: 180
+      })
+    });
+    if (!response.ok) return null;
+    const payload = await response.json();
+    const parsed = parseJsonObject(payload?.choices?.[0]?.message?.content || '');
+    if (!parsed || !['primary_game', 'dlc_or_update'].includes(parsed.relation)) return null;
+    const title = String(parsed.game_title || '').trim();
+    const confidence = Math.max(0, Math.min(1, Number(parsed.confidence) || 0));
+    const evidence = groundedCandidate(item, title, confidence);
+    if (!evidence) return null;
+    return { title, confidence, evidence, relation: parsed.relation };
+  } catch {
+    return null;
+  }
 }
 
 function rowsFromOpenCritic(payload) {
@@ -154,23 +146,6 @@ function rowsFromOpenCritic(payload) {
   if (Array.isArray(payload?.data)) return payload.data;
   if (Array.isArray(payload?.results)) return payload.results;
   return [];
-}
-
-async function fetchOpenCritic(query, fetchImpl) {
-  try {
-    const response = await fetchImpl(`https://opencritic.com/api/game/search?criteria=${encodeURIComponent(query)}`, {
-      redirect: 'follow',
-      signal: AbortSignal.timeout(6000),
-      headers: {
-        'user-agent': 'Mozilla/5.0 IgropoiskNewsGameResolver/1.0',
-        accept: 'application/json,text/plain,*/*'
-      }
-    });
-    if (!response.ok) return [];
-    return rowsFromOpenCritic(await response.json());
-  } catch {
-    return [];
-  }
 }
 
 function rowTitle(row = {}) {
@@ -181,68 +156,96 @@ function rowId(row = {}) {
   return row.id ?? row._id ?? row.gameId ?? null;
 }
 
-function chooseVerifiedOpenCritic(item, attempts = []) {
-  const ranked = [];
-  for (const attempt of attempts) {
-    for (const row of attempt.rows || []) {
-      const title = rowTitle(row);
-      if (!title) continue;
-      const evidence = evidenceFor(item, title, attempt.query);
-      const wordCount = normalizeGameContext(title).split(' ').filter(Boolean).length;
-      const valid = wordCount === 1
-        ? !evidence.genericSingle && (evidence.title || evidence.url) && evidence.score >= 120
-        : (evidence.title || evidence.url || (evidence.summary && evidence.exactQuery)) && evidence.score >= 90;
-      if (!valid) continue;
-      ranked.push({ row, title, evidence, score: evidence.score });
-    }
+function titleSimilarity(left, right) {
+  const a = normalizeGameContext(left);
+  const b = normalizeGameContext(right);
+  if (!a || !b) return 0;
+  if (a === b) return 1;
+  const aw = new Set(a.split(' ').filter(Boolean));
+  const bw = new Set(b.split(' ').filter(Boolean));
+  let shared = 0;
+  for (const word of aw) if (bw.has(word)) shared += 1;
+  return shared / Math.max(aw.size, bw.size);
+}
+
+async function verifyWithOpenCritic(candidate, item, fetchImpl) {
+  if (!candidate || typeof fetchImpl !== 'function') return null;
+  try {
+    const response = await fetchImpl(`https://opencritic.com/api/game/search?criteria=${encodeURIComponent(candidate.title)}`, {
+      redirect: 'follow',
+      signal: AbortSignal.timeout(6000),
+      headers: { 'user-agent': 'Mozilla/5.0 IgropoiskNewsGameResolver/2.0', accept: 'application/json,text/plain,*/*' }
+    });
+    if (!response.ok) return null;
+    const rows = rowsFromOpenCritic(await response.json());
+    const ranked = rows
+      .map(row => ({ row, title: rowTitle(row), similarity: titleSimilarity(candidate.title, rowTitle(row)) }))
+      .filter(entry => entry.title && entry.similarity >= 0.82)
+      .sort((a, b) => b.similarity - a.similarity || b.title.length - a.title.length);
+    const best = ranked[0];
+    if (!best) return null;
+    const evidence = groundedCandidate(item, best.title, candidate.confidence) || candidate.evidence;
+    return externalGame(best.title, rowId(best.row), 'github-model-opencritic', Math.min(0.99, candidate.confidence + 0.05), evidence);
+  } catch {
+    return null;
   }
-  ranked.sort((a, b) => b.score - a.score || b.title.length - a.title.length);
-  if (!ranked.length) return null;
-  if (ranked[1] && ranked[0].score - ranked[1].score < 15 && normalizeGameContext(ranked[0].title) !== normalizeGameContext(ranked[1].title)) return null;
-  return ranked[0];
 }
 
-function corroboratedCandidate(item, queries = []) {
-  const ranked = queries.map(query => {
-    const evidence = evidenceFor(item, query, query);
-    const words = normalizeGameContext(query).split(' ').filter(Boolean);
-    if (words.length < 2) return null;
-    if (!(evidence.title && (evidence.summary || evidence.url))) return null;
-    return { title: query, evidence, score: evidence.score };
-  }).filter(Boolean).sort((a, b) => b.score - a.score || b.title.length - a.title.length);
-  if (!ranked.length) return null;
-  if (ranked[1] && ranked[0].score - ranked[1].score < 15 && normalizeGameContext(ranked[0].title) !== normalizeGameContext(ranked[1].title)) return null;
-  return ranked[0];
+function cleanCandidate(value = '') {
+  return String(value).replace(/[“”«»"()[\]{}]/g, ' ').replace(/^[\s:;,.!?–—-]+|[\s:;,.!?–—-]+$/g, '').replace(/\s+/g, ' ').trim();
 }
 
-export async function resolveVerifiedExternalNewsGame(item, { fetchImpl = globalThis.fetch, maxQueries = 4 } = {}) {
+function titleCandidates(value = '') {
+  const text = String(value || '');
+  const results = [];
+  const colon = /\b([A-Z0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9'’.-]*(?:\s+(?:[A-Z0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9'’.-]*|x|of|the|and|to|for|vs\.?|Part)){0,4}\s*:\s*[A-Z0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9'’.-]*(?:\s+(?:[A-Z0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9'’.-]*|x|of|the|and|to|for|vs\.?|Part)){0,4})/gu;
+  for (const match of text.matchAll(colon)) results.push(cleanCandidate(match[1]));
+  const plain = /\b([A-Z0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9'’.-]*(?:\s+(?:[A-Z0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9'’.-]*|x|of|the|and|to|for|vs\.?|Part)){0,4})/gu;
+  for (const match of text.matchAll(plain)) results.push(cleanCandidate(match[1]));
+  return results.filter(Boolean);
+}
+
+export function extractNewsGameQueries(item = {}) {
+  const candidates = [item.titleEn, item.title, item.titleRu].filter(Boolean).flatMap(titleCandidates);
+  const seen = new Set();
+  return candidates.filter(candidate => {
+    const key = normalizeGameContext(candidate);
+    if (!key || key.length < 4 || seen.has(key) || organizationLike(candidate)) return false;
+    seen.add(key);
+    return true;
+  }).sort((a, b) => normalizeGameContext(b).split(' ').length - normalizeGameContext(a).split(' ').length || b.length - a.length).slice(0, 10);
+}
+
+function conservativeFallback(item) {
+  const candidates = extractNewsGameQueries(item).map(title => ({ title, evidence: evidenceFor(item, title) }))
+    .filter(entry => {
+      const words = normalizeGameContext(entry.title).split(' ').filter(Boolean);
+      if (words.length === 1) return !entry.evidence.genericSingle && entry.evidence.title && entry.evidence.summary && entry.evidence.url;
+      return entry.evidence.title && entry.evidence.summary && entry.evidence.url;
+    })
+    .sort((a, b) => b.evidence.score - a.evidence.score || b.title.length - a.title.length);
+  if (!candidates.length) return null;
+  if (candidates[1] && candidates[0].evidence.score === candidates[1].evidence.score && normalizeGameContext(candidates[0].title) !== normalizeGameContext(candidates[1].title)) return null;
+  return candidates[0];
+}
+
+export async function resolveVerifiedExternalNewsGame(item, {
+  fetchImpl = globalThis.fetch,
+  githubToken = process.env.GITHUB_TOKEN || '',
+  model = process.env.NEWS_GAME_MODEL || 'openai/gpt-4.1'
+} = {}) {
   if (Array.isArray(item?.games) && item.games.length) return null;
-  const queries = extractNewsGameQueries(item);
-  if (!queries.length) return null;
 
-  const attempts = [];
-  if (typeof fetchImpl === 'function') {
-    for (const query of queries.slice(0, Math.max(0, maxQueries))) {
-      const rows = await fetchOpenCritic(query, fetchImpl);
-      attempts.push({ query, rows });
-      const verified = chooseVerifiedOpenCritic(item, attempts);
-      if (verified && verified.score >= 150) break;
-    }
+  const semantic = await identifyPrimaryGameWithModel(item, { fetchImpl, githubToken, model });
+  if (semantic) {
+    const verified = await verifyWithOpenCritic(semantic, item, fetchImpl);
+    if (verified) return verified;
+    return externalGame(semantic.title, null, 'github-model-context', semantic.confidence, semantic.evidence);
   }
 
-  const verified = chooseVerifiedOpenCritic(item, attempts);
-  if (verified) {
-    const confidence = Math.min(0.99, 0.78 + Math.min(0.2, verified.score / 700));
-    return externalGame(verified.title, rowId(verified.row), 'context-opencritic-verified', confidence, verified.evidence);
-  }
-
-  const corroborated = corroboratedCandidate(item, queries);
-  if (corroborated) {
-    const confidence = Math.min(0.94, 0.74 + Math.min(0.18, corroborated.score / 800));
-    return externalGame(corroborated.title, null, 'context-corroborated', confidence, corroborated.evidence);
-  }
-
-  return null;
+  const fallback = conservativeFallback(item);
+  if (!fallback) return null;
+  return externalGame(fallback.title, null, 'context-three-signal-fallback', 0.82, fallback.evidence);
 }
 
 export function applyResolvedExternalGame(item, game) {
