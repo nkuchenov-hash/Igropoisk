@@ -2,84 +2,63 @@ name: Top-250 review pilot
 
 on:
   workflow_dispatch:
-    inputs:
-      target_reviews:
-        description: Reviews that must pass the pilot
-        required: false
-        default: '10'
   push:
     branches:
       - feat/top-250-review-pilot
     paths:
       - 'scripts/build-top-250.mjs'
       - 'scripts/validate-top-250.mjs'
-      - 'scripts/run-top-250-review-pilot.mjs'
-      - 'scripts/run-keyless-review-pilot.mjs'
       - 'scripts/seed-top-250-web-reviews.mjs'
+      - 'data/top-250/**'
+      - 'data/pilot-reviews/**'
       - 'top-250/**'
       - 'assets/top-250.*'
-      - 'article/_shared/pilot-review.css'
-      - 'article/_shared/pilot-review.js'
+      - 'article/**'
+      - '.github/workflows/top-250-review-pilot.yml'
+  pull_request:
+    branches: [staging]
+    paths:
+      - 'scripts/build-top-250.mjs'
+      - 'scripts/validate-top-250.mjs'
+      - 'scripts/seed-top-250-web-reviews.mjs'
+      - 'data/top-250/**'
+      - 'data/pilot-reviews/**'
+      - 'top-250/**'
+      - 'assets/top-250.*'
+      - 'article/**'
       - '.github/workflows/top-250-review-pilot.yml'
 
 permissions:
-  contents: write
-  models: read
+  contents: read
 
 jobs:
-  build-pilot:
-    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[top250-generated]')
+  validate-pilot:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      OPENAI_MODEL: gpt-5
-      OPENAI_RESEARCH_MODEL: gpt-5
-      TARGET_REVIEWS: ${{ inputs.target_reviews || '10' }}
-      GITHUB_TOKEN: ${{ github.token }}
-      GITHUB_MODELS_MODEL: openai/gpt-4.1-mini
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Seed verified web-research reviews
-        if: contains(github.event.head_commit.message, '[seed-web-reviews]')
-        run: node scripts/seed-top-250-web-reviews.mjs
-      - name: Build canonical Top-250 snapshot
-        run: node scripts/build-top-250.mjs --limit=20
-      - name: Validate Top-250 snapshot
+      - name: Validate committed Top-250 snapshot
         run: node scripts/validate-top-250.mjs
-      - name: Build Top-250 review pilot with OpenAI provider
-        if: ${{ !contains(github.event.head_commit.message, '[seed-web-reviews]') && env.OPENAI_API_KEY != '' }}
-        run: node scripts/run-top-250-review-pilot.mjs --limit=20 --target="$TARGET_REVIEWS"
-      - name: Build Top-250 review pilot with keyless provider
-        if: ${{ !contains(github.event.head_commit.message, '[seed-web-reviews]') && env.OPENAI_API_KEY == '' }}
-        run: node scripts/run-keyless-review-pilot.mjs --limit=20 --target="$TARGET_REVIEWS"
-      - name: Refresh Top-250 review status
-        run: node scripts/build-top-250.mjs --limit=20
-      - name: Validate final Top-250 snapshot
-        run: node scripts/validate-top-250.mjs
-      - name: Validate Registry integration
+      - name: Validate Game Registry integration
         run: node scripts/validate-system-game-registry-integration.mjs
-      - name: Commit generated pilot content and diagnostics
-        if: always()
+      - name: Validate review pilot target
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A -- data/top-250 article
-          if [ -d data/pilot-reviews ]; then git add -A -- data/pilot-reviews; fi
-          if [ -d data/popular ]; then git add -A -- data/popular; fi
-          for dir in data/drafts data/reviews data/research data/ratings data/article-media data/articles data/game-content data/parser-output data/parser-runs game; do
-            if [ -e "$dir" ]; then git add -A -- "$dir"; fi
-          done
-          if [ -f data/catalog-visible.json ]; then git add -- data/catalog-visible.json; fi
-          if git diff --cached --quiet; then
-            echo "No generated changes"
-            exit 0
-          fi
-          git commit -m "content: generate Top-250 review pilot [top250-generated]"
-          git push origin HEAD:${GITHUB_REF_NAME}
+          node - <<'NODE'
+          const fs = require('fs');
+          const status = JSON.parse(fs.readFileSync('data/top-250/review-pilot-status.json', 'utf8'));
+          if (status.passed !== true || Number(status.published) < 10) {
+            throw new Error(`Top-250 review pilot target not met: ${status.published || 0}/10`);
+          }
+          const top = JSON.parse(fs.readFileSync('data/top-250/current.json', 'utf8'));
+          const published = (top.ranking || []).filter(item => item.review?.status === 'published' && item.review?.url);
+          if (published.length < 10) throw new Error(`Top-250 exposes only ${published.length}/10 published reviews`);
+          for (const item of published) {
+            if (!fs.existsSync(`data/pilot-reviews/${item.slug}.json`) && !fs.existsSync(`data/articles/${item.slug}.json`)) {
+              throw new Error(`Missing review data for ${item.slug}`);
+            }
+            if (!fs.existsSync(`article/${item.slug}/index.html`)) throw new Error(`Missing review page for ${item.slug}`);
+          }
+          console.log(`Top-250 pilot verified: ${published.length} published review links.`);
+          NODE
