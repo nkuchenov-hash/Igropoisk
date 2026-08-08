@@ -19,27 +19,37 @@
   background:var(--ig-hover-surface);
 }
 
-/* Universal lightweight navigation actions. */
-.ig-text-link,
-.ig-hashtag-link{
+/* Universal lightweight navigation variants built on registered components. */
+.ig-button.ig-text-link,
+.ig-chip.ig-hashtag-link{
   display:inline-flex;
   align-items:center;
+  width:auto;
+  min-height:0;
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:none;
+  box-shadow:none;
   color:var(--ig-accent);
   font-weight:750;
   text-decoration:none;
   transition:color var(--ig-transition),transform var(--ig-transition);
 }
-.ig-text-link:hover,
-.ig-text-link:focus-visible,
-.ig-hashtag-link:hover,
-.ig-hashtag-link:focus-visible{
+.ig-button.ig-text-link:hover,
+.ig-button.ig-text-link:focus-visible,
+.ig-chip.ig-hashtag-link:hover,
+.ig-chip.ig-hashtag-link:focus-visible{
+  border:0;
+  background:none;
   color:var(--ig-rating);
 }
-.ig-text-link:active,
-.ig-hashtag-link:active{
+.ig-button.ig-text-link:active,
+.ig-chip.ig-hashtag-link:active{
   transform:translateY(1px);
 }
-.ig-hashtag-link{
+.ig-chip.ig-hashtag-link{
   white-space:nowrap;
 }
 
