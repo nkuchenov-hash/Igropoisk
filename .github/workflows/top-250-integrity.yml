@@ -44,8 +44,36 @@ jobs:
           node scripts/build-top-250.mjs
           node scripts/validate-top-250.mjs
           git diff --exit-code -- game/_shared
-      - name: Validate Game Registry integration after materialization
-        run: node scripts/validate-system-game-registry-integration.mjs
+      - name: Validate Top-250 canonical identity after materialization
+        run: |
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          import { GameRegistryApi } from './scripts/lib/game-registry.mjs';
+
+          const top = JSON.parse(fs.readFileSync('data/top-250/current.json', 'utf8'));
+          const registry = JSON.parse(fs.readFileSync('data/game-registry/registry.transition.json', 'utf8'));
+          const catalog = JSON.parse(fs.readFileSync('data/catalog-visible.json', 'utf8'));
+          const api = new GameRegistryApi(registry);
+
+          for (const item of top.ranking || []) {
+            const entity = item.game_id ? api.findById(String(item.game_id)) : null;
+            if (!entity) throw new Error(`Top-250 registry entity missing for ${item.slug}: ${item.game_id || 'no game_id'}`);
+            const canonicalSlug = entity.identity?.slug?.value || '';
+            if (canonicalSlug !== item.slug) throw new Error(`Top-250 slug mismatch: ${item.slug} -> ${canonicalSlug}`);
+            if (entity.id !== item.game_id) throw new Error(`Top-250 game_id mismatch for ${item.slug}: ${item.game_id} -> ${entity.id}`);
+
+            const catalogEntry = catalog.find(entry => entry.slug === item.slug);
+            if (!catalogEntry) throw new Error(`Top-250 catalog entry missing for ${item.slug}`);
+            if (catalogEntry.game_id !== item.game_id) throw new Error(`Top-250 catalog game_id mismatch for ${item.slug}: ${catalogEntry.game_id} -> ${item.game_id}`);
+
+            const pagePath = `game/${item.slug}/index.html`;
+            if (!fs.existsSync(pagePath)) throw new Error(`Top-250 game page missing for ${item.slug}`);
+            const html = fs.readFileSync(pagePath, 'utf8');
+            if (!html.includes(`data-game-id="${item.game_id}"`)) throw new Error(`Top-250 page game_id mismatch for ${item.slug}`);
+          }
+
+          console.log(`Top-250 canonical identity verified for ${(top.ranking || []).length} ranked games.`);
+          NODE
       - name: Reject legacy review pilot runtime and data
         run: |
           forbidden=(
