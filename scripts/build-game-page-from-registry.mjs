@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-import {GameRegistryApi, isEmbeddedGameKind, validateForPublication} from './lib/game-registry.mjs';
+import {GameRegistryApi, isEmbeddedGameKind} from './lib/game-registry.mjs';
 import {projectPublicCatalog} from './lib/system-game-registry-adapter.mjs';
 
 const root = process.cwd();
@@ -28,6 +28,74 @@ function hashDirectory(directory) {
   return hash.digest('hex');
 }
 
+function field(entity, key, fallback = null) {
+  const value = entity?.fields?.[key]?.value;
+  return value === undefined || value === null ? fallback : value;
+}
+
+function mediaUrl(entity, kinds) {
+  const item = (entity?.media ?? []).find(media => kinds.includes(media.kind) && media.url);
+  return item?.url ?? '';
+}
+
+function ensureResearchSeed(entity) {
+  const slug = entity.identity.slug.value;
+  const parserPath = path.join(root, 'data/parser-output', `${slug}.json`);
+  const draftPath = path.join(root, 'data/drafts', `${slug}.json`);
+  if (fs.existsSync(parserPath) || fs.existsSync(draftPath)) return;
+
+  const steamAppId = entity.externalIds?.steamAppId ? Number(entity.externalIds.steamAppId) : null;
+  const platforms = field(entity, 'platforms', []);
+  const release = (entity.releases ?? []).find(item => item.date?.value)?.date?.value ?? '';
+  const officialLinks = field(entity, 'officialLinks', {});
+  const store = steamAppId ? `https://store.steampowered.com/app/${steamAppId}/` : '';
+  const seed = {
+    schema_version: 1,
+    identity: {
+      slug,
+      title: entity.identity.canonicalTitle.value,
+      steam_appid: steamAppId
+    },
+    release: {date_text: String(release || '')},
+    companies: {
+      developers: field(entity, 'developers', []),
+      publishers: field(entity, 'publishers', [])
+    },
+    classification: {
+      genres: field(entity, 'genres', []),
+      categories: [],
+      platforms: Array.isArray(platforms) ? platforms : [platforms].filter(Boolean)
+    },
+    editorial: {
+      short_description: field(entity, 'shortDescription', field(entity, 'description', '')),
+      integrated_description: '',
+      features: []
+    },
+    media: {
+      cover: mediaUrl(entity, ['cover', 'keyArt']),
+      hero: mediaUrl(entity, ['hero', 'keyArt', 'cover']),
+      screenshots: [],
+      videos: [],
+      artwork: []
+    },
+    requirements: {
+      pc: {minimum: {raw: ''}, recommended: {raw: ''}},
+      platforms: Array.isArray(platforms) ? platforms : [platforms].filter(Boolean)
+    },
+    links: {
+      store,
+      official: typeof officialLinks === 'string' ? officialLinks : officialLinks?.official ?? ''
+    },
+    source: {
+      name: 'Game Registry',
+      url: '',
+      checked_at: new Date().toISOString()
+    }
+  };
+  fs.mkdirSync(path.dirname(parserPath), {recursive: true});
+  fs.writeFileSync(parserPath, `${JSON.stringify(seed, null, 2)}\n`);
+}
+
 const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
 const api = new GameRegistryApi(registry);
 const entity = api.findById(slugOrId) ?? api.findBySlug(slugOrId);
@@ -36,11 +104,13 @@ const kind = entity.identity?.kind?.value ?? 'unknown';
 if (isEmbeddedGameKind(kind) || entity.presentation?.standalonePage === false) {
   throw new Error(`Embedded game content cannot receive a standalone page: ${entity.id} (${kind})`);
 }
-const gate = validateForPublication(entity, {allowNoRelease: false});
-if (!gate.passed) {
-  console.error(JSON.stringify({status: 'blocked', gameId: entity.id, slug: entity.identity.slug.value, errors: gate.errors}, null, 2));
-  process.exit(2);
-}
+if (entity.workflow?.status === 'needs_review') throw new Error(`Game identity requires review before page research: ${entity.id}`);
+if ((entity.conflicts ?? []).length) throw new Error(`Game has unresolved canonical conflicts: ${entity.id}`);
+if (!entity.identity?.canonicalTitle?.value || !entity.identity?.slug?.value) throw new Error(`Game identity is incomplete: ${entity.id}`);
+
+// The strict publication gate belongs to build-game-page.mjs after research. A newly
+// discovered popular game may legitimately start with only canonical identity data.
+ensureResearchSeed(entity);
 const slug = entity.identity.slug.value;
 const sharedPath = path.join(root, 'game/_shared');
 const sharedBefore = hashDirectory(sharedPath);

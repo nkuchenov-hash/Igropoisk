@@ -6,7 +6,7 @@ const root = process.cwd();
 const readJSON = (relative, fallback = null) => { try { return JSON.parse(fs.readFileSync(path.join(root, relative), 'utf8')); } catch { return fallback; } };
 const writeJSON = (relative, value) => { const target = path.join(root, relative); fs.mkdirSync(path.dirname(target), {recursive: true}); fs.writeFileSync(target, `${JSON.stringify(value, null, 2)}\n`); };
 const exists = relative => fs.existsSync(path.join(root, relative));
-const plan = readJSON('data/content-pipeline/execution-plan.json', {pages: [], reviews: []});
+let plan = readJSON('data/content-pipeline/execution-plan.json', {pages: [], reviews: []});
 const startedAt = new Date().toISOString();
 const results = [];
 function run(label, command, args, env = {}) {
@@ -19,13 +19,30 @@ function run(label, command, args, env = {}) {
   if (record.stderr) console.error(record.stderr);
   return child.status === 0;
 }
+
+let pageSucceeded = false;
 for (const task of plan.pages || []) {
   if (!task.game_id) { results.push({label: `page:${task.slug}`, status: 'blocked', reason: 'canonical_game_id_missing'}); continue; }
-  if (!task.steam_appid) { results.push({label: `page:${task.slug}`, status: 'blocked', reason: 'steam_appid_missing'}); continue; }
-  const parsed = run(`parse:${task.slug}`, 'node', ['scripts/parse-game-data.mjs', task.slug, String(task.steam_appid), task.title || '']);
-  if (!parsed) continue;
-  run(`page:${task.slug}`, 'node', ['scripts/build-game-page-from-registry.mjs', task.game_id], {OPENAI_MODEL: process.env.OPENAI_MODEL || 'gpt-5', OPENAI_RESEARCH_MODEL: process.env.OPENAI_RESEARCH_MODEL || process.env.OPENAI_MODEL || 'gpt-5'});
+
+  // Steam is a useful bootstrap source, but it is not a requirement for a canonical game.
+  // Console/exclusive/upcoming popular games continue through registry-seeded web research.
+  if (task.steam_appid) {
+    run(`parse:${task.slug}`, 'node', ['scripts/parse-game-data.mjs', task.slug, String(task.steam_appid), task.title || '']);
+  }
+  const built = run(`page:${task.slug}`, 'node', ['scripts/build-game-page-from-registry.mjs', task.game_id], {
+    OPENAI_MODEL: process.env.OPENAI_MODEL || 'gpt-5',
+    OPENAI_RESEARCH_MODEL: process.env.OPENAI_RESEARCH_MODEL || process.env.OPENAI_MODEL || 'gpt-5'
+  });
+  if (built) pageSucceeded = true;
 }
+
+// A newly published page immediately becomes eligible for its Игропоиск review.
+// Rebuild the canonical plan once after the page phase instead of waiting for tomorrow's run.
+if (pageSucceeded) {
+  const replanned = run('replan-after-pages', 'node', ['scripts/orchestrate-content.mjs', '--finalize']);
+  if (replanned) plan = readJSON('data/content-pipeline/execution-plan.json', plan);
+}
+
 let reviewSucceeded = false;
 for (const task of plan.reviews || []) {
   const slug = task.slug;

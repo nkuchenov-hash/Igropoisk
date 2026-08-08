@@ -12,12 +12,19 @@ const writeJson = (relative, value) => fs.writeFileSync(path.join(root, relative
 const same = (left, right) => JSON.stringify(left) === JSON.stringify(right);
 const popularPaths = ['data/popular/current.json', 'data/popular/published.json'].filter(relative => fs.existsSync(path.join(root, relative)));
 const popularSources = popularPaths.map(readJson);
+const recoverableStaleId = issue => issue?.status === 'mismatch' && issue?.reason === 'unknown_explicit_game_id' && Boolean(issue?.expected_game_id);
+const blockingIssue = issue => !recoverableStaleId(issue) && ['unresolved', 'mismatch'].includes(issue?.status);
 
 const migration = migrateRepository(root, {dryRun: true, publicBaseUrl: '/game'});
 const discovery = registerPopularCandidates(migration.registry, popularSources);
 const registry = discovery.registry;
 const changes = [];
-const blocking = discovery.issues.map(issue => ({file: 'data/popular/*.json', ...issue}));
+const repaired = [];
+const blocking = [];
+for (const issue of discovery.issues) {
+  if (recoverableStaleId(issue)) repaired.push({file: 'data/popular/*.json', ...issue});
+  else if (blockingIssue(issue)) blocking.push({file: 'data/popular/*.json', ...issue});
+}
 
 if (!popularOnly) {
   const catalogPath = 'data/catalog-visible.json';
@@ -37,7 +44,8 @@ for (let index = 0; index < popularPaths.length; index += 1) {
   const source = popularSources[index];
   const bound = bindPopularSnapshot(source, registry);
   for (const issue of bound.issues) {
-    if (issue.status === 'unresolved' || issue.status === 'mismatch') blocking.push({file: relative, ...issue});
+    if (recoverableStaleId(issue)) repaired.push({file: relative, ...issue});
+    else if (blockingIssue(issue)) blocking.push({file: relative, ...issue});
   }
   if (!same(source, bound.snapshot)) {
     changes.push({file: relative, ranking: bound.snapshot.ranking?.length ?? 0});
@@ -54,6 +62,7 @@ const report = {
   popular_discovery: {created: discovery.created, matched: discovery.matched},
   embedded_content: migration.report.embeddedContent,
   changes,
+  repaired,
   blocking
 };
 console.log(JSON.stringify(report, null, 2));
