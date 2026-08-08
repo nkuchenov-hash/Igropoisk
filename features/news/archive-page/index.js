@@ -136,7 +136,7 @@
         .sort((a, b) => Number(b.title.startsWith(needle)) - Number(a.title.startsWith(needle)) || a.game.title.localeCompare(b.game.title, lang))
         .slice(0, 7)
         .map(({ game }) => game);
-      panel.innerHTML = matches.map(game => `<a class="ig-text-link ig-news-game-suggestion" role="option" href="${api.escapeHtml(gameFilterUrl(game.slug))}" data-news-game-suggestion="${api.escapeHtml(game.slug)}">${api.escapeHtml(game.title)}</a>`).join('');
+      panel.innerHTML = matches.map(game => `<a class="ig-button ig-text-link ig-news-game-suggestion" role="option" href="${api.escapeHtml(gameFilterUrl(game.slug))}" data-news-game-suggestion="${api.escapeHtml(game.slug)}">${api.escapeHtml(game.title)}</a>`).join('');
       panel.hidden = matches.length === 0;
       input.setAttribute('aria-expanded', matches.length ? 'true' : 'false');
     }
