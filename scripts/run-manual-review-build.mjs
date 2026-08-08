@@ -18,8 +18,8 @@ if(!parts.length){
   console.error(`No .b64part files found for ${slug}`);
   process.exit(2);
 }
-const buffers=parts.map(name=>Buffer.from(fs.readFileSync(path.join(dir,name),'utf8').trim(),'base64'));
-const source=Buffer.concat(buffers);
+const encoded=parts.map(name=>fs.readFileSync(path.join(dir,name),'utf8').trim()).join('');
+const source=Buffer.from(encoded,'base64');
 const tempDir=path.join(root,'.tmp-manual-review-builds');
 fs.mkdirSync(tempDir,{recursive:true});
 const scriptPath=path.join(tempDir,`${slug}.mjs`);
