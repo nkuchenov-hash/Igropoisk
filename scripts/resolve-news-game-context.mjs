@@ -1,10 +1,11 @@
 import fs from 'node:fs/promises';
 import { buildGameReviewQueue, enrichNewsItems } from './lib/news-game-linker.mjs';
 import { applyResolvedExternalGame, resolveVerifiedExternalNewsGame } from './lib/news-game-context-resolver.mjs';
+import { refineNewsPrimaryGame } from './lib/news-primary-game-refiner.mjs';
 
 const eventsPath = 'data/news-events.json';
 const reviewPath = 'data/news-game-review.json';
-const maxExternalLookups = Number(process.env.NEWS_GAME_CONTEXT_MAX_LOOKUPS || 24);
+const maxExternalLookups = Number(process.env.NEWS_GAME_CONTEXT_MAX_LOOKUPS || 100);
 
 function itemsFrom(payload) {
   return Array.isArray(payload) ? payload : (payload.items || []);
@@ -32,7 +33,8 @@ for (const item of canonical) {
     continue;
   }
   externalLookups += 1;
-  const game = await resolveVerifiedExternalNewsGame(item);
+  const proposed = await resolveVerifiedExternalNewsGame(item);
+  const game = refineNewsPrimaryGame(item, proposed);
   if (game) {
     resolvedExternally += 1;
     items.push(applyResolvedExternalGame(item, game));
@@ -45,7 +47,7 @@ const generatedAt = new Date().toISOString();
 const output = Array.isArray(payload) ? items : {
   ...payload,
   generatedAt,
-  gameResolutionModel: 'canonical-registry-plus-verified-context-v1',
+  gameResolutionModel: 'canonical-registry-plus-primary-context-v2',
   gameResolutionStats: {
     alreadyResolved,
     externalLookups,
@@ -57,4 +59,4 @@ const output = Array.isArray(payload) ? items : {
 
 await fs.writeFile(eventsPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
 await fs.writeFile(reviewPath, `${JSON.stringify(buildGameReviewQueue(items, { generatedAt }), null, 2)}\n`, 'utf8');
-console.log(`[news/game-context] ${alreadyResolved} canonical links; ${resolvedExternally} verified context links from ${externalLookups} public unmatched events; ${items.filter(item => isPublic(item) && !(Array.isArray(item.games) && item.games.length)).length} public events remain without a game.`);
+console.log(`[news/game-context] ${alreadyResolved} canonical links; ${resolvedExternally} primary-context links from ${externalLookups} public unmatched events; ${items.filter(item => isPublic(item) && !(Array.isArray(item.games) && item.games.length)).length} public events remain without a game.`);
