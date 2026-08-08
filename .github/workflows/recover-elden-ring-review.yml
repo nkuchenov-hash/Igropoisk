@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   recover:
@@ -22,11 +22,15 @@ jobs:
           node-version: 22
       - name: Recover payloads
         run: node scripts/recover-manual-review-payloads.mjs elden-ring
-      - name: Inspect recovered files
+      - name: Restore recovered media corpus
         run: |
-          find .tmp-recovered-review/elden-ring -type f -maxdepth 6 -print
-          for f in $(find .tmp-recovered-review/elden-ring -type f); do echo "--- $f"; file "$f"; wc -c "$f"; done
-      - uses: actions/upload-artifact@v4
-        with:
-          name: elden-ring-recovered-review
-          path: .tmp-recovered-review/elden-ring
+          cp .tmp-recovered-review/elden-ring/data/article-media/elden-ring.json data/article-media/elden-ring.json
+          node -e "JSON.parse(require('fs').readFileSync('data/article-media/elden-ring.json','utf8')); console.log('Recovered media JSON is valid')"
+      - name: Commit recovered media
+        run: |
+          git config user.name "igropoisk-builder"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/article-media/elden-ring.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Recover Elden Ring article media corpus"
+          git push origin HEAD:fix/recover-elden-ring-mafia-build
