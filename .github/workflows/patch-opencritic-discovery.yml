@@ -14,22 +14,75 @@ jobs:
         with:
           ref: staging
           fetch-depth: 0
-      - name: Patch OpenCritic game lookup with sitemap
+      - name: Patch OpenCritic lookup through frontend API
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p=Path('scripts/build-complete-review-github-models-v2.mjs')
           s=p.read_text()
-          old="""  let gamePath=[...new Set(paths)][0];\n  if(!gamePath){\n    for(const q of [`site:opencritic.com/game \\\"${title}\\\" OpenCritic`,`site:opencritic.com/game/${year||''} \\\"${title}\\\"`]){\n      const rows=await bing(q);\n      const hit=rows.find(x=>{try{return new URL(x.url).hostname.endsWith('opencritic.com')&&/\\/game\\/\\d+\\//.test(new URL(x.url).pathname)}catch{return false}});\n      if(hit){try{gamePath=new URL(hit.url).pathname.replace(/\\/reviews\\/?$/,'');break}catch{}}\n    }\n  }\n  if(!gamePath)return[];\n"""
-          new="""  let gamePath=[...new Set(paths)][0];\n  if(!gamePath){\n    const sitemap=await fetchText('https://opencritic.com/sitemap.xml',25000);\n    if(sitemap){\n      const words=normalized.split(' ').filter(w=>w.length>3);\n      const gameUrls=[...sitemap.text.matchAll(/<loc>(https?:\\/\\/opencritic\\.com\\/game\\/\\d+\\/[^<]+)<\\/loc>/gi)].map(m=>decode(m[1]));\n      const ranked=gameUrls.map(u=>{const low=u.toLowerCase().replace(/[-_]+/g,' ');return{u,score:words.reduce((n,w)=>n+(low.includes(w)?1:0),0)}}).filter(x=>x.score>0).sort((a,b)=>b.score-a.score);\n      if(ranked[0]&&ranked[0].score>=Math.min(2,Math.max(1,words.length)))try{gamePath=new URL(ranked[0].u).pathname}catch{}\n    }\n  }\n  if(!gamePath){\n    for(const q of [`site:opencritic.com/game \\\"${title}\\\" OpenCritic`,`site:opencritic.com/game \\\"${title}\\\" reviews`]){\n      const rows=await bing(q);\n      const hit=rows.find(x=>{try{return new URL(x.url).hostname.endsWith('opencritic.com')&&/\\/game\\/\\d+\\//.test(new URL(x.url).pathname)}catch{return false}});\n      if(hit){try{gamePath=new URL(hit.url).pathname.replace(/\\/reviews\\/?$/,'');break}catch{}}\n    }\n  }\n  if(!gamePath)return[];\n"""
-          if old not in s:
-              raise SystemExit('target block not found')
-          p.write_text(s.replace(old,new,1))
+          start=s.index('async function openCriticCandidates(){')
+          end=s.index('\nasync function bing(q)', start)
+          fn=r'''async function openCriticCandidates(){
+  let gamePath='';
+  const api=await fetchText(`https://opencritic.com/api/game/search?criteria=${encodeURIComponent(title)}`);
+  if(api){
+    try{
+      const rows=JSON.parse(api.text);
+      const list=Array.isArray(rows)?rows:(Array.isArray(rows?.data)?rows.data:[]);
+      const norm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').trim();
+      const wanted=norm(title);
+      const score=row=>{
+        const name=norm(row.name||row.title||row.gameName||'');
+        let n=name===wanted?100:0;
+        for(const w of wanted.split(' ').filter(x=>x.length>2))if(name.includes(w))n+=5;
+        const dist=Number(row.dist??row.distance??999); if(Number.isFinite(dist))n-=Math.min(20,dist);
+        return n;
+      };
+      const hit=[...list].sort((a,b)=>score(b)-score(a))[0];
+      const id=hit?.id??hit?._id??hit?.gameId;
+      const name=hit?.name||hit?.title||title;
+      if(id!==undefined&&id!==null){
+        const gameSlug=String(name).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+        gamePath=`/game/${id}/${gameSlug}`;
+      }
+    }catch{}
+  }
+  if(!gamePath){
+    const search=await fetchText(`https://opencritic.com/search?q=${encodeURIComponent(title)}`);
+    const html=search?.text||'';
+    const normalized=title.toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').trim();
+    const paths=[];
+    for(const m of html.matchAll(/href=["'](\/game\/\d+\/[^"'#?]+)["']/gi)){
+      const p=m[1],low=decode(p).toLowerCase().replace(/[-_]+/g,' ');
+      if(normalized.split(' ').filter(w=>w.length>3).some(w=>low.includes(w)))paths.push(p);
+    }
+    gamePath=[...new Set(paths)][0]||'';
+  }
+  if(!gamePath)return[];
+  const out=[];const seen=new Set();
+  for(let page=1;page<=8&&out.length<Math.max(required*3,60);page++){
+    const url=`https://opencritic.com${gamePath}/reviews?sort=popularity&page=${page}`;
+    const r=await fetchText(url);if(!r)continue;
+    const html=r.text;
+    for(const m of html.matchAll(/href=["'](https?:\/\/[^"']+)["']/gi)){
+      const u=decode(m[1]).replaceAll('\\/','/');
+      const src=sourceFor(u);if(!src||seen.has(src.id))continue;
+      const start=Math.max(0,m.index-2200),end=Math.min(html.length,m.index+1400);
+      const context=strip(html.slice(start,end));
+      if(context.length<40)continue;
+      seen.add(src.id);
+      out.push({url:u,title:`${title} — ${src.name} review`,snippet:context.slice(-1600),publication:src.name,publication_id:src.id,discovery_url:url});
+    }
+    await sleep(80);
+  }
+  return out;
+}'''
+          p.write_text(s[:start]+fn+s[end:])
           PY
           node --check scripts/build-complete-review-github-models-v2.mjs
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
           git add scripts/build-complete-review-github-models-v2.mjs
-          git commit -m "Resolve OpenCritic games through sitemap"
+          git commit -m "Use OpenCritic public frontend search for review discovery"
           git pull --rebase origin staging
           git push origin HEAD:staging
