@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { buildGameReviewQueue, canonicalSourceUrl, enrichNewsItems } from './lib/news-game-linker.mjs';
+import { editorializeNewsSummary } from './lib/news-editorial-summary.mjs';
 
 const rankedPath = 'data/news.json';
 const officialPath = 'data/publisher-news.json';
@@ -17,30 +18,6 @@ function similarity(a, b) {
   if (!left.size || !right.size) return 0;
   let common = 0; for (const token of left) if (right.has(token)) common += 1;
   return common / Math.min(left.size, right.size);
-}
-function cleanSummary(value = '') {
-  let text = String(value)
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;/gi, "'")
-    .replace(/\[\s*(?:…|\.\.\.)\s*\]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  text = text
-    .replace(/\s+The post\s+[\s\S]*?\s+appeared first on\s+[\s\S]*$/i, '')
-    .replace(/\s+(?:Сообщение|Публикация)\s+[\s\S]*?\s+впервые\s+появил(?:ось|ась)\s+на\s+[\s\S]*$/i, '')
-    .trim();
-  if (text.length <= 520) return text;
-  const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
-  let result = '';
-  for (const sentence of sentences.slice(0, 3)) {
-    if ((result + sentence).trim().length > 520) break;
-    result = `${result} ${sentence}`.trim();
-  }
-  if (result.length >= 120) return result;
-  return `${text.slice(0, 517).trimEnd()}…`;
 }
 async function readItems(path) { try { const payload = JSON.parse(await fs.readFile(path, 'utf8')); return Array.isArray(payload) ? payload : payload.items || []; } catch { return []; } }
 function sourceRef(item) {
@@ -122,10 +99,14 @@ const output = events.map(event => {
   const editorialScore = globalScore + trendScore + mediaSourceCount * 120 + discussionMentions * 80 + regionalScore + (officialItems.length ? 80 : 0);
   const type = officialItems.length && mediaItems.length ? 'confirmed' : officialItems.length ? 'official' : 'ranked';
   const id = createHash('sha1').update(event.items.map(item => canonicalSourceUrl(item.url)).sort().join('|')).digest('hex').slice(0, 16);
+  const titleRu = representative.titleRu || representative.title || '';
+  const titleEn = representative.titleEn || representative.title || '';
   return {
     id, type, importance, official: officialItems.length > 0, publicEligible, editorialScore,
-    titleRu: representative.titleRu || representative.title || '', titleEn: representative.titleEn || representative.title || '',
-    summaryRu: cleanSummary(representative.summaryRu || representative.summary || ''), summaryEn: cleanSummary(representative.summaryEn || representative.summary || ''),
+    titleRu, titleEn,
+    summaryRu: editorializeNewsSummary(representative.summaryRu || representative.summary || '', { title: titleRu }),
+    summaryEn: editorializeNewsSummary(representative.summaryEn || representative.summary || '', { title: titleEn }),
+    summaryModel: 'editorial-extract-v2',
     publishedAt: event.publishedAt,
     publishedDay: newestItem?.publishedDay,
     publishedLocalTime: newestItem?.publishedLocalTime,
