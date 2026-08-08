@@ -53,6 +53,48 @@ html body .release-layout{
   border-color:var(--ig-hover-border)!important;
 }
 
+/* Release-calendar typography follows the site readability floor. */
+.release-page .release-breadcrumb,
+.release-page .release-view-tabs button,
+.release-page .release-quick-filters select,
+.release-page .release-period-nav .ig-button,
+.release-page .release-result-count,
+.release-page .release-rail-head a,
+.release-page .release-upcoming-item h3,
+.release-page .release-change span,
+.release-page .release-rail-note p,
+.release-page .release-calendar-item h3,
+.release-page .release-approximate-chip,
+.release-page .release-list-item p,
+.release-page .release-feed-card p,
+.release-page .release-empty,
+.release-page .release-detail-copy>p,
+.release-page .release-detail-copy li,
+.release-page .release-detail-platforms,
+.release-page .release-detail-source-list a{
+  font-size:16px!important;
+  line-height:1.45;
+}
+.release-page .release-kicker,
+.release-page .release-quick-filters label>span,
+.release-page .release-intro__stats span,
+.release-page .release-upcoming-item span,
+.release-page .release-change strong,
+.release-page .release-rail-note strong,
+.release-page .release-weekdays span,
+.release-page .release-day__number,
+.release-page .release-day__count,
+.release-page .release-calendar-item>span>span,
+.release-page .release-list-date small,
+.release-page .release-list-item__meta span,
+.release-page .release-feed-card__footer span,
+.release-page .release-feed-date,
+.release-page .release-detail-label,
+.release-page .release-detail-tags span{
+  font-size:13px!important;
+  line-height:1.35;
+}
+
 @media(max-width:1320px){
   html body .wtp-layout{
     grid-template-columns:minmax(260px,var(--ig-grid-left)) minmax(0,1fr)!important;
