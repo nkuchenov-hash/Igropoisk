@@ -104,15 +104,15 @@
     const actions=header.querySelector(':scope > .site-header__inner > .site-actions');
     if(!inner||!desktopNav||!actions)return;
 
-    const oldToggles=[...header.querySelectorAll('.mobile-menu-toggle')];
-    let toggle=freshNode(oldToggles.shift()||null);
-    oldToggles.forEach(node=>node.remove());
-    if(!toggle){
-      toggle=document.createElement('button');
-      inner.insertBefore(toggle,actions);
-    }else if(toggle.parentElement!==inner){
-      inner.insertBefore(toggle,actions);
-    }
+    let toggle=header.querySelector('.mobile-menu-toggle[data-ig-mobile-menu-toggle]');
+    header.querySelectorAll('.mobile-menu-toggle').forEach(node=>{if(node!==toggle)node.remove()});
+    let menu=header.querySelector('.mobile-menu[data-ig-mobile-menu]');
+    header.querySelectorAll('.mobile-menu').forEach(node=>{if(node!==menu)node.remove()});
+
+    if(toggle&&menu)return;
+
+    toggle=freshNode(toggle||header.querySelector('.mobile-menu-toggle'))||document.createElement('button');
+    if(toggle.parentElement!==inner)inner.insertBefore(toggle,actions);
     toggle.className='ig-button icon-button mobile-menu-toggle';
     toggle.type='button';
     toggle.dataset.igMobileMenuToggle='';
@@ -121,22 +121,24 @@
     toggle.setAttribute('aria-controls','mobileMenu');
     toggle.innerHTML='<span></span><span></span><span></span>';
 
-    const oldMenus=[...header.querySelectorAll('.mobile-menu')];
-    let menu=freshNode(oldMenus.shift()||null);
-    oldMenus.forEach(node=>node.remove());
-    if(!menu){
-      menu=document.createElement('div');
-      header.appendChild(menu);
-    }else if(menu.parentElement!==header){
-      header.appendChild(menu);
-    }
+    menu=freshNode(menu||header.querySelector('.mobile-menu'))||document.createElement('div');
+    if(menu.parentElement!==header)header.appendChild(menu);
     menu.className='mobile-menu';
     menu.id='mobileMenu';
     menu.dataset.igMobileMenu='';
     menu.hidden=true;
 
     const sync=()=>{
-      menu.innerHTML=`<nav aria-label="Мобильная навигация">${desktopNav.innerHTML}</nav>`;
+      const theme=actions.querySelector('#theme');
+      const account=actions.querySelector('[data-auth-link]');
+      const themeLabel=document.documentElement.dataset.theme==='light'?'Включить тёмную тему':'Включить светлую тему';
+      menu.innerHTML=`<nav aria-label="Мобильная навигация">${desktopNav.innerHTML}</nav><div class="mobile-menu__actions"><button type="button" class="mobile-menu__action" data-mobile-theme>${themeLabel}</button></div>`;
+      if(account){
+        const clone=account.cloneNode(true);
+        clone.classList.add('mobile-menu__action','mobile-menu__account');
+        menu.querySelector('.mobile-menu__actions')?.appendChild(clone);
+      }
+      if(theme)menu.querySelector('[data-mobile-theme]')?.setAttribute('aria-label',themeLabel);
     };
     const setOpen=open=>{
       if(open)sync();
@@ -150,6 +152,13 @@
     sync();
     toggle.addEventListener('click',()=>setOpen(menu.hidden));
     menu.addEventListener('click',event=>{
+      const themeAction=event.target.closest('[data-mobile-theme]');
+      if(themeAction){
+        event.preventDefault();
+        actions.querySelector('#theme')?.click();
+        setOpen(false);
+        return;
+      }
       const pageButton=event.target.closest('[data-page]');
       if(pageButton){
         event.preventDefault();
