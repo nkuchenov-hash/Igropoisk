@@ -215,10 +215,8 @@
         ${tags.length ? `<div class="ig-chip-list">${tags.map(tag => `<span class="ig-chip">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
         <h3 class="ig-card__title"><a href="${story}" data-news-story-link>${title}</a></h3>
         ${summary ? `<p class="ig-card__summary">${summary}</p>` : ''}
-        <div class="ig-news-card__footer">
-          ${games ? `<div class="ig-chip-list ig-news-card__actions">${games}</div>` : ''}
-          <div class="ig-card__meta">${sourceLink(item, { lang })} · ${escapeHtml(formatters[lang].format(new Date(item.publishedAt)))}</div>
-        </div>
+        ${games ? `<div class="ig-chip-list ig-news-card__actions">${games}</div>` : ''}
+        <div class="ig-card__meta">${sourceLink(item, { lang })} · ${escapeHtml(formatters[lang].format(new Date(item.publishedAt)))}</div>
       </div>
     </article>`;
   }
