@@ -48,20 +48,21 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
       - name: Build complete Mafia-standard pages and reviews
         env:
-          REQUESTED_SLUG: ${{ inputs.slug }}
-          REQUESTED_LIMIT: ${{ inputs.limit }}
+          REQUESTED_SLUG: ${{ inputs.slug || '' }}
+          REQUESTED_LIMIT: ${{ inputs.limit || '0' }}
         run: |
           node - <<'NODE' > /tmp/queue.txt
           const fs=require('fs');
           const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
-          const requested=process.env.REQUESTED_SLUG||'';
+          const requested=(process.env.REQUESTED_SLUG||'').trim();
           const limit=Number(process.env.REQUESTED_LIMIT||0);
           let queue=catalog.filter(g=>g.slug!=='mafia');
           if(requested) queue=queue.filter(g=>g.slug===requested);
           else queue=queue.filter(g=>!fs.existsSync(`data/articles/${g.slug}.json`)||g.slug==='the-witcher-3-wild-hunt');
           if(limit>0) queue=queue.slice(0,limit);
-          process.stdout.write(queue.map(g=>g.slug).join('\n'));
+          process.stdout.write(queue.map(g=>g.slug).join('\n')+(queue.length?'\n':''));
           NODE
+          echo "Queued $(wc -l < /tmp/queue.txt) games"
           : > /tmp/complete-results.tsv
           while IFS= read -r slug; do
             [ -z "$slug" ] && continue
@@ -96,7 +97,8 @@ jobs:
           const fs=require('fs');
           const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
           const complete=catalog.filter(g=>fs.existsSync(`game/${g.slug}/index.html`)&&fs.existsSync(`data/articles/${g.slug}.json`)&&fs.existsSync(`article/${g.slug}/index.html`));
-          const missing=catalog.filter(g=>!complete.includes(g)).map(g=>g.slug);
+          const completeSlugs=new Set(complete.map(g=>g.slug));
+          const missing=catalog.filter(g=>!completeSlugs.has(g.slug)).map(g=>g.slug);
           console.log(JSON.stringify({total:catalog.length,complete:complete.length,missing},null,2));
           fs.mkdirSync('data/parser-runs',{recursive:true});
           fs.writeFileSync('data/parser-runs/complete-game-pages-latest.json',JSON.stringify({generated_at:new Date().toISOString(),total:catalog.length,complete:complete.length,missing},null,2)+'\n');
