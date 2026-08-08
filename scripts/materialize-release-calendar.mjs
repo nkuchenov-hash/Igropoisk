@@ -3,6 +3,8 @@ import path from 'node:path';
 import { buildCandidates, buildPublicCalendar, validateCalendar } from './lib/release-calendar-policy.mjs';
 import { migrateRepository } from './lib/game-registry-migration.mjs';
 import { attachCanonicalGameIdsToPublicCalendar, linkReleaseCandidatesToRegistry } from './lib/release-game-registry-adapter.mjs';
+import { attachAudienceAffinity, buildPersonalizedReleases, validatePersonalizedReleases } from './lib/release-audience-relevance.mjs';
+import { enrichRawReleasesFromSteamEditorial } from './lib/release-steam-editorial-discovery.mjs';
 
 const ROOT = process.cwd();
 const paths = {
@@ -10,6 +12,8 @@ const paths = {
   editorial: path.join(ROOT, 'data/release-candidates/editorial.json'),
   claims: path.join(ROOT, 'config/release-official-claims.json'),
   policy: path.join(ROOT, 'config/release-calendar.json'),
+  news: path.join(ROOT, 'data/news-events.json'),
+  rankedNews: path.join(ROOT, 'data/news.json'),
   candidates: path.join(ROOT, 'data/release-candidates/current.json'),
   public: path.join(ROOT, 'data/releases/public.json'),
   report: path.join(ROOT, 'data/releases/materialization-report.json'),
@@ -43,16 +47,23 @@ function deduplicateCandidates(candidates) {
   return [...byId.values()];
 }
 
-const [raw, editorial, claimsDoc, policy] = await Promise.all([
+const [raw, editorial, claimsDoc, policy, newsDoc, rankedNewsDoc] = await Promise.all([
   readJson(paths.raw, { releases: [] }),
   readJson(paths.editorial, { schema_version: 1, decisions: {} }),
   readJson(paths.claims, { schema_version: 1, claims: [] }),
   readJson(paths.policy, {}),
+  readJson(paths.news, { items: [] }),
+  readJson(paths.rankedNews, { items: [] }),
 ]);
 
 const generatedAt = new Date().toISOString();
+const steamEditorial = await enrichRawReleasesFromSteamEditorial(
+  Array.isArray(raw?.releases) ? raw.releases : [],
+  policy,
+  generatedAt,
+);
 const rawCandidates = buildCandidates({
-  rawReleases: Array.isArray(raw?.releases) ? raw.releases : [],
+  rawReleases: steamEditorial.releases,
   editorial,
   officialClaims: Array.isArray(claimsDoc?.claims) ? claimsDoc.claims : [],
   policy,
@@ -65,22 +76,46 @@ const registryMigration = migrateRepository(ROOT, {
   publicBaseUrl: '/game',
 });
 const linkage = linkReleaseCandidatesToRegistry(deduplicatedCandidates, registryMigration.registry);
-const candidates = linkage.candidates;
+const eventNews = Array.isArray(newsDoc) ? newsDoc : (Array.isArray(newsDoc?.items) ? newsDoc.items : []);
+const rankedNews = Array.isArray(rankedNewsDoc) ? rankedNewsDoc : (Array.isArray(rankedNewsDoc?.items) ? rankedNewsDoc.items : []);
+const newsEvents = [...eventNews, ...rankedNews];
+const candidates = attachAudienceAffinity(linkage.candidates, newsEvents);
 let publicCalendar = buildPublicCalendar(candidates, generatedAt);
+publicCalendar.personalized_releases = buildPersonalizedReleases(candidates, policy);
+publicCalendar.personalization = {
+  model: 'user-context-region-v1',
+  minimum_region_score: Number(policy.minimum_personalized_region_score || 160),
+  client_minimum_score: Number(policy.personalized_client_minimum_score || 90),
+};
+publicCalendar.statistics.personalized = publicCalendar.personalized_releases.length;
 publicCalendar = attachCanonicalGameIdsToPublicCalendar(publicCalendar, candidates);
-const errors = validateCalendar({ candidates, publicCalendar, policy });
+const errors = [
+  ...validateCalendar({ candidates, publicCalendar, policy }),
+  ...validatePersonalizedReleases({ candidates, publicCalendar, policy }),
+];
+
 const candidateDocument = {
-  schema_version: 2,
+  schema_version: 3,
   generated_at: generatedAt,
   raw_generated_at: raw?.generated_at || null,
+  news_generated_at: newsDoc?.generatedAt || null,
   candidates,
   statistics: publicCalendar.statistics,
 };
 const report = {
-  schema_version: 1,
+  schema_version: 2,
   generated_at: generatedAt,
   sources: {
-    active_discovery: ['Steam coming-soon/appdetails (PC only)'],
+    active_discovery: [
+      'Steam coming-soon/appdetails (PC only)',
+      'Steam Popular Upcoming editorial discovery',
+      'Steam Popular New Releases editorial discovery',
+    ],
+    steam_editorial_discovery: {
+      discovered_candidates: steamEditorial.discovered,
+      sources: steamEditorial.sources,
+    },
+    audience_relevance: ['News event and ranked-news regional scores linked by canonical game slug or title evidence'],
     optional_auxiliary: ['RAWG enrichment when RAWG_API_KEY is configured'],
     supported_auxiliary: ['IGDB/RAWG claims are discovery/cross-check only and cannot confirm a date alone'],
     console_authority: ['Official platform stores', 'publisher/developer sites', 'official announcements via config/release-official-claims.json'],

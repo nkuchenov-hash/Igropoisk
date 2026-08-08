@@ -1,0 +1,24 @@
+/* Release calendar composition and layout stability overrides. */
+html {
+  scrollbar-gutter: stable;
+}
+
+.release-intro__stats {
+  grid-template-columns: minmax(210px, 1fr);
+  min-width: 230px;
+}
+
+.release-intro__stats > div {
+  min-width: 0;
+}
+
+.release-intro__stats span {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .release-intro__stats {
+    min-width: 0;
+    width: 100%;
+  }
+}
