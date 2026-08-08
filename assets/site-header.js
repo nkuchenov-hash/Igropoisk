@@ -9,7 +9,7 @@
     return `<div class="ig-container site-header__inner">
       <button class="site-logo" data-page="home" aria-label="Игропоиск — главное">ИГРОПОИСК</button>
       <nav class="site-nav" aria-label="Основная навигация">
-        <button data-page="home">Главное</button>
+        <button data-page="home">Главная</button>
         <button data-page="what-to-play">Во что поиграть?</button>
         <button data-page="search">Поиск игр</button>
         <a class="release-nav-link" href="${ROOT}calendar/" data-ig-release-nav>Календарь релизов</a>
@@ -77,6 +77,9 @@
 
     if(isNativeMainHeader(header)){
       header.dataset.igSharedHeader='native';
+      header.querySelectorAll('.site-nav [data-page="home"],.mobile-menu [data-page="home"]').forEach(button=>{
+        button.textContent='Главная';
+      });
       return;
     }
 
@@ -104,10 +107,18 @@
     const target=document.getElementById(id);
     if(!target||!target.classList.contains('page'))return false;
     document.querySelectorAll('main.page').forEach(page=>page.classList.toggle('active',page===target));
+    document.querySelectorAll('.site-nav [data-page]').forEach(button=>{
+      button.classList.toggle('active',button.dataset.page===id);
+    });
     history.replaceState(null,'',`#${id}`);
     window.scrollTo({top:0,behavior:'auto'});
     updateGeneratedActive(id);
     return true;
+  }
+
+  function activateHashOnMain(){
+    const id=decodeURIComponent(location.hash.slice(1));
+    if(pages.includes(id))activateLocalPage(id);
   }
 
   function ensureAuthScript(){
@@ -139,7 +150,11 @@
     }
   });
 
-  window.addEventListener('hashchange',()=>updateGeneratedActive());
+  window.addEventListener('hashchange',()=>{
+    const id=decodeURIComponent(location.hash.slice(1));
+    if(pages.includes(id)&&activateLocalPage(id))return;
+    updateGeneratedActive();
+  });
 
   let queued=false;
   function queueScan(){
@@ -160,4 +175,5 @@
   document.documentElement.dataset.theme=storedTheme();
   paintGeneratedTheme();
   updateGeneratedActive();
+  activateHashOnMain();
 })();
