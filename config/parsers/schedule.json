@@ -39,7 +39,7 @@
         "preserve_editor_locked_fields": true,
         "official_conflicts_require_review": true
       },
-      "command": "node scripts/parse-releases.mjs",
+      "command": "node scripts/parse-releases.mjs && node scripts/normalize-release-feed.mjs",
       "outputs": [
         "data/releases/current.json",
         "data/releases/changes.json",
