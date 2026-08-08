@@ -29,6 +29,8 @@ on:
       - 'config/news-pipeline.json'
       - 'data/news-sources.json'
       - 'data/youtube-sources.json'
+      - 'data/news-game-aliases.json'
+      - 'data/news-game-overrides.json'
       - 'scripts/fetch-news.mjs'
       - 'scripts/collect-regional-news.mjs'
       - 'scripts/postprocess-industry-news.mjs'
@@ -43,7 +45,10 @@ on:
       - 'scripts/test-news-pipeline-health.mjs'
       - 'scripts/test-news-content-api.mjs'
       - 'scripts/test-news-storage-content-api.mjs'
+      - 'scripts/test-news-game-linker.mjs'
       - 'scripts/validate-news-module.mjs'
+      - 'scripts/lib/news-game-linker.mjs'
+      - 'scripts/lib/news-game-registry-adapter.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/publish-news-storage.mjs'
       - '.github/workflows/news-pipeline.yml'
@@ -82,6 +87,7 @@ jobs:
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
           node scripts/test-news-storage-content-api.mjs
+          node scripts/test-news-game-linker.mjs
 
       - name: Collect validate and prepare one isolated snapshot
         env:
