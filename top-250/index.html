@@ -3,29 +3,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="description" content="Игропоиск Топ-250 — рейтинг популярных игр с обзорами редакции Игропоиска.">
+  <meta name="description" content="Игропоиск Топ-250 — рейтинг игр, связанный с каноническими страницами игр Игропоиска.">
   <title>Игропоиск Топ-250</title>
-  <link rel="stylesheet" href="../styles.css?v=20260325c">
-  <link rel="stylesheet" href="../assets/top-250.css?v=20260807">
+  <link rel="stylesheet" href="/Igropoisk/assets/design-system.css?v=20260808">
+  <link rel="stylesheet" href="/Igropoisk/assets/site-system.css?v=20260808-3">
   <link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">
   <link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">
 </head>
-<body class="top250-page">
-  <main class="top250-shell">
-    <a class="top250-back" href="../">← Главная</a>
-    <header class="top250-head">
-      <div>
-        <div class="top250-kicker">Рейтинг популярности</div>
-        <h1>Игропоиск Топ-250</h1>
-        <p data-top250-meta>Первые двадцать позиций рейтинга популярности Игропоиска. Рейтинг связан с каноническим Game Registry; обзоры редакции доступны прямо из списка.</p>
+<body class="ig-site-page">
+  <header class="ig-site-header"></header>
+  <main class="ig-container top250-layout">
+    <section class="ig-panel top250-intro" aria-labelledby="top250Title">
+      <div class="top250-intro-copy">
+        <div class="ig-kicker">Рейтинг Игропоиска</div>
+        <h1 class="ig-page-title" id="top250Title">Топ-250</h1>
+        <p class="ig-muted" data-top250-meta>Загружаем актуальный рейтинг игр.</p>
       </div>
-      <div class="top250-capacity">250<small>мест в рейтинге</small></div>
-    </header>
-    <section class="top250-list" data-top250-list aria-live="polite">
-      <div class="top250-error">Загрузка рейтинга…</div>
+      <span class="ig-pill">До 250 позиций</span>
+    </section>
+    <section class="top250-list" data-top250-list aria-live="polite" aria-label="Игропоиск Топ-250">
+      <div class="ig-empty-state">Загрузка рейтинга…</div>
     </section>
   </main>
-  <script src="../assets/top-250.js?v=20260807" defer></script>
+  <script src="/Igropoisk/assets/top-250.js?v=20260808-2" defer></script>
   <script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>
   <script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>
 </body>

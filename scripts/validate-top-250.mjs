@@ -19,6 +19,11 @@ const ids = new Set();
 const slugs = new Set();
 for (let i = 0; i < ranking.length; i += 1) {
   const item = ranking[i];
+  const gamePath = path.join(root, 'game', String(item.slug || ''), 'index.html');
+  const articleData = path.join(root, 'data/articles', `${item.slug}.json`);
+  const articlePage = path.join(root, 'article', String(item.slug || ''), 'index.html');
+  const expectedGameUrl = `/Igropoisk/game/${encodeURIComponent(item.slug)}/`;
+  const expectedReviewUrl = `/Igropoisk/article/${encodeURIComponent(item.slug)}/`;
   if (Number(item.rank) !== i + 1) errors.push(`rank mismatch at index ${i}`);
   if (!item.game_id) errors.push(`missing game_id at rank ${i + 1}`);
   if (!item.slug) errors.push(`missing slug at rank ${i + 1}`);
@@ -27,12 +32,26 @@ for (let i = 0; i < ranking.length; i += 1) {
   if (slugs.has(item.slug)) errors.push(`duplicate slug ${item.slug}`);
   ids.add(item.game_id);
   slugs.add(item.slug);
-  if (item.game_url && item.game_url !== `/Igropoisk/game/${encodeURIComponent(item.slug)}/`) errors.push(`non-canonical game_url for ${item.slug}`);
-  if (item.review?.url && item.review.url !== `/Igropoisk/article/${encodeURIComponent(item.slug)}/`) errors.push(`non-canonical review url for ${item.slug}`);
+  if (item.game_url !== expectedGameUrl) errors.push(`Top-250 item must lead to canonical game page: ${item.slug}`);
+  if (!fs.existsSync(gamePath)) errors.push(`missing game page for ${item.slug}`);
   if (!['published', 'ready_to_render', 'pending'].includes(item.review?.status)) errors.push(`invalid review status for ${item.slug}`);
+  if (item.review?.pipeline && item.review.pipeline !== 'strict') errors.push(`non-strict review pipeline is forbidden for ${item.slug}`);
+  if (item.review?.status === 'published') {
+    if (item.review.url !== expectedReviewUrl) errors.push(`non-canonical review url for ${item.slug}`);
+    if (item.review.pipeline !== 'strict') errors.push(`published review is not strict for ${item.slug}`);
+    if (!fs.existsSync(articleData)) errors.push(`published review data missing for ${item.slug}`);
+    if (!fs.existsSync(articlePage)) errors.push(`published review page missing for ${item.slug}`);
+  } else if (item.review?.url) {
+    errors.push(`unpublished review must not expose a URL for ${item.slug}`);
+  }
 }
 if (errors.length) {
   console.error(JSON.stringify({ errors }, null, 2));
   process.exit(2);
 }
-console.log(JSON.stringify({ valid: true, count: ranking.length, published_reviews: ranking.filter(item => item.review.status === 'published').length }, null, 2));
+console.log(JSON.stringify({
+  valid: true,
+  count: ranking.length,
+  game_pages: ranking.filter(item => item.game_url).length,
+  published_reviews: ranking.filter(item => item.review.status === 'published').length
+}, null, 2));
