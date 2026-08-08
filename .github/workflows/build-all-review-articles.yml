@@ -5,6 +5,7 @@ on:
   push:
     branches: [staging]
     paths:
+      - .github/workflows/build-all-review-articles.yml
       - data/review-build-requests/all-catalog.json
       - scripts/materialize-catalog-no-api.mjs
       - scripts/render-review-pages.mjs
@@ -38,10 +39,13 @@ jobs:
       - name: Materialize every catalog game page without external AI API
         run: node scripts/materialize-catalog-no-api.mjs
       - name: Render all already prepared review articles
+        continue-on-error: true
         run: node scripts/render-review-pages.mjs
       - name: Bind editorial artifacts to canonical Game Registry IDs
+        if: always()
         run: node scripts/canonicalize-all-editorial-game-ids.mjs --write
       - name: Commit materialized pages and reports to staging
+        if: always()
         run: |
           git add data article game
           git diff --cached --quiet && exit 0
