@@ -194,9 +194,9 @@
     const copy = labels(lang);
     return resolvedGames(item).map(game => {
       const label = escapeHtml(gameHashtag(game));
-      if (!game.pageExists) return `<span class="ig-chip ig-hashtag ig-news-game-unlinked" title="${escapeHtml(lang === 'ru' ? 'Страница игры ещё не создана' : 'Game page is not available yet')}">${label}</span>`;
+      if (!game.pageExists) return `<span class="ig-hashtag ig-news-game-unlinked" title="${escapeHtml(lang === 'ru' ? 'Страница игры ещё не создана' : 'Game page is not available yet')}">${label}</span>`;
       const pageUrl = escapeHtml(new URL(game.pageUrl, siteBase).href);
-      return `<a class="ig-chip ig-hashtag ig-hashtag-link ig-news-game-link" href="${pageUrl}" title="${escapeHtml(copy.openGame)}">${label}</a>`;
+      return `<a class="ig-hashtag ig-news-game-link" href="${pageUrl}" title="${escapeHtml(copy.openGame)}">${label}</a>`;
     }).join('');
   }
 

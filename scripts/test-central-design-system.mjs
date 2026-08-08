@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { parseAddedLines, validateFeatureCssText, validateMarkupText } from './validate-central-design-system.mjs';
 
 const roles = {
@@ -6,7 +7,7 @@ const roles = {
   field: ['ig-input'],
   card: ['ig-card'],
   panel: ['ig-panel', 'ig-toolbar'],
-  tag: ['ig-chip', 'ig-pill'],
+  tag: ['ig-chip', 'ig-hashtag', 'ig-pill'],
   tag_list: ['ig-chip-list'],
   state: ['ig-empty-state'],
   title: ['ig-page-title'],
@@ -24,8 +25,15 @@ assert.deepEqual(validateMarkupText('feature.js', `${open('button')} class="ig-b
 assert.ok(validateMarkupText('feature.js', `${open('button')} class="module__button">OK</button>`, roles, registeredComponents).length > 0);
 assert.deepEqual(validateMarkupText('feature.js', `${open('input')} class="ig-input module__field">`, roles, registeredComponents), []);
 assert.deepEqual(validateMarkupText('feature.js', `${open('div')} class="ig-chip-list">`, roles, registeredComponents), []);
+assert.deepEqual(validateMarkupText('feature.js', `${open('span')} class="ig-hashtag">#Doom</span>`, roles, registeredComponents), []);
 assert.deepEqual(validateMarkupText('feature.js', `${open('div')} class="ig-empty-state\${kind}">`, roles, registeredComponents), []);
 assert.ok(validateMarkupText('feature.js', `${open('div')} style="color:red">x</div>`, roles, registeredComponents).length > 0);
+
+const designSystem = fs.readFileSync('assets/design-system.css', 'utf8');
+const hashtagRule = designSystem.match(/\.ig-hashtag\{([^}]*)\}/)?.[1] || '';
+assert.match(hashtagRule, /color:var\(--ig-accent\)/, 'The central game hashtag must remain purple through --ig-accent.');
+assert.match(hashtagRule, /background:transparent/, 'The central game hashtag must remain a lightweight text element.');
+assert.match(hashtagRule, /border:0/, 'The central game hashtag must not regress into a chip or pill.');
 
 const parsed = parseAddedLines('diff --git a/a.css b/a.css\n+++ b/a.css\n@@ -0,0 +1 @@\n+.x{color:red}\n');
 assert.deepEqual(parsed.get('a.css'), ['.x{color:red}']);
