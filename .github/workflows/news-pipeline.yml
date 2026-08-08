@@ -39,6 +39,7 @@ on:
       - 'scripts/build-news-events.mjs'
       - 'scripts/build-home-news.mjs'
       - 'scripts/build-news-pipeline-health.mjs'
+      - 'scripts/infer-news-game-entities.mjs'
       - 'scripts/run-news-pipeline.mjs'
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
@@ -46,6 +47,7 @@ on:
       - 'scripts/test-news-content-api.mjs'
       - 'scripts/test-news-storage-content-api.mjs'
       - 'scripts/test-news-game-linker.mjs'
+      - 'scripts/test-news-game-entity-inference.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/lib/news-game-linker.mjs'
       - 'scripts/lib/news-game-registry-adapter.mjs'
@@ -83,11 +85,13 @@ jobs:
           node --check scripts/validate-news-pipeline.mjs
           node --check scripts/lib/yandex-object-storage.mjs
           node --check scripts/publish-news-storage.mjs
+          node --check scripts/infer-news-game-entities.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
           node scripts/test-news-storage-content-api.mjs
           node scripts/test-news-game-linker.mjs
+          node scripts/test-news-game-entity-inference.mjs
 
       - name: Collect validate and prepare one isolated snapshot
         env:
