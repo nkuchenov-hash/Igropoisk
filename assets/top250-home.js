@@ -6,14 +6,6 @@
   const heroContent = document.querySelector('#home .hero .hero-content');
   if (!nav || !heroContent) return;
 
-  if (!document.querySelector('link[data-top250-home-style]')) {
-    const style = document.createElement('link');
-    style.rel = 'stylesheet';
-    style.href = `${ROOT}assets/top-250.css?v=20260808-2`;
-    style.dataset.top250HomeStyle = 'true';
-    document.head.appendChild(style);
-  }
-
   const ensureNavLink = targetNav => {
     if (!targetNav || targetNav.querySelector('[data-top250-nav]')) return;
     const link = document.createElement('a');
