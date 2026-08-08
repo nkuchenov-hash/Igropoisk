@@ -24,19 +24,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Diagnose Bloodborne after syntax fix
+      - name: Diagnose Bloodborne expanded discovery
         run: |
           mkdir -p data/parser-runs
           {
-            echo '=== NODE CHECK V2 ==='
+            echo '=== NODE CHECK V3 ==='
             node --check scripts/build-complete-review-github-models.mjs
-            echo '=== RUN V2 ==='
+            echo '=== RUN V3 ==='
             node scripts/build-complete-review-github-models.mjs bloodborne
           } > data/parser-runs/complete-review-debug.txt 2>&1 || true
           cat data/parser-runs/complete-review-debug.txt
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
-          git add data/parser-runs/complete-review-debug.txt
-          git commit -m "Record complete review builder diagnostic v2" || true
+          git add data/parser-runs/complete-review-debug.txt data/parser-runs/review-source-discovery-bloodborne.json data/articles/bloodborne.json data/article-media/bloodborne.json data/reviews/bloodborne.json data/parser-runs/review-research-bloodborne.json 2>/dev/null || true
+          git commit -m "Record complete review builder diagnostic v3" || true
           git pull --rebase origin staging
           git push origin HEAD:staging
