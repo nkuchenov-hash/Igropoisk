@@ -19,7 +19,8 @@
     })
     .then(data => {
       const items = Array.isArray(data.ranking) ? data.ranking : [];
-      if (meta) meta.textContent = `Сейчас в пилоте ${items.length} игр · рейтинг рассчитан системой популярности Игропоиска`;
+      const reviews = items.filter(item => item.review?.status === 'published').length;
+      if (meta) meta.textContent = `Сейчас опубликованы первые ${items.length} позиций рейтинга · обзоров Игропоиска: ${reviews}`;
       list.innerHTML = items.map(item => {
         const cover = imageUrl(item.image);
         const title = esc(item.title);
