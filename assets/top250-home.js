@@ -9,7 +9,7 @@
   if (!document.querySelector('link[data-top250-home-style]')) {
     const style = document.createElement('link');
     style.rel = 'stylesheet';
-    style.href = `${ROOT}assets/top250-home.css?v=20260808-1`;
+    style.href = `${ROOT}assets/top-250.css?v=20260808-2`;
     style.dataset.top250HomeStyle = 'true';
     document.head.appendChild(style);
   }
@@ -31,26 +31,26 @@
   heroContent.classList.add('hero-content--with-top250');
 
   const card = document.createElement('aside');
-  card.className = 'top250-home-card';
+  card.className = 'ig-card top250-home-preview';
   card.dataset.top250HomeCard = 'true';
   card.setAttribute('aria-label', 'Игропоиск Топ-250');
   card.innerHTML = `
-    <div class="top250-home-card__head">
+    <div data-top250-home-head>
       <div>
-        <div class="top250-home-card__kicker">Рейтинг Игропоиска</div>
-        <a class="top250-home-card__title" href="${ROOT}top-250/">Топ-250</a>
+        <div class="ig-kicker top250-home-kicker">Рейтинг Игропоиска</div>
+        <a class="ig-card__title top250-home-title" href="${ROOT}top-250/">Топ-250</a>
       </div>
-      <div class="top250-home-card__controls" aria-label="Листать рейтинг">
-        <button class="top250-home-card__control" type="button" data-top250-direction="-1" aria-label="Предыдущие игры">‹</button>
-        <button class="top250-home-card__control" type="button" data-top250-direction="1" aria-label="Следующие игры">›</button>
+      <div class="ig-control-group" aria-label="Листать рейтинг">
+        <button class="ig-icon-button" type="button" data-top250-direction="-1" aria-label="Предыдущие игры">‹</button>
+        <button class="ig-icon-button" type="button" data-top250-direction="1" aria-label="Следующие игры">›</button>
       </div>
     </div>
-    <div class="top250-home-card__list" data-top250-home-list aria-live="polite">
-      <div class="top250-home-card__state">Загружаем рейтинг…</div>
+    <div data-top250-home-list aria-live="polite">
+      <div class="ig-empty-state top250-home-state">Загружаем рейтинг…</div>
     </div>
-    <div class="top250-home-card__footer">
-      <span class="top250-home-card__counter" data-top250-home-counter></span>
-      <a class="top250-home-card__all" href="${ROOT}top-250/">Весь Топ-250 →</a>
+    <div data-top250-home-footer>
+      <span class="ig-muted top250-home-counter" data-top250-home-counter></span>
+      <a class="ig-button top250-home-all" href="${ROOT}top-250/">Весь Топ-250 →</a>
     </div>`;
   heroContent.appendChild(card);
 
@@ -69,27 +69,27 @@
 
   const createItem = item => {
     const row = document.createElement('a');
-    row.className = 'top250-home-card__item';
+    row.className = 'ig-card ig-card--interactive top250-home-row';
     row.href = `${ROOT}top-250/`;
     row.setAttribute('aria-label', `${item.rank}. ${item.title} — открыть Топ-250`);
 
     const rank = document.createElement('span');
-    rank.className = 'top250-home-card__rank';
+    rank.className = 'ig-muted top250-home-rank';
     rank.textContent = String(item.rank);
 
     const cover = document.createElement('img');
-    cover.className = 'top250-home-card__cover';
+    cover.className = 'ig-card__media top250-home-cover';
     cover.src = normalizeImage(item.image);
     cover.alt = '';
     cover.loading = 'lazy';
 
     const copy = document.createElement('span');
-    copy.className = 'top250-home-card__copy';
+    copy.className = 'ig-card__body top250-home-copy';
     const name = document.createElement('span');
-    name.className = 'top250-home-card__name';
+    name.className = 'ig-card__title top250-home-name';
     name.textContent = item.title || 'Без названия';
     const meta = document.createElement('span');
-    meta.className = 'top250-home-card__meta';
+    meta.className = 'ig-card__meta top250-home-meta';
     if (item.year) {
       const year = document.createElement('span');
       year.textContent = String(item.year);
@@ -97,14 +97,14 @@
     }
     if (item.review?.status === 'published') {
       const review = document.createElement('span');
-      review.className = 'top250-home-card__review';
+      review.className = 'ig-pill top250-home-review';
       review.textContent = 'есть обзор';
       meta.appendChild(review);
     }
     copy.append(name, meta);
 
     const arrow = document.createElement('span');
-    arrow.className = 'top250-home-card__arrow';
+    arrow.className = 'ig-muted top250-home-arrow';
     arrow.textContent = '›';
     arrow.setAttribute('aria-hidden', 'true');
 
@@ -167,7 +167,7 @@
     })
     .catch(error => {
       console.warn(error);
-      list.innerHTML = `<a class="top250-home-card__state" href="${ROOT}top-250/">Открыть Топ-250 →</a>`;
+      list.innerHTML = `<a class="ig-empty-state top250-home-state" href="${ROOT}top-250/">Открыть Топ-250 →</a>`;
       counter.textContent = '';
     });
 })();
