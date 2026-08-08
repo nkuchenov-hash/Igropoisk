@@ -5,6 +5,7 @@ import { migrateRepository } from './lib/game-registry-migration.mjs';
 import { attachCanonicalGameIdsToPublicCalendar, linkReleaseCandidatesToRegistry } from './lib/release-game-registry-adapter.mjs';
 import { attachAudienceAffinity, buildPersonalizedReleases, validatePersonalizedReleases } from './lib/release-audience-relevance.mjs';
 import { enrichRawReleasesFromSteamEditorial } from './lib/release-steam-editorial-discovery.mjs';
+import { ensureVisibleReleaseCovers, validateVisibleReleaseCovers } from './lib/release-cover-resolver.mjs';
 
 const ROOT = process.cwd();
 const paths = {
@@ -79,7 +80,21 @@ const linkage = linkReleaseCandidatesToRegistry(deduplicatedCandidates, registry
 const eventNews = Array.isArray(newsDoc) ? newsDoc : (Array.isArray(newsDoc?.items) ? newsDoc.items : []);
 const rankedNews = Array.isArray(rankedNewsDoc) ? rankedNewsDoc : (Array.isArray(rankedNewsDoc?.items) ? rankedNewsDoc.items : []);
 const newsEvents = [...eventNews, ...rankedNews];
-const candidates = attachAudienceAffinity(linkage.candidates, newsEvents);
+let candidates = attachAudienceAffinity(linkage.candidates, newsEvents);
+
+const personalizedPreview = buildPersonalizedReleases(candidates, policy);
+const visibleIds = new Set([
+  ...candidates.filter(candidate => candidate.moderation?.status === 'published' && !candidate.moderation?.publication_forbidden).map(candidate => candidate.id),
+  ...personalizedPreview.map(release => release.id),
+]);
+const coverResolution = await ensureVisibleReleaseCovers(candidates, {
+  root: ROOT,
+  visibleIds,
+  minimumBytes: 4_000,
+  concurrency: 6,
+});
+candidates = coverResolution.candidates;
+
 let publicCalendar = buildPublicCalendar(candidates, generatedAt);
 publicCalendar.personalized_releases = buildPersonalizedReleases(candidates, policy);
 publicCalendar.personalization = {
@@ -88,10 +103,12 @@ publicCalendar.personalization = {
   client_minimum_score: Number(policy.personalized_client_minimum_score || 90),
 };
 publicCalendar.statistics.personalized = publicCalendar.personalized_releases.length;
+publicCalendar.statistics.coverage_percent = coverResolution.statistics.coverage_percent;
 publicCalendar = attachCanonicalGameIdsToPublicCalendar(publicCalendar, candidates);
 const errors = [
   ...validateCalendar({ candidates, publicCalendar, policy }),
   ...validatePersonalizedReleases({ candidates, publicCalendar, policy }),
+  ...validateVisibleReleaseCovers(publicCalendar),
 ];
 
 const candidateDocument = {
@@ -103,7 +120,7 @@ const candidateDocument = {
   statistics: publicCalendar.statistics,
 };
 const report = {
-  schema_version: 2,
+  schema_version: 3,
   generated_at: generatedAt,
   sources: {
     active_discovery: [
@@ -114,6 +131,13 @@ const report = {
     steam_editorial_discovery: {
       discovered_candidates: steamEditorial.discovered,
       sources: steamEditorial.sources,
+    },
+    release_cover_resolution: {
+      strategy: 'verified local asset required for every globally or personally visible release',
+      preferred: 'Steam library 600x900 cover',
+      fallbacks: ['existing official image', 'Steam capsule', 'Steam header', 'Steam background', 'Steam screenshot'],
+      ...coverResolution.statistics,
+      unresolved: coverResolution.unresolved,
     },
     audience_relevance: ['News event and ranked-news regional scores linked by canonical game slug or title evidence'],
     optional_auxiliary: ['RAWG enrichment when RAWG_API_KEY is configured'],
