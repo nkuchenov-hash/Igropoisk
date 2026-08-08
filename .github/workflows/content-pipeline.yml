@@ -12,11 +12,14 @@ on:
       - 'scripts/orchestrate-content.mjs'
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/build-game-page.mjs'
+      - 'scripts/build-game-page-from-registry.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/validate-automation-publish-diff.mjs'
       - 'scripts/lib/game-registry*.mjs'
+      - 'scripts/lib/system-game-registry-adapter.mjs'
       - 'data/catalog-visible.json'
       - 'data/game-series.json'
+      - 'data/popular/**'
       - 'data/releases/current.json'
       - 'data/reviews/**'
       - 'data/articles/**'
@@ -45,13 +48,15 @@ jobs:
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/build-game-page.mjs
+          node --check scripts/build-game-page-from-registry.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/validate-automation-publish-diff.mjs
           node --check scripts/lib/game-registry.mjs
           node --check scripts/lib/game-registry-migration.mjs
           node --check scripts/lib/game-registry-page-sections.mjs
+          node --check scripts/lib/system-game-registry-adapter.mjs
       - name: Build registry and execution plan
-        run: node scripts/orchestrate-content.mjs
+        run: node scripts/orchestrate-content.mjs --finalize
       - name: Build selected pages and reviews
         run: node scripts/run-content-pipeline.mjs
         env:
