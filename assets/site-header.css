@@ -1,6 +1,6 @@
-@import url('./site-system.css?v=20260803-1');
+@import url('./site-system.css?v=20260808-2');
 
-/* Shared header: exact home-page header, with only a translucent background. */
+/* Shared header: exact site header on every page. */
 .site-header{
   position:sticky;
   top:0;
@@ -89,13 +89,80 @@
   font-size:12px;
   font-weight:900;
 }
+
+.mobile-menu-toggle{
+  display:none;
+  margin-left:auto;
+  position:relative;
+  gap:4px;
+  align-content:center;
+}
+.mobile-menu-toggle span{
+  display:block;
+  width:18px;
+  height:2px;
+  background:currentColor;
+  border-radius:2px;
+  transition:transform 160ms ease,opacity 160ms ease;
+}
+.mobile-menu-toggle.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.mobile-menu-toggle.open span:nth-child(2){opacity:0}
+.mobile-menu-toggle.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.mobile-menu{
+  position:absolute;
+  left:0;
+  right:0;
+  top:100%;
+  border-bottom:1px solid var(--ig-line);
+  background:var(--ig-header);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  box-shadow:var(--ig-shadow);
+}
+.mobile-menu nav{
+  display:grid;
+  padding:10px var(--ig-gutter) 0;
+}
+.mobile-menu nav button,
+.mobile-menu nav a,
+.mobile-menu__action{
+  position:relative;
+  display:flex;
+  align-items:center;
+  width:100%;
+  min-height:52px;
+  border:0;
+  border-bottom:1px solid var(--ig-line);
+  border-radius:0;
+  background:transparent;
+  color:var(--ig-text);
+  padding:15px 2px;
+  text-align:left;
+  font-weight:700;
+  box-shadow:none;
+}
+.mobile-menu nav button.active,
+.mobile-menu nav a.active,
+.mobile-menu nav a[aria-current="page"]{color:var(--ig-rating)}
+.mobile-menu__actions{
+  display:grid;
+  padding:0 var(--ig-gutter) 16px;
+}
+.mobile-menu__actions .account-action__label{display:inline}
+.mobile-menu__actions .account-action{justify-content:flex-start}
+.mobile-menu__actions>*:last-child{border-bottom:0}
+
 @media(max-width:760px){
+  .site-header__inner{gap:10px}
   .site-nav{display:none}
-  .account-action__label{display:none}
-  .account-action{width:40px;padding:6px;justify-content:center}
+  .mobile-menu-toggle{display:grid}
+  .site-header__inner>.site-actions{display:none!important}
+  .site-logo{font-size:21px}
+  body.mobile-menu-open{overflow:hidden}
 }
 @media(prefers-reduced-transparency:reduce){
-  .site-header{
+  .site-header,
+  .mobile-menu{
     background:var(--ig-header);
     backdrop-filter:none;
     -webkit-backdrop-filter:none;

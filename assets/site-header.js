@@ -90,12 +90,103 @@
     });
   }
 
+  function freshNode(node){
+    if(!node)return null;
+    const clone=node.cloneNode(true);
+    node.replaceWith(clone);
+    return clone;
+  }
+
+  function ensureMobileMenu(header){
+    if(!(header instanceof HTMLElement))return;
+    const inner=header.querySelector(':scope > .site-header__inner');
+    const desktopNav=header.querySelector(':scope > .site-header__inner > .site-nav');
+    const actions=header.querySelector(':scope > .site-header__inner > .site-actions');
+    if(!inner||!desktopNav||!actions)return;
+
+    let toggle=header.querySelector('.mobile-menu-toggle[data-ig-mobile-menu-toggle]');
+    header.querySelectorAll('.mobile-menu-toggle').forEach(node=>{if(node!==toggle)node.remove()});
+    let menu=header.querySelector('.mobile-menu[data-ig-mobile-menu]');
+    header.querySelectorAll('.mobile-menu').forEach(node=>{if(node!==menu)node.remove()});
+
+    if(toggle&&menu)return;
+
+    toggle=freshNode(toggle||header.querySelector('.mobile-menu-toggle'))||document.createElement('button');
+    if(toggle.parentElement!==inner)inner.insertBefore(toggle,actions);
+    toggle.className='ig-button icon-button mobile-menu-toggle';
+    toggle.type='button';
+    toggle.dataset.igMobileMenuToggle='';
+    toggle.setAttribute('aria-label','Открыть меню');
+    toggle.setAttribute('aria-expanded','false');
+    toggle.setAttribute('aria-controls','mobileMenu');
+    toggle.innerHTML='<span></span><span></span><span></span>';
+
+    menu=freshNode(menu||header.querySelector('.mobile-menu'))||document.createElement('div');
+    if(menu.parentElement!==header)header.appendChild(menu);
+    menu.className='mobile-menu';
+    menu.id='mobileMenu';
+    menu.dataset.igMobileMenu='';
+    menu.hidden=true;
+
+    const sync=()=>{
+      const theme=actions.querySelector('#theme');
+      const account=actions.querySelector('[data-auth-link]');
+      const themeLabel=document.documentElement.dataset.theme==='light'?'Включить тёмную тему':'Включить светлую тему';
+      menu.innerHTML=`<nav aria-label="Мобильная навигация">${desktopNav.innerHTML}</nav><div class="mobile-menu__actions"><button type="button" class="ig-button mobile-menu__action" data-mobile-theme>${themeLabel}</button></div>`;
+      if(account){
+        const clone=account.cloneNode(true);
+        clone.classList.add('mobile-menu__action','mobile-menu__account');
+        menu.querySelector('.mobile-menu__actions')?.appendChild(clone);
+      }
+      if(theme)menu.querySelector('[data-mobile-theme]')?.setAttribute('aria-label',themeLabel);
+    };
+    const setOpen=open=>{
+      if(open)sync();
+      menu.hidden=!open;
+      toggle.classList.toggle('open',open);
+      toggle.setAttribute('aria-expanded',String(open));
+      toggle.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');
+      document.body.classList.toggle('mobile-menu-open',open);
+    };
+
+    sync();
+    toggle.addEventListener('click',()=>setOpen(menu.hidden));
+    menu.addEventListener('click',event=>{
+      const themeAction=event.target.closest('[data-mobile-theme]');
+      if(themeAction){
+        event.preventDefault();
+        actions.querySelector('#theme')?.click();
+        setOpen(false);
+        return;
+      }
+      const pageButton=event.target.closest('[data-page]');
+      if(pageButton){
+        event.preventDefault();
+        event.stopPropagation();
+        const page=pageButton.dataset.page;
+        const original=desktopNav.querySelector(`[data-page="${CSS.escape(page)}"]`);
+        setOpen(false);
+        original?.click();
+        return;
+      }
+      if(event.target.closest('a'))setOpen(false);
+    });
+    document.addEventListener('keydown',event=>{if(event.key==='Escape')setOpen(false)});
+    window.addEventListener('resize',()=>{if(window.innerWidth>760)setOpen(false)},{passive:true});
+  }
+
   function normalize(header){
-    if(!(header instanceof HTMLElement)||header.dataset.igSharedHeader)return;
+    if(!(header instanceof HTMLElement))return;
+    if(header.dataset.igSharedHeader){
+      ensureTop250Link(header);
+      ensureMobileMenu(header);
+      return;
+    }
 
     if(isNativeMainHeader(header)){
       ensureTop250Link(header);
       header.dataset.igSharedHeader='native';
+      ensureMobileMenu(header);
       return;
     }
 
@@ -104,6 +195,7 @@
     header.innerHTML=mainHeaderMarkup();
     setTheme(storedTheme());
     updateGeneratedActive();
+    ensureMobileMenu(header);
   }
 
   function scan(root=document){

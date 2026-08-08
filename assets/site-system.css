@@ -129,6 +129,21 @@ html body .release-layout{
   line-height:1.35;
 }
 
+/* Top-250 uses only the shared site system. These rules are composition only. */
+.top250-layout{padding-top:32px;padding-bottom:96px}
+.top250-intro{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end;margin-bottom:24px}
+.top250-intro-copy{min-width:0;max-width:860px}
+.top250-intro-copy p{max-width:760px;margin:12px 0 0}
+.top250-list{display:grid;gap:12px}
+.top250-row{display:grid;grid-template-columns:64px 88px minmax(0,1fr) auto;gap:18px;align-items:center;min-height:112px;padding:14px 16px}
+.top250-rank{display:block;text-align:center}
+.top250-media{width:88px;max-height:88px;overflow:hidden}
+.top250-media img{display:block;width:100%;height:auto}
+.top250-copy{min-width:0}
+.top250-name{display:block;margin:0 0 8px}
+.top250-meta{display:flex;flex-wrap:wrap;gap:8px}
+.top250-state{display:flex;justify-content:flex-end;min-width:0}
+
 @media(max-width:1320px){
   html body .wtp-layout{
     grid-template-columns:minmax(260px,var(--ig-grid-left)) minmax(0,1fr)!important;
@@ -142,4 +157,13 @@ html body .release-layout{
     grid-template-columns:minmax(0,1fr)!important;
   }
   .release-rail{position:static!important}
+}
+
+@media(max-width:760px){
+  .top250-layout{padding-top:20px}
+  .top250-intro{grid-template-columns:1fr}
+  .top250-row{grid-template-columns:42px 66px minmax(0,1fr);gap:12px;padding:12px}
+  .top250-media{width:66px;max-height:66px}
+  .top250-state{grid-column:3;justify-content:flex-start}
+  .top250-rank{text-align:left}
 }

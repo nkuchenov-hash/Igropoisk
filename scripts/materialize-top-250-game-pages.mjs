@@ -25,8 +25,11 @@ const catalog = readJson(catalogPath);
 const catalogById = new Map(catalog.map(item => [item.game_id, item]));
 const catalogBySlug = new Map(catalog.map(item => [item.slug, item]));
 const createdPages = [];
+const repairedPages = [];
 const createdDrafts = [];
+const repairedDrafts = [];
 const addedCatalog = [];
+const repairedCatalog = [];
 const skipped = [];
 
 const field = (entity, key, fallback = null) => {
@@ -107,6 +110,13 @@ for (const item of top.ranking || []) {
       source: { type: 'canonical-game-registry', game_id: entity.id }
     });
     createdDrafts.push(slug);
+  } else {
+    const draft = readJson(draftFile);
+    if (draft?.publication?.status === 'baseline' && draft?.source?.type === 'canonical-game-registry' && draft.source.game_id !== entity.id) {
+      draft.source.game_id = entity.id;
+      writeJson(draftFile, draft);
+      repairedDrafts.push(slug);
+    }
   }
 
   const pageFile = path.join(root, 'game', slug, 'index.html');
@@ -114,9 +124,31 @@ for (const item of top.ranking || []) {
     fs.mkdirSync(path.dirname(pageFile), { recursive: true });
     fs.writeFileSync(pageFile, pageHtml({ slug, title, year, gameId: entity.id }));
     createdPages.push(slug);
+  } else {
+    const html = fs.readFileSync(pageFile, 'utf8');
+    const match = html.match(/data-game-id="([^"]*)"/);
+    const currentGameId = match?.[1] || '';
+    if (currentGameId !== entity.id) {
+      const isBaselinePage = html.includes(`data-draft="${slug}"`) && html.includes('../_shared/game-shell.js');
+      if (!isBaselinePage) {
+        skipped.push({ slug, game_id: entity.id, page_game_id: currentGameId || null, reason: 'existing_nonbaseline_page_identity_mismatch' });
+        continue;
+      }
+      const repaired = match
+        ? html.replace(/data-game-id="[^"]*"/, `data-game-id="${entity.id}"`)
+        : html.replace('<body ', `<body data-game-id="${entity.id}" `);
+      fs.writeFileSync(pageFile, repaired);
+      repairedPages.push(slug);
+    }
   }
 
-  if (!catalogById.has(entity.id) && !catalogBySlug.has(slug)) {
+  const catalogRecord = catalogBySlug.get(slug);
+  if (catalogRecord && catalogRecord.game_id !== entity.id) {
+    catalogById.delete(catalogRecord.game_id);
+    catalogRecord.game_id = entity.id;
+    catalogById.set(entity.id, catalogRecord);
+    repairedCatalog.push(slug);
+  } else if (!catalogById.has(entity.id) && !catalogRecord) {
     const record = { title, year: year || null, slug, game_id: entity.id };
     catalog.push(record);
     catalogById.set(entity.id, record);
@@ -130,15 +162,21 @@ writeJson(path.join(root, 'data/top-250/materialization.json'), {
   schema_version: 1,
   generated_at: new Date().toISOString(),
   created_pages: createdPages,
+  repaired_pages: repairedPages,
   created_drafts: createdDrafts,
+  repaired_drafts: repairedDrafts,
   added_catalog: addedCatalog,
+  repaired_catalog: repairedCatalog,
   skipped
 });
 
 console.log(JSON.stringify({
   created_pages: createdPages.length,
+  repaired_pages: repairedPages.length,
   created_drafts: createdDrafts.length,
+  repaired_drafts: repairedDrafts.length,
   added_catalog: addedCatalog.length,
+  repaired_catalog: repairedCatalog.length,
   skipped: skipped.length
 }, null, 2));
 if (skipped.length) process.exitCode = 2;
