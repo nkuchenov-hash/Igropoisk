@@ -4,6 +4,7 @@ import { buildCandidates, buildPublicCalendar, validateCalendar } from './lib/re
 import { migrateRepository } from './lib/game-registry-migration.mjs';
 import { attachCanonicalGameIdsToPublicCalendar, linkReleaseCandidatesToRegistry } from './lib/release-game-registry-adapter.mjs';
 import { attachAudienceAffinity, buildPersonalizedReleases, validatePersonalizedReleases } from './lib/release-audience-relevance.mjs';
+import { enrichRawReleasesFromSteamEditorial } from './lib/release-steam-editorial-discovery.mjs';
 
 const ROOT = process.cwd();
 const paths = {
@@ -24,42 +25,6 @@ async function readJson(file, fallback) {
     if (error.code === 'ENOENT') return fallback;
     throw new Error(`Cannot read ${path.relative(ROOT, file)}: ${error.message}`);
   }
-}
-
-async function fetchSteamPopularUpcomingIds(limit = 200) {
-  const url = `https://store.steampowered.com/search/results/?query&start=0&count=${limit}&dynamic_data=&filter=popularcomingsoon&cc=us&l=english&json=1`;
-  try {
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(15000),
-      headers: { 'user-agent': 'Mozilla/5.0 IgropoiskReleaseMaterializer/1.0', 'accept-language': 'en-US,en;q=0.9' },
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const payload = await response.json();
-    const html = String(payload?.results_html || '');
-    return new Set([...html.matchAll(/data-ds-appid="([^"]+)"/gi)]
-      .flatMap(match => String(match[1]).split(','))
-      .map(value => Number(value.trim()))
-      .filter(Number.isFinite));
-  } catch (error) {
-    console.warn(`Steam popular-coming-soon signal unavailable: ${error.message}`);
-    return new Set();
-  }
-}
-
-function attachSteamPopularity(rawReleases, popularIds) {
-  if (!popularIds.size) return rawReleases;
-  return (rawReleases || []).map(release => {
-    const steamId = Number(release?.external_ids?.steam);
-    if (!Number.isFinite(steamId) || !popularIds.has(steamId)) return release;
-    const quality = release.editorial_quality || {};
-    return {
-      ...release,
-      editorial_quality: {
-        ...quality,
-        signals: [...new Set([...(quality.signals || []), 'steam_popular_upcoming'])],
-      },
-    };
-  });
 }
 
 function deduplicateCandidates(candidates) {
@@ -92,10 +57,13 @@ const [raw, editorial, claimsDoc, policy, newsDoc, rankedNewsDoc] = await Promis
 ]);
 
 const generatedAt = new Date().toISOString();
-const popularUpcomingIds = await fetchSteamPopularUpcomingIds(Number(policy.steam_popular_upcoming_limit || 200));
-const releaseInput = attachSteamPopularity(Array.isArray(raw?.releases) ? raw.releases : [], popularUpcomingIds);
+const steamEditorial = await enrichRawReleasesFromSteamEditorial(
+  Array.isArray(raw?.releases) ? raw.releases : [],
+  policy,
+  generatedAt,
+);
 const rawCandidates = buildCandidates({
-  rawReleases: releaseInput,
+  rawReleases: steamEditorial.releases,
   editorial,
   officialClaims: Array.isArray(claimsDoc?.claims) ? claimsDoc.claims : [],
   policy,
@@ -138,7 +106,15 @@ const report = {
   schema_version: 2,
   generated_at: generatedAt,
   sources: {
-    active_discovery: ['Steam coming-soon/appdetails (PC only)', 'Steam popular-coming-soon relevance signal'],
+    active_discovery: [
+      'Steam coming-soon/appdetails (PC only)',
+      'Steam Popular Upcoming editorial discovery',
+      'Steam Popular New Releases editorial discovery',
+    ],
+    steam_editorial_discovery: {
+      discovered_candidates: steamEditorial.discovered,
+      sources: steamEditorial.sources,
+    },
     audience_relevance: ['News event and ranked-news regional scores linked by canonical game slug or title evidence'],
     optional_auxiliary: ['RAWG enrichment when RAWG_API_KEY is configured'],
     supported_auxiliary: ['IGDB/RAWG claims are discovery/cross-check only and cannot confirm a date alone'],
