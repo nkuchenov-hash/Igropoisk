@@ -21,6 +21,20 @@ async function fetchJSON(url, timeout = DEFAULT_TIMEOUT) {
   return response.json();
 }
 
+async function mapPool(items, concurrency, worker) {
+  const results = new Array(items.length);
+  let cursor = 0;
+  const runners = Array.from({ length: Math.max(1, Math.min(concurrency, items.length || 1)) }, async () => {
+    while (cursor < items.length) {
+      const index = cursor++;
+      try { results[index] = await worker(items[index], index); }
+      catch (error) { results[index] = { error }; }
+    }
+  });
+  await Promise.all(runners);
+  return results;
+}
+
 function parseSearchAppIds(html = '') {
   return uniq([...String(html).matchAll(/data-ds-appid="([^"]+)"/gi)]
     .flatMap(match => String(match[1]).split(','))
@@ -152,28 +166,34 @@ export async function enrichRawReleasesFromSteamEditorial(rawReleases = [], poli
     if (Number.isFinite(appid)) bySteamId.set(appid, index);
   });
 
+  const missing = [];
   for (const [appid, appSignals] of signalByAppId) {
     const existingIndex = bySteamId.get(appid);
     if (Number.isInteger(existingIndex)) {
       let updated = releases[existingIndex];
       for (const signal of appSignals) updated = mergeSignal(updated, signal);
       releases[existingIndex] = updated;
-      continue;
+    } else {
+      missing.push({ appid, signals: [...appSignals] });
     }
+  }
 
-    try {
-      const payload = await fetchJSON(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=us&l=english`);
-      const result = payload?.[appid];
-      if (!result?.success || !result?.data) continue;
-      const release = rawReleaseFromSteam(result.data, appid, [...appSignals], generatedAt);
-      if (!release) continue;
-      const releaseTime = Date.parse(`${release.events[0].date}T12:00:00Z`);
-      if (!Number.isFinite(releaseTime) || releaseTime < lowerBound || releaseTime > upperBound) continue;
-      bySteamId.set(appid, releases.length);
-      releases.push(release);
-    } catch (error) {
-      // Source-level diagnostics already report search availability. A single appdetails failure must not abort the calendar.
-    }
+  const discovered = await mapPool(missing, 8, async item => {
+    const payload = await fetchJSON(`https://store.steampowered.com/api/appdetails?appids=${item.appid}&cc=us&l=english`);
+    const result = payload?.[item.appid];
+    if (!result?.success || !result?.data) return null;
+    const release = rawReleaseFromSteam(result.data, item.appid, item.signals, generatedAt);
+    if (!release) return null;
+    const releaseTime = Date.parse(`${release.events[0].date}T12:00:00Z`);
+    if (!Number.isFinite(releaseTime) || releaseTime < lowerBound || releaseTime > upperBound) return null;
+    return release;
+  });
+
+  for (const release of discovered.filter(Boolean)) {
+    const appid = Number(release.external_ids?.steam);
+    if (!Number.isFinite(appid) || bySteamId.has(appid)) continue;
+    bySteamId.set(appid, releases.length);
+    releases.push(release);
   }
 
   return {
