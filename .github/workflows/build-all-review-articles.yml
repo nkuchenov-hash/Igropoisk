@@ -1,38 +1,28 @@
-name: Build all review articles
+name: Build catalog pages and existing reviews
 
 on:
   workflow_dispatch:
-    inputs:
-      only_slug:
-        description: Optional single game slug
-        required: false
-        type: string
-      batch_limit:
-        description: Optional maximum number of games
-        required: false
-        type: string
   push:
     branches: [staging]
     paths:
       - data/review-build-requests/all-catalog.json
-      - scripts/build-all-review-articles.mjs
-      - config/parsers/review-media-policy.json
+      - scripts/materialize-catalog-no-api.mjs
+      - scripts/render-review-pages.mjs
+      - data/game-registry/**
+      - data/articles/**
+      - data/article-media/**
 
 permissions:
   contents: write
 
 concurrency:
-  group: build-all-review-articles-staging
+  group: build-catalog-no-api-staging
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      ONLY_SLUG: ${{ inputs.only_slug }}
-      BATCH_LIMIT: ${{ inputs.batch_limit }}
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,32 +35,16 @@ jobs:
         run: |
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
-      - name: Verify required secret
-        run: test -n "$OPENAI_API_KEY"
-      - name: Mark build as running on staging
-        run: |
-          mkdir -p data/parser-runs
-          node -e "const fs=require('fs');fs.writeFileSync('data/parser-runs/review-batch-runtime.json',JSON.stringify({schema_version:1,status:'running',started_at:new Date().toISOString(),workflow_run_id:process.env.GITHUB_RUN_ID,workflow_run_attempt:process.env.GITHUB_RUN_ATTEMPT,head_sha:process.env.GITHUB_SHA,ref:'staging'},null,2)+'\n')"
-          git add data/parser-runs/review-batch-runtime.json
-          git commit -m "Mark catalog article build running on staging"
-          git pull --rebase origin staging
-          git push origin HEAD:staging
-      - name: Build catalog review articles
-        run: node scripts/build-all-review-articles.mjs
+      - name: Materialize every catalog game page without external AI API
+        run: node scripts/materialize-catalog-no-api.mjs
+      - name: Render all already prepared review articles
+        run: node scripts/render-review-pages.mjs
       - name: Bind editorial artifacts to canonical Game Registry IDs
         run: node scripts/canonicalize-all-editorial-game-ids.mjs --write
-      - name: Mark build result
-        if: always()
-        run: |
-          RESULT="${{ job.status }}"
-          node -e "const fs=require('fs');const p='data/parser-runs/review-batch-runtime.json';let d={schema_version:1};try{d=JSON.parse(fs.readFileSync(p,'utf8'))}catch{};d.status=process.env.RESULT==='success'?'completed':'failed';d.finished_at=new Date().toISOString();d.workflow_run_id=process.env.GITHUB_RUN_ID;fs.writeFileSync(p,JSON.stringify(d,null,2)+'\n')"
-        env:
-          RESULT: ${{ job.status }}
-      - name: Commit generated articles and reports to staging
-        if: always()
+      - name: Commit materialized pages and reports to staging
         run: |
           git add data article game
           git diff --cached --quiet && exit 0
-          git commit -m "Build catalog review articles on staging"
+          git commit -m "Materialize catalog pages without OpenAI API"
           git pull --rebase origin staging
           git push origin HEAD:staging
