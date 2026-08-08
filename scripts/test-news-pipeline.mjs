@@ -4,6 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { generatedAtFromPayload, healthNeedsInitialization, selectDueGroups, runPipeline } from './run-news-pipeline.mjs';
 import { canonicalSourceUrl, validateNewsPipeline } from './validate-news-pipeline.mjs';
+import { editorializeNewsSummary } from './lib/news-editorial-summary.mjs';
 
 assert.equal(generatedAtFromPayload({ generatedAt: '2026-08-05T00:00:00.000Z' }), Date.parse('2026-08-05T00:00:00.000Z'));
 assert.equal(generatedAtFromPayload({}), 0);
@@ -12,6 +13,22 @@ assert.equal(
   canonicalSourceUrl('https://example.com/article?id=7&utm_source=test#fragment'),
   canonicalSourceUrl('https://example.com/article?id=7')
 );
+
+const russianEditorial = editorializeNewsSummary(
+  'Привет всем! Мы очень рады сообщить, что Crimson Moon выйдет на PS5 1 сентября. Игрокам предстоит вернуть город Гильденарх, который поглотила демоническая порча. Сообщение Crimson Moon впервые появилось на Example.',
+  { title: 'Crimson Moon выйдет на PS5 1 сентября' }
+);
+assert.match(russianEditorial, /^Crimson Moon выйдет на PS5 1 сентября\./);
+assert.match(russianEditorial, /Гильденарх/);
+assert.doesNotMatch(russianEditorial, /рады сообщить|впервые появилось/i);
+
+const englishEditorial = editorializeNewsSummary(
+  "Earlier this year, we introduced Crimson Moon. Today, we're excited to announce that Crimson Moon launches on PS5 on September 1. Players must reclaim Gildenarch from demonic corruption. The post Crimson Moon appeared first on Example.",
+  { title: 'Crimson Moon launches on September 1' }
+);
+assert.match(englishEditorial, /^Crimson Moon launches on PS5 on September 1\./);
+assert.match(englishEditorial, /Gildenarch/);
+assert.doesNotMatch(englishEditorial, /excited to announce|appeared first on/i);
 
 const schedule = {
   groups: [

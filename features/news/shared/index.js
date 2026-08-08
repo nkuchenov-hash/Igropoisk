@@ -36,14 +36,16 @@
           search: 'Поиск по заголовку или тексту',
           all: 'Все игры',
           allTypes: 'Все темы',
-          allNews: 'Все новости',
+          allNews: 'Перейти ко всем новостям',
           official: 'От разработчиков',
-          gameFilter: 'Игра',
+          gameFilter: 'Поиск по играм',
+          gameSearchPlaceholder: 'Начните вводить название игры',
           typeFilter: 'Темы новостей',
           allNewsAboutGame: 'Все новости об игре',
           openGame: 'Открыть страницу игры',
           backToNews: '← Все новости',
-          source: 'Источник'
+          source: 'Источник',
+          sourceAction: 'Перейти к источнику'
         }
       : {
           loading: 'Loading news…',
@@ -52,14 +54,16 @@
           search: 'Search headlines or summaries',
           all: 'All games',
           allTypes: 'All topics',
-          allNews: 'All news',
+          allNews: 'Go to all news',
           official: 'From developers',
-          gameFilter: 'Game',
+          gameFilter: 'Search games',
+          gameSearchPlaceholder: 'Start typing a game title',
           typeFilter: 'News topics',
           allNewsAboutGame: 'All news about this game',
           openGame: 'Open game page',
           backToNews: '← All news',
-          source: 'Source'
+          source: 'Source',
+          sourceAction: 'Go to source'
         };
   }
 
@@ -169,19 +173,48 @@
     return url.href;
   }
 
+  function gameHashtag(game) {
+    const compact = String(game?.title || '').replace(/[^\p{L}\p{N}]+/gu, '');
+    const fallback = String(game?.slug || '').replace(/[^a-z0-9]+/gi, '');
+    return `#${compact || fallback || 'game'}`;
+  }
+
+  function renderSourceLink(item, { lang = language() } = {}) {
+    const url = String(item?.primaryUrl || item?.url || '').trim();
+    if (!/^https?:\/\//i.test(url)) return '';
+    const copy = labels(lang);
+    return `<a class="ig-button ig-text-link ig-news-card__source-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(copy.sourceAction)} ↗</a>`;
+  }
+
+  function renderGameTags(item, { lang = language() } = {}) {
+    const copy = labels(lang);
+    return resolvedGames(item).map(game => {
+      const label = escapeHtml(gameHashtag(game));
+      if (!game.pageExists) return `<span class="ig-muted ig-news-game-unlinked" title="${escapeHtml(lang === 'ru' ? 'Страница игры ещё не создана' : 'Game page is not available yet')}">${label}</span>`;
+      const pageUrl = escapeHtml(new URL(game.pageUrl, siteBase).href);
+      return `<a class="ig-chip ig-hashtag-link ig-news-game-link" href="${pageUrl}" title="${escapeHtml(copy.openGame)}">${label}</a>`;
+    }).join('');
+  }
+
   function renderCard(item, { compact = false, lang = language() } = {}) {
     const title = escapeHtml(text(item, 'title', lang));
     const summary = escapeHtml(text(item, 'summary', lang));
     const tags = deriveTypeTags(item, lang);
-    return `<a class="ig-card ig-card--interactive ig-news-card${compact ? ' ig-news-card--compact' : ''}" href="${escapeHtml(storyUrl(item))}" data-news-story-link>
-      <img class="ig-card__media ig-card__media--landscape" src="${escapeHtml(absoluteAsset(item.image))}" alt="${title}" loading="lazy">
+    const story = escapeHtml(storyUrl(item));
+    const games = renderGameTags(item, { lang });
+    const sourceLink = renderSourceLink(item, { lang });
+    return `<article class="ig-card ig-news-card${compact ? ' ig-news-card--compact' : ''}">
+      <a class="ig-card__media ig-news-card__story-media" href="${story}" data-news-story-link>
+        <img class="ig-card__media ig-card__media--landscape" src="${escapeHtml(absoluteAsset(item.image))}" alt="${title}" loading="lazy">
+      </a>
       <div class="ig-card__body">
         ${tags.length ? `<div class="ig-chip-list">${tags.map(tag => `<span class="ig-chip">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
-        <h3 class="ig-card__title">${title}</h3>
-        ${compact || !summary ? '' : `<p class="ig-card__summary">${summary}</p>`}
-        <div class="ig-card__meta">${escapeHtml(formatters[lang].format(new Date(item.publishedAt)))} · ${escapeHtml(sourceName(item))}</div>
+        <h3 class="ig-card__title"><a href="${story}" data-news-story-link>${title}</a></h3>
+        ${summary ? `<p class="ig-card__summary">${summary}</p>` : ''}
+        <div class="ig-card__meta">${escapeHtml(sourceName(item))} · ${escapeHtml(formatters[lang].format(new Date(item.publishedAt)))}</div>
+        ${games || sourceLink ? `<div class="ig-chip-list ig-news-card__actions">${games}${sourceLink}</div>` : ''}
       </div>
-    </a>`;
+    </article>`;
   }
 
   function publicationTime(item, lang = language()) {
@@ -208,33 +241,21 @@
     return timeFormatters.get(key).format(new Date(item.publishedAt));
   }
 
-  function renderGameTags(item, { lang = language() } = {}) {
-    const copy = labels(lang);
-    return resolvedGames(item).map(game => {
-      const title = escapeHtml(game.title);
-      if (!game.pageExists) return `<span class="ig-chip ig-news-game-tag ig-news-game-unlinked" title="${escapeHtml(lang === 'ru' ? 'Страница игры ещё не создана' : 'Game page is not available yet')}">${title}</span>`;
-      const pageUrl = escapeHtml(new URL(game.pageUrl, siteBase).href);
-      return `<span class="ig-chip ig-news-game-tag" data-news-game-tag="${escapeHtml(game.slug)}">
-        <a class="ig-news-game-link" href="${pageUrl}" title="${escapeHtml(copy.openGame)}">${title}</a>
-        <button class="ig-icon-button ig-news-game-filter" type="button" data-news-game-filter-button="${escapeHtml(game.slug)}" aria-label="${escapeHtml(`${copy.allNewsAboutGame}: ${game.title}`)}">⌕</button>
-      </span>`;
-    }).join('');
-  }
-
   function renderArchiveItem(item, { lang = language() } = {}) {
     const title = escapeHtml(text(item, 'title', lang));
     const summary = escapeHtml(text(item, 'summary', lang));
     const games = renderGameTags(item, { lang });
+    const sourceLink = renderSourceLink(item, { lang });
     const types = deriveTypeTags(item, lang);
-    const image = item.image ? `<img class="ig-card__media ig-card__media--landscape ig-news-entry__image" src="${escapeHtml(absoluteAsset(item.image))}" alt="" loading="lazy">` : '';
+    const image = item.image ? `<a class="ig-card__media ig-news-entry__media-link" href="${escapeHtml(storyUrl(item))}" data-news-story-link><img class="ig-card__media ig-card__media--landscape ig-news-entry__image" src="${escapeHtml(absoluteAsset(item.image))}" alt="" loading="lazy"></a>` : '';
     return `<article class="ig-card ig-news-entry ig-news-card" data-news-id="${escapeHtml(item.id || '')}">
       ${image}
       <div class="ig-card__body ig-news-entry__body">
         ${types.length ? `<div class="ig-chip-list ig-news-entry__types">${types.map(tag => `<span class="ig-chip">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
         <h3 class="ig-card__title ig-news-entry__title"><a href="${escapeHtml(storyUrl(item))}" data-news-story-link>${title}</a></h3>
         ${summary ? `<p class="ig-card__summary ig-news-entry__summary">${summary}</p>` : ''}
-        <div class="ig-card__meta"><time datetime="${escapeHtml(item.publishedAt)}">${escapeHtml(publicationTime(item, lang))}</time> · ${escapeHtml(sourceName(item))}</div>
-        ${games ? `<div class="ig-chip-list ig-news-entry__games">${games}</div>` : ''}
+        <div class="ig-card__meta"><span>${escapeHtml(sourceName(item))}</span> · <time datetime="${escapeHtml(item.publishedAt)}">${escapeHtml(publicationTime(item, lang))}</time></div>
+        ${games || sourceLink ? `<div class="ig-chip-list ig-news-entry__actions">${games}${sourceLink}</div>` : ''}
       </div>
     </article>`;
   }
@@ -253,7 +274,7 @@
       <a class="ig-button ig-news-story__back" href="${escapeHtml(new URL('?page=news', siteBase).href)}">${escapeHtml(copy.backToNews)}</a>
       <h1 class="ig-page-title ig-news-story__title">${title}</h1>
       ${summary ? `<p class="article-lead ig-news-story__lead">${summary}</p>` : ''}
-      <div class="ig-news-story__meta"><a href="${sourceUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(copy.source)}: ${source} ↗</a><span>·</span><span>${date}</span></div>
+      <div class="ig-news-story__meta"><a class="ig-button ig-text-link" href="${sourceUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(copy.source)}: ${source} ↗</a><span>·</span><span>${date}</span></div>
       ${types.length ? `<div class="ig-chip-list ig-news-story__types">${types.map(tag => `<span class="ig-chip">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
       ${games ? `<div class="ig-chip-list ig-news-story__games">${games}</div>` : ''}
       ${image}
@@ -281,6 +302,7 @@
     renderArchiveItem,
     renderCard,
     renderGameTags,
+    renderSourceLink,
     renderStory,
     resolvedGames,
     score,
