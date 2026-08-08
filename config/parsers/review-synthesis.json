@@ -39,7 +39,9 @@
     "allow_port_reviews_for_platform_context": true,
     "allow_source_expansion": true,
     "resolve_dead_links_with_internet_archive": true,
-    "url_timeout_ms": 15000
+    "url_timeout_ms": 15000,
+    "source_corpus_expanded_at": "2026-08-08T22:07:00Z",
+    "source_expansion_rule": "Professional editorial outlets may be added when they carry a substantive review of the exact game; regional mirrors of the same publication do not count as independent publications."
   },
   "editorial_voice": {
     "base": "analytical, concrete, readable, non-promotional",
@@ -104,39 +106,736 @@
     ]
   },
   "sources": [
-    {"id":"pc-gamer","enabled":true,"family":"editorial","name":"PC Gamer","type":"review-search","url":"https://www.pcgamer.com/games/reviews/","weight":1,"trust":0.9},
-    {"id":"gamespot","enabled":true,"family":"editorial","name":"GameSpot","type":"review-search","url":"https://www.gamespot.com/game-reviews/","weight":1,"trust":0.9},
-    {"id":"ign","enabled":true,"family":"editorial","name":"IGN","type":"review-search","url":"https://www.ign.com/reviews/games","weight":1,"trust":0.9},
-    {"id":"eurogamer","enabled":true,"family":"editorial","name":"Eurogamer","type":"review-search","url":"https://www.eurogamer.net/reviews","weight":1,"trust":0.9},
-    {"id":"game-informer","enabled":true,"family":"editorial","name":"Game Informer","type":"review-search","url":"https://gameinformer.com/reviews","weight":0.95,"trust":0.88},
-    {"id":"gamesradar","enabled":true,"family":"editorial","name":"GamesRadar+","type":"review-search","url":"https://www.gamesradar.com/reviews/","weight":0.95,"trust":0.87},
-    {"id":"polygon","enabled":true,"family":"editorial","name":"Polygon","type":"review-search","url":"https://www.polygon.com/reviews","weight":0.9,"trust":0.87},
-    {"id":"rock-paper-shotgun","enabled":true,"family":"editorial","name":"Rock Paper Shotgun","type":"review-search","url":"https://www.rockpapershotgun.com/reviews","weight":0.9,"trust":0.87},
-    {"id":"game-revolution","enabled":true,"family":"editorial","name":"GameRevolution","type":"review-search","url":"https://www.gamerevolution.com/review","weight":0.9,"trust":0.84},
-    {"id":"ars-technica","enabled":true,"family":"editorial","name":"Ars Technica","type":"review-search","url":"https://arstechnica.com/gaming/","weight":0.9,"trust":0.88},
-    {"id":"gamespy-archive","enabled":true,"family":"editorial","name":"GameSpy","type":"archive-search","url":"https://web.archive.org/web/*/http://pc.gamespy.com/","weight":0.85,"trust":0.82},
-    {"id":"gamezone","enabled":true,"family":"editorial","name":"GameZone","type":"review-search","url":"https://www.gamezone.com/reviews/","weight":0.82,"trust":0.8},
-    {"id":"gamepressure","enabled":true,"family":"editorial","name":"Gamepressure","type":"review-search","url":"https://www.gamepressure.com/games/reviews.asp","weight":0.85,"trust":0.84},
-    {"id":"gry-online","enabled":true,"family":"editorial","name":"GRYOnline","type":"review-search","url":"https://www.gry-online.pl/recenzje.asp","weight":0.85,"trust":0.84},
-    {"id":"worthplaying","enabled":true,"family":"editorial","name":"WorthPlaying","type":"review-search","url":"https://worthplaying.com/reviews/","weight":0.82,"trust":0.8},
-    {"id":"rpgfan","enabled":true,"family":"editorial","name":"RPGFan","type":"review-search","url":"https://www.rpgfan.com/reviews/","weight":0.82,"trust":0.82},
-    {"id":"rpgamer","enabled":true,"family":"editorial","name":"RPGamer","type":"review-search","url":"https://rpgamer.com/reviews/","weight":0.82,"trust":0.82},
-    {"id":"destructoid","enabled":true,"family":"editorial","name":"Destructoid","type":"review-search","url":"https://www.destructoid.com/category/reviews/","weight":0.82,"trust":0.82},
-    {"id":"shacknews","enabled":true,"family":"editorial","name":"Shacknews","type":"review-search","url":"https://www.shacknews.com/topic/review","weight":0.82,"trust":0.82},
-    {"id":"pcworld","enabled":true,"family":"editorial","name":"PCWorld","type":"review-search","url":"https://www.pcworld.com/gaming/","weight":0.82,"trust":0.84},
-    {"id":"guardian-games","enabled":true,"family":"editorial","name":"The Guardian","type":"review-search","url":"https://www.theguardian.com/games","weight":0.82,"trust":0.86},
-    {"id":"igromania","enabled":true,"family":"editorial","name":"Игромания","type":"review-search","url":"https://www.igromania.ru/reviews/","weight":0.9,"trust":0.86},
-    {"id":"stopgame","enabled":true,"family":"editorial","name":"StopGame","type":"review-search","url":"https://stopgame.ru/review","weight":0.9,"trust":0.86},
-    {"id":"kanobu","enabled":true,"family":"editorial","name":"Канобу","type":"review-search","url":"https://kanobu.ru/reviews/","weight":0.84,"trust":0.82},
-    {"id":"playground","enabled":true,"family":"editorial","name":"PlayGround.ru","type":"review-search","url":"https://www.playground.ru/","weight":0.84,"trust":0.82},
-    {"id":"absolute-games-archive","enabled":true,"family":"editorial","name":"Absolute Games","type":"archive-search","url":"https://web.archive.org/web/*/http://www.ag.ru/reviews/","weight":0.84,"trust":0.84},
-    {"id":"steam-media","enabled":true,"family":"media","name":"Steam / официальный CDN","type":"media-api","url":"https://store.steampowered.com/api/appdetails?appids={steam_appid}","weight":1,"trust":0.98},
-    {"id":"official-press-kit","enabled":true,"family":"media","name":"Официальный press kit","type":"media-search","url":"{official_url}","weight":1,"trust":1},
-    {"id":"gamespot-media","enabled":true,"family":"media","name":"GameSpot screenshots","type":"media-search","url":"https://www.gamespot.com/games/{slug}/images/","weight":0.9,"trust":0.88},
-    {"id":"ign-media","enabled":true,"family":"media","name":"IGN screenshots","type":"media-search","url":"https://www.ign.com/games/{slug}/images","weight":0.9,"trust":0.88},
-    {"id":"mobygames-media","enabled":true,"family":"media","name":"MobyGames screenshots","type":"media-search","url":"https://www.mobygames.com/game/{mobygames_id}/screenshots/","weight":0.82,"trust":0.82},
-    {"id":"old-games-media","enabled":true,"family":"media","name":"Old-Games.RU screenshots","type":"media-search","url":"https://www.old-games.ru/game/{oldgames_id}.html","weight":0.82,"trust":0.8},
-    {"id":"gog-media","enabled":true,"family":"media","name":"GOG gallery","type":"media-search","url":"https://www.gog.com/game/{gog_slug}","weight":0.9,"trust":0.9}
+    {
+      "id": "pc-gamer",
+      "enabled": true,
+      "family": "editorial",
+      "name": "PC Gamer",
+      "type": "review-search",
+      "url": "https://www.pcgamer.com/games/reviews/",
+      "weight": 1,
+      "trust": 0.9
+    },
+    {
+      "id": "gamespot",
+      "enabled": true,
+      "family": "editorial",
+      "name": "GameSpot",
+      "type": "review-search",
+      "url": "https://www.gamespot.com/game-reviews/",
+      "weight": 1,
+      "trust": 0.9
+    },
+    {
+      "id": "ign",
+      "enabled": true,
+      "family": "editorial",
+      "name": "IGN",
+      "type": "review-search",
+      "url": "https://www.ign.com/reviews/games",
+      "weight": 1,
+      "trust": 0.9
+    },
+    {
+      "id": "eurogamer",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Eurogamer",
+      "type": "review-search",
+      "url": "https://www.eurogamer.net/reviews",
+      "weight": 1,
+      "trust": 0.9
+    },
+    {
+      "id": "game-informer",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Game Informer",
+      "type": "review-search",
+      "url": "https://gameinformer.com/reviews",
+      "weight": 0.95,
+      "trust": 0.88
+    },
+    {
+      "id": "gamesradar",
+      "enabled": true,
+      "family": "editorial",
+      "name": "GamesRadar+",
+      "type": "review-search",
+      "url": "https://www.gamesradar.com/reviews/",
+      "weight": 0.95,
+      "trust": 0.87
+    },
+    {
+      "id": "polygon",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Polygon",
+      "type": "review-search",
+      "url": "https://www.polygon.com/reviews",
+      "weight": 0.9,
+      "trust": 0.87
+    },
+    {
+      "id": "rock-paper-shotgun",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Rock Paper Shotgun",
+      "type": "review-search",
+      "url": "https://www.rockpapershotgun.com/reviews",
+      "weight": 0.9,
+      "trust": 0.87
+    },
+    {
+      "id": "game-revolution",
+      "enabled": true,
+      "family": "editorial",
+      "name": "GameRevolution",
+      "type": "review-search",
+      "url": "https://www.gamerevolution.com/review",
+      "weight": 0.9,
+      "trust": 0.84
+    },
+    {
+      "id": "ars-technica",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Ars Technica",
+      "type": "review-search",
+      "url": "https://arstechnica.com/gaming/",
+      "weight": 0.9,
+      "trust": 0.88
+    },
+    {
+      "id": "gamespy-archive",
+      "enabled": true,
+      "family": "editorial",
+      "name": "GameSpy",
+      "type": "archive-search",
+      "url": "https://web.archive.org/web/*/http://pc.gamespy.com/",
+      "weight": 0.85,
+      "trust": 0.82
+    },
+    {
+      "id": "gamezone",
+      "enabled": true,
+      "family": "editorial",
+      "name": "GameZone",
+      "type": "review-search",
+      "url": "https://www.gamezone.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "gamepressure",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Gamepressure",
+      "type": "review-search",
+      "url": "https://www.gamepressure.com/games/reviews.asp",
+      "weight": 0.85,
+      "trust": 0.84
+    },
+    {
+      "id": "gry-online",
+      "enabled": true,
+      "family": "editorial",
+      "name": "GRYOnline",
+      "type": "review-search",
+      "url": "https://www.gry-online.pl/recenzje.asp",
+      "weight": 0.85,
+      "trust": 0.84
+    },
+    {
+      "id": "worthplaying",
+      "enabled": true,
+      "family": "editorial",
+      "name": "WorthPlaying",
+      "type": "review-search",
+      "url": "https://worthplaying.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "rpgfan",
+      "enabled": true,
+      "family": "editorial",
+      "name": "RPGFan",
+      "type": "review-search",
+      "url": "https://www.rpgfan.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "rpgamer",
+      "enabled": true,
+      "family": "editorial",
+      "name": "RPGamer",
+      "type": "review-search",
+      "url": "https://rpgamer.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "destructoid",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Destructoid",
+      "type": "review-search",
+      "url": "https://www.destructoid.com/category/reviews/",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "shacknews",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Shacknews",
+      "type": "review-search",
+      "url": "https://www.shacknews.com/topic/review",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "pcworld",
+      "enabled": true,
+      "family": "editorial",
+      "name": "PCWorld",
+      "type": "review-search",
+      "url": "https://www.pcworld.com/gaming/",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "guardian-games",
+      "enabled": true,
+      "family": "editorial",
+      "name": "The Guardian",
+      "type": "review-search",
+      "url": "https://www.theguardian.com/games",
+      "weight": 0.82,
+      "trust": 0.86
+    },
+    {
+      "id": "igromania",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Игромания",
+      "type": "review-search",
+      "url": "https://www.igromania.ru/reviews/",
+      "weight": 0.9,
+      "trust": 0.86
+    },
+    {
+      "id": "stopgame",
+      "enabled": true,
+      "family": "editorial",
+      "name": "StopGame",
+      "type": "review-search",
+      "url": "https://stopgame.ru/review",
+      "weight": 0.9,
+      "trust": 0.86
+    },
+    {
+      "id": "kanobu",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Канобу",
+      "type": "review-search",
+      "url": "https://kanobu.ru/reviews/",
+      "weight": 0.84,
+      "trust": 0.82
+    },
+    {
+      "id": "playground",
+      "enabled": true,
+      "family": "editorial",
+      "name": "PlayGround.ru",
+      "type": "review-search",
+      "url": "https://www.playground.ru/",
+      "weight": 0.84,
+      "trust": 0.82
+    },
+    {
+      "id": "absolute-games-archive",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Absolute Games",
+      "type": "archive-search",
+      "url": "https://web.archive.org/web/*/http://www.ag.ru/reviews/",
+      "weight": 0.84,
+      "trust": 0.84
+    },
+    {
+      "id": "steam-media",
+      "enabled": true,
+      "family": "media",
+      "name": "Steam / официальный CDN",
+      "type": "media-api",
+      "url": "https://store.steampowered.com/api/appdetails?appids={steam_appid}",
+      "weight": 1,
+      "trust": 0.98
+    },
+    {
+      "id": "official-press-kit",
+      "enabled": true,
+      "family": "media",
+      "name": "Официальный press kit",
+      "type": "media-search",
+      "url": "{official_url}",
+      "weight": 1,
+      "trust": 1
+    },
+    {
+      "id": "gamespot-media",
+      "enabled": true,
+      "family": "media",
+      "name": "GameSpot screenshots",
+      "type": "media-search",
+      "url": "https://www.gamespot.com/games/{slug}/images/",
+      "weight": 0.9,
+      "trust": 0.88
+    },
+    {
+      "id": "ign-media",
+      "enabled": true,
+      "family": "media",
+      "name": "IGN screenshots",
+      "type": "media-search",
+      "url": "https://www.ign.com/games/{slug}/images",
+      "weight": 0.9,
+      "trust": 0.88
+    },
+    {
+      "id": "mobygames-media",
+      "enabled": true,
+      "family": "media",
+      "name": "MobyGames screenshots",
+      "type": "media-search",
+      "url": "https://www.mobygames.com/game/{mobygames_id}/screenshots/",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "old-games-media",
+      "enabled": true,
+      "family": "media",
+      "name": "Old-Games.RU screenshots",
+      "type": "media-search",
+      "url": "https://www.old-games.ru/game/{oldgames_id}.html",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "gog-media",
+      "enabled": true,
+      "family": "media",
+      "name": "GOG gallery",
+      "type": "media-search",
+      "url": "https://www.gog.com/game/{gog_slug}",
+      "weight": 0.9,
+      "trust": 0.9
+    },
+    {
+      "id": "hardcore-gamer",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Hardcore Gamer",
+      "type": "review-search",
+      "url": "https://hardcoregamer.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "tom-guide",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Tom’s Guide",
+      "type": "review-search",
+      "url": "https://www.tomsguide.com/reviews",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "venturebeat",
+      "enabled": true,
+      "family": "editorial",
+      "name": "VentureBeat",
+      "type": "review-search",
+      "url": "https://venturebeat.com/games/",
+      "weight": 0.82,
+      "trust": 0.86
+    },
+    {
+      "id": "forbes-games",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Forbes",
+      "type": "review-search",
+      "url": "https://www.forbes.com/games/",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "dualshockers",
+      "enabled": true,
+      "family": "editorial",
+      "name": "DualShockers",
+      "type": "review-search",
+      "url": "https://www.dualshockers.com/category/reviews/",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "metro-gaming",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Metro Gaming",
+      "type": "review-search",
+      "url": "https://metro.co.uk/gaming/",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "god-is-a-geek",
+      "enabled": true,
+      "family": "editorial",
+      "name": "God is a Geek",
+      "type": "review-search",
+      "url": "https://www.godisageek.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "videogamer",
+      "enabled": true,
+      "family": "editorial",
+      "name": "VideoGamer",
+      "type": "review-search",
+      "url": "https://www.videogamer.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "escapist",
+      "enabled": true,
+      "family": "editorial",
+      "name": "The Escapist",
+      "type": "review-search",
+      "url": "https://www.escapistmagazine.com/category/video-games/reviews/",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "cgmagazine",
+      "enabled": true,
+      "family": "editorial",
+      "name": "CGMagazine",
+      "type": "review-search",
+      "url": "https://www.cgmagonline.com/review/",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "paste",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Paste Magazine",
+      "type": "review-search",
+      "url": "https://www.pastemagazine.com/games/reviews",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "gamingbolt",
+      "enabled": true,
+      "family": "editorial",
+      "name": "GamingBolt",
+      "type": "review-search",
+      "url": "https://gamingbolt.com/category/reviews",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "digital-chumps",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Digital Chumps",
+      "type": "review-search",
+      "url": "https://digitalchumps.com/category/reviews/",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "vg247",
+      "enabled": true,
+      "family": "editorial",
+      "name": "VG247",
+      "type": "review-search",
+      "url": "https://www.vg247.com/reviews",
+      "weight": 0.82,
+      "trust": 0.86
+    },
+    {
+      "id": "push-square",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Push Square",
+      "type": "review-search",
+      "url": "https://www.pushsquare.com/reviews",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "cogconnected",
+      "enabled": true,
+      "family": "editorial",
+      "name": "COGconnected",
+      "type": "review-search",
+      "url": "https://cogconnected.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "attack-fanboy",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Attack of the Fanboy",
+      "type": "review-search",
+      "url": "https://attackofthefanboy.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "wccftech",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Wccftech",
+      "type": "review-search",
+      "url": "https://wccftech.com/review/",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "gamingtrend",
+      "enabled": true,
+      "family": "editorial",
+      "name": "GamingTrend",
+      "type": "review-search",
+      "url": "https://gamingtrend.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "psu",
+      "enabled": true,
+      "family": "editorial",
+      "name": "PlayStation Universe",
+      "type": "review-search",
+      "url": "https://www.psu.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "playstation-lifestyle",
+      "enabled": true,
+      "family": "editorial",
+      "name": "PlayStation LifeStyle",
+      "type": "review-search",
+      "url": "https://www.playstationlifestyle.net/review/",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "nintendo-life",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Nintendo Life",
+      "type": "review-search",
+      "url": "https://www.nintendolife.com/reviews",
+      "weight": 0.82,
+      "trust": 0.86
+    },
+    {
+      "id": "pure-xbox",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Pure Xbox",
+      "type": "review-search",
+      "url": "https://www.purexbox.com/reviews",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "pcmag",
+      "enabled": true,
+      "family": "editorial",
+      "name": "PCMag",
+      "type": "review-search",
+      "url": "https://www.pcmag.com/reviews/games",
+      "weight": 0.82,
+      "trust": 0.86
+    },
+    {
+      "id": "techradar-gaming",
+      "enabled": true,
+      "family": "editorial",
+      "name": "TechRadar Gaming",
+      "type": "review-search",
+      "url": "https://www.techradar.com/gaming/reviews",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "sixth-axis",
+      "enabled": true,
+      "family": "editorial",
+      "name": "TheSixthAxis",
+      "type": "review-search",
+      "url": "https://www.thesixthaxis.com/category/review/",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "trusted-reviews",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Trusted Reviews",
+      "type": "review-search",
+      "url": "https://www.trustedreviews.com/reviews/games",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "gamespew",
+      "enabled": true,
+      "family": "editorial",
+      "name": "GameSpew",
+      "type": "review-search",
+      "url": "https://www.gamespew.com/category/reviews/",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "gamewatcher",
+      "enabled": true,
+      "family": "editorial",
+      "name": "GameWatcher",
+      "type": "review-search",
+      "url": "https://www.gamewatcher.com/reviews",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "gamegrin",
+      "enabled": true,
+      "family": "editorial",
+      "name": "GameGrin",
+      "type": "review-search",
+      "url": "https://www.gamegrin.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "spaziogames",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Spaziogames",
+      "type": "review-search",
+      "url": "https://www.spaziogames.it/recensioni",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "multiplayer-it",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Multiplayer.it",
+      "type": "review-search",
+      "url": "https://multiplayer.it/recensioni/",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "everyeye",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Everyeye.it",
+      "type": "review-search",
+      "url": "https://www.everyeye.it/articoli/recensioni/",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "hobbyconsolas",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Hobby Consolas",
+      "type": "review-search",
+      "url": "https://www.hobbyconsolas.com/reviews",
+      "weight": 0.82,
+      "trust": 0.82
+    },
+    {
+      "id": "av-club",
+      "enabled": true,
+      "family": "editorial",
+      "name": "The A.V. Club",
+      "type": "review-search",
+      "url": "https://www.avclub.com/games",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "digital-fix",
+      "enabled": true,
+      "family": "editorial",
+      "name": "The Digital Fix",
+      "type": "review-search",
+      "url": "https://www.thedigitalfix.com/gaming/reviews",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "ausgamers",
+      "enabled": true,
+      "family": "editorial",
+      "name": "AusGamers",
+      "type": "review-search",
+      "url": "https://www.ausgamers.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.8
+    },
+    {
+      "id": "slant-games",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Slant Magazine",
+      "type": "review-search",
+      "url": "https://www.slantmagazine.com/games/",
+      "weight": 0.82,
+      "trust": 0.84
+    },
+    {
+      "id": "game-rant",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Game Rant",
+      "type": "review-search",
+      "url": "https://gamerant.com/reviews/",
+      "weight": 0.82,
+      "trust": 0.78
+    },
+    {
+      "id": "screen-rant-games",
+      "enabled": true,
+      "family": "editorial",
+      "name": "Screen Rant",
+      "type": "review-search",
+      "url": "https://screenrant.com/gaming/reviews/",
+      "weight": 0.82,
+      "trust": 0.78
+    }
   ],
   "outputs": [
     "data/research/{slug}-source-matrix.json",
@@ -149,6 +848,10 @@
     "data/parser-runs/review-media-{slug}.json"
   ],
   "examples": [
-    {"label":"Эталонный обзор Mafia: The City of Lost Heaven","url":"../../../article/mafia/","canonical":true}
+    {
+      "label": "Эталонный обзор Mafia: The City of Lost Heaven",
+      "url": "../../../article/mafia/",
+      "canonical": true
+    }
   ]
 }
