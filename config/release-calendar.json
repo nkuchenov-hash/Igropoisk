@@ -1,20 +1,26 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "minimum_significance_score": 25,
+  "minimum_personalized_region_score": 160,
+  "personalized_client_minimum_score": 90,
   "max_public_releases_per_day": 12,
+  "max_personalized_releases_per_day": 6,
+  "max_personalized_pool": 80,
   "signal_weights": {
     "igropoisk_page": 35,
     "independent_coverage": 30,
     "official_announcement": 18,
-    "known_developer_or_publisher": 20,
     "home_quality_gate": 18,
     "current_popular": 18,
-    "published_page": 30
+    "published_page": 30,
+    "steam_popular_upcoming": 28,
+    "steam_popular_new": 28,
+    "steam_popular_upcoming_discovery": 8,
+    "steam_popular_new_discovery": 8
   },
-  "known_organizations": [
-    "Nintendo", "Sony Interactive Entertainment", "PlayStation Studios", "Xbox Game Studios",
-    "Electronic Arts", "Ubisoft", "Capcom", "SEGA", "Square Enix", "Bandai Namco",
-    "Bethesda", "CD PROJEKT", "Devolver Digital", "Annapurna Interactive", "Panic",
-    "Game Freak", "Koei Tecmo", "Konami", "Take-Two", "2K", "Rockstar Games"
-  ]
+  "steam_popular_upcoming_limit": 80,
+  "steam_popular_new_limit": 80,
+  "steam_editorial_strong_rank": 20,
+  "steam_popular_new_recent_days": 21,
+  "steam_editorial_horizon_days": 540
 }

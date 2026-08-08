@@ -18,6 +18,7 @@ on:
       - 'config/parsers/releases.json'
       - 'config/parsers/official-popular-art.json'
       - 'config/home-feeds-quality.json'
+      - 'config/release-calendar.json'
       - 'data/popular/cover-overrides.json'
       - 'features/home-releases/rules.json'
       - 'assets/popular-home.js'
@@ -34,6 +35,13 @@ on:
       - 'scripts/resolve-popular-covers.mjs'
       - 'scripts/validate-home-feeds.mjs'
       - 'scripts/canonicalize-system-game-identity.mjs'
+      - 'scripts/materialize-release-calendar.mjs'
+      - 'scripts/validate-release-calendar.mjs'
+      - 'scripts/test-release-calendar-policy.mjs'
+      - 'scripts/lib/release-calendar-policy.mjs'
+      - 'scripts/lib/release-game-registry-adapter.mjs'
+      - 'scripts/lib/release-audience-relevance.mjs'
+      - 'scripts/lib/release-steam-editorial-discovery.mjs'
       - 'scripts/lib/system-game-registry-adapter.mjs'
       - 'scripts/lib/game-registry.mjs'
       - 'scripts/lib/game-registry-migration.mjs'
@@ -77,6 +85,10 @@ jobs:
           node --check scripts/resolve-popular-covers.mjs
           node --check scripts/validate-home-feeds.mjs
           node --check scripts/canonicalize-system-game-identity.mjs
+          node --check scripts/materialize-release-calendar.mjs
+          node --check scripts/validate-release-calendar.mjs
+          node --check scripts/lib/release-audience-relevance.mjs
+          node --check scripts/lib/release-steam-editorial-discovery.mjs
           node --check scripts/lib/system-game-registry-adapter.mjs
           node --check assets/popular-home.js
           node --check assets/home-releases/index.js
@@ -106,6 +118,43 @@ jobs:
         if: always() && steps.curation.outcome == 'success'
         run: node scripts/canonicalize-system-game-identity.mjs --write --popular-only
 
+      - name: Materialize editorial release calendar
+        id: release_calendar
+        if: always() && steps.identity.outcome == 'success'
+        run: |
+          node scripts/test-release-calendar-policy.mjs
+          node scripts/materialize-release-calendar.mjs
+          node scripts/validate-release-calendar.mjs
+
+      - name: Commit validated editorial release calendar to staging
+        id: release_publication
+        if: always() && steps.release_calendar.outcome == 'success'
+        run: |
+          git config user.name "igropoisk-parser[bot]"
+          git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
+
+          base_sha="$(git rev-parse HEAD)"
+          remote_sha="$(git ls-remote origin refs/heads/staging | cut -f1)"
+          if [ -z "$remote_sha" ] || [ "$remote_sha" != "$base_sha" ]; then
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "superseded=true" >> "$GITHUB_OUTPUT"
+            echo "Staging advanced from $base_sha to ${remote_sha:-unknown}; stale editorial calendar was not published."
+            exit 0
+          fi
+
+          git add -- data/releases/public.json data/releases/materialization-report.json data/release-candidates/current.json
+          if git diff --cached --quiet; then
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "superseded=false" >> "$GITHUB_OUTPUT"
+            echo "Editorial release calendar is already current."
+            exit 0
+          fi
+
+          git commit -m "Update editorial release calendar on staging"
+          git push origin HEAD:staging
+          echo "published=true" >> "$GITHUB_OUTPUT"
+          echo "superseded=false" >> "$GITHUB_OUTPUT"
+
       - name: Preserve editorial audit for inspection
         if: always()
         uses: actions/upload-artifact@v4
@@ -117,6 +166,9 @@ jobs:
             data/popular/published.json
             data/parser-runs/popular.json
             data/releases/current.json
+            data/releases/public.json
+            data/releases/materialization-report.json
+            data/release-candidates/current.json
             data/parser-runs/releases.json
             data/parser-runs/scheduler.json
           if-no-files-found: warn
@@ -130,7 +182,7 @@ jobs:
 
       - name: Commit validated parser outputs to staging
         id: publication
-        if: always() && steps.curation.outcome == 'success' && steps.identity.outcome == 'success' && steps.validation.outcome == 'success'
+        if: always() && steps.curation.outcome == 'success' && steps.identity.outcome == 'success' && steps.release_calendar.outcome == 'success' && steps.validation.outcome == 'success'
         run: |
           git config user.name "igropoisk-parser[bot]"
           git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
@@ -182,7 +234,7 @@ jobs:
         run: echo "One or more sources/parsers degraded, but valid staging snapshots remain publishable."
 
       - name: Report invalid staging snapshot
-        if: steps.curation.outcome == 'failure' || steps.identity.outcome == 'failure' || steps.validation.outcome == 'failure'
+        if: steps.curation.outcome == 'failure' || steps.identity.outcome == 'failure' || steps.release_calendar.outcome == 'failure' || steps.validation.outcome == 'failure'
         run: |
-          echo "Home-feed output is structurally invalid and was not written to staging."
+          echo "A generated feed is invalid. Valid editorial release output may already have been published independently."
           exit 1
