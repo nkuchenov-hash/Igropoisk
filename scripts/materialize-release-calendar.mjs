@@ -12,6 +12,7 @@ const paths = {
   claims: path.join(ROOT, 'config/release-official-claims.json'),
   policy: path.join(ROOT, 'config/release-calendar.json'),
   news: path.join(ROOT, 'data/news-events.json'),
+  rankedNews: path.join(ROOT, 'data/news.json'),
   candidates: path.join(ROOT, 'data/release-candidates/current.json'),
   public: path.join(ROOT, 'data/releases/public.json'),
   report: path.join(ROOT, 'data/releases/materialization-report.json'),
@@ -45,12 +46,13 @@ function deduplicateCandidates(candidates) {
   return [...byId.values()];
 }
 
-const [raw, editorial, claimsDoc, policy, newsDoc] = await Promise.all([
+const [raw, editorial, claimsDoc, policy, newsDoc, rankedNewsDoc] = await Promise.all([
   readJson(paths.raw, { releases: [] }),
   readJson(paths.editorial, { schema_version: 1, decisions: {} }),
   readJson(paths.claims, { schema_version: 1, claims: [] }),
   readJson(paths.policy, {}),
   readJson(paths.news, { items: [] }),
+  readJson(paths.rankedNews, { items: [] }),
 ]);
 
 const generatedAt = new Date().toISOString();
@@ -68,7 +70,9 @@ const registryMigration = migrateRepository(ROOT, {
   publicBaseUrl: '/game',
 });
 const linkage = linkReleaseCandidatesToRegistry(deduplicatedCandidates, registryMigration.registry);
-const newsEvents = Array.isArray(newsDoc) ? newsDoc : (Array.isArray(newsDoc?.items) ? newsDoc.items : []);
+const eventNews = Array.isArray(newsDoc) ? newsDoc : (Array.isArray(newsDoc?.items) ? newsDoc.items : []);
+const rankedNews = Array.isArray(rankedNewsDoc) ? rankedNewsDoc : (Array.isArray(rankedNewsDoc?.items) ? rankedNewsDoc.items : []);
+const newsEvents = [...eventNews, ...rankedNews];
 const candidates = attachAudienceAffinity(linkage.candidates, newsEvents);
 let publicCalendar = buildPublicCalendar(candidates, generatedAt);
 publicCalendar.personalized_releases = buildPersonalizedReleases(candidates, policy);
@@ -97,7 +101,7 @@ const report = {
   generated_at: generatedAt,
   sources: {
     active_discovery: ['Steam coming-soon/appdetails (PC only)'],
-    audience_relevance: ['News event regional scores linked by canonical game slug or title evidence'],
+    audience_relevance: ['News event and ranked-news regional scores linked by canonical game slug or title evidence'],
     optional_auxiliary: ['RAWG enrichment when RAWG_API_KEY is configured'],
     supported_auxiliary: ['IGDB/RAWG claims are discovery/cross-check only and cannot confirm a date alone'],
     console_authority: ['Official platform stores', 'publisher/developer sites', 'official announcements via config/release-official-claims.json'],
