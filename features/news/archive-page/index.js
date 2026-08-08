@@ -46,6 +46,14 @@
       window.history.replaceState({}, '', url);
     }
 
+    function gameFilterUrl(slug) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('page', 'news');
+      url.searchParams.set('game', slug);
+      url.searchParams.delete('story');
+      return url.href;
+    }
+
     function availableGames(source) {
       const games = new Map();
       source.forEach(item => api.resolvedGames(item).forEach(game => {
@@ -62,13 +70,9 @@
     }
 
     function filteredItems() {
-      const query = (toolbar.querySelector('[data-news-search]')?.value || '').trim().toLowerCase();
       return model.filterByGame(items, activeGame).filter(item => {
         if (activeType && !api.deriveTypeTags(item, lang).includes(activeType)) return false;
-        if (!query) return true;
-        const gameTitles = api.resolvedGames(item).map(game => game.title).join(' ');
-        const haystack = `${api.text(item, 'title', lang)} ${api.text(item, 'summary', lang)} ${gameTitles}`.toLowerCase();
-        return haystack.includes(query);
+        return true;
       });
     }
 
@@ -109,11 +113,42 @@
       root.dataset.newsDayCount = String(groups.length);
     }
 
+    function hideGameSuggestions() {
+      const panel = toolbar.querySelector('[data-news-game-suggestions]');
+      const input = toolbar.querySelector('[data-news-game-search]');
+      if (panel) panel.hidden = true;
+      if (input) input.setAttribute('aria-expanded', 'false');
+    }
+
+    function renderGameSuggestions(query) {
+      const panel = toolbar.querySelector('[data-news-game-suggestions]');
+      const input = toolbar.querySelector('[data-news-game-search]');
+      if (!panel || !input) return;
+      const needle = String(query || '').trim().toLocaleLowerCase(lang);
+      if (!needle) {
+        hideGameSuggestions();
+        return;
+      }
+      const games = availableGames(items);
+      const matches = games
+        .map(game => ({ game, title: game.title.toLocaleLowerCase(lang) }))
+        .filter(({ title }) => title.includes(needle))
+        .sort((a, b) => Number(b.title.startsWith(needle)) - Number(a.title.startsWith(needle)) || a.game.title.localeCompare(b.game.title, lang))
+        .slice(0, 7)
+        .map(({ game }) => game);
+      panel.innerHTML = matches.map(game => `<a class="ig-text-link ig-news-game-suggestion" role="option" href="${api.escapeHtml(gameFilterUrl(game.slug))}" data-news-game-suggestion="${api.escapeHtml(game.slug)}">${api.escapeHtml(game.title)}</a>`).join('');
+      panel.hidden = matches.length === 0;
+      input.setAttribute('aria-expanded', matches.length ? 'true' : 'false');
+    }
+
     function setGameFilter(slug) {
       activeGame = model.normalizeSlug(slug);
       activeStory = '';
-      const select = toolbar.querySelector('[data-news-game-filter]');
-      if (select) select.value = activeGame;
+      const games = availableGames(items);
+      const input = toolbar.querySelector('[data-news-game-search]');
+      const selected = games.find(game => game.slug === activeGame);
+      if (input) input.value = selected?.title || '';
+      hideGameSuggestions();
       updateUrl({ game: activeGame, story: '' });
       renderFeed();
     }
@@ -134,29 +169,54 @@
       const types = availableTypes(items);
       if (activeGame && !games.some(game => game.slug === activeGame)) activeGame = '';
       if (activeType && !types.some(([tag]) => tag === activeType)) activeType = '';
-      toolbar.innerHTML = `<div class="ig-filter-list ig-news-controls__types" aria-label="${api.escapeHtml(copy.typeFilter)}">
+      const activeGameTitle = games.find(game => game.slug === activeGame)?.title || '';
+      toolbar.innerHTML = `<div class="ig-news-controls__game-search">
+          <label class="ig-muted" for="news-game-search">${api.escapeHtml(copy.gameFilter)}</label>
+          <div class="ig-news-game-search">
+            <input class="ig-input ig-input--search" id="news-game-search" type="search" data-news-game-search value="${api.escapeHtml(activeGameTitle)}" placeholder="${api.escapeHtml(copy.gameSearchPlaceholder)}" autocomplete="off" aria-autocomplete="list" aria-controls="news-game-suggestions" aria-expanded="false">
+            <div class="ig-panel ig-news__game-suggestions" id="news-game-suggestions" data-news-game-suggestions role="listbox" hidden></div>
+          </div>
+        </div>
+        <div class="ig-filter-list ig-news-controls__types" aria-label="${api.escapeHtml(copy.typeFilter)}">
           <button class="ig-filter-chip${activeType ? '' : ' is-active'}" type="button" data-news-type-filter="" aria-pressed="${activeType ? 'false' : 'true'}">${api.escapeHtml(copy.allTypes)}</button>
           ${types.map(([tag, count]) => `<button class="ig-filter-chip${tag === activeType ? ' is-active' : ''}" type="button" data-news-type-filter="${api.escapeHtml(tag)}" aria-pressed="${tag === activeType ? 'true' : 'false'}">${api.escapeHtml(tag)} <span>${count}</span></button>`).join('')}
-        </div>
-        <div class="ig-news-controls__game">
-          <label class="ig-muted" for="news-game-filter">${api.escapeHtml(copy.gameFilter)}</label>
-          <select class="ig-input" id="news-game-filter" data-news-game-filter>
-            <option value="">${api.escapeHtml(copy.all)}</option>
-            ${games.map(game => `<option value="${api.escapeHtml(game.slug)}"${game.slug === activeGame ? ' selected' : ''}>${api.escapeHtml(game.title)}</option>`).join('')}
-          </select>
-        </div>
-        <div class="ig-news-controls__search"><input class="ig-input ig-input--search" type="search" data-news-search placeholder="${api.escapeHtml(copy.search)}"></div>`;
-      toolbar.querySelector('[data-news-game-filter]').addEventListener('change', event => setGameFilter(event.target.value));
-      toolbar.querySelector('[data-news-search]').addEventListener('input', renderFeed);
+        </div>`;
+
+      const gameSearch = toolbar.querySelector('[data-news-game-search]');
+      gameSearch.addEventListener('input', event => {
+        const value = event.target.value;
+        if (!value.trim() && activeGame) {
+          activeGame = '';
+          activeStory = '';
+          updateUrl({ game: '', story: '' });
+          renderFeed();
+        }
+        renderGameSuggestions(value);
+      });
+      gameSearch.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          hideGameSuggestions();
+          return;
+        }
+        if (event.key === 'Enter') {
+          const first = toolbar.querySelector('[data-news-game-suggestion]');
+          if (!first) return;
+          event.preventDefault();
+          setGameFilter(first.dataset.newsGameSuggestion || '');
+        }
+      });
       toolbar.querySelectorAll('[data-news-type-filter]').forEach(button => button.addEventListener('click', () => setTypeFilter(button.dataset.newsTypeFilter || '')));
     }
 
     root.addEventListener('click', event => {
-      const button = event.target.closest('[data-news-game-filter-button]');
-      if (!button) return;
+      const suggestion = event.target.closest('[data-news-game-suggestion]');
+      if (!suggestion) return;
       event.preventDefault();
-      setGameFilter(button.dataset.newsGameFilterButton || '');
-      root.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      setGameFilter(suggestion.dataset.newsGameSuggestion || '');
+    });
+
+    document.addEventListener('click', event => {
+      if (!toolbar.contains(event.target)) hideGameSuggestions();
     });
 
     window.addEventListener('popstate', () => {
