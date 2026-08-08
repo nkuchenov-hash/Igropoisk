@@ -1,0 +1,79 @@
+name: Top-250 integrity
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [staging, main]
+    paths:
+      - 'scripts/build-top-250.mjs'
+      - 'scripts/materialize-top-250-game-pages.mjs'
+      - 'scripts/validate-top-250.mjs'
+      - 'scripts/render-review-pages.mjs'
+      - 'data/top-250/**'
+      - 'top-250/**'
+      - 'assets/top-250.*'
+      - 'article/**'
+      - 'game/**/index.html'
+      - 'config/design-system-components.json'
+      - '.github/workflows/top-250-integrity.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate Top-250 scripts
+        run: |
+          node --check scripts/build-top-250.mjs
+          node --check scripts/materialize-top-250-game-pages.mjs
+          node --check scripts/validate-top-250.mjs
+          node --check scripts/render-review-pages.mjs
+      - name: Validate committed Top-250 snapshot
+        run: node scripts/validate-top-250.mjs
+      - name: Validate Game Registry integration
+        run: node scripts/validate-system-game-registry-integration.mjs
+      - name: Reject legacy review pilot runtime and data
+        run: |
+          forbidden=(
+            article/_shared/pilot-review.css
+            article/_shared/pilot-review.js
+            data/pilot-reviews
+            scripts/seed-top-250-web-reviews.mjs
+            scripts/run-top-250-review-pilot.mjs
+          )
+          for path in "${forbidden[@]}"; do
+            if [ -e "$path" ]; then
+              echo "Legacy Top-250 review pilot artifact is forbidden: $path"
+              exit 1
+            fi
+          done
+      - name: Verify review renderer uses the shared site shell
+        run: |
+          grep -q 'assets/site-header.js' scripts/render-review-pages.mjs
+          grep -q 'assets/layout-contract.js' scripts/render-review-pages.mjs
+          if grep -q 'keyless-pilot' scripts/build-top-250.mjs; then
+            echo 'Top-250 must not publish keyless-pilot reviews'
+            exit 1
+          fi
+      - name: Verify every ranked game has a canonical page
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const top = JSON.parse(fs.readFileSync('data/top-250/current.json', 'utf8'));
+          for (const item of top.ranking || []) {
+            const expected = `/Igropoisk/game/${encodeURIComponent(item.slug)}/`;
+            if (item.game_url !== expected) throw new Error(`Non-canonical game_url for ${item.slug}`);
+            if (!fs.existsSync(`game/${item.slug}/index.html`)) throw new Error(`Missing game page for ${item.slug}`);
+            if (item.review?.status === 'published') {
+              if (item.review.pipeline !== 'strict') throw new Error(`Non-strict published review for ${item.slug}`);
+              if (!fs.existsSync(`data/articles/${item.slug}.json`)) throw new Error(`Missing strict article data for ${item.slug}`);
+            }
+          }
+          console.log(`Top-250 game-first contract verified for ${(top.ranking || []).length} games.`);
+          NODE
