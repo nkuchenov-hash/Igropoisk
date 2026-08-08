@@ -15,9 +15,11 @@ on:
       - 'scripts/validate-top-250.mjs'
       - 'scripts/run-top-250-review-pilot.mjs'
       - 'scripts/run-keyless-review-pilot.mjs'
+      - 'scripts/seed-top-250-web-reviews.mjs'
       - 'top-250/**'
       - 'assets/top-250.*'
       - 'article/_shared/pilot-review.css'
+      - 'article/_shared/pilot-review.js'
       - '.github/workflows/top-250-review-pilot.yml'
 
 permissions:
@@ -44,24 +46,24 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Seed verified web-research reviews
+        if: contains(github.event.head_commit.message, '[seed-web-reviews]')
+        run: node scripts/seed-top-250-web-reviews.mjs
       - name: Build canonical Top-250 snapshot
         run: node scripts/build-top-250.mjs --limit=20
       - name: Validate Top-250 snapshot
         run: node scripts/validate-top-250.mjs
       - name: Build Top-250 review pilot with OpenAI provider
-        if: env.OPENAI_API_KEY != ''
+        if: ${{ !contains(github.event.head_commit.message, '[seed-web-reviews]') && env.OPENAI_API_KEY != '' }}
         run: node scripts/run-top-250-review-pilot.mjs --limit=20 --target="$TARGET_REVIEWS"
       - name: Build Top-250 review pilot with keyless provider
-        if: env.OPENAI_API_KEY == ''
+        if: ${{ !contains(github.event.head_commit.message, '[seed-web-reviews]') && env.OPENAI_API_KEY == '' }}
         run: node scripts/run-keyless-review-pilot.mjs --limit=20 --target="$TARGET_REVIEWS"
       - name: Refresh Top-250 review status
-        if: success()
         run: node scripts/build-top-250.mjs --limit=20
       - name: Validate final Top-250 snapshot
-        if: success()
         run: node scripts/validate-top-250.mjs
       - name: Validate Registry integration
-        if: success()
         run: node scripts/validate-system-game-registry-integration.mjs
       - name: Commit generated pilot content and diagnostics
         if: always()
