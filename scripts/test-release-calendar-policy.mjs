@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { buildCandidates, buildPublicCalendar, validateCalendar } from './lib/release-calendar-policy.mjs';
 import { attachCanonicalGameIdsToPublicCalendar, linkReleaseCandidatesToRegistry } from './lib/release-game-registry-adapter.mjs';
+import { attachAudienceAffinity, buildPersonalizedReleases, validatePersonalizedReleases } from './lib/release-audience-relevance.mjs';
 import { createGameEntity, createRegistry, rebuildIndexes } from './lib/game-registry.mjs';
 
 const steamSource = (id) => ({ id: `steam:${id}`, family: 'official_store', title: 'Steam', url: `https://store.steampowered.com/app/${id}/`, platforms: ['PC'] });
@@ -38,15 +39,10 @@ assert.deepEqual(validateCalendar({ candidates, publicCalendar, policy }), []);
 
 const registry = createRegistry({generatedAt: '2026-08-06T00:00:00Z'});
 const exactGame = createGameEntity({
-  title: 'Canonical Exact Game',
-  steamAppId: 9001,
-  releaseYear: 2026,
-  kind: 'game',
+  title: 'Canonical Exact Game', steamAppId: 9001, releaseYear: 2026, kind: 'game',
 }, {now: '2026-08-06T00:00:00Z'});
 const conflictingGame = createGameEntity({
-  title: 'Shared Identity',
-  releaseYear: 2026,
-  kind: 'game',
+  title: 'Shared Identity', releaseYear: 2026, kind: 'game',
 }, {now: '2026-08-06T00:00:00Z'});
 registry.games[exactGame.id] = exactGame;
 registry.games[conflictingGame.id] = conflictingGame;
@@ -72,5 +68,34 @@ const linkedPublic = attachCanonicalGameIdsToPublicCalendar({
 assert.equal(linkedPublic.releases.find(item => item.id === 'steam:9001').game_id, exactGame.id);
 assert.equal(Object.hasOwn(linkedPublic.releases.find(item => item.id === 'steam:9002'), 'game_id'), false, 'ambiguous release must not expose canonical game_id');
 assert.deepEqual(linked.statistics, {matched: 1, needs_review: 1, unresolved: 1});
+
+const regionalCandidate = buildCandidates({
+  rawReleases: [event(777, 'IL-2 Sturmovik Korea')],
+  policy: {minimum_significance_score: 25, max_public_releases_per_day: 12, signal_weights: {current_popular: 18}},
+})[0];
+assert.equal(regionalCandidate.moderation.status, 'review', 'a niche candidate must stay out of the global feed below the global threshold');
+const regionalEvents = [{
+  id: 'news-il2',
+  titleEn: 'The global release of the flight simulator Korea took place. IL-2 series',
+  titleRu: 'Состоялся глобальный релиз авиасимулятора Корея. Серия Ил-2',
+  regionalEligible: true,
+  regionalScore: 275,
+  regions: ['cis'],
+}];
+const audienceCandidates = attachAudienceAffinity([regionalCandidate], regionalEvents);
+assert.ok(audienceCandidates[0].audience_affinity.score >= 160, 'regional demand evidence must produce a measurable audience affinity');
+const personalizedCalendar = {
+  releases: [],
+  personalized_releases: buildPersonalizedReleases(audienceCandidates, {
+    minimum_personalized_region_score: 160,
+    max_personalized_releases_per_day: 6,
+  }),
+};
+assert.equal(personalizedCalendar.personalized_releases.length, 1, 'audience evidence may admit a review-gated game only to the personalized pool');
+assert.deepEqual(validatePersonalizedReleases({
+  candidates: audienceCandidates,
+  publicCalendar: personalizedCalendar,
+  policy: {minimum_personalized_region_score: 160},
+}), []);
 
 console.log('release-calendar-policy tests passed');

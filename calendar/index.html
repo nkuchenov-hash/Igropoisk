@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../assets/release-calendar.css?v=20260803-1">
   <link rel="stylesheet" href="../assets/release-calendar-readable.css?v=20260804-2">
   <link rel="stylesheet" href="../assets/release-calendar-cell-fill.css?v=20260804-2">
+  <link rel="stylesheet" href="../assets/release-calendar-personalized.css?v=20260808-1">
   <link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">
   <link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">
 </head>
@@ -17,8 +18,8 @@
 <main class="ig-container release-page ig-page-shell">
   <nav class="release-breadcrumb" aria-label="Хлебные крошки"><a href="../index.html">Главная</a><span>›</span><span>Календарь релизов</span></nav>
   <section class="release-intro">
-    <div><div class="release-kicker">Отобрано редакцией</div><h1>Календарь релизов</h1><p>Только заметные игры и крупные дополнения. Даты привязаны к конкретной платформе и подтверждающему источнику.</p></div>
-    <div class="release-intro__stats" aria-label="Статистика календаря"><div><strong id="releaseTotal">—</strong><span>игр</span></div><div><strong id="releaseExact">—</strong><span>точных событий</span></div><div><strong id="releaseReview">—</strong><span>непроверенных публично</span></div></div>
+    <div><div class="release-kicker">Отобрано редакцией</div><h1>Календарь релизов</h1></div>
+    <div class="release-intro__stats" aria-label="Статистика календаря"><div><strong id="releaseTotal">—</strong><span>Количество игр в месяце</span></div></div>
   </section>
   <section class="release-command-bar" aria-label="Управление календарём">
     <div class="release-view-tabs ig-tabs" role="tablist" aria-label="Режим отображения"><button class="ig-action active" type="button" data-view="calendar" role="tab" aria-selected="true">Календарь</button><button class="ig-action" type="button" data-view="list" role="tab" aria-selected="false">Список</button><button class="ig-action" type="button" data-view="feed" role="tab" aria-selected="false">Лента</button></div>
@@ -30,7 +31,8 @@
   </div>
 </main>
 <div class="ig-panel release-modal" id="releaseModal" hidden><button class="ig-button release-modal__backdrop" type="button" data-close-release aria-label="Закрыть карточку игры"></button><article class="ig-card release-modal__panel" role="dialog" aria-modal="true" aria-labelledby="releaseModalTitle"><button class="ig-button release-modal__close" type="button" data-close-release aria-label="Закрыть">×</button><div id="releaseModalContent"></div></article></div>
-<script src="../assets/release-calendar.js?v=20260806-1"></script>
+<script src="../assets/auth.js?v=20260804-6"></script>
+<script src="../assets/release-calendar.js?v=20260808-1"></script>
 <script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>
 <script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>
 </body>
