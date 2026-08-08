@@ -70,9 +70,13 @@
     }
 
     function filteredItems() {
+      const query = (toolbar.querySelector('[data-news-search]')?.value || '').trim().toLocaleLowerCase(lang);
       return model.filterByGame(items, activeGame).filter(item => {
         if (activeType && !api.deriveTypeTags(item, lang).includes(activeType)) return false;
-        return true;
+        if (!query) return true;
+        const gameTitles = api.resolvedGames(item).map(game => game.title).join(' ');
+        const haystack = `${api.text(item, 'title', lang)} ${api.text(item, 'summary', lang)} ${gameTitles}`.toLocaleLowerCase(lang);
+        return haystack.includes(query);
       });
     }
 
@@ -180,7 +184,8 @@
         <div class="ig-filter-list ig-news-controls__types" aria-label="${api.escapeHtml(copy.typeFilter)}">
           <button class="ig-filter-chip${activeType ? '' : ' is-active'}" type="button" data-news-type-filter="" aria-pressed="${activeType ? 'false' : 'true'}">${api.escapeHtml(copy.allTypes)}</button>
           ${types.map(([tag, count]) => `<button class="ig-filter-chip${tag === activeType ? ' is-active' : ''}" type="button" data-news-type-filter="${api.escapeHtml(tag)}" aria-pressed="${tag === activeType ? 'true' : 'false'}">${api.escapeHtml(tag)} <span>${count}</span></button>`).join('')}
-        </div>`;
+        </div>
+        <div class="ig-news-controls__search"><input class="ig-input ig-input--search" type="search" data-news-search placeholder="${api.escapeHtml(copy.search)}"></div>`;
 
       const gameSearch = toolbar.querySelector('[data-news-game-search]');
       gameSearch.addEventListener('input', event => {
@@ -205,6 +210,7 @@
           setGameFilter(first.dataset.newsGameSuggestion || '');
         }
       });
+      toolbar.querySelector('[data-news-search]').addEventListener('input', renderFeed);
       toolbar.querySelectorAll('[data-news-type-filter]').forEach(button => button.addEventListener('click', () => setTypeFilter(button.dataset.newsTypeFilter || '')));
     }
 
