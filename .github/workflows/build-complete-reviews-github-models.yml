@@ -1,0 +1,107 @@
+name: Build complete game pages with GitHub Models
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: Optional single game slug; blank builds incomplete catalog games
+        required: false
+        type: string
+      limit:
+        description: Optional maximum games in this run
+        required: false
+        default: "0"
+        type: string
+  push:
+    branches: [staging]
+    paths:
+      - scripts/build-complete-review-github-models.mjs
+      - .github/workflows/build-complete-reviews-github-models.yml
+      - config/parsers/review-synthesis.json
+
+permissions:
+  contents: write
+  models: read
+
+concurrency:
+  group: complete-game-pages-staging
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_MODEL: openai/gpt-4.1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Configure builder identity
+        run: |
+          git config user.name "igropoisk-builder"
+          git config user.email "actions@users.noreply.github.com"
+      - name: Build complete Mafia-standard pages and reviews
+        env:
+          REQUESTED_SLUG: ${{ inputs.slug }}
+          REQUESTED_LIMIT: ${{ inputs.limit }}
+        run: |
+          node - <<'NODE' > /tmp/queue.txt
+          const fs=require('fs');
+          const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
+          const requested=process.env.REQUESTED_SLUG||'';
+          const limit=Number(process.env.REQUESTED_LIMIT||0);
+          let queue=catalog.filter(g=>g.slug!=='mafia');
+          if(requested) queue=queue.filter(g=>g.slug===requested);
+          else queue=queue.filter(g=>!fs.existsSync(`data/articles/${g.slug}.json`)||g.slug==='the-witcher-3-wild-hunt');
+          if(limit>0) queue=queue.slice(0,limit);
+          process.stdout.write(queue.map(g=>g.slug).join('\n'));
+          NODE
+          : > /tmp/complete-results.tsv
+          while IFS= read -r slug; do
+            [ -z "$slug" ] && continue
+            echo "=== COMPLETE BUILD: $slug ==="
+            if node scripts/build-complete-review-github-models.mjs "$slug" \
+              && node scripts/validate-review-output.mjs "$slug"; then
+              printf '%s\tsuccess\n' "$slug" >> /tmp/complete-results.tsv
+              git add data
+              git commit -m "Build complete Mafia-standard review for $slug" || true
+              git pull --rebase origin staging
+              git push origin HEAD:staging
+            else
+              printf '%s\tblocked\n' "$slug" >> /tmp/complete-results.tsv
+              git reset --hard HEAD
+            fi
+          done < /tmp/queue.txt
+          cat /tmp/complete-results.tsv
+      - name: Render all validated reviews and rebuild game pages
+        if: always()
+        run: |
+          node scripts/render-review-pages.mjs || true
+          node scripts/materialize-catalog-no-api.mjs
+          node scripts/canonicalize-all-editorial-game-ids.mjs --write
+          git add data article game
+          git diff --cached --quiet || git commit -m "Render complete catalog game pages and reviews"
+          git pull --rebase origin staging
+          git push origin HEAD:staging
+      - name: Report completeness
+        if: always()
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
+          const complete=catalog.filter(g=>fs.existsSync(`game/${g.slug}/index.html`)&&fs.existsSync(`data/articles/${g.slug}.json`)&&fs.existsSync(`article/${g.slug}/index.html`));
+          const missing=catalog.filter(g=>!complete.includes(g)).map(g=>g.slug);
+          console.log(JSON.stringify({total:catalog.length,complete:complete.length,missing},null,2));
+          fs.mkdirSync('data/parser-runs',{recursive:true});
+          fs.writeFileSync('data/parser-runs/complete-game-pages-latest.json',JSON.stringify({generated_at:new Date().toISOString(),total:catalog.length,complete:complete.length,missing},null,2)+'\n');
+          NODE
+          git add data/parser-runs/complete-game-pages-latest.json
+          git diff --cached --quiet || git commit -m "Update complete game page coverage report"
+          git pull --rebase origin staging
+          git push origin HEAD:staging
