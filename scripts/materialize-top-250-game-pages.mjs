@@ -55,14 +55,15 @@ for (const item of top.ranking || []) {
     skipped.push({ slug: item.slug, reason: 'canonical_identity_missing' });
     continue;
   }
+  const gameId = String(item.game_id || entity.id);
   const kind = entity.identity?.kind?.value || 'unknown';
   if (isEmbeddedGameKind(kind) || entity.presentation?.standalonePage === false || entity.workflow?.status === 'needs_review' || (entity.conflicts || []).length) {
-    skipped.push({ slug: item.slug, game_id: entity.id, reason: 'canonical_identity_not_publishable' });
+    skipped.push({ slug: item.slug, game_id: gameId, reason: 'canonical_identity_not_publishable' });
     continue;
   }
 
-  const slug = entity.identity?.slug?.value || item.slug;
-  const title = entity.identity?.canonicalTitle?.value || item.title || slug;
+  const slug = String(item.slug || entity.identity?.slug?.value || '');
+  const title = item.title || entity.identity?.canonicalTitle?.value || slug;
   const release = releaseValue(entity);
   const year = Number(item.year) || releaseYear(release) || 0;
   const steamAppId = entity.externalIds?.steamAppId ? Number(entity.externalIds.steamAppId) : null;
@@ -107,13 +108,13 @@ for (const item of top.ranking || []) {
       materials: { reviews: [], news: [], guides: [] },
       requirements: { platforms },
       sources: [],
-      source: { type: 'canonical-game-registry', game_id: entity.id }
+      source: { type: 'canonical-game-registry', game_id: gameId }
     });
     createdDrafts.push(slug);
   } else {
     const draft = readJson(draftFile);
-    if (draft?.publication?.status === 'baseline' && draft?.source?.type === 'canonical-game-registry' && draft.source.game_id !== entity.id) {
-      draft.source.game_id = entity.id;
+    if (draft?.publication?.status === 'baseline' && draft?.source?.type === 'canonical-game-registry' && draft.source.game_id !== gameId) {
+      draft.source.game_id = gameId;
       writeJson(draftFile, draft);
       repairedDrafts.push(slug);
     }
@@ -122,36 +123,36 @@ for (const item of top.ranking || []) {
   const pageFile = path.join(root, 'game', slug, 'index.html');
   if (!exists(pageFile)) {
     fs.mkdirSync(path.dirname(pageFile), { recursive: true });
-    fs.writeFileSync(pageFile, pageHtml({ slug, title, year, gameId: entity.id }));
+    fs.writeFileSync(pageFile, pageHtml({ slug, title, year, gameId }));
     createdPages.push(slug);
   } else {
     const html = fs.readFileSync(pageFile, 'utf8');
     const match = html.match(/data-game-id="([^"]*)"/);
     const currentGameId = match?.[1] || '';
-    if (currentGameId !== entity.id) {
+    if (currentGameId !== gameId) {
       const isBaselinePage = html.includes(`data-draft="${slug}"`) && html.includes('../_shared/game-shell.js');
       if (!isBaselinePage) {
-        skipped.push({ slug, game_id: entity.id, page_game_id: currentGameId || null, reason: 'existing_nonbaseline_page_identity_mismatch' });
+        skipped.push({ slug, game_id: gameId, page_game_id: currentGameId || null, reason: 'existing_nonbaseline_page_identity_mismatch' });
         continue;
       }
       const repaired = match
-        ? html.replace(/data-game-id="[^"]*"/, `data-game-id="${entity.id}"`)
-        : html.replace('<body ', `<body data-game-id="${entity.id}" `);
+        ? html.replace(/data-game-id="[^"]*"/, `data-game-id="${gameId}"`)
+        : html.replace('<body ', `<body data-game-id="${gameId}" `);
       fs.writeFileSync(pageFile, repaired);
       repairedPages.push(slug);
     }
   }
 
   const catalogRecord = catalogBySlug.get(slug);
-  if (catalogRecord && catalogRecord.game_id !== entity.id) {
+  if (catalogRecord && catalogRecord.game_id !== gameId) {
     catalogById.delete(catalogRecord.game_id);
-    catalogRecord.game_id = entity.id;
-    catalogById.set(entity.id, catalogRecord);
+    catalogRecord.game_id = gameId;
+    catalogById.set(gameId, catalogRecord);
     repairedCatalog.push(slug);
-  } else if (!catalogById.has(entity.id) && !catalogRecord) {
-    const record = { title, year: year || null, slug, game_id: entity.id };
+  } else if (!catalogById.has(gameId) && !catalogRecord) {
+    const record = { title, year: year || null, slug, game_id: gameId };
     catalog.push(record);
-    catalogById.set(entity.id, record);
+    catalogById.set(gameId, record);
     catalogBySlug.set(slug, record);
     addedCatalog.push(slug);
   }
