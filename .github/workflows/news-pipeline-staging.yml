@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: read
+  models: read
 
 concurrency:
   group: news-pipeline-staging-${{ github.ref }}
@@ -48,6 +49,7 @@ jobs:
 
       - name: Run all source groups without publishing
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           NEWS_PIPELINE_REPORT: tmp/news-pipeline-staging-report.json
         run: |
           node scripts/run-news-pipeline.mjs --force
