@@ -58,6 +58,7 @@ on:
 
 permissions:
   contents: read
+  models: read
 
 concurrency:
   group: autonomous-news-pipeline-object-storage
@@ -97,6 +98,7 @@ jobs:
 
       - name: Collect validate and prepare one isolated snapshot
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           PIPELINE_FORCE: ${{ inputs.force || github.event.inputs.force || false }}
           NEWS_PIPELINE_REPORT: tmp/news-pipeline-report.json
         run: |
