@@ -32,6 +32,7 @@ function contains(haystack, needle) {
 function cleanCandidate(value = '') {
   return String(value)
     .replace(/[“”«»"()[\]{}]/g, ' ')
+    .replace(/[.!?]\s+[A-ZА-ЯЁ][\s\S]*$/u, '')
     .replace(/^[\s:;,.!?–—-]+|[\s:;,.!?–—-]+$/g, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -45,41 +46,36 @@ function invalidCandidate(value = '') {
 }
 
 function context(item = {}) {
+  const summary = [cleanNewsEntitySummary(item.summaryEn || item.summary || ''), cleanNewsEntitySummary(item.summaryRu || '')].filter(Boolean).join(' · ');
+  let url = '';
+  try {
+    const value = item.primaryUrl || item.url || '';
+    const parsed = new URL(value);
+    url = normalizePrimaryGame(decodeURIComponent(`${parsed.pathname} ${parsed.search}`));
+  } catch {
+    url = normalizePrimaryGame(item.primaryUrl || item.url || '');
+  }
   return {
     title: normalizePrimaryGame([item.titleEn, item.title, item.titleRu].filter(Boolean).join(' · ')),
-    summary: normalizePrimaryGame([
-      cleanNewsEntitySummary(item.summaryEn || item.summary || ''),
-      cleanNewsEntitySummary(item.summaryRu || '')
-    ].filter(Boolean).join(' · ')),
-    url: (() => {
-      try {
-        const value = item.primaryUrl || item.url || '';
-        const parsed = new URL(value);
-        return normalizePrimaryGame(decodeURIComponent(`${parsed.pathname} ${parsed.search}`));
-      } catch {
-        return normalizePrimaryGame(item.primaryUrl || item.url || '');
-      }
-    })()
+    summary: normalizePrimaryGame(summary),
+    url
   };
 }
 
 function evidenceFor(item, value) {
   const ctx = context(item);
   const normalized = normalizePrimaryGame(value);
-  return {
-    title: contains(ctx.title, normalized),
-    summary: contains(ctx.summary, normalized),
-    url: contains(ctx.url, normalized)
-  };
+  return { title: contains(ctx.title, normalized), summary: contains(ctx.summary, normalized), url: contains(ctx.url, normalized) };
 }
 
 function makeGame(title, evidence, method = 'primary-game-context-v1') {
-  const normalized = normalizePrimaryGame(title);
+  const cleanTitle = cleanCandidate(title);
+  const normalized = normalizePrimaryGame(cleanTitle);
   const stable = crypto.createHash('sha1').update(`news-primary:${normalized}`).digest('hex').slice(0, 16);
   return Object.freeze({
     gameId: `news_game_${stable}`,
     slug: normalized.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '') || `game-${stable}`,
-    title: cleanCandidate(title),
+    title: cleanTitle,
     pageExists: false,
     pageUrl: '',
     manual: false,
@@ -95,16 +91,7 @@ function addCandidate(map, value, kind, weight, index = 999) {
   const title = cleanCandidate(value);
   if (invalidCandidate(title)) return;
   const normalized = normalizePrimaryGame(title);
-  const current = map.get(normalized) || {
-    title,
-    normalized,
-    score: 0,
-    kinds: new Set(),
-    index,
-    strong: false,
-    comparison: false,
-    updateName: false
-  };
+  const current = map.get(normalized) || { title, normalized, score: 0, kinds: new Set(), index, strong: false, comparison: false, updateName: false };
   current.score += weight;
   current.kinds.add(kind);
   current.index = Math.min(current.index, index);
@@ -144,9 +131,7 @@ function detectCandidate(item = {}) {
   collectMatches(summaryIn, summary, match => {
     const candidate = cleanCandidate(match[1]);
     const normalized = normalizePrimaryGame(candidate);
-    if (contains(normalizePrimaryGame(title), normalized) || /\b(?:simulator|souls|craft)\b/i.test(candidate)) {
-      addCandidate(map, candidate, 'summary-cue', 130, match.index || 0);
-    }
+    if (contains(normalizePrimaryGame(title), normalized) || /\b(?:simulator|souls|craft)\b/i.test(candidate)) addCandidate(map, candidate, 'summary-cue', 130, match.index || 0);
   });
 
   const leading = summary.match(new RegExp(`^(${TITLE})`, 'u'));
@@ -162,8 +147,7 @@ function detectCandidate(item = {}) {
     candidate.evidence = evidence;
     candidate.score += Number(evidence.title) * 90 + Number(evidence.summary) * 100 + Number(evidence.url) * 60;
 
-    const lowerTitle = title.toLowerCase();
-    const position = lowerTitle.indexOf(candidate.title.toLowerCase());
+    const position = title.toLowerCase().indexOf(candidate.title.toLowerCase());
     const before = position >= 0 ? title.slice(0, position) : '';
     candidate.comparison = position >= 0 && COMPARISON_CUE.test(before.slice(-55));
     candidate.updateName = position >= 0 && UPDATE_CUE.test(before.slice(-45));
@@ -175,8 +159,7 @@ function detectCandidate(item = {}) {
   let ranked = [...map.values()];
   ranked = ranked.filter(candidate => !ranked.some(longer => {
     if (longer === candidate || longer.normalized.length <= candidate.normalized.length) return false;
-    return contains(longer.normalized, candidate.normalized)
-      && (longer.strong || longer.kinds.has('title-colon') || longer.score >= candidate.score - 25);
+    return contains(longer.normalized, candidate.normalized) && (longer.strong || longer.kinds.has('title-colon') || longer.score >= candidate.score - 25);
   }));
   ranked.sort((a, b) => b.score - a.score || a.index - b.index || b.title.length - a.title.length);
 
@@ -206,9 +189,7 @@ export function refineNewsPrimaryGame(item, proposedGame = null) {
   if (proposedValid) {
     if (detected) {
       const proposedKey = normalizePrimaryGame(proposedGame.title);
-      if (detected.normalized !== proposedKey && contains(detected.normalized, proposedKey)) {
-        return makeGame(detected.title, detected.evidence);
-      }
+      if (detected.normalized !== proposedKey && contains(detected.normalized, proposedKey)) return makeGame(detected.title, detected.evidence);
     }
     return proposedGame;
   }
