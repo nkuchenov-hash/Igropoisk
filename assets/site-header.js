@@ -132,7 +132,7 @@
       const theme=actions.querySelector('#theme');
       const account=actions.querySelector('[data-auth-link]');
       const themeLabel=document.documentElement.dataset.theme==='light'?'Включить тёмную тему':'Включить светлую тему';
-      menu.innerHTML=`<nav aria-label="Мобильная навигация">${desktopNav.innerHTML}</nav><div class="mobile-menu__actions"><button type="button" class="mobile-menu__action" data-mobile-theme>${themeLabel}</button></div>`;
+      menu.innerHTML=`<nav aria-label="Мобильная навигация">${desktopNav.innerHTML}</nav><div class="mobile-menu__actions"><button type="button" class="ig-button mobile-menu__action" data-mobile-theme>${themeLabel}</button></div>`;
       if(account){
         const clone=account.cloneNode(true);
         clone.classList.add('mobile-menu__action','mobile-menu__account');
