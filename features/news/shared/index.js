@@ -89,6 +89,19 @@
     return contentApi.sourceName(item);
   }
 
+  function sourceUrl(item) {
+    const value = String(item?.primaryUrl || item?.url || '').trim();
+    return /^https?:\/\//i.test(value) ? value : '';
+  }
+
+  function sourceLink(item, { lang = language(), story = false } = {}) {
+    const name = escapeHtml(sourceName(item));
+    const url = sourceUrl(item);
+    const label = story ? `${escapeHtml(labels(lang).source)}: ` : '';
+    if (!url) return `${label}<span>${name}</span>`;
+    return `${label}<a class="ig-link ig-news-source-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${name}</a>`;
+  }
+
   function resolvedGames(item) {
     const source = Array.isArray(item?.games) ? item.games : [];
     const seen = new Set();
@@ -192,8 +205,9 @@
     const summary = escapeHtml(text(item, 'summary', lang));
     const tags = deriveTypeTags(item, lang);
     const story = escapeHtml(storyUrl(item));
+    const source = escapeHtml(sourceUrl(item));
     const games = renderGameTags(item, { lang });
-    return `<article class="ig-card ig-news-card${compact ? ' ig-news-card--compact' : ''}">
+    return `<article class="ig-card ig-news-card${compact ? ' ig-news-card--compact' : ''}"${source ? ` data-news-source-url="${source}"` : ''}>
       <a class="ig-card__media ig-news-card__story-media" href="${story}" data-news-story-link>
         <img class="ig-card__media ig-card__media--landscape" src="${escapeHtml(absoluteAsset(item.image))}" alt="${title}" loading="lazy">
       </a>
@@ -201,8 +215,8 @@
         ${tags.length ? `<div class="ig-chip-list">${tags.map(tag => `<span class="ig-chip">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
         <h3 class="ig-card__title"><a href="${story}" data-news-story-link>${title}</a></h3>
         ${summary ? `<p class="ig-card__summary">${summary}</p>` : ''}
-        <div class="ig-card__meta">${escapeHtml(sourceName(item))} · ${escapeHtml(formatters[lang].format(new Date(item.publishedAt)))}</div>
         ${games ? `<div class="ig-chip-list ig-news-card__actions">${games}</div>` : ''}
+        <div class="ig-card__meta">${sourceLink(item, { lang })} · ${escapeHtml(formatters[lang].format(new Date(item.publishedAt)))}</div>
       </div>
     </article>`;
   }
@@ -236,15 +250,16 @@
     const summary = escapeHtml(text(item, 'summary', lang));
     const games = renderGameTags(item, { lang });
     const types = deriveTypeTags(item, lang);
+    const source = escapeHtml(sourceUrl(item));
     const image = item.image ? `<a class="ig-card__media ig-news-entry__media-link" href="${escapeHtml(storyUrl(item))}" data-news-story-link><img class="ig-card__media ig-card__media--landscape ig-news-entry__image" src="${escapeHtml(absoluteAsset(item.image))}" alt="" loading="lazy"></a>` : '';
-    return `<article class="ig-card ig-news-entry ig-news-card" data-news-id="${escapeHtml(item.id || '')}">
+    return `<article class="ig-card ig-news-entry ig-news-card" data-news-id="${escapeHtml(item.id || '')}"${source ? ` data-news-source-url="${source}"` : ''}>
       ${image}
       <div class="ig-card__body ig-news-entry__body">
         ${types.length ? `<div class="ig-chip-list ig-news-entry__types">${types.map(tag => `<span class="ig-chip">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
         <h3 class="ig-card__title ig-news-entry__title"><a href="${escapeHtml(storyUrl(item))}" data-news-story-link>${title}</a></h3>
         ${summary ? `<p class="ig-card__summary ig-news-entry__summary">${summary}</p>` : ''}
-        <div class="ig-card__meta"><span>${escapeHtml(sourceName(item))}</span> · <time datetime="${escapeHtml(item.publishedAt)}">${escapeHtml(publicationTime(item, lang))}</time></div>
         ${games ? `<div class="ig-chip-list ig-news-entry__actions">${games}</div>` : ''}
+        <div class="ig-card__meta">${sourceLink(item, { lang })} · <time datetime="${escapeHtml(item.publishedAt)}">${escapeHtml(publicationTime(item, lang))}</time></div>
       </div>
     </article>`;
   }
@@ -255,24 +270,36 @@
     const summary = escapeHtml(text(item, 'summary', lang));
     const types = deriveTypeTags(item, lang);
     const games = renderGameTags(item, { lang });
-    const source = escapeHtml(sourceName(item));
     const date = escapeHtml(formatters[lang].format(new Date(item.publishedAt)));
     const image = item.image ? `<img class="ig-card__media ig-card__media--landscape ig-news-story__image" src="${escapeHtml(absoluteAsset(item.image))}" alt="${title}" loading="lazy">` : '';
     return `<article class="ig-panel ig-news-story" data-news-story="${escapeHtml(item.id || '')}">
       <a class="ig-button ig-news-story__back" href="${escapeHtml(new URL('?page=news', siteBase).href)}">${escapeHtml(copy.backToNews)}</a>
       <h1 class="ig-page-title ig-news-story__title">${title}</h1>
       ${summary ? `<p class="article-lead ig-news-story__lead">${summary}</p>` : ''}
-      <div class="ig-news-story__meta"><span>${escapeHtml(copy.source)}: ${source}</span><span>·</span><span>${date}</span></div>
       ${types.length ? `<div class="ig-chip-list ig-news-story__types">${types.map(tag => `<span class="ig-chip">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
       ${games ? `<div class="ig-chip-list ig-news-story__games">${games}</div>` : ''}
+      <div class="ig-news-story__meta"><span>${sourceLink(item, { lang, story: true })}</span><span>·</span><span>${date}</span></div>
       ${image}
     </article>`;
+  }
+
+  function bindDesktopSourceNavigation() {
+    document.addEventListener('click', event => {
+      const card = event.target.closest?.('[data-news-source-url]');
+      if (!card || !window.matchMedia('(min-width: 761px) and (hover: hover) and (pointer: fine)').matches) return;
+      if (event.target.closest('a,button,input,select,textarea,label,[role="button"]')) return;
+      const url = String(card.dataset.newsSourceUrl || '');
+      if (!/^https?:\/\//i.test(url)) return;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    });
   }
 
   function setState(target, message, kind = '') {
     if (!target) return;
     target.innerHTML = `<div class="ig-empty-state${kind ? ` ig-empty-state--${escapeHtml(kind)}` : ''}">${escapeHtml(message)}</div>`;
   }
+
+  bindDesktopSourceNavigation();
 
   window.IgropoiskNews = Object.freeze({
     absoluteAsset,
@@ -295,6 +322,7 @@
     score,
     setState,
     sourceName,
+    sourceUrl,
     storyUrl,
     text,
     userRegion
