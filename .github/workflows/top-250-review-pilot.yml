@@ -68,7 +68,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/top-250 data/pilot-reviews data/popular data/catalog-visible.json data/drafts data/reviews data/research data/ratings data/article-media data/articles data/game-content data/parser-output data/parser-runs game article || true
+          git add -A -- data/top-250 article
+          if [ -d data/pilot-reviews ]; then git add -A -- data/pilot-reviews; fi
+          if [ -d data/popular ]; then git add -A -- data/popular; fi
+          for dir in data/drafts data/reviews data/research data/ratings data/article-media data/articles data/game-content data/parser-output data/parser-runs game; do
+            if [ -e "$dir" ]; then git add -A -- "$dir"; fi
+          done
+          if [ -f data/catalog-visible.json ]; then git add -- data/catalog-visible.json; fi
           if git diff --cached --quiet; then
             echo "No generated changes"
             exit 0
