@@ -130,7 +130,7 @@ function exactCaseTitleContains(title, source) {
   if (!normalized || normalized.includes(' ') || GENERIC_SINGLE_WORD_GAME_TITLES.has(normalized)) return false;
   const candidate = String(source || '').trim();
   if (!candidate || candidate.length < 4) return false;
-  return new RegExp(`(^|[^\\p{L}\\p{N}])${escapeRegExp(candidate)}(?=$|[^\\p{L}\\p{N}])`, 'u').test(String(title || ''));
+  return new RegExp(`(^|[^\\p{L}\\p{N}])${escapeRegExp(candidate)}(?=$|[^\\p{L}\\p{N}])`, 'iu').test(String(title || ''));
 }
 
 function explicitNames(item) {
