@@ -25,12 +25,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Build Bloodborne with expanded source corpus
+      - name: Build Bloodborne after sitemap discovery patch
         run: |
           mkdir -p data/parser-runs
           set +e
           node --check scripts/build-complete-review-github-models-v2.mjs > data/parser-runs/complete-review-debug.txt 2>&1
-          echo '=== EXPANDED CORPUS V2 BUILD ===' >> data/parser-runs/complete-review-debug.txt
+          echo '=== SITEMAP V2 BUILD ===' >> data/parser-runs/complete-review-debug.txt
           node scripts/build-complete-review-github-models-v2.mjs bloodborne >> data/parser-runs/complete-review-debug.txt 2>&1
           BUILD=$?
           echo "build_exit=$BUILD" >> data/parser-runs/complete-review-debug.txt
@@ -44,7 +44,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add -f data/parser-runs/complete-review-debug.txt
           for f in data/parser-runs/review-source-discovery-bloodborne.json data/parser-runs/review-media-discovery-bloodborne.json data/parser-runs/review-research-bloodborne.json data/articles/bloodborne.json data/article-media/bloodborne.json data/reviews/bloodborne.json; do [ -f "$f" ] && git add "$f"; done
-          git commit -m "Record expanded-corpus Bloodborne diagnostic" || true
+          git commit -m "Record sitemap Bloodborne diagnostic" || true
           git pull --rebase origin staging || true
           git push origin HEAD:staging || true
           exit 0
