@@ -41,6 +41,7 @@ on:
       - 'scripts/lib/release-calendar-policy.mjs'
       - 'scripts/lib/release-game-registry-adapter.mjs'
       - 'scripts/lib/release-audience-relevance.mjs'
+      - 'scripts/lib/release-cover-resolver.mjs'
       - 'scripts/lib/release-steam-editorial-discovery.mjs'
       - 'scripts/lib/system-game-registry-adapter.mjs'
       - 'scripts/lib/game-registry.mjs'
@@ -88,6 +89,7 @@ jobs:
           node --check scripts/materialize-release-calendar.mjs
           node --check scripts/validate-release-calendar.mjs
           node --check scripts/lib/release-audience-relevance.mjs
+          node --check scripts/lib/release-cover-resolver.mjs
           node --check scripts/lib/release-steam-editorial-discovery.mjs
           node --check scripts/lib/system-game-registry-adapter.mjs
           node --check assets/popular-home.js
@@ -142,15 +144,15 @@ jobs:
             exit 0
           fi
 
-          git add -- data/releases/public.json data/releases/materialization-report.json data/release-candidates/current.json
+          git add -A -- data/releases/public.json data/releases/materialization-report.json data/release-candidates/current.json assets/covers/releases
           if git diff --cached --quiet; then
             echo "published=false" >> "$GITHUB_OUTPUT"
             echo "superseded=false" >> "$GITHUB_OUTPUT"
-            echo "Editorial release calendar is already current."
+            echo "Editorial release calendar and covers are already current."
             exit 0
           fi
 
-          git commit -m "Update editorial release calendar on staging"
+          git commit -m "Update editorial release calendar and covers on staging"
           git push origin HEAD:staging
           echo "published=true" >> "$GITHUB_OUTPUT"
           echo "superseded=false" >> "$GITHUB_OUTPUT"

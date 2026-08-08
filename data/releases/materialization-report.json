@@ -1,6 +1,6 @@
 {
-  "schema_version": 2,
-  "generated_at": "2026-08-08T00:53:48.587Z",
+  "schema_version": 3,
+  "generated_at": "2026-08-08T21:35:52.201Z",
   "sources": {
     "active_discovery": [
       "Steam coming-soon/appdetails (PC only)",
@@ -8,7 +8,7 @@
       "Steam Popular New Releases editorial discovery"
     ],
     "steam_editorial_discovery": {
-      "discovered_candidates": 81,
+      "discovered_candidates": 86,
       "sources": [
         {
           "signal": "steam_popular_upcoming",
@@ -16,7 +16,7 @@
           "items": 80,
           "strong_rank": 20,
           "url": "https://store.steampowered.com/search/results/?query&start=0&count=80&dynamic_data=&sort_by=Released_ASC&filter=popularcomingsoon&ignore_preferences=1&os=win&infinite=1&cc=us&l=english&json=1",
-          "duration_ms": 376
+          "duration_ms": 224
         },
         {
           "signal": "steam_popular_new",
@@ -24,9 +24,24 @@
           "items": 80,
           "strong_rank": 20,
           "url": "https://store.steampowered.com/search/results/?query&start=0&count=80&dynamic_data=&sort_by=Released_DESC&filter=popularnew&ignore_preferences=1&os=win&infinite=1&cc=us&l=english&json=1",
-          "duration_ms": 272
+          "duration_ms": 173
         }
       ]
+    },
+    "release_cover_resolution": {
+      "strategy": "verified local asset required for every globally or personally visible release",
+      "preferred": "Steam library 600x900 cover",
+      "fallbacks": [
+        "existing official image",
+        "Steam capsule",
+        "Steam header",
+        "Steam background",
+        "Steam screenshot"
+      ],
+      "requested": 40,
+      "resolved": 40,
+      "unresolved": [],
+      "coverage_percent": 100
     },
     "audience_relevance": [
       "News event and ranked-news regional scores linked by canonical game slug or title evidence"
@@ -44,26 +59,26 @@
     ]
   },
   "statistics": {
-    "raw_candidates": 332,
+    "raw_candidates": 339,
     "published": 40,
-    "review": 288,
+    "review": 295,
     "rejected": 4,
-    "max_exact_releases_in_one_day": 7,
+    "max_exact_releases_in_one_day": 6,
     "dense_days": [
       {
         "date": "2026-08-06",
-        "count": 7
+        "count": 6
       },
       {
         "date": "2026-08-11",
-        "count": 5
+        "count": 6
       },
       {
         "date": "2026-07-31",
         "count": 4
       },
       {
-        "date": "2026-08-07",
+        "date": "2026-08-13",
         "count": 4
       },
       {
@@ -71,7 +86,7 @@
         "count": 3
       },
       {
-        "date": "2026-08-13",
+        "date": "2026-08-07",
         "count": 3
       },
       {
@@ -87,17 +102,18 @@
         "count": 2
       },
       {
-        "date": "2026-08-01",
+        "date": "2026-07-30",
         "count": 1
       }
     ],
-    "personalized": 0
+    "personalized": 0,
+    "coverage_percent": 100
   },
   "game_registry_linkage": {
-    "canonical_games_considered": 322,
-    "matched": 250,
+    "canonical_games_considered": 367,
+    "matched": 283,
     "needs_review": 0,
-    "unresolved": 82
+    "unresolved": 56
   },
   "validation_errors": []
 }
