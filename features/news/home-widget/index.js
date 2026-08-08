@@ -14,6 +14,17 @@
   let startX = 0;
   let startScroll = 0;
 
+  function anchorControlsToHeading() {
+    const head = root.querySelector('.section-head');
+    const title = head?.querySelector('h2');
+    if (!head || !title || !controls || head.querySelector('[data-news-heading-group]')) return;
+    const group = document.createElement('div');
+    group.className = 'ig-news__heading-group';
+    group.dataset.newsHeadingGroup = 'true';
+    head.insertBefore(group, title);
+    group.append(title, controls);
+  }
+
   function ensureArchiveLink() {
     const head = root.querySelector('.section-head');
     if (!head || head.querySelector('[data-news-all-link]')) return;
@@ -91,6 +102,7 @@
     }
   }
 
+  anchorControlsToHeading();
   ensureArchiveLink();
   bindControls();
   bindMouseDrag();
