@@ -12,6 +12,7 @@
         <button data-page="home">Главное</button>
         <button data-page="what-to-play">Во что поиграть?</button>
         <button data-page="search">Поиск игр</button>
+        <a href="${ROOT}top-250/" data-top250-nav>Топ-250</a>
         <a class="release-nav-link" href="${ROOT}calendar/" data-ig-release-nav>Календарь релизов</a>
         <button data-page="news">Новости</button>
       </nav>
@@ -30,10 +31,22 @@
       && header.querySelector('.site-actions');
   }
 
+  function ensureTop250Link(header){
+    const nav=header.querySelector('.site-nav');
+    if(!nav||nav.querySelector('[data-top250-nav]'))return;
+    const link=document.createElement('a');
+    link.href=`${ROOT}top-250/`;
+    link.dataset.top250Nav='';
+    link.textContent='Топ-250';
+    const release=nav.querySelector('[data-ig-release-nav]');
+    nav.insertBefore(link,release||nav.querySelector('[data-page="news"]')||null);
+  }
+
   function currentSection(){
     const hash=decodeURIComponent(location.hash.slice(1));
     if(pages.includes(hash))return hash;
     const path=location.pathname.toLowerCase();
+    if(path.includes('/top-250/'))return 'top-250';
     if(path.includes('/calendar/'))return 'calendar';
     if(path.includes('/news/'))return 'news';
     if(path.includes('/game/')||path.includes('/article/'))return 'search';
@@ -70,12 +83,18 @@
       link.classList.toggle('active',selected);
       if(selected)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
     });
+    document.querySelectorAll('.site-header[data-ig-shared-header="generated"] [data-top250-nav]').forEach(link=>{
+      const selected=active==='top-250';
+      link.classList.toggle('active',selected);
+      if(selected)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+    });
   }
 
   function normalize(header){
     if(!(header instanceof HTMLElement)||header.dataset.igSharedHeader)return;
 
     if(isNativeMainHeader(header)){
+      ensureTop250Link(header);
       header.dataset.igSharedHeader='native';
       return;
     }
@@ -118,6 +137,14 @@
     document.head.appendChild(script);
   }
 
+  function ensureHomeTop250Module(){
+    if(!document.querySelector('#home .hero')||document.querySelector('script[data-top250-home-module]'))return;
+    const script=document.createElement('script');
+    script.src=`${ROOT}assets/top250-home.js?v=20260808-1`;
+    script.dataset.top250HomeModule='';
+    document.body.appendChild(script);
+  }
+
   document.addEventListener('click',event=>{
     const header=event.target.closest('.site-header[data-ig-shared-header="generated"]');
     if(!header)return;
@@ -149,6 +176,7 @@
       queued=false;
       scan();
       ensureHeader();
+      ensureHomeTop250Module();
       updateGeneratedActive();
     });
   }
@@ -157,6 +185,7 @@
   scan();
   ensureHeader();
   ensureAuthScript();
+  ensureHomeTop250Module();
   document.documentElement.dataset.theme=storedTheme();
   paintGeneratedTheme();
   updateGeneratedActive();
