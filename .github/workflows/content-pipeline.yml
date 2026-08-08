@@ -13,6 +13,10 @@ on:
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/build-game-page.mjs'
       - 'scripts/build-game-page-from-registry.mjs'
+      - 'scripts/build-top-250.mjs'
+      - 'scripts/materialize-top-250-game-pages.mjs'
+      - 'scripts/validate-top-250.mjs'
+      - 'scripts/render-review-pages.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/validate-automation-publish-diff.mjs'
       - 'scripts/lib/game-registry*.mjs'
@@ -20,6 +24,7 @@ on:
       - 'data/catalog-visible.json'
       - 'data/game-series.json'
       - 'data/popular/**'
+      - 'data/top-250/**'
       - 'data/releases/current.json'
       - 'data/reviews/**'
       - 'data/articles/**'
@@ -49,6 +54,10 @@ jobs:
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/build-game-page.mjs
           node --check scripts/build-game-page-from-registry.mjs
+          node --check scripts/build-top-250.mjs
+          node --check scripts/materialize-top-250-game-pages.mjs
+          node --check scripts/validate-top-250.mjs
+          node --check scripts/render-review-pages.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/validate-automation-publish-diff.mjs
           node --check scripts/lib/game-registry.mjs
@@ -57,6 +66,15 @@ jobs:
           node --check scripts/lib/system-game-registry-adapter.mjs
       - name: Build registry and execution plan
         run: node scripts/orchestrate-content.mjs --finalize
+      - name: Materialize canonical Top-250 game pages
+        run: |
+          node scripts/build-top-250.mjs
+          node scripts/materialize-top-250-game-pages.mjs
+          node scripts/build-top-250.mjs
+          node scripts/materialize-top-250-game-pages.mjs
+          node scripts/build-top-250.mjs
+          node scripts/validate-top-250.mjs
+          node scripts/orchestrate-content.mjs --finalize
       - name: Build selected pages and reviews
         run: node scripts/run-content-pipeline.mjs
         env:
@@ -82,6 +100,7 @@ jobs:
             data/drafts
             data/game-content
             data/catalog-visible.json
+            data/top-250
             data/research
             data/reviews
             data/ratings
