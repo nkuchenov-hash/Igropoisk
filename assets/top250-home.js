@@ -67,11 +67,13 @@
     return `${ROOT}${image.replace(/^\.\//, '')}`;
   };
 
+  const gameUrl = item => item.game_url || (item.slug ? `${ROOT}game/${encodeURIComponent(item.slug)}/` : `${ROOT}top-250/`);
+
   const createItem = item => {
     const row = document.createElement('a');
     row.className = 'ig-card ig-card--interactive top250-home-row';
-    row.href = `${ROOT}top-250/`;
-    row.setAttribute('aria-label', `${item.rank}. ${item.title} — открыть Топ-250`);
+    row.href = gameUrl(item);
+    row.setAttribute('aria-label', `${item.rank}. ${item.title} — открыть страницу игры`);
 
     const rank = document.createElement('span');
     rank.className = 'ig-muted top250-home-rank';
