@@ -14,7 +14,7 @@ import {
 
 const root = await fs.mkdtemp(path.join(os.tmpdir(), 'ig-news-games-'));
 await fs.mkdir(path.join(root, 'data'), { recursive: true });
-for (const slug of ['alpha-game', 'beta-game', 'control', 'marathon']) {
+for (const slug of ['alpha-game', 'beta-game', 'control', 'marathon', 'doom']) {
   await fs.mkdir(path.join(root, 'game', slug), { recursive: true });
   await fs.writeFile(path.join(root, 'game', slug, 'index.html'), '<!doctype html>');
 }
@@ -23,6 +23,7 @@ await fs.writeFile(path.join(root, 'data/catalog-visible.json'), JSON.stringify(
   { slug: 'beta-game', title: 'Beta Game', steam_appid: 202 },
   { slug: 'control', title: 'Control' },
   { slug: 'marathon', title: 'Marathon' },
+  { slug: 'doom', title: 'DOOM' },
   { slug: 'future-game', title: 'Future Game' }
 ]));
 await fs.writeFile(path.join(root, 'data/news-game-aliases.json'), JSON.stringify({
@@ -41,8 +42,8 @@ await fs.writeFile(path.join(root, 'data/news-game-overrides.json'), JSON.string
 
 const catalog = await loadGameCatalog({ root });
 assert.equal(catalog.canonicalRegistry, true, 'News catalog must come from the canonical Game Registry.');
-assert.equal(catalog.games.length, 5);
-assert.equal(new Set(catalog.games.map(game => game.gameId)).size, 5, 'Every news target must have one canonical game ID.');
+assert.equal(catalog.games.length, 6);
+assert.equal(new Set(catalog.games.map(game => game.gameId)).size, 6, 'Every news target must have one canonical game ID.');
 
 const one = resolveNewsGames({ id: 'one', title: 'Alpha Game получила обновление' }, catalog);
 assert.deepEqual(one.games.map(game => game.slug), ['alpha-game']);
@@ -69,6 +70,13 @@ assert.equal(ambiguous.gameCandidates.some(candidate => candidate.possibleGameId
 const singleWordHeadline = resolveNewsGames({ id: 'headline-word', title: 'Marathon получила новый трейлер' }, catalog);
 assert.deepEqual(singleWordHeadline.games.map(game => game.slug), ['marathon'], 'A distinctive canonical one-word game title in the headline should link automatically.');
 assert.equal(singleWordHeadline.games[0].matchedBy, 'headline-single-word');
+
+const doomHeadline = resolveNewsGames({
+  id: 'doom-headline',
+  title: '«Они принципиально не понимают искусство» — разработчики Doom раскритиковали Xbox после увольнений'
+}, catalog);
+assert.deepEqual(doomHeadline.games.map(game => game.slug), ['doom'], 'The Doom article must resolve to the canonical DOOM game, not to a quoted prose fragment.');
+assert.equal(doomHeadline.games[0].matchedBy, 'headline-single-word');
 
 const singleWordSummary = resolveNewsGames({ id: 'summary-word', title: 'Разработчики рассказали о тренировках', summary: 'В интервью упомянули Marathon.' }, catalog);
 assert.equal(singleWordSummary.games.length, 0, 'A one-word title mentioned only in summary text must stay conservative.');
