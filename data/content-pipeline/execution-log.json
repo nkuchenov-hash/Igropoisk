@@ -1,55 +1,46 @@
 {
   "schema_version": 2,
-  "started_at": "2026-08-07T18:03:27.957Z",
-  "finished_at": "2026-08-07T18:03:28.656Z",
+  "started_at": "2026-08-08T08:00:06.056Z",
+  "finished_at": "2026-08-08T08:00:06.709Z",
   "summary": {
-    "success": 2,
+    "success": 1,
     "blocked": 3,
-    "total": 5
+    "total": 4
   },
   "results": [
     {
-      "label": "parse:baldurs-gate-3",
-      "command": "node scripts/parse-game-data.mjs baldurs-gate-3 1086940 Baldur’s Gate 3",
+      "label": "parse:big-walk",
+      "command": "node scripts/parse-game-data.mjs big-walk 1478500 Big Walk",
       "status": "success",
       "exit_code": 0,
-      "duration_ms": 292,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"baldurs-gate-3\",\n  \"checked_at\": \"2026-08-07T18:03:27.985Z\",\n  \"duration_ms\": 258,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1086940&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Baldur's Gate 3\",\n    \"developers\": [\n      \"Larian Studios\"\n    ],\n    \"genres\": [\n      \"Adventure\",\n      \"RPG\",\n      \"Strategy\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\"\n    ],\n    \"screenshots\": 19,\n    \"videos\": 6\n  },\n  \"output\": \"data/parser-output/baldurs-gate-3.json\"\n}\n",
+      "duration_ms": 387,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"big-walk\",\n  \"checked_at\": \"2026-08-08T08:00:06.082Z\",\n  \"duration_ms\": 353,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1478500&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Big Walk\",\n    \"developers\": [\n      \"House House\"\n    ],\n    \"genres\": [\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\"\n    ],\n    \"screenshots\": 8,\n    \"videos\": 3\n  },\n  \"output\": \"data/parser-output/big-walk.json\"\n}\n",
       "stderr": ""
     },
     {
-      "label": "page:baldurs-gate-3",
-      "command": "node scripts/build-game-page-from-registry.mjs game_c49611ca32c18a2bf5df_15e4",
+      "label": "page:big-walk",
+      "command": "node scripts/build-game-page-from-registry.mjs game_278b396092bcf615e14a",
       "status": "blocked",
-      "exit_code": 1,
-      "duration_ms": 45,
+      "exit_code": 2,
+      "duration_ms": 124,
       "stdout": "",
-      "stderr": "node:fs:440\n    return binding.readFileUtf8(path, stringToFlags(options.flag));\n                   ^\n\nError: ENOENT: no such file or directory, open '/home/runner/work/Igropoisk/Igropoisk/data/game-registry/registry.transition.json'\n    at Object.readFileSync (node:fs:440:20)\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page-from-registry.mjs:30:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {\n  errno: -2,\n  code: 'ENOENT',\n  syscall: 'open',\n  path: '/home/runner/work/Igropoisk/Igropoisk/data/game-registry/registry.transition.json'\n}\n\nNode.js v22.23.1\n"
+      "stderr": "OPENAI_API_KEY is required\n"
     },
     {
-      "label": "parse:god-of-war-ragnarok",
-      "command": "node scripts/parse-game-data.mjs god-of-war-ragnarok 2322010 God of War Ragnarök",
-      "status": "success",
-      "exit_code": 0,
-      "duration_ms": 288,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"god-of-war-ragnarok\",\n  \"checked_at\": \"2026-08-07T18:03:28.325Z\",\n  \"duration_ms\": 255,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2322010&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"God of War Ragnarök\",\n    \"developers\": [\n      \"Santa Monica Studio\",\n      \"Jetpack Interactive\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 15,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/god-of-war-ragnarok.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "page:god-of-war-ragnarok",
-      "command": "node scripts/build-game-page-from-registry.mjs game_c49611ca32c18a2bf5df_c80a",
+      "label": "page:grand-theft-auto-vi",
+      "command": "node scripts/build-game-page-from-registry.mjs game_2e7c3083287367c08378",
       "status": "blocked",
-      "exit_code": 1,
-      "duration_ms": 36,
+      "exit_code": 2,
+      "duration_ms": 108,
       "stdout": "",
-      "stderr": "node:fs:440\n    return binding.readFileUtf8(path, stringToFlags(options.flag));\n                   ^\n\nError: ENOENT: no such file or directory, open '/home/runner/work/Igropoisk/Igropoisk/data/game-registry/registry.transition.json'\n    at Object.readFileSync (node:fs:440:20)\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page-from-registry.mjs:30:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {\n  errno: -2,\n  code: 'ENOENT',\n  syscall: 'open',\n  path: '/home/runner/work/Igropoisk/Igropoisk/data/game-registry/registry.transition.json'\n}\n\nNode.js v22.23.1\n"
+      "stderr": "OPENAI_API_KEY is required\n"
     },
     {
-      "label": "research:elden-ring",
-      "command": "node scripts/prepare-review-research.mjs elden-ring",
+      "label": "research:overwatch",
+      "command": "node scripts/prepare-review-research.mjs overwatch",
       "status": "blocked",
       "exit_code": 1,
-      "duration_ms": 33,
+      "duration_ms": 31,
       "stdout": "",
       "stderr": "OPENAI_API_KEY is required\n"
     }
