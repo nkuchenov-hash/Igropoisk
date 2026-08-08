@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: write
-  models: read
 
 jobs:
   debug:
@@ -22,30 +21,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Inspect OpenCritic frontend bundles
+      - name: Probe OpenCritic public game search endpoint
         run: |
           mkdir -p data/parser-runs
           node - <<'NODE' > data/parser-runs/complete-review-debug.txt 2>&1
-          const base='https://opencritic.com';
-          const r=await fetch(base+'/search?q=Bloodborne',{headers:{'user-agent':'Mozilla/5.0'}});
-          const html=await r.text();
-          console.log('search',r.status,html.length);
-          const scripts=[...html.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)].map(m=>new URL(m[1],base).toString());
-          console.log('scripts',scripts.length);
-          for(const url of scripts){
-            try{
-              const sr=await fetch(url,{headers:{'user-agent':'Mozilla/5.0'}}); const text=await sr.text();
-              const needles=['api/game/search','game/search','search?criteria','api/game','api/review','opencritic.com/api'];
-              const hits=[];
-              for(const n of needles){let i=0;while((i=text.indexOf(n,i))>=0&&hits.length<30){hits.push(text.slice(Math.max(0,i-240),Math.min(text.length,i+420)));i+=n.length}}
-              if(hits.length){console.log('\nBUNDLE',url,'LEN',text.length);for(const h of hits)console.log('\nHIT',h.replace(/\s+/g,' '));}
-            }catch(e){console.log('ERR',url,e.message)}
-          }
+          const url='https://opencritic.com/api/game/search?criteria='+encodeURIComponent('Bloodborne');
+          const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0','accept':'application/json'}});
+          const text=await r.text();
+          console.log('STATUS',r.status,'TYPE',r.headers.get('content-type'),'LEN',text.length);
+          console.log(text.slice(0,8000));
           NODE
           cat data/parser-runs/complete-review-debug.txt
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
           git add -f data/parser-runs/complete-review-debug.txt
-          git commit -m "Record OpenCritic frontend endpoint inspection" || true
+          git commit -m "Record OpenCritic public search probe" || true
           git pull --rebase origin staging || true
           git push origin HEAD:staging || true
