@@ -1,18 +1,21 @@
 {
-  "schema_version": 2,
-  "requested_at": "2026-08-04T00:18:00Z",
+  "schema_version": 3,
+  "requested_at": "2026-08-08T21:09:57Z",
   "scope": "all_visible_catalog_games",
   "catalog_source": "data/catalog-visible.json",
   "include_popular_first": true,
   "rebuild_existing": true,
   "require_live_status_marker": true,
   "requirements": {
+    "full_game_page": true,
+    "full_review_article": true,
     "design_system_only": true,
-    "hero_art_only": true,
     "minimum_unique_screenshots_per_section": 3,
     "no_repeated_urls": true,
     "no_repeated_files": true,
     "no_repeated_scenes": true,
-    "independent_media_search": true
+    "independent_media_search": true,
+    "video_categories": ["trailer", "gameplay", "review", "interview", "other"],
+    "review_voice": "analytical_with_light_irony"
   }
 }
