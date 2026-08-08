@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { GameRegistryApi, isEmbeddedGameKind } from './lib/game-registry.mjs';
 import { migrateRepository } from './lib/game-registry-migration.mjs';
 import { bindPopularSnapshot, registerPopularCandidates } from './lib/system-game-registry-adapter.mjs';
 
@@ -24,14 +25,21 @@ const discovery = registerPopularCandidates(migration.registry, [popular]);
 const bound = bindPopularSnapshot(popular, discovery.registry);
 const blocking = [...(discovery.issues || []), ...(bound.issues || [])]
   .filter(issue => !recoverableStaleId(issue) && (issue.status === 'unresolved' || issue.status === 'mismatch'));
+const api = new GameRegistryApi(discovery.registry);
 
-if (blocking.length) {
-  console.error(JSON.stringify({ blocking }, null, 2));
-  process.exit(2);
-}
+const candidates = (bound.snapshot.ranking || []).filter(item => {
+  const entity = (item.game_id ? api.findById(String(item.game_id)) : null) || api.findBySlug(String(item.canonical_slug || item.slug || ''));
+  if (!entity) return false;
+  const kind = entity.identity?.kind?.value || 'unknown';
+  if (isEmbeddedGameKind(kind) || entity.presentation?.standalonePage === false) return false;
+  if (entity.workflow?.status === 'needs_review' || (entity.conflicts || []).length) return false;
+  return true;
+});
 
-const ranking = (bound.snapshot.ranking || []).slice(0, limit).map((item, index) => {
-  const slug = item.canonical_slug || item.slug;
+const ranking = candidates.slice(0, limit).map((item, index) => {
+  const entity = (item.game_id ? api.findById(String(item.game_id)) : null) || api.findBySlug(String(item.canonical_slug || item.slug || ''));
+  const slug = entity?.identity?.slug?.value || item.canonical_slug || item.slug;
+  const gameId = entity?.id || item.game_id;
   const articleJson = `data/articles/${slug}.json`;
   const articlePage = `article/${slug}/index.html`;
   const gamePage = `game/${slug}/index.html`;
@@ -40,9 +48,9 @@ const ranking = (bound.snapshot.ranking || []).slice(0, limit).map((item, index)
   const reviewPublished = gamePublished && strictReviewData && exists(articlePage);
   return {
     rank: index + 1,
-    game_id: item.game_id,
+    game_id: gameId,
     slug,
-    title: item.title,
+    title: entity?.identity?.canonicalTitle?.value || item.title,
     year: item.year ?? null,
     image: item.image || '',
     score: item.score ?? null,
@@ -65,6 +73,8 @@ const output = {
   source_generated_at: popular.generated_at || null,
   capacity: 250,
   count: ranking.length,
+  excluded_identity: (bound.snapshot.ranking || []).length - candidates.length,
+  registry_issues: blocking.length,
   ranking
 };
 
@@ -72,6 +82,8 @@ fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, `${JSON.stringify(output, null, 2)}\n`);
 console.log(JSON.stringify({
   count: ranking.length,
+  excluded_identity: output.excluded_identity,
+  registry_issues: blocking.length,
   game_pages: ranking.filter(item => item.game_url).length,
   published_reviews: ranking.filter(item => item.review.status === 'published').length
 }, null, 2));
