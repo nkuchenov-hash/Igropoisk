@@ -12,22 +12,21 @@ permissions:
 jobs:
   debug:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
           ref: staging
           fetch-depth: 0
-      - name: Export catalog title list
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Resolve OpenCritic IDs for catalog
         run: |
-          mkdir -p data/parser-runs
-          node - <<'NODE' > data/parser-runs/complete-review-debug.txt
-          const fs=require('fs');
-          const c=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
-          for(const g of c) console.log(`${g.slug}\t${g.title}\t${g.year||''}`);
-          NODE
+          node scripts/build-opencritic-id-map.mjs | tee data/parser-runs/complete-review-debug.txt
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
-          git add -f data/parser-runs/complete-review-debug.txt
-          git commit -m "Record catalog title list for review discovery" || true
+          git add data/opencritic-game-ids.json data/parser-runs/complete-review-debug.txt
+          git commit -m "Resolve catalog OpenCritic IDs from Wikidata" || true
           git pull --rebase origin staging || true
           git push origin HEAD:staging || true
