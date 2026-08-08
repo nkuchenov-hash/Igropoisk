@@ -18,7 +18,7 @@
     const head = root.querySelector('.section-head');
     if (!head || head.querySelector('[data-news-all-link]')) return;
     const link = document.createElement('a');
-    link.className = 'ig-text-link ig-news__all-link';
+    link.className = 'ig-button ig-text-link ig-news__all-link';
     link.dataset.newsAllLink = 'true';
     link.href = api.storyUrl({ id: '' }).replace(/([?&])story=(?:&|$)/, '$1').replace(/[?&]$/, '');
     link.textContent = copy.allNews;
