@@ -41,7 +41,16 @@ async function openCriticCandidates(){
   if(!paths.length){for(const m of search.text.matchAll(/href=["'](\/game\/\d+\/[^"'#?]+)["']/gi))paths.push(m[1])}
   let gamePath=[...new Set(paths)][0];
   if(!gamePath){
-    for(const q of [`site:opencritic.com/game \"${title}\" OpenCritic`,`site:opencritic.com/game/${year||''} \"${title}\"`]){
+    const sitemap=await fetchText('https://opencritic.com/sitemap.xml',25000);
+    if(sitemap){
+      const words=normalized.split(' ').filter(w=>w.length>3);
+      const gameUrls=[...sitemap.text.matchAll(/<loc>(https?:\/\/opencritic\.com\/game\/\d+\/[^<]+)<\/loc>/gi)].map(m=>decode(m[1]));
+      const ranked=gameUrls.map(u=>{const low=u.toLowerCase().replace(/[-_]+/g,' ');return{u,score:words.reduce((n,w)=>n+(low.includes(w)?1:0),0)}}).filter(x=>x.score>0).sort((a,b)=>b.score-a.score);
+      if(ranked[0]&&ranked[0].score>=Math.min(2,Math.max(1,words.length)))try{gamePath=new URL(ranked[0].u).pathname}catch{}
+    }
+  }
+  if(!gamePath){
+    for(const q of [`site:opencritic.com/game \"${title}\" OpenCritic`,`site:opencritic.com/game \"${title}\" reviews`]){
       const rows=await bing(q);
       const hit=rows.find(x=>{try{return new URL(x.url).hostname.endsWith('opencritic.com')&&/\/game\/\d+\//.test(new URL(x.url).pathname)}catch{return false}});
       if(hit){try{gamePath=new URL(hit.url).pathname.replace(/\/reviews\/?$/,'');break}catch{}}
