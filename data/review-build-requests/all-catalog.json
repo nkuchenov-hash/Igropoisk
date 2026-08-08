@@ -1,15 +1,18 @@
 {
-  "schema_version": 4,
-  "requested_at": "2026-08-08T21:20:13Z",
+  "schema_version": 5,
+  "requested_at": "2026-08-08T21:41:33Z",
   "scope": "all_visible_catalog_games",
   "catalog_source": "data/catalog-visible.json",
-  "mode": "no-openai-api",
+  "mode": "canonical-game-page-tool",
   "include_popular_first": true,
   "rebuild_existing": true,
+  "canonical_reference": "mafia-the-city-of-lost-heaven",
   "require_live_status_marker": true,
   "requirements": {
     "full_game_page": true,
     "full_review_article": true,
+    "use_game_registry": true,
+    "standalone_pages_only": true,
     "design_system_only": true,
     "minimum_unique_screenshots_per_section": 3,
     "no_repeated_urls": true,
@@ -17,6 +20,7 @@
     "no_repeated_scenes": true,
     "independent_media_search": true,
     "video_categories": ["trailer", "gameplay", "review", "interview", "other"],
-    "review_voice": "analytical_with_light_irony"
+    "review_voice": "analytical_with_light_irony",
+    "do_not_use_witcher_3_as_template": true
   }
 }
