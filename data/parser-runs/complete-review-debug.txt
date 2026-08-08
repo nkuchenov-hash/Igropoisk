@@ -1,0 +1,26 @@
+=== NODE CHECK ===
+/home/runner/work/Igropoisk/Igropoisk/scripts/build-complete-review-github-models.mjs:60
+const imageById=new Map(compactImages.map(x=>[x.id,x]));const used=new Set();for(const s of sections){const ids=(s.image_ids||[]).filter(id=>imageById.has(id)&&!used.has(id)).slice(0,5);while(ids.length<minPerSection){const next=compactImages.find(x=>!used.has(x.id)&&!ids.includes(x.id));if(!next)break;ids.push(next.id)}for(const id of ids)used.add(id);s.images=ids.map(id=>{const x=imageById.get(id);return{url:x.url,alt:x.alt||`${title}: кадр к разделу «${s.heading}»`,caption:x.alt||`Кадр показывает визуальную сторону тезиса раздела «${s.heading}».`,source_name:x.source_name,source_url:x.source_url,width:x.width,height:x.height,bytes:x.bytes,mime:x.mime,duplicate_group:x.duplicate_group,quality:x.quality}};delete s.image_ids}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^
+
+SyntaxError: missing ) after argument list
+    at checkSyntax (node:internal/main/check_syntax:74:5)
+
+Node.js v22.23.1
+=== RUN ===
+file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-complete-review-github-models.mjs:60
+const imageById=new Map(compactImages.map(x=>[x.id,x]));const used=new Set();for(const s of sections){const ids=(s.image_ids||[]).filter(id=>imageById.has(id)&&!used.has(id)).slice(0,5);while(ids.length<minPerSection){const next=compactImages.find(x=>!used.has(x.id)&&!ids.includes(x.id));if(!next)break;ids.push(next.id)}for(const id of ids)used.add(id);s.images=ids.map(id=>{const x=imageById.get(id);return{url:x.url,alt:x.alt||`${title}: кадр к разделу «${s.heading}»`,caption:x.alt||`Кадр показывает визуальную сторону тезиса раздела «${s.heading}».`,source_name:x.source_name,source_url:x.source_url,width:x.width,height:x.height,bytes:x.bytes,mime:x.mime,duplicate_group:x.duplicate_group,quality:x.quality}};delete s.image_ids}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^
+
+SyntaxError: missing ) after argument list
+    at compileSourceTextModule (node:internal/modules/esm/utils:346:16)
+    at ModuleLoader.moduleStrategy (node:internal/modules/esm/translators:110:18)
+    at #translate (node:internal/modules/esm/loader:559:20)
+    at afterLoad (node:internal/modules/esm/loader:612:29)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:617:12)
+    at #createModuleJob (node:internal/modules/esm/loader:640:36)
+    at #getJobFromResolveResult (node:internal/modules/esm/loader:353:34)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:321:41)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:680:25)
+
+Node.js v22.23.1
