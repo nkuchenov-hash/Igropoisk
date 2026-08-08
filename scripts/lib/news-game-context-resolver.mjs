@@ -91,7 +91,7 @@ async function identifyPrimaryGameWithModel(item, { fetchImpl, githubToken, mode
   try {
     const response = await fetchImpl(GITHUB_MODELS_ENDPOINT, {
       method: 'POST', signal: AbortSignal.timeout(12000),
-      headers: { authorization: `Bearer ${githubToken}`, 'content-type': 'application/json', accept: 'application/vnd.github+json' },
+      headers: { authorization: `Bearer ${githubToken}`, 'content-type': 'application/json', accept: 'application/vnd.github+json', 'x-github-api-version': '2026-03-10' },
       body: JSON.stringify({ model, messages: [{ role: 'system', content: 'You are a precise video-game entity resolver. Output valid JSON only.' }, { role: 'user', content: prompt }], response_format: { type: 'json_object' }, temperature: 0, max_tokens: 180 })
     });
     if (!response.ok) {
@@ -154,7 +154,7 @@ function collectSummaryAnchors(text) {
 }
 
 function candidateEntries(item = {}) {
-  const ctx = contextText(item); const all = [
+  const all = [
     ...collectNamed(item.titleEn || item.title || '', 'title'), ...collectNamed(item.titleRu || '', 'title-ru'),
     ...collectSummaryAnchors(item.summaryEn || item.summary || ''), ...collectSummaryAnchors(item.summaryRu || '')
   ];
@@ -172,9 +172,9 @@ function candidateEntries(item = {}) {
     const before = titleRaw.slice(0, Math.max(0, titleRaw.toLowerCase().indexOf(String(entry.title).toLowerCase())));
     const comparison = COMPARISON_CUE.test(before.slice(-45));
     const afterDashInUpdate = UPDATE_WORDS.test(titleRaw) && /[-–—]\s*$/.test(before.slice(-3));
-    let score = evidence.title * 110 + evidence.summary * 65 + evidence.url * 85 + Math.min(60, (evidence.titleCount + evidence.summaryCount + evidence.urlCount) * 12);
-    score += entry.colon * 55 + entry.anchor * 75 + entry.leading * 30 + entry.origins.has('summary-leading') * 35;
-    score -= comparison * 150 + afterDashInUpdate * 100;
+    let score = Number(evidence.title) * 110 + Number(evidence.summary) * 65 + Number(evidence.url) * 85 + Math.min(60, (evidence.titleCount + evidence.summaryCount + evidence.urlCount) * 12);
+    score += Number(entry.colon) * 55 + Number(entry.anchor) * 75 + Number(entry.leading) * 30 + Number(entry.origins.has('summary-leading')) * 35;
+    score -= Number(comparison) * 150 + Number(afterDashInUpdate) * 100;
     return { ...entry, evidence, score };
   });
   const filtered = entries.filter(entry => !entries.some(longer => {
