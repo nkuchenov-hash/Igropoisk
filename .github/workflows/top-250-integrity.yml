@@ -34,10 +34,18 @@ jobs:
           node --check scripts/materialize-top-250-game-pages.mjs
           node --check scripts/validate-top-250.mjs
           node --check scripts/render-review-pages.mjs
-      - name: Validate committed Top-250 snapshot
-        run: node scripts/validate-top-250.mjs
-      - name: Validate Game Registry integration
-        run: node scripts/validate-system-game-registry-integration.mjs
+      - name: Canonicalize and validate Game Registry integration
+        run: |
+          node scripts/canonicalize-system-game-identity.mjs --write
+          node scripts/validate-system-game-registry-integration.mjs
+      - name: Build and materialize current Top-250
+        run: |
+          node scripts/orchestrate-content.mjs --finalize
+          node scripts/build-top-250.mjs
+          node scripts/materialize-top-250-game-pages.mjs
+          node scripts/build-top-250.mjs
+          node scripts/validate-top-250.mjs
+          git diff --exit-code -- game/_shared
       - name: Reject legacy review pilot runtime and data
         run: |
           forbidden=(
