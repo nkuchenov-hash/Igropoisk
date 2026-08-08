@@ -39,7 +39,14 @@ async function openCriticCandidates(){
     if(normalized.split(' ').filter(w=>w.length>3).some(w=>low.includes(w)))paths.push(p);
   }
   if(!paths.length){for(const m of search.text.matchAll(/href=["'](\/game\/\d+\/[^"'#?]+)["']/gi))paths.push(m[1])}
-  const gamePath=[...new Set(paths)][0];
+  let gamePath=[...new Set(paths)][0];
+  if(!gamePath){
+    for(const q of [`site:opencritic.com/game \"${title}\" OpenCritic`,`site:opencritic.com/game/${year||''} \"${title}\"`]){
+      const rows=await bing(q);
+      const hit=rows.find(x=>{try{return new URL(x.url).hostname.endsWith('opencritic.com')&&/\/game\/\d+\//.test(new URL(x.url).pathname)}catch{return false}});
+      if(hit){try{gamePath=new URL(hit.url).pathname.replace(/\/reviews\/?$/,'');break}catch{}}
+    }
+  }
   if(!gamePath)return[];
   const out=[];const seen=new Set();
   for(let page=1;page<=8&&out.length<Math.max(required*2,40);page++){
