@@ -6,12 +6,12 @@ const boilerplatePatterns = [
   /\s+(?:Subscribe|Sign up|Подпишитесь)[\s\S]*$/i
 ];
 
-const promotionalLead = /^(?:hi|hello|привет|hey\b|we(?:'re| are) (?:excited|thrilled|happy|pleased|delighted)|мы (?:очень )?(?:рады|счастливы)|today we(?:'re| are) (?:excited|thrilled|happy|pleased)|сегодня мы (?:рады|счастливы))/i;
-const callToAction = /\b(?:stay tuned|wishlist|pre-order|preorder|subscribe|visit our|check out|don'?t miss|следите за|добавляйте? в желаемое|предзаказ|подписывайтесь|заходите)\b/i;
-const keyAction = /\b(?:release|launch|arriv|announce|reveal|confirm|add|remove|delay|cancel|update|patch|expansion|dlc|beta|demo|sales?|sold|acquir|close|layoff|ship|available|выход|выйдет|вышел|вышла|релиз|анонс|представ|показа|подтверд|добав|убер|удал|перенес|отмен|обнов|патч|дополнен|бета|демо|продаж|тираж|закры|увольнен|доступ)/i;
-const timeSignal = /\b(?:today|tomorrow|week|month|year|january|february|march|april|may|june|july|august|september|october|november|december|сегодня|завтра|недел|месяц|год|январ|феврал|март|апрел|ма[йя]|июн|июл|август|сентябр|октябр|ноябр|декабр|\d{1,2}[./-]\d{1,2}|20\d{2})\b/i;
+const promotionalLead = /^(?:hi|hello|привет|hey\b|we(?:'re| are) (?:excited|thrilled|happy|pleased|delighted)|мы (?:очень )?(?:рады|счастливы)|today we(?:'re| are) (?:excited|thrilled|happy|pleased)|сегодня мы (?:рады|счастливы))/iu;
+const callToAction = /(?:\b(?:stay tuned|wishlist|pre-order|preorder|subscribe|visit our|check out|don'?t miss)\b|следите за|добавляйте? в желаемое|предзаказ|подписывайтесь|заходите)/iu;
+const keyAction = /(?:\b(?:release|launch|arriv|announce|reveal|confirm|add|remove|delay|cancel|update|patch|expansion|dlc|beta|demo|sales?|sold|acquir|close|layoff|ship|available)\b|выход|выйдет|вышел|вышла|релиз|анонс|представ|показа|подтверд|добав|убер|удал|перенес|отмен|обнов|патч|дополнен|бета|демо|продаж|тираж|закры|увольнен|доступ)/iu;
+const timeSignal = /(?:\b(?:today|tomorrow|week|month|year|january|february|march|april|may|june|july|august|september|october|november|december|\d{1,2}[./-]\d{1,2}|20\d{2})\b|сегодня|завтра|недел|месяц|год|январ|феврал|март|апрел|ма[йя]|июн|июл|август|сентябр|октябр|ноябр|декабр|\d{1,2}[./-]\d{1,2}|20\d{2})/iu;
 const platformSignal = /\b(?:pc|steam|playstation|ps5|xbox|switch|nintendo|game pass|epic games|gog)\b/i;
-const weakPronounLead = /^(?:it|this|that|these|those|he|she|they|это|эта|этот|эти|он|она|они)\b/i;
+const weakPronounLead = /^(?:\b(?:it|this|that|these|those|he|she|they)\b|это|эта|этот|эти|он|она|они)/iu;
 
 function decode(value = '') {
   return String(value)
@@ -71,9 +71,9 @@ function scoreSentence(sentence, title, index) {
 function dePromote(sentence) {
   return sentence
     .replace(/^(?:today,?\s*)?we(?:'re| are) (?:excited|thrilled|happy|pleased|delighted) to (?:announce|share|reveal|confirm|show)(?: that)?\s+/i, '')
-    .replace(/^(?:сегодня\s+)?мы (?:очень )?(?:рады|счастливы) (?:сообщить|поделиться|представить|показать|подтвердить)(?:,? что)?\s+/i, '')
+    .replace(/^(?:сегодня\s+)?мы (?:очень )?(?:рады|счастливы) (?:сообщить|поделиться|представить|показать|подтвердить)(?:,? что)?\s+/iu, '')
     .replace(/^we (?:want|wanted|would like) to (?:share|announce|reveal|confirm)(?: that)?\s+/i, '')
-    .replace(/^мы (?:хотим|хотели бы) (?:сообщить|поделиться|представить|подтвердить)(?:,? что)?\s+/i, '')
+    .replace(/^мы (?:хотим|хотели бы) (?:сообщить|поделиться|представить|подтвердить)(?:,? что)?\s+/iu, '')
     .replace(/^([a-zа-яё])/iu, character => character.toLocaleUpperCase())
     .trim();
 }
