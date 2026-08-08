@@ -125,21 +125,37 @@ function rawReleaseFromSteam(data, appid, signals, checkedAt) {
   };
 }
 
-async function fetchSearchSignal({ filter, sortBy, limit, signal }) {
+async function fetchSearchSignal({ filter, sortBy, limit, strongSignal, discoverySignal, strongRank }) {
   const url = `https://store.steampowered.com/search/results/?query&start=0&count=${limit}&dynamic_data=&sort_by=${encodeURIComponent(sortBy)}&filter=${encodeURIComponent(filter)}&ignore_preferences=1&os=win&infinite=1&cc=us&l=english&json=1`;
   const started = Date.now();
   try {
     const payload = await fetchJSON(url);
     const ids = parseSearchAppIds(payload?.results_html || '');
-    return { signal, ids, status: 'success', url, duration_ms: Date.now() - started };
+    return {
+      ids,
+      ranked: ids.map((appid, index) => ({
+        appid,
+        signal: index < strongRank ? strongSignal : discoverySignal,
+        rank: index + 1,
+      })),
+      status: 'success',
+      url,
+      duration_ms: Date.now() - started,
+      strong_signal: strongSignal,
+      strong_rank: strongRank,
+    };
   } catch (error) {
-    return { signal, ids: [], status: 'error', error: error.message, url, duration_ms: Date.now() - started };
+    return {
+      ids: [], ranked: [], status: 'error', error: error.message, url,
+      duration_ms: Date.now() - started, strong_signal: strongSignal, strong_rank: strongRank,
+    };
   }
 }
 
 export async function enrichRawReleasesFromSteamEditorial(rawReleases = [], policy = {}, generatedAt = new Date().toISOString()) {
   const upcomingLimit = Math.max(1, Number(policy.steam_popular_upcoming_limit || 80));
   const recentLimit = Math.max(1, Number(policy.steam_popular_new_limit || 80));
+  const strongRank = Math.max(1, Number(policy.steam_editorial_strong_rank || 20));
   const recentDays = Math.max(1, Number(policy.steam_popular_new_recent_days || 21));
   const horizonDays = Math.max(30, Number(policy.steam_editorial_horizon_days || 540));
   const now = Date.parse(generatedAt);
@@ -147,15 +163,21 @@ export async function enrichRawReleasesFromSteamEditorial(rawReleases = [], poli
   const upperBound = now + horizonDays * DAY_MS;
 
   const signals = await Promise.all([
-    fetchSearchSignal({ filter: 'popularcomingsoon', sortBy: 'Released_ASC', limit: upcomingLimit, signal: 'steam_popular_upcoming' }),
-    fetchSearchSignal({ filter: 'popularnew', sortBy: 'Released_DESC', limit: recentLimit, signal: 'steam_popular_new' }),
+    fetchSearchSignal({
+      filter: 'popularcomingsoon', sortBy: 'Released_ASC', limit: upcomingLimit,
+      strongSignal: 'steam_popular_upcoming', discoverySignal: 'steam_popular_upcoming_discovery', strongRank,
+    }),
+    fetchSearchSignal({
+      filter: 'popularnew', sortBy: 'Released_DESC', limit: recentLimit,
+      strongSignal: 'steam_popular_new', discoverySignal: 'steam_popular_new_discovery', strongRank,
+    }),
   ]);
 
   const signalByAppId = new Map();
   for (const source of signals) {
-    for (const appid of source.ids) {
-      if (!signalByAppId.has(appid)) signalByAppId.set(appid, new Set());
-      signalByAppId.get(appid).add(source.signal);
+    for (const item of source.ranked) {
+      if (!signalByAppId.has(item.appid)) signalByAppId.set(item.appid, new Set());
+      signalByAppId.get(item.appid).add(item.signal);
     }
   }
 
@@ -199,9 +221,10 @@ export async function enrichRawReleasesFromSteamEditorial(rawReleases = [], poli
   return {
     releases,
     sources: signals.map(source => ({
-      signal: source.signal,
+      signal: source.strong_signal,
       status: source.status,
       items: source.ids.length,
+      strong_rank: source.strong_rank,
       url: source.url,
       duration_ms: source.duration_ms,
       ...(source.error ? { error: source.error } : {}),
