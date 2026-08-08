@@ -15,7 +15,6 @@ on:
       - 'scripts/validate-top-250.mjs'
       - 'scripts/run-top-250-review-pilot.mjs'
       - 'scripts/run-keyless-review-pilot.mjs'
-      - 'scripts/probe-review-provider.mjs'
       - 'top-250/**'
       - 'assets/top-250.*'
       - 'article/_shared/pilot-review.css'
@@ -49,9 +48,6 @@ jobs:
         run: node scripts/build-top-250.mjs --limit=20
       - name: Validate Top-250 snapshot
         run: node scripts/validate-top-250.mjs
-      - name: Probe keyless review provider
-        if: env.OPENAI_API_KEY == ''
-        run: node scripts/probe-review-provider.mjs
       - name: Build Top-250 review pilot with OpenAI provider
         if: env.OPENAI_API_KEY != ''
         run: node scripts/run-top-250-review-pilot.mjs --limit=20 --target="$TARGET_REVIEWS"
