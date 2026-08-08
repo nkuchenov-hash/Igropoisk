@@ -16,6 +16,7 @@ const PROFILES = {
     prefixes: [
       'data/content-pipeline/',
       'data/game-registry/',
+      'data/top-250/',
       'data/parser-runs/',
       'data/parser-output/',
       'data/drafts/',
@@ -99,27 +100,20 @@ function parseProfile(argv) {
   const direct = argv.find((arg) => arg.startsWith('--profile='));
   if (direct) return direct.slice('--profile='.length);
   const index = argv.indexOf('--profile');
-  return index >= 0 ? argv[index + 1] : '';
+  if (index !== -1) return argv[index + 1] || '';
+  return 'content-pipeline';
 }
 
 function main() {
   const profileName = parseProfile(process.argv.slice(2));
-  if (!profileName) {
-    throw new Error('Usage: node scripts/validate-automation-publish-diff.mjs --profile <name>');
-  }
-
-  const entries = readStagedEntries();
-  const errors = validateEntries(profileName, entries);
+  const errors = validateEntries(profileName, readStagedEntries());
   if (errors.length) {
-    console.error(`Automation publish diff rejected (${errors.length}):`);
-    for (const error of errors) console.error(`- ${error}`);
-    process.exitCode = 1;
-    return;
+    console.error(errors.join('\n'));
+    process.exit(2);
   }
-
-  console.log(`Automation publish diff accepted: profile=${profileName}; files=${entries.length}`);
+  console.log(`Automation diff is isolated for profile ${profileName}.`);
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main();
 }
