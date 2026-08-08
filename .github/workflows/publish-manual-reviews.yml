@@ -1,0 +1,44 @@
+name: Restore and publish manual review builds
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - data/manual-review-builds/**
+      - scripts/run-manual-review-build.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Configure builder identity
+        run: |
+          git config user.name "igropoisk-builder"
+          git config user.email "actions@users.noreply.github.com"
+      - name: Restore Elden Ring manual review build
+        run: node scripts/run-manual-review-build.mjs elden-ring
+      - name: Validate review output
+        run: node scripts/validate-review-output.mjs elden-ring
+      - name: Render review page
+        run: node scripts/render-review-pages.mjs
+      - name: Bind canonical game IDs
+        run: node scripts/canonicalize-all-editorial-game-ids.mjs --write
+      - name: Commit published review
+        run: |
+          git add data article game assets
+          git diff --cached --quiet && exit 0
+          git commit -m "Publish Elden Ring review from manual build"
+          git pull --rebase origin staging
+          git push origin HEAD:staging
