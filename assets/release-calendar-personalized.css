@@ -1,4 +1,4 @@
-/* Release calendar readability and layout stability overrides. */
+/* Release calendar composition and layout stability overrides. */
 html {
   scrollbar-gutter: stable;
 }
@@ -16,65 +16,9 @@ html {
   overflow-wrap: anywhere;
 }
 
-.release-breadcrumb,
-.release-intro p,
-.release-view-tabs button,
-.release-quick-filters label,
-.release-quick-filters select,
-.release-result-count,
-.release-rail-head a,
-.release-upcoming-item h3,
-.release-change span,
-.release-rail-note p,
-.release-list-item p,
-.release-feed-card__body p,
-.release-empty,
-.release-detail-copy p,
-.release-detail-sources p,
-.release-detail-sources a,
-.release-detail-platforms,
-.release-approximate-chip {
-  font-size: 16px;
-  line-height: 1.45;
-}
-
-.release-calendar-item h3,
-.release-list-item h3,
-.release-feed-card__body h3 {
-  font-size: 16px;
-  line-height: 1.3;
-}
-
-.release-kicker,
-.release-quick-filters label > span,
-.release-intro__stats span,
-.release-upcoming-item span,
-.release-change strong,
-.release-rail-note strong,
-.release-weekdays,
-.release-day__number,
-.release-day__count,
-.release-calendar-item > span > span,
-.release-list-item__meta,
-.release-list-date small,
-.release-feed-card__footer,
-.release-feed-date,
-.release-detail-label {
-  font-size: 13px;
-  line-height: 1.35;
-}
-
 @media (max-width: 760px) {
   .release-intro__stats {
     min-width: 0;
     width: 100%;
-  }
-
-  .release-view-tabs button,
-  .release-quick-filters select,
-  .release-result-count,
-  .release-list-item p,
-  .release-feed-card__body p {
-    font-size: 16px;
   }
 }
