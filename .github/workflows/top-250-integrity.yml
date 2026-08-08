@@ -36,9 +36,11 @@ jobs:
           node --check scripts/render-review-pages.mjs
       - name: Canonicalize Game Registry inputs
         run: node scripts/canonicalize-system-game-identity.mjs --write
-      - name: Build and materialize current Top-250
+      - name: Build and converge current Top-250
         run: |
           node scripts/orchestrate-content.mjs --finalize
+          node scripts/build-top-250.mjs
+          node scripts/materialize-top-250-game-pages.mjs
           node scripts/build-top-250.mjs
           node scripts/materialize-top-250-game-pages.mjs
           node scripts/build-top-250.mjs
