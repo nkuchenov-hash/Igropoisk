@@ -8,8 +8,9 @@
 .ig-news--home .ig-news-card__story-media{display:block}
 .ig-news--home .ig-card__body{min-height:0}
 .ig-news--home .ig-card__summary{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
-.ig-news--home .ig-news-card__footer{margin-top:auto;padding-top:12px}
-.ig-news--home .ig-news-card__footer .ig-card__meta{margin:0}
+.ig-news--home .ig-news-card__actions{margin-top:auto;padding-top:12px}
+.ig-news--home .ig-news-card__actions + .ig-card__meta{margin:0}
+.ig-news--home .ig-card__body:not(:has(.ig-news-card__actions)) .ig-card__meta{margin-top:auto;padding-top:12px}
 .ig-news--home .ig-news__all-link{margin-left:auto;white-space:nowrap}
 .ig-news-card__actions,.ig-news-entry__actions,.ig-news-story__games{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .ig-news--archive.ig-container{padding-top:48px!important;padding-bottom:80px!important}
