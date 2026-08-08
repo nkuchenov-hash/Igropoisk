@@ -90,12 +90,94 @@
     });
   }
 
+  function freshNode(node){
+    if(!node)return null;
+    const clone=node.cloneNode(true);
+    node.replaceWith(clone);
+    return clone;
+  }
+
+  function ensureMobileMenu(header){
+    if(!(header instanceof HTMLElement))return;
+    const inner=header.querySelector(':scope > .site-header__inner');
+    const desktopNav=header.querySelector(':scope > .site-header__inner > .site-nav');
+    const actions=header.querySelector(':scope > .site-header__inner > .site-actions');
+    if(!inner||!desktopNav||!actions)return;
+
+    const oldToggles=[...header.querySelectorAll('.mobile-menu-toggle')];
+    let toggle=freshNode(oldToggles.shift()||null);
+    oldToggles.forEach(node=>node.remove());
+    if(!toggle){
+      toggle=document.createElement('button');
+      inner.insertBefore(toggle,actions);
+    }else if(toggle.parentElement!==inner){
+      inner.insertBefore(toggle,actions);
+    }
+    toggle.className='ig-button icon-button mobile-menu-toggle';
+    toggle.type='button';
+    toggle.dataset.igMobileMenuToggle='';
+    toggle.setAttribute('aria-label','Открыть меню');
+    toggle.setAttribute('aria-expanded','false');
+    toggle.setAttribute('aria-controls','mobileMenu');
+    toggle.innerHTML='<span></span><span></span><span></span>';
+
+    const oldMenus=[...header.querySelectorAll('.mobile-menu')];
+    let menu=freshNode(oldMenus.shift()||null);
+    oldMenus.forEach(node=>node.remove());
+    if(!menu){
+      menu=document.createElement('div');
+      header.appendChild(menu);
+    }else if(menu.parentElement!==header){
+      header.appendChild(menu);
+    }
+    menu.className='mobile-menu';
+    menu.id='mobileMenu';
+    menu.dataset.igMobileMenu='';
+    menu.hidden=true;
+
+    const sync=()=>{
+      menu.innerHTML=`<nav aria-label="Мобильная навигация">${desktopNav.innerHTML}</nav>`;
+    };
+    const setOpen=open=>{
+      if(open)sync();
+      menu.hidden=!open;
+      toggle.classList.toggle('open',open);
+      toggle.setAttribute('aria-expanded',String(open));
+      toggle.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');
+      document.body.classList.toggle('mobile-menu-open',open);
+    };
+
+    sync();
+    toggle.addEventListener('click',()=>setOpen(menu.hidden));
+    menu.addEventListener('click',event=>{
+      const pageButton=event.target.closest('[data-page]');
+      if(pageButton){
+        event.preventDefault();
+        event.stopPropagation();
+        const page=pageButton.dataset.page;
+        const original=desktopNav.querySelector(`[data-page="${CSS.escape(page)}"]`);
+        setOpen(false);
+        original?.click();
+        return;
+      }
+      if(event.target.closest('a'))setOpen(false);
+    });
+    document.addEventListener('keydown',event=>{if(event.key==='Escape')setOpen(false)});
+    window.addEventListener('resize',()=>{if(window.innerWidth>760)setOpen(false)},{passive:true});
+  }
+
   function normalize(header){
-    if(!(header instanceof HTMLElement)||header.dataset.igSharedHeader)return;
+    if(!(header instanceof HTMLElement))return;
+    if(header.dataset.igSharedHeader){
+      ensureTop250Link(header);
+      ensureMobileMenu(header);
+      return;
+    }
 
     if(isNativeMainHeader(header)){
       ensureTop250Link(header);
       header.dataset.igSharedHeader='native';
+      ensureMobileMenu(header);
       return;
     }
 
@@ -104,6 +186,7 @@
     header.innerHTML=mainHeaderMarkup();
     setTheme(storedTheme());
     updateGeneratedActive();
+    ensureMobileMenu(header);
   }
 
   function scan(root=document){
