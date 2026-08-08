@@ -15,7 +15,7 @@ on:
   push:
     branches: [staging]
     paths:
-      - scripts/build-complete-review-github-models.mjs
+      - scripts/build-complete-review-github-models-v2.mjs
       - .github/workflows/build-complete-reviews-github-models.yml
       - config/parsers/review-synthesis.json
 
@@ -67,7 +67,7 @@ jobs:
           while IFS= read -r slug; do
             [ -z "$slug" ] && continue
             echo "=== COMPLETE BUILD: $slug ==="
-            if node scripts/build-complete-review-github-models.mjs "$slug" \
+            if node scripts/build-complete-review-github-models-v2.mjs "$slug" \
               && node scripts/validate-review-output.mjs "$slug"; then
               printf '%s\tsuccess\n' "$slug" >> /tmp/complete-results.tsv
               git add data
@@ -76,6 +76,8 @@ jobs:
               git push origin HEAD:staging
             else
               printf '%s\tblocked\n' "$slug" >> /tmp/complete-results.tsv
+              mkdir -p data/parser-runs/blocked
+              for f in data/parser-runs/review-source-discovery-${slug}.json data/parser-runs/review-media-discovery-${slug}.json; do [ -f "$f" ] && cp "$f" data/parser-runs/blocked/; done
               git reset --hard HEAD
             fi
           done < /tmp/queue.txt
