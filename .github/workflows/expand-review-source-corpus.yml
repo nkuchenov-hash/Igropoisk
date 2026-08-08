@@ -1,0 +1,80 @@
+name: Expand professional review source corpus
+on:
+  push:
+    branches: [staging]
+    paths:
+      - .github/workflows/expand-review-source-corpus.yml
+permissions:
+  contents: write
+jobs:
+  expand:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Add professional editorial outlets used by OpenCritic discovery
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const file='config/parsers/review-synthesis.json';
+          const cfg=JSON.parse(fs.readFileSync(file,'utf8'));
+          const extra=[
+            ['hardcore-gamer','Hardcore Gamer','https://hardcoregamer.com/reviews/',0.84],
+            ['tom-guide','Tom’s Guide','https://www.tomsguide.com/reviews',0.84],
+            ['venturebeat','VentureBeat','https://venturebeat.com/games/',0.86],
+            ['forbes-games','Forbes','https://www.forbes.com/games/',0.84],
+            ['dualshockers','DualShockers','https://www.dualshockers.com/category/reviews/',0.82],
+            ['metro-gaming','Metro Gaming','https://metro.co.uk/gaming/',0.84],
+            ['god-is-a-geek','God is a Geek','https://www.godisageek.com/reviews/',0.84],
+            ['videogamer','VideoGamer','https://www.videogamer.com/reviews/',0.84],
+            ['escapist','The Escapist','https://www.escapistmagazine.com/category/video-games/reviews/',0.84],
+            ['cgmagazine','CGMagazine','https://www.cgmagonline.com/review/',0.82],
+            ['paste','Paste Magazine','https://www.pastemagazine.com/games/reviews',0.84],
+            ['gamingbolt','GamingBolt','https://gamingbolt.com/category/reviews',0.80],
+            ['digital-chumps','Digital Chumps','https://digitalchumps.com/category/reviews/',0.80],
+            ['vg247','VG247','https://www.vg247.com/reviews',0.86],
+            ['push-square','Push Square','https://www.pushsquare.com/reviews',0.84],
+            ['cogconnected','COGconnected','https://cogconnected.com/reviews/',0.80],
+            ['attack-fanboy','Attack of the Fanboy','https://attackofthefanboy.com/reviews/',0.80],
+            ['wccftech','Wccftech','https://wccftech.com/review/',0.80],
+            ['gamingtrend','GamingTrend','https://gamingtrend.com/reviews/',0.82],
+            ['psu','PlayStation Universe','https://www.psu.com/reviews/',0.82],
+            ['playstation-lifestyle','PlayStation LifeStyle','https://www.playstationlifestyle.net/review/',0.80],
+            ['nintendo-life','Nintendo Life','https://www.nintendolife.com/reviews',0.86],
+            ['pure-xbox','Pure Xbox','https://www.purexbox.com/reviews',0.82],
+            ['pcmag','PCMag','https://www.pcmag.com/reviews/games',0.86],
+            ['techradar-gaming','TechRadar Gaming','https://www.techradar.com/gaming/reviews',0.84],
+            ['sixth-axis','TheSixthAxis','https://www.thesixthaxis.com/category/review/',0.82],
+            ['trusted-reviews','Trusted Reviews','https://www.trustedreviews.com/reviews/games',0.84],
+            ['gamespew','GameSpew','https://www.gamespew.com/category/reviews/',0.80],
+            ['gamewatcher','GameWatcher','https://www.gamewatcher.com/reviews',0.80],
+            ['gamegrin','GameGrin','https://www.gamegrin.com/reviews/',0.80],
+            ['spaziogames','Spaziogames','https://www.spaziogames.it/recensioni',0.82],
+            ['multiplayer-it','Multiplayer.it','https://multiplayer.it/recensioni/',0.84],
+            ['everyeye','Everyeye.it','https://www.everyeye.it/articoli/recensioni/',0.82],
+            ['hobbyconsolas','Hobby Consolas','https://www.hobbyconsolas.com/reviews',0.82],
+            ['av-club','The A.V. Club','https://www.avclub.com/games',0.84],
+            ['digital-fix','The Digital Fix','https://www.thedigitalfix.com/gaming/reviews',0.80],
+            ['ausgamers','AusGamers','https://www.ausgamers.com/reviews/',0.80],
+            ['slant-games','Slant Magazine','https://www.slantmagazine.com/games/',0.84],
+            ['game-rant','Game Rant','https://gamerant.com/reviews/',0.78],
+            ['screen-rant-games','Screen Rant','https://screenrant.com/gaming/reviews/',0.78]
+          ];
+          const byId=new Map(cfg.sources.map(x=>[x.id,x]));
+          for(const [id,name,url,trust] of extra){if(!byId.has(id))cfg.sources.push({id,enabled:true,family:'editorial',name,type:'review-search',url,weight:0.82,trust});}
+          cfg.research_policy.source_corpus_expanded_at='2026-08-08T22:07:00Z';
+          cfg.research_policy.source_expansion_rule='Professional editorial outlets may be added when they carry a substantive review of the exact game; regional mirrors of the same publication do not count as independent publications.';
+          fs.writeFileSync(file,JSON.stringify(cfg,null,2)+'\n');
+          console.log('editorial sources',cfg.sources.filter(x=>x.family==='editorial'&&x.enabled!==false).length);
+          NODE
+          git config user.name "igropoisk-builder"
+          git config user.email "actions@users.noreply.github.com"
+          git add config/parsers/review-synthesis.json
+          git commit -m "Expand professional review source corpus"
+          git pull --rebase origin staging
+          git push origin HEAD:staging
