@@ -56,7 +56,7 @@ jobs:
           const limit=Number(process.env.REQUESTED_LIMIT||0);
           let queue=catalog.filter(g=>g.slug!=='mafia');
           if(requested) queue=queue.filter(g=>g.slug===requested);
-          else queue=queue.filter(g=>!fs.existsSync(`data/articles/${g.slug}.json`)||!fs.existsSync(`article/${g.slug}/index.html`));
+          else queue=queue.filter(g=>!fs.existsSync(`article/${g.slug}/index.html`));
           if(limit>0) queue=queue.slice(0,limit);
           process.stdout.write(queue.map(g=>g.slug).join('\n')+(queue.length?'\n':''));
           NODE
@@ -65,14 +65,38 @@ jobs:
           while IFS= read -r slug; do
             [ -z "$slug" ] && continue
             echo "=== COMPLETE BUILD: $slug ==="
-            if node scripts/build-complete-review-github-models-v2.mjs "$slug" \
-              && node scripts/validate-review-output.mjs "$slug" \
-              && node scripts/render-review-pages.mjs "$slug"; then
-              printf '%s\tsuccess\n' "$slug" >> /tmp/complete-results.tsv
-              git add data "article/$slug" "game/$slug" scripts
-              git commit -m "Build complete Mafia-standard review for $slug" || true
-              git pull --rebase origin staging
-              git push origin HEAD:staging
+            if node scripts/build-complete-review-github-models-v2.mjs "$slug"; then
+              node - "$slug" <<'NODE'
+          const fs=require('fs');
+          const slug=process.argv[2];
+          for(const file of [`data/article-media/${slug}.json`,`data/articles/${slug}.json`,`data/reviews/${slug}.json`]){
+            if(!fs.existsSync(file)) continue;
+            const data=JSON.parse(fs.readFileSync(file,'utf8'));
+            const walk=v=>{
+              if(Array.isArray(v)){
+                const seen=new Set();
+                return v.map(walk).filter(x=>{
+                  if(!x||typeof x!=='object'||!x.duplicate_group)return true;
+                  if(seen.has(x.duplicate_group))return false;
+                  seen.add(x.duplicate_group);return true;
+                });
+              }
+              if(v&&typeof v==='object')for(const k of Object.keys(v))v[k]=walk(v[k]);
+              return v;
+            };
+            fs.writeFileSync(file,JSON.stringify(walk(data),null,2)+'\n');
+          }
+          NODE
+              if node scripts/validate-review-output.mjs "$slug" && node scripts/render-review-pages.mjs "$slug"; then
+                printf '%s\tsuccess\n' "$slug" >> /tmp/complete-results.tsv
+                git add data "article/$slug" "game/$slug" scripts
+                git commit -m "Build complete Mafia-standard review for $slug" || true
+                git pull --rebase origin staging
+                git push origin HEAD:staging
+              else
+                printf '%s\tblocked\n' "$slug" >> /tmp/complete-results.tsv
+                git reset --hard HEAD
+              fi
             else
               printf '%s\tblocked\n' "$slug" >> /tmp/complete-results.tsv
               git reset --hard HEAD
