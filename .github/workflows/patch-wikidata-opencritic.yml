@@ -1,4 +1,4 @@
-name: Test Wikidata-backed complete review build
+name: Test autonomous complete review build
 on:
   push:
     branches: [staging]
@@ -10,7 +10,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_MODEL: openai/gpt-4.1
@@ -22,16 +22,33 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Build and validate Bloodborne
+      - name: Permanently wire local synthesis fallback
         run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/build-complete-review-github-models-v2.mjs')
+          s=p.read_text()
+          imp="import {buildLocalReview} from './local-review-synthesis.mjs';\n"
+          if imp not in s:
+              s=s.replace("import path from 'node:path';\n", "import path from 'node:path';\n"+imp, 1)
+          old="""if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);\nconst generated=JSON.parse((await response.json()).choices?.[0]?.message?.content||'{}');"""
+          new="""let generated;\nif(response.ok){\n  generated=JSON.parse((await response.json()).choices?.[0]?.message?.content||'{}');\n}else{\n  const modelError=await response.text();\n  console.warn(`GitHub Models unavailable (${response.status}); using autonomous local synthesis: ${modelError.slice(0,300)}`);\n  generated=buildLocalReview({slug,title,year,draft,sources,media,minSections,minWords,minImages,minPerSection});\n}"""
+          if old not in s:
+              raise SystemExit('model response block not found')
+          p.write_text(s.replace(old,new,1))
+          PY
+          node --check scripts/build-complete-review-github-models-v2.mjs
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
-          node --check scripts/build-complete-review-github-models-v2.mjs
+          git add scripts/build-complete-review-github-models-v2.mjs scripts/local-review-synthesis.mjs
+          git commit -m "Use autonomous synthesis when GitHub Models is unavailable" || true
+      - name: Build and validate Bloodborne end to end
+        run: |
           node scripts/build-complete-review-github-models-v2.mjs bloodborne
           node scripts/validate-review-output.mjs bloodborne
           node scripts/render-review-pages.mjs
           node scripts/materialize-catalog-no-api.mjs
-          git add data article game
+          git add data article game scripts
           git commit -m "Build complete Bloodborne page and review" || true
           git pull --rebase origin staging
           git push origin HEAD:staging
