@@ -1,4 +1,4 @@
-name: Patch Wikidata OpenCritic discovery
+name: Test Wikidata-backed complete review build
 on:
   push:
     branches: [staging]
@@ -6,9 +6,14 @@ on:
       - .github/workflows/patch-wikidata-opencritic.yml
 permissions:
   contents: write
+  models: read
 jobs:
-  patch:
+  test:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_MODEL: openai/gpt-4.1
     steps:
       - uses: actions/checkout@v4
         with:
@@ -17,14 +22,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Add Wikidata OpenCritic ID resolver
+      - name: Build and validate Bloodborne
         run: |
-          echo 'ZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCnA9UGF0aCgnc2NyaXB0cy9idWlsZC1jb21wbGV0ZS1yZXZpZXctZ2l0aHViLW1vZGVscy12Mi5tanMnKQpzPXAucmVhZF90ZXh0KCkKbWFya2VyPSdhc3luYyBmdW5jdGlvbiBvcGVuQ3JpdGljQ2FuZGlkYXRlcygpe1xuJwppbnNlcnQ9IiIiYXN5bmMgZnVuY3Rpb24gd2lraWRhdGFPcGVuQ3JpdGljSWQoKXsKICB0cnl7CiAgICBjb25zdCBhcGk9YGh0dHBzOi8vd3d3Lndpa2lkYXRhLm9yZy93L2FwaS5waHA/YWN0aW9uPXdic2VhcmNoZW50aXRpZXMmc2VhcmNoPSR7ZW5jb2RlVVJJQ29tcG9uZW50KHRpdGxlKX0mbGFuZ3VhZ2U9ZW4mZm9ybWF0PWpzb24mbGltaXQ9MTAmb3JpZ2luPSpgOwogICAgY29uc3Qgcj1hd2FpdCBmZXRjaFRleHQoYXBpLDE2MDAwKTtpZighcilyZXR1cm4nJzsKICAgIGNvbnN0IGpzb249SlNPTi5wYXJzZShyLnRleHQpO2NvbnN0IGhpdHM9QXJyYXkuaXNBcnJheShqc29uLnNlYXJjaCk/anNvbi5zZWFyY2g6W107CiAgICBjb25zdCB3b3Jkcz10aXRsZS50b0xvd2VyQ2FzZSgpLnJlcGxhY2UoL1teYS16MC05XSsvZywnICcpLnNwbGl0KC9cXHMrLykuZmlsdGVyKHc9PncubGVuZ3RoPjIpOwogICAgZm9yKGNvbnN0IGhpdCBvZiBoaXRzKXsKICAgICAgY29uc3QgZW50aXR5PWF3YWl0IGZldGNoVGV4dChgaHR0cHM6Ly93d3cud2lraWRhdGEub3JnL3dpa2kvU3BlY2lhbDpFbnRpdHlEYXRhLyR7aGl0LmlkfS5qc29uYCwxNjAwMCk7aWYoIWVudGl0eSljb250aW51ZTsKICAgICAgY29uc3QgZGF0YT1KU09OLnBhcnNlKGVudGl0eS50ZXh0KT8uZW50aXRpZXM/LltoaXQuaWRdO2lmKCFkYXRhKWNvbnRpbnVlOwogICAgICBjb25zdCBkZXNjPShkYXRhLmRlc2NyaXB0aW9ucz8uZW4/LnZhbHVlfHwnJykudG9Mb3dlckNhc2UoKTsKICAgICAgY29uc3QgbGFiZWw9KGRhdGEubGFiZWxzPy5lbj8udmFsdWV8fCcnKS50b0xvd2VyQ2FzZSgpOwogICAgICBjb25zdCBzY29yZT13b3Jkcy5yZWR1Y2UoKG4sdyk9Pm4rKGxhYmVsLmluY2x1ZGVzKHcpPzI6MCksMCkrKGRlc2MuaW5jbHVkZXMoJ3ZpZGVvIGdhbWUnKT8yOjApOwogICAgICBpZihzY29yZTwyKWNvbnRpbnVlOwogICAgICBjb25zdCBjbGFpbT1kYXRhLmNsYWltcz8uUDI4NjQ/LlswXT8ubWFpbnNuYWs/LmRhdGF2YWx1ZT8udmFsdWU7CiAgICAgIGlmKGNsYWltIT09dW5kZWZpbmVkJiZjbGFpbSE9PW51bGwmJlN0cmluZyhjbGFpbSkudHJpbSgpKXJldHVybiBTdHJpbmcoY2xhaW0pLnRyaW0oKTsKICAgIH0KICB9Y2F0Y2h7fQogIHJldHVybicnOwp9CiIiIgppZiAnYXN5bmMgZnVuY3Rpb24gd2lraWRhdGFPcGVuQ3JpdGljSWQoKScgbm90IGluIHM6CiAgICBzPXMucmVwbGFjZShtYXJrZXIsaW5zZXJ0K21hcmtlciwxKQpvbGQ9IiAgY29uc3Qgc2VhcmNoPWF3YWl0IGZldGNoVGV4dChgaHR0cHM6Ly9vcGVuY3JpdGljLmNvbS9zZWFyY2g/cT0ke2VuY29kZVVSSUNvbXBvbmVudCh0aXRsZSl9YCk7XG4iCm5ldz0iICBjb25zdCB3aWtpZGF0YUlkPWF3YWl0IHdpa2lkYXRhT3BlbkNyaXRpY0lkKCk7XG4gIGNvbnN0IHNlYXJjaD13aWtpZGF0YUlkP3t0ZXh0OmA8YSBocmVmPVxcXCIvZ2FtZS8ke3dpa2lkYXRhSWR9LyR7c2x1Z31cXFwiPiR7dGl0bGV9PC9hPmB9OmF3YWl0IGZldGNoVGV4dChgaHR0cHM6Ly9vcGVuY3JpdGljLmNvbS9zZWFyY2g/cT0ke2VuY29kZVVSSUNvbXBvbmVudCh0aXRsZSl9YCk7XG4iCmlmIG9sZCBub3QgaW4gczogcmFpc2UgU3lzdGVtRXhpdCgnc2VhcmNoIGxpbmUgbm90IGZvdW5kJykKcz1zLnJlcGxhY2Uob2xkLG5ldywxKQpwLndyaXRlX3RleHQocykK' | base64 -d > /tmp/patch.py
-          python3 /tmp/patch.py
-          node --check scripts/build-complete-review-github-models-v2.mjs
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
-          git add scripts/build-complete-review-github-models-v2.mjs
-          git commit -m "Resolve OpenCritic games through Wikidata IDs"
+          node --check scripts/build-complete-review-github-models-v2.mjs
+          node scripts/build-complete-review-github-models-v2.mjs bloodborne
+          node scripts/validate-review-output.mjs bloodborne
+          node scripts/render-review-pages.mjs
+          node scripts/materialize-catalog-no-api.mjs
+          git add data article game
+          git commit -m "Build complete Bloodborne page and review" || true
           git pull --rebase origin staging
           git push origin HEAD:staging
