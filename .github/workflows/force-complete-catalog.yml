@@ -36,16 +36,22 @@ jobs:
           from pathlib import Path
           p = Path('scripts/build-sparse-review-fast.mjs')
           s = p.read_text()
-          old = "if(candidates.length<45){const imgs=await Promise.all([`${title} gameplay screenshots`,`${title} official screenshots`,`${title} game screenshot`].map(imageSearch));for(const rows of imgs)for(const u of rows)add(u,'https://www.bing.com/images/search','Web image source',title)}"
-          new = "if(candidates.length<120){const imageQueries=[`${title} gameplay screenshots`,`${title} official screenshots`,`${title} game screenshot`,`${title} screenshot gallery`,`${title} press kit screenshots`,`${title} 4k gameplay screenshots`,`${title} PC screenshots`,`${title} PS5 screenshots`,`${title} Xbox screenshots`,`${title} review screenshots`,`${title} trailer screenshots`,`${title} official media gallery`,`${title} wallpapers gameplay`,`${title} screenshots IGN`,`${title} screenshots GameSpot`,`${title} screenshots Eurogamer`];const imgs=await Promise.all(imageQueries.map(imageSearch));for(const rows of imgs)for(const u of rows)add(u,'https://www.bing.com/images/search','Web image source',title)}"
-          if old not in s:
-              raise SystemExit('media discovery patch anchor missing')
-          s = s.replace(old,new)
-          anchor = "const candidates=[];const add=(url,source_url='',source_name='Game media',alt='')=>{if(/^https?:/i.test(url||''))candidates.push({url,source_url,source_name,alt})};"
-          injected = anchor + "\nfor(const pageUrl of [draft.links?.official,draft.links?.store].filter(Boolean)){const page=await text(pageUrl,15000);if(!page)continue;for(const m of page.text.matchAll(/https?:\\/\\/[^\\\"'<> ]+?\\.(?:jpg|jpeg|png|webp)(?:\\?[^\\\"'<> ]*)?/gi))add(decode(m[0]),page.url,'Official page',title);for(const m of page.text.matchAll(/(?:content|src|data-src|href)=['\\\"]([^'\\\"]+\\.(?:jpg|jpeg|png|webp)(?:\\?[^'\\\"]*)?)['\\\"]/gi)){try{add(new URL(decode(m[1]),page.url).href,page.url,'Official page',title)}catch{}}}"
-          if anchor not in s:
-              raise SystemExit('official media patch anchor missing')
-          p.write_text(s.replace(anchor,injected))
+          title_anchor = "const title=draft.identity?.title||slug,year=Number(String(draft.release?.date||draft.release?.date_text||'').match(/(?:19|20)\\d{2}/)?.[0]||0);"
+          title_patch = "const overrides={overwatch:{title:'Overwatch 2',appid:2357570,store:'https://store.steampowered.com/app/2357570/Overwatch_2/'},fortnite:{title:'Fortnite',official:'https://www.fortnite.com/'},'marvel-rivals':{title:'Marvel Rivals',appid:2767030,store:'https://store.steampowered.com/app/2767030/Marvel_Rivals/',official:'https://www.marvelrivals.com/'},'genshin-impact':{title:'Genshin Impact',official:'https://genshin.hoyoverse.com/en/'},valorant:{title:'VALORANT',official:'https://playvalorant.com/en-us/'},'honkai-star-rail':{title:'Honkai: Star Rail',official:'https://hsr.hoyoverse.com/en-us/'},palworld:{title:'Palworld',appid:1623730,store:'https://store.steampowered.com/app/1623730/Palworld/'},'counter-strike-2':{title:'Counter-Strike 2',appid:730,store:'https://store.steampowered.com/app/730/CounterStrike_2/'}};const ov=overrides[slug]||{};if(ov.title)draft.identity={...(draft.identity||{}),title:ov.title,steam_appid:ov.appid||draft.identity?.steam_appid};draft.links={...(draft.links||{}),official:ov.official||draft.links?.official||'',store:ov.store||draft.links?.store||''};const title=draft.identity?.title||slug,year=Number(String(draft.release?.date||draft.release?.date_text||'').match(/(?:19|20)\\d{2}/)?.[0]||0);"
+          if title_anchor not in s: raise SystemExit('title patch anchor missing')
+          s = s.replace(title_anchor,title_patch)
+          image_anchor = "async function imageSearch(q){const r=await text(`https://www.bing.com/images/search?q=${encodeURIComponent(q)}`,15000);if(!r)return[];const out=[];for(const m of r.text.matchAll(/murl&quot;:&quot;(https?:[^&]+?)&quot;/gi))out.push(decode(m[1]));for(const m of r.text.matchAll(/\"murl\":\"(https?:\\\\?\\/\\\\?\\/[^\" ]+)\"/gi))out.push(m[1].replaceAll('\\\\/','/'));return[...new Set(out)]}"
+          image_patch = image_anchor + "\nasync function imageSearchDeep(q){const out=[];for(const first of [1,36,71,106]){const r=await text(`https://www.bing.com/images/search?q=${encodeURIComponent(q)}&first=${first}&count=35`,15000);if(!r)continue;const body=decode(r.text).replaceAll('\\\\/','/');for(const m of body.matchAll(/murl(?:&quot;|\\\")?\\s*:\\s*(?:&quot;|\\\")?(https?:[^&\\\"< ]+)/gi))out.push(decode(m[1]));for(const m of body.matchAll(/\\\"murl\\\":\\\"(https?:[^\\\"]+)\\\"/gi))out.push(decode(m[1]));for(const m of body.matchAll(/imgurl=([^&\\\"']+)/gi)){try{out.push(decodeURIComponent(decode(m[1])))}catch{}}}return[...new Set(out)]}"
+          if image_anchor not in s: raise SystemExit('image search patch anchor missing')
+          s = s.replace(image_anchor,image_patch)
+          search_anchor = "if(candidates.length<45){const imgs=await Promise.all([`${title} gameplay screenshots`,`${title} official screenshots`,`${title} game screenshot`].map(imageSearch));for(const rows of imgs)for(const u of rows)add(u,'https://www.bing.com/images/search','Web image source',title)}"
+          search_patch = "if(candidates.length<180){const imageQueries=[`${title} gameplay screenshots`,`${title} official screenshots`,`${title} game screenshot`,`${title} screenshot gallery`,`${title} press kit screenshots`,`${title} 4k gameplay screenshots`,`${title} PC screenshots`,`${title} PS5 screenshots`,`${title} Xbox screenshots`,`${title} review screenshots`,`${title} trailer screenshots`,`${title} official media gallery`,`${title} wallpapers gameplay`,`${title} screenshots IGN`,`${title} screenshots GameSpot`,`${title} screenshots Eurogamer`,`${title} screenshots Polygon`,`${title} screenshots PC Gamer`,`${title} screenshots Rock Paper Shotgun`];const imgs=await Promise.all(imageQueries.map(imageSearchDeep));for(const rows of imgs)for(const u of rows)add(u,'https://www.bing.com/images/search','Web image source',title)}"
+          if search_anchor not in s: raise SystemExit('media discovery patch anchor missing')
+          s = s.replace(search_anchor,search_patch)
+          candidates_anchor = "const candidates=[];const add=(url,source_url='',source_name='Game media',alt='')=>{if(/^https?:/i.test(url||''))candidates.push({url,source_url,source_name,alt})};"
+          candidates_patch = candidates_anchor + "\nfor(const pageUrl of [draft.links?.official,draft.links?.store].filter(Boolean)){const page=await text(pageUrl,15000);if(!page)continue;const body=decode(page.text).replaceAll('\\\\/','/');for(const m of body.matchAll(/https?:\\/\\/[^\\\"'<> ]+?\\.(?:jpg|jpeg|png|webp)(?:\\?[^\\\"'<> ]*)?/gi))add(decode(m[0]),page.url,'Official page',title);for(const m of body.matchAll(/(?:content|src|data-src|href)=['\\\"]([^'\\\"]+\\.(?:jpg|jpeg|png|webp)(?:\\?[^'\\\"]*)?)['\\\"]/gi)){try{add(new URL(decode(m[1]),page.url).href,page.url,'Official page',title)}catch{}}}"
+          if candidates_anchor not in s: raise SystemExit('official media patch anchor missing')
+          p.write_text(s.replace(candidates_anchor,candidates_patch))
           PY
       - name: Build every remaining filled page
         run: |
@@ -65,7 +71,8 @@ jobs:
             if node scripts/build-complete-review-github-models-v2.mjs "$slug"; then
               built=1
             else
-              git reset --hard HEAD
+              git restore --worktree --staged data article game 2>/dev/null || true
+              git clean -fd data article game >/dev/null 2>&1 || true
               if node scripts/build-sparse-review-fast.mjs "$slug"; then built=1; fi
             fi
             if [ "$built" = "1" ]; then
@@ -82,11 +89,13 @@ jobs:
                 git push origin HEAD:staging
               else
                 printf '%s\tblocked\n' "$slug" >> /tmp/results.tsv
-                git reset --hard HEAD
+                git restore --worktree --staged data article game 2>/dev/null || true
+                git clean -fd data article game >/dev/null 2>&1 || true
               fi
             else
               printf '%s\tblocked\n' "$slug" >> /tmp/results.tsv
-              git reset --hard HEAD
+              git restore --worktree --staged data article game 2>/dev/null || true
+              git clean -fd data article game >/dev/null 2>&1 || true
             fi
           done < /tmp/queue.txt
           cat /tmp/results.tsv
@@ -97,13 +106,9 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           node scripts/materialize-catalog-no-api.mjs
           node scripts/canonicalize-all-editorial-game-ids.mjs --write || true
-          node - <<'NODE'
-          const fs=require('fs');const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
-          const missing=catalog.filter(g=>!(fs.existsSync(`game/${g.slug}/index.html`)&&fs.existsSync(`data/articles/${g.slug}.json`)&&fs.existsSync(`article/${g.slug}/index.html`))).map(g=>g.slug);
-          const report={generated_at:new Date().toISOString(),total:catalog.length,complete:catalog.length-missing.length,missing};
-          fs.mkdirSync('data/parser-runs',{recursive:true});fs.writeFileSync('data/parser-runs/complete-game-pages-latest.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
+          node -e "const fs=require('fs');const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));const missing=catalog.filter(g=>!(fs.existsSync('game/'+g.slug+'/index.html')&&fs.existsSync('data/articles/'+g.slug+'.json')&&fs.existsSync('article/'+g.slug+'/index.html'))).map(g=>g.slug);const report={generated_at:new Date().toISOString(),total:catalog.length,complete:catalog.length-missing.length,missing};fs.mkdirSync('data/parser-runs',{recursive:true});fs.writeFileSync('data/parser-runs/complete-game-pages-latest.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));"
           git add data game article
           git diff --cached --quiet || git commit -m "Update complete catalog coverage report"
           git pull --rebase origin staging
           git push origin HEAD:staging
-          if [ -n "$(node -e \"const fs=require('fs');const r=JSON.parse(fs.readFileSync('data/parser-runs/complete-game-pages-latest.json','utf8'));process.stdout.write(r.missing.length?String(r.missing.length):'')\")" ]; then exit 2; fi
+          test "$(node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('data/parser-runs/complete-game-pages-latest.json','utf8'));process.stdout.write(String(r.missing.length))")" = "0"
