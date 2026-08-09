@@ -29,8 +29,28 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function fetchText(url,timeout=16000){try{const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(timeout),headers:{'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36 IgropoiskResearchBot/3.0','accept-language':'en-US,en;q=0.9'}});if(!r.ok)return null;return{url:r.url,text:await r.text(),type:r.headers.get('content-type')||''}}catch{return null}}
 const defs=(config.sources||[]).filter(x=>x.enabled!==false&&x.family==='editorial').map(s=>{try{return{...s,domain:new URL(s.url).hostname.replace(/^www\./,'').toLowerCase()}}catch{return null}}).filter(Boolean);
 const sourceFor=u=>{const h=host(u);return defs.find(s=>h===s.domain||h.endsWith('.'+s.domain))||null};
+async function wikidataOpenCriticId(){
+  try{
+    const api=`https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(title)}&language=en&format=json&limit=10&origin=*`;
+    const r=await fetchText(api,16000);if(!r)return'';
+    const json=JSON.parse(r.text);const hits=Array.isArray(json.search)?json.search:[];
+    const words=title.toLowerCase().replace(/[^a-z0-9]+/g,' ').split(/\s+/).filter(w=>w.length>2);
+    for(const hit of hits){
+      const entity=await fetchText(`https://www.wikidata.org/wiki/Special:EntityData/${hit.id}.json`,16000);if(!entity)continue;
+      const data=JSON.parse(entity.text)?.entities?.[hit.id];if(!data)continue;
+      const desc=(data.descriptions?.en?.value||'').toLowerCase();
+      const label=(data.labels?.en?.value||'').toLowerCase();
+      const score=words.reduce((n,w)=>n+(label.includes(w)?2:0),0)+(desc.includes('video game')?2:0);
+      if(score<2)continue;
+      const claim=data.claims?.P2864?.[0]?.mainsnak?.datavalue?.value;
+      if(claim!==undefined&&claim!==null&&String(claim).trim())return String(claim).trim();
+    }
+  }catch{}
+  return'';
+}
 async function openCriticCandidates(){
-  const search=await fetchText(`https://opencritic.com/search?q=${encodeURIComponent(title)}`);
+  const wikidataId=await wikidataOpenCriticId();
+  const search=wikidataId?{text:`<a href=\"/game/${wikidataId}/${slug}\">${title}</a>`}:await fetchText(`https://opencritic.com/search?q=${encodeURIComponent(title)}`);
   if(!search)return[];
   const normalized=title.toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').trim();
   const paths=[];
