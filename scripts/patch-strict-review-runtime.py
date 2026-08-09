@@ -9,6 +9,12 @@ if anchor not in s:
     raise SystemExit('title anchor missing')
 s = s.replace(anchor, patch, 1)
 
+defs_anchor = "const defs=(config.sources||[]).filter(x=>x.enabled!==false&&x.family==='editorial').map(s=>{try{return{...s,domain:new URL(s.url).hostname.replace(/^www\\./,'').toLowerCase()}}catch{return null}}).filter(Boolean);"
+extra = "const extraEditorial=[{id:'pcgamesn',name:'PCGamesN',url:'https://www.pcgamesn.com/reviews'},{id:'screen-rant',name:'Screen Rant',url:'https://screenrant.com/gaming/reviews/'},{id:'keengamer',name:'KeenGamer',url:'https://www.keengamer.com/articles/reviews/'},{id:'gamestar',name:'GameStar',url:'https://www.gamestar.de/tests/'},{id:'gamereactor',name:'Gamereactor',url:'https://www.gamereactor.eu/reviews/'},{id:'jeuxvideo',name:'Jeuxvideo.com',url:'https://www.jeuxvideo.com/tests.htm'},{id:'pocket-tactics',name:'Pocket Tactics',url:'https://www.pockettactics.com/reviews'},{id:'game8',name:'Game8',url:'https://game8.co/articles/reviews'},{id:'digital-trends',name:'Digital Trends',url:'https://www.digitaltrends.com/gaming/game-reviews/'},{id:'game-rant',name:'Game Rant',url:'https://gamerant.com/gaming/reviews/'}].map(x=>({...x,enabled:true,family:'editorial',type:'review-search',weight:.8,trust:.8}));\nconst defs=[...(config.sources||[]),...extraEditorial].filter(x=>x.enabled!==false&&x.family==='editorial').map(s=>{try{return{...s,domain:new URL(s.url).hostname.replace(/^www\\./,'').toLowerCase()}}catch{return null}}).filter(Boolean);"
+if defs_anchor not in s:
+    raise SystemExit('defs anchor missing')
+s = s.replace(defs_anchor, extra, 1)
+
 # Replace calls, not the original helper, so the deep search can still use the RSS fallback.
 s = s.replace('await bing(', 'await bingDeep(')
 
@@ -32,7 +38,7 @@ async function wikipediaCandidates(){
 }
 async function bingDeep(q){
   const out=[],seen=new Set();
-  for(const first of [1,11]){
+  for(const first of [1,11,21]){
     const r=await fetchText(`https://www.bing.com/search?q=${encodeURIComponent(q)}&first=${first}&count=10`,9000);if(!r)continue;const html=r.text;
     for(const m of html.matchAll(/<li[^>]+class=["'][^"']*b_algo[^"']*["'][\s\S]*?<h2[^>]*>\s*<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>[\s\S]*?(?:<p[^>]*>([\s\S]*?)<\/p>)?/gi)){const url=decode(m[1]);if(!url.startsWith('http')||seen.has(url))continue;seen.add(url);out.push({url,title:strip(m[2]||''),snippet:strip(m[3]||'')})}
     for(const m of html.matchAll(/<h2[^>]*>\s*<a[^>]+href=["'](https?:\/\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)){const url=decode(m[1]);if(seen.has(url))continue;seen.add(url);out.push({url,title:strip(m[2]||''),snippet:''})}
