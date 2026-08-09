@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root=process.cwd();
+const requestedSlug=process.argv[2]||'';
 const articlesDir=path.join(root,'data/articles');
 const mediaDir=path.join(root,'data/article-media');
 const policy=JSON.parse(fs.readFileSync(path.join(root,'config/parsers/review-media-policy.json'),'utf8'));
@@ -77,7 +78,8 @@ function page(article,stats){
 
 if(!fs.existsSync(articlesDir))process.exit(0);
 let failed=false;
-for(const name of fs.readdirSync(articlesDir).filter(name=>name.endsWith('.json'))){
+const renderFiles=requestedSlug?[`${requestedSlug}.json`]:fs.readdirSync(articlesDir).filter(name=>name.endsWith('.json'));
+for(const name of renderFiles){
   try{
     const article=read(path.join(articlesDir,name));
     const mediaPath=path.join(mediaDir,name);
