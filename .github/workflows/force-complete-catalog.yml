@@ -37,10 +37,15 @@ jobs:
           p = Path('scripts/build-sparse-review-fast.mjs')
           s = p.read_text()
           old = "if(candidates.length<45){const imgs=await Promise.all([`${title} gameplay screenshots`,`${title} official screenshots`,`${title} game screenshot`].map(imageSearch));for(const rows of imgs)for(const u of rows)add(u,'https://www.bing.com/images/search','Web image source',title)}"
-          new = "if(candidates.length<90){const imageQueries=[`${title} gameplay screenshots`,`${title} official screenshots`,`${title} game screenshot`,`${title} screenshot gallery`,`${title} press kit screenshots`,`${title} 4k gameplay screenshots`,`${title} PC screenshots`,`${title} PS5 screenshots`,`${title} Xbox screenshots`,`${title} review screenshots`,`${title} trailer screenshots`,`${title} official media gallery`];const imgs=await Promise.all(imageQueries.map(imageSearch));for(const rows of imgs)for(const u of rows)add(u,'https://www.bing.com/images/search','Web image source',title)}"
+          new = "if(candidates.length<120){const imageQueries=[`${title} gameplay screenshots`,`${title} official screenshots`,`${title} game screenshot`,`${title} screenshot gallery`,`${title} press kit screenshots`,`${title} 4k gameplay screenshots`,`${title} PC screenshots`,`${title} PS5 screenshots`,`${title} Xbox screenshots`,`${title} review screenshots`,`${title} trailer screenshots`,`${title} official media gallery`,`${title} wallpapers gameplay`,`${title} screenshots IGN`,`${title} screenshots GameSpot`,`${title} screenshots Eurogamer`];const imgs=await Promise.all(imageQueries.map(imageSearch));for(const rows of imgs)for(const u of rows)add(u,'https://www.bing.com/images/search','Web image source',title)}"
           if old not in s:
               raise SystemExit('media discovery patch anchor missing')
-          p.write_text(s.replace(old,new))
+          s = s.replace(old,new)
+          anchor = "const candidates=[];const add=(url,source_url='',source_name='Game media',alt='')=>{if(/^https?:/i.test(url||''))candidates.push({url,source_url,source_name,alt})};"
+          injected = anchor + "\nfor(const pageUrl of [draft.links?.official,draft.links?.store].filter(Boolean)){const page=await text(pageUrl,15000);if(!page)continue;for(const m of page.text.matchAll(/https?:\\/\\/[^\\\"'<> ]+?\\.(?:jpg|jpeg|png|webp)(?:\\?[^\\\"'<> ]*)?/gi))add(decode(m[0]),page.url,'Official page',title);for(const m of page.text.matchAll(/(?:content|src|data-src|href)=['\\\"]([^'\\\"]+\\.(?:jpg|jpeg|png|webp)(?:\\?[^'\\\"]*)?)['\\\"]/gi)){try{add(new URL(decode(m[1]),page.url).href,page.url,'Official page',title)}catch{}}}"
+          if anchor not in s:
+              raise SystemExit('official media patch anchor missing')
+          p.write_text(s.replace(anchor,injected))
           PY
       - name: Build every remaining filled page
         run: |
@@ -49,7 +54,8 @@ jobs:
           node - <<'NODE' > /tmp/queue.txt
           const fs=require('fs');
           const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
-          process.stdout.write(catalog.filter(g=>g.slug!=='mafia'&&!fs.existsSync(`article/${g.slug}/index.html`)).map(g=>g.slug).join('\n')+'\n');
+          const complete=g=>fs.existsSync(`game/${g.slug}/index.html`)&&fs.existsSync(`data/articles/${g.slug}.json`)&&fs.existsSync(`article/${g.slug}/index.html`);
+          process.stdout.write(catalog.filter(g=>g.slug!=='mafia'&&!complete(g)).map(g=>g.slug).join('\n')+'\n');
           NODE
           : > /tmp/results.tsv
           while IFS= read -r slug; do
@@ -96,9 +102,8 @@ jobs:
           const missing=catalog.filter(g=>!(fs.existsSync(`game/${g.slug}/index.html`)&&fs.existsSync(`data/articles/${g.slug}.json`)&&fs.existsSync(`article/${g.slug}/index.html`))).map(g=>g.slug);
           const report={generated_at:new Date().toISOString(),total:catalog.length,complete:catalog.length-missing.length,missing};
           fs.mkdirSync('data/parser-runs',{recursive:true});fs.writeFileSync('data/parser-runs/complete-game-pages-latest.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
-          if(missing.length)process.exit(2);
-          NODE
           git add data game article
-          git diff --cached --quiet || git commit -m "Complete entire filled game catalog"
+          git diff --cached --quiet || git commit -m "Update complete catalog coverage report"
           git pull --rebase origin staging
           git push origin HEAD:staging
+          if [ -n "$(node -e \"const fs=require('fs');const r=JSON.parse(fs.readFileSync('data/parser-runs/complete-game-pages-latest.json','utf8'));process.stdout.write(r.missing.length?String(r.missing.length):'')\")" ]; then exit 2; fi
