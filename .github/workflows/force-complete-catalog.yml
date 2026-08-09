@@ -48,7 +48,7 @@ jobs:
               built=1
             else
               git reset --hard HEAD
-              if node scripts/build-limited-review-fallback.mjs "$slug"; then built=1; fi
+              if node scripts/build-sparse-review-fast.mjs "$slug"; then built=1; fi
             fi
             if [ "$built" = "1" ]; then
               node - "$slug" <<'NODE'
