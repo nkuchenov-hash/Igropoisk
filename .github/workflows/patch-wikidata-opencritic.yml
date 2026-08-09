@@ -19,45 +19,8 @@ jobs:
           node-version: 22
       - name: Add Wikidata OpenCritic ID resolver
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('scripts/build-complete-review-github-models-v2.mjs')
-          s=p.read_text()
-          marker="async function openCriticCandidates(){\n"
-          insert=r'''async function wikidataOpenCriticId(){
-  try{
-    const api=`https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(title)}&language=en&format=json&limit=10&origin=*`;
-    const r=await fetchText(api,16000);if(!r)return'';
-    const json=JSON.parse(r.text);const hits=Array.isArray(json.search)?json.search:[];
-    const words=title.toLowerCase().replace(/[^a-z0-9]+/g,' ').split(/\s+/).filter(w=>w.length>2);
-    for(const hit of hits){
-      const entity=await fetchText(`https://www.wikidata.org/wiki/Special:EntityData/${hit.id}.json`,16000);if(!entity)continue;
-      const data=JSON.parse(entity.text)?.entities?.[hit.id];if(!data)continue;
-      const desc=(data.descriptions?.en?.value||'').toLowerCase();
-      const label=(data.labels?.en?.value||'').toLowerCase();
-      const score=words.reduce((n,w)=>n+(label.includes(w)?2:0),0)+(desc.includes('video game')?2:0);
-      if(score<2)continue;
-      const claim=data.claims?.P2864?.[0]?.mainsnak?.datavalue?.value;
-      if(claim!==undefined&&claim!==null&&String(claim).trim())return String(claim).trim();
-    }
-  }catch{}
-  return'';
-}
-'''
-          if 'async function wikidataOpenCriticId()' not in s:
-              s=s.replace(marker,insert+marker,1)
-          old="""async function openCriticCandidates(){\n  const search=await fetchText(`https://opencritic.com/search?q=${encodeURIComponent(title)}`);\n  if(!search)return[];\n  const normalized=title.toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').trim();\n  const paths=[];\n"""
-          new="""async function openCriticCandidates(){\n  const normalized=title.toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').trim();\n  const paths=[];\n  const wikidataId=await wikidataOpenCriticId();\n  if(wikidataId)paths.push(`/game/${wikidataId}/${slug}`);\n  const search=await fetchText(`https://opencritic.com/search?q=${encodeURIComponent(title)}`);\n  if(search){\n"""
-          if old not in s:
-              raise SystemExit('openCriticCandidates prefix not found')
-          s=s.replace(old,new,1)
-          needle="""  for(const m of search.text.matchAll(/href=[\"'](\\/game\\/\\d+\\/[^\"'#?]+)[\"']/gi)){\n    const p=m[1];const low=decode(p).toLowerCase().replace(/[-_]+/g,' ');\n    if(normalized.split(' ').filter(w=>w.length>3).some(w=>low.includes(w)))paths.push(p);\n  }\n  if(!paths.length){for(const m of search.text.matchAll(/href=[\"'](\\/game\\/\\d+\\/[^\"'#?]+)[\"']/gi))paths.push(m[1])}\n"""
-          repl=needle+"  }\n"
-          if needle not in s:
-              raise SystemExit('search parsing block not found')
-          s=s.replace(needle,repl,1)
-          p.write_text(s)
-          PY
+          echo 'ZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCnA9UGF0aCgnc2NyaXB0cy9idWlsZC1jb21wbGV0ZS1yZXZpZXctZ2l0aHViLW1vZGVscy12Mi5tanMnKQpzPXAucmVhZF90ZXh0KCkKbWFya2VyPSdhc3luYyBmdW5jdGlvbiBvcGVuQ3JpdGljQ2FuZGlkYXRlcygpe1xuJwppbnNlcnQ9IiIiYXN5bmMgZnVuY3Rpb24gd2lraWRhdGFPcGVuQ3JpdGljSWQoKXsKICB0cnl7CiAgICBjb25zdCBhcGk9YGh0dHBzOi8vd3d3Lndpa2lkYXRhLm9yZy93L2FwaS5waHA/YWN0aW9uPXdic2VhcmNoZW50aXRpZXMmc2VhcmNoPSR7ZW5jb2RlVVJJQ29tcG9uZW50KHRpdGxlKX0mbGFuZ3VhZ2U9ZW4mZm9ybWF0PWpzb24mbGltaXQ9MTAmb3JpZ2luPSpgOwogICAgY29uc3Qgcj1hd2FpdCBmZXRjaFRleHQoYXBpLDE2MDAwKTtpZighcilyZXR1cm4nJzsKICAgIGNvbnN0IGpzb249SlNPTi5wYXJzZShyLnRleHQpO2NvbnN0IGhpdHM9QXJyYXkuaXNBcnJheShqc29uLnNlYXJjaCk/anNvbi5zZWFyY2g6W107CiAgICBjb25zdCB3b3Jkcz10aXRsZS50b0xvd2VyQ2FzZSgpLnJlcGxhY2UoL1teYS16MC05XSsvZywnICcpLnNwbGl0KC9cXHMrLykuZmlsdGVyKHc9PncubGVuZ3RoPjIpOwogICAgZm9yKGNvbnN0IGhpdCBvZiBoaXRzKXsKICAgICAgY29uc3QgZW50aXR5PWF3YWl0IGZldGNoVGV4dChgaHR0cHM6Ly93d3cud2lraWRhdGEub3JnL3dpa2kvU3BlY2lhbDpFbnRpdHlEYXRhLyR7aGl0LmlkfS5qc29uYCwxNjAwMCk7aWYoIWVudGl0eSljb250aW51ZTsKICAgICAgY29uc3QgZGF0YT1KU09OLnBhcnNlKGVudGl0eS50ZXh0KT8uZW50aXRpZXM/LltoaXQuaWRdO2lmKCFkYXRhKWNvbnRpbnVlOwogICAgICBjb25zdCBkZXNjPShkYXRhLmRlc2NyaXB0aW9ucz8uZW4/LnZhbHVlfHwnJykudG9Mb3dlckNhc2UoKTsKICAgICAgY29uc3QgbGFiZWw9KGRhdGEubGFiZWxzPy5lbj8udmFsdWV8fCcnKS50b0xvd2VyQ2FzZSgpOwogICAgICBjb25zdCBzY29yZT13b3Jkcy5yZWR1Y2UoKG4sdyk9Pm4rKGxhYmVsLmluY2x1ZGVzKHcpPzI6MCksMCkrKGRlc2MuaW5jbHVkZXMoJ3ZpZGVvIGdhbWUnKT8yOjApOwogICAgICBpZihzY29yZTwyKWNvbnRpbnVlOwogICAgICBjb25zdCBjbGFpbT1kYXRhLmNsYWltcz8uUDI4NjQ/LlswXT8ubWFpbnNuYWs/LmRhdGF2YWx1ZT8udmFsdWU7CiAgICAgIGlmKGNsYWltIT09dW5kZWZpbmVkJiZjbGFpbSE9PW51bGwmJlN0cmluZyhjbGFpbSkudHJpbSgpKXJldHVybiBTdHJpbmcoY2xhaW0pLnRyaW0oKTsKICAgIH0KICB9Y2F0Y2h7fQogIHJldHVybicnOwp9CiIiIgppZiAnYXN5bmMgZnVuY3Rpb24gd2lraWRhdGFPcGVuQ3JpdGljSWQoKScgbm90IGluIHM6CiAgICBzPXMucmVwbGFjZShtYXJrZXIsaW5zZXJ0K21hcmtlciwxKQpvbGQ9IiIiYXN5bmMgZnVuY3Rpb24gb3BlbkNyaXRpY0NhbmRpZGF0ZXMoKXsKICBjb25zdCBzZWFyY2g9YXdhaXQgZmV0Y2hUZXh0KGBodHRwczovL29wZW5jcml0aWMuY29tL3NlYXJjaD9xPSR7ZW5jb2RlVVJJQ29tcG9uZW50KHRpdGxlKX1gKTsKICBpZighc2VhcmNoKXJldHVybltdOwogIGNvbnN0IG5vcm1hbGl6ZWQ9dGl0bGUudG9Mb3dlckNhc2UoKS5yZXBsYWNlKC9bXmEtejAtOdCwLdGP0ZFdKy9naSwnICcpLnRyaW0oKTsKICBjb25zdCBwYXRocz1bXTsKIiIiCm5ldz0iIiJhc3luYyBmdW5jdGlvbiBvcGVuQ3JpdGljQ2FuZGlkYXRlcygpewogIGNvbnN0IG5vcm1hbGl6ZWQ9dGl0bGUudG9Mb3dlckNhc2UoKS5yZXBsYWNlKC9bXmEtejAtOdCwLdGP0ZFdKy9naSwnICcpLnRyaW0oKTsKICBjb25zdCBwYXRocz1bXTsKICBjb25zdCB3aWtpZGF0YUlkPWF3YWl0IHdpa2lkYXRhT3BlbkNyaXRpY0lkKCk7CiAgaWYod2lraWRhdGFJZClwYXRocy5wdXNoKGAvZ2FtZS8ke3dpa2lkYXRhSWR9LyR7c2x1Z31gKTsKICBjb25zdCBzZWFyY2g9YXdhaXQgZmV0Y2hUZXh0KGBodHRwczovL29wZW5jcml0aWMuY29tL3NlYXJjaD9xPSR7ZW5jb2RlVVJJQ29tcG9uZW50KHRpdGxlKX1gKTsKICBpZihzZWFyY2gpewoiIiIKaWYgb2xkIG5vdCBpbiBzOiByYWlzZSBTeXN0ZW1FeGl0KCdwcmVmaXggbm90IGZvdW5kJykKcz1zLnJlcGxhY2Uob2xkLG5ldywxKQpuZWVkbGU9IiIiICBmb3IoY29uc3QgbSBvZiBzZWFyY2gudGV4dC5tYXRjaEFsbCgvaHJlZj1bXFwiJ10oXFwvZ2FtZVxcL1xcZCtcXC9bXlxcIicjP10rKVtcXCInXS9naSkpewogICAgY29uc3QgcD1tWzFdO2NvbnN0IGxvdz1kZWNvZGUocCkudG9Mb3dlckNhc2UoKS5yZXBsYWNlKC9bLV9dKy9nLCcgJyk7CiAgICBpZihub3JtYWxpemVkLnNwbGl0KCcgJykuZmlsdGVyKHc9PncubGVuZ3RoPjMpLnNvbWUodz0+bG93LmluY2x1ZGVzKHcpKSlwYXRocy5wdXNoKHApOwogIH0KICBpZighcGF0aHMubGVuZ3RoKXtmb3IoY29uc3QgbSBvZiBzZWFyY2gudGV4dC5tYXRjaEFsbCgvaHJlZj1bXFwiJ10oXFwvZ2FtZVxcL1xcZCtcXC9bXlxcIicjP10rKVtcXCInXS9naSkpcGF0aHMucHVzaChtWzFdKX0KIiIiCmlmIG5lZWRsZSBub3QgaW4gczogcmFpc2UgU3lzdGVtRXhpdCgnc2VhcmNoIGJsb2NrIG5vdCBmb3VuZCcpCnM9cy5yZXBsYWNlKG5lZWRsZSxuZWVkbGUrJyAgfVxuJywxKQpwLndyaXRlX3RleHQocykK' | base64 -d > /tmp/patch.py
+          python3 /tmp/patch.py
           node --check scripts/build-complete-review-github-models-v2.mjs
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
