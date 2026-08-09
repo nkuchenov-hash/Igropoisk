@@ -1,4 +1,4 @@
-name: Persist and test autonomous review builder
+name: Complete Bloodborne publication build
 on:
   push:
     branches: [staging]
@@ -22,43 +22,36 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Persist synthesis fallback and content-hash dedupe
+      - name: Add single-review rendering support
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          p=Path('scripts/build-complete-review-github-models-v2.mjs')
+          p=Path('scripts/render-review-pages.mjs')
           s=p.read_text()
-          imp="import {buildLocalReview} from './local-review-synthesis.mjs';\n"
-          if imp not in s:
-              s=s.replace("import path from 'node:path';\n", "import path from 'node:path';\n"+imp, 1)
-          if "import {createHash} from 'node:crypto';" not in s:
-              s=s.replace("import path from 'node:path';\n", "import path from 'node:path';\nimport {createHash} from 'node:crypto';\n", 1)
-          old_model="""if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);\nconst generated=JSON.parse((await response.json()).choices?.[0]?.message?.content||'{}');"""
-          new_model="""let generated;\nif(response.ok){\n  generated=JSON.parse((await response.json()).choices?.[0]?.message?.content||'{}');\n}else{\n  const modelError=await response.text();\n  console.warn(`GitHub Models unavailable (${response.status}); using autonomous local synthesis: ${modelError.slice(0,300)}`);\n  generated=buildLocalReview({slug,title,year,draft,sources,media,minSections,minWords,minImages,minPerSection});\n}"""
-          if old_model in s:
-              s=s.replace(old_model,new_model,1)
-          old_group="duplicate_group:`${slug}-${Buffer.from(r.url).toString('base64url').slice(0,20)}`"
-          new_group="duplicate_group:`${slug}-${createHash('sha256').update(b).digest('hex').slice(0,24)}`"
-          if old_group in s:
-              s=s.replace(old_group,new_group,1)
-          if 'buildLocalReview({' not in s or "createHash('sha256').update(b)" not in s:
-              raise SystemExit('builder patch verification failed')
+          if "const requestedSlug=process.argv[2]||'';" not in s:
+              s=s.replace("const root=process.cwd();\n", "const root=process.cwd();\nconst requestedSlug=process.argv[2]||'';\n", 1)
+          old="for(const name of fs.readdirSync(articlesDir).filter(name=>name.endsWith('.json'))){"
+          new="const renderFiles=requestedSlug?[`${requestedSlug}.json`]:fs.readdirSync(articlesDir).filter(name=>name.endsWith('.json'));\nfor(const name of renderFiles){"
+          if old in s:
+              s=s.replace(old,new,1)
+          if 'const renderFiles=requestedSlug?' not in s:
+              raise SystemExit('renderer patch verification failed')
           p.write_text(s)
           PY
-          node --check scripts/build-complete-review-github-models-v2.mjs
+          node --check scripts/render-review-pages.mjs
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
-          git add scripts/build-complete-review-github-models-v2.mjs scripts/local-review-synthesis.mjs
-          git commit -m "Make complete review builder independent of retired GitHub Models" || true
+          git add scripts/render-review-pages.mjs
+          git commit -m "Render individual validated reviews independently" || true
           git pull --rebase origin staging
           git push origin HEAD:staging
-      - name: Build and validate Bloodborne end to end
+      - name: Build, validate, render and materialize Bloodborne
         run: |
           node scripts/build-complete-review-github-models-v2.mjs bloodborne
           node scripts/validate-review-output.mjs bloodborne
-          node scripts/render-review-pages.mjs
+          node scripts/render-review-pages.mjs bloodborne
           node scripts/materialize-catalog-no-api.mjs
           git add data article game
-          git commit -m "Build complete Bloodborne page and review" || true
+          git commit -m "Publish complete Bloodborne page and review to staging" || true
           git pull --rebase origin staging
           git push origin HEAD:staging
