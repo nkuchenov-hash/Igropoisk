@@ -1,0 +1,67 @@
+name: Patch Wikidata OpenCritic discovery
+on:
+  push:
+    branches: [staging]
+    paths:
+      - .github/workflows/patch-wikidata-opencritic.yml
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Add Wikidata OpenCritic ID resolver
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/build-complete-review-github-models-v2.mjs')
+          s=p.read_text()
+          marker="async function openCriticCandidates(){\n"
+          insert=r'''async function wikidataOpenCriticId(){
+  try{
+    const api=`https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(title)}&language=en&format=json&limit=10&origin=*`;
+    const r=await fetchText(api,16000);if(!r)return'';
+    const json=JSON.parse(r.text);const hits=Array.isArray(json.search)?json.search:[];
+    const words=title.toLowerCase().replace(/[^a-z0-9]+/g,' ').split(/\s+/).filter(w=>w.length>2);
+    for(const hit of hits){
+      const entity=await fetchText(`https://www.wikidata.org/wiki/Special:EntityData/${hit.id}.json`,16000);if(!entity)continue;
+      const data=JSON.parse(entity.text)?.entities?.[hit.id];if(!data)continue;
+      const desc=(data.descriptions?.en?.value||'').toLowerCase();
+      const label=(data.labels?.en?.value||'').toLowerCase();
+      const score=words.reduce((n,w)=>n+(label.includes(w)?2:0),0)+(desc.includes('video game')?2:0);
+      if(score<2)continue;
+      const claim=data.claims?.P2864?.[0]?.mainsnak?.datavalue?.value;
+      if(claim!==undefined&&claim!==null&&String(claim).trim())return String(claim).trim();
+    }
+  }catch{}
+  return'';
+}
+'''
+          if 'async function wikidataOpenCriticId()' not in s:
+              s=s.replace(marker,insert+marker,1)
+          old="""async function openCriticCandidates(){\n  const search=await fetchText(`https://opencritic.com/search?q=${encodeURIComponent(title)}`);\n  if(!search)return[];\n  const normalized=title.toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').trim();\n  const paths=[];\n"""
+          new="""async function openCriticCandidates(){\n  const normalized=title.toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').trim();\n  const paths=[];\n  const wikidataId=await wikidataOpenCriticId();\n  if(wikidataId)paths.push(`/game/${wikidataId}/${slug}`);\n  const search=await fetchText(`https://opencritic.com/search?q=${encodeURIComponent(title)}`);\n  if(search){\n"""
+          if old not in s:
+              raise SystemExit('openCriticCandidates prefix not found')
+          s=s.replace(old,new,1)
+          needle="""  for(const m of search.text.matchAll(/href=[\"'](\\/game\\/\\d+\\/[^\"'#?]+)[\"']/gi)){\n    const p=m[1];const low=decode(p).toLowerCase().replace(/[-_]+/g,' ');\n    if(normalized.split(' ').filter(w=>w.length>3).some(w=>low.includes(w)))paths.push(p);\n  }\n  if(!paths.length){for(const m of search.text.matchAll(/href=[\"'](\\/game\\/\\d+\\/[^\"'#?]+)[\"']/gi))paths.push(m[1])}\n"""
+          repl=needle+"  }\n"
+          if needle not in s:
+              raise SystemExit('search parsing block not found')
+          s=s.replace(needle,repl,1)
+          p.write_text(s)
+          PY
+          node --check scripts/build-complete-review-github-models-v2.mjs
+          git config user.name "igropoisk-builder"
+          git config user.email "actions@users.noreply.github.com"
+          git add scripts/build-complete-review-github-models-v2.mjs
+          git commit -m "Resolve OpenCritic games through Wikidata IDs"
+          git pull --rebase origin staging
+          git push origin HEAD:staging
