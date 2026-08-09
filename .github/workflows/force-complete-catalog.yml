@@ -47,16 +47,27 @@ jobs:
           while IFS= read -r slug; do
             [ -z "$slug" ] && continue
             echo "=== STRICT BUILD: $slug ==="
-            if node scripts/build-complete-review-github-models-v2.mjs "$slug" && node scripts/validate-review-output.mjs "$slug" && node scripts/render-review-pages.mjs "$slug"; then
-              printf '%s\tsuccess\n' "$slug" >> /tmp/results.tsv
-              git add data "article/$slug"
-              git commit -m "Complete strict Mafia-standard article for $slug" || true
-              git push origin HEAD:staging
-            else
-              printf '%s\tblocked\n' "$slug" >> /tmp/results.tsv
-              git restore --worktree --staged data article game 2>/dev/null || true
-              git clean -fd data article game >/dev/null 2>&1 || true
+            if node scripts/build-complete-review-github-models-v2.mjs "$slug"; then
+              node - "$slug" <<'NODE'
+          const fs=require('fs');const slug=process.argv[2];
+          for(const file of [`data/article-media/${slug}.json`,`data/articles/${slug}.json`,`data/reviews/${slug}.json`]){
+            if(!fs.existsSync(file))continue;
+            const data=JSON.parse(fs.readFileSync(file,'utf8'));const seen=new Set();
+            const walk=v=>{if(Array.isArray(v))return v.map(walk).filter(x=>{if(!x||typeof x!=='object'||!x.duplicate_group)return true;if(seen.has(x.duplicate_group))return false;seen.add(x.duplicate_group);return true});if(v&&typeof v==='object')for(const k of Object.keys(v))v[k]=walk(v[k]);return v};
+            fs.writeFileSync(file,JSON.stringify(walk(data),null,2)+'\n');
+          }
+          NODE
+              if node scripts/validate-review-output.mjs "$slug" && node scripts/render-review-pages.mjs "$slug"; then
+                printf '%s\tsuccess\n' "$slug" >> /tmp/results.tsv
+                git add data "article/$slug"
+                git commit -m "Complete strict Mafia-standard article for $slug" || true
+                git push origin HEAD:staging
+                continue
+              fi
             fi
+            printf '%s\tblocked\n' "$slug" >> /tmp/results.tsv
+            git restore --worktree --staged data article game 2>/dev/null || true
+            git clean -fd data article game >/dev/null 2>&1 || true
           done < /tmp/queue.txt
           cat /tmp/results.tsv
       - name: Materialize and require full catalog coverage
