@@ -30,6 +30,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Expand sparse-title media discovery
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('scripts/build-sparse-review-fast.mjs')
+          s = p.read_text()
+          old = "if(candidates.length<45){const imgs=await Promise.all([`${title} gameplay screenshots`,`${title} official screenshots`,`${title} game screenshot`].map(imageSearch));for(const rows of imgs)for(const u of rows)add(u,'https://www.bing.com/images/search','Web image source',title)}"
+          new = "if(candidates.length<90){const imageQueries=[`${title} gameplay screenshots`,`${title} official screenshots`,`${title} game screenshot`,`${title} screenshot gallery`,`${title} press kit screenshots`,`${title} 4k gameplay screenshots`,`${title} PC screenshots`,`${title} PS5 screenshots`,`${title} Xbox screenshots`,`${title} review screenshots`,`${title} trailer screenshots`,`${title} official media gallery`];const imgs=await Promise.all(imageQueries.map(imageSearch));for(const rows of imgs)for(const u of rows)add(u,'https://www.bing.com/images/search','Web image source',title)}"
+          if old not in s:
+              raise SystemExit('media discovery patch anchor missing')
+          p.write_text(s.replace(old,new))
+          PY
       - name: Build every remaining filled page
         run: |
           git config user.name "igropoisk-builder"
