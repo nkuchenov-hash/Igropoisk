@@ -32,7 +32,9 @@ jobs:
           test -z "$(git status --porcelain)"
       - name: Verify JavaScript and JSON integrity
         run: |
-          find assets scripts features game -type f \( -name '*.js' -o -name '*.mjs' \) -print0 | xargs -0 -n1 node --check
+          find assets scripts features -type f \( -name '*.js' -o -name '*.mjs' \) -print0 | xargs -0 -n1 node --check
+          node --check game/_shared/game-shell.js
+          node --check game/_shared/game-page.js
           python3 - <<'PY'
           import json
           from pathlib import Path
