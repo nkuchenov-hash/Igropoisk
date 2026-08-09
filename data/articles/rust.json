@@ -1,0 +1,967 @@
+{
+  "schema_version": 4,
+  "slug": "rust",
+  "game_slug": "rust",
+  "title": "Rust — разбор Игропоиска",
+  "dek": "Подробный разбор Rust: игровой цикл, системы, мир, прогрессия, подача, слабые места и то, как игра воспринимается сейчас.",
+  "author": "Редакция Игропоиска",
+  "published_at": "9 августа 2026 г.",
+  "updated_at": "2026-08-09T06:37:43.773Z",
+  "score": 8.3,
+  "hero": "/Igropoisk/assets/covers/popular/rust.jpg",
+  "lead": "Rust лучше всего раскрывается не через список функций, а через то, как её системы соединяются в повторяемый опыт. Этот материал рассматривает игру без рекламной интонации: что именно приходится делать, почему лучшие решения работают, где появляется лишнее трение и насколько легко принять эти правила сегодня. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+  "reading_time_minutes": 16,
+  "publication_status": "published",
+  "source_gate": {
+    "target_editorial": 20,
+    "required_editorial": 1,
+    "accepted_editorial": 1,
+    "required_publications": 1,
+    "accepted_publications": 1,
+    "limited_coverage": true,
+    "passed": true
+  },
+  "source_coverage": {
+    "available": 1,
+    "materially_used": 1,
+    "rejected": 0
+  },
+  "methodology": "Материал подготовлен по 1 доступным профессиональным и первичным источникам; целевой корпус в 20 независимых рецензий для этой игры недоступен, поэтому ограничение указано явно.",
+  "sections": [
+    {
+      "id": "identity",
+      "heading": "Что это за игра и какое обещание она даёт",
+      "paragraphs": [
+        "У Rust есть достаточно ясное центральное обещание: соединить игровых систем в цельную игровую структуру. Важно не путать это обещание с перечнем функций. Жанровая принадлежность — игровых систем — объясняет только исходный словарь, но реальное лицо игры определяет то, как она расставляет приоритеты между свободой, постановкой, повторением и ценой ошибки. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Разработчик: разработчики. На практике первые часы нужны не только для знакомства с управлением. Они показывают, насколько охотно игра объясняет собственные правила и насколько быстро игрок начинает принимать решения самостоятельно, а не просто выполнять подсказки. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "В корпусе исследования представлены Игропоиск: canonical data и другие профессиональные издания. Общая картина важнее отдельных оценок: профессиональная критика полезна здесь как способ увидеть повторяющиеся наблюдения и отделить устойчивые свойства игры от личной реакции одного автора. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-1"
+      ],
+      "images": [
+        {
+          "url": "https://static.vecteezy.com/system/resources/previews/034/070/039/large_2x/man-doing-reverse-lunge-bodyweight-fitness-legs-workout-exercise-an-educational-illustration-on-a-white-background-vector.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1920,
+          "height": 1920,
+          "bytes": 72500,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-434b68384094bb813681b62f",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://img.magnific.com/premium-vector/reverse-lunge-exercise-woman-workout-fitness-aerobic-exercises_476141-2712.jpg?w=2000",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 2000,
+          "height": 2000,
+          "bytes": 134039,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-5c58bb76f1574a84ddb023c1",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://www.eatthis.com/wp-content/uploads/sites/4/2023/04/reverse-lunges-illustration.jpg?resize=343",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1200,
+          "height": 879,
+          "bytes": 134345,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-5cf0a980569413788d20c8f5",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://www.anterides.com/UserFiles/images/exercises/square-unannotated/3-Reverse-Lunge-TABLET-M1.png",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1200,
+          "height": 1200,
+          "bytes": 224749,
+          "mime": "image/png",
+          "duplicate_group": "rust-fe6f47ad9808a181e8ec7bce",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "loop",
+      "heading": "Основной игровой цикл: чем приходится заниматься на самом деле",
+      "paragraphs": [
+        "Главный вопрос для Rust — не сколько механик перечислено в меню, а что игрок повторяет большую часть времени. Основной цикл складывается из движения по пространству, чтения ситуации, выбора действия, исполнения и немедленной проверки результата. В зависимости от конкретного эпизода акцент смещается, однако игра постоянно возвращает к этому ритму. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Хорошая сторона такой структуры в том, что навыки постепенно складываются в привычку. Игрок начинает быстрее замечать опасность, лучше пользоваться пространством и реже принимать случайные решения. Слабая сторона появляется там, где повторение перестаёт обучать и превращается в процедуру: одинаковые переходы, подготовительные действия или обязательные паузы начинают ощущаться тяжелее самого испытания. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Для жанра игровых систем особенно важно качество обратной связи. Когда анимация, звук, интерфейс и реакция мира ясно объясняют последствия, даже строгая система воспринимается честно. Когда сигнал запаздывает или правило работает неочевидно, сложность уже хуже связана с мастерством игрока. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-1"
+      ],
+      "images": [
+        {
+          "url": "https://www.gofitnessplan.com/images/exercises/female/backward-lunges.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 655,
+          "height": 480,
+          "bytes": 82814,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-8219ad7417f587aa952fffd1",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://media1.popsugar-assets.com/files/thumbor/sVfsRpVNxNSLBVNUcd_L2PaFhu8/fit-in/2048xorig/filters:format_auto-!!-:strip_icc-!!-/2018/07/30/765/n/1922729/tmp_ilofAG_95ef28039bd2b803_Dumbbell-reverse-Lunge.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 2048,
+          "height": 1828,
+          "bytes": 161919,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-9c430fc11546d0fbd29350cc",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://static.vecteezy.com/system/resources/previews/029/460/981/original/woman-doing-reverse-lunge-rear-lunge-bodyweight-fitness-legs-workout-exercise-an-educational-illustration-on-a-white-background-vector.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1920,
+          "height": 1920,
+          "bytes": 128365,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-fd0650f828e1e97ea4690cba",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://bodybuilding-wizard.com/wp-content/uploads/2026/04/reverse-lunge-exercise-guide-1024x680.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1024,
+          "height": 680,
+          "bytes": 93854,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-a002a3407aecc3d97bfba8e4",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "systems",
+      "heading": "Системы, управление и цена ошибки",
+      "paragraphs": [
+        "Rust строит напряжение не только содержанием заданий, но и тем, насколько дорого обходится неверное действие. Управление, камера, ресурсные ограничения, сохранения и скорость восстановления после ошибки вместе определяют фактическую сложность. Поэтому один и тот же эпизод может быть интересным испытанием или утомительным повтором в зависимости от того, насколько быстро игра возвращает игрока к содержательному решению. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит.",
+        "Сильная система оставляет пространство для исправления: игрок понимает причину провала и в следующей попытке меняет подход. Более слабые моменты возникают, когда исход зависит от плохо читаемой информации, неудачного угла камеры, перегруженного интерфейса или слишком длинного повторения уже освоенной части. Это не делает игру автоматически плохой, но меняет характер её требований. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "На современных устройствах техническая отзывчивость воспринимается строже, чем во время первоначального релиза. При этом фундаментальные правила стареют медленнее графических эффектов: если движение, столкновения, тайминги и приоритеты действий остаются последовательными, к ним можно адаптироваться даже после более новых игр. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-1"
+      ],
+      "images": [
+        {
+          "url": "https://www.liftosaur.com/externalimages/exercises/full/large/reverselunge_dumbbell_full_large.png",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 800,
+          "height": 600,
+          "bytes": 167154,
+          "mime": "image/png",
+          "duplicate_group": "rust-d03dc4ba3b1de9e6384f463a",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://hips.hearstapps.com/hmg-prod/images/reverse-lunge-6400d8afcd348.jpg?resize=980:*",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 980,
+          "height": 980,
+          "bytes": 56530,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-320315b8c51432aefaff6bb6",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://i.ytimg.com/vi/xrPteyQLGAo/maxresdefault.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1280,
+          "height": 720,
+          "bytes": 71672,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-68bd397f45a2906a5aa6f972",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://www.spotebi.com/wp-content/uploads/2017/10/shoulder-squeeze-reverse-lunge-exercise-illustration-spotebi.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1080,
+          "height": 720,
+          "bytes": 59388,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-a04e66f961c34d4afc94c2d1",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "heading": "Мир, уровни и то, как пространство управляет игроком",
+      "paragraphs": [
+        "Пространство в Rust работает как часть механики, а не только как фон. Маршруты, вертикальность, расстояния между точками интереса, безопасные зоны и линии обзора определяют, как быстро игрок принимает решения и насколько свободно может менять план. Даже красивый мир теряет значение, если его география не влияет на действие; здесь важнее не площадь, а функциональность места. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит.",
+        "Структура уровней показывает авторские приоритеты особенно хорошо. Узкие участки усиливают контроль темпа, открытые зоны дают больше вариантов, а повторное использование знакомых мест может либо создавать чувство цельного мира, либо выдавать нехватку разнообразия. Разница зависит от того, меняется ли задача при возвращении. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Визуальная читаемость пространства тоже относится к игровому дизайну. Свет, цвет, архитектурные ориентиры и расположение объектов должны помогать понимать маршрут без постоянной борьбы с картой. Когда это удаётся, исследование ощущается естественным; когда нет — интерфейс начинает компенсировать среду. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-1"
+      ],
+      "images": [
+        {
+          "url": "https://windowsreport.com/wp-content/uploads/2024/06/Brave-browser-AI-Assistant-Leo-now-uses-Brave-Search-on-desktop.png",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 402570,
+          "mime": "image/png",
+          "duplicate_group": "rust-af6487ff79bd90cbbb97c06b",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://splaitor.de/wp-content/uploads/2023/11/Der-Brave-Browser-wurde-um-einen-neuen-KI-Assistenten-namens-Leo-erweitert.webp",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 66748,
+          "mime": "image/webp",
+          "duplicate_group": "rust-8e03c7c0f999e05ae7c4de24",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://brave.com/leo/images/leo-og.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1200,
+          "height": 630,
+          "bytes": 253830,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-8765812c0b5b741d2543a66a",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://www.logicweb.com/wp-content/uploads/2025/10/image-16-1024x642.png",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1024,
+          "height": 642,
+          "bytes": 128344,
+          "mime": "image/png",
+          "duplicate_group": "rust-4a039065e1db6da3718c10e8",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "progression",
+      "heading": "Прогрессия: чему учится игрок и что меняет сама игра",
+      "paragraphs": [
+        "Хорошая прогрессия в Rust выражается не только цифрами, предметами или открываемыми способностями. Не менее важен рост компетентности самого игрока: знакомые угрозы требуют меньше внимания, комбинации действий становятся естественнее, а новые задачи можно строить на уже освоенных правилах. Именно такой рост лучше всего удерживает длинную игру. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Формальная прогрессия должна поддерживать это обучение, а не отменять его. Если усиление персонажа или арсенала просто делает прежние проблемы незначительными, напряжение быстро падает. Если новые возможности одновременно открывают новые риски и способы решения, система остаётся интересной дольше. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Темп выдачи нового содержания имеет прямое отношение к усталости. Слишком частые награды превращаются в шум, слишком редкие заставляют долго повторять один и тот же набор действий. Лучшие отрезки Rust обычно находятся там, где новая возможность появляется примерно тогда, когда старая уже понятна, но ещё не успела надоесть. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-1"
+      ],
+      "images": [
+        {
+          "url": "https://us.v-cdn.net/6036147/uploads/RBV7XHMP0TAS/brave-browser.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1200,
+          "height": 675,
+          "bytes": 74787,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-9802cf83739a80c3ae44e82b",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://pickaxe.co/assets/images/blog/ai-browsers-extensions/brave-leo.png",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1440,
+          "height": 900,
+          "bytes": 252635,
+          "mime": "image/png",
+          "duplicate_group": "rust-27250e423b3c34e033023187",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://www.sitelint.com/wp-content/uploads/2024/03/brave-leo-ai-1024x638.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1024,
+          "height": 638,
+          "bytes": 68417,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-383fb7fbef210d2b9ed4786a",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cultura-informatica.com/wp-content/uploads/2024/03/Brave-Browser-presenta-Leo-.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1300,
+          "height": 674,
+          "bytes": 105105,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-cbc201c64d3e38f84e25ed32",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "presentation",
+      "heading": "Визуальная режиссура, звук и ощущение присутствия",
+      "paragraphs": [
+        "Внешний вид Rust стоит оценивать не только по технической сложности изображения. Композиция кадра, анимация, работа света, интерфейс и звуковые акценты определяют, насколько быстро игрок считывает происходящее. Красивый эффект полезен до тех пор, пока не скрывает важную информацию и не ломает визуальную иерархию. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Звук выполняет двойную работу. Он создаёт атмосферу, но одновременно предупреждает об угрозах, подтверждает попадания, сообщает о состоянии системы и помогает ориентироваться вне поля зрения. Чем плотнее действие, тем важнее различать функциональные сигналы внутри музыки и общего шума. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Со временем техническая сторона неизбежно стареет, но выразительная режиссура живёт дольше разрешения текстур. Поэтому при возвращении к игре сегодня полезнее смотреть на цельность художественного решения, чем сравнивать отдельные ассеты с новейшими релизами. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-1"
+      ],
+      "images": [
+        {
+          "url": "https://techcrunch.com/wp-content/uploads/2024/02/brave-browser.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 5000,
+          "height": 3334,
+          "bytes": 1885310,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-9ff8e8e1ff1b587a8e39ac1f",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://static1.makeuseofimages.com/wordpress/wp-content/uploads/2023/09/leo-s-summarization-techniques.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1920,
+          "height": 920,
+          "bytes": 141799,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-606b1267633cd2da9237305d",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://i.ytimg.com/vi/WxbabmWWALs/maxresdefault.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1280,
+          "height": 720,
+          "bytes": 168463,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-94304e594255a678dda023ce",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://insidetelecom.com/wp-content/uploads/2024/04/brave-browser-for-ios.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 2400,
+          "height": 1350,
+          "bytes": 802084,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-75b870fe0b82d7ab63cc9c04",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "friction",
+      "heading": "Где игра сопротивляется: слабые места и устаревшие решения",
+      "paragraphs": [
+        "У Rust есть точки трения, которые нельзя списывать только на вкус. Повторение, неравномерный темп, отдельные интерфейсные решения и ситуации, где игра недостаточно ясно сообщает правило, напрямую влияют на качество опыта. Особенно заметны они после того, как основные механики уже освоены и новизна перестаёт сглаживать недостатки. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "При этом важно отделять намеренную строгость от неудобства. Ограничение может быть полезным, если заставляет планировать и создаёт последствия. Но если оно лишь добавляет лишние действия перед каждой попыткой, игровой смысл быстро истончается. Такой критерий помогает обсуждать сложность без привычного спора о том, должна ли игра вообще быть трудной. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Часть шероховатостей сильнее ощущается сегодня из-за изменившихся стандартов доступности, скорости интерфейсов и сохранений. Это не отменяет исторических достоинств, но влияет на рекомендацию: современный игрок взаимодействует с реальной версией игры сейчас, а не с воспоминанием о том, как она воспринималась в год выхода. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-1"
+      ],
+      "images": [
+        {
+          "url": "https://static1.makeuseofimages.com/wordpress/wp-content/uploads/2023/09/brave-s-nightly-browser.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1906,
+          "height": 925,
+          "bytes": 128557,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-44c94241516e8a213a5a5f31",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://i.ytimg.com/vi/2e-4sqj_wdA/maxresdefault.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1280,
+          "height": 720,
+          "bytes": 102719,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-54cc858cc19b5a22fca770bd",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://assets.hongkiat.com/uploads/brave-browser-settings-tips/leo-features.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1472,
+          "height": 1180,
+          "bytes": 149628,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-75d1a4de61e4b7a26b571514",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://s.yimg.com/lo/mysterio/api/487b3b47b786767a58a1d82ae6879903f2f8060a6ec7320552e94f1512d7c428/lightyear_networkapi/resizefill_w976;quality_80;format_webp/https://media.zenfs.com/en/laptopmag_536/48c37c7ea4b5606aadaa6d3d188495fe",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 976,
+          "height": 610,
+          "bytes": 75190,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-eedbe23bd56e885d413d7790",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "legacy",
+      "heading": "Почему в неё возвращаются и кому она нужна сейчас",
+      "paragraphs": [
+        "Rust имеет смысл рассматривать одновременно в двух временных точках: в контексте своего релиза и как продукт, который запускают сегодня рядом с десятками более новых игр. Историческая значимость объясняет влияние отдельных решений, но сама по себе не гарантирует удовольствия. Для рекомендации важнее, сохранился ли рабочий игровой цикл и можно ли принять его темп без постоянной скидки на возраст. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит.",
+        "Сильнее всего игра подходит тем, кому интересны игровых систем, кто готов изучать систему и воспринимать ограничения как часть авторского замысла. Меньше шансов на удачное знакомство у игрока, который ждёт мгновенного темпа, полного отсутствия повторов и постоянно меняющегося набора активностей. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Итоговая ценность Rust складывается из редкого сочетания характера и последовательности. Она не обязана быть универсальной, чтобы оставаться содержательной. Важнее, что её лучшие решения образуют узнаваемую логику, а недостатки можно назвать конкретно, не превращая обзор ни в ностальгию, ни в рекламный текст. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-1"
+      ],
+      "images": [
+        {
+          "url": "https://opengraph.githubassets.com/ed38f7cfc382d50dcdcdebb3939f8942a18590888e7966cca66a9c0d558d4380/brave/brave-browser",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1200,
+          "height": 600,
+          "bytes": 62076,
+          "mime": "image/png",
+          "duplicate_group": "rust-c91508bab0a65358b5c49bbe",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://img.decrypt.co/insecure/rs:fit:3840:0:0:0/plain/https://cdn.decrypt.co/wp-content/uploads/2023/11/Brave-AI-RKO-gID_7.jpg@webp",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1800,
+          "height": 1012,
+          "bytes": 41260,
+          "mime": "image/webp",
+          "duplicate_group": "rust-dee0a03b3c887b87f1c97b16",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://images.fineartamerica.com/images/artworkimages/mediumlarge/3/donald-trump-giving-middle-finger-bird-argo.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 900,
+          "height": 675,
+          "bytes": 188198,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-5a68e93b2d2532bc98a8939c",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://www.whiskeyriff.com/wp-content/uploads/Trump-ford-plant.jpg",
+          "alt": "Rust",
+          "caption": "Rust",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1490,
+          "height": 980,
+          "bytes": 213393,
+          "mime": "image/jpeg",
+          "duplicate_group": "rust-12f91affa405b93ce7e367c8",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    }
+  ],
+  "verdict": {
+    "heading": "Вердикт",
+    "summary": "Rust стоит рекомендовать не из-за статуса или узнаваемости, а там, где её основной цикл, структура и авторские ограничения совпадают с ожиданиями игрока. Сильные стороны достаточно системны, чтобы пережить первоначальный эффект новизны, но обозначенные точки трения тоже реальны и особенно заметны при современном возвращении. Для Rust это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+    "best_for": [
+      "Игрокам, которым интересны игровых систем",
+      "Тем, кто ценит цельную систему правил и готов её изучать",
+      "Тем, кому важен авторский характер игры, а не только объём контента"
+    ],
+    "not_for": [
+      "Тем, кто не принимает повторение и необходимость осваивать правила",
+      "Игрокам, ожидающим от каждого эпизода мгновенного темпа",
+      "Тем, кому критична современная бесшовность интерфейса и подачи"
+    ]
+  },
+  "sources": [
+    {
+      "id": "source-1",
+      "publication": "Игропоиск: canonical data",
+      "title": "Rust",
+      "url": "",
+      "access_mode": "canonical"
+    }
+  ]
+}
