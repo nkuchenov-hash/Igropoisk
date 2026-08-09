@@ -30,89 +30,53 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Configure builder
+      - name: Build every remaining filled page
         run: |
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
-          node - <<'NODE'
-          const fs=require('fs');
-          const file='scripts/build-complete-review-github-models-v2.mjs';
-          let s=fs.readFileSync(file,'utf8');
-          const anchor='if(selected.length<required){for(const s of defs){if(selected.length>=required)break;if(seenPub.has(s.id))continue;accept(await bing(`"${title}" review site:${s.domain}`))}}';
-          if(!s.includes('adaptive-professional-coverage-v1')){
-            if(!s.includes(anchor)) throw new Error('builder source anchor not found');
-            const extra=`\n// adaptive-professional-coverage-v1: exact-game professional coverage fallback for titles without 20 indexed reviews.\nif(selected.length<required){\n  const variants=[title,slug.replace(/[-_]+/g,' '),title.replace(/^Tom Clancy[’']?s?\\s*:?\\s*/i,'').trim()].filter(Boolean);\n  for(const outlet of defs){\n    if(selected.length>=required)break;\n    if(seenPub.has(outlet.id))continue;\n    for(const variant of variants){\n      const rows=await bing(\\\`\\\"\\${variant}\\\" site:\\${outlet.domain}\\\`);\n      const tokens=variant.toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').split(/\\s+/).filter(w=>w.length>3);\n      const filtered=rows.filter(x=>{const hay=(x.title+' '+x.snippet).toLowerCase();const hits=tokens.filter(w=>hay.includes(w)).length;return hits>=Math.max(1,Math.min(2,tokens.length));});\n      accept(filtered,{trustTitle:true});\n      if(selected.length>=required)break;\n    }\n  }\n}\nif(selected.length<required){\n  for(const u of [draft.links?.official,draft.links?.store].filter(Boolean)){\n    if(seenUrl.has(u))continue;\n    const p=await fetchText(u);if(!p)continue;\n    const publication=host(p.url).includes('steampowered.com')?'Steam':'Official source';\n    selected.push({url:p.url,title:TITLE_PLACEHOLDER+' — '+publication,snippet:strip(p.text).slice(0,1400),publication,publication_id:'primary-'+(selected.length+1),discovery_url:p.url,primary:true});\n    seenUrl.add(p.url);\n  }\n}\nconst coverageLimited=selected.length<required;\nconst sourceFloor=year>=2026?1:Math.min(4,required);\nconst sourceTarget=Math.min(required,selected.length);\n`.replace('TITLE_PLACEHOLDER','${title}');
-            s=s.replace(anchor,anchor+extra);
-            s=s.replace('write(`data/parser-runs/review-source-discovery-${slug}.json`,{slug,title,required,selected_count:selected.length,selected:selected.map(x=>({publication:x.publication,title:x.title,url:x.url,discovery_url:x.discovery_url||null})),checked_at:new Date().toISOString()});\nif(selected.length<required)throw new Error(`Source gate blocked: ${selected.length}/${required}`);',
-              'write(`data/parser-runs/review-source-discovery-${slug}.json`,{slug,title,required,target_required:required,source_target:sourceTarget,coverage_limited:coverageLimited,selected_count:selected.length,selected:selected.map(x=>({publication:x.publication,title:x.title,url:x.url,discovery_url:x.discovery_url||null})),checked_at:new Date().toISOString()});\nif(selected.length<sourceFloor)throw new Error(`Source gate blocked: ${selected.length}/${sourceFloor} floor (${required} target)`);');
-            s=s.replace('for(const src of selected.slice(0,required)){','for(const src of selected.slice(0,sourceTarget)){');
-            s=s.replace('if(pageData.length<required)throw new Error(`Evidence gate blocked: ${pageData.length}/${required}`);','if(pageData.length<sourceFloor)throw new Error(`Evidence gate blocked: ${pageData.length}/${sourceFloor}`);');
-            s=s.replace('if(approved.length<minImages||mediaSources.size<3)throw new Error(`Media gate blocked: ${approved.length}/${minImages}, sources=${mediaSources.size}/3`);',
-              'const effectiveMinImages=coverageLimited?Math.min(minImages,Math.max(8,Math.min(approved.length,minImages))):minImages;\nconst effectivePerSection=coverageLimited?1:minPerSection;\nif(approved.length<effectiveMinImages||mediaSources.size<1)throw new Error(`Media gate blocked: ${approved.length}/${effectiveMinImages}, sources=${mediaSources.size}/1`);');
-            s=s.replace('const sources=pageData.slice(0,required).map((s,i)=>({id:`source-${i+1}`','const sources=pageData.slice(0,sourceTarget).map((s,i)=>({id:`source-${i+1}`');
-            s=s.replace('суммарно минимум ${minImages} изображений и минимум ${minPerSection} на раздел.','суммарно минимум ${effectiveMinImages} изображений и минимум ${effectivePerSection} на раздел. Если coverageLimited=true, это предварительный/ограниченный обзор: прямо не утверждай личный hands-on опыт и не изображай отсутствие рецензий как наличие рецензий.');
-            s=s.replace('const sections=(generated.sections||[]).slice(0,10);if(sections.length<minSections)throw new Error(`Synthesis sections blocked: ${sections.length}/${minSections}`);\nconst byId=new Map(media.map(x=>[x.id,x])),used=new Set();const targetPer=Math.max(minPerSection,Math.ceil(minImages/sections.length));',
-              'const sections=(generated.sections||[]).slice(0,10);if(sections.length<minSections)throw new Error(`Synthesis sections blocked: ${sections.length}/${minSections}`);\nconst byId=new Map(media.map(x=>[x.id,x])),used=new Set();const targetPer=Math.max(effectivePerSection,Math.ceil(effectiveMinImages/sections.length));');
-            s=s.replace("if(sections.flatMap(s=>s.images||[]).length<minImages)throw new Error('Not enough unique images after section assignment');","if(sections.flatMap(s=>s.images||[]).length<effectiveMinImages)throw new Error('Not enough unique images after section assignment');");
-            s=s.replace('source_gate:{required_editorial:required,accepted_editorial:articleSources.length,required_publications:required,accepted_publications:articleSources.length,passed:articleSources.length>=required}',
-              'source_gate:{target_editorial:required,required_editorial:sourceTarget,accepted_editorial:articleSources.length,required_publications:sourceTarget,accepted_publications:articleSources.length,limited_coverage:coverageLimited,passed:articleSources.length>=sourceTarget}');
-            s=s.replace('methodology:generated.methodology||`Обзор построен по ${required} независимым профессиональным материалам.`',
-              'methodology:generated.methodology||`Материал построен по ${articleSources.length} независимым профессиональным/первичным источникам${coverageLimited?`; целевой порог ${required} публикаций недоступен, поэтому материал помечен как ограниченный обзор/превью`:``}.`');
-            s=s.replace('minimum_images_per_section:minPerSection','minimum_images_per_section:effectivePerSection');
-            s=s.replace('publication_gate:{required,accepted:articleSources.length,passed:true}','publication_gate:{target_required:required,required:sourceTarget,accepted:articleSources.length,limited_coverage:coverageLimited,passed:true}');
-            s=s.replace("required,accepted:articleSources.length,images:sections.flatMap(s=>s.images||[]).length","target_required:required,required:sourceTarget,accepted:articleSources.length,coverage_limited:coverageLimited,images:sections.flatMap(s=>s.images||[]).length");
-            fs.writeFileSync(file,s);
-          }
-
-          const validator='scripts/validate-review-output.mjs';
-          let v=fs.readFileSync(validator,'utf8');
-          if(!v.includes('adaptive-limited-media-v1')){
-            v=v.replace('  const sections=article.sections||[];','  // adaptive-limited-media-v1\n  const limitedCoverage=Boolean(article.source_gate?.limited_coverage);\n  const sections=article.sections||[];');
-            v=v.replace("if(images.length<Number(balance.screenshots_per_section?.minimum||3))errors.push(`${section.id}: images ${images.length}/${balance.screenshots_per_section?.minimum}`);",
-              "const sectionImageMinimum=limitedCoverage?1:Number(balance.screenshots_per_section?.minimum||3);\n    if(images.length<sectionImageMinimum)errors.push(`${section.id}: images ${images.length}/${sectionImageMinimum}`);");
-            v=v.replace("if(allImages.length<Number(balance.minimum_total_screenshots||30))errors.push(`total images ${allImages.length}/${balance.minimum_total_screenshots}`);\n  if(new Set(urls).size<Number(balance.minimum_unique_screenshots||30))errors.push(`unique images ${new Set(urls).size}/${balance.minimum_unique_screenshots}`);",
-              "const totalImageMinimum=limitedCoverage?8:Number(balance.minimum_total_screenshots||30);\n  const uniqueImageMinimum=limitedCoverage?8:Number(balance.minimum_unique_screenshots||30);\n  if(allImages.length<totalImageMinimum)errors.push(`total images ${allImages.length}/${totalImageMinimum}`);\n  if(new Set(urls).size<uniqueImageMinimum)errors.push(`unique images ${new Set(urls).size}/${uniqueImageMinimum}`);");
-            fs.writeFileSync(validator,v);
-          }
-          NODE
-          git add scripts/build-complete-review-github-models-v2.mjs scripts/validate-review-output.mjs
-          git commit -m "Support honest limited-coverage Mafia-standard articles" || true
-          git pull --rebase origin staging
-          git push origin HEAD:staging
-      - name: Build all remaining games
-        run: |
           node - <<'NODE' > /tmp/queue.txt
           const fs=require('fs');
           const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
           process.stdout.write(catalog.filter(g=>g.slug!=='mafia'&&!fs.existsSync(`article/${g.slug}/index.html`)).map(g=>g.slug).join('\n')+'\n');
           NODE
+          : > /tmp/results.tsv
           while IFS= read -r slug; do
             [ -z "$slug" ] && continue
             echo "=== COMPLETE BUILD: $slug ==="
+            built=0
             if node scripts/build-complete-review-github-models-v2.mjs "$slug"; then
+              built=1
+            else
+              git reset --hard HEAD
+              if node scripts/build-limited-review-fallback.mjs "$slug"; then built=1; fi
+            fi
+            if [ "$built" = "1" ]; then
               node - "$slug" <<'NODE'
-          const fs=require('fs');const slug=process.argv[2];
-          for(const file of [`data/article-media/${slug}.json`,`data/articles/${slug}.json`,`data/reviews/${slug}.json`]){
-            if(!fs.existsSync(file))continue;const data=JSON.parse(fs.readFileSync(file,'utf8'));
-            const globalSeen=new Set();
-            const walk=v=>{if(Array.isArray(v))return v.map(walk).filter(x=>{if(!x||typeof x!=='object'||!x.duplicate_group)return true;if(globalSeen.has(x.duplicate_group))return false;globalSeen.add(x.duplicate_group);return true});if(v&&typeof v==='object')for(const k of Object.keys(v))v[k]=walk(v[k]);return v};
-            fs.writeFileSync(file,JSON.stringify(walk(data),null,2)+'\n');
-          }
+          const fs=require('fs');const slug=process.argv[2];const globalSeen=new Set();
+          const walk=v=>{if(Array.isArray(v))return v.map(walk).filter(x=>{if(!x||typeof x!=='object'||!x.duplicate_group)return true;if(globalSeen.has(x.duplicate_group))return false;globalSeen.add(x.duplicate_group);return true});if(v&&typeof v==='object')for(const k of Object.keys(v))v[k]=walk(v[k]);return v};
+          for(const file of [`data/article-media/${slug}.json`,`data/articles/${slug}.json`,`data/reviews/${slug}.json`]){if(!fs.existsSync(file))continue;globalSeen.clear();const data=JSON.parse(fs.readFileSync(file,'utf8'));fs.writeFileSync(file,JSON.stringify(walk(data),null,2)+'\n')}
           NODE
-              if node scripts/validate-review-output.mjs "$slug" && node scripts/render-review-pages.mjs "$slug"; then
+              if node scripts/validate-review-output.mjs "$slug" && node scripts/render-review-pages.mjs "$slug" && node scripts/build-game-page-from-registry.mjs "$slug"; then
+                printf '%s\tsuccess\n' "$slug" >> /tmp/results.tsv
                 git add data "article/$slug" "game/$slug"
-                git commit -m "Complete Mafia-standard article for $slug" || true
+                git commit -m "Complete filled Mafia-standard page for $slug" || true
                 git pull --rebase origin staging
                 git push origin HEAD:staging
               else
+                printf '%s\tblocked\n' "$slug" >> /tmp/results.tsv
                 git reset --hard HEAD
               fi
             else
+              printf '%s\tblocked\n' "$slug" >> /tmp/results.tsv
               git reset --hard HEAD
             fi
           done < /tmp/queue.txt
-      - name: Materialize and require full coverage
+          cat /tmp/results.tsv
+      - name: Materialize and require full catalog coverage
+        if: always()
         run: |
+          git config user.name "igropoisk-builder"
+          git config user.email "actions@users.noreply.github.com"
           node scripts/materialize-catalog-no-api.mjs
           node scripts/canonicalize-all-editorial-game-ids.mjs --write || true
           node - <<'NODE'
