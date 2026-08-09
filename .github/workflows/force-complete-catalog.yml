@@ -56,10 +56,10 @@ jobs:
           const walk=v=>{if(Array.isArray(v))return v.map(walk).filter(x=>{if(!x||typeof x!=='object'||!x.duplicate_group)return true;if(globalSeen.has(x.duplicate_group))return false;globalSeen.add(x.duplicate_group);return true});if(v&&typeof v==='object')for(const k of Object.keys(v))v[k]=walk(v[k]);return v};
           for(const file of [`data/article-media/${slug}.json`,`data/articles/${slug}.json`,`data/reviews/${slug}.json`]){if(!fs.existsSync(file))continue;globalSeen.clear();const data=JSON.parse(fs.readFileSync(file,'utf8'));fs.writeFileSync(file,JSON.stringify(walk(data),null,2)+'\n')}
           NODE
-              if node scripts/validate-review-output.mjs "$slug" && node scripts/render-review-pages.mjs "$slug" && node scripts/build-game-page-from-registry.mjs "$slug"; then
+              if node scripts/validate-review-output.mjs "$slug" && node scripts/render-review-pages.mjs "$slug"; then
                 printf '%s\tsuccess\n' "$slug" >> /tmp/results.tsv
-                git add data "article/$slug" "game/$slug"
-                git commit -m "Complete filled Mafia-standard page for $slug" || true
+                git add data "article/$slug"
+                git commit -m "Complete Mafia-standard article for $slug" || true
                 git pull --rebase origin staging
                 git push origin HEAD:staging
               else
