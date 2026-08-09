@@ -1,4 +1,4 @@
-name: Build complete game pages with GitHub Models
+name: Build complete game pages autonomously
 
 on:
   workflow_dispatch:
@@ -15,9 +15,7 @@ on:
   push:
     branches: [staging]
     paths:
-      - scripts/build-complete-review-github-models-v2.mjs
       - .github/workflows/build-complete-reviews-github-models.yml
-      - config/parsers/review-synthesis.json
 
 permissions:
   contents: write
@@ -46,7 +44,7 @@ jobs:
         run: |
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
-      - name: Build complete Mafia-standard pages and reviews
+      - name: Build every incomplete filled game page and review
         env:
           REQUESTED_SLUG: ${{ inputs.slug || '' }}
           REQUESTED_LIMIT: ${{ inputs.limit || '0' }}
@@ -58,7 +56,7 @@ jobs:
           const limit=Number(process.env.REQUESTED_LIMIT||0);
           let queue=catalog.filter(g=>g.slug!=='mafia');
           if(requested) queue=queue.filter(g=>g.slug===requested);
-          else queue=queue.filter(g=>!fs.existsSync(`data/articles/${g.slug}.json`)||g.slug==='the-witcher-3-wild-hunt');
+          else queue=queue.filter(g=>!fs.existsSync(`data/articles/${g.slug}.json`)||!fs.existsSync(`article/${g.slug}/index.html`));
           if(limit>0) queue=queue.slice(0,limit);
           process.stdout.write(queue.map(g=>g.slug).join('\n')+(queue.length?'\n':''));
           NODE
@@ -68,44 +66,36 @@ jobs:
             [ -z "$slug" ] && continue
             echo "=== COMPLETE BUILD: $slug ==="
             if node scripts/build-complete-review-github-models-v2.mjs "$slug" \
-              && node scripts/validate-review-output.mjs "$slug"; then
+              && node scripts/validate-review-output.mjs "$slug" \
+              && node scripts/render-review-pages.mjs "$slug"; then
               printf '%s\tsuccess\n' "$slug" >> /tmp/complete-results.tsv
-              git add data
+              git add data "article/$slug" "game/$slug" scripts
               git commit -m "Build complete Mafia-standard review for $slug" || true
               git pull --rebase origin staging
               git push origin HEAD:staging
             else
               printf '%s\tblocked\n' "$slug" >> /tmp/complete-results.tsv
-              mkdir -p data/parser-runs/blocked
-              for f in data/parser-runs/review-source-discovery-${slug}.json data/parser-runs/review-media-discovery-${slug}.json; do [ -f "$f" ] && cp "$f" data/parser-runs/blocked/; done
               git reset --hard HEAD
             fi
           done < /tmp/queue.txt
           cat /tmp/complete-results.tsv
-      - name: Render all validated reviews and rebuild game pages
+      - name: Rebuild catalog pages and report coverage
         if: always()
         run: |
-          node scripts/render-review-pages.mjs || true
           node scripts/materialize-catalog-no-api.mjs
-          node scripts/canonicalize-all-editorial-game-ids.mjs --write
-          git add data article game
-          git diff --cached --quiet || git commit -m "Render complete catalog game pages and reviews"
-          git pull --rebase origin staging
-          git push origin HEAD:staging
-      - name: Report completeness
-        if: always()
-        run: |
+          node scripts/canonicalize-all-editorial-game-ids.mjs --write || true
           node - <<'NODE'
           const fs=require('fs');
           const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
           const complete=catalog.filter(g=>fs.existsSync(`game/${g.slug}/index.html`)&&fs.existsSync(`data/articles/${g.slug}.json`)&&fs.existsSync(`article/${g.slug}/index.html`));
           const completeSlugs=new Set(complete.map(g=>g.slug));
           const missing=catalog.filter(g=>!completeSlugs.has(g.slug)).map(g=>g.slug);
-          console.log(JSON.stringify({total:catalog.length,complete:complete.length,missing},null,2));
+          const report={generated_at:new Date().toISOString(),total:catalog.length,complete:complete.length,missing};
+          console.log(JSON.stringify(report,null,2));
           fs.mkdirSync('data/parser-runs',{recursive:true});
-          fs.writeFileSync('data/parser-runs/complete-game-pages-latest.json',JSON.stringify({generated_at:new Date().toISOString(),total:catalog.length,complete:complete.length,missing},null,2)+'\n');
+          fs.writeFileSync('data/parser-runs/complete-game-pages-latest.json',JSON.stringify(report,null,2)+'\n');
           NODE
-          git add data/parser-runs/complete-game-pages-latest.json
-          git diff --cached --quiet || git commit -m "Update complete game page coverage report"
+          git add data game article
+          git diff --cached --quiet || git commit -m "Materialize complete catalog pages and coverage"
           git pull --rebase origin staging
           git push origin HEAD:staging
