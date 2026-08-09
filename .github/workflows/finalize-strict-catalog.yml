@@ -1,0 +1,102 @@
+name: Finalize strict game catalog
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - .github/workflows/finalize-strict-catalog.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  models: read
+
+concurrency:
+  group: finalize-strict-game-catalog
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_MODEL: openai/gpt-4.1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Strengthen strict source discovery for canonical reviews
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/build-complete-review-github-models-v2.mjs')
+          s=p.read_text()
+          title_anchor="const title=draft.identity?.title||slug;"
+          title_patch="const titleOverrides={fortnite:'Fortnite','marvel-rivals':'Marvel Rivals','genshin-impact':'Genshin Impact',valorant:'VALORANT','honkai-star-rail':'Honkai: Star Rail',palworld:'Palworld','counter-strike-2':'Counter-Strike 2',overwatch:'Overwatch 2'};const title=titleOverrides[slug]||draft.identity?.title||slug;"
+          if title_anchor not in s: raise SystemExit('strict title anchor missing')
+          s=s.replace(title_anchor,title_patch)
+          s=s.replace('await bing(', 'await bingDeep(')
+          marker='const selected=[];const seenPub=new Set(),seenUrl=new Set();'
+          if marker not in s: raise SystemExit('strict search marker missing')
+          deep=r'''async function bingDeep(q){
+  const out=[],seen=new Set();
+  for(const first of [1,11,21,31]){
+    const r=await fetchText(`https://www.bing.com/search?q=${encodeURIComponent(q)}&first=${first}&count=10`,18000);if(!r)continue;
+    const html=r.text;
+    for(const m of html.matchAll(/<li[^>]+class=["'][^"']*b_algo[^"']*["'][\s\S]*?<h2[^>]*>\s*<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>[\s\S]*?(?:<p[^>]*>([\s\S]*?)<\/p>)?/gi)){
+      const url=decode(m[1]);if(!url.startsWith('http')||seen.has(url))continue;seen.add(url);out.push({url,title:strip(m[2]||''),snippet:strip(m[3]||'')});
+    }
+    for(const m of html.matchAll(/<h2[^>]*>\s*<a[^>]+href=["'](https?:\/\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)){
+      const url=decode(m[1]);if(seen.has(url))continue;seen.add(url);out.push({url,title:strip(m[2]||''),snippet:''});
+    }
+  }
+  if(out.length)return out;
+  const r=await fetchText(`https://www.bing.com/search?format=rss&q=${encodeURIComponent(q)}`);if(!r)return[];
+  return [...r.text.matchAll(/<item>([\s\S]*?)<\/item>/gi)].map(m=>{const b=m[1];return{url:decode(b.match(/<link>([\s\S]*?)<\/link>/i)?.[1]||''),title:strip(b.match(/<title>([\s\S]*?)<\/title>/i)?.[1]||''),snippet:strip(b.match(/<description>([\s\S]*?)<\/description>/i)?.[1]||'')}}).filter(x=>x.url.startsWith('http'));
+}
+'''
+          s=s.replace(marker,deep+marker)
+          p.write_text(s)
+          PY
+      - name: Build remaining games through strict Mafia gate
+        run: |
+          git config user.name "igropoisk-builder"
+          git config user.email "actions@users.noreply.github.com"
+          node - <<'NODE' > /tmp/queue.txt
+          const fs=require('fs');const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
+          const complete=g=>fs.existsSync(`game/${g.slug}/index.html`)&&fs.existsSync(`data/articles/${g.slug}.json`)&&fs.existsSync(`article/${g.slug}/index.html`);
+          process.stdout.write(catalog.filter(g=>g.slug!=='mafia'&&!complete(g)).map(g=>g.slug).join('\n')+'\n');
+          NODE
+          : > /tmp/results.tsv
+          while IFS= read -r slug; do
+            [ -z "$slug" ] && continue
+            echo "=== STRICT COMPLETE BUILD: $slug ==="
+            if node scripts/build-complete-review-github-models-v2.mjs "$slug" && node scripts/validate-review-output.mjs "$slug" && node scripts/render-review-pages.mjs "$slug"; then
+              printf '%s\tsuccess\n' "$slug" >> /tmp/results.tsv
+              git add data "article/$slug"
+              git commit -m "Complete strict Mafia-standard article for $slug" || true
+              git push origin HEAD:staging
+            else
+              printf '%s\tblocked\n' "$slug" >> /tmp/results.tsv
+              git restore --worktree --staged data article game 2>/dev/null || true
+              git clean -fd data article game >/dev/null 2>&1 || true
+            fi
+          done < /tmp/queue.txt
+          cat /tmp/results.tsv
+      - name: Materialize and record exact coverage
+        if: always()
+        run: |
+          git config user.name "igropoisk-builder"
+          git config user.email "actions@users.noreply.github.com"
+          node scripts/materialize-catalog-no-api.mjs
+          node scripts/canonicalize-all-editorial-game-ids.mjs --write || true
+          node -e "const fs=require('fs');const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));const missing=catalog.filter(g=>!(fs.existsSync('game/'+g.slug+'/index.html')&&fs.existsSync('data/articles/'+g.slug+'.json')&&fs.existsSync('article/'+g.slug+'/index.html'))).map(g=>g.slug);const report={generated_at:new Date().toISOString(),total:catalog.length,complete:catalog.length-missing.length,missing};fs.mkdirSync('data/parser-runs',{recursive:true});fs.writeFileSync('data/parser-runs/complete-game-pages-latest.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));"
+          git add data game article
+          git diff --cached --quiet || git commit -m "Record strict complete catalog coverage"
+          git push origin HEAD:staging
+          test "$(node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('data/parser-runs/complete-game-pages-latest.json','utf8'));process.stdout.write(String(r.missing.length))")" = "0"
