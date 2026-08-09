@@ -1,0 +1,91 @@
+name: Deploy complete game catalog
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-complete-game-catalog.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages-production
+  cancel-in-progress: false
+
+jobs:
+  verify-game-catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify immutable production source
+        run: |
+          node scripts/verify-deployment-source.mjs
+          node scripts/validate-production-boundaries.mjs
+          test -z "$(git status --porcelain)"
+      - name: Verify JavaScript and JSON integrity
+        run: |
+          find assets scripts features game -type f \( -name '*.js' -o -name '*.mjs' \) -print0 | xargs -0 -n1 node --check
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          errors=[]
+          for root in (Path('config'),Path('data')):
+              for file in root.rglob('*.json'):
+                  try: json.loads(file.read_text(encoding='utf-8'))
+                  except Exception as e: errors.append(f'{file}: {e}')
+          if errors: raise SystemExit('Invalid JSON files:\n'+'\n'.join(errors))
+          print('Structured content JSON is valid.')
+          PY
+      - name: Require complete game and editorial publication gates
+        run: |
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-editorial-pipeline.mjs
+          node - <<'NODE'
+          const fs=require('fs');
+          const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
+          const missing=catalog.filter(g=>!(fs.existsSync(`game/${g.slug}/index.html`)&&fs.existsSync(`data/articles/${g.slug}.json`)&&fs.existsSync(`article/${g.slug}/index.html`))).map(g=>g.slug);
+          console.log(JSON.stringify({total:catalog.length,complete:catalog.length-missing.length,missing},null,2));
+          if(missing.length)process.exit(1);
+          NODE
+      - name: Reject malformed snapshot
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+  deploy:
+    needs: verify-game-catalog
+    runs-on: ubuntu-latest
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  game-runtime-production-smoke:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify deployed game pages and protected shared runtime
+        env:
+          GAME_RUNTIME_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: node scripts/smoke-game-runtime.mjs
