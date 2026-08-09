@@ -1,4 +1,4 @@
-name: Test autonomous complete review build
+name: Test content-hash review build
 on:
   push:
     branches: [staging]
@@ -22,26 +22,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Permanently wire local synthesis fallback
+      - name: Patch screenshot duplicate detection
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p=Path('scripts/build-complete-review-github-models-v2.mjs')
           s=p.read_text()
-          imp="import {buildLocalReview} from './local-review-synthesis.mjs';\n"
-          if imp not in s:
-              s=s.replace("import path from 'node:path';\n", "import path from 'node:path';\n"+imp, 1)
-          old="""if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);\nconst generated=JSON.parse((await response.json()).choices?.[0]?.message?.content||'{}');"""
-          new="""let generated;\nif(response.ok){\n  generated=JSON.parse((await response.json()).choices?.[0]?.message?.content||'{}');\n}else{\n  const modelError=await response.text();\n  console.warn(`GitHub Models unavailable (${response.status}); using autonomous local synthesis: ${modelError.slice(0,300)}`);\n  generated=buildLocalReview({slug,title,year,draft,sources,media,minSections,minWords,minImages,minPerSection});\n}"""
+          if "import {createHash} from 'node:crypto';" not in s:
+              s=s.replace("import path from 'node:path';\n", "import path from 'node:path';\nimport {createHash} from 'node:crypto';\n", 1)
+          old="duplicate_group:`${slug}-${Buffer.from(r.url).toString('base64url').slice(0,20)}`"
+          new="duplicate_group:`${slug}-${createHash('sha256').update(b).digest('hex').slice(0,24)}`"
           if old not in s:
-              raise SystemExit('model response block not found')
+              raise SystemExit('duplicate group expression not found')
           p.write_text(s.replace(old,new,1))
           PY
           node --check scripts/build-complete-review-github-models-v2.mjs
           git config user.name "igropoisk-builder"
           git config user.email "actions@users.noreply.github.com"
           git add scripts/build-complete-review-github-models-v2.mjs scripts/local-review-synthesis.mjs
-          git commit -m "Use autonomous synthesis when GitHub Models is unavailable" || true
+          git commit -m "Deduplicate review screenshots by content hash" || true
       - name: Build and validate Bloodborne end to end
         run: |
           node scripts/build-complete-review-github-models-v2.mjs bloodborne
