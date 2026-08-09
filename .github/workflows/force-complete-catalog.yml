@@ -5,6 +5,7 @@ on:
     branches: [staging]
     paths:
       - .github/workflows/force-complete-catalog.yml
+      - scripts/patch-strict-review-runtime.py
   workflow_dispatch:
 
 permissions:
@@ -30,22 +31,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Strengthen strict source discovery
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('scripts/build-complete-review-github-models-v2.mjs')
-          s=p.read_text()
-          anchor="const title=draft.identity?.title||slug;"
-          patch="const titleOverrides={overwatch:'Overwatch 2',fortnite:'Fortnite','marvel-rivals':'Marvel Rivals','genshin-impact':'Genshin Impact',valorant:'VALORANT','honkai-star-rail':'Honkai: Star Rail',palworld:'Palworld','counter-strike-2':'Counter-Strike 2'};const title=titleOverrides[slug]||draft.identity?.title||slug;"
-          if anchor not in s: raise SystemExit('title anchor missing')
-          s=s.replace(anchor,patch)
-          s=s.replace('await bing(', 'await bingDeep(')
-          marker='const selected=[];const seenPub=new Set(),seenUrl=new Set();'
-          deep="async function bingDeep(q){const out=[],seen=new Set();for(const first of [1,11,21,31]){const r=await fetchText(`https://www.bing.com/search?q=${encodeURIComponent(q)}&first=${first}&count=10`,18000);if(!r)continue;const html=r.text;for(const m of html.matchAll(/<li[^>]+class=[\\\"'][^\\\"']*b_algo[^\\\"']*[\\\"'][\\s\\S]*?<h2[^>]*>\\s*<a[^>]+href=[\\\"']([^\\\"']+)[\\\"'][^>]*>([\\s\\S]*?)<\\/a>[\\s\\S]*?(?:<p[^>]*>([\\s\\S]*?)<\\/p>)?/gi)){const url=decode(m[1]);if(!url.startsWith('http')||seen.has(url))continue;seen.add(url);out.push({url,title:strip(m[2]||''),snippet:strip(m[3]||'')})}for(const m of html.matchAll(/<h2[^>]*>\\s*<a[^>]+href=[\\\"'](https?:\\/\\/[^\\\"']+)[\\\"'][^>]*>([\\s\\S]*?)<\\/a>/gi)){const url=decode(m[1]);if(seen.has(url))continue;seen.add(url);out.push({url,title:strip(m[2]||''),snippet:''})}}if(out.length)return out;const r=await fetchText(`https://www.bing.com/search?format=rss&q=${encodeURIComponent(q)}`);if(!r)return[];return [...r.text.matchAll(/<item>([\\s\\S]*?)<\\/item>/gi)].map(m=>{const b=m[1];return{url:decode(b.match(/<link>([\\s\\S]*?)<\\/link>/i)?.[1]||''),title:strip(b.match(/<title>([\\s\\S]*?)<\\/title>/i)?.[1]||''),snippet:strip(b.match(/<description>([\\s\\S]*?)<\\/description>/i)?.[1]||'')}}).filter(x=>x.url.startsWith('http'))}"
-          if marker not in s: raise SystemExit('search marker missing')
-          p.write_text(s.replace(marker,deep+'\n'+marker))
-          PY
+      - name: Patch strict research runtime
+        run: python scripts/patch-strict-review-runtime.py
       - name: Build every remaining game through Mafia publication gate
         run: |
           git config user.name "igropoisk-builder"
