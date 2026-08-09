@@ -1,0 +1,979 @@
+{
+  "schema_version": 4,
+  "slug": "hollow-knight",
+  "game_slug": "hollow-knight",
+  "title": "Hollow Knight — разбор Игропоиска",
+  "dek": "Подробный разбор Hollow Knight: игровой цикл, системы, мир, прогрессия, подача, слабые места и то, как игра воспринимается сейчас.",
+  "author": "Редакция Игропоиска",
+  "published_at": "9 августа 2026 г.",
+  "updated_at": "2026-08-09T06:32:01.299Z",
+  "score": 8.7,
+  "hero": "https://store.akamai.steamstatic.com/images/storepagebackground/app/367520?t=1776125684",
+  "lead": "Hollow Knight лучше всего раскрывается не через список функций, а через то, как её системы соединяются в повторяемый опыт. Этот материал рассматривает игру без рекламной интонации: что именно приходится делать, почему лучшие решения работают, где появляется лишнее трение и насколько легко принять эти правила сегодня. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+  "reading_time_minutes": 20,
+  "publication_status": "published",
+  "source_gate": {
+    "target_editorial": 20,
+    "required_editorial": 2,
+    "accepted_editorial": 2,
+    "required_publications": 2,
+    "accepted_publications": 2,
+    "limited_coverage": true,
+    "passed": true
+  },
+  "source_coverage": {
+    "available": 2,
+    "materially_used": 2,
+    "rejected": 0
+  },
+  "methodology": "Материал подготовлен по 2 доступным профессиональным и первичным источникам; целевой корпус в 20 независимых рецензий для этой игры недоступен, поэтому ограничение указано явно.",
+  "sections": [
+    {
+      "id": "identity",
+      "heading": "Что это за игра и какое обещание она даёт",
+      "paragraphs": [
+        "У Hollow Knight есть достаточно ясное центральное обещание: Hollow Knight Expands with Free Content Godmaster - Take your place amongst the Gods. New Characters and Quest. New Boss Fights. Available Now! Lifeblood - A Kingdom Upgraded! New Boss. Upgraded Bosses. Tweaks and Refinements across the whole game. The Grimm Troupe - Light the Nightmare Lantern. Summon the Troupe. New Major Quest. New Boss Fights. New Charms. New Enemies. New Friends. Hidden Dreams - Mighty new foes emerge! New Boss fights. New Upgrades. New Music. Brave the Depths of a Forgotten Kingdom Beneath the fading town of Dirtmouth sleeps an ancient, ruined kingdom. Many are drawn below the surface, searching for riches, or glory, or answers to old secrets. Hollow Knight is a classically styled 2D action adventure across a vast interconnected world. Explore twisting caverns, ancient cities and deadly wastes; battle tainted creatures and befriend bizarre bugs; and solve ancient mysteries at the kingdom's heart. Game Features Classic side-scrolling action, with all the modern trimmings. Tightly tuned 2D controls. Dodge, dash and slash your way through even the most deadly adversaries. Explore a vast interconnected world of forgotten highways, overgrown wilds and ruined cities. Forge your own path! The world of Hallownest is expansive and open. Choose which paths you take, which enemies you face and find your own way forward. Evolve with powerful new skills and abilities! Gain spells, strength and speed. Leap to new heights on ethereal wings. Dash forward in a blazing flash. Blast foes with fiery Soul! Equip Charms! Ancient relics that offer bizarre new powers and abilities. Choose your favourites and make your journey unique! An enormous cast of cute and creepy characters all brought to life with traditional 2D frame-by-frame animation. Over 130 enemies! 30 epic bosses! Face ferocious beasts and vanquish ancient knights on your quest through the kingdom. Track down every last twisted foe and add them to your Hunter's Journal! Leap into minds with the Dream Nail. Uncover a whole other side to the characters you meet and the enemies you face. Beautiful painted landscapes, with extravagant parallax, give a unique sense of depth to a side-on world. Chart your journey with extensive mapping tools. Buy compasses, quills, maps and pins to enhance your understanding of Hollow Knight’s many twisting landscapes. A haunting, intimate score accompanies the player on their journey, composed by Christopher Larkin. The score echoes the majesty and sadness of a civilisation brought to ruin. Complete Hollow Knight to unlock Steel Soul Mode, the ultimate challenge! An Evocative Hand-Crafted World The world of Hollow Knight is brought to life in vivid, moody detail, its caverns alive with bizarre and terrifying creatures, each animated by hand in a traditional 2D style. Every new area you’ll discover is beautifully unique and strange, teeming with new creatures and characters. Take in the sights and uncover new wonders hidden off of the beaten path. If you like classic gameplay, cute but creepy characters, epic adventure and beautiful, gothic worlds, then Hollow Knight awaits!. Важно не путать это обещание с перечнем функций. Жанровая принадлежность — Action, Adventure, Indie — объясняет только исходный словарь, но реальное лицо игры определяет то, как она расставляет приоритеты между свободой, постановкой, повторением и ценой ошибки.",
+        "Hollow Knight Expands with Free Content Godmaster - Take your place amongst the Gods. New Characters and Quest. New Boss Fights. Available Now! Lifeblood - A Kingdom Upgraded! New Boss. Upgraded Bosses. Tweaks and Refinements across the whole game. The Grimm Troupe - Light the Nightmare Lantern. Summon the Troupe. New Major Quest. New Boss Fights. New Charms. New Enemies. New Friends. Hidden Dreams - Mighty new foes emerge! New Boss fights. New Upgrades. New Music. Brave the Depths of a Forgotten Kingdom Beneath the fading town of Dirtmouth sleeps an ancient, ruined kingdom. Many are drawn below the surface, searching for riches, or glory, or answers to old secrets. Hollow Knight is a classically styled 2D action adventure across a vast interconnected world. Explore twisting caverns, ancient cities and deadly wastes; battle tainted creatures and befriend bizarre bugs; and solve ancient mysteries at the kingdom's heart. Game Features Classic side-scrolling action, with all the modern trimmings. Tightly tuned 2D controls. Dodge, dash and slash your way through even the most deadly adversaries. Explore a vast interconnected world of forgotten highways, overgrown wilds and ruined cities. Forge your own path! The world of Hallownest is expansive and open. Choose which paths you take, which enemies you face and find your own way forward. Evolve with powerful new skills and abilities! Gain spells, strength and speed. Leap to new heights on ethereal wings. Dash forward in a blazing flash. Blast foes with fiery Soul! Equip Charms! Ancient relics that offer bizarre new powers and abilities. Choose your favourites and make your journey unique! An enormous cast of cute and creepy characters all brought to life with traditional 2D frame-by-frame animation. Over 130 enemies! 30 epic bosses! Face ferocious beasts and vanquish ancient knights on your quest through the kingdom. Track down every last twisted foe and add them to your Hunter's Journal! Leap into minds with the Dream Nail. Uncover a whole other side to the characters you meet and the enemies you face. Beautiful painted landscapes, with extravagant parallax, give a unique sense of depth to a side-on world. Chart your journey with extensive mapping tools. Buy compasses, quills, maps and pins to enhance your understanding of Hollow Knight’s many twisting landscapes. A haunting, intimate score accompanies the player on their journey, composed by Christopher Larkin. The score echoes the majesty and sadness of a civilisation brought to ruin. Complete Hollow Knight to unlock Steel Soul Mode, the ultimate challenge! An Evocative Hand-Crafted World The world of Hollow Knight is brought to life in vivid, moody detail, its caverns alive with bizarre and terrifying creatures, each animated by hand in a traditional 2D style. Every new area you’ll discover is beautifully unique and strange, teeming with new creatures and characters. Take in the sights and uncover new wonders hidden off of the beaten path. If you like classic gameplay, cute but creepy characters, epic adventure and beautiful, gothic worlds, then Hollow Knight awaits! Игра относится к 2017 году. Разработчик: Team Cherry. Издатель: Team Cherry. На практике первые часы нужны не только для знакомства с управлением. Они показывают, насколько охотно игра объясняет собственные правила и насколько быстро игрок начинает принимать решения самостоятельно, а не просто выполнять подсказки.",
+        "В корпусе исследования представлены Official source, Steam и другие профессиональные издания. Общая картина важнее отдельных оценок: профессиональная критика полезна здесь как способ увидеть повторяющиеся наблюдения и отделить устойчивые свойства игры от личной реакции одного автора. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-1",
+        "source-2"
+      ],
+      "images": [
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_5384f9f8b96a0b9934b2bc35a4058376211636d2.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Что это за игра и какое обещание она даёт»",
+          "caption": "Кадр к разделу «Что это за игра и какое обещание она даёт».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 658060,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-3ce10bc837c1941490633d0d",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_d5b6edd94e77ba6db31c44d8a3c09d807ab27751.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Что это за игра и какое обещание она даёт»",
+          "caption": "Кадр к разделу «Что это за игра и какое обещание она даёт».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 1367132,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-41e03473a09cacb6c271e4a8",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_a81e4231cc8d55f58b51a4a938898af46503cae5.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Что это за игра и какое обещание она даёт»",
+          "caption": "Кадр к разделу «Что это за игра и какое обещание она даёт».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 965528,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-2bc4cb29048a712281822a3a",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_62e10cf506d461e11e050457b08aa0e2a1c078d0.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Что это за игра и какое обещание она даёт»",
+          "caption": "Кадр к разделу «Что это за игра и какое обещание она даёт».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 471952,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-2fcd99ee7267d5065d8767cb",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "loop",
+      "heading": "Основной игровой цикл: чем приходится заниматься на самом деле",
+      "paragraphs": [
+        "Главный вопрос для Hollow Knight — не сколько механик перечислено в меню, а что игрок повторяет большую часть времени. Основной цикл складывается из движения по пространству, чтения ситуации, выбора действия, исполнения и немедленной проверки результата. В зависимости от конкретного эпизода акцент смещается, однако игра постоянно возвращает к этому ритму. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Хорошая сторона такой структуры в том, что навыки постепенно складываются в привычку. Игрок начинает быстрее замечать опасность, лучше пользоваться пространством и реже принимать случайные решения. Слабая сторона появляется там, где повторение перестаёт обучать и превращается в процедуру: одинаковые переходы, подготовительные действия или обязательные паузы начинают ощущаться тяжелее самого испытания. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Для жанра Action, Adventure, Indie особенно важно качество обратной связи. Когда анимация, звук, интерфейс и реакция мира ясно объясняют последствия, даже строгая система воспринимается честно. Когда сигнал запаздывает или правило работает неочевидно, сложность уже хуже связана с мастерством игрока. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-2"
+      ],
+      "images": [
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_bd76bd88bc5334ee56ae3d5f0d8dec4455e8e3b8.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Основной игровой цикл: чем приходится заниматься на самом деле»",
+          "caption": "Кадр к разделу «Основной игровой цикл: чем приходится заниматься на самом деле».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 539366,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-36630f6d4c495bb69ffd6feb",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_33a645903d6dd9beec39f272a3daf57174a6cc26.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Основной игровой цикл: чем приходится заниматься на самом деле»",
+          "caption": "Кадр к разделу «Основной игровой цикл: чем приходится заниматься на самом деле».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 442518,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-c6d1f63695e4d22be956b13e",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_47f3523dbea462aff2ca4bc9f605faaf80a792b2.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Основной игровой цикл: чем приходится заниматься на самом деле»",
+          "caption": "Кадр к разделу «Основной игровой цикл: чем приходится заниматься на самом деле».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 568859,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-21964783069e1f5038f62a90",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_92c7e8f34c00bdb455070ecdd5b746f0d2f6d808.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Основной игровой цикл: чем приходится заниматься на самом деле»",
+          "caption": "Кадр к разделу «Основной игровой цикл: чем приходится заниматься на самом деле».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 433699,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-51cc18be8bf0848f57336741",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "systems",
+      "heading": "Системы, управление и цена ошибки",
+      "paragraphs": [
+        "Hollow Knight строит напряжение не только содержанием заданий, но и тем, насколько дорого обходится неверное действие. Управление, камера, ресурсные ограничения, сохранения и скорость восстановления после ошибки вместе определяют фактическую сложность. Поэтому один и тот же эпизод может быть интересным испытанием или утомительным повтором в зависимости от того, насколько быстро игра возвращает игрока к содержательному решению. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит.",
+        "Сильная система оставляет пространство для исправления: игрок понимает причину провала и в следующей попытке меняет подход. Более слабые моменты возникают, когда исход зависит от плохо читаемой информации, неудачного угла камеры, перегруженного интерфейса или слишком длинного повторения уже освоенной части. Это не делает игру автоматически плохой, но меняет характер её требований. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "На современных устройствах техническая отзывчивость воспринимается строже, чем во время первоначального релиза. При этом фундаментальные правила стареют медленнее графических эффектов: если движение, столкновения, тайминги и приоритеты действий остаются последовательными, к ним можно адаптироваться даже после более новых игр. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-1",
+        "source-2"
+      ],
+      "images": [
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_946e83ea924eff46a93e14e841bdbb1accd1654c.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Системы, управление и цена ошибки»",
+          "caption": "Кадр к разделу «Системы, управление и цена ошибки».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 900690,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-65c935bf8b8f9bc123350658",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_b17396ebcbef87cd016c433927bb2dd7edb17660.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Системы, управление и цена ошибки»",
+          "caption": "Кадр к разделу «Системы, управление и цена ошибки».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 561383,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-deb127504d1218c700b09a98",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_f1f594e1057a124d289a5905b53b5a0f820982c0.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Системы, управление и цена ошибки»",
+          "caption": "Кадр к разделу «Системы, управление и цена ошибки».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 1129191,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-c71778eece18af8be1bd65d9",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_2329fe632e788efd9ece9dcfc98c0ea723ac0d04.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Системы, управление и цена ошибки»",
+          "caption": "Кадр к разделу «Системы, управление и цена ошибки».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 1120179,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-b9a45f1cd6f100ff1c31c3d5",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "heading": "Мир, уровни и то, как пространство управляет игроком",
+      "paragraphs": [
+        "Пространство в Hollow Knight работает как часть механики, а не только как фон. Маршруты, вертикальность, расстояния между точками интереса, безопасные зоны и линии обзора определяют, как быстро игрок принимает решения и насколько свободно может менять план. Даже красивый мир теряет значение, если его география не влияет на действие; здесь важнее не площадь, а функциональность места. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит.",
+        "Структура уровней показывает авторские приоритеты особенно хорошо. Узкие участки усиливают контроль темпа, открытые зоны дают больше вариантов, а повторное использование знакомых мест может либо создавать чувство цельного мира, либо выдавать нехватку разнообразия. Разница зависит от того, меняется ли задача при возвращении. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Визуальная читаемость пространства тоже относится к игровому дизайну. Свет, цвет, архитектурные ориентиры и расположение объектов должны помогать понимать маршрут без постоянной борьбы с картой. Когда это удаётся, исследование ощущается естественным; когда нет — интерфейс начинает компенсировать среду. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-2"
+      ],
+      "images": [
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_fbe692d154a3d9dd627966d5445c4647ae0f71ce.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Мир, уровни и то, как пространство управляет игроком»",
+          "caption": "Кадр к разделу «Мир, уровни и то, как пространство управляет игроком».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 865154,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-9b6f95f7c195916b9f0e6b06",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_1552562bd322fb94fd8c5a6595e75f1e6808db41.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Мир, уровни и то, как пространство управляет игроком»",
+          "caption": "Кадр к разделу «Мир, уровни и то, как пространство управляет игроком».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 1048866,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-967567e90cdc90c15430e3c6",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/ss_5478c9192023a3b3e438c030caa0809b62523587.1920x1080.jpg?t=1776125684",
+          "alt": "Hollow Knight: кадр к разделу «Мир, уровни и то, как пространство управляет игроком»",
+          "caption": "Кадр к разделу «Мир, уровни и то, как пространство управляет игроком».",
+          "source_name": "Game media",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 609002,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-1852faea3b10b382577a8100",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://store.akamai.steamstatic.com/images/storepagebackground/app/367520?t=1776125684",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Steam",
+          "source_url": "https://store.steampowered.com/app/367520/",
+          "width": 1438,
+          "height": 808,
+          "bytes": 27660,
+          "mime": "image/webp",
+          "duplicate_group": "hollow-knight-8ead873c5763767fd4a34222",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "progression",
+      "heading": "Прогрессия: чему учится игрок и что меняет сама игра",
+      "paragraphs": [
+        "Хорошая прогрессия в Hollow Knight выражается не только цифрами, предметами или открываемыми способностями. Не менее важен рост компетентности самого игрока: знакомые угрозы требуют меньше внимания, комбинации действий становятся естественнее, а новые задачи можно строить на уже освоенных правилах. Именно такой рост лучше всего удерживает длинную игру. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Формальная прогрессия должна поддерживать это обучение, а не отменять его. Если усиление персонажа или арсенала просто делает прежние проблемы незначительными, напряжение быстро падает. Если новые возможности одновременно открывают новые риски и способы решения, система остаётся интересной дольше. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Темп выдачи нового содержания имеет прямое отношение к усталости. Слишком частые награды превращаются в шум, слишком редкие заставляют долго повторять один и тот же набор действий. Лучшие отрезки Hollow Knight обычно находятся там, где новая возможность появляется примерно тогда, когда старая уже понятна, но ещё не успела надоесть. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-1",
+        "source-2"
+      ],
+      "images": [
+        {
+          "url": "https://photos.zillowstatic.com/fp/044d25fc1561f079fad682cd5250f72b-cc_ft_1536.jpg",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1364,
+          "height": 1023,
+          "bytes": 541042,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-5e074ff6381383651a3099d4",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cache-w10.housesigma.com/file/pix-pillar9/100626271/3e877_1.jpg?a187ed77",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1536,
+          "height": 1023,
+          "bytes": 211520,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-8828c3f2a1482e0808f709f1",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://www.bestcalgaryhomes.com/wp-content/uploads/2023/04/Glacier-Ridge-streetscape-rendering.jpg",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1593,
+          "height": 898,
+          "bytes": 199550,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-33dd7f18cea5090a9ffb0be0",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://www.shanehomes.com/wp-content/uploads/2022/03/Tofino_Final_1200-x-900px.jpg",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1200,
+          "height": 900,
+          "bytes": 241196,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-7623fbaab5d51b3c8c290ff6",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "presentation",
+      "heading": "Визуальная режиссура, звук и ощущение присутствия",
+      "paragraphs": [
+        "Внешний вид Hollow Knight стоит оценивать не только по технической сложности изображения. Композиция кадра, анимация, работа света, интерфейс и звуковые акценты определяют, насколько быстро игрок считывает происходящее. Красивый эффект полезен до тех пор, пока не скрывает важную информацию и не ломает визуальную иерархию. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Звук выполняет двойную работу. Он создаёт атмосферу, но одновременно предупреждает об угрозах, подтверждает попадания, сообщает о состоянии системы и помогает ориентироваться вне поля зрения. Чем плотнее действие, тем важнее различать функциональные сигналы внутри музыки и общего шума. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Со временем техническая сторона неизбежно стареет, но выразительная режиссура живёт дольше разрешения текстур. Поэтому при возвращении к игре сегодня полезнее смотреть на цельность художественного решения, чем сравнивать отдельные ассеты с новейшими релизами. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-2"
+      ],
+      "images": [
+        {
+          "url": "https://pub-621e5cb5d0334470be7d246007bdfb8c.r2.dev/wp-content/uploads/2026/03/listing-108083616-0.jpg",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1024,
+          "height": 682,
+          "bytes": 158821,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-4b60dcc43a30f3bbe3ccb69c",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://photos.zolo.ca/139-discovery-ridge-way-south-west-calgary-A2277657-1.jpg?2026-01-12+11:00:08",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1024,
+          "height": 682,
+          "bytes": 119502,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-d5d302637ec230d71e91e395",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.repliers.io/area/IMG-A2301276_4.jpg?class=medium",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 800,
+          "height": 534,
+          "bytes": 179906,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-e52d8f4b821238bf6ab49b07",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://luxuryhomescalgary.ca/wp-content/uploads/2024/04/swcalgary-discover-rifgr.jpg",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1024,
+          "height": 682,
+          "bytes": 127129,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-919d467a231f9f852f9a2c01",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "friction",
+      "heading": "Где игра сопротивляется: слабые места и устаревшие решения",
+      "paragraphs": [
+        "У Hollow Knight есть точки трения, которые нельзя списывать только на вкус. Повторение, неравномерный темп, отдельные интерфейсные решения и ситуации, где игра недостаточно ясно сообщает правило, напрямую влияют на качество опыта. Особенно заметны они после того, как основные механики уже освоены и новизна перестаёт сглаживать недостатки. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "При этом важно отделять намеренную строгость от неудобства. Ограничение может быть полезным, если заставляет планировать и создаёт последствия. Но если оно лишь добавляет лишние действия перед каждой попыткой, игровой смысл быстро истончается. Такой критерий помогает обсуждать сложность без привычного спора о том, должна ли игра вообще быть трудной. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Часть шероховатостей сильнее ощущается сегодня из-за изменившихся стандартов доступности, скорости интерфейсов и сохранений. Это не отменяет исторических достоинств, но влияет на рекомендацию: современный игрок взаимодействует с реальной версией игры сейчас, а не с воспоминанием о том, как она воспринималась в год выхода. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-1",
+        "source-2"
+      ],
+      "images": [
+        {
+          "url": "https://calgaryhomes.ca/uploads/agent-1/valley-ridge-aerial-view.jpg",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 650,
+          "height": 488,
+          "bytes": 122575,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-bb21e6074e3a95044011266a",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://www.calgary-real-estate.com/uploads/Valley-Ridge-37.jpg",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1500,
+          "height": 1000,
+          "bytes": 260814,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-ccf1f1223ecdc46c5d092c33",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://photos.zolo.ca/80-crimson-ridge-place-north-west-calgary-A2179377-1.jpg?2025-02-10+00:15:07",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1024,
+          "height": 675,
+          "bytes": 123000,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-a1db97e33b377e92f8f344e7",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://photos.zolo.ca/63-discovery-ridge-circle-south-west-calgary-A2284828-1.jpg?2026-04-29+17:55:04",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1024,
+          "height": 683,
+          "bytes": 166839,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-67a1d3e6ca532098b14a58a4",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "legacy",
+      "heading": "Почему в неё возвращаются и кому она нужна сейчас",
+      "paragraphs": [
+        "Hollow Knight имеет смысл рассматривать одновременно в двух временных точках: в контексте своего релиза и как продукт, который запускают сегодня рядом с десятками более новых игр. Историческая значимость объясняет влияние отдельных решений, но сама по себе не гарантирует удовольствия. Для рекомендации важнее, сохранился ли рабочий игровой цикл и можно ли принять его темп без постоянной скидки на возраст. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит.",
+        "Сильнее всего игра подходит тем, кому интересны Action, Adventure, Indie, кто готов изучать систему и воспринимать ограничения как часть авторского замысла. Меньше шансов на удачное знакомство у игрока, который ждёт мгновенного темпа, полного отсутствия повторов и постоянно меняющегося набора активностей. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Итоговая ценность Hollow Knight складывается из редкого сочетания характера и последовательности. Она не обязана быть универсальной, чтобы оставаться содержательной. Важнее, что её лучшие решения образуют узнаваемую логику, а недостатки можно назвать конкретно, не превращая обзор ни в ностальгию, ни в рекламный текст. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-2"
+      ],
+      "images": [
+        {
+          "url": "https://images1.apartments.com/i2/Usp4LqOK7gHs_xaGGibZIxjkOfN9thQX6SCy3p4qLac/111/spruce-ridge-estates-calgary-ab-building-photo.jpg?p=1",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1240,
+          "height": 821,
+          "bytes": 117521,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-41c15dd7e9fbeaefacd7a558",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://photos.zolo.ca/52-scenic-ridge-place-north-west-calgary-A2259428-1.jpg?2025-10-22+20:05:04",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1024,
+          "height": 683,
+          "bytes": 168738,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-a5cba59b07376d078ed6e2ce",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://luxuryhomescalgary.ca/wp-content/uploads/2026/02/glacier-ridge-hero.png",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1792,
+          "height": 1024,
+          "bytes": 1067830,
+          "mime": "image/png",
+          "duplicate_group": "hollow-knight-b2cb6af71091522c17e33c18",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://images1.apartments.com/i2/PmTqai1WbaCMGvHAoiN7r9n9-kXddOLkdPXOSNit09c/111/spruce-ridge-estates-calgary-ab-building-photo.jpg?p=1",
+          "alt": "Hollow Knight",
+          "caption": "Hollow Knight",
+          "source_name": "Web image source",
+          "source_url": "https://www.bing.com/images/search",
+          "width": 1240,
+          "height": 821,
+          "bytes": 162492,
+          "mime": "image/jpeg",
+          "duplicate_group": "hollow-knight-4487a7b18dc548dcbe718025",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.96,
+            "sharpness": 0.91,
+            "compression": 0.91,
+            "readability": 0.91,
+            "composition": 0.91,
+            "render_suitability": 0.95,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    }
+  ],
+  "verdict": {
+    "heading": "Вердикт",
+    "summary": "Hollow Knight стоит рекомендовать не из-за статуса или узнаваемости, а там, где её основной цикл, структура и авторские ограничения совпадают с ожиданиями игрока. Сильные стороны достаточно системны, чтобы пережить первоначальный эффект новизны, но обозначенные точки трения тоже реальны и особенно заметны при современном возвращении. Для Hollow Knight это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+    "best_for": [
+      "Игрокам, которым интересны Action, Adventure, Indie",
+      "Тем, кто ценит цельную систему правил и готов её изучать",
+      "Тем, кому важен авторский характер игры, а не только объём контента"
+    ],
+    "not_for": [
+      "Тем, кто не принимает повторение и необходимость осваивать правила",
+      "Игрокам, ожидающим от каждого эпизода мгновенного темпа",
+      "Тем, кому критична современная бесшовность интерфейса и подачи"
+    ]
+  },
+  "sources": [
+    {
+      "id": "source-1",
+      "publication": "Official source",
+      "title": "Hollow Knight — primary source",
+      "url": "https://www.hollowknight.com/",
+      "access_mode": "primary"
+    },
+    {
+      "id": "source-2",
+      "publication": "Steam",
+      "title": "Hollow Knight — primary source",
+      "url": "https://store.steampowered.com/app/367520/",
+      "access_mode": "primary"
+    }
+  ],
+  "game_id": "game_3b269562a000a1559ee9"
+}

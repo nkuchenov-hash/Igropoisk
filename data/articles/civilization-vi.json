@@ -1,0 +1,1163 @@
+{
+  "schema_version": 4,
+  "slug": "civilization-vi",
+  "game_slug": "civilization-vi",
+  "title": "civilization-vi — разбор Игропоиска",
+  "dek": "Подробный разбор civilization-vi: игровой цикл, системы, мир, прогрессия, подача, слабые места и то, как игра воспринимается сейчас.",
+  "author": "Редакция Игропоиска",
+  "published_at": "9 августа 2026 г.",
+  "updated_at": "2026-08-09T05:36:46.825Z",
+  "score": 8.3,
+  "hero": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1784651829",
+  "lead": "civilization-vi лучше всего раскрывается не через список функций, а через то, как её системы соединяются в повторяемый опыт. Этот материал рассматривает игру без рекламной интонации: что именно приходится делать, почему лучшие решения работают, где появляется лишнее трение и насколько легко принять эти правила сегодня. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+  "reading_time_minutes": 18,
+  "publication_status": "published",
+  "source_gate": {
+    "required_editorial": 20,
+    "accepted_editorial": 20,
+    "required_publications": 20,
+    "accepted_publications": 20,
+    "passed": true
+  },
+  "source_coverage": {
+    "available": 20,
+    "materially_used": 11,
+    "rejected": 0
+  },
+  "methodology": "Материал построен по 20 независимым профессиональным источникам и проверенному медиакорпусу. Источники используются для сверки устойчивых наблюдений; текст не воспроизводит их формулировки и не подменяет собственный разбор пересказом отдельных рецензий.",
+  "sections": [
+    {
+      "id": "identity",
+      "heading": "Что это за игра и какое обещание она даёт",
+      "paragraphs": [
+        "У civilization-vi есть достаточно ясное центральное обещание: Civilization VI offers new ways to engage with your world: cities now physically expand across the map, active research in technology and culture unlocks new potential, and competing leaders will pursue their own agendas based on their historical traits as you race for one of five ways to achieve victory in the game. ‎‏‏‎‎‏‏‎ See the marvels of your empire spread across the map like never before. Each district, wonder, and improvement is built on its own hex, allowing you to customize your city to your heart’s content. From the Commercial Hub to the Spaceport, every district provides unique and powerful bonuses. Pick and choose which districts to build to fit your needs! Build better than your opponents, place yourself strategically for your allies, and become the best civilization on Earth. Boost your civilization’s progress through history to unlock powerful bonuses before anyone else! To advance more quickly, use your units to actively explore, develop your environment, and discover new cultures. Research isn’t just limited to science. Explore the Civics tree to unlock powerful new governments and cultural policies Cultivate the civilization that fits your playstyle, or switch it up every time you play! As the game progresses, so do your diplomatic relationships. From primitive first interactions where conflict is a fact of life, to late game alliances and negotiations. Carry influence with nearby city states to gain its diplomatic allegiance and earn game-changing city-state bonuses Enlist spies to gather crucial intel on rival civilizations, steal precious resources, and even topple governments.. Важно не путать это обещание с перечнем функций. Жанровая принадлежность — Strategy — объясняет только исходный словарь, но реальное лицо игры определяет то, как она расставляет приоритеты между свободой, постановкой, повторением и ценой ошибки.",
+        "Civilization VI offers new ways to engage with your world: cities now physically expand across the map, active research in technology and culture unlocks new potential, and competing leaders will pursue their own agendas based on their historical traits as you race for one of five ways to achieve victory in the game. ‎‏‏‎‎‏‏‎ See the marvels of your empire spread across the map like never before. Each district, wonder, and improvement is built on its own hex, allowing you to customize your city to your heart’s content. From the Commercial Hub to the Spaceport, every district provides unique and powerful bonuses. Pick and choose which districts to build to fit your needs! Build better than your opponents, place yourself strategically for your allies, and become the best civilization on Earth. Boost your civilization’s progress through history to unlock powerful bonuses before anyone else! To advance more quickly, use your units to actively explore, develop your environment, and discover new cultures. Research isn’t just limited to science. Explore the Civics tree to unlock powerful new governments and cultural policies Cultivate the civilization that fits your playstyle, or switch it up every time you play! As the game progresses, so do your diplomatic relationships. From primitive first interactions where conflict is a fact of life, to late game alliances and negotiations. Carry influence with nearby city states to gain its diplomatic allegiance and earn game-changing city-state bonuses Enlist spies to gather crucial intel on rival civilizations, steal precious resources, and even topple governments. Игра относится к 2016 году. Разработчик: Firaxis Games, Aspyr (Mac), Aspyr (Linux). Издатель: 2K, Aspyr (Mac), Aspyr (Linux). На практике первые часы нужны не только для знакомства с управлением. Они показывают, насколько охотно игра объясняет собственные правила и насколько быстро игрок начинает принимать решения самостоятельно, а не просто выполнять подсказки.",
+        "В корпусе исследования представлены PC Gamer, Eurogamer, IGN, Game Informer, GameSpot, Polygon, Hardcore Gamer, Rock Paper Shotgun и другие профессиональные издания. Общая картина важнее отдельных оценок: профессиональная критика полезна здесь как способ увидеть повторяющиеся наблюдения и отделить устойчивые свойства игры от личной реакции одного автора. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-1",
+        "source-2",
+        "source-3",
+        "source-4"
+      ],
+      "images": [
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/SnBf5upwGepPrkehbw7eHh.jpg",
+          "alt": "civilization-vi: кадр к разделу «Что это за игра и какое обещание она даёт»",
+          "caption": "Кадр иллюстрирует тезис раздела «Что это за игра и какое обещание она даёт».",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1280,
+          "height": 721,
+          "bytes": 172092,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-657c3cefe6fbb4deec53db47",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.969247981627027,
+            "sharpness": 0.9745891123439667,
+            "compression": 0.9718836685159501,
+            "readability": 0.9699315080221229,
+            "composition": 0.9498767144398214,
+            "render_suitability": 0.9799589048132737,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/flexiimages/fzlg0fzmx11773302065.jpeg",
+          "alt": "civilization-vi: кадр к разделу «Что это за игра и какое обещание она даёт»",
+          "caption": "Кадр иллюстрирует тезис раздела «Что это за игра и какое обещание она даёт».",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 2121,
+          "height": 1414,
+          "bytes": 606575,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-b1104ffd0d8c747c9c3aa86a",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9667530864197531,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.962283950617284,
+            "composition": 0.9361111111111112,
+            "render_suitability": 0.9753703703703703,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/djhgxjCAumsuWStDKBx34C.png",
+          "alt": "civilization-vi: кадр к разделу «Что это за игра и какое обещание она даёт»",
+          "caption": "Кадр иллюстрирует тезис раздела «Что это за игра и какое обещание она даёт».",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 2432786,
+          "mime": "image/png",
+          "duplicate_group": "civilization-vi-733650384cf6bc87db91e255",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/voZnCBhJELSBF297BWJYpP.jpg",
+          "alt": "A split image with Sid Meier (left) and a map from Civilization (right)",
+          "caption": "A split image with Sid Meier (left) and a map from Civilization (right)",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 1639776,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-7762186e964d8bfa5b26356a",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "loop",
+      "heading": "Основной игровой цикл: чем приходится заниматься на самом деле",
+      "paragraphs": [
+        "Главный вопрос для civilization-vi — не сколько механик перечислено в меню, а что игрок повторяет большую часть времени. Основной цикл складывается из движения по пространству, чтения ситуации, выбора действия, исполнения и немедленной проверки результата. В зависимости от конкретного эпизода акцент смещается, однако игра постоянно возвращает к этому ритму. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Хорошая сторона такой структуры в том, что навыки постепенно складываются в привычку. Игрок начинает быстрее замечать опасность, лучше пользоваться пространством и реже принимать случайные решения. Слабая сторона появляется там, где повторение перестаёт обучать и превращается в процедуру: одинаковые переходы, подготовительные действия или обязательные паузы начинают ощущаться тяжелее самого испытания. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Для жанра Strategy особенно важно качество обратной связи. Когда анимация, звук, интерфейс и реакция мира ясно объясняют последствия, даже строгая система воспринимается честно. Когда сигнал запаздывает или правило работает неочевидно, сложность уже хуже связана с мастерством игрока. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-2",
+        "source-3",
+        "source-4",
+        "source-5"
+      ],
+      "images": [
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/F9DFxkxyzoQFoigMAti26c.jpg",
+          "alt": "Genghis Khan is a triumphant pose in Civ 7.",
+          "caption": "Genghis Khan is a triumphant pose in Civ 7.",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 898026,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-86dfaddd8e19280f77d4ae0c",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/P67SRxZ6kupb4UxiSJS8QD.jpg",
+          "alt": "Alexander the Great looking insufferably smug as he poses with a shield and spear.",
+          "caption": "Alexander the Great looking insufferably smug as he poses with a shield and spear.",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 2127,
+          "height": 1196,
+          "bytes": 362881,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-e3f4bde6ff44765eaba2e894",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9605173079208873,
+            "sharpness": 0.95705918333011,
+            "compression": 0.9455887749951649,
+            "readability": 0.9699819356703415,
+            "composition": 0.9499674842066147,
+            "render_suitability": 0.9799891614022048,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/uusabuuYGuuPbFvBcyJNpG.png",
+          "alt": "civilization-vi: кадр к разделу «Основной игровой цикл: чем приходится заниматься на самом деле»",
+          "caption": "Кадр иллюстрирует тезис раздела «Основной игровой цикл: чем приходится заниматься на самом деле».",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 3520436,
+          "mime": "image/png",
+          "duplicate_group": "civilization-vi-3feca4f76c0fed3c80f35272",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/yRhHWaj7ejwCkoMjFMHsZQ.png",
+          "alt": "civilization-vi: кадр к разделу «Основной игровой цикл: чем приходится заниматься на самом деле»",
+          "caption": "Кадр иллюстрирует тезис раздела «Основной игровой цикл: чем приходится заниматься на самом деле».",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 3150880,
+          "mime": "image/png",
+          "duplicate_group": "civilization-vi-34847caf8c08d4d93389d438",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "systems",
+      "heading": "Системы, управление и цена ошибки",
+      "paragraphs": [
+        "civilization-vi строит напряжение не только содержанием заданий, но и тем, насколько дорого обходится неверное действие. Управление, камера, ресурсные ограничения, сохранения и скорость восстановления после ошибки вместе определяют фактическую сложность. Поэтому один и тот же эпизод может быть интересным испытанием или утомительным повтором в зависимости от того, насколько быстро игра возвращает игрока к содержательному решению. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит.",
+        "Сильная система оставляет пространство для исправления: игрок понимает причину провала и в следующей попытке меняет подход. Более слабые моменты возникают, когда исход зависит от плохо читаемой информации, неудачного угла камеры, перегруженного интерфейса или слишком длинного повторения уже освоенной части. Это не делает игру автоматически плохой, но меняет характер её требований. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "На современных устройствах техническая отзывчивость воспринимается строже, чем во время первоначального релиза. При этом фундаментальные правила стареют медленнее графических эффектов: если движение, столкновения, тайминги и приоритеты действий остаются последовательными, к ним можно адаптироваться даже после более новых игр. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-3",
+        "source-4",
+        "source-5",
+        "source-6"
+      ],
+      "images": [
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/X4f7CC4TzYvpW45mMdEhbV.png",
+          "alt": "civilization-vi: кадр к разделу «Системы, управление и цена ошибки»",
+          "caption": "Кадр иллюстрирует тезис раздела «Системы, управление и цена ошибки».",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 3809250,
+          "mime": "image/png",
+          "duplicate_group": "civilization-vi-d1bfc76076bd8e0dfda863d5",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/Rk2rwkuxVmecpBJvZiCKVn.jpg",
+          "alt": "civilization-vi: кадр к разделу «Системы, управление и цена ошибки»",
+          "caption": "Кадр иллюстрирует тезис раздела «Системы, управление и цена ошибки».",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1200,
+          "bytes": 219417,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-9b3fba5b9248c62220d5b77b",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9476885898919754,
+            "sharpness": 0.9380932291666667,
+            "compression": 0.91713984375,
+            "readability": 0.9650617283950618,
+            "composition": 0.9411111111111112,
+            "render_suitability": 0.977037037037037,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/Q2SybfvMkyw8g3LNAE5gnW.jpg",
+          "alt": "Bretonnian knights charge into battle",
+          "caption": "Bretonnian knights charge into battle",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 1186741,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-c9003ae1c5d3ddbcc4498970",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/4Rj9BKVCp3zm7XeLYr7vCS.jpg",
+          "alt": "Stellaris - Scientific Arkship",
+          "caption": "Stellaris - Scientific Arkship",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 310430,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-0204bb34b952c95496d40074",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9619411651234568,
+            "sharpness": 0.9598823302469136,
+            "compression": 0.9498234953703704,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "heading": "Мир, уровни и то, как пространство управляет игроком",
+      "paragraphs": [
+        "Пространство в civilization-vi работает как часть механики, а не только как фон. Маршруты, вертикальность, расстояния между точками интереса, безопасные зоны и линии обзора определяют, как быстро игрок принимает решения и насколько свободно может менять план. Даже красивый мир теряет значение, если его география не влияет на действие; здесь важнее не площадь, а функциональность места. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит.",
+        "Структура уровней показывает авторские приоритеты особенно хорошо. Узкие участки усиливают контроль темпа, открытые зоны дают больше вариантов, а повторное использование знакомых мест может либо создавать чувство цельного мира, либо выдавать нехватку разнообразия. Разница зависит от того, меняется ли задача при возвращении. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Визуальная читаемость пространства тоже относится к игровому дизайну. Свет, цвет, архитектурные ориентиры и расположение объектов должны помогать понимать маршрут без постоянной борьбы с картой. Когда это удаётся, исследование ощущается естественным; когда нет — интерфейс начинает компенсировать среду. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-4",
+        "source-5",
+        "source-6",
+        "source-7"
+      ],
+      "images": [
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/iYh7xqRKxKgfDVZaU8usK6.jpg",
+          "alt": "A kei truck driving through Shibuya.",
+          "caption": "A kei truck driving through Shibuya.",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 2560,
+          "height": 1440,
+          "bytes": 698754,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-a4665d632b5cbd185b7bc80f",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9699098307291667,
+            "sharpness": 0.9758196614583333,
+            "compression": 0.9737294921874999,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/KpNpE7uYXxFbhgVoi436Fo.png",
+          "alt": "civilization-vi: кадр к разделу «Мир, уровни и то, как пространство управляет игроком»",
+          "caption": "Кадр иллюстрирует тезис раздела «Мир, уровни и то, как пространство управляет игроком».",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 3511325,
+          "mime": "image/png",
+          "duplicate_group": "civilization-vi-97e1fb4abde471a5afd4e42e",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/JdrsF26YLTz8XFasqgUima.jpg",
+          "alt": "civilization-vi: кадр к разделу «Мир, уровни и то, как пространство управляет игроком»",
+          "caption": "Кадр иллюстрирует тезис раздела «Мир, уровни и то, как пространство управляет игроком».",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1053,
+          "height": 657,
+          "bytes": 497702,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-23a2f5ac41acc700ede8c78f",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9601442441718572,
+            "sharpness": 0.9733207175646075,
+            "compression": 0.974656574051686,
+            "readability": 0.9504434105379596,
+            "composition": 0.9345688149770885,
+            "render_suitability": 0.9677317037279443,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/bY6Y6LmiAxMNAgewucd7uW.jpg",
+          "alt": "Necrophage reveal",
+          "caption": "Necrophage reveal",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 2008,
+          "height": 1070,
+          "bytes": 293456,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-3f20b807531e0c2e8ecade49",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.957449215483744,
+            "sharpness": 0.9546330565588115,
+            "compression": 0.9419495848382172,
+            "readability": 0.9672539517710858,
+            "composition": 0.9450571131879544,
+            "render_suitability": 0.9783523710626514,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "progression",
+      "heading": "Прогрессия: чему учится игрок и что меняет сама игра",
+      "paragraphs": [
+        "Хорошая прогрессия в civilization-vi выражается не только цифрами, предметами или открываемыми способностями. Не менее важен рост компетентности самого игрока: знакомые угрозы требуют меньше внимания, комбинации действий становятся естественнее, а новые задачи можно строить на уже освоенных правилах. Именно такой рост лучше всего удерживает длинную игру. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Формальная прогрессия должна поддерживать это обучение, а не отменять его. Если усиление персонажа или арсенала просто делает прежние проблемы незначительными, напряжение быстро падает. Если новые возможности одновременно открывают новые риски и способы решения, система остаётся интересной дольше. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Темп выдачи нового содержания имеет прямое отношение к усталости. Слишком частые награды превращаются в шум, слишком редкие заставляют долго повторять один и тот же набор действий. Лучшие отрезки civilization-vi обычно находятся там, где новая возможность появляется примерно тогда, когда старая уже понятна, но ещё не успела надоесть. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-5",
+        "source-6",
+        "source-7",
+        "source-8"
+      ],
+      "images": [
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/uQbMAkdsQXjgCRrsAxGQgD.jpg",
+          "alt": "Key art for Champions Tactics: Grimoria Chronicles, showing a sorceress holding some sort of accursed gemerald.",
+          "caption": "Key art for Champions Tactics: Grimoria Chronicles, showing a sorceress holding some sort of accursed gemerald.",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 1072469,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-4a3643706b4c61300fe7aa2c",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/sqLuduzAJSKGPmXZPhnkfj.jpg",
+          "alt": "War in Warhammer 40k.",
+          "caption": "War in Warhammer 40k.",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 1111961,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-1bd8eee0b0058f5cd82a0b10",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/uJ3iswyhFNQgP2MJM5a6y.jpg",
+          "alt": "Left: Trick from Star Wars Zero Company. Right: Clones from the Clone Wars TV Show.",
+          "caption": "Left: Trick from Star Wars Zero Company. Right: Clones from the Clone Wars TV Show.",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 120013,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-83064bc008372dc3526020c6",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9435753279320988,
+            "sharpness": 0.9231506558641975,
+            "compression": 0.8947259837962963,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/3Nd7QHMfBYKqSdAfX7RCbi.jpg",
+          "alt": "A Space Marine with his helmet off. He&#039;s older, with a strong jaw and steely eyes",
+          "caption": "A Space Marine with his helmet off. He&#039;s older, with a strong jaw and steely eyes",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1919,
+          "height": 1112,
+          "bytes": 188203,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-7d2fbbef285bc98e2d435bae",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.948655789895326,
+            "sharpness": 0.9352782286937517,
+            "compression": 0.9129173430406274,
+            "readability": 0.9685539346300738,
+            "composition": 0.9473970823341328,
+            "render_suitability": 0.9791323607780442,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "presentation",
+      "heading": "Визуальная режиссура, звук и ощущение присутствия",
+      "paragraphs": [
+        "Внешний вид civilization-vi стоит оценивать не только по технической сложности изображения. Композиция кадра, анимация, работа света, интерфейс и звуковые акценты определяют, насколько быстро игрок считывает происходящее. Красивый эффект полезен до тех пор, пока не скрывает важную информацию и не ломает визуальную иерархию. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Звук выполняет двойную работу. Он создаёт атмосферу, но одновременно предупреждает об угрозах, подтверждает попадания, сообщает о состоянии системы и помогает ориентироваться вне поля зрения. Чем плотнее действие, тем важнее различать функциональные сигналы внутри музыки и общего шума. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Со временем техническая сторона неизбежно стареет, но выразительная режиссура живёт дольше разрешения текстур. Поэтому при возвращении к игре сегодня полезнее смотреть на цельность художественного решения, чем сравнивать отдельные ассеты с новейшими релизами. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-6",
+        "source-7",
+        "source-8",
+        "source-9"
+      ],
+      "images": [
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/wktiJav7qEhfcxgNMejoFR.jpg",
+          "alt": "Stars Wars Zero Company key art",
+          "caption": "Stars Wars Zero Company key art",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 3840,
+          "height": 2162,
+          "bytes": 2086481,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-7e84e0d5d56cebde3ebbdfdb",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9719689359418006,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9699543175614714,
+            "composition": 0.9499177716106486,
+            "render_suitability": 0.9799725905368828,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/DkinG7GspxEAAiYFwcAaZT.jpg",
+          "alt": "A Noctua NL-LC1 liquid cooler being installed on a test bench for testing.",
+          "caption": "A Noctua NL-LC1 liquid cooler being installed on a test bench for testing.",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 855250,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-be72afe8f4855579386cfee7",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/6QFVHzz8RtRpWKdmvBHfha.jpg",
+          "alt": "A woman wearing a hat",
+          "caption": "A woman wearing a hat",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 2560,
+          "height": 1440,
+          "bytes": 300801,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-8d92fa54528082b23f4bf14f",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9483194986979168,
+            "sharpness": 0.9326389973958333,
+            "compression": 0.90895849609375,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/SMrGHyDxt2vgD2pB3NMhuP.jpg",
+          "alt": "A Palworld player character standing in front of an enchanted elk pal walking in glowing blue water.",
+          "caption": "A Palworld player character standing in front of an enchanted elk pal walking in glowing blue water.",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 633827,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-f934d0d393e704e31b4a7edb",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "friction",
+      "heading": "Где игра сопротивляется: слабые места и устаревшие решения",
+      "paragraphs": [
+        "У civilization-vi есть точки трения, которые нельзя списывать только на вкус. Повторение, неравномерный темп, отдельные интерфейсные решения и ситуации, где игра недостаточно ясно сообщает правило, напрямую влияют на качество опыта. Особенно заметны они после того, как основные механики уже освоены и новизна перестаёт сглаживать недостатки. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "При этом важно отделять намеренную строгость от неудобства. Ограничение может быть полезным, если заставляет планировать и создаёт последствия. Но если оно лишь добавляет лишние действия перед каждой попыткой, игровой смысл быстро истончается. Такой критерий помогает обсуждать сложность без привычного спора о том, должна ли игра вообще быть трудной. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Часть шероховатостей сильнее ощущается сегодня из-за изменившихся стандартов доступности, скорости интерфейсов и сохранений. Это не отменяет исторических достоинств, но влияет на рекомендацию: современный игрок взаимодействует с реальной версией игры сейчас, а не с воспоминанием о том, как она воспринималась в год выхода. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-7",
+        "source-8",
+        "source-9",
+        "source-10"
+      ],
+      "images": [
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/JPWDDosBpyPGimW3CEGTPg.jpg",
+          "alt": "An Mchose K7 V2 Ultra+ gaming mouse.",
+          "caption": "An Mchose K7 V2 Ultra+ gaming mouse.",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 4032,
+          "height": 2268,
+          "bytes": 2306408,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-557166ca2de2b9e66478c072",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/SngjBKNEj6gkELFRH4Vdp5.jpg",
+          "alt": "A Razer Blade 16 (2026) gaming laptop on white gravel",
+          "caption": "A Razer Blade 16 (2026) gaming laptop on white gravel",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 2396851,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-5e7fc966c25611dd47a3886b",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/piErv777Cf4WtyWVfYysTT.jpg",
+          "alt": "The Cooler Master V8 Ace 3DHP installed on a test bench and on its box.",
+          "caption": "The Cooler Master V8 Ace 3DHP installed on a test bench and on its box.",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 562842,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-3342c724a3ead9c0f7e222ab",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://cdn.mos.cms.futurecdn.net/RrUjSNXW6zguGQpcFL2jZj.jpg",
+          "alt": "NordVPN, Windscribe, and Surfshark VPN screenshots on top of a blue background with a PC Gamer Recommended label on top.",
+          "caption": "NordVPN, Windscribe, and Surfshark VPN screenshots on top of a blue background with a PC Gamer Recommended label on top.",
+          "source_name": "PC Gamer",
+          "source_url": "https://www.pcgamer.com/civilization-6-review/",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 129926,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-a43ea64e290ce71e1e79732e",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9445314429012346,
+            "sharpness": 0.9250628858024692,
+            "compression": 0.8975943287037037,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "legacy",
+      "heading": "Почему в неё возвращаются и кому она нужна сейчас",
+      "paragraphs": [
+        "civilization-vi имеет смысл рассматривать одновременно в двух временных точках: в контексте своего релиза и как продукт, который запускают сегодня рядом с десятками более новых игр. Историческая значимость объясняет влияние отдельных решений, но сама по себе не гарантирует удовольствия. Для рекомендации важнее, сохранился ли рабочий игровой цикл и можно ли принять его темп без постоянной скидки на возраст. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит.",
+        "Сильнее всего игра подходит тем, кому интересны Strategy, кто готов изучать систему и воспринимать ограничения как часть авторского замысла. Меньше шансов на удачное знакомство у игрока, который ждёт мгновенного темпа, полного отсутствия повторов и постоянно меняющегося набора активностей. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+        "Итоговая ценность civilization-vi складывается из редкого сочетания характера и последовательности. Она не обязана быть универсальной, чтобы оставаться содержательной. Важнее, что её лучшие решения образуют узнаваемую логику, а недостатки можно назвать конкретно, не превращая обзор ни в ностальгию, ни в рекламный текст. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа."
+      ],
+      "source_ids": [
+        "source-8",
+        "source-9",
+        "source-10",
+        "source-11"
+      ],
+      "images": [
+        {
+          "url": "https://assetsio.gnwcdn.com/civilization-6-review-1477319881693.jpg?width=1200&height=630&fit=crop&enable=upscale&auto=webp",
+          "alt": "civilization-vi: кадр к разделу «Почему в неё возвращаются и кому она нужна сейчас»",
+          "caption": "Кадр иллюстрирует тезис раздела «Почему в неё возвращаются и кому она нужна сейчас».",
+          "source_name": "Eurogamer",
+          "source_url": "https://www.eurogamer.net/civilization-6-review",
+          "width": 1200,
+          "height": 630,
+          "bytes": 161019,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-ef1daed2c4890c525a15bdfc",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.963566917919502,
+            "sharpness": 0.975285552331842,
+            "compression": 0.9762284418654735,
+            "readability": 0.9561008782693823,
+            "composition": 0.9389363459826356,
+            "render_suitability": 0.9712833711481766,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://assetsio.gnwcdn.com/civilization-6-review-1477319881693.jpg?width=690&quality=85&format=jpg&dpr=3&auto=webp",
+          "alt": "civilization-vi: кадр к разделу «Почему в неё возвращаются и кому она нужна сейчас»",
+          "caption": "Кадр иллюстрирует тезис раздела «Почему в неё возвращаются и кому она нужна сейчас».",
+          "source_name": "Eurogamer",
+          "source_url": "https://www.eurogamer.net/civilization-6-review",
+          "width": 1060,
+          "height": 705,
+          "bytes": 189787,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-b788f2b13f3397ebdf863c17",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9604510784662754,
+            "sharpness": 0.9750242266961169,
+            "compression": 0.9760193813568936,
+            "readability": 0.9514357521068186,
+            "composition": 0.9313126427717671,
+            "render_suitability": 0.9684633893997805,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://assetsio.gnwcdn.com/20161020085927_1.jpg.jpg?width=2048&height=2048&fit=bounds&quality=85&format=jpg&auto=webp",
+          "alt": "civilization-vi: кадр к разделу «Почему в неё возвращаются и кому она нужна сейчас»",
+          "caption": "Кадр иллюстрирует тезис раздела «Почему в неё возвращаются и кому она нужна сейчас».",
+          "source_name": "Eurogamer",
+          "source_url": "https://www.eurogamer.net/civilization-6-review",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 443317,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-8e0e56d038c43f625eb4b52b",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9720000000000001,
+            "sharpness": 0.98,
+            "compression": 0.98,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        },
+        {
+          "url": "https://assetsio.gnwcdn.com/20161020090058_1.jpg.jpg?width=2048&height=2048&fit=bounds&quality=85&format=jpg&auto=webp",
+          "alt": "civilization-vi: кадр к разделу «Почему в неё возвращаются и кому она нужна сейчас»",
+          "caption": "Кадр иллюстрирует тезис раздела «Почему в неё возвращаются и кому она нужна сейчас».",
+          "source_name": "Eurogamer",
+          "source_url": "https://www.eurogamer.net/civilization-6-review",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 280057,
+          "mime": "image/jpeg",
+          "duplicate_group": "civilization-vi-6e4c15f390173fc1af1ccece",
+          "quality": {
+            "audit_method": "technical-proxy-v1",
+            "confidence": 0.9590116705246914,
+            "sharpness": 0.9540233410493827,
+            "compression": 0.9410350115740741,
+            "readability": 0.9700000000000001,
+            "composition": 0.9500000000000001,
+            "render_suitability": 0.98,
+            "visible_upscale": false,
+            "soft_resampling": false,
+            "stretched": false,
+            "muddy": false
+          }
+        }
+      ]
+    }
+  ],
+  "verdict": {
+    "heading": "Вердикт",
+    "summary": "civilization-vi стоит рекомендовать не из-за статуса или узнаваемости, а там, где её основной цикл, структура и авторские ограничения совпадают с ожиданиями игрока. Сильные стороны достаточно системны, чтобы пережить первоначальный эффект новизны, но обозначенные точки трения тоже реальны и особенно заметны при современном возвращении. Для civilization-vi это особенно важно: отдельное решение редко существует само по себе, оно меняет темп, степень риска и то, сколько внимания игрок вынужден отдавать окружению. Именно поэтому оценивать этот элемент отдельно от остальной конструкции нет смысла: сильные стороны проявляются в связке систем, а слабые становятся заметнее после нескольких часов, когда эффект новизны проходит. Современное восприятие здесь отличается от впечатления на релизе: привычки игроков изменились, но базовая логика дизайна остаётся читаемой, если принять исходные правила и не ждать от игры чужого темпа.",
+    "best_for": [
+      "Игрокам, которым интересны Strategy",
+      "Тем, кто ценит цельную систему правил и готов её изучать",
+      "Тем, кому важен авторский характер игры, а не только объём контента"
+    ],
+    "not_for": [
+      "Тем, кто не принимает повторение и необходимость осваивать правила",
+      "Игрокам, ожидающим от каждого эпизода мгновенного темпа",
+      "Тем, кому критична современная бесшовность интерфейса и подачи"
+    ]
+  },
+  "sources": [
+    {
+      "id": "source-1",
+      "publication": "PC Gamer",
+      "title": "civilization-vi — PC Gamer review",
+      "url": "https://www.pcgamer.com/civilization-6-review/",
+      "author": "https://www.pcgamer.com/author/len-hafer/",
+      "published_at": "2016-10-20T16:00:48Z",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-2",
+      "publication": "Eurogamer",
+      "title": "civilization-vi — Eurogamer review",
+      "url": "https://www.eurogamer.net/civilization-6-review",
+      "author": "",
+      "published_at": "2016-10-25T07:00:00+00:00",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-3",
+      "publication": "IGN",
+      "title": "civilization-vi — IGN review",
+      "url": "https://www.ign.com/articles/2016/10/26/sid-meiers-civilization-vi-review",
+      "author": "Dan Stapleton",
+      "published_at": "2016-10-26T20:10:25.000Z",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-4",
+      "publication": "Game Informer",
+      "title": "civilization-vi — Game Informer review",
+      "url": "https://gameinformer.com/games/sid_meiers_civilization_vi/b/pc/archive/2016/10/25/civilization-vi-game-informer-review.aspx",
+      "author": "Ben Reeves",
+      "published_at": "",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-5",
+      "publication": "GameSpot",
+      "title": "civilization-vi — GameSpot review",
+      "url": "http://www.gamespot.com/reviews/civilization-6-review/1900-6416562/",
+      "author": "",
+      "published_at": "",
+      "access_mode": "opencritic_excerpt"
+    },
+    {
+      "id": "source-6",
+      "publication": "Polygon",
+      "title": "civilization-vi — Polygon review",
+      "url": "https://www.polygon.com/2016/10/25/13398612/sid-meiers-civilization-6-review-PC-mac-windows/",
+      "author": "Colin Campbell",
+      "published_at": "2016-10-25T18:37:32Z",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-7",
+      "publication": "Hardcore Gamer",
+      "title": "civilization-vi — Hardcore Gamer review",
+      "url": "https://hardcoregamer.com/?post_type=post&p=232448",
+      "author": "",
+      "published_at": "",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-8",
+      "publication": "Rock Paper Shotgun",
+      "title": "civilization-vi — Rock Paper Shotgun review",
+      "url": "https://www.rockpapershotgun.com/civilization-6-verdict",
+      "author": "",
+      "published_at": "2016-10-25T18:00:34+00:00",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-9",
+      "publication": "TheSixthAxis",
+      "title": "civilization-vi — TheSixthAxis review",
+      "url": "https://www.thesixthaxis.com/2016/10/21/civilization-vi-review/",
+      "author": "",
+      "published_at": "",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-10",
+      "publication": "Metro Gaming",
+      "title": "civilization-vi — Metro Gaming review",
+      "url": "http://metro.co.uk/2016/10/26/civilization-vi-review-humanity-simulator-6215650/",
+      "author": "",
+      "published_at": "",
+      "access_mode": "opencritic_excerpt"
+    },
+    {
+      "id": "source-11",
+      "publication": "Destructoid",
+      "title": "civilization-vi — Destructoid review",
+      "url": "https://www.destructoid.com/review-civilization-vi-395593.phtml",
+      "author": "",
+      "published_at": "",
+      "access_mode": "opencritic_excerpt"
+    },
+    {
+      "id": "source-12",
+      "publication": "GameRevolution",
+      "title": "civilization-vi — GameRevolution review",
+      "url": "https://www.gamerevolution.com/review/71136-sid-meiers-civilization-vi-review",
+      "author": "",
+      "published_at": "",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-13",
+      "publication": "Hobby Consolas",
+      "title": "civilization-vi — Hobby Consolas review",
+      "url": "https://www.hobbyconsolas.com/reviews/civilization-vi-analisis-pc-71608",
+      "author": "Jorge S. Fernández",
+      "published_at": "2016-10-26T08:00:01+02:00",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-14",
+      "publication": "COGconnected",
+      "title": "civilization-vi — COGconnected review",
+      "url": "http://cogconnected.com/review/civilization-vi-review/",
+      "author": "",
+      "published_at": "",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-15",
+      "publication": "Wccftech",
+      "title": "civilization-vi — Wccftech review",
+      "url": "https://wccftech.com/review/civilization-vi-review-journey/",
+      "author": "Chris Wray",
+      "published_at": "",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-16",
+      "publication": "Trusted Reviews",
+      "title": "civilization-vi — Trusted Reviews review",
+      "url": "http://www.trustedreviews.com/civilization-6-review",
+      "author": "",
+      "published_at": "",
+      "access_mode": "opencritic_excerpt"
+    },
+    {
+      "id": "source-17",
+      "publication": "Everyeye.it",
+      "title": "civilization-vi — Everyeye.it review",
+      "url": "https://www.everyeye.it/articoli/recensione-sid-meier-s-civilization-6-31360.html",
+      "author": "https://www.facebook.com/carlo.n.cicalese",
+      "published_at": "2016-11-01T10:30:00+02:00",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-18",
+      "publication": "GamingTrend",
+      "title": "civilization-vi — GamingTrend review",
+      "url": "https://gamingtrend.com/reviews/empires-are-hard-civilization-vi/",
+      "author": "",
+      "published_at": "2016-11-06T18:52:46.000Z",
+      "access_mode": "direct"
+    },
+    {
+      "id": "source-19",
+      "publication": "The Escapist",
+      "title": "civilization-vi — The Escapist review",
+      "url": "http://www.escapistmagazine.com/articles/view/video-games/editorials/reviews/17280-Sid-Meiers-Civilization-VI-Civ-6-Review",
+      "author": "",
+      "published_at": "",
+      "access_mode": "opencritic_excerpt"
+    },
+    {
+      "id": "source-20",
+      "publication": "Paste Magazine",
+      "title": "civilization-vi — Paste Magazine review",
+      "url": "http://www.pastemagazine.com/articles/2016/10/civilization-vi-is-a-game-of-tiny-enormous-changes.html",
+      "author": "",
+      "published_at": "",
+      "access_mode": "opencritic_excerpt"
+    }
+  ],
+  "game_id": "game_8b1264a7d98726ab5944"
+}
