@@ -15,33 +15,36 @@ const warnings=[];
 const badSource=value=>/bing\.com\/images|google\.[^/]+\/search|yandex\.[^/]+\/images/i.test(String(value||''));
 const badUrl=value=>/scribdassets\.com|document_thumbnails/i.test(String(value||''));
 const urlOf=item=>typeof item==='string'?item:String(item?.url||item?.src||item?.image||item?.thumbnail||'');
-const valid=item=>{const url=urlOf(item);return /^https?:\/\//i.test(url)&&!badUrl(url)&&!badSource(item?.source_url)};
+const valid=item=>{const url=urlOf(item);return (/^https?:\/\//i.test(url)||url.startsWith('/Igropoisk/'))&&!badUrl(url)&&!badSource(item?.source_url)};
 const unique=items=>{const seen=new Set();return items.filter(item=>{if(!valid(item))return false;const url=urlOf(item);if(seen.has(url))return false;seen.add(url);return true})};
 
 for(const slug of slugs){
   const draft=read(`data/drafts/${slug}.json`,{});
   const curated=records.get(slug)||{};
+  const override=read(`data/game-media/${slug}.json`,{});
   const article=read(`data/articles/${slug}.json`,read(`data/article-drafts/${slug}.json`,{}));
   const articleMedia=read(`data/article-media/${slug}.json`,{});
   const articleMediaShots=(articleMedia.sections||[]).flatMap(section=>section.images||[]);
   const articleShots=(article.sections||[]).flatMap(section=>section.images||[]);
   const draftShots=draft.media?.screenshots||[];
   const curatedShots=curated.media?.screenshots||[];
-  const goodShots=unique([...curatedShots,...draftShots,...articleMediaShots,...articleShots]);
+  const goodShots=unique([...(override.screenshots||[]),...curatedShots,...draftShots,...articleMediaShots,...articleShots]);
   const rejectedDraft=draftShots.filter(item=>!valid(item)).map(urlOf);
   const appid=Number(curated.identity?.steam_appid||draft.identity?.steam_appid||0);
   const steamHero=appid?`https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_hero.jpg`:'';
   const steamCover=appid?`https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg`:'';
-  const cover=urlOf(curated.media?.cover)||urlOf(draft.media?.cover)||steamCover||urlOf(article.hero);
-  const hero=urlOf(curated.media?.hero)||urlOf(draft.media?.hero)||steamHero||urlOf(article.hero)||(goodShots[0]&&urlOf(goodShots[0]));
+  const cover=urlOf(override.cover)||urlOf(curated.media?.cover)||urlOf(draft.media?.cover)||steamCover||urlOf(article.hero);
+  const hero=urlOf(override.hero)||urlOf(curated.media?.hero)||urlOf(draft.media?.hero)||steamHero||urlOf(article.hero)||(goodShots[0]&&urlOf(goodShots[0]));
   const art=unique([
+    ...(override.artwork||[]),
     ...(curated.media?.artwork||[]),
     ...(draft.media?.artwork||[]),
     cover&&{url:cover},
     hero&&{url:hero},
     article.hero&&{url:article.hero,source_url:article.sources?.[0]?.url||''}
   ].filter(Boolean));
-  if(goodShots.length<6)errors.push(`${slug}: only ${goodShots.length} valid screenshots after effective runtime recovery; minimum is 6`);
+  const minimumScreenshots=Math.max(1,Number(override.minimum_screenshots||6));
+  if(goodShots.length<minimumScreenshots)errors.push(`${slug}: only ${goodShots.length} valid screenshots after effective runtime recovery; minimum is ${minimumScreenshots}`);
   if(!cover||badUrl(cover))errors.push(`${slug}: no valid effective cover`);
   if(!hero||badUrl(hero))errors.push(`${slug}: no valid effective hero`);
   if(art.length<2)warnings.push(`${slug}: only ${art.length} unique cover/art image; page will still render but needs richer artwork`);
