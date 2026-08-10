@@ -17,6 +17,7 @@ if (ranking.length !== Number(data.count)) errors.push('count mismatch');
 if (ranking.length > 250) errors.push('ranking exceeds 250');
 const ids = new Set();
 const slugs = new Set();
+let previousScore = Infinity;
 for (let i = 0; i < ranking.length; i += 1) {
   const item = ranking[i];
   const gamePath = path.join(root, 'game', String(item.slug || ''), 'index.html');
@@ -24,10 +25,15 @@ for (let i = 0; i < ranking.length; i += 1) {
   const articlePage = path.join(root, 'article', String(item.slug || ''), 'index.html');
   const expectedGameUrl = `/Igropoisk/game/${encodeURIComponent(item.slug)}/`;
   const expectedReviewUrl = `/Igropoisk/article/${encodeURIComponent(item.slug)}/`;
+  const score = Number(item.score);
   if (Number(item.rank) !== i + 1) errors.push(`rank mismatch at index ${i}`);
   if (!item.game_id) errors.push(`missing game_id at rank ${i + 1}`);
   if (!item.slug) errors.push(`missing slug at rank ${i + 1}`);
   if (!item.title) errors.push(`missing title at rank ${i + 1}`);
+  if (!Number.isFinite(score) || score <= 0 || score > 10) errors.push(`invalid Игропоиск rating for ${item.slug}: ${item.score}`);
+  if (score > previousScore) errors.push(`rating order is not descending at ${item.slug}`);
+  previousScore = score;
+  if (!['rating_research', 'game_content'].includes(item.rating_source)) errors.push(`invalid rating_source for ${item.slug}`);
   if (ids.has(item.game_id)) errors.push(`duplicate game_id ${item.game_id}`);
   if (slugs.has(item.slug)) errors.push(`duplicate slug ${item.slug}`);
   ids.add(item.game_id);
@@ -45,6 +51,7 @@ for (let i = 0; i < ranking.length; i += 1) {
     errors.push(`unpublished review must not expose a URL for ${item.slug}`);
   }
 }
+if (ranking.some(item => item.slug === 'grand-theft-auto-vi')) errors.push('Grand Theft Auto VI is unreleased and must not be present in Top-250');
 if (errors.length) {
   console.error(JSON.stringify({ errors }, null, 2));
   process.exit(2);

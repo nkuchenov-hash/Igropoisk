@@ -1,0 +1,53 @@
+name: Game page quality
+
+on:
+  pull_request:
+    branches: [staging, main]
+    paths:
+      - 'game/_shared/**'
+      - 'data/drafts/**'
+      - 'data/article-media/**'
+      - 'data/game-media/**'
+      - 'config/game-media-steam-overrides.json'
+      - 'scripts/repair-game-media-from-steam.mjs'
+      - 'scripts/validate-game-media-quality.mjs'
+      - 'scripts/build-game-page.mjs'
+      - '.github/workflows/game-page-quality.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify shared game runtime syntax
+        run: |
+          node --check game/_shared/game-page-v3-bootstrap.js
+          node --check game/_shared/game-page.js
+          node --check game/_shared/game-media-recovery.js
+          node --check scripts/repair-game-media-from-steam.mjs
+      - name: Exercise verified Steam media repair
+        run: node scripts/repair-game-media-from-steam.mjs
+      - name: Verify game media quality after repair
+        run: node scripts/validate-game-media-quality.mjs
+      - name: Verify GTA VI release and media contract
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const gta=JSON.parse(fs.readFileSync('data/drafts/grand-theft-auto-vi.json','utf8'));
+          if(gta.release?.status!=='upcoming') throw new Error('GTA VI must be marked upcoming');
+          if(gta.release?.date!=='2026-11-19') throw new Error('GTA VI release date must be 2026-11-19');
+          if(gta.ratings?.igropoisk!==null&&gta.ratings?.igropoisk!==undefined) throw new Error('GTA VI must not have an editorial rating before release');
+          if((gta.media?.screenshots||[]).length<10) throw new Error('GTA VI needs a substantial official screenshot set');
+          if((gta.media?.artwork||[]).length<2) throw new Error('GTA VI needs official artwork');
+          for(const item of gta.media?.screenshots||[]){
+            if(!String(item.url||'').includes('rockstargames.com/VI/')) throw new Error(`Non-official GTA VI screenshot: ${item.url}`);
+            if(!String(item.source_url||'').startsWith('https://www.rockstargames.com/VI/')) throw new Error(`Non-official GTA VI source: ${item.source_url}`);
+          }
+          console.log('GTA VI upcoming/media contract verified.');
+          NODE
