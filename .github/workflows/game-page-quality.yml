@@ -7,6 +7,9 @@ on:
       - 'game/_shared/**'
       - 'data/drafts/**'
       - 'data/article-media/**'
+      - 'data/game-media/**'
+      - 'config/game-media-steam-overrides.json'
+      - 'scripts/repair-game-media-from-steam.mjs'
       - 'scripts/validate-game-media-quality.mjs'
       - 'scripts/build-game-page.mjs'
       - '.github/workflows/game-page-quality.yml'
@@ -27,7 +30,10 @@ jobs:
           node --check game/_shared/game-page-v3-bootstrap.js
           node --check game/_shared/game-page.js
           node --check game/_shared/game-media-recovery.js
-      - name: Verify game media quality
+          node --check scripts/repair-game-media-from-steam.mjs
+      - name: Exercise verified Steam media repair
+        run: node scripts/repair-game-media-from-steam.mjs
+      - name: Verify game media quality after repair
         run: node scripts/validate-game-media-quality.mjs
       - name: Verify GTA VI release and media contract
         run: |
