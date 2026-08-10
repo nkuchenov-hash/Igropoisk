@@ -13,23 +13,18 @@ on:
   push:
     branches: [staging]
     paths:
-      - 'config/parsers/schedule.json'
-      - 'config/parsers/popular.json'
-      - 'config/parsers/releases.json'
-      - 'config/parsers/official-popular-art.json'
+      - 'config/parsers/**'
       - 'config/home-feeds-quality.json'
       - 'config/release-calendar.json'
+      - 'config/home-feeds-storage.json'
       - 'data/popular/cover-overrides.json'
       - 'features/home-releases/rules.json'
-      - 'assets/popular-home.js'
-      - 'assets/home-releases/index.js'
       - 'scripts/run-scheduled-parsers.mjs'
       - 'scripts/parse-releases.mjs'
       - 'scripts/parse-popular.mjs'
       - 'scripts/enrich-global-popular-youtube.mjs'
       - 'scripts/resolve-global-popular-art.mjs'
       - 'scripts/resolve-official-popular-packages.mjs'
-      - 'scripts/test-gta6-popular-rules.mjs'
       - 'scripts/curate-home-feeds.mjs'
       - 'scripts/filter-popular.mjs'
       - 'scripts/resolve-popular-covers.mjs'
@@ -38,32 +33,27 @@ on:
       - 'scripts/materialize-release-calendar.mjs'
       - 'scripts/validate-release-calendar.mjs'
       - 'scripts/test-release-calendar-policy.mjs'
-      - 'scripts/lib/release-calendar-policy.mjs'
-      - 'scripts/lib/release-game-registry-adapter.mjs'
-      - 'scripts/lib/release-audience-relevance.mjs'
-      - 'scripts/lib/release-cover-resolver.mjs'
-      - 'scripts/lib/release-steam-editorial-discovery.mjs'
-      - 'scripts/lib/system-game-registry-adapter.mjs'
-      - 'scripts/lib/game-registry.mjs'
-      - 'scripts/lib/game-registry-migration.mjs'
+      - 'scripts/publish-home-feeds-storage.mjs'
+      - 'scripts/lib/**'
       - '.github/workflows/parser-scheduler.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: central-parser-scheduler-staging
+  group: central-parser-scheduler-storage
   cancel-in-progress: false
 
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
-      - name: Checkout current staging
+      - name: Checkout current staging code and repository fallback snapshot
         uses: actions/checkout@v4
         with:
           ref: staging
-          fetch-depth: 0
+          fetch-depth: 1
 
       - uses: actions/setup-node@v4
         with:
@@ -72,29 +62,19 @@ jobs:
       - name: Install parser dependencies
         run: npm install --no-save --ignore-scripts image-size@2
 
-      - name: Validate parser code
+      - name: Validate parser and storage code
         run: |
           node --check scripts/run-scheduled-parsers.mjs
           node --check scripts/parse-releases.mjs
           node --check scripts/parse-popular.mjs
-          node --check scripts/enrich-global-popular-youtube.mjs
-          node --check scripts/resolve-global-popular-art.mjs
-          node --check scripts/resolve-official-popular-packages.mjs
-          node --check scripts/test-gta6-popular-rules.mjs
           node --check scripts/curate-home-feeds.mjs
-          node --check scripts/filter-popular.mjs
-          node --check scripts/resolve-popular-covers.mjs
           node --check scripts/validate-home-feeds.mjs
           node --check scripts/canonicalize-system-game-identity.mjs
           node --check scripts/materialize-release-calendar.mjs
           node --check scripts/validate-release-calendar.mjs
-          node --check scripts/lib/release-audience-relevance.mjs
-          node --check scripts/lib/release-cover-resolver.mjs
-          node --check scripts/lib/release-steam-editorial-discovery.mjs
-          node --check scripts/lib/system-game-registry-adapter.mjs
-          node --check assets/popular-home.js
-          node --check assets/home-releases/index.js
-          node scripts/test-gta6-popular-rules.mjs
+          node --check scripts/publish-home-feeds-storage.mjs
+          node --check scripts/lib/yandex-object-storage.mjs
+          node scripts/test-release-calendar-policy.mjs
 
       - name: Run due parsers independently
         id: parsers
@@ -110,7 +90,7 @@ jobs:
           mkdir -p assets/covers/releases assets/covers/popular data/release-drafts data/parser-runs
           node scripts/run-scheduled-parsers.mjs
 
-      - name: Curate available snapshots without a cardinality gate
+      - name: Curate available snapshots
         id: curation
         if: always()
         run: node scripts/curate-home-feeds.mjs
@@ -128,34 +108,28 @@ jobs:
           node scripts/materialize-release-calendar.mjs
           node scripts/validate-release-calendar.mjs
 
-      - name: Commit validated editorial release calendar to staging
-        id: release_publication
+      - name: Validate publishable home feeds
+        id: validation
         if: always() && steps.release_calendar.outcome == 'success'
+        run: node scripts/validate-home-feeds.mjs --fresh-hours 18
+
+      - name: Publish immutable home-feed snapshot and switch manifest
+        id: publication
+        if: steps.validation.outcome == 'success'
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/publish-home-feeds-storage.mjs
+
+      - name: Prove parser automation did not write to GitHub
+        if: always()
         run: |
-          git config user.name "igropoisk-parser[bot]"
-          git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
-
-          base_sha="$(git rev-parse HEAD)"
-          remote_sha="$(git ls-remote origin refs/heads/staging | cut -f1)"
-          if [ -z "$remote_sha" ] || [ "$remote_sha" != "$base_sha" ]; then
-            echo "published=false" >> "$GITHUB_OUTPUT"
-            echo "superseded=true" >> "$GITHUB_OUTPUT"
-            echo "Staging advanced from $base_sha to ${remote_sha:-unknown}; stale editorial calendar was not published."
-            exit 0
-          fi
-
-          git add -A -- data/releases/public.json data/releases/materialization-report.json data/release-candidates/current.json assets/covers/releases
-          if git diff --cached --quiet; then
-            echo "published=false" >> "$GITHUB_OUTPUT"
-            echo "superseded=false" >> "$GITHUB_OUTPUT"
-            echo "Editorial release calendar and covers are already current."
-            exit 0
-          fi
-
-          git commit -m "Update editorial release calendar and covers on staging"
-          git push origin HEAD:staging
-          echo "published=true" >> "$GITHUB_OUTPUT"
-          echo "superseded=false" >> "$GITHUB_OUTPUT"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/staging)"
+          git diff --check
+          echo "Generated parser data stayed in the runner workspace and Object Storage; Git history was not modified."
 
       - name: Preserve editorial audit for inspection
         if: always()
@@ -176,67 +150,6 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Validate publishable home feeds
-        id: validation
-        if: always() && steps.identity.outcome == 'success'
-        continue-on-error: true
-        run: node scripts/validate-home-feeds.mjs --fresh-hours 18
-
-      - name: Commit validated parser outputs to staging
-        id: publication
-        if: always() && steps.curation.outcome == 'success' && steps.identity.outcome == 'success' && steps.release_calendar.outcome == 'success' && steps.validation.outcome == 'success'
-        run: |
-          git config user.name "igropoisk-parser[bot]"
-          git config user.email "igropoisk-parser[bot]@users.noreply.github.com"
-
-          base_sha="$(git rev-parse HEAD)"
-          remote_sha="$(git ls-remote origin refs/heads/staging | cut -f1)"
-          if [ -z "$remote_sha" ] || [ "$remote_sha" != "$base_sha" ]; then
-            echo "published=false" >> "$GITHUB_OUTPUT"
-            echo "superseded=true" >> "$GITHUB_OUTPUT"
-            echo "Staging advanced from $base_sha to ${remote_sha:-unknown}; stale generated snapshot was not published."
-            exit 0
-          fi
-
-          paths=(
-            data/popular/current.json
-            data/popular/published.json
-            data/popular/covers.json
-            data/parser-runs/popular.json
-            assets/covers/popular
-            data/releases/current.json
-            data/releases/changes.json
-            data/parser-runs/releases.json
-            data/parser-runs/scheduler.json
-            data/home-feeds-quality.json
-            data/release-drafts
-            assets/covers/releases
-          )
-
-          existing=()
-          for path in "${paths[@]}"; do
-            if [ -e "$path" ]; then existing+=("$path"); fi
-          done
-          if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
-
-          if git diff --cached --quiet; then
-            echo "published=false" >> "$GITHUB_OUTPUT"
-            echo "superseded=false" >> "$GITHUB_OUTPUT"
-            echo "Parser snapshots are already current."
-            exit 0
-          fi
-
-          git commit -m "Update curated popular and release feeds on staging"
-          git push origin HEAD:staging
-          echo "published=true" >> "$GITHUB_OUTPUT"
-          echo "superseded=false" >> "$GITHUB_OUTPUT"
-
-      - name: Report parser degradation without blocking valid updates
+      - name: Report parser degradation without blocking a valid publication
         if: steps.parsers.outcome == 'failure' && steps.validation.outcome == 'success'
-        run: echo "One or more sources/parsers degraded, but valid staging snapshots remain publishable."
-
-      - name: Report invalid staging snapshot
-        if: steps.curation.outcome == 'failure' || steps.identity.outcome == 'failure' || steps.release_calendar.outcome == 'failure' || steps.validation.outcome == 'failure'
-        run: |
-          echo "A generated feed is invalid. Valid editorial release output may already have been published independently."
-          exit 1
+        run: echo "One or more sources degraded, but the validated snapshot was published from the remaining/fallback data."
