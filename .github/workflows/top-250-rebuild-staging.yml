@@ -1,0 +1,51 @@
+name: Rebuild rated Top-250 on staging
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - 'scripts/build-top-250.mjs'
+      - 'scripts/validate-top-250.mjs'
+      - 'data/game-content/**'
+      - 'data/ratings/**'
+      - 'data/catalog-visible.json'
+      - '.github/workflows/top-250-rebuild-staging.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: top-250-rebuild-staging
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Rebuild Top-250 from released rated games
+        run: |
+          node scripts/build-top-250.mjs
+          node scripts/validate-top-250.mjs
+          if grep -q 'grand-theft-auto-vi' data/top-250/current.json; then
+            echo 'Unreleased GTA VI must not be ranked'
+            exit 1
+          fi
+      - name: Publish regenerated ranking to staging
+        run: |
+          git config user.name "igropoisk-top250[bot]"
+          git config user.email "igropoisk-top250[bot]@users.noreply.github.com"
+          git add data/top-250/current.json
+          if git diff --cached --quiet; then
+            echo 'Top-250 is already current.'
+            exit 0
+          fi
+          git commit -m "Rebuild Top-250 from released rated games"
+          git push origin HEAD:staging
