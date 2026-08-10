@@ -1,15 +1,6 @@
 name: Cache release covers locally
 
 on:
-  push:
-    branches: [staging]
-    paths:
-      - '.github/workflows/cache-release-covers.yml'
-      - 'scripts/cache-release-covers.mjs'
-      - 'data/releases/current.json'
-      - 'data/popular/current.json'
-  schedule:
-    - cron: '23 */6 * * *'
   workflow_dispatch:
 
 permissions:
