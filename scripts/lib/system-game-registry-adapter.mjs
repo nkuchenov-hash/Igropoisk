@@ -146,6 +146,51 @@ export function registerPopularCandidates(registry = {}, snapshots = []) {
   return {registry: api.registry, issues, created, matched};
 }
 
+export function registerReleaseCandidates(registry = {}, snapshots = []) {
+  const api = new GameRegistryApi(registry);
+  const issues = [];
+  let created = 0;
+  let matched = 0;
+  for (const snapshot of snapshots.filter(Boolean)) {
+    for (const [index, item] of (snapshot.releases ?? []).entries()) {
+      const existing = resolveSystemGameIdentity(item, api.registry);
+      if (existing.entity && existing.status !== 'mismatch') { matched += 1; continue; }
+      if (existing.status === 'mismatch') {
+        issues.push({index, slug:item?.slug??null, game_id:item?.game_id??null, status:'mismatch', reason:existing.reason, expected_game_id:existing.game_id});
+        continue;
+      }
+      const kind=inferKind({...item,type:item.release_type});
+      if(isEmbeddedGameKind(kind)){
+        issues.push({index,slug:item?.slug??null,game_id:item?.game_id??null,status:'unresolved',reason:'embedded_release_candidate_requires_base_game',kind});
+        continue;
+      }
+      const title=item.title??item.name??item.slug;
+      if(!title||!item.slug){issues.push({index,slug:item?.slug??null,status:'unresolved',reason:'release_candidate_missing_identity'});continue;}
+      const releases=(item.events??[]).map(event=>({id:event.id,platform:(event.platforms??[])[0]??null,region:event.region??'global',date:event.date??event.date_start??null,precision:event.precision??'unknown',status:event.status??'announced',confidence:event.confidence??0.7,source:{type:'official_platform_store',name:'release-feed'}}));
+      const result=api.registerCandidate({
+        gameId:item.game_id??undefined,
+        title,
+        slug:item.slug,
+        aliases:item.aliases??[],
+        kind,
+        steamAppId:item.external_ids?.steam??item.steam_appid??null,
+        igdbId:item.external_ids?.igdb??item.igdb_id??null,
+        rawgId:item.external_ids?.rawg??item.rawg_id??null,
+        releases,
+        source:{type:'official_platform_store',name:'release-feed',url:item.sources?.[0]?.url??null},
+        discoveryReason:'public_release_calendar',
+        status:'discovered',
+        statusReason:'discovered in validated public release feed',
+        confidence:0.75
+      },{actor:'release-registry-adapter'});
+      if(result.decision==='created')created+=1;
+      else if(result.decision==='matched')matched+=1;
+      else issues.push({index,slug:item.slug,game_id:item.game_id??null,status:'unresolved',reason:'release_candidate_needs_review'});
+    }
+  }
+  return {registry:api.registry,issues,created,matched};
+}
+
 export function canonicalCatalogRecord(record, registry) {
   const resolution = resolveSystemGameIdentity(record, registry);
   if (!resolution.entity) return {record: null, resolution};

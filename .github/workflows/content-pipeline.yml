@@ -1,13 +1,28 @@
-name: Maintain Игропоиск content
+name: Maintain Игропоиск game lifecycle
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '41 */6 * * *'
+  push:
+    branches: [staging]
+    paths:
+      - 'scripts/hydrate-live-home-feeds.mjs'
+      - 'scripts/orchestrate-content.mjs'
+      - 'scripts/run-content-pipeline.mjs'
+      - 'scripts/materialize-review-publication-feed.mjs'
+      - 'scripts/audit-review-publication.mjs'
+      - 'scripts/lib/system-game-registry-adapter.mjs'
+      - 'config/content-pipeline.json'
+      - 'config/home-feeds-storage.json'
+      - '.github/workflows/content-pipeline.yml'
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
-  group: content-pipeline-staging
+  group: content-lifecycle-staging
   cancel-in-progress: false
 
 jobs:
@@ -22,34 +37,42 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate pipeline scripts
+      - name: Validate lifecycle scripts
         run: |
+          node --check scripts/hydrate-live-home-feeds.mjs
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/build-game-page.mjs
           node --check scripts/build-game-page-from-registry.mjs
-          node --check scripts/build-top-250.mjs
-          node --check scripts/materialize-top-250-game-pages.mjs
-          node --check scripts/validate-top-250.mjs
           node --check scripts/render-review-pages.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/validate-automation-publish-diff.mjs
+          node --check scripts/materialize-review-publication-feed.mjs
+          node --check scripts/audit-review-publication.mjs
           node --check scripts/lib/game-registry.mjs
           node --check scripts/lib/game-registry-migration.mjs
           node --check scripts/lib/game-registry-page-sections.mjs
           node --check scripts/lib/system-game-registry-adapter.mjs
-      - name: Build registry and execution plan
+      - name: Hydrate current Popular and Releases snapshots from Object Storage
+        run: node scripts/hydrate-live-home-feeds.mjs
+      - name: Build canonical registry and work queue
         run: node scripts/orchestrate-content.mjs --finalize
-      - name: Materialize canonical Top-250 game pages
+      - name: Restore safe publication links for existing valid reviews
+        run: node scripts/materialize-review-publication-feed.mjs
+      - name: Detect AI research capability
+        id: ai
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          node scripts/build-top-250.mjs
-          node scripts/materialize-top-250-game-pages.mjs
-          node scripts/build-top-250.mjs
-          node scripts/materialize-top-250-game-pages.mjs
-          node scripts/build-top-250.mjs
-          node scripts/validate-top-250.mjs
-          node scripts/orchestrate-content.mjs --finalize
+          if [ -n "$OPENAI_API_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo "OpenAI research capability is available."
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "OPENAI_API_KEY is not configured; lifecycle queue and safe feed repairs will continue without fabricating game pages or reviews."
+          fi
       - name: Build selected pages and reviews
+        if: steps.ai.outputs.available == 'true'
         run: node scripts/run-content-pipeline.mjs
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -57,46 +80,73 @@ jobs:
           OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
           OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
           OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
-      - name: Recalculate final statuses
+      - name: Materialize newly validated reviews into runtime feed
+        if: steps.ai.outputs.available == 'true'
+        run: node scripts/materialize-review-publication-feed.mjs
+      - name: Recalculate lifecycle state
         if: always()
         run: node scripts/orchestrate-content.mjs --finalize
-      - name: Validate current public game structure
+      - name: Audit actual review publication state
         if: always()
+        run: node scripts/audit-review-publication.mjs
+      - name: Stage isolated lifecycle output
         run: |
-          if [ -f scripts/validate-game-v3.mjs ]; then node scripts/validate-game-v3.mjs; fi
-      - name: Stage and validate isolated pipeline results
-        run: |
-          paths=(
-            data/content-pipeline
-            data/game-registry
-            data/parser-runs
-            data/parser-output
-            data/drafts
-            data/game-content
-            data/catalog-visible.json
-            data/top-250
-            data/research
-            data/reviews
-            data/ratings
-            data/media-candidates
-            data/articles
-            data/article-drafts
-            data/article-media
-            game
-            article
-          )
+          paths=(data/reviews)
+          if [ "${{ steps.ai.outputs.available }}" = "true" ]; then
+            paths+=(
+              data/parser-output
+              data/drafts
+              data/game-content
+              data/catalog-visible.json
+              data/research
+              data/ratings
+              data/media-candidates
+              data/articles
+              data/article-drafts
+              data/article-media
+              game
+              article
+            )
+          fi
           existing=()
           for path in "${paths[@]}"; do
             if [ -e "$path" ]; then existing+=("$path"); fi
           done
           if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
-          node scripts/validate-automation-publish-diff.mjs --profile content-pipeline
-      - name: Commit pipeline results to staging
+          if ! git diff --cached --quiet; then
+            node scripts/validate-automation-publish-diff.mjs --profile content-pipeline
+          fi
+      - name: Open isolated lifecycle PR instead of writing to staging
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          if git diff --cached --quiet; then
+            echo "No validated lifecycle content changes."
+            exit 0
+          fi
+          branch="automation/game-lifecycle-${GITHUB_RUN_ID}"
           git config user.name "igropoisk-content[bot]"
           git config user.email "igropoisk-content[bot]@users.noreply.github.com"
-          if ! git diff --cached --quiet; then
-            git commit -m "Maintain game pages and reviews on staging"
-            git pull --rebase origin staging
-            git push origin HEAD:staging
-          fi
+          git checkout -b "$branch"
+          git commit -m "Build queued game lifecycle output"
+          git push origin "$branch"
+          gh pr create \
+            --base staging \
+            --head "$branch" \
+            --title "Automated game lifecycle ${GITHUB_RUN_ID}" \
+            --body "Automated isolated game lifecycle output from the live Popular/Releases manifests. Existing valid article files are exposed only after identity checks; AI-generated pages/reviews are included only when research credentials are available. Direct bot writes to staging are forbidden."
+      - name: Preserve lifecycle queue and audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-lifecycle-${{ github.run_id }}
+          path: |
+            data/parser-runs/home-feed-hydration.json
+            data/content-pipeline/status.json
+            data/content-pipeline/queue.json
+            data/content-pipeline/execution-plan.json
+            data/content-pipeline/execution-log.json
+            data/audits/review-publication.json
+            data/audits/review-feed-materialization.json
+          if-no-files-found: warn
+          retention-days: 14
