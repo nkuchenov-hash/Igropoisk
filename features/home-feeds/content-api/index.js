@@ -6,11 +6,12 @@
   const bucketPath='/igropoisk-content/';
   const manifestUrl=new URL(`${storageOrigin}${bucketPath}home-feeds/manifests/current.json`);
   const runtimeFiles=new Set(['data/popular/current.json','data/releases/current.json','data/releases/public.json']);
+  const nativeFetch=window.fetch.bind(window);
   let backendPromise=null;
 
   async function fetchJson(url,label){
     const target=new URL(url);target.searchParams.set('v',String(Date.now()));
-    const response=await fetch(target,{cache:'no-store'});
+    const response=await nativeFetch(target,{cache:'no-store'});
     if(!response.ok)throw new Error(`${label}: ${response.status}`);
     return response.json();
   }
@@ -45,5 +46,25 @@
       return fetchJson(new URL(path,siteBase),`${path} fallback`);
     }
   }
+  function requestedRuntimePath(input){
+    const raw=typeof input==='string'||input instanceof URL?input:input?.url;
+    if(!raw)return '';
+    let pathname='';
+    try{pathname=new URL(raw,document.baseURI).pathname}catch{return ''}
+    for(const file of runtimeFiles)if(pathname.endsWith(`/${file}`)||pathname===`/${file}`)return file;
+    return '';
+  }
+  window.fetch=async function(input,init){
+    const method=String(init?.method||(input instanceof Request?input.method:'GET')).toUpperCase();
+    const path=method==='GET'?requestedRuntimePath(input):'';
+    if(!path)return nativeFetch(input,init);
+    try{
+      const backend=await storageBackend();
+      return nativeFetch(backend.files[path],{...init,cache:'no-store'});
+    }catch(storageError){
+      console.warn('Игропоиск: Object Storage home feed unavailable, using repository fallback',storageError);
+      return nativeFetch(input,init);
+    }
+  };
   window.IgropoiskHomeFeeds=Object.freeze({load,manifestUrl:manifestUrl.href});
 })();
