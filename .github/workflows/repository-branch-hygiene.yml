@@ -1,0 +1,46 @@
+name: Repository branch hygiene
+
+on:
+  push:
+    branches: [staging]
+  schedule:
+    - cron: '11 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repository-branch-hygiene
+  cancel-in-progress: true
+
+jobs:
+  staging-divergence:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+
+      - name: Measure main/staging divergence
+        env:
+          MAX_STAGING_AHEAD: '20'
+        run: |
+          git fetch origin main staging
+          read -r behind ahead <<< "$(git rev-list --left-right --count origin/main...origin/staging)"
+          echo "staging behind main: $behind"
+          echo "staging ahead of main: $ahead"
+
+          if [ "$behind" -ne 0 ]; then
+            echo "::error::staging is $behind commit(s) behind main. Synchronize or repair staging before adding more work."
+            exit 1
+          fi
+
+          if [ "$ahead" -gt "$MAX_STAGING_AHEAD" ]; then
+            echo "::error::staging is $ahead commits ahead of main; maximum allowed is $MAX_STAGING_AHEAD. Consolidate staging before adding more work."
+            exit 1
+          fi
+
+          echo "Branch hygiene OK."

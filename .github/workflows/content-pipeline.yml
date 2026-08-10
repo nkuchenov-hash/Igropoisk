@@ -2,32 +2,6 @@ name: Maintain Игропоиск content
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '20 2 * * *'
-  push:
-    branches: [staging]
-    paths:
-      - '.github/workflows/content-pipeline.yml'
-      - 'config/content-pipeline.json'
-      - 'scripts/orchestrate-content.mjs'
-      - 'scripts/run-content-pipeline.mjs'
-      - 'scripts/build-game-page.mjs'
-      - 'scripts/build-game-page-from-registry.mjs'
-      - 'scripts/build-top-250.mjs'
-      - 'scripts/materialize-top-250-game-pages.mjs'
-      - 'scripts/validate-top-250.mjs'
-      - 'scripts/render-review-pages.mjs'
-      - 'scripts/calculate-ratings-from-research.mjs'
-      - 'scripts/validate-automation-publish-diff.mjs'
-      - 'scripts/lib/game-registry*.mjs'
-      - 'scripts/lib/system-game-registry-adapter.mjs'
-      - 'data/catalog-visible.json'
-      - 'data/game-series.json'
-      - 'data/popular/**'
-      - 'data/top-250/**'
-      - 'data/releases/current.json'
-      - 'data/reviews/**'
-      - 'data/articles/**'
 
 permissions:
   contents: write
