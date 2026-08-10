@@ -1,0 +1,40 @@
+name: Review publication audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [staging, main]
+    paths:
+      - 'data/catalog-visible.json'
+      - 'data/drafts/**'
+      - 'data/articles/**'
+      - 'game/**'
+      - 'article/**'
+      - 'scripts/audit-review-publication.mjs'
+      - '.github/workflows/review-publication-audit.yml'
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify audit code
+        run: node --check scripts/audit-review-publication.mjs
+      - name: Audit actual user-visible review publication
+        run: node scripts/audit-review-publication.mjs
+      - name: Upload review publication report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: review-publication-audit-${{ github.run_id }}
+          path: data/audits/review-publication.json
+          if-no-files-found: error
+          retention-days: 14
