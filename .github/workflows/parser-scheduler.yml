@@ -76,6 +76,15 @@ jobs:
           node --check scripts/lib/yandex-object-storage.mjs
           node scripts/test-release-calendar-policy.mjs
 
+      - name: Bootstrap last repository snapshot into Object Storage if empty
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/publish-home-feeds-storage.mjs --bootstrap-only
+
       - name: Run due parsers independently
         id: parsers
         continue-on-error: true
@@ -93,16 +102,19 @@ jobs:
       - name: Curate available snapshots
         id: curation
         if: always()
+        continue-on-error: true
         run: node scripts/curate-home-feeds.mjs
 
       - name: Bind Popular snapshots to canonical Game Registry ids
         id: identity
         if: always() && steps.curation.outcome == 'success'
+        continue-on-error: true
         run: node scripts/canonicalize-system-game-identity.mjs --write --popular-only
 
       - name: Materialize editorial release calendar
         id: release_calendar
         if: always() && steps.identity.outcome == 'success'
+        continue-on-error: true
         run: |
           node scripts/test-release-calendar-policy.mjs
           node scripts/materialize-release-calendar.mjs
@@ -111,6 +123,7 @@ jobs:
       - name: Validate publishable home feeds
         id: validation
         if: always() && steps.release_calendar.outcome == 'success'
+        continue-on-error: true
         run: node scripts/validate-home-feeds.mjs --fresh-hours 18
 
       - name: Publish immutable home-feed snapshot and switch manifest
@@ -123,6 +136,10 @@ jobs:
           YC_S3_REGION: ru-central1
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
         run: node scripts/publish-home-feeds-storage.mjs
+
+      - name: Keep last validated external snapshot on rejected refresh
+        if: always() && steps.validation.outcome != 'success'
+        run: echo "Fresh parser output did not pass all publication gates; current Object Storage manifest remains unchanged."
 
       - name: Prove parser automation did not write to GitHub
         if: always()
@@ -150,6 +167,6 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Report parser degradation without blocking a valid publication
-        if: steps.parsers.outcome == 'failure' && steps.validation.outcome == 'success'
-        run: echo "One or more sources degraded, but the validated snapshot was published from the remaining/fallback data."
+      - name: Report source degradation without replacing valid content
+        if: always() && (steps.parsers.outcome == 'failure' || steps.validation.outcome != 'success')
+        run: echo "Parser refresh degraded or was rejected; the last validated external snapshot remains active."
