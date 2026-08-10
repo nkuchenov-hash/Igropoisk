@@ -17,9 +17,10 @@ async function enhance(){
   const artGroup=document.querySelector('#artGroup');
   const artCount=document.querySelector('#artCount');
   if(!screenshots||!screenshotGroup||!art||!artGroup)return false;
-  const [draft,articleMedia]=await Promise.all([
+  const [draft,articleMedia,article]=await Promise.all([
     fetchJson(`../../data/drafts/${encodeURIComponent(slug)}.json`),
-    fetchJson(`../../data/article-media/${encodeURIComponent(slug)}.json`)
+    fetchJson(`../../data/article-media/${encodeURIComponent(slug)}.json`),
+    fetchJson(`../../data/articles/${encodeURIComponent(slug)}.json`)
   ]);
   const articleImages=(articleMedia?.sections||[]).flatMap(section=>section.images||[]);
   const shots=unique([...(draft?.media?.screenshots||[]),...articleImages]).slice(0,18);
@@ -27,7 +28,12 @@ async function enhance(){
   for(const item of shots){const url=urlOf(item);if(rendered.has(url))continue;screenshots.appendChild(makeCard(item,String(item?.caption||'Скриншот')));rendered.add(url)}
   if(rendered.size){screenshotGroup.hidden=false;screenshotCount.textContent=String(rendered.size)}
 
-  const artItems=unique([...(draft?.media?.artwork||[]),draft?.media?.cover&&{url:draft.media.cover,caption:'Обложка'},draft?.media?.hero&&{url:draft.media.hero,caption:'Арт'}].filter(Boolean));
+  const artItems=unique([
+    ...(draft?.media?.artwork||[]),
+    draft?.media?.cover&&{url:draft.media.cover,caption:'Обложка'},
+    draft?.media?.hero&&{url:draft.media.hero,caption:'Арт'},
+    article?.hero&&{url:article.hero,caption:'Ключевой арт'}
+  ].filter(Boolean));
   const renderedArt=new Set([...art.querySelectorAll('img')].map(img=>img.currentSrc||img.src));
   for(const item of artItems){const url=urlOf(item);if(renderedArt.has(url))continue;art.appendChild(makeCard(item,String(item?.caption||'Арт')));renderedArt.add(url)}
   if(renderedArt.size){artGroup.hidden=false;artCount.textContent=String(renderedArt.size)}
