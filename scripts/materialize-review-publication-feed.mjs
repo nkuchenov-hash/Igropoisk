@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root=process.cwd();
+const dryRun=process.argv.includes('--dry-run');
+const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
+const norm=value=>String(value||'').toLowerCase().normalize('NFKD').replace(/[™®©]/g,'').replace(/[^a-zа-яё0-9]+/gi,' ').trim().replace(/\s+/g,' ');
+const catalog=read('data/catalog-visible.json',[]);
+const result={schema_version:1,checked_at:new Date().toISOString(),updated:[],already_valid:[],blocked:[]};
+
+for(const game of catalog){
+  const slug=String(game.slug||'');
+  if(!slug)continue;
+  const article=read(`data/articles/${slug}.json`);
+  const articleHtml=path.join(root,'article',slug,'index.html');
+  if(!article||!fs.existsSync(articleHtml)){result.blocked.push({slug,reason:'article_pair_missing'});continue}
+  const articleSlug=String(article.game_slug||article.slug||'');
+  if(articleSlug!==slug){result.blocked.push({slug,reason:`article_slug_mismatch:${articleSlug}`});continue}
+  if(String(article.publication_status||'published').toLowerCase()!=='published'){result.blocked.push({slug,reason:`article_status:${article.publication_status}`});continue}
+  const draft=read(`data/drafts/${slug}.json`);
+  if(draft?.identity?.title&&norm(draft.identity.title)!==norm(game.title)){
+    result.blocked.push({slug,reason:`draft_title_mismatch:${draft.identity.title}`});continue;
+  }
+  const relative=`data/reviews/${slug}.json`;
+  const feed=read(relative,{schema_version:2,game_slug:slug,reviews:[]});
+  if(feed.game_slug&&String(feed.game_slug)!==slug){result.blocked.push({slug,reason:`review_feed_slug_mismatch:${feed.game_slug}`});continue}
+  const desired={
+    url:`../../article/${slug}/`,
+    title:String(article.title||`Обзор ${game.title}`),
+    description:String(article.dek||article.lead||`Полный обзор ${game.title} от Игропоиска.`),
+    score:article.score??null
+  };
+  const same=feed.igropoisk_article&&String(feed.igropoisk_article.url||'')===desired.url&&String(feed.igropoisk_article.title||'')===desired.title&&String(feed.igropoisk_article.description||'')===desired.description&&String(feed.igropoisk_article.score??'')===String(desired.score??'');
+  if(same){result.already_valid.push(slug);continue}
+  feed.schema_version=Math.max(Number(feed.schema_version||1),2);
+  feed.game_slug=slug;
+  feed.updated_at=new Date().toISOString();
+  feed.reviews=Array.isArray(feed.reviews)?feed.reviews:[];
+  feed.igropoisk_article=desired;
+  if(!dryRun){
+    const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(feed,null,2)+'\n');
+  }
+  result.updated.push(slug);
+}
+
+fs.mkdirSync(path.join(root,'data/audits'),{recursive:true});
+fs.writeFileSync(path.join(root,'data/audits/review-feed-materialization.json'),JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify({dry_run:dryRun,updated:result.updated.length,already_valid:result.already_valid.length,blocked:result.blocked.length,blocked_examples:result.blocked.slice(0,20)},null,2));
