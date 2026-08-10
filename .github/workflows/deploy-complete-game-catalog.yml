@@ -46,17 +46,12 @@ jobs:
           if errors: raise SystemExit('Invalid JSON files:\n'+'\n'.join(errors))
           print('Structured content JSON is valid.')
           PY
-      - name: Require complete game and editorial publication gates
+      - name: Require game publication gates
         run: |
           node scripts/validate-game-v3.mjs
           node scripts/validate-editorial-pipeline.mjs
-          node - <<'NODE'
-          const fs=require('fs');
-          const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
-          const missing=catalog.filter(g=>!(fs.existsSync(`game/${g.slug}/index.html`)&&fs.existsSync(`data/articles/${g.slug}.json`)&&fs.existsSync(`article/${g.slug}/index.html`))).map(g=>g.slug);
-          console.log(JSON.stringify({total:catalog.length,complete:catalog.length-missing.length,missing},null,2));
-          if(missing.length)process.exit(1);
-          NODE
+      - name: Require semantic and user-visible review publication integrity
+        run: node scripts/audit-review-publication.mjs --strict
       - name: Reject malformed snapshot
         run: |
           git diff --check
