@@ -1,0 +1,43 @@
+{
+  "id": "home-feeds",
+  "version": 1,
+  "enforcement": "strict",
+  "roots": {},
+  "runtime": [
+    "features/home-feeds/content-api/index.js"
+  ],
+  "contentApi": {
+    "global": "IgropoiskHomeFeeds",
+    "version": 1,
+    "interface": [
+      "load",
+      "manifestUrl"
+    ],
+    "backend": "yandex-object-storage-with-repository-fallback",
+    "manifest": "https://storage.yandexcloud.net/igropoisk-content/home-feeds/manifests/current.json"
+  },
+  "pipeline": {
+    "config": "config/home-feeds-storage.json",
+    "workflow": ".github/workflows/parser-scheduler.yml",
+    "publisher": "scripts/publish-home-feeds-storage.mjs",
+    "storageClient": "scripts/lib/yandex-object-storage.mjs",
+    "publication": "external-immutable-snapshot-with-atomic-manifest"
+  },
+  "content": [
+    "data/popular/current.json",
+    "data/popular/published.json",
+    "data/releases/current.json",
+    "data/releases/public.json",
+    "data/releases/changes.json",
+    "assets/covers/popular/",
+    "assets/covers/releases/"
+  ],
+  "centralComponents": [
+    "ig-empty-state"
+  ],
+  "designSystem": {
+    "source": "assets/design-system.css",
+    "policy": "central-components-only",
+    "localStyles": "composition-only"
+  }
+}
