@@ -11,18 +11,20 @@ const contentType=file=>({'.json':'application/json; charset=utf-8','.jpg':'imag
 const versionId=()=>`${new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'')}-${String(process.env.GITHUB_SHA||'local').slice(0,12)}-${String(process.env.GITHUB_RUN_ID||'manual')}`;
 
 function collectLocalMedia(value,roots,out=new Set()){
+  if(typeof value==='string'){
+    if(roots.some(root=>value.startsWith(root)))out.add(value);
+    return out;
+  }
   if(Array.isArray(value)){value.forEach(item=>collectLocalMedia(item,roots,out));return out}
   if(!value||typeof value!=='object')return out;
-  for(const child of Object.values(value)){
-    if(typeof child==='string'&&roots.some(root=>child.startsWith(root)))out.add(child);
-    else collectLocalMedia(child,roots,out);
-  }
+  for(const child of Object.values(value))collectLocalMedia(child,roots,out);
   return out;
 }
 function replaceLocalMedia(value,map){
+  if(typeof value==='string')return map.get(value)||value;
   if(Array.isArray(value))return value.map(item=>replaceLocalMedia(item,map));
   if(!value||typeof value!=='object')return value;
-  return Object.fromEntries(Object.entries(value).map(([key,child])=>[key,typeof child==='string'&&map.has(child)?map.get(child):replaceLocalMedia(child,map)]));
+  return Object.fromEntries(Object.entries(value).map(([key,child])=>[key,replaceLocalMedia(child,map)]));
 }
 async function exists(storage,key){try{await storage.headObject(key);return true}catch(error){if(/failed with 404/.test(error.message))return false;throw error}}
 
