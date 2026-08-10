@@ -1,69 +1,109 @@
 {
   "schema_version": 1,
   "game_slug": "the-witcher-3-wild-hunt",
-  "checked_at": "2026-08-03T10:55:00Z",
+  "checked_at": "2026-08-10T05:47:41.827Z",
   "method": {
     "name": "Robust critic median",
-    "description": "Each verified publication contributes at most one normalized critic score. Scores are converted to a 100-point scale. The published Игропоиск score is the median, which limits the influence of unusually high or low reviews.",
+    "description": "One normalized score per verified publication; the median limits outlier influence.",
     "scale": 100,
     "rounding": "one decimal on a 10-point scale"
   },
   "sources": [
     {
       "publication": "PC Gamer",
-      "score": 92,
-      "scale": 100,
-      "normalized": 92,
       "url": "https://www.pcgamer.com/the-witcher-3-review/",
-      "status": "parsed"
+      "scale": 100,
+      "patterns": [
+        "The Verdict\\s*([0-9]{2,3})",
+        "\\b92\\b"
+      ],
+      "score": 92,
+      "normalized": 92,
+      "status": "parsed",
+      "duration_ms": 192,
+      "checked_at": "2026-08-10T05:47:41.827Z"
     },
     {
       "publication": "GameSpot",
-      "score": 10,
-      "scale": 10,
-      "normalized": 100,
       "url": "https://www.gamespot.com/reviews/the-witcher-3-wild-hunt-review/1900-6416135/",
-      "status": "parsed"
+      "scale": 10,
+      "patterns": [
+        "10\\s*(?:/\\s*10|Essential)",
+        "GameSpot\\s*10"
+      ],
+      "status": "error",
+      "error": "HTTP 403",
+      "duration_ms": 92,
+      "checked_at": "2026-08-10T05:47:41.827Z"
     },
     {
       "publication": "IGN",
-      "score": 9.3,
-      "scale": 10,
-      "normalized": 93,
       "url": "https://www.ign.com/articles/2015/05/12/the-witcher-3-the-wild-hunt-review",
-      "status": "parsed"
+      "scale": 10,
+      "patterns": [
+        "9\\.3\\s*(?:/\\s*10)?"
+      ],
+      "score": 9.3,
+      "normalized": 93,
+      "status": "parsed",
+      "duration_ms": 792,
+      "checked_at": "2026-08-10T05:47:41.827Z"
     },
     {
       "publication": "Game Informer",
-      "score": 9.8,
-      "scale": 10,
-      "normalized": 98,
       "url": "https://www.gameinformer.com/games/the_witcher_3_wild_hunt/b/playstation4/archive/2015/05/12/the-witcher-3-wild-hunt-review-game-informer.aspx",
-      "status": "parsed"
+      "scale": 10,
+      "patterns": [
+        "9\\.8\\s*(?:/\\s*10)?"
+      ],
+      "status": "error",
+      "error": "Score pattern not found",
+      "duration_ms": 1142,
+      "checked_at": "2026-08-10T05:47:41.827Z"
     },
     {
       "publication": "Metacritic",
-      "score": 92,
-      "scale": 100,
-      "normalized": 92,
       "url": "https://www.metacritic.com/game/the-witcher-3-wild-hunt/",
+      "scale": 100,
+      "patterns": [
+        "Metascore[^0-9]{0,120}92",
+        "Based on [0-9]+ Critic Reviews[^0-9]{0,40}92"
+      ],
+      "score": 92,
+      "normalized": 92,
       "status": "parsed",
-      "kind": "aggregate"
+      "duration_ms": 1193,
+      "checked_at": "2026-08-10T05:47:41.827Z"
     },
     {
       "publication": "OpenCritic",
-      "score": 93,
-      "scale": 100,
-      "normalized": 93,
       "url": "https://opencritic.com/game/463/the-witcher-3-wild-hunt-",
+      "scale": 100,
+      "patterns": [
+        "Top Critic Average[^0-9]{0,40}93",
+        "\\b93\\b"
+      ],
+      "score": 93,
+      "normalized": 93,
       "status": "parsed",
-      "kind": "aggregate"
+      "duration_ms": 248,
+      "checked_at": "2026-08-10T05:47:41.827Z"
     }
   ],
   "calculation": {
-    "values": [92, 100, 93, 98, 92, 93],
-    "sorted": [92, 92, 93, 93, 98, 100],
-    "median_100": 93,
+    "values": [
+      92,
+      93,
+      92,
+      93
+    ],
+    "sorted": [
+      92,
+      92,
+      93,
+      93
+    ],
+    "median_100": 92.5,
     "score_10": 9.3
   }
 }
