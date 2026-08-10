@@ -5,7 +5,7 @@
   const storageOrigin='https://storage.yandexcloud.net';
   const bucketPath='/igropoisk-content/';
   const manifestUrl=new URL(`${storageOrigin}${bucketPath}home-feeds/manifests/current.json`);
-  const runtimeFiles=new Set(['data/popular/current.json','data/releases/current.json']);
+  const runtimeFiles=new Set(['data/popular/current.json','data/releases/current.json','data/releases/public.json']);
   let backendPromise=null;
 
   async function fetchJson(url,label){
