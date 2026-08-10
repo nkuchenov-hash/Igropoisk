@@ -43,13 +43,17 @@ for (const name of fs.readdirSync(WORKFLOWS).filter(file => /\.ya?ml$/i.test(fil
   const relative = `.github/workflows/${name}`;
   const content = read(relative);
   const lines = content.split('\n');
+  const isolatedAutomationPrWriter = relative === '.github/workflows/content-pipeline.yml'
+    && /branch="automation\/game-lifecycle-\$\{GITHUB_RUN_ID\}"/.test(content)
+    && /gh\s+pr\s+create[\s\S]*--base\s+staging/.test(content);
 
   for (const [index, line] of lines.entries()) {
     if (/\bgh\s+workflow\s+run\s+pages\.yml\b/.test(line)) {
       fail(`${relative}:${index + 1} dispatches production deployment outside a main merge.`);
     }
     if (/\bgit\s+push\b/.test(line) && !/staging/.test(line)) {
-      fail(`${relative}:${index + 1} pushes without an explicit staging target.`);
+      const pushesIsolatedPrBranch = isolatedAutomationPrWriter && /git\s+push\s+origin\s+"?\$branch"?/.test(line);
+      if (!pushesIsolatedPrBranch) fail(`${relative}:${index + 1} pushes without an explicit staging target or approved isolated PR branch.`);
     }
     if (/\bgit\s+pull\b/.test(line) && /origin\s+main/.test(line)) {
       fail(`${relative}:${index + 1} rebases generated content directly on main.`);
@@ -71,4 +75,4 @@ if (errors.length) {
   throw new Error(`Production boundary validation failed:\n${errors.map(error => `- ${error}`).join('\n')}`);
 }
 
-console.log('Production is read-only; repository writers target staging and news publishes only to external content storage.');
+console.log('Production is read-only; repository writers target staging or an approved isolated PR branch, and news publishes only to external content storage.');
