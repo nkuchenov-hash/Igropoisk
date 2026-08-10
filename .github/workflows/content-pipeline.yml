@@ -12,6 +12,7 @@ on:
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/audit-review-publication.mjs'
+      - 'scripts/lib/editorial-game-registry-adapter.mjs'
       - 'scripts/lib/system-game-registry-adapter.mjs'
       - 'config/content-pipeline.json'
       - 'config/home-feeds-storage.json'
@@ -52,13 +53,14 @@ jobs:
           node --check scripts/lib/game-registry.mjs
           node --check scripts/lib/game-registry-migration.mjs
           node --check scripts/lib/game-registry-page-sections.mjs
+          node --check scripts/lib/editorial-game-registry-adapter.mjs
           node --check scripts/lib/system-game-registry-adapter.mjs
       - name: Hydrate current Popular and Releases snapshots from Object Storage
         run: node scripts/hydrate-live-home-feeds.mjs
-      - name: Build canonical registry and work queue
-        run: node scripts/orchestrate-content.mjs --finalize
-      - name: Restore safe publication links for existing valid reviews
+      - name: Restore identity-safe publication links before planning new work
         run: node scripts/materialize-review-publication-feed.mjs
+      - name: Build canonical registry and semantic work queue
+        run: node scripts/orchestrate-content.mjs --finalize
       - name: Detect AI research capability
         id: ai
         env:
@@ -134,7 +136,7 @@ jobs:
             --base staging \
             --head "$branch" \
             --title "Automated game lifecycle ${GITHUB_RUN_ID}" \
-            --body "Automated isolated game lifecycle output from the live Popular/Releases manifests. Existing valid article files are exposed only after identity checks; AI-generated pages/reviews are included only when research credentials are available. Direct bot writes to staging are forbidden."
+            --body "Automated isolated game lifecycle output from live Popular/Releases manifests. Publication status is semantic, not file-count based. Direct bot writes to staging are forbidden."
       - name: Preserve lifecycle queue and audit
         if: always()
         uses: actions/upload-artifact@v4
