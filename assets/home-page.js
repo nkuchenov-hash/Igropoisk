@@ -1,5 +1,9 @@
 'use strict';
 
+if (!window.IgropoiskHomeFeeds && document.readyState === 'loading') {
+  document.write('<script src="features/home-feeds/content-api/index.js?v=20260810-1"><\/script>');
+}
+
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
