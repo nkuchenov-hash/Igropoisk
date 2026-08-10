@@ -8,7 +8,7 @@ const urlOf=item=>typeof item==='string'?item:String(item?.url||item?.src||item?
 const valid=item=>{const url=urlOf(item);return /^https?:\/\//i.test(url)&&!badUrl(url)&&!badSource(item?.source_url)};
 const unique=items=>{const out=[];const seen=new Set();for(const item of items){if(!valid(item))continue;const url=urlOf(item);if(seen.has(url))continue;seen.add(url);out.push(item)}return out};
 const fetchJson=async url=>{try{const response=await fetch(url,{cache:'no-store'});return response.ok?await response.json():null}catch{return null}};
-const makeCard=(item,label)=>{const url=urlOf(item);const card=document.createElement('article');card.className='ig-media-card';const media=document.createElement('div');media.className='ig-media-card__image';const image=document.createElement('img');image.src=url;image.alt=String(item?.caption||label||'Скриншот игры');image.loading='lazy';media.appendChild(image);const body=document.createElement('div');body.className='ig-media-card__body';const title=document.createElement('b');title.textContent=label;body.appendChild(title);card.append(media,body);return card};
+const makeCard=(item,label)=>{const url=urlOf(item);const card=document.createElement('article');card.className='ig-media-card';const media=document.createElement('div');media.className='ig-media-card__image';const image=document.createElement('img');image.src=url;image.alt=String(item?.caption||item?.alt||label||'Скриншот игры');image.loading='lazy';media.appendChild(image);const body=document.createElement('div');body.className='ig-media-card__body';const title=document.createElement('b');title.textContent=label;body.appendChild(title);card.append(media,body);return card};
 async function enhance(){
   const screenshots=document.querySelector('#mediaScreenshots');
   const screenshotGroup=document.querySelector('#screenshotGroup');
@@ -22,10 +22,11 @@ async function enhance(){
     fetchJson(`../../data/article-media/${encodeURIComponent(slug)}.json`),
     fetchJson(`../../data/articles/${encodeURIComponent(slug)}.json`)
   ]);
-  const articleImages=(articleMedia?.sections||[]).flatMap(section=>section.images||[]);
-  const shots=unique([...(draft?.media?.screenshots||[]),...articleImages]).slice(0,18);
+  const articleMediaImages=(articleMedia?.sections||[]).flatMap(section=>section.images||[]);
+  const articleImages=(article?.sections||[]).flatMap(section=>section.images||[]);
+  const shots=unique([...(draft?.media?.screenshots||[]),...articleMediaImages,...articleImages]).slice(0,18);
   const rendered=new Set([...screenshots.querySelectorAll('img')].map(img=>img.currentSrc||img.src));
-  for(const item of shots){const url=urlOf(item);if(rendered.has(url))continue;screenshots.appendChild(makeCard(item,String(item?.caption||'Скриншот')));rendered.add(url)}
+  for(const item of shots){const url=urlOf(item);if(rendered.has(url))continue;screenshots.appendChild(makeCard(item,String(item?.caption||item?.alt||'Скриншот')));rendered.add(url)}
   if(rendered.size){screenshotGroup.hidden=false;screenshotCount.textContent=String(rendered.size)}
 
   const artItems=unique([
