@@ -28,9 +28,11 @@ function replaceLocalMedia(value,map){
 }
 async function exists(storage,key){try{await storage.headObject(key);return true}catch(error){if(/failed with 404/.test(error.message))return false;throw error}}
 
-export async function publishHomeFeeds({root=process.cwd(),configPath='config/home-feeds-storage.json',storage=createYandexObjectStorageClient(),dryRun=false}={}){
+export async function publishHomeFeeds({root=process.cwd(),configPath='config/home-feeds-storage.json',storage=createYandexObjectStorageClient(),dryRun=false,bootstrapOnly=false}={}){
   const config=readJson(path.join(root,configPath));
   const storageConfig=config.storage||{};
+  const currentManifest=storageConfig.current_manifest||'home-feeds/manifests/current.json';
+  if(bootstrapOnly&&!dryRun&&await exists(storage,currentManifest))return {skipped:true,reason:'current-manifest-exists',manifest:null,dryRun:false};
   const version=versionId();
   const snapshotRoot=`${storageConfig.snapshot_prefix||'home-feeds/snapshots'}/${version}`;
   const mediaPrefix=storageConfig.media_prefix||'home-feeds/media';
@@ -66,10 +68,14 @@ export async function publishHomeFeeds({root=process.cwd(),configPath='config/ho
   const body=jsonBuffer(manifest);
   if(!dryRun){
     await storage.putObject(`${snapshotRoot}/manifest.json`,body,{contentType:'application/json; charset=utf-8',cacheControl:immutableCache});
-    await storage.putObject(storageConfig.current_manifest||'home-feeds/manifests/current.json',body,{contentType:'application/json; charset=utf-8',cacheControl:manifestCache});
-    const readBack=await (await storage.getObject(storageConfig.current_manifest||'home-feeds/manifests/current.json')).json();
+    await storage.putObject(currentManifest,body,{contentType:'application/json; charset=utf-8',cacheControl:manifestCache});
+    const readBack=await (await storage.getObject(currentManifest)).json();
     if(readBack.version!==version||readBack.channel!==(config.channel||'home-feeds'))throw new Error('Current home-feed manifest did not switch to the verified snapshot.');
   }
-  return {manifest,dryRun};
+  return {skipped:false,manifest,dryRun};
 }
-if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const result=await publishHomeFeeds({dryRun:process.argv.includes('--dry-run')});console.log(`${result.dryRun?'Prepared':'Published'} home-feed snapshot ${result.manifest.version}.`)}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
+  const result=await publishHomeFeeds({dryRun:process.argv.includes('--dry-run'),bootstrapOnly:process.argv.includes('--bootstrap-only')});
+  if(result.skipped)console.log(`Home-feed bootstrap skipped: ${result.reason}.`);
+  else console.log(`${result.dryRun?'Prepared':'Published'} home-feed snapshot ${result.manifest.version}.`);
+}
