@@ -39,7 +39,11 @@ jobs:
       - name: Validate parser and lifecycle planner
         run: |
           node --check scripts/parse-game-data.mjs
+          node --check scripts/hydrate-live-home-feeds.mjs
           node --check scripts/orchestrate-content.mjs
+      - name: Hydrate current Popular and Releases snapshots
+        if: inputs.slug == ''
+        run: node scripts/hydrate-live-home-feeds.mjs
       - name: Build current lifecycle queue
         if: inputs.slug == ''
         run: node scripts/orchestrate-content.mjs
@@ -79,6 +83,7 @@ jobs:
           path: |
             data/parser-output
             data/parser-runs/game-data*.json
+            data/parser-runs/home-feed-hydration.json
             data/content-pipeline/execution-plan.json
           if-no-files-found: warn
           retention-days: 7
