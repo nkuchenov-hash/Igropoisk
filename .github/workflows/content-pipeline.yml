@@ -7,11 +7,14 @@ on:
   push:
     branches: [staging]
     paths:
+      - 'scripts/hydrate-live-home-feeds.mjs'
       - 'scripts/orchestrate-content.mjs'
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/audit-review-publication.mjs'
+      - 'scripts/lib/system-game-registry-adapter.mjs'
       - 'config/content-pipeline.json'
+      - 'config/home-feeds-storage.json'
       - '.github/workflows/content-pipeline.yml'
 
 permissions:
@@ -36,6 +39,7 @@ jobs:
           node-version: '22'
       - name: Validate lifecycle scripts
         run: |
+          node --check scripts/hydrate-live-home-feeds.mjs
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/build-game-page.mjs
@@ -49,6 +53,8 @@ jobs:
           node --check scripts/lib/game-registry-migration.mjs
           node --check scripts/lib/game-registry-page-sections.mjs
           node --check scripts/lib/system-game-registry-adapter.mjs
+      - name: Hydrate current Popular and Releases snapshots from Object Storage
+        run: node scripts/hydrate-live-home-feeds.mjs
       - name: Build canonical registry and work queue
         run: node scripts/orchestrate-content.mjs --finalize
       - name: Restore safe publication links for existing valid reviews
@@ -128,13 +134,14 @@ jobs:
             --base staging \
             --head "$branch" \
             --title "Automated game lifecycle ${GITHUB_RUN_ID}" \
-            --body "Automated isolated game lifecycle output. Existing valid article files are exposed only after identity checks; AI-generated pages/reviews are included only when research credentials are available. Direct bot writes to staging are forbidden."
+            --body "Automated isolated game lifecycle output from the live Popular/Releases manifests. Existing valid article files are exposed only after identity checks; AI-generated pages/reviews are included only when research credentials are available. Direct bot writes to staging are forbidden."
       - name: Preserve lifecycle queue and audit
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: game-lifecycle-${{ github.run_id }}
           path: |
+            data/parser-runs/home-feed-hydration.json
             data/content-pipeline/status.json
             data/content-pipeline/queue.json
             data/content-pipeline/execution-plan.json
