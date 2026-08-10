@@ -10,7 +10,7 @@ fetch(sourceUrl,{cache:'no-store'})
     );
     corrected=corrected.replace(
       "const unique=list=>list.filter((value,index,items)=>value&&items.indexOf(value)===index);",
-      `const unique=list=>list.filter((value,index,items)=>value&&items.indexOf(value)===index);\nconst uniqueMedia=list=>{const seen=new Set();return list.filter(item=>{const url=mediaUrl(item);if(!url||seen.has(url))return false;seen.add(url);return true})};\nconst releasePresentation=game=>{const raw=first(game?.release?.date_text,game?.release?.date,'Уточняется');const status=canonical(game?.release?.status||'');const parsed=Date.parse(game?.release?.date||'');const upcoming=(Number.isFinite(parsed)&&parsed>Date.now())||/(upcoming|expected|announced|coming|tba|ожида)/i.test(status);return{raw,upcoming,label:upcoming?\\`Ожидается \\${raw}\\`:raw}};`
+      "const unique=list=>list.filter((value,index,items)=>value&&items.indexOf(value)===index);\nconst uniqueMedia=list=>{const seen=new Set();return list.filter(item=>{const url=mediaUrl(item);if(!url||seen.has(url))return false;seen.add(url);return true})};\nconst releasePresentation=game=>{const raw=first(game?.release?.date_text,game?.release?.date,'Уточняется');const status=canonical(game?.release?.status||'');const parsed=Date.parse(game?.release?.date||'');const upcoming=(Number.isFinite(parsed)&&parsed>Date.now())||/(upcoming|expected|announced|coming|tba|ожида)/i.test(status);return{raw,upcoming,label:upcoming?'Ожидается '+raw:raw}};"
     );
     corrected=corrected.replace(
       "screenshots:arr(game.media.screenshots).length?arr(game.media.screenshots):arr(draft.media?.screenshots),\n      videos:arr(game.media.videos).length?arr(game.media.videos):arr(draft.media?.videos),\n      artwork:arr(game.media.artwork).length?arr(game.media.artwork):arr(draft.media?.artwork)",
@@ -23,10 +23,6 @@ fetch(sourceUrl,{cache:'no-store'})
     corrected=corrected.replace(
       "document.querySelector('#details').innerHTML=`<dt>Дата выхода</dt><dd>${esc(game.release.date_text)}</dd><dt>Разработчик</dt>",
       "const releaseInfo=releasePresentation(game);document.querySelector('#details').innerHTML=`<dt>Статус</dt><dd>${releaseInfo.upcoming?'Ожидается':'Вышла'}</dd><dt>Дата выхода</dt><dd>${esc(releaseInfo.raw)}</dd><dt>Разработчик</dt>"
-    );
-    corrected=corrected.replace(
-      "function bindRating(title,runtime,game){\n  const dialog=document.querySelector('#ratingDialog')",
-      "function bindRating(title,runtime,game){\n  const dialog=document.querySelector('#ratingDialog')"
     );
     Function(corrected)();
   })
