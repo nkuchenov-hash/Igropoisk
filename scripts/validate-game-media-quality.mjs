@@ -23,16 +23,17 @@ for(const slug of slugs){
   const curated=records.get(slug)||{};
   const article=read(`data/articles/${slug}.json`,read(`data/article-drafts/${slug}.json`,{}));
   const articleMedia=read(`data/article-media/${slug}.json`,{});
-  const articleShots=(articleMedia.sections||[]).flatMap(section=>section.images||[]);
+  const articleMediaShots=(articleMedia.sections||[]).flatMap(section=>section.images||[]);
+  const articleShots=(article.sections||[]).flatMap(section=>section.images||[]);
   const draftShots=draft.media?.screenshots||[];
   const curatedShots=curated.media?.screenshots||[];
-  const goodShots=unique([...curatedShots,...draftShots,...articleShots]);
+  const goodShots=unique([...curatedShots,...draftShots,...articleMediaShots,...articleShots]);
   const rejectedDraft=draftShots.filter(item=>!valid(item)).map(urlOf);
   const appid=Number(curated.identity?.steam_appid||draft.identity?.steam_appid||0);
   const steamHero=appid?`https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_hero.jpg`:'';
   const steamCover=appid?`https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg`:'';
   const cover=urlOf(curated.media?.cover)||urlOf(draft.media?.cover)||steamCover||urlOf(article.hero);
-  const hero=urlOf(curated.media?.hero)||urlOf(draft.media?.hero)||steamHero||urlOf(article.hero)||goodShots[0]&&urlOf(goodShots[0]);
+  const hero=urlOf(curated.media?.hero)||urlOf(draft.media?.hero)||steamHero||urlOf(article.hero)||(goodShots[0]&&urlOf(goodShots[0]));
   const art=unique([
     ...(curated.media?.artwork||[]),
     ...(draft.media?.artwork||[]),
