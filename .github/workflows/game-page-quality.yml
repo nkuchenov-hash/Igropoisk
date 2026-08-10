@@ -36,7 +36,7 @@ jobs:
           const gta=JSON.parse(fs.readFileSync('data/drafts/grand-theft-auto-vi.json','utf8'));
           if(gta.release?.status!=='upcoming') throw new Error('GTA VI must be marked upcoming');
           if(gta.release?.date!=='2026-11-19') throw new Error('GTA VI release date must be 2026-11-19');
-          if(Number.isFinite(Number(gta.ratings?.igropoisk))) throw new Error('GTA VI must not have an editorial rating before release');
+          if(gta.ratings?.igropoisk!==null&&gta.ratings?.igropoisk!==undefined) throw new Error('GTA VI must not have an editorial rating before release');
           if((gta.media?.screenshots||[]).length<10) throw new Error('GTA VI needs a substantial official screenshot set');
           if((gta.media?.artwork||[]).length<2) throw new Error('GTA VI needs official artwork');
           for(const item of gta.media?.screenshots||[]){
