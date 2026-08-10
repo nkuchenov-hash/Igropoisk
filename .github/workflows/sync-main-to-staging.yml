@@ -21,14 +21,23 @@ jobs:
           ref: staging
           fetch-depth: 0
 
-      - name: Merge the confirmed production commit into staging
+      - name: Fast-forward staging to confirmed production only
         run: |
-          git config user.name "igropoisk-staging[bot]"
-          git config user.email "igropoisk-staging[bot]@users.noreply.github.com"
           git fetch origin main staging
-          if git merge-base --is-ancestor origin/main HEAD; then
+
+          if git merge-base --is-ancestor origin/main origin/staging; then
             echo "Staging already contains the current main commit."
             exit 0
           fi
-          git merge --no-edit origin/main
-          git push origin HEAD:staging
+
+          if git merge-base --is-ancestor origin/staging origin/main; then
+            git checkout -B staging origin/staging
+            git merge --ff-only origin/main
+            git push origin HEAD:staging
+            echo "Staging fast-forwarded to main."
+            exit 0
+          fi
+
+          read -r behind ahead <<< "$(git rev-list --left-right --count origin/main...origin/staging)"
+          echo "::error::main and staging diverged (staging behind=$behind, ahead=$ahead). Automatic merge commits are forbidden. Preserve staging if needed, then repair it explicitly."
+          exit 1
