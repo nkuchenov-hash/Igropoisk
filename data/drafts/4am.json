@@ -1,12 +1,32 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
+  "publication": {
+    "status": "published",
+    "gate_passed": true,
+    "mode": "structured_sources",
+    "updated_at": "2026-08-11T00:08:42.331Z",
+    "gate": {
+      "canonical_game_id": "game_a0d66db8a5b2124ca89a",
+      "title": true,
+      "media": true,
+      "source_count": 1,
+      "passed": true
+    }
+  },
+  "game_id": "game_a0d66db8a5b2124ca89a",
   "identity": {
     "slug": "4am",
     "title": "4am",
-    "steam_appid": 4963870
+    "steam_appid": 4963870,
+    "aliases": [
+      "4am"
+    ],
+    "excluded_versions": []
   },
   "release": {
-    "date_text": "Aug 6, 2026"
+    "date_text": "Aug 6, 2026",
+    "date": "Aug 6, 2026",
+    "status": "released"
   },
   "companies": {
     "developers": [
@@ -22,19 +42,20 @@
       "Indie",
       "Simulation"
     ],
+    "platforms": [
+      "windows"
+    ],
     "categories": [
       "Single-player",
       "#category_playable_at_your_own_pace",
       "Playable without Timed Input",
       "Family Sharing"
-    ],
-    "platforms": [
-      "windows"
     ]
   },
   "editorial": {
     "short_description": "A tiny gimbap café in a back alley, lights on until 4 a.m. Lured by oddly high pay, you take the night shift — greet customers, cook, walk home through the dark. Night by night, something slips out of place. Where did the last clerk go?",
-    "integrated_description": "",
+    "integrated_description": "A tiny gimbap café in a back alley, lights on until 4 a.m. Lured by oddly high pay, you take the night shift — greet customers, cook, walk home through the dark. Night by night, something slips out of place. Where did the last clerk go?",
+    "campaign": "",
     "features": [
       "Single-player",
       "#category_playable_at_your_own_pace",
@@ -43,8 +64,8 @@
     ]
   },
   "media": {
-    "cover": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4963870/1f533adc3954e8de7bb55532051a0cf0583f6175/header.jpg?t=1786061010",
     "hero": "https://store.akamai.steamstatic.com/images/storepagebackground/app/4963870?t=1786061010",
+    "cover": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4963870/1f533adc3954e8de7bb55532051a0cf0583f6175/header.jpg?t=1786061010",
     "screenshots": [
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4963870/8ca98addef74e9cb5f91d206de71bce1abf8785a/ss_8ca98addef74e9cb5f91d206de71bce1abf8785a.1920x1080.jpg?t=1786061010",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4963870/300b58ee601478352c65ea8cf1510c5c19ccc66f/ss_300b58ee601478352c65ea8cf1510c5c19ccc66f.1920x1080.jpg?t=1786061010",
@@ -75,11 +96,18 @@
     ]
   },
   "links": {
-    "store": "https://store.steampowered.com/app/4963870/"
+    "official": "",
+    "store": "https://store.steampowered.com/app/4963870/",
+    "developer": "",
+    "publisher": ""
   },
-  "source": {
-    "name": "Steam Store API",
-    "url": "https://store.steampowered.com/api/appdetails?appids=4963870&l=english&cc=us",
-    "checked_at": "2026-08-11T00:08:42.002Z"
-  }
+  "sources": [
+    {
+      "name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=4963870&l=english&cc=us",
+      "type": "database",
+      "checked_at": "2026-08-11T00:08:42.002Z"
+    }
+  ],
+  "updated_at": "2026-08-11T00:08:42.331Z"
 }
