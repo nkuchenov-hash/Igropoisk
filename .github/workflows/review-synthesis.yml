@@ -36,11 +36,22 @@ jobs:
         id: target
         shell: bash
         run: |
+          set -euo pipefail
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             SLUG="${{ inputs.slug }}"
           else
-            REQUEST_FILE=$(ls -t data/review-build-requests/*.json | head -n 1)
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.sha }}"
+            REQUEST_FILE="$(git diff --name-only "$BEFORE" "$AFTER" -- 'data/review-build-requests/*.json' | tail -n 1)"
+            if [ -z "$REQUEST_FILE" ]; then
+              REQUEST_FILE="$(git log -1 --format= --name-only "$AFTER" -- 'data/review-build-requests/*.json' | sed '/^$/d' | tail -n 1)"
+            fi
+            if [ -z "$REQUEST_FILE" ] || [ ! -f "$REQUEST_FILE" ]; then
+              echo "Could not resolve review request from triggering commit $AFTER" >&2
+              exit 2
+            fi
             SLUG=$(node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));if(!d.slug)process.exit(2);process.stdout.write(d.slug)" "$REQUEST_FILE")
+            echo "Resolved request file: $REQUEST_FILE"
           fi
           echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
           echo "Building review for $SLUG"
