@@ -16,7 +16,7 @@ function ensureControls(target){
     controls=document.createElement('div');
     controls.className='rail-controls';
     controls.dataset.controlsFor=target.id;
-    controls.innerHTML='<button class="rail-button" type="button" data-direction="prev" aria-label="Прокрутить влево">←</button><button class="rail-button" type="button" data-direction="next" aria-label="Прокрутить вправо">→</button>';
+    controls.innerHTML='<button class="ig-icon-button rail-button" type="button" data-direction="prev" aria-label="Прокрутить влево">←</button><button class="ig-icon-button rail-button" type="button" data-direction="next" aria-label="Прокрутить вправо">→</button>';
     meta.appendChild(controls);
   }
   return [...controls.querySelectorAll('button')];
@@ -144,7 +144,7 @@ async function load(){
       const poster=src
         ? `<img src="${esc(src)}" data-cover-candidates='${esc(JSON.stringify(candidates))}' alt="${esc(item.title)}" loading="${index<6?'eager':'lazy'}" fetchpriority="${index<3?'high':'auto'}" decoding="async" width="600" height="900">`
         : `<div class="popular-placeholder" role="img" aria-label="Обложка временно недоступна">${esc(initials(item.title))}</div>`;
-      return `<article class="card game-card popular-card"${clickable?` data-game="${esc(item.slug)}"`:''} aria-label="${esc(item.title)}"><div class="popular-rank">${index+1}</div><div class="popular-poster">${poster}</div><div class="card-body"><h3>${esc(item.title)}</h3><div class="popular-meta"><span>Индекс ${esc(Number(item.score||0).toFixed(1))}</span></div>${clickable?'':'<span class="popular-pending">Страница готовится</span>'}</div></article>`;
+      return `<article class="ig-card ig-card--interactive popular-card"${clickable?` data-game="${esc(item.slug)}"`:''} aria-label="${esc(item.title)}"><div class="popular-rank">${index+1}</div><div class="ig-card__media popular-poster">${poster}</div><div class="ig-card__body card-body"><h3 class="ig-card__title">${esc(item.title)}</h3><div class="ig-card__meta popular-meta"><span>Индекс ${esc(Number(item.score||0).toFixed(1))}</span></div>${clickable?'':'<span class="popular-pending">Страница готовится</span>'}</div></article>`;
     }).join('');
 
     wireCoverFallbacks(target);
