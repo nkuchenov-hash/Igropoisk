@@ -58,6 +58,7 @@ jobs:
       - name: Validate JavaScript
         run: |
           node --check scripts/sync-review-policy.mjs
+          node --check scripts/apply-review-supplemental-sources.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/discover-review-media.mjs
           node --check scripts/synthesize-review-github-models.mjs
@@ -69,6 +70,8 @@ jobs:
           node --check article/_shared/review-carousel.js
       - name: Synchronize text, media and layout gates
         run: node scripts/sync-review-policy.mjs
+      - name: Apply verified supplemental review sources
+        run: node scripts/apply-review-supplemental-sources.mjs "${{ steps.target.outputs.slug }}"
       - name: Discover or revalidate professional sources
         run: node scripts/prepare-review-research.mjs "${{ steps.target.outputs.slug }}"
         env:
