@@ -106,7 +106,19 @@ jobs:
           if ! git diff --cached --quiet; then
             node scripts/validate-automation-publish-diff.mjs --profile content-pipeline
           fi
-      - name: Open isolated lifecycle PR instead of writing to staging
+      - name: Validate complete candidate before merge
+        if: success()
+        run: |
+          if git diff --cached --quiet; then exit 0; fi
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-game-media-quality.mjs
+          node scripts/audit-review-publication.mjs --strict
+          node scripts/validate-editorial-pipeline.mjs
+          node scripts/validate-production-boundaries.mjs
+          node scripts/validate-top-250.mjs
+          python3 scripts/enforce_layout_contract.py --check
+          git diff --check
+      - name: Open and merge isolated lifecycle PR
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -120,11 +132,12 @@ jobs:
           git checkout -b "$branch"
           git commit -m "Build queued game lifecycle output"
           git push origin "$branch"
-          gh pr create \
+          pr_url="$(gh pr create \
             --base staging \
             --head "$branch" \
             --title "Automated game lifecycle ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
-            --body "Automated isolated game lifecycle output from live Popular/Releases manifests. Game pages are built from structured sources without requiring AI. AI is optional and used only for editorial reviews. Direct bot writes to staging are forbidden."
+            --body "Validated autonomous game lifecycle output. Pages are built from structured sources without requiring AI; editorial AI remains optional. The producing workflow ran publication, media, identity, layout and boundary gates before this PR was opened.")"
+          gh pr merge "$pr_url" --merge --delete-branch
       - name: Preserve lifecycle queue and audit
         if: always()
         uses: actions/upload-artifact@v4

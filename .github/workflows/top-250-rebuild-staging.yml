@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: top-250-rebuild-staging
@@ -30,7 +31,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Rebuild Top-250 from released rated games
+      - name: Rebuild and validate Top-250
         run: |
           node scripts/build-top-250.mjs
           node scripts/validate-top-250.mjs
@@ -38,14 +39,21 @@ jobs:
             echo 'Unreleased GTA VI must not be ranked'
             exit 1
           fi
-      - name: Publish regenerated ranking to staging
+          git diff --check
+      - name: Publish through isolated PR
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          git config user.name "igropoisk-top250[bot]"
-          git config user.email "igropoisk-top250[bot]@users.noreply.github.com"
           git add data/top-250/current.json
           if git diff --cached --quiet; then
             echo 'Top-250 is already current.'
             exit 0
           fi
+          branch="automation/top250-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-top250[bot]"
+          git config user.email "igropoisk-top250[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
           git commit -m "Rebuild Top-250 from released rated games"
-          git push origin HEAD:staging
+          git push origin "$branch"
+          pr_url="$(gh pr create --base staging --head "$branch" --title "Automated Top-250 ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" --body "Validated Top-250 rebuild from released rated games only. The producing workflow ran Top-250 integrity checks before opening this PR.")"
+          gh pr merge "$pr_url" --merge --delete-branch
