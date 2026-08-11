@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: review-staging-${{ github.event_name }}
@@ -29,7 +30,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
       - name: Resolve requested game slug
         id: target
         shell: bash
@@ -91,12 +92,28 @@ jobs:
         run: node scripts/canonicalize-editorial-game-id.mjs "${{ steps.target.outputs.slug }}"
       - name: Render static pages for every published review
         run: node scripts/render-review-pages.mjs
-      - name: Commit research, candidates, articles and generated pages to staging
+      - name: Publish audited review through isolated PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
+          set -euo pipefail
+          slug="${{ steps.target.outputs.slug }}"
+          git add config/parsers/review-synthesis.json data/research data/reviews data/media-candidates data/articles data/article-drafts data/article-media data/parser-runs data/drafts article
+          if git diff --cached --quiet; then
+            echo "No audited review changes to publish."
+            exit 0
+          fi
+          git diff --cached --check
+          branch="automation/review-${slug}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git config user.name "igropoisk-editor[bot]"
           git config user.email "igropoisk-editor[bot]@users.noreply.github.com"
-          git add config/parsers/review-synthesis.json data/research data/reviews data/media-candidates data/articles data/article-drafts data/article-media data/parser-runs data/drafts article
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Build audited review for ${{ steps.target.outputs.slug }}"
-          git pull --rebase origin staging
-          git push origin HEAD:staging
+          git checkout -b "$branch"
+          git commit -m "Build audited review for ${slug}"
+          git push origin "$branch"
+          pr_url="$(gh pr create \
+            --base staging \
+            --head "$branch" \
+            --title "Audited review: ${slug}" \
+            --body "Generated only after the configured Review Synthesizer passed source, identity, article-depth, media-deduplication and visual-quality gates for ${slug}. The workflow does not write review content directly to staging.")"
+          gh pr merge "$pr_url" --merge --delete-branch
