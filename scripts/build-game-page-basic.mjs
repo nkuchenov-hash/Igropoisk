@@ -10,6 +10,7 @@ const registryPath=path.resolve(root,args.includes('--registry')?args[args.index
 if(!slugOrId)throw new Error('Usage: node scripts/build-game-page-basic.mjs <slug-or-id> [--registry path]');
 const readJSON=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
 const writeJSON=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n')};
+const exists=relative=>fs.existsSync(path.join(root,relative));
 const field=(entity,key,fallback=null)=>entity?.fields?.[key]?.value??fallback;
 const media=(entity,kinds)=>(entity?.media||[]).filter(item=>kinds.includes(item.kind)&&item.url).map(item=>item.url);
 const first=(...values)=>values.find(value=>value!==undefined&&value!==null&&value!=='')??'';
@@ -59,10 +60,18 @@ if(!genres.length)missing.push('classification.genres');
 if(!platforms.length)missing.push('classification.platforms');
 if(!hero&&!cover)missing.push('media.hero_or_cover');
 if(screenshots.length<minimumScreenshots)missing.push(`screenshots:${screenshots.length}/${minimumScreenshots}`);
-const passed=missing.length===0;
+const structuredPassed=missing.length===0;
+const catalog=readJSON('data/catalog-visible.json',[]);
+const catalogIndex=catalog.findIndex(item=>item.slug===slug);
+const alreadyPublic=catalogIndex>=0;
+const article=readJSON(`data/articles/${slug}.json`);
+const articleSlug=String(article?.game_slug||article?.slug||'');
+const articleStatus=String(article?.publication_status||'published').toLowerCase();
+const reviewReady=Boolean(article)&&exists(`article/${slug}/index.html`)&&articleSlug===slug&&articleStatus==='published';
+const publicReady=structuredPassed&&(alreadyPublic||reviewReady);
 const game={
   schema_version:3,
-  publication:{status:passed?'published':'review',gate_passed:passed,mode:'structured_sources',updated_at:now,gate:{canonical_game_id:entity.id,title:Boolean(title),media:Boolean(hero||cover||screenshots.length),source_count:sources.length,minimum_screenshots:minimumScreenshots,accepted_screenshots:screenshots.length,missing,passed}},
+  publication:{status:publicReady?'published':structuredPassed?'review':'review',gate_passed:structuredPassed,public_ready:publicReady,review_ready:reviewReady,mode:'structured_sources',updated_at:now,gate:{canonical_game_id:entity.id,title:Boolean(title),media:Boolean(hero||cover||screenshots.length),source_count:sources.length,minimum_screenshots:minimumScreenshots,accepted_screenshots:screenshots.length,missing,passed:structuredPassed}},
   game_id:entity.id,
   identity:{slug,title,steam_appid:steamAppId,aliases:entity.identity?.aliases?.value||[],excluded_versions:[]},
   release:{date_text:String(releaseDate),date:String(releaseDate),status:year&&year<=new Date().getUTCFullYear()?'released':'upcoming'},
@@ -76,20 +85,24 @@ const game={
   updated_at:now
 };
 writeJSON(`data/drafts/${slug}.json`,game);
-writeJSON(`data/parser-runs/game-page-${slug}.json`,{parser:'deterministic-game-page-builder',status:passed?'success':'blocked',game_slug:slug,game_id:entity.id,checked_at:now,gate:game.publication.gate,output:passed?[`game/${slug}/index.html`] : [`data/drafts/${slug}.json`]});
-if(!passed){
+if(!structuredPassed){
+  writeJSON(`data/parser-runs/game-page-${slug}.json`,{parser:'deterministic-game-page-builder',status:'blocked',game_slug:slug,game_id:entity.id,checked_at:now,gate:game.publication.gate,output:[`data/drafts/${slug}.json`]});
   console.error(`Structured page gate failed for ${slug}: ${missing.join(', ')}`);
   process.exit(2);
 }
 const chunk=year&&year<=2015?'2002-2015':year&&year<=2017?'2016-2017':year&&year<=2019?'2018-2019':year===2020?'2020':year&&year<=2022?'2021-2022':'2023-2025';
 const chunkPath=`data/game-content/${chunk}.json`;
 const chunkData=readJSON(chunkPath,{schema_version:3,games:{}});chunkData.schema_version=Math.max(Number(chunkData.schema_version||1),3);chunkData.games=chunkData.games||{};chunkData.games[slug]=game;writeJSON(chunkPath,chunkData);
-const catalog=readJSON('data/catalog-visible.json',[]);
+if(!publicReady){
+  writeJSON(`data/parser-runs/game-page-${slug}.json`,{parser:'deterministic-game-page-builder',status:'deferred',reason:'published_review_required_before_public_catalog',game_slug:slug,game_id:entity.id,checked_at:now,gate:game.publication.gate,review_ready:false,output:[`data/drafts/${slug}.json`,chunkPath]});
+  console.log(JSON.stringify({slug,game_id:entity.id,mode:'structured_sources',year,sources:sources.length,screenshots:screenshots.length,gate_passed:true,public_ready:false,reason:'published_review_required_before_public_catalog'},null,2));
+  process.exit(0);
+}
 const entry={title,year,slug,game_id:entity.id,...(steamAppId?{steam_appid:steamAppId}:{})};
-const index=catalog.findIndex(item=>item.slug===slug);if(index>=0)catalog[index]={...catalog[index],...entry};else catalog.push(entry);writeJSON('data/catalog-visible.json',catalog);
+if(catalogIndex>=0)catalog[catalogIndex]={...catalog[catalogIndex],...entry};else catalog.push(entry);writeJSON('data/catalog-visible.json',catalog);
 const safeTitle=String(title).replace(/[&<>"']/g,'');
 const safeYear=year||'';
 const html=`<!doctype html><html lang="ru" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safeTitle} — Игропоиск</title><link rel="stylesheet" href="../_shared/game-page.css">\n  <link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">\n  <link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">\n</head><body data-title="${safeTitle}" data-year="${safeYear}" data-slug="${slug}" data-game-id="${entity.id}" data-draft="${slug}"><script src="../_shared/game-shell.js"></script>\n  <script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>\n  <script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>\n</body></html>`;
 const pagePath=path.join(root,'game',slug,'index.html');fs.mkdirSync(path.dirname(pagePath),{recursive:true});fs.writeFileSync(pagePath,html+'\n');
-const run=readJSON(`data/parser-runs/game-page-${slug}.json`,{});run.output=[chunkPath,`game/${slug}/index.html`];writeJSON(`data/parser-runs/game-page-${slug}.json`,run);
-console.log(JSON.stringify({slug,game_id:entity.id,mode:'structured_sources',year,sources:sources.length,screenshots:screenshots.length,gate_passed:true},null,2));
+writeJSON(`data/parser-runs/game-page-${slug}.json`,{parser:'deterministic-game-page-builder',status:'success',game_slug:slug,game_id:entity.id,checked_at:now,gate:game.publication.gate,review_ready:true,public_ready:true,output:[chunkPath,`game/${slug}/index.html`]});
+console.log(JSON.stringify({slug,game_id:entity.id,mode:'structured_sources',year,sources:sources.length,screenshots:screenshots.length,gate_passed:true,public_ready:true},null,2));
