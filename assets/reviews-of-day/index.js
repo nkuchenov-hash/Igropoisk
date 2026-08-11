@@ -5,13 +5,13 @@ const rail=document.querySelector('#reviewsOfDayRail');
 if(!main||!rail)return;
 
 const AUTO_ROTATE_MS=30000;
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
 let items=[];
 let activeIndex=0;
 let timer=null;
 
-const mainCard=item=>`<a class="review-day-card" href="article/${encodeURIComponent(item.slug)}/"><div class="review-day-card__copy"><span class="review-day-card__eyebrow">${esc(item.game_title||'Обзор Игропоиска')}</span><h3>${esc(item.title)}</h3><p class="review-day-card__dek">${esc(item.dek||'')}</p><div class="review-day-card__meta"><span>${esc(item.author||'Редакция Игропоиска')}</span><span>${esc(item.published_at||'')}</span></div></div><div class="review-day-card__media"><img src="${esc(item.hero||'')}" alt="${esc(item.game_title||item.title)}" loading="eager" decoding="async"></div>${Number.isFinite(Number(item.score))?`<span class="review-day-card__score">${Number(item.score).toFixed(1)}</span>`:''}</a>`;
-const miniCard=(item,index)=>`<button class="review-day-mini${index===activeIndex?' is-active':''}" type="button" data-review-index="${index}" aria-label="Показать обзор ${esc(item.game_title||item.title)}"><img src="${esc(item.hero||'')}" alt="" loading="lazy" decoding="async"><span>${esc(item.game_title||item.title)}</span></button>`;
+const mainCard=item=>`<a class="ig-card ig-card--interactive review-day-card" href="article/${encodeURIComponent(item.slug)}/"><div class="ig-card__body review-day-card__copy"><span class="review-day-card__eyebrow">${esc(item.game_title||'Обзор Игропоиска')}</span><h3 class="ig-card__title">${esc(item.title)}</h3><p class="ig-card__summary review-day-card__dek">${esc(item.dek||'')}</p><div class="ig-card__meta review-day-card__meta"><span>${esc(item.author||'Редакция Игропоиска')}</span><span>${esc(item.published_at||'')}</span></div></div><div class="ig-card__media review-day-card__media"><img src="${esc(item.hero||'')}" alt="${esc(item.game_title||item.title)}" loading="eager" decoding="async"></div>${Number.isFinite(Number(item.score))?`<span class="ig-rating review-day-card__score">${Number(item.score).toFixed(1)}</span>`:''}</a>`;
+const miniCard=(item,index)=>`<button class="ig-button review-day-mini${index===activeIndex?' is-active':''}" type="button" data-review-index="${index}" aria-label="Показать обзор ${esc(item.game_title||item.title)}"><img src="${esc(item.hero||'')}" alt="" loading="lazy" decoding="async"><span>${esc(item.game_title||item.title)}</span></button>`;
 
 function render(){
   const item=items[activeIndex];
@@ -49,7 +49,7 @@ fetch('data/home-widgets/reviews-of-day.json',{cache:'no-store'})
   })
   .catch(error=>{
     console.warn('Reviews of day:',error);
-    main.innerHTML='<div class="home-widget-loading">Проверенные обзоры временно недоступны.</div>';
+    main.innerHTML='<div class="ig-empty-state home-widget-loading">Проверенные обзоры временно недоступны.</div>';
     rail.innerHTML='';
   });
 })();
