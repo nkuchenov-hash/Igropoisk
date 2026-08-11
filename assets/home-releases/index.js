@@ -21,8 +21,8 @@ const dateLabel=event=>{
   const diff=dayDiff(value);
   if(diff===0)return 'Сегодня';
   if(diff===1)return 'Завтра';
-  if(diff===-1)return 'Релиз вчера';
-  if(Number.isFinite(diff)&&diff<0)return `Релиз ${formattedDate(value)}`;
+  if(diff===-1)return 'Вышла вчера';
+  if(Number.isFinite(diff)&&diff<0)return `Вышла ${formattedDate(value)}`;
   return formattedDate(value);
 };
 const releaseKind=(event,recentDays)=>{
@@ -45,12 +45,21 @@ const candidates=game=>{
     id&&`https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/header.jpg`
   ].filter(Boolean))];
 };
+const anticipationLabel=game=>{
+  const quality=game.editorial_quality||{};
+  if((quality.signals||[]).includes('current_popular'))return 'Сейчас в центре внимания';
+  const position=Number(quality.steam_popular_upcoming_position||game.anticipation?.steam_popular_upcoming_position||0);
+  if(position>0)return `Steam: популярные ожидаемые · #${position}`;
+  if((quality.signals||[]).includes('cross_site_coverage'))return 'Об игре пишут несколько изданий';
+  return '';
+};
 const card=(game,kind)=>{
   const event=primaryEvent(game);
   const diff=dayDiff(dateValue(event));
   const image=candidates(game)[0]||'';
-  const meta=[...(game.genres||[]).slice(0,1),...(event.platforms||[]).slice(0,1)].join(' · ');
-  return `<article class="ig-card ig-card--interactive home-release-card" data-release="${esc(game.slug)}" data-release-kind="${esc(kind)}"><a class="ig-card__part home-release-card__link" href="calendar/#game=${encodeURIComponent(game.slug)}"><div class="ig-card__media home-release-card__media" data-initials="${esc(initials(game.title))}">${image?`<img src="${esc(image)}" alt="Обложка ${esc(game.title)}" loading="eager" decoding="async" data-cover-index="0">`:''}<span class="home-release-card__date ${kind==='recent'||Number.isFinite(diff)&&diff>=0&&diff<=7?'is-near':''}">${esc(dateLabel(event))}</span></div><div class="ig-card__part home-release-card__body"><h3>${esc(game.title)}</h3><div class="ig-card__part home-release-card__meta">${esc(meta)}</div></div></a></article>`;
+  const relevance=anticipationLabel(game);
+  const meta=[relevance,...(event.platforms||[]).slice(0,1)].filter(Boolean).join(' · ');
+  return `<article class="ig-card ig-card--interactive home-release-card" data-release="${esc(game.slug)}" data-release-kind="${esc(kind)}"><a class="ig-card__part home-release-card__link" href="calendar/#game=${encodeURIComponent(game.slug)}"><div class="ig-card__media home-release-card__media" data-initials="${esc(initials(game.title))}">${image?`<img src="${esc(image)}" alt="Обложка ${esc(game.title)}" loading="lazy" decoding="async" data-cover-index="0">`:''}<span class="home-release-card__date ${kind==='recent'||Number.isFinite(diff)&&diff>=0&&diff<=7?'is-near':''}">${esc(dateLabel(event))}</span></div><div class="ig-card__part home-release-card__body"><h3>${esc(game.title)}</h3>${meta?`<div class="ig-card__part home-release-card__meta">${esc(meta)}</div>`:''}</div></a></article>`;
 };
 const bindFallbacks=games=>{
   rail.querySelectorAll('.home-release-card').forEach(cardElement=>{
@@ -66,20 +75,18 @@ const bindFallbacks=games=>{
     });
   });
 };
-const bindRail=()=>{
-  document.querySelectorAll('[data-release-rail]').forEach(button=>{
-    button.onclick=()=>rail.scrollBy({left:Number(button.dataset.releaseRail)*Math.max(320,rail.clientWidth*.82),behavior:'smooth'});
-  });
-  rail.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)<=Math.abs(event.deltaX))return;event.preventDefault();rail.scrollBy({left:event.deltaY,behavior:'auto'})},{passive:false});
-};
+
+document.querySelectorAll('[data-release-rail]').forEach(button=>{
+  button.addEventListener('click',()=>rail.scrollBy({left:Number(button.dataset.releaseRail)*Math.max(320,rail.clientWidth*.82),behavior:'smooth'}));
+});
 
 Promise.all([
   fetch('data/releases/current.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json()}),
   fetch('features/home-releases/rules.json',{cache:'no-store'}).then(response=>response.ok?response.json():{})
 ]).then(([payload,rules])=>{
-  const maximum=Math.max(6,Number(rules.maximum_cards||12));
+  const maximum=Math.max(8,Number(rules.maximum_cards||12));
   const recentDays=Math.max(1,Number(rules.recent_release_days||7));
-  const maximumRecent=Math.min(maximum,Math.max(0,Number(rules.maximum_recent_cards||4)));
+  const maximumRecent=Math.min(maximum,Math.max(0,Number(rules.maximum_recent_cards||3)));
   const classified=(payload.releases||[])
     .filter(game=>game.editorial_quality?.homepage_eligible===true)
     .map(game=>({game,event:primaryEvent(game)}))
@@ -87,16 +94,15 @@ Promise.all([
     .filter(row=>row.kind!=='expired');
 
   const recent=classified.filter(row=>row.kind==='recent')
-    .sort((left,right)=>String(dateEndValue(right.event)||'').localeCompare(String(dateEndValue(left.event)||''))||String(left.game.title).localeCompare(String(right.game.title),'ru'))
+    .sort((a,b)=>Number(b.game.editorial_quality?.anticipation_score||b.game.editorial_quality?.quality_score||0)-Number(a.game.editorial_quality?.anticipation_score||a.game.editorial_quality?.quality_score||0)||String(dateEndValue(b.event)||'').localeCompare(String(dateEndValue(a.event)||'')))
     .slice(0,maximumRecent);
   const upcoming=classified.filter(row=>row.kind==='upcoming')
-    .sort((left,right)=>String(dateValue(left.event)||'9999').localeCompare(String(dateValue(right.event)||'9999'))||String(left.game.title).localeCompare(String(right.game.title),'ru'));
+    .sort((a,b)=>Number(b.game.editorial_quality?.anticipation_score||b.game.editorial_quality?.quality_score||0)-Number(a.game.editorial_quality?.anticipation_score||a.game.editorial_quality?.quality_score||0)||String(dateValue(a.event)||'9999').localeCompare(String(dateValue(b.event)||'9999')));
   const selected=[...recent,...upcoming].slice(0,maximum);
   const rows=selected.map(row=>row.game);
 
-  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Проверенные новые и ожидаемые релизы пока не найдены.</div>';
+  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Нет релизов с подтверждённой заметной ожидаемостью. Слабые Steam-кандидаты сюда больше не попадают.</div>';
   bindFallbacks(rows);
-  bindRail();
 }).catch(error=>{
   console.warn('Home releases:',error);
   rail.innerHTML='<div class="home-release-empty">Календарь временно недоступен.</div>';

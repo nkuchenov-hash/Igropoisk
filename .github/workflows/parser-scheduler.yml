@@ -21,6 +21,7 @@ on:
       - 'features/home-releases/rules.json'
       - 'scripts/run-scheduled-parsers.mjs'
       - 'scripts/parse-releases.mjs'
+      - 'scripts/enrich-release-anticipation.mjs'
       - 'scripts/parse-popular.mjs'
       - 'scripts/enrich-global-popular-youtube.mjs'
       - 'scripts/resolve-global-popular-art.mjs'
@@ -35,6 +36,7 @@ on:
       - 'scripts/test-release-calendar-policy.mjs'
       - 'scripts/publish-home-feeds-storage.mjs'
       - 'scripts/lib/**'
+      - 'tests/home-release-anticipation.mjs'
       - '.github/workflows/parser-scheduler.yml'
 
 permissions:
@@ -66,6 +68,7 @@ jobs:
         run: |
           node --check scripts/run-scheduled-parsers.mjs
           node --check scripts/parse-releases.mjs
+          node --check scripts/enrich-release-anticipation.mjs
           node --check scripts/parse-popular.mjs
           node --check scripts/curate-home-feeds.mjs
           node --check scripts/validate-home-feeds.mjs
@@ -73,8 +76,10 @@ jobs:
           node --check scripts/materialize-release-calendar.mjs
           node --check scripts/validate-release-calendar.mjs
           node --check scripts/publish-home-feeds-storage.mjs
+          node --check scripts/lib/home-release-quality.mjs
           node --check scripts/lib/yandex-object-storage.mjs
           node scripts/test-release-calendar-policy.mjs
+          node tests/home-release-anticipation.mjs
 
       - name: Bootstrap last repository snapshot into Object Storage if empty
         env:
@@ -98,6 +103,12 @@ jobs:
         run: |
           mkdir -p assets/covers/releases assets/covers/popular data/release-drafts data/parser-runs
           node scripts/run-scheduled-parsers.mjs
+
+      - name: Measure release anticipation from Steam and cross-site Popular signals
+        id: anticipation
+        if: always()
+        continue-on-error: true
+        run: node scripts/enrich-release-anticipation.mjs
 
       - name: Curate available snapshots
         id: curation
@@ -163,6 +174,7 @@ jobs:
             data/releases/materialization-report.json
             data/release-candidates/current.json
             data/parser-runs/releases.json
+            data/parser-runs/release-anticipation.json
             data/parser-runs/scheduler.json
           if-no-files-found: warn
           retention-days: 7

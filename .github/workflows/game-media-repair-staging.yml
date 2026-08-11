@@ -40,7 +40,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git add data/drafts/gears-of-war-e-day.json data/drafts/mistfall-hunter.json data/drafts/wuthering-waves.json data/drafts/rust.json
+          node - <<'NODE' > /tmp/media-files.txt
+          const fs=require('fs');
+          const config=JSON.parse(fs.readFileSync('config/game-media-steam-overrides.json','utf8'));
+          for(const slug of Object.keys(config.games||{})) console.log(`data/drafts/${slug}.json`);
+          NODE
+          while IFS= read -r file; do
+            if [ -f "$file" ]; then git add "$file"; fi
+          done < /tmp/media-files.txt
           if git diff --cached --quiet; then
             echo 'Verified media is already current.'
             exit 0
@@ -51,5 +58,5 @@ jobs:
           git checkout -b "$branch"
           git commit -m "Repair game media from verified Steam records"
           git push origin "$branch"
-          pr_url="$(gh pr create --base staging --head "$branch" --title "Automated game media repair ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" --body "Verified Steam media repair. The producing workflow validated effective media for the full public catalog before opening this PR.")"
+          pr_url="$(gh pr create --base staging --head "$branch" --title "Automated game media repair ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" --body "Verified Steam media repair for configured game pages. The producing workflow validated effective media for the public catalog before opening this PR.")"
           gh pr merge "$pr_url" --merge --delete-branch
