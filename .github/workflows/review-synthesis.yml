@@ -14,6 +14,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  models: read
 
 concurrency:
   group: review-staging-${{ github.event_name }}
@@ -48,8 +49,8 @@ jobs:
           node --check scripts/sync-review-policy.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/discover-review-media.mjs
-          node --check scripts/synthesize-review.mjs
-          node --check scripts/enrich-review-media.mjs
+          node --check scripts/synthesize-review-github-models.mjs
+          node --check scripts/enrich-review-media-github-models.mjs
           node --check scripts/validate-review-output.mjs
           node --check scripts/render-review-pages.mjs
           node --check scripts/canonicalize-editorial-game-id.mjs
@@ -57,7 +58,7 @@ jobs:
           node --check article/_shared/review-carousel.js
       - name: Synchronize text, media and layout gates
         run: node scripts/sync-review-policy.mjs
-      - name: Discover and validate professional sources
+      - name: Discover or revalidate professional sources
         run: node scripts/prepare-review-research.mjs "${{ steps.target.outputs.slug }}"
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -65,27 +66,21 @@ jobs:
           OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
       - name: Bind research to canonical Game Registry identity
         run: node scripts/canonicalize-editorial-game-id.mjs "${{ steps.target.outputs.slug }}"
-      - name: Discover a broad screenshot corpus
+      - name: Verify official game-specific screenshot corpus
         run: node scripts/discover-review-media.mjs "${{ steps.target.outputs.slug }}"
+      - name: Write game-specific article through GitHub Models
+        run: node scripts/synthesize-review-github-models.mjs "${{ steps.target.outputs.slug }}"
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
-          OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
-      - name: Plan, write and audit full article
-        run: node scripts/synthesize-review.mjs "${{ steps.target.outputs.slug }}"
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
-          OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
-          OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REVIEW_MODEL: openai/gpt-4.1
       - name: Bind synthesized artifacts to canonical Game Registry identity
         run: node scripts/canonicalize-editorial-game-id.mjs "${{ steps.target.outputs.slug }}"
-      - name: Measure, deduplicate and build screenshot carousels
-        run: node scripts/enrich-review-media.mjs "${{ steps.target.outputs.slug }}"
+      - name: Match unique verified screenshots to article sections
+        run: node scripts/enrich-review-media-github-models.mjs "${{ steps.target.outputs.slug }}"
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
-          OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REVIEW_MODEL: openai/gpt-4.1
+          GITHUB_VISION_MODEL: openai/gpt-4.1
       - name: Enforce article depth, dimensions and zero duplicates
         run: node scripts/validate-review-output.mjs "${{ steps.target.outputs.slug }}"
       - name: Re-bind generated media/report artifacts to canonical identity
@@ -115,5 +110,5 @@ jobs:
             --base staging \
             --head "$branch" \
             --title "Audited review: ${slug}" \
-            --body "Generated only after the configured Review Synthesizer passed source, identity, article-depth, media-deduplication and visual-quality gates for ${slug}. The workflow does not write review content directly to staging.")"
+            --body "Generated only after the configured Review Synthesizer passed source, identity, article-depth, media-deduplication and visual-quality gates for ${slug}. Existing complete professional source packs are revalidated without paid discovery; article text and visual matching use GitHub Models with repository-scoped Actions permissions. The workflow never writes review content directly to staging.")"
           gh pr merge "$pr_url" --merge --delete-branch
