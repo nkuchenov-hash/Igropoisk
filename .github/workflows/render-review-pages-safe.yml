@@ -1,0 +1,87 @@
+name: Render changed review pages
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - 'data/articles/**'
+      - 'data/article-media/**'
+      - 'scripts/render-review-pages.mjs'
+      - 'article/_shared/**'
+      - '.github/workflows/render-review-pages-safe.yml'
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: Optional single review slug
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: render-review-pages-safe
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Resolve changed review slugs
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.slug || '' }}" ]; then
+            printf '%s\n' "${{ inputs.slug }}" > /tmp/review-slugs.txt
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" -- 'data/articles/*.json' 'data/article-media/*.json' \
+              | sed -E 's#^data/(articles|article-media)/##;s#\.json$##' \
+              | sort -u > /tmp/review-slugs.txt
+          else
+            : > /tmp/review-slugs.txt
+          fi
+          sed -i '/^$/d' /tmp/review-slugs.txt
+          echo "slugs=$(paste -sd' ' /tmp/review-slugs.txt)" >> "$GITHUB_OUTPUT"
+          cat /tmp/review-slugs.txt || true
+      - name: Validate renderer syntax
+        run: node --check scripts/render-review-pages.mjs
+      - name: Render only changed reviews
+        if: steps.target.outputs.slugs != ''
+        run: node scripts/render-review-pages.mjs ${{ steps.target.outputs.slugs }}
+      - name: Validate rendered review output
+        if: steps.target.outputs.slugs != ''
+        run: |
+          node scripts/validate-editorial-pipeline.mjs
+          git diff --check
+      - name: Publish rendered pages through isolated PR
+        if: steps.target.outputs.slugs != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r slug; do
+            [ -z "$slug" ] && continue
+            git add "article/$slug/index.html"
+          done < /tmp/review-slugs.txt
+          if git diff --cached --quiet; then
+            echo "Rendered pages already match article JSON."
+            exit 0
+          fi
+          branch="automation/render-reviews-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-renderer[bot]"
+          git config user.email "igropoisk-renderer[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Render changed review pages"
+          git push origin "$branch"
+          pr_url="$(gh pr create --base staging --head "$branch" --title "Render changed review pages ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" --body "Materializes only review HTML whose source article/media JSON changed. The renderer validates editorial depth and media uniqueness before this isolated PR is opened.")"
+          gh pr merge "$pr_url" --merge --delete-branch
