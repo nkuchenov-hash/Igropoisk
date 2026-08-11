@@ -18,9 +18,12 @@ jobs:
         with:
           node-version: '22'
       - run: node scripts/materialize-complete-review-catalog.mjs
-      - run: |
-          node scripts/audit-review-publication.mjs || true
-          node scripts/validate-game-media-quality.mjs
+      - name: Verify semantic publication and affected media
+        run: |
+          node scripts/audit-review-publication.mjs --strict
+          for slug in doom control hades 3-japan-stigmatized-property; do
+            node scripts/validate-game-media-quality.mjs "$slug"
+          done
           git diff --check
       - name: Commit materialized package
         run: |
