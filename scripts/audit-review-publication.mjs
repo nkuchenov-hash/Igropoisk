@@ -15,6 +15,8 @@ const reasonCounts={};
 const countReason=reason=>{const key=reason.split(':')[0];reasonCounts[key]=(reasonCounts[key]||0)+1};
 const articleUrlMatches=(value,slug)=>{try{const url=new URL(String(value||''),`https://igropoisk.invalid/Igropoisk/game/${slug}/`);return url.pathname.replace(/\/+$/,'').endsWith(`/article/${slug}`)}catch{return false}};
 function resolveDraftIdentity(draft){
+  const explicit=String(draft?.game_id||draft?.gameId||'').trim();
+  if(explicit)return {game_id:explicit,matched_by:'draft.game_id',error:null};
   if(!draft?.identity)return {game_id:null,matched_by:null,error:null};
   const steam=draft.identity.steam_appid??draft.identity.steamAppId??null;
   const title=draft.identity.title??null;

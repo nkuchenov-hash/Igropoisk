@@ -10,6 +10,8 @@ const catalog=read('data/catalog-visible.json',[]);
 const loaded=loadEditorialRegistry(root);
 const result={schema_version:2,checked_at:new Date().toISOString(),updated:[],already_valid:[],blocked:[]};
 function resolveDraftIdentity(draft){
+  const explicit=String(draft?.game_id||draft?.gameId||'').trim();
+  if(explicit)return {game_id:explicit,matched_by:'draft.game_id'};
   if(!draft?.identity)return {game_id:null};
   try{
     const steam=draft.identity.steam_appid??draft.identity.steamAppId??null;
