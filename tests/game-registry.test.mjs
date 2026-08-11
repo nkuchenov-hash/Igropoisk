@@ -17,6 +17,18 @@ test('trademark and localized aliases resolve to one game', () => {
   assert.equal(Object.keys(api.registry.games).length,1);
 });
 
+test('published canonical ID from a source record remains authoritative', () => {
+  const api = new GameRegistryApi(createRegistry());
+  const pinnedId='game_115c1094a78a556a310d';
+  const first=api.registerCandidate({title:'Mafia',slug:'mafia',steamAppId:40990,raw:{game_id:pinnedId},source:{type:'manual',name:'public catalog'}});
+  assert.equal(first.entity.id,pinnedId);
+  api.registerCandidate({title:'Unrelated Parser Game',slug:'unrelated-parser-game',steamAppId:999999,source:steam});
+  const again=api.registerCandidate({title:'Mafia: The City of Lost Heaven',slug:'mafia',steamAppId:40990,source:steam});
+  assert.equal(again.entity.id,pinnedId);
+  assert.equal(api.registry.indexes.slug.mafia,pinnedId);
+  assert.equal(api.registry.indexes.external['steamAppId:40990'],pinnedId);
+});
+
 test('platform records with the same external identity remain one game', () => {
   const api = new GameRegistryApi(createRegistry());
   api.registerCandidate({title:'Example Game',externalIds:{igdbId:42},releases:[{platform:'PC',date:'2026-01-01'}],source:official});

@@ -11,7 +11,17 @@ const {registry}=migrateRepository(root,{dryRun:true,publicBaseUrl:'/game'});
 const projected=projectPublicCatalog(catalog,registry);
 const unresolved=projected.issues.filter(issue=>issue.status==='unresolved');
 if(unresolved.length)throw new Error(`Public catalog contains unresolved Game Registry identities: ${JSON.stringify(unresolved)}`);
-let changed=0;
-for(let i=0;i<catalog.length;i++)if(catalog[i]?.game_id!==projected.records[i]?.game_id)changed++;
-fs.writeFileSync(catalogPath,JSON.stringify(projected.records,null,2)+'\n');
-console.log(JSON.stringify({records:projected.records.length,canonical_ids_repaired:changed,issues:projected.issues.length,registry_source:'fresh_migration'},null,2));
+let filled=0;
+let conflicts=0;
+const records=catalog.map((item,index)=>{
+  const projectedId=projected.records[index]?.game_id??null;
+  const pinned=String(item?.game_id??'').trim();
+  if(pinned){
+    if(projectedId&&projectedId!==pinned)conflicts++;
+    return {...projected.records[index],...item,game_id:pinned};
+  }
+  if(projectedId)filled++;
+  return {...item,...projected.records[index],...(projectedId?{game_id:projectedId}:{})};
+});
+fs.writeFileSync(catalogPath,JSON.stringify(records,null,2)+'\n');
+console.log(JSON.stringify({records:records.length,canonical_ids_filled:filled,pinned_ids_preserved:records.filter(item=>item.game_id).length,projection_conflicts_ignored:conflicts,issues:projected.issues.length,registry_source:'fresh_migration',policy:'existing public game_id is authoritative'},null,2));

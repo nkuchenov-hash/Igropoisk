@@ -64,30 +64,33 @@ export function resolveEditorialGame(input = {}, { root = process.cwd(), loaded 
   const { api, registry } = context;
   const explicitId = input.game_id ?? input.gameId ?? input.id;
   const explicitVariantId = input.variant_id ?? input.variantId ?? input.variant?.id;
+  let staleExplicitId = null;
   if (explicitId) {
     const rawEntity = api.findById(String(explicitId));
     const entity = activeEntity(registry, rawEntity);
-    if (!entity) throw new Error(`Unknown canonical game_id: ${explicitId}`);
-    if (explicitVariantId) {
-      const owner = variantOwnerById(registry, String(explicitVariantId));
-      if (!owner || owner.game.id !== entity.id) throw new Error(`Unknown variant_id ${explicitVariantId} for canonical game ${explicitId}`);
-      return canonicalIdentity(entity, rawEntity?.id === entity.id ? 'game_id+variant_id' : 'merged_game_id+variant_id', owner.variant);
+    if (entity) {
+      if (explicitVariantId) {
+        const owner = variantOwnerById(registry, String(explicitVariantId));
+        if (!owner || owner.game.id !== entity.id) throw new Error(`Unknown variant_id ${explicitVariantId} for canonical game ${explicitId}`);
+        return canonicalIdentity(entity, rawEntity?.id === entity.id ? 'game_id+variant_id' : 'merged_game_id+variant_id', owner.variant);
+      }
+      return canonicalIdentity(entity, rawEntity?.id === entity.id ? 'game_id' : 'merged_game_id');
     }
-    return canonicalIdentity(entity, rawEntity?.id === entity.id ? 'game_id' : 'merged_game_id');
+    staleExplicitId = String(explicitId);
   }
 
   const slug = String(input.variant_slug ?? input.slug ?? input.game_slug ?? input.game?.slug ?? '').trim();
   if (slug) {
     const owner = variantOwnerBySlug(registry, slug);
-    if (owner) return canonicalIdentity(owner.game, 'variant_slug', owner.variant);
+    if (owner) return canonicalIdentity(owner.game, staleExplicitId ? 'stale_game_id+variant_slug' : 'variant_slug', owner.variant);
     const entity = activeEntity(registry, api.findBySlug(slug));
-    if (entity) return canonicalIdentity(entity, 'slug');
+    if (entity) return canonicalIdentity(entity, staleExplicitId ? 'stale_game_id+slug' : 'slug');
   }
 
   const title = String(input.variant_title ?? input.title ?? input.name ?? input.game?.title ?? '').trim();
   if (title) {
     const variantMatches = variantOwnersByTitle(registry, title);
-    if (variantMatches.length === 1) return canonicalIdentity(variantMatches[0].game, 'variant_title', variantMatches[0].variant);
+    if (variantMatches.length === 1) return canonicalIdentity(variantMatches[0].game, staleExplicitId ? 'stale_game_id+variant_title' : 'variant_title', variantMatches[0].variant);
     if (variantMatches.length > 1) throw new Error(`Ambiguous embedded content title "${title}" resolves to ${variantMatches.length} variants`);
   }
 
@@ -98,14 +101,15 @@ export function resolveEditorialGame(input = {}, { root = process.cwd(), loaded 
     external.steamAppId ? activeEntity(registry, api.findByExternalId('steamAppId', external.steamAppId)) : null
   ]);
   if (externalMatches.length > 1) throw new Error(`Conflicting external IDs resolve to multiple games: ${externalMatches.map(item => item.id).join(', ')}`);
-  if (externalMatches.length === 1) return canonicalIdentity(externalMatches[0], 'external_id');
+  if (externalMatches.length === 1) return canonicalIdentity(externalMatches[0], staleExplicitId ? 'stale_game_id+external_id' : 'external_id');
 
   if (title) {
     const aliases = unique(api.findByExactAlias(title).map(entity => activeEntity(registry, entity)));
-    if (aliases.length === 1) return canonicalIdentity(aliases[0], 'exact_alias');
+    if (aliases.length === 1) return canonicalIdentity(aliases[0], staleExplicitId ? 'stale_game_id+exact_alias' : 'exact_alias');
     if (aliases.length > 1) throw new Error(`Ambiguous game title "${title}" resolves to ${aliases.length} canonical games`);
   }
 
+  if (staleExplicitId) throw new Error(`Unknown canonical game_id ${staleExplicitId} and no secondary identity resolved it`);
   throw new Error(`Cannot resolve editorial game to canonical Game Registry entity: ${slug || title || 'missing identity'}`);
 }
 

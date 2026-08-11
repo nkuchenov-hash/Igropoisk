@@ -81,6 +81,12 @@ export function stableGameId(candidate = {}) {
   return `game_${crypto.createHash('sha256').update(basis).digest('hex').slice(0, 20)}`;
 }
 
+function explicitCanonicalGameId(candidate = {}) {
+  const raw = candidate.raw ?? {};
+  const value = candidate.gameId ?? candidate.game_id ?? raw.gameId ?? raw.game_id ?? (String(candidate.id ?? '').startsWith('game_') ? candidate.id : null);
+  return value ? String(value) : null;
+}
+
 export function normalizeExternalIds(input = {}) {
   const steam = input.steamAppId ?? input.steam_appid ?? input.steam ?? input.appid ?? null;
   const igdb = input.igdbId ?? input.igdb_id ?? input.igdb ?? null;
@@ -149,7 +155,7 @@ export function createGameEntity(candidate = {}, options = {}) {
   const kind = inferKind(candidate);
   return {
     schemaVersion: 'game-entity/v1',
-    id: candidate.id ?? candidate.gameId ?? stableGameId(candidate),
+    id: explicitCanonicalGameId(candidate) ?? stableGameId(candidate),
     identity: {
       canonicalTitle: fieldValue(title, source, {now, confidence: candidate.confidence ?? 0.5}),
       slug: fieldValue(slug, source, {now, confidence: candidate.confidence ?? 0.5}),
@@ -368,7 +374,7 @@ export class GameRegistryApi {
     return [...(entity?.articles ?? [])].sort((a,b) => Number(b.type === 'igropoisk_review') - Number(a.type === 'igropoisk_review'));
   }
   registerCandidate(candidate, options = {}) {
-    const explicitId = candidate.gameId ?? candidate.game_id ?? (String(candidate.id ?? '').startsWith('game_') ? candidate.id : null);
+    const explicitId = explicitCanonicalGameId(candidate);
     if (explicitId) {
       const existing = this.findById(String(explicitId));
       if (existing) {
