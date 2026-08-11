@@ -1,0 +1,55 @@
+name: Repair game media on staging
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - 'config/game-media-steam-overrides.json'
+      - 'scripts/repair-game-media-from-steam.mjs'
+      - 'scripts/validate-game-media-quality.mjs'
+      - 'data/game-media/**'
+      - '.github/workflows/game-media-repair-staging.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: game-media-repair-staging
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Repair verified Steam media
+        run: node scripts/repair-game-media-from-steam.mjs
+      - name: Validate effective game media
+        run: |
+          node scripts/validate-game-media-quality.mjs
+          git diff --check
+      - name: Publish repaired media through isolated PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add data/drafts/gears-of-war-e-day.json data/drafts/mistfall-hunter.json data/drafts/wuthering-waves.json data/drafts/rust.json
+          if git diff --cached --quiet; then
+            echo 'Verified media is already current.'
+            exit 0
+          fi
+          branch="automation/game-media-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-game-media[bot]"
+          git config user.email "igropoisk-game-media[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Repair game media from verified Steam records"
+          git push origin "$branch"
+          pr_url="$(gh pr create --base staging --head "$branch" --title "Automated game media repair ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" --body "Verified Steam media repair. The producing workflow validated effective media for the full public catalog before opening this PR.")"
+          gh pr merge "$pr_url" --merge --delete-branch

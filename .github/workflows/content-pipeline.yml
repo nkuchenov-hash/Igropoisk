@@ -1,13 +1,31 @@
-name: Maintain Игропоиск content
+name: Maintain Игропоиск game lifecycle
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '41 */6 * * *'
+  push:
+    branches: [staging]
+    paths:
+      - 'scripts/hydrate-live-home-feeds.mjs'
+      - 'scripts/orchestrate-content.mjs'
+      - 'scripts/run-content-pipeline.mjs'
+      - 'scripts/build-game-page-basic.mjs'
+      - 'scripts/repair-public-catalog-game-ids.mjs'
+      - 'scripts/materialize-review-publication-feed.mjs'
+      - 'scripts/audit-review-publication.mjs'
+      - 'scripts/lib/editorial-game-registry-adapter.mjs'
+      - 'scripts/lib/system-game-registry-adapter.mjs'
+      - 'config/content-pipeline.json'
+      - 'config/home-feeds-storage.json'
+      - '.github/workflows/content-pipeline.yml'
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
-  group: content-pipeline-staging
+  group: content-lifecycle-staging
   cancel-in-progress: false
 
 jobs:
@@ -22,34 +40,32 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate pipeline scripts
+      - name: Validate lifecycle scripts
         run: |
+          node --check scripts/hydrate-live-home-feeds.mjs
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
-          node --check scripts/build-game-page.mjs
-          node --check scripts/build-game-page-from-registry.mjs
-          node --check scripts/build-top-250.mjs
-          node --check scripts/materialize-top-250-game-pages.mjs
-          node --check scripts/validate-top-250.mjs
+          node --check scripts/build-game-page-basic.mjs
+          node --check scripts/repair-public-catalog-game-ids.mjs
           node --check scripts/render-review-pages.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/validate-automation-publish-diff.mjs
+          node --check scripts/materialize-review-publication-feed.mjs
+          node --check scripts/audit-review-publication.mjs
           node --check scripts/lib/game-registry.mjs
           node --check scripts/lib/game-registry-migration.mjs
           node --check scripts/lib/game-registry-page-sections.mjs
+          node --check scripts/lib/editorial-game-registry-adapter.mjs
           node --check scripts/lib/system-game-registry-adapter.mjs
-      - name: Build registry and execution plan
+      - name: Hydrate current Popular and Releases snapshots from Object Storage
+        run: node scripts/hydrate-live-home-feeds.mjs
+      - name: Repair public catalog canonical identities
+        run: node scripts/repair-public-catalog-game-ids.mjs
+      - name: Restore identity-safe publication links before planning new work
+        run: node scripts/materialize-review-publication-feed.mjs
+      - name: Build canonical registry and semantic work queue
         run: node scripts/orchestrate-content.mjs --finalize
-      - name: Materialize canonical Top-250 game pages
-        run: |
-          node scripts/build-top-250.mjs
-          node scripts/materialize-top-250-game-pages.mjs
-          node scripts/build-top-250.mjs
-          node scripts/materialize-top-250-game-pages.mjs
-          node scripts/build-top-250.mjs
-          node scripts/validate-top-250.mjs
-          node scripts/orchestrate-content.mjs --finalize
-      - name: Build selected pages and reviews
+      - name: Build selected game pages and optional reviews
         run: node scripts/run-content-pipeline.mjs
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -57,26 +73,23 @@ jobs:
           OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
           OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
           OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
-      - name: Recalculate final statuses
+      - name: Materialize newly validated reviews into runtime feed
+        run: node scripts/materialize-review-publication-feed.mjs
+      - name: Recalculate lifecycle state
         if: always()
         run: node scripts/orchestrate-content.mjs --finalize
-      - name: Validate current public game structure
+      - name: Audit actual review publication state
         if: always()
-        run: |
-          if [ -f scripts/validate-game-v3.mjs ]; then node scripts/validate-game-v3.mjs; fi
-      - name: Stage and validate isolated pipeline results
+        run: node scripts/audit-review-publication.mjs
+      - name: Stage isolated lifecycle output
         run: |
           paths=(
-            data/content-pipeline
-            data/game-registry
-            data/parser-runs
+            data/reviews
             data/parser-output
             data/drafts
             data/game-content
             data/catalog-visible.json
-            data/top-250
             data/research
-            data/reviews
             data/ratings
             data/media-candidates
             data/articles
@@ -90,13 +103,53 @@ jobs:
             if [ -e "$path" ]; then existing+=("$path"); fi
           done
           if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
-          node scripts/validate-automation-publish-diff.mjs --profile content-pipeline
-      - name: Commit pipeline results to staging
+          if ! git diff --cached --quiet; then
+            node scripts/validate-automation-publish-diff.mjs --profile content-pipeline
+          fi
+      - name: Validate complete candidate before merge
+        if: success()
         run: |
+          if git diff --cached --quiet; then exit 0; fi
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-game-media-quality.mjs
+          node scripts/audit-review-publication.mjs --strict
+          node scripts/validate-editorial-pipeline.mjs
+          node scripts/validate-production-boundaries.mjs
+          node scripts/validate-top-250.mjs
+          python3 scripts/enforce_layout_contract.py --check
+          git diff --check
+      - name: Open and merge isolated lifecycle PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --cached --quiet; then
+            echo "No validated lifecycle content changes."
+            exit 0
+          fi
+          branch="automation/game-lifecycle-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git config user.name "igropoisk-content[bot]"
           git config user.email "igropoisk-content[bot]@users.noreply.github.com"
-          if ! git diff --cached --quiet; then
-            git commit -m "Maintain game pages and reviews on staging"
-            git pull --rebase origin staging
-            git push origin HEAD:staging
-          fi
+          git checkout -b "$branch"
+          git commit -m "Build queued game lifecycle output"
+          git push origin "$branch"
+          pr_url="$(gh pr create \
+            --base staging \
+            --head "$branch" \
+            --title "Automated game lifecycle ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
+            --body "Validated autonomous game lifecycle output. Pages are built from structured sources without requiring AI; editorial AI remains optional. The producing workflow ran publication, media, identity, layout and boundary gates before this PR was opened.")"
+          gh pr merge "$pr_url" --merge --delete-branch
+      - name: Preserve lifecycle queue and audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-lifecycle-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            data/parser-runs/home-feed-hydration.json
+            data/content-pipeline/status.json
+            data/content-pipeline/queue.json
+            data/content-pipeline/execution-plan.json
+            data/content-pipeline/execution-log.json
+            data/audits/review-publication.json
+            data/audits/review-feed-materialization.json
+          if-no-files-found: warn
+          retention-days: 14
