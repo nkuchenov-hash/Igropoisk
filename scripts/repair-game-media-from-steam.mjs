@@ -11,6 +11,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const targetConfig=raw=>typeof raw==='object'&&raw!==null?raw:{appid:raw};
 const clone=value=>value==null?value:JSON.parse(JSON.stringify(value));
+const nonEmpty=value=>Array.isArray(value)?value.length>0:(value&&typeof value==='object'?Object.keys(value).length>0:String(value??'').trim().length>0);
 
 function findGameContent(slug){
   const dir=path.join(root,'data/game-content');
@@ -20,6 +21,17 @@ function findGameContent(slug){
     if(payload?.games?.[slug])return clone(payload.games[slug]);
   }
   return null;
+}
+
+function mergeMissing(target={},seed={}){
+  const out={...clone(seed),...clone(target)};
+  for(const key of new Set([...Object.keys(seed||{}),...Object.keys(target||{})])){
+    const current=target?.[key];
+    const fallback=seed?.[key];
+    if(current&&typeof current==='object'&&!Array.isArray(current)&&fallback&&typeof fallback==='object'&&!Array.isArray(fallback)) out[key]=mergeMissing(current,fallback);
+    else if(!nonEmpty(current)&&nonEmpty(fallback)) out[key]=clone(fallback);
+  }
+  return out;
 }
 
 function seedDraft(slug,appid){
@@ -47,7 +59,21 @@ for(const [slug,raw] of targets){
   const appid=Number(settings.appid);
   if(!appid)throw new Error(`${slug}: missing Steam appid`);
   const draftPath=path.join(root,'data/drafts',`${slug}.json`);
-  const draft=fs.existsSync(draftPath)?readJson(draftPath):seedDraft(slug,appid);
+  const seed=findGameContent(slug);
+  let draft=fs.existsSync(draftPath)?readJson(draftPath):seedDraft(slug,appid);
+  if(seed){
+    draft=mergeMissing(draft,{
+      game_id:seed.game_id||null,
+      identity:seed.identity||{},
+      release:seed.release||{},
+      companies:seed.companies||{},
+      classification:seed.classification||{},
+      editorial:seed.editorial||{},
+      ratings:seed.ratings||{},
+      requirements:seed.requirements||{},
+      links:seed.links||{}
+    });
+  }
   const response=await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&l=english&cc=US`,{headers:{'user-agent':'Igropoisk media repair/1.0'}});
   if(!response.ok)throw new Error(`${slug}: Steam HTTP ${response.status}`);
   const payload=await response.json();
@@ -83,9 +109,9 @@ for(const [slug,raw] of targets){
   draft.links={...(draft.links||{}),store:`https://store.steampowered.com/app/${appid}/`};
   draft.requirements={...(draft.requirements||{}),platforms:platforms.length?platforms:(draft.requirements?.platforms||[])};
   draft.sources=[...(draft.sources||[]).filter(source=>!String(source?.url||'').includes('bing.com/images/search')&&!String(source?.url||'').includes(`store.steampowered.com/app/${appid}`)), {name:`Steam — ${data.name}`,url:`https://store.steampowered.com/app/${appid}/`,type:'store',checked_at:new Date().toISOString()}];
-  draft.publication={...(draft.publication||{}),status:draft.publication?.status||'published',gate_passed:draft.publication?.gate_passed!==false,mode:draft.publication?.mode||'structured_sources',checked_at:new Date().toISOString()};
+  draft.publication={...(draft.publication||{}),mode:'structured_sources',checked_at:new Date().toISOString()};
   fs.mkdirSync(path.dirname(draftPath),{recursive:true});
   fs.writeFileSync(draftPath,`${JSON.stringify(draft,null,2)}\n`);
-  console.log(`${slug}: ${screenshots.length} verified Steam screenshots${fs.existsSync(draftPath)?'':' (seeded)'}`);
+  console.log(`${slug}: ${screenshots.length} verified Steam screenshots`);
   await sleep(600);
 }
