@@ -44,7 +44,7 @@ for (const name of fs.readdirSync(WORKFLOWS).filter(file => /\.ya?ml$/i.test(fil
   const content = read(relative);
   const lines = content.split('\n');
   const isolatedAutomationPrWriter = relative === '.github/workflows/content-pipeline.yml'
-    && /branch="automation\/game-lifecycle-\$\{GITHUB_RUN_ID\}"/.test(content)
+    && /branch="automation\/game-lifecycle-\$\{GITHUB_RUN_ID\}(?:-\$\{GITHUB_RUN_ATTEMPT\})?"/.test(content)
     && /gh\s+pr\s+create[\s\S]*--base\s+staging/.test(content);
 
   for (const [index, line] of lines.entries()) {
