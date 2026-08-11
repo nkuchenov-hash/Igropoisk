@@ -52,7 +52,7 @@ for(const game of catalog){
   const articlePublishedFlag=!publicationStatus||publicationStatus==='published';
   const reasons=[];
   if(draft&&!draftIdentityOk)reasons.push(`draft_identity_mismatch:${draftResolution.game_id||draftResolution.error||draft?.identity?.title||'unresolved'}`);
-  if(Boolean(article)!==Boolean(articleHtml))reasons.push('article_json_html_pair_incomplete');
+  if(!articleFiles)reasons.push(Boolean(article)!==Boolean(articleHtml)?'article_json_html_pair_incomplete':'article_missing');
   if(articleFiles&&!articleSlugOk)reasons.push(`article_slug_mismatch:${articleGameSlug}`);
   if(articleFiles&&!articlePublishedFlag)reasons.push(`article_status:${publicationStatus}`);
   if(articleFiles&&reviewFeed&&reviewGameSlug!==slug)reasons.push(`review_feed_slug_mismatch:${reviewGameSlug}`);
@@ -61,10 +61,10 @@ for(const game of catalog){
   const row={slug,title:game.title,game_id:expectedGameId,draft_title:draft?.identity?.title||null,draft_resolved_game_id:draftResolution.game_id||null,draft_matched_by:draftResolution.matched_by||null,page_draft:pageDraft||null,article_files:articleFiles,article_game_slug:articleGameSlug||null,review_feed:Boolean(reviewFeed),review_game_slug:reviewGameSlug||null,dynamic_runtime:dynamicRuntime,runtime_article_url:runtimeArticleUrl||null,linked_from_game_page:linked,publication_verified:userPublished,reasons};
   rows.push(row);
   for(const reason of reasons)countReason(reason);
-  if(reasons.length||articleFiles&&!userPublished)blocking.push(row);
+  if(reasons.length||!userPublished)blocking.push(row);
 }
 
-const report={schema_version:3,checked_at:new Date().toISOString(),catalog_games:rows.length,article_file_pairs:rows.filter(r=>r.article_files).length,verified_published_reviews:rows.filter(r=>r.publication_verified).length,blocking:blocking.length,reason_counts:reasonCounts,rows};
+const report={schema_version:4,checked_at:new Date().toISOString(),catalog_games:rows.length,article_file_pairs:rows.filter(r=>r.article_files).length,verified_published_reviews:rows.filter(r=>r.publication_verified).length,blocking:blocking.length,reason_counts:reasonCounts,rows};
 fs.mkdirSync(path.join(root,'data/audits'),{recursive:true});
 fs.writeFileSync(path.join(root,'data/audits/review-publication.json'),JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({catalog_games:report.catalog_games,article_file_pairs:report.article_file_pairs,verified_published_reviews:report.verified_published_reviews,blocking:report.blocking,reason_counts:reasonCounts,examples:blocking.slice(0,15).map(r=>({slug:r.slug,reasons:r.reasons}))},null,2));
