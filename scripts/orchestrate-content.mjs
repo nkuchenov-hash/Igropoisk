@@ -84,17 +84,22 @@ function semanticReviewState(game) {
   if (String(article.game_slug || article.slug || '') !== slug) return {published:false, reason:'article_slug_mismatch'};
   if (String(article.publication_status || 'published').toLowerCase() !== 'published') return {published:false, reason:`article_status:${article.publication_status}`};
   const draft = readJSON(`data/drafts/${slug}.json`);
-  if (draft?.identity) {
-    try {
-      const steam = draft.identity.steam_appid ?? draft.identity.steamAppId ?? null;
-      const identity = steam
-        ? resolveEditorialGame({steam_appid: steam}, {root, loaded: editorialContext})
-        : draft.identity.title
-          ? resolveEditorialGame({title: draft.identity.title}, {root, loaded: editorialContext})
-          : null;
-      if (identity?.game_id && identity.game_id !== game.id) return {published:false, reason:`draft_identity_mismatch:${identity.game_id}`};
-    } catch (error) {
-      return {published:false, reason:`draft_identity_unresolved:${error.message}`};
+  if (draft) {
+    const explicit = String(draft.game_id || draft.gameId || '').trim();
+    if (explicit) {
+      if (explicit !== game.id) return {published:false, reason:`draft_identity_mismatch:${explicit}`};
+    } else if (draft.identity) {
+      try {
+        const steam = draft.identity.steam_appid ?? draft.identity.steamAppId ?? null;
+        const identity = steam
+          ? resolveEditorialGame({steam_appid: steam}, {root, loaded: editorialContext})
+          : draft.identity.title
+            ? resolveEditorialGame({title: draft.identity.title}, {root, loaded: editorialContext})
+            : null;
+        if (identity?.game_id && identity.game_id !== game.id) return {published:false, reason:`draft_identity_mismatch:${identity.game_id}`};
+      } catch (error) {
+        return {published:false, reason:`draft_identity_unresolved:${error.message}`};
+      }
     }
   }
   if (!feed || String(feed.game_slug || '') !== slug || !articleUrlMatches(feed.igropoisk_article?.url, slug)) {
