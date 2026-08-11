@@ -7,6 +7,8 @@ on:
         description: Optional exact staging SHA to promote
         required: false
         type: string
+  schedule:
+    - cron: '17 * * * *'
 
 permissions:
   contents: read
@@ -31,7 +33,41 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Require automation-only history for scheduled promotion
+        id: trust
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          git fetch origin main staging
+          AHEAD="$(git rev-list --count origin/main..origin/staging)"
+          if [ "$AHEAD" = "0" ]; then
+            echo "eligible=false" >> "$GITHUB_OUTPUT"
+            echo "Nothing to promote."
+            exit 0
+          fi
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "eligible=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          eligible=true
+          while read -r sha; do
+            head_ref="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${sha}/pulls" --jq '[.[] | select(.base.ref == "staging")][0].head.ref // empty' 2>/dev/null || true)"
+            author_email="$(git show -s --format=%ae "$sha")"
+            if [[ "$head_ref" == automation/* ]]; then
+              continue
+            fi
+            if [[ "$author_email" == igropoisk-*bot*@users.noreply.github.com ]]; then
+              continue
+            fi
+            echo "Scheduled production promotion blocked by non-automation commit $sha (PR head: ${head_ref:-none}, author: $author_email)."
+            eligible=false
+            break
+          done < <(git rev-list origin/main..origin/staging)
+          echo "eligible=$eligible" >> "$GITHUB_OUTPUT"
+
       - name: Verify requested SHA and production gates
+        if: steps.trust.outputs.eligible == 'true'
         env:
           EXPECTED_SHA: ${{ inputs.expected_sha }}
         run: |
@@ -49,12 +85,16 @@ jobs:
           node scripts/validate-news-module.mjs
           node scripts/validate-home-feeds.mjs
           node scripts/validate-game-v3.mjs
+          node scripts/validate-game-media-quality.mjs
+          node scripts/audit-review-publication.mjs --strict
           node scripts/validate-editorial-pipeline.mjs
+          node scripts/validate-top-250.mjs
           python3 scripts/enforce_layout_contract.py --check
           git diff --check
           test -z "$(git status --porcelain)"
 
-      - name: Open or refresh the staging-to-main promotion PR
+      - name: Open and merge staging-to-main promotion PR
+        if: steps.trust.outputs.eligible == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -66,10 +106,14 @@ jobs:
           fi
           SHA="$(git rev-parse origin/staging)"
           EXISTING="$(gh pr list --base main --head staging --state open --json number --jq '.[0].number // empty')"
-          BODY="Staging snapshot \`$SHA\` passed immutable-source, module, content and publication gates. Merge of this PR is the only action that starts production deployment."
+          BODY="Staging snapshot \`$SHA\` passed immutable-source, module, content, media, review and publication gates. Scheduled promotion is allowed only when all unpromoted history is automation-owned; manual dispatch is explicit."
           if [ -n "$EXISTING" ]; then
             gh pr edit "$EXISTING" --title "Promote staging to production" --body "$BODY"
-            echo "Updated promotion PR #$EXISTING."
+            PR="$EXISTING"
           else
-            gh pr create --base main --head staging --title "Promote staging to production" --body "$BODY"
+            PR="$(gh pr create --base main --head staging --title "Promote staging to production" --body "$BODY" --json number --jq '.number' 2>/dev/null || true)"
+            if [ -z "$PR" ]; then
+              PR="$(gh pr list --base main --head staging --state open --json number --jq '.[0].number')"
+            fi
           fi
+          gh pr merge "$PR" --merge
