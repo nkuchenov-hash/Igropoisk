@@ -36,6 +36,7 @@ on:
       - 'scripts/test-release-calendar-policy.mjs'
       - 'scripts/publish-home-feeds-storage.mjs'
       - 'scripts/lib/**'
+      - 'tests/home-release-anticipation.mjs'
       - '.github/workflows/parser-scheduler.yml'
 
 permissions:
@@ -78,6 +79,7 @@ jobs:
           node --check scripts/lib/home-release-quality.mjs
           node --check scripts/lib/yandex-object-storage.mjs
           node scripts/test-release-calendar-policy.mjs
+          node tests/home-release-anticipation.mjs
 
       - name: Bootstrap last repository snapshot into Object Storage if empty
         env:
