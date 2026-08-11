@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {hasAiProvider} from './lib/ai-provider.mjs';
 
 const root = process.cwd();
 const readJSON = (relative, fallback = null) => { try { return JSON.parse(fs.readFileSync(path.join(root, relative), 'utf8')); } catch { return fallback; } };
@@ -10,7 +9,7 @@ const exists = relative => fs.existsSync(path.join(root, relative));
 let plan = readJSON('data/content-pipeline/execution-plan.json', {pages: [], reviews: []});
 const startedAt = new Date().toISOString();
 const results = [];
-const aiAvailable = hasAiProvider(process.env);
+const aiAvailable = Boolean(process.env.OPENAI_API_KEY);
 function run(label, command, args, env = {}) {
   const started = Date.now();
   const child = spawnSync(command, args, {cwd: root, encoding: 'utf8', stdio: 'pipe', env: {...process.env, ...env}, maxBuffer: 16 * 1024 * 1024});
@@ -41,7 +40,7 @@ for (const task of plan.reviews || []) {
   if (!task.game_id) { results.push({label: `review:${slug}`, status: 'blocked', reason: 'canonical_game_id_missing'}); continue; }
   if (!exists(`data/drafts/${slug}.json`)) { results.push({label: `review:${slug}`, status: 'blocked', reason: `missing data/drafts/${slug}.json`}); continue; }
   if (!aiAvailable) {
-    results.push({label: `review:${slug}`, status: 'deferred', reason: 'optional_ai_provider_not_configured'});
+    results.push({label: `review:${slug}`, status: 'deferred', reason: 'optional_editorial_ai_not_configured'});
     continue;
   }
   const steps = [['research','scripts/prepare-review-research.mjs'],['rating','scripts/calculate-ratings-from-research.mjs'],['media-discovery','scripts/discover-review-media.mjs'],['synthesis','scripts/synthesize-review.mjs'],['media-enrichment','scripts/enrich-review-media.mjs'],['validation','scripts/validate-review-output.mjs']];
@@ -54,6 +53,6 @@ for (const task of plan.reviews || []) {
 }
 if (reviewSucceeded && exists('scripts/render-review-pages.mjs')) run('render-reviews', 'node', ['scripts/render-review-pages.mjs']);
 const finishedAt = new Date().toISOString();
-const summary = {success: results.filter(item => item.status === 'success').length, deferred: results.filter(item => item.status === 'deferred').length, blocked: results.filter(item => !['success','deferred'].includes(item.status)).length, total: results.length, ai_optional_available: aiAvailable};
+const summary = {success: results.filter(item => item.status === 'success').length, deferred: results.filter(item => item.status === 'deferred').length, blocked: results.filter(item => !['success','deferred'].includes(item.status)).length, total: results.length, editorial_ai_optional_available: aiAvailable};
 writeJSON('data/content-pipeline/execution-log.json', {schema_version: 3, started_at: startedAt, finished_at: finishedAt, summary, results});
 console.log(JSON.stringify(summary, null, 2));
