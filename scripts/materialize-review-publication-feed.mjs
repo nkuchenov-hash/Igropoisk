@@ -36,14 +36,17 @@ for(const game of catalog){
   const relative=`data/reviews/${slug}.json`;
   const feed=read(relative,{schema_version:2,game_slug:slug,reviews:[]});
   if(feed.game_slug&&String(feed.game_slug)!==slug){result.blocked.push({slug,reason:`review_feed_slug_mismatch:${feed.game_slug}`});continue}
+  const desiredUrl=`../../article/${slug}/`;
+  if(feed.igropoisk_article&&String(feed.igropoisk_article.url||'')===desiredUrl){
+    result.already_valid.push(slug);
+    continue;
+  }
   const desired={
-    url:`../../article/${slug}/`,
+    url:desiredUrl,
     title:String(article.title||`Обзор ${game.title}`),
     description:String(article.dek||article.lead||`Полный обзор ${game.title} от Игропоиска.`),
     score:article.score??null
   };
-  const same=feed.igropoisk_article&&String(feed.igropoisk_article.url||'')===desired.url&&String(feed.igropoisk_article.title||'')===desired.title&&String(feed.igropoisk_article.description||'')===desired.description&&String(feed.igropoisk_article.score??'')===String(desired.score??'');
-  if(same){result.already_valid.push(slug);continue}
   feed.schema_version=Math.max(Number(feed.schema_version||1),2);
   feed.game_slug=slug;
   feed.game_id=String(game.game_id||feed.game_id||'')||undefined;
