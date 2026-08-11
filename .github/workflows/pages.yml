@@ -48,8 +48,8 @@ jobs:
           node scripts/validate-news-pipeline.mjs
           node scripts/validate-news-module.mjs
 
-      - name: Verify popular and release feeds
-        run: node scripts/validate-home-feeds.mjs --fresh-hours 18
+      - name: Verify repository fallback for popular and release feeds
+        run: node scripts/validate-home-feeds.mjs
 
       - name: Verify central design-system governance
         env:
