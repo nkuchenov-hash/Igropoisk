@@ -10,6 +10,8 @@ on:
       - 'scripts/hydrate-live-home-feeds.mjs'
       - 'scripts/orchestrate-content.mjs'
       - 'scripts/run-content-pipeline.mjs'
+      - 'scripts/build-game-page-basic.mjs'
+      - 'scripts/lib/ai-provider.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/audit-review-publication.mjs'
       - 'scripts/lib/editorial-game-registry-adapter.mjs'
@@ -43,6 +45,7 @@ jobs:
           node --check scripts/hydrate-live-home-feeds.mjs
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
+          node --check scripts/build-game-page-basic.mjs
           node --check scripts/build-game-page.mjs
           node --check scripts/build-game-page-from-registry.mjs
           node --check scripts/render-review-pages.mjs
@@ -50,6 +53,7 @@ jobs:
           node --check scripts/validate-automation-publish-diff.mjs
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/audit-review-publication.mjs
+          node --check scripts/lib/ai-provider.mjs
           node --check scripts/lib/game-registry.mjs
           node --check scripts/lib/game-registry-migration.mjs
           node --check scripts/lib/game-registry-page-sections.mjs
@@ -61,29 +65,34 @@ jobs:
         run: node scripts/materialize-review-publication-feed.mjs
       - name: Build canonical registry and semantic work queue
         run: node scripts/orchestrate-content.mjs --finalize
-      - name: Detect AI research capability
+      - name: Detect optional AI capability
         id: ai
         env:
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          if [ -n "$OPENAI_API_KEY" ]; then
+          if [ -n "$AI_API_KEY" ] || [ -n "$OPENROUTER_API_KEY" ] || [ -n "$OPENAI_API_KEY" ]; then
             echo "available=true" >> "$GITHUB_OUTPUT"
-            echo "OpenAI research capability is available."
+            echo "Optional AI editorial capability is configured."
           else
             echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "OPENAI_API_KEY is not configured; lifecycle queue and safe feed repairs will continue without fabricating game pages or reviews."
+            echo "No AI provider configured. Structured game pages will still be built; editorial reviews remain queued."
           fi
-      - name: Build selected pages and reviews
-        if: steps.ai.outputs.available == 'true'
+      - name: Build selected game pages and optional reviews
         run: node scripts/run-content-pipeline.mjs
         env:
+          AI_PROVIDER: ${{ vars.AI_PROVIDER }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_BASE_URL: ${{ vars.AI_BASE_URL }}
+          AI_MODEL: ${{ vars.AI_MODEL }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
           OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
           OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
           OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
       - name: Materialize newly validated reviews into runtime feed
-        if: steps.ai.outputs.available == 'true'
         run: node scripts/materialize-review-publication-feed.mjs
       - name: Recalculate lifecycle state
         if: always()
@@ -93,23 +102,21 @@ jobs:
         run: node scripts/audit-review-publication.mjs
       - name: Stage isolated lifecycle output
         run: |
-          paths=(data/reviews)
-          if [ "${{ steps.ai.outputs.available }}" = "true" ]; then
-            paths+=(
-              data/parser-output
-              data/drafts
-              data/game-content
-              data/catalog-visible.json
-              data/research
-              data/ratings
-              data/media-candidates
-              data/articles
-              data/article-drafts
-              data/article-media
-              game
-              article
-            )
-          fi
+          paths=(
+            data/reviews
+            data/parser-output
+            data/drafts
+            data/game-content
+            data/catalog-visible.json
+            data/research
+            data/ratings
+            data/media-candidates
+            data/articles
+            data/article-drafts
+            data/article-media
+            game
+            article
+          )
           existing=()
           for path in "${paths[@]}"; do
             if [ -e "$path" ]; then existing+=("$path"); fi
@@ -126,7 +133,7 @@ jobs:
             echo "No validated lifecycle content changes."
             exit 0
           fi
-          branch="automation/game-lifecycle-${GITHUB_RUN_ID}"
+          branch="automation/game-lifecycle-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git config user.name "igropoisk-content[bot]"
           git config user.email "igropoisk-content[bot]@users.noreply.github.com"
           git checkout -b "$branch"
@@ -135,13 +142,13 @@ jobs:
           gh pr create \
             --base staging \
             --head "$branch" \
-            --title "Automated game lifecycle ${GITHUB_RUN_ID}" \
-            --body "Automated isolated game lifecycle output from live Popular/Releases manifests. Publication status is semantic, not file-count based. Direct bot writes to staging are forbidden."
+            --title "Automated game lifecycle ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
+            --body "Automated isolated game lifecycle output from live Popular/Releases manifests. Game pages are built from structured sources without requiring AI. AI is optional and used only for editorial enrichment/reviews. Direct bot writes to staging are forbidden."
       - name: Preserve lifecycle queue and audit
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: game-lifecycle-${{ github.run_id }}
+          name: game-lifecycle-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             data/parser-runs/home-feed-hydration.json
             data/content-pipeline/status.json
