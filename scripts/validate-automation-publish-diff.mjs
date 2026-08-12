@@ -26,6 +26,7 @@ const PROFILES = {
       'data/ratings/',
       'data/similarity/',
       'data/franchises/',
+      'data/guides/',
       'data/quality-control/',
       'data/media-candidates/',
       'data/articles/',
