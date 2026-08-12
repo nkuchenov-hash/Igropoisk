@@ -1,0 +1,43 @@
+name: Temporary review carousel governance migration
+
+on:
+  push:
+    branches:
+      - fix/promotion-review-carousel-governance-2026-08-12
+    paths:
+      - scripts/migrate-review-carousel-governance.mjs
+      - .github/workflows/temp-review-carousel-governance-migration.yml
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/promotion-review-carousel-governance-2026-08-12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply exact migration
+        run: node scripts/migrate-review-carousel-governance.mjs
+      - name: Validate migration output
+        run: |
+          node --check scripts/render-review-pages.mjs
+          node scripts/test-central-design-system.mjs
+          node scripts/validate-central-design-system.mjs --base staging
+          git diff --check
+      - name: Commit migration output to fix branch
+        run: |
+          set -euo pipefail
+          git config user.name "igropoisk-migration[bot]"
+          git config user.email "igropoisk-migration[bot]@users.noreply.github.com"
+          git add scripts/validate-central-design-system.mjs config/design-system-components.json article/_shared/review-shot-card.css scripts/render-review-pages.mjs article/elden-ring/index.html article/the-witcher-3-wild-hunt/index.html article/doom/index.html article/control/index.html article/hades/index.html
+          if git diff --cached --quiet; then
+            echo "No migration changes"
+            exit 0
+          fi
+          git commit -m "Register shared review carousel with central design system"
+          git push origin HEAD:fix/promotion-review-carousel-governance-2026-08-12
