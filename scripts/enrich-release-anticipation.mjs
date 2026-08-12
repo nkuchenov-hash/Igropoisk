@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { normalizeGameIdentity } from './lib/home-feed-identity.mjs';
+import { canonicalPressText, pressPublisherGroup, pressTitleMatches } from './lib/release-press-quality.mjs';
 
 const root=process.cwd();
 const read=file=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
@@ -12,7 +13,6 @@ const checkedAt=new Date().toISOString();
 const now=Date.now();
 const suffixPatterns=[/\s*[™®]$/i,/\s*[-:]?\s*(demo|prologue|playtest)$/i];
 const identity=title=>normalizeGameIdentity(title,suffixPatterns);
-const canonical=value=>String(value||'').normalize('NFKD').toLowerCase().replace(/&amp;/g,' and ').replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
 
 const popularByIdentity=new Map((popular.ranking||[]).map(item=>[identity(item.title),item]).filter(([key])=>key));
 const steamPositions=new Map();
@@ -22,13 +22,10 @@ let steamError=null;
 let pressStatus='success';
 let pressError=null;
 
-const trustedPublishers=new Set([
-  ...(popularConfig.sources||[]).filter(source=>source.family==='news').map(source=>canonical(source.name)),
-  'gamesradar','video games chronicle','vgc','game informer','push square','nintendo life','pure xbox','vg247','kotaku','destructoid','gematsu','the gamer','thegamer','gamesbeat','digital trends','the verge','windows central','techradar','pcgamesn','shacknews','hardcore gamer','gamingbolt','wccftech','dualshockers','playstation lifestyle','gamingtrend','meristation','gamepressure','game reactor','gamereactor','game developer'
-].map(canonical).filter(Boolean));
-const publisherAliases=new Map([
-  ['gamesradar+','gamesradar'],['rock paper shotgun','rock paper shotgun'],['video games chronicle','video games chronicle'],['v g c','vgc'],['pcgamesn','pcgamesn'],['pc gamer','pc gamer']
-].map(([from,to])=>[canonical(from),canonical(to)]));
+const trustedPublisherGroups=new Set([
+  ...(popularConfig.sources||[]).filter(source=>source.family==='news').map(source=>pressPublisherGroup(source.name)),
+  'gamesradar','vgc','game informer','push square','nintendo life','pure xbox','vg247','kotaku','destructoid','gematsu','thegamer','gamesbeat','digital trends','the verge','windows central','techradar','pcgamesn','shacknews','hardcore gamer','gamingbolt','wccftech','dualshockers','playstation lifestyle','gamingtrend','meristation','gamepressure','gamereactor','game developer'
+].map(pressPublisherGroup).filter(Boolean));
 const officialPublisherPattern=/\b(steam|electronic arts|ea games|playstation|xbox|nintendo|bandai namco|ubisoft|rockstar games|bethesda|focus entertainment|lucasfilm|starwars\.com|epic games|developer|publisher)\b/i;
 
 function decode(value){return String(value||'').replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,'$1').replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ').trim()}
@@ -45,8 +42,13 @@ function parseGoogleNews(xml){
     url:xmlTag(block,['link','guid'])
   })).filter(item=>item.title&&item.publisher);
 }
-function normalizedPublisher(value){const key=canonical(value);return publisherAliases.get(key)||key}
-function isTrustedPublisher(value){const key=normalizedPublisher(value);if(!key||officialPublisherPattern.test(key))return false;if(trustedPublishers.has(key))return true;return [...trustedPublishers].some(trusted=>key===trusted||key.includes(trusted)||trusted.includes(key))}
+function isTrustedPublisher(value){
+  const raw=canonicalPressText(value);
+  const group=pressPublisherGroup(value);
+  if(!raw||!group||officialPublisherPattern.test(raw))return false;
+  if(trustedPublisherGroups.has(group))return true;
+  return [...trustedPublisherGroups].some(trusted=>group===trusted||group.includes(trusted)||trusted.includes(group));
+}
 function eventDate(game){const event=(game.events||[])[0]||{};return event.date||event.date_start||event.date_end||null}
 function daysFromNow(value){const parsed=value?Date.parse(`${value}T12:00:00Z`):NaN;return Number.isFinite(parsed)?Math.round((parsed-now)/86400000):null}
 function researchPriority(game){
@@ -60,7 +62,7 @@ function researchPriority(game){
   if(popularItem)return 120-Number(popularItem.score||0);
   return null;
 }
-async function fetchText(url){const response=await fetch(url,{signal:AbortSignal.timeout(18000),headers:{'user-agent':'Mozilla/5.0 IgropoiskReleaseAnticipation/4.0','accept-language':'en-US,en;q=0.9'}});if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.text()}
+async function fetchText(url){const response=await fetch(url,{signal:AbortSignal.timeout(18000),headers:{'user-agent':'Mozilla/5.0 IgropoiskReleaseAnticipation/4.1','accept-language':'en-US,en;q=0.9'}});if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.text()}
 async function researchPress(game){
   const cleanTitle=String(game.title||'').replace(/[™®]/g,'').trim();
   if(cleanTitle.length<3)return {publishers:[],evidence:[]};
@@ -69,19 +71,17 @@ async function researchPress(game){
   const items=parseGoogleNews(await fetchText(url));
   const publishers=new Map();
   const evidence=[];
-  const wanted=identity(cleanTitle);
   for(const item of items){
     const observed=Date.parse(item.date||'');
     if(Number.isFinite(observed)&&now-observed>120*86400000)continue;
-    const titleIdentity=identity(item.title);
-    if(wanted&&!titleIdentity.includes(wanted))continue;
+    if(!pressTitleMatches(cleanTitle,item.title))continue;
     if(!isTrustedPublisher(item.publisher))continue;
-    const publisher=normalizedPublisher(item.publisher);
-    if(publishers.has(publisher))continue;
-    publishers.set(publisher,item.publisher);
-    evidence.push({publisher:item.publisher,title:item.title,url:item.url,observed_at:item.date||null,family:'gaming_news'});
+    const publisherGroup=pressPublisherGroup(item.publisher);
+    if(publishers.has(publisherGroup))continue;
+    publishers.set(publisherGroup,publisherGroup);
+    evidence.push({publisher:publisherGroup,publisher_display:item.publisher,title:item.title,url:item.url,observed_at:item.date||null,family:'gaming_news'});
   }
-  return {publishers:[...publishers.values()],evidence:evidence.slice(0,12)};
+  return {publishers:[...publishers.keys()],evidence:evidence.slice(0,12)};
 }
 async function runPool(items,worker,concurrency=6){
   let cursor=0;
@@ -91,7 +91,7 @@ async function runPool(items,worker,concurrency=6){
 
 try{
   const url='https://store.steampowered.com/search/results/?query&start=0&count=100&dynamic_data=&filter=popularcomingsoon&infinite=1&cc=us&l=english&json=1';
-  const response=await fetch(url,{signal:AbortSignal.timeout(25000),headers:{'user-agent':'Mozilla/5.0 IgropoiskReleaseAnticipation/4.0','accept-language':'en-US,en;q=0.9'}});
+  const response=await fetch(url,{signal:AbortSignal.timeout(25000),headers:{'user-agent':'Mozilla/5.0 IgropoiskReleaseAnticipation/4.1','accept-language':'en-US,en;q=0.9'}});
   if(!response.ok)throw new Error(`HTTP ${response.status}`);
   const payload=await response.json();
   parseSteamRows(payload.results_html).forEach((item,index)=>steamPositions.set(String(item.appid),index+1));
@@ -107,9 +107,13 @@ for(const game of releases.releases||[]){
   const steamId=String(game.external_ids?.steam||'');
   const previous=game.anticipation||{};
   const steamPosition=steamPositions.get(steamId)||Number(previous.steam_popular_upcoming_position||0)||null;
-  const popularPublishers=(popularItem?.news_publishers||[]).filter(Boolean);
-  const independentPublishers=[...new Map([...popularPublishers,...(previous.independent_publishers||[]),...press.publishers].map(value=>[normalizedPublisher(value),value])).values()].filter(Boolean);
-  const publicationCount=Math.max(Number(popularItem?.news_sources||0),independentPublishers.length,Number(previous.independent_publication_count||0));
+  const publisherGroups=new Set([
+    ...(popularItem?.news_publishers||[]).map(pressPublisherGroup),
+    ...(previous.independent_publishers||[]).map(pressPublisherGroup),
+    ...press.publishers.map(pressPublisherGroup)
+  ].filter(Boolean));
+  const independentPublishers=[...publisherGroups].sort();
+  const publicationCount=independentPublishers.length;
   const popularIndex=popularItem?Number(popularItem.score||0):Number(previous.popular_index||0)||null;
   const popularConfidence=popularItem?Number(popularItem.confidence||0):Number(previous.popular_confidence||0)||null;
   const families=[...new Set([...(popularItem?.families||[]),...(previous.evidence_families||[]),...(press.publishers.length?['gaming_news']:[]),...(steamPosition?['steam_chart']:[])].filter(Boolean))];
@@ -141,17 +145,12 @@ for(const game of releases.releases||[]){
     homepage_eligible:homepageEligible,
     anticipation_score:anticipationScore,
     press_evidence:press.evidence,
-    source:'Steam Popular Upcoming + 120-day cross-site gaming press research + current Popular signals'
+    source:'Steam Popular Upcoming + 120-day cross-site gaming press research + current Popular signals; regional editions count as one publisher group'
   };
 
   const quality=game.editorial_quality||{};
   const retainedSignals=(quality.signals||[]).filter(signal=>!['published_page','current_popular','cross_site_coverage','steam_popular_upcoming','gaming_press'].includes(signal));
-  const anticipationSignals=[
-    popularItem?'current_popular':null,
-    crossSiteCoverage?'cross_site_coverage':null,
-    steamPosition?'steam_popular_upcoming':null,
-    press.publishers.length?'gaming_press':null
-  ].filter(Boolean);
+  const anticipationSignals=[popularItem?'current_popular':null,crossSiteCoverage?'cross_site_coverage':null,steamPosition?'steam_popular_upcoming':null,press.publishers.length?'gaming_press':null].filter(Boolean);
   game.editorial_quality={
     ...quality,
     homepage_eligible:homepageEligible,
@@ -160,33 +159,12 @@ for(const game of releases.releases||[]){
     independent_source_count:publicationCount,
     source_families:[...new Set([...(quality.source_families||[]),...families])],
     signals:[...new Set([...retainedSignals,...anticipationSignals])],
-    homepage_reason:homepageEligible
-      ? manuallyFeatured?'manual_editorial_mark':pressDominant?'broad_gaming_press_coverage':pressPlusStrongSteam?'steam_top50_plus_three_gaming_publications':pressPlusPopular?'current_popular_plus_gaming_press':'cross_site_popularity'
-      : 'insufficient_global_anticipation_evidence'
+    homepage_reason:homepageEligible?manuallyFeatured?'manual_editorial_mark':pressDominant?'broad_gaming_press_coverage':pressPlusStrongSteam?'steam_top50_plus_three_gaming_publications':pressPlusPopular?'current_popular_plus_gaming_press':'cross_site_popularity':'insufficient_global_anticipation_evidence'
   };
 }
 
 const eligibleGames=(releases.releases||[]).filter(game=>game.anticipation?.homepage_eligible===true);
-releases.anticipation={
-  measured_at:checkedAt,
-  steam_popular_upcoming_count:steamPositions.size,
-  popular_snapshot_generated_at:popular.generated_at||null,
-  steam_status:steamStatus,
-  press_status:pressStatus,
-  press_candidates_researched:researchCandidates.length,
-  homepage_policy:'Global anticipation requires several independent gaming publications, or gaming press corroborated by strong Steam/current Popular interest. Store rank or a published page alone never qualifies.'
-};
+releases.anticipation={measured_at:checkedAt,steam_popular_upcoming_count:steamPositions.size,popular_snapshot_generated_at:popular.generated_at||null,steam_status:steamStatus,press_status:pressStatus,press_candidates_researched:researchCandidates.length,homepage_policy:'Global anticipation requires independent publisher groups. Regional editions of one brand count once. Ambiguous one-word titles are matched fail-closed. Store rank or a published page alone never qualifies.'};
 write('data/releases/current.json',releases);
-write('data/parser-runs/release-anticipation.json',{
-  schema_version:4,
-  status:steamStatus==='success'&&pressStatus==='success'?'success':'partial',
-  checked_at:checkedAt,
-  steam_popular_upcoming_count:steamPositions.size,
-  press_candidates_researched:researchCandidates.length,
-  releases_enriched:(releases.releases||[]).length,
-  popular_matches:(releases.releases||[]).filter(game=>game.anticipation?.popular_index!==null).length,
-  homepage_eligible:eligibleGames.length,
-  homepage_eligible_titles:eligibleGames.slice().sort((a,b)=>Number(b.anticipation?.anticipation_score||0)-Number(a.anticipation?.anticipation_score||0)).slice(0,24).map(game=>({title:game.title,score:game.anticipation?.anticipation_score,steam_position:game.anticipation?.steam_popular_upcoming_position,independent_publications:game.anticipation?.independent_publication_count,publishers:game.anticipation?.independent_publishers})),
-  errors:[steamError,pressError].filter(Boolean)
-});
+write('data/parser-runs/release-anticipation.json',{schema_version:5,status:steamStatus==='success'&&pressStatus==='success'?'success':'partial',checked_at:checkedAt,steam_popular_upcoming_count:steamPositions.size,press_candidates_researched:researchCandidates.length,releases_enriched:(releases.releases||[]).length,popular_matches:(releases.releases||[]).filter(game=>game.anticipation?.popular_index!==null).length,homepage_eligible:eligibleGames.length,homepage_eligible_titles:eligibleGames.slice().sort((a,b)=>Number(b.anticipation?.anticipation_score||0)-Number(a.anticipation?.anticipation_score||0)).slice(0,24).map(game=>({title:game.title,score:game.anticipation?.anticipation_score,steam_position:game.anticipation?.steam_popular_upcoming_position,independent_publications:game.anticipation?.independent_publication_count,publishers:game.anticipation?.independent_publishers})),errors:[steamError,pressError].filter(Boolean)});
 console.log(JSON.stringify({status:steamStatus==='success'&&pressStatus==='success'?'success':'partial',steam_popular_upcoming:steamPositions.size,press_candidates_researched:researchCandidates.length,releases_enriched:(releases.releases||[]).length,popular_matches:(releases.releases||[]).filter(game=>game.anticipation?.popular_index!==null).length,homepage_eligible:eligibleGames.length,homepage_eligible_titles:eligibleGames.slice().sort((a,b)=>Number(b.anticipation?.anticipation_score||0)-Number(a.anticipation?.anticipation_score||0)).slice(0,12).map(game=>game.title)},null,2));
