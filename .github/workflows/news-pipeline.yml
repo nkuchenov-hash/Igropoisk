@@ -41,6 +41,7 @@ on:
       - 'scripts/build-home-news.mjs'
       - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
+      - 'scripts/prepare-news-publication.mjs'
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
       - 'scripts/test-news-pipeline-health.mjs'
@@ -49,16 +50,19 @@ on:
       - 'scripts/test-news-game-linker.mjs'
       - 'scripts/test-news-game-context-resolver.mjs'
       - 'scripts/test-news-primary-game-refiner.mjs'
+      - 'scripts/test-news-publication-gate.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/lib/news-game-linker.mjs'
       - 'scripts/lib/news-game-registry-adapter.mjs'
       - 'scripts/lib/news-game-context-resolver.mjs'
       - 'scripts/lib/news-primary-game-refiner.mjs'
+      - 'scripts/lib/news-publication-gate.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/publish-news-storage.mjs'
       - '.github/workflows/news-pipeline.yml'
 
 permissions:
+  actions: write
   contents: read
   models: read
 
@@ -88,8 +92,10 @@ jobs:
           node --check scripts/build-news-pipeline-health.mjs
           node --check scripts/validate-news-pipeline.mjs
           node --check scripts/resolve-news-game-context.mjs
+          node --check scripts/prepare-news-publication.mjs
           node --check scripts/lib/news-game-context-resolver.mjs
           node --check scripts/lib/news-primary-game-refiner.mjs
+          node --check scripts/lib/news-publication-gate.mjs
           node --check scripts/lib/yandex-object-storage.mjs
           node --check scripts/publish-news-storage.mjs
           node scripts/test-news-pipeline.mjs
@@ -99,6 +105,7 @@ jobs:
           node scripts/test-news-game-linker.mjs
           node scripts/test-news-game-context-resolver.mjs
           node scripts/test-news-primary-game-refiner.mjs
+          node scripts/test-news-publication-gate.mjs
 
       - name: Collect validate and prepare one isolated snapshot
         env:
@@ -120,6 +127,26 @@ jobs:
           echo "status=$status" >> "$GITHUB_OUTPUT"
           echo "Pipeline status: $status"
 
+      - name: Detect missing game pages referenced by news
+        if: steps.pipeline.outputs.status == 'success'
+        id: game_pages
+        run: |
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs = require('fs');
+          const payload = JSON.parse(fs.readFileSync('data/news-game-review.json', 'utf8'));
+          const items = Array.isArray(payload?.items) ? payload.items : [];
+          const missing = items.filter(item => Array.isArray(item?.reasons) && item.reasons.includes('missing-game-page'));
+          const ids = [...new Set(missing.flatMap(item => [
+            ...(Array.isArray(item.gameIds) ? item.gameIds : []),
+            ...(Array.isArray(item.games) ? item.games.map(game => game?.gameId || game?.game_id) : [])
+          ]).map(value => String(value || '').trim()).filter(Boolean))];
+          process.stdout.write(`count=${ids.length}\nids=${ids.join(',')}\n`);
+          NODE
+
+      - name: Remove news whose resolved game page is not ready from this public snapshot
+        if: steps.pipeline.outputs.status == 'success'
+        run: node scripts/prepare-news-publication.mjs
+
       - name: Publish immutable news snapshot and switch manifest
         if: steps.pipeline.outputs.status == 'success'
         env:
@@ -129,6 +156,13 @@ jobs:
           YC_S3_REGION: ru-central1
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
         run: node scripts/publish-news-storage.mjs
+
+      - name: Trigger canonical game lifecycle for news game pages
+        if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEWS_GAME_IDS: ${{ steps.game_pages.outputs.ids }}
+        run: gh workflow run content-pipeline.yml --ref staging -f news_game_ids="$NEWS_GAME_IDS"
 
       - name: Prove that the pipeline did not write to GitHub
         run: |
