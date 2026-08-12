@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { collectMissingGamePageRequests, filterNewsPayload, hasMissingGamePage } from './lib/news-publication-gate.mjs';
+import { collectMissingGamePageRequests, hasMissingGamePage } from './lib/news-publication-gate.mjs';
 
 const ready = { id: 'ready', games: [{ gameId: 'game_ready', title: 'Ready Game', slug: 'ready-game', pageExists: true, pageUrl: 'game/ready-game/' }], gameReviewReasons: [] };
 const missingByReason = { id: 'reason', games: [{ slug: 'future-game' }], gameReviewReasons: ['missing-game-page'] };
@@ -17,17 +17,14 @@ assert.equal(hasMissingGamePage(ready), false);
 assert.equal(hasMissingGamePage(missingByReason), true);
 assert.equal(hasMissingGamePage(missingCanonical), true);
 assert.equal(hasMissingGamePage(missingExternal), true);
-assert.equal(hasMissingGamePage(ambiguousOnly), false, 'Ambiguous unresolved names expose no broken game hashtag and do not block unrelated news.');
+assert.equal(hasMissingGamePage(ambiguousOnly), false, 'Ambiguous unresolved names expose no broken game hashtag and do not trigger a wrong page.');
 
-const requests = collectMissingGamePageRequests([ready, missingCanonical, missingExternal]);
+const sourceItems = [ready, missingCanonical, missingExternal, ambiguousOnly];
+const requests = collectMissingGamePageRequests(sourceItems);
 assert.equal(requests.length, 2);
 assert.equal(requests.find(item => item.game_id === 'game_future')?.slug, 'future-game');
 assert.equal(requests.find(item => item.game_id === 'news_game_abc')?.verified_external, true);
 assert.equal(requests.find(item => item.game_id === 'news_game_abc')?.confidence, 0.93);
+assert.deepEqual(sourceItems.map(item => item.id), ['ready', 'canonical', 'external', 'ambiguous'], 'Request extraction must not remove or mutate news stories.');
 
-const objectPayload = filterNewsPayload({ generatedAt: '2026-08-12T00:00:00Z', items: [ready, missingByReason, missingCanonical, missingExternal, ambiguousOnly] });
-assert.deepEqual(objectPayload.items.map(item => item.id), ['ready', 'ambiguous']);
-const arrayPayload = filterNewsPayload([missingExternal, ready]);
-assert.deepEqual(arrayPayload.map(item => item.id), ['ready']);
-
-console.log('News publication game-page gate tests passed.');
+console.log('News game-page request tests passed.');
