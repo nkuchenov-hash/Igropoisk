@@ -2,6 +2,12 @@ name: Maintain Игропоиск game lifecycle
 
 on:
   workflow_dispatch:
+    inputs:
+      news_game_requests_b64:
+        description: Base64 JSON of games whose pages are required by news
+        required: false
+        type: string
+        default: ''
   schedule:
     - cron: '41 */6 * * *'
   push:
@@ -9,6 +15,7 @@ on:
     paths:
       - 'scripts/hydrate-live-home-feeds.mjs'
       - 'scripts/orchestrate-content.mjs'
+      - 'scripts/plan-news-game-pages.mjs'
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/run-game-catalog-enrichment.mjs'
       - 'scripts/materialize-catalog-game-data.mjs'
@@ -27,6 +34,8 @@ on:
       - 'scripts/enrich-game-relations.mjs'
       - 'scripts/audit-review-publication.mjs'
       - 'scripts/validate-automation-publish-diff.mjs'
+      - 'scripts/test-news-game-registry-discovery.mjs'
+      - 'scripts/lib/news-game-registry-discovery.mjs'
       - 'scripts/lib/editorial-game-registry-adapter.mjs'
       - 'scripts/lib/system-game-registry-adapter.mjs'
       - 'config/content-pipeline.json'
@@ -35,6 +44,7 @@ on:
       - '.github/workflows/content-pipeline.yml'
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -58,6 +68,7 @@ jobs:
         run: |
           node --check scripts/hydrate-live-home-feeds.mjs
           node --check scripts/orchestrate-content.mjs
+          node --check scripts/plan-news-game-pages.mjs
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/run-game-catalog-enrichment.mjs
           node --check scripts/materialize-catalog-game-data.mjs
@@ -80,9 +91,11 @@ jobs:
           node --check scripts/lib/game-registry.mjs
           node --check scripts/lib/game-registry-migration.mjs
           node --check scripts/lib/game-registry-page-sections.mjs
+          node --check scripts/lib/news-game-registry-discovery.mjs
           node --check scripts/lib/editorial-game-registry-adapter.mjs
           node --check scripts/lib/system-game-registry-adapter.mjs
           node --check game/_shared/game-page-materialized-data.js
+          node scripts/test-news-game-registry-discovery.mjs
       - name: Hydrate current Popular and Releases snapshots from Object Storage
         run: node scripts/hydrate-live-home-feeds.mjs
       - name: Repair public catalog canonical identities
@@ -101,6 +114,10 @@ jobs:
           CATALOG_GUIDE_BATCH: '8'
       - name: Build canonical registry and semantic work queue
         run: node scripts/orchestrate-content.mjs --finalize
+      - name: Inject every news-required missing game page into this lifecycle run
+        env:
+          NEWS_GAME_REQUESTS_B64: ${{ inputs.news_game_requests_b64 || '' }}
+        run: node scripts/plan-news-game-pages.mjs
       - name: Build selected game pages and revise red work until green
         run: node scripts/run-content-pipeline.mjs
         env:
@@ -109,6 +126,23 @@ jobs:
           OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
           OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
           OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
+      - name: Check whether news-required pages are ready
+        id: news_pages
+        run: |
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs = require('fs');
+          const path = require('path');
+          let requestPlan = { page_tasks: [] };
+          try { requestPlan = JSON.parse(fs.readFileSync('tmp/news-game-page-plan.json', 'utf8')); } catch {}
+          const tasks = Array.isArray(requestPlan.page_tasks) ? requestPlan.page_tasks : [];
+          const readyTasks = tasks.filter(task => {
+            const page = path.join('game', task.slug, 'index.html');
+            let quality = null;
+            try { quality = JSON.parse(fs.readFileSync(path.join('data/quality-control', `page-${task.slug}-control.json`), 'utf8')); } catch {}
+            return fs.existsSync(page) && quality?.green === true;
+          });
+          process.stdout.write(`count=${tasks.length}\nready_count=${readyTasks.length}\nall_ready=${tasks.length > 0 && readyTasks.length === tasks.length ? 'true' : 'false'}\n`);
+          NODE
       - name: Materialize newly green reviews into runtime feed
         run: node scripts/materialize-review-publication-feed.mjs
       - name: Recalculate lifecycle state
@@ -121,6 +155,7 @@ jobs:
         run: |
           paths=(
             data/content-pipeline
+            data/game-registry
             data/quality-control
             data/franchises
             data/similarity
@@ -161,11 +196,13 @@ jobs:
           python3 scripts/enforce_layout_contract.py --check
           git diff --check
       - name: Open and merge isolated lifecycle PR
+        id: lifecycle_publish
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if git diff --cached --quiet; then
             echo "No lifecycle or revision-state changes."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           branch="automation/game-lifecycle-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
@@ -180,6 +217,12 @@ jobs:
             --title "Automated game lifecycle ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
             --body "Autonomous game lifecycle output. Every visible game is tracked for relations/franchise, similarity, professional reviews/rating and guides. Green content is exposed publicly; red quality findings are retained only as revision state and automatically return to research/rebuild/recheck on the next lifecycle pass. The workflow never treats a red quality result as terminal.")"
           gh pr merge "$pr_url" --merge --delete-branch
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      - name: Republish deferred news after all requested game pages are green
+        if: steps.news_pages.outputs.all_ready == 'true' && steps.lifecycle_publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run news-pipeline.yml --ref staging -f force=true
       - name: Preserve lifecycle queue and quality audit
         if: always()
         uses: actions/upload-artifact@v4
@@ -197,5 +240,6 @@ jobs:
             data/quality-control
             data/audits/review-publication.json
             data/audits/review-feed-materialization.json
+            tmp/news-game-page-plan.json
           if-no-files-found: warn
           retention-days: 14

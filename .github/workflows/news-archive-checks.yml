@@ -10,9 +10,17 @@ on:
       - 'data/news-game-*.json'
       - 'scripts/build-news-events.mjs'
       - 'scripts/normalize-news-records.mjs'
+      - 'scripts/plan-news-game-pages.mjs'
+      - 'scripts/prepare-news-game-page-requests.mjs'
       - 'scripts/lib/news-game-linker.mjs'
+      - 'scripts/lib/news-game-registry-discovery.mjs'
+      - 'scripts/lib/news-publication-gate.mjs'
       - 'scripts/test-news-archive.mjs'
       - 'scripts/test-news-game-linker.mjs'
+      - 'scripts/test-news-game-registry-discovery.mjs'
+      - 'scripts/test-news-publication-gate.mjs'
+      - '.github/workflows/content-pipeline.yml'
+      - '.github/workflows/news-pipeline.yml'
       - '.github/workflows/news-archive-checks.yml'
   workflow_dispatch:
 
@@ -34,9 +42,15 @@ jobs:
           node --check features/news/shared/index.js
           node --check features/news/admin-game-links/index.js
           node --check scripts/lib/news-game-linker.mjs
+          node --check scripts/lib/news-game-registry-discovery.mjs
+          node --check scripts/lib/news-publication-gate.mjs
           node --check scripts/normalize-news-records.mjs
           node --check scripts/build-news-events.mjs
+          node --check scripts/plan-news-game-pages.mjs
+          node --check scripts/prepare-news-game-page-requests.mjs
           node scripts/test-news-archive.mjs
           node scripts/test-news-game-linker.mjs
+          node scripts/test-news-game-registry-discovery.mjs
+          node scripts/test-news-publication-gate.mjs
           node scripts/test-news-content-api.mjs
           node scripts/validate-news-module.mjs
