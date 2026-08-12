@@ -2,6 +2,12 @@ import fs from 'node:fs';
 
 const file='game/_shared/game-page-v3.js';
 let text=fs.readFileSync(file,'utf8');
+
+const brokenMedia="['artGroup','mediaArt','artCount',art,(url,index)=>mediaCard(url,title,index===0?'Обложка':'Арт']];";
+const fixedMedia="['artGroup','mediaArt','artCount',art,(url,index)=>mediaCard(url,title,index===0?'Обложка':'Арт')]];";
+if(text.includes(brokenMedia))text=text.replace(brokenMedia,fixedMedia);
+else if(!text.includes(fixedMedia))throw new Error('renderMedia syntax anchor not found');
+
 const anchor="async function load(){\n  shellHTML();root.dataset.designSystem='igropoisk-game-v3';const chunk=chunkForYear(seedYear);";
 if(!text.includes(anchor))throw new Error('load() anchor not found');
 const helper=`function applyPublicLocalization(game,draft){
@@ -26,10 +32,10 @@ const helper=`function applyPublicLocalization(game,draft){
 }
 
 `;
-text=text.replace(anchor,helper+anchor);
+if(!text.includes('function applyPublicLocalization(game,draft){'))text=text.replace(anchor,helper+anchor);
 const oldLine="  const game=mergeGame(curatedFile?.games?.[slug]||null,draft,awards,reviews,rating,news);document.title=`${game.identity.title} — Игропоиск`;";
 const newLine="  const game=applyPublicLocalization(mergeGame(curatedFile?.games?.[slug]||null,draft,awards,reviews,rating,news),draft);document.title=`${game.identity.title} — Игропоиск`;";
-if(!text.includes(oldLine))throw new Error('game merge line not found');
-text=text.replace(oldLine,newLine);
+if(text.includes(oldLine))text=text.replace(oldLine,newLine);
+else if(!text.includes(newLine))throw new Error('game merge line not found');
 fs.writeFileSync(file,text);
-console.log('Applied public localization for Japan Stigmatized Property 3 only.');
+console.log('Repaired shared game runtime syntax and applied public localization for Japan Stigmatized Property 3 only.');
