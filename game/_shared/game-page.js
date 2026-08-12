@@ -1,6 +1,6 @@
 (()=>{
   const script=document.createElement('script');
-  script.src='../_shared/game-page-v3-bootstrap.js?v=20260812-2';
+  script.src='../_shared/game-page-v3-bootstrap.js?v=20260812-3';
   document.head.appendChild(script);
   const qualityStyle=document.createElement('link');
   qualityStyle.rel='stylesheet';
@@ -15,7 +15,7 @@
   similarity.defer=true;
   document.head.appendChild(similarity);
   const reviewControl=document.createElement('script');
-  reviewControl.src='../_shared/game-page-review-publication-control.js?v=20260812-1';
+  reviewControl.src='../_shared/game-page-review-publication-control.js?v=20260812-2';
   reviewControl.defer=true;
   document.head.appendChild(reviewControl);
   const editions=document.createElement('script');
