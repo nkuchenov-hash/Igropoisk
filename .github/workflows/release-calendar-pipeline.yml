@@ -8,6 +8,9 @@ on:
     paths:
       - "scripts/lib/release-calendar-policy.mjs"
       - "scripts/lib/release-game-registry-adapter.mjs"
+      - "scripts/lib/release-audience-relevance.mjs"
+      - "scripts/lib/release-notability.mjs"
+      - "scripts/enrich-release-anticipation.mjs"
       - "scripts/materialize-release-calendar.mjs"
       - "scripts/validate-release-calendar.mjs"
       - "scripts/test-release-calendar-policy.mjs"
@@ -23,6 +26,9 @@ on:
       - "scripts/**release-calendar**"
       - "scripts/lib/release-calendar-policy.mjs"
       - "scripts/lib/release-game-registry-adapter.mjs"
+      - "scripts/lib/release-audience-relevance.mjs"
+      - "scripts/lib/release-notability.mjs"
+      - "scripts/enrich-release-anticipation.mjs"
       - "config/release-calendar.json"
       - "config/release-official-claims.json"
       - "data/release-candidates/**"
@@ -67,6 +73,8 @@ jobs:
         env:
           RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
         run: node scripts/parse-releases.mjs
+      - name: Measure current broad, niche and franchise attention
+        run: node scripts/enrich-release-anticipation.mjs
       - name: Build candidate database and public calendar
         run: node scripts/materialize-release-calendar.mjs
       - name: Validate public boundary
@@ -79,14 +87,18 @@ jobs:
           const report = JSON.parse(fs.readFileSync('data/releases/materialization-report.json', 'utf8'));
           const s = report.statistics || {};
           const g = report.game_registry_linkage || {};
+          const n = report.notability || {};
           console.log('## Release calendar materialization');
           console.log(`- Raw candidates: **${s.raw_candidates || 0}**`);
-          console.log(`- Published: **${s.published || 0}**`);
+          console.log(`- Broad-global releases: **${n.broad_global || 0}**`);
+          console.log(`- Niche-global releases: **${n.niche_global || 0}**`);
+          console.log(`- Personalized regional releases: **${n.personalized_regional || 0}**`);
+          console.log(`- Published globally: **${s.published || 0}**`);
           console.log(`- Review: **${s.review || 0}**`);
           console.log(`- Rejected: **${s.rejected || 0}**`);
           console.log(`- Canonical Game Registry matches: **${g.matched || 0}**`);
           console.log(`- Registry review/unresolved: **${(g.needs_review || 0) + (g.unresolved || 0)}**`);
-          console.log(`- Maximum exact releases in one day: **${s.max_exact_releases_in_one_day || 0}**`);
+          console.log(`- Maximum exact global releases in one day: **${s.max_exact_releases_in_one_day || 0}**`);
           for (const day of s.dense_days || []) console.log(`  - ${day.date}: ${day.count}`);
           NODE
       - name: Upload materialized data
@@ -97,4 +109,5 @@ jobs:
             data/release-candidates/current.json
             data/releases/public.json
             data/releases/materialization-report.json
+            data/parser-runs/release-anticipation.json
           retention-days: 14
