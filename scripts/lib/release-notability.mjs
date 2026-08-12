@@ -6,11 +6,12 @@ function normalize(value = '') {
 }
 
 function itemGameIds(item = {}) {
-  return uniq([
+  const raw = [
     ...(item.gameIds || []),
     ...(item.game_ids || []),
     ...(item.games || []).map(game => typeof game === 'object' ? (game?.gameId || game?.game_id) : null),
-  ].map(String));
+  ];
+  return uniq(raw.filter(Boolean).map(String));
 }
 
 function titleMatches(candidate, item) {
@@ -57,9 +58,16 @@ function newsMediaCount(item = {}) {
   return Math.max(declared, new Set(sources.map(source => typeof source === 'string' ? source : source.name || source.organization || source.url).filter(Boolean)).size);
 }
 
-function confirmedEvent(event = {}) {
+function confirmedEvent(event = {}, candidate = {}) {
   const platforms = event.platforms || [];
-  return platforms.length > 0 && platforms.every(platform => (event.platform_confirmations?.[platform] || []).length > 0);
+  if (!platforms.length) return false;
+  if (platforms.every(platform => (event.platform_confirmations?.[platform] || []).length > 0)) return true;
+  if (platforms.length !== 1 || platforms[0] !== 'PC') return false;
+  const byId = new Map((candidate.sources || []).map(source => [source.id, source]));
+  return (event.source_ids || []).some(sourceId => {
+    const source = byId.get(sourceId);
+    return String(sourceId || '').startsWith('steam:') || /store\.steampowered\.com/i.test(String(source?.url || ''));
+  });
 }
 
 export function measureGlobalNotability(candidate, {newsEvents = [], popularRanking = [], policy = {}} = {}) {
@@ -102,11 +110,7 @@ export function measureGlobalNotability(candidate, {newsEvents = [], popularRank
     model: 'global-notability-v2',
     eligible,
     reasons,
-    linkage: {
-      game_id: candidate?.game_id || null,
-      news: news.mode,
-      popular: popular.mode,
-    },
+    linkage: {game_id: candidate?.game_id || null, news: news.mode, popular: popular.mode},
     metrics: {
       independent_publications: independentPublications,
       global_score: globalScore,
@@ -131,7 +135,7 @@ export function applyGlobalNotabilityGate(candidates = [], {newsEvents = [], pop
     candidate.moderation.automatic_reasons = uniq(candidate.moderation.automatic_reasons || []);
 
     if (candidate.moderation.rejection_reason || candidate.moderation.publication_forbidden || candidate.moderation.status === 'rejected') return candidate;
-    const hasConfirmedEvent = (candidate.events || []).some(confirmedEvent);
+    const hasConfirmedEvent = (candidate.events || []).some(event => confirmedEvent(event, candidate));
     if (!notability.eligible) {
       candidate.moderation.status = 'review';
       candidate.moderation.automatic_reasons = uniq([...candidate.moderation.automatic_reasons, 'global_notability_required']);
@@ -143,6 +147,7 @@ export function applyGlobalNotabilityGate(candidates = [], {newsEvents = [], pop
       candidate.moderation.automatic_reasons = uniq([...candidate.moderation.automatic_reasons, 'no_confirmed_platform_event']);
       return candidate;
     }
+    if (candidate.moderation.automatic_reasons.includes('daily_cap')) return candidate;
     if (candidate.moderation.manual_decision !== 'review') candidate.moderation.status = 'published';
     return candidate;
   });
@@ -154,9 +159,7 @@ export function validateGlobalNotability({candidates = [], publicCalendar = {}} 
   for (const release of publicCalendar.releases || []) {
     const candidate = byId.get(release.id);
     if (!candidate?.global_notability?.eligible) errors.push(`Global notability gate bypassed: ${release.id}`);
-    if ((candidate?.global_notability?.metrics?.steam_signals || []).length && Number(candidate?.global_notability?.metrics?.independent_publications || 0) === 0) {
-      errors.push(`Steam-only release published: ${release.id}`);
-    }
+    if ((candidate?.global_notability?.metrics?.steam_signals || []).length && Number(candidate?.global_notability?.metrics?.independent_publications || 0) === 0) errors.push(`Steam-only release published: ${release.id}`);
   }
   return uniq(errors);
 }

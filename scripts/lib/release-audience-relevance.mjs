@@ -12,7 +12,8 @@ function normalize(value = '') {
 }
 function tokens(value = '') { return normalize(value).split(' ').filter(token => token.length >= 2 && !STOP_WORDS.has(token)); }
 function itemGameIds(item = {}) {
-  return uniq([...(item.gameIds || []), ...(item.game_ids || []), ...(item.games || []).map(game => typeof game === 'object' ? (game?.gameId || game?.game_id) : null)].map(String));
+  const raw = [...(item.gameIds || []), ...(item.game_ids || []), ...(item.games || []).map(game => typeof game === 'object' ? (game?.gameId || game?.game_id) : null)];
+  return uniq(raw.filter(Boolean).map(String));
 }
 function titleMatch(candidate, item) {
   const ids = itemGameIds(item);
