@@ -24,9 +24,17 @@ let catalog = [...featured];
 const featuredBySlug = new Map(featured.map(game => [game.slug, game]));
 
 function openPage(id) {
+  const target = document.getElementById(id);
+  if (!target?.classList.contains('page')) return false;
   $$('.page').forEach(page => page.classList.toggle('active', page.id === id));
   $$('.site-nav [data-page]').forEach(button => button.classList.toggle('active', button.dataset.page === id));
-  window.scrollTo({top:0,behavior:'instant'});
+  window.scrollTo({top:0,behavior:'auto'});
+  return true;
+}
+
+function routeFromLocation() {
+  const id = decodeURIComponent(location.hash.replace(/^#/, '') || 'home');
+  openPage(id) || openPage('home');
 }
 
 function openGame(slug) {
@@ -34,7 +42,14 @@ function openGame(slug) {
 }
 
 function bindNavigation() {
-  $$('[data-page]').forEach(button => button.addEventListener('click', () => openPage(button.dataset.page)));
+  $$('[data-page]').forEach(button => button.addEventListener('click', event => {
+    const id = button.dataset.page;
+    if (!openPage(id)) return;
+    event.preventDefault();
+    const next = id === 'home' ? `${location.pathname}${location.search}` : `#${encodeURIComponent(id)}`;
+    history.replaceState(null, '', next);
+  }));
+  window.addEventListener('hashchange', routeFromLocation);
   document.addEventListener('click', event => {
     const target = event.target.closest('[data-game]');
     if (target) openGame(target.dataset.game);
@@ -160,7 +175,9 @@ function loadEnhancedSearch() {
   document.body.appendChild(script);
 }
 
+document.querySelector('.primary')?.classList.add('ig-button');
 bindNavigation();
+routeFromLocation();
 bindTheme();
 bindFilters();
 renderHome();
