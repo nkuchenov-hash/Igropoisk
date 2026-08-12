@@ -119,8 +119,9 @@ jobs:
           node - <<'NODE' >> "$GITHUB_OUTPUT"
           const fs = require('fs');
           const path = require('path');
-          const plan = JSON.parse(fs.readFileSync('data/content-pipeline/execution-plan.json', 'utf8'));
-          const tasks = (plan.pages || []).filter(item => item.news_reference === true);
+          let requestPlan = { page_tasks: [] };
+          try { requestPlan = JSON.parse(fs.readFileSync('tmp/news-game-page-plan.json', 'utf8')); } catch {}
+          const tasks = Array.isArray(requestPlan.page_tasks) ? requestPlan.page_tasks : [];
           const readyTasks = tasks.filter(task => {
             const page = path.join('game', task.slug, 'index.html');
             let quality = null;
