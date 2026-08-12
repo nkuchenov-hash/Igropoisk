@@ -27,7 +27,7 @@ function parseSteamRows(html){
 
 try{
   const url='https://store.steampowered.com/search/results/?query&start=0&count=100&dynamic_data=&filter=popularcomingsoon&infinite=1&cc=us&l=english&json=1';
-  const response=await fetch(url,{signal:AbortSignal.timeout(25000),headers:{'user-agent':'Mozilla/5.0 IgropoiskReleaseAnticipation/2.0','accept-language':'en-US,en;q=0.9'}});
+  const response=await fetch(url,{signal:AbortSignal.timeout(25000),headers:{'user-agent':'Mozilla/5.0 IgropoiskReleaseAnticipation/3.0','accept-language':'en-US,en;q=0.9'}});
   if(!response.ok)throw new Error(`HTTP ${response.status}`);
   const payload=await response.json();
   parseSteamRows(payload.results_html).forEach((item,index)=>steamPositions.set(String(item.appid),index+1));
@@ -42,20 +42,21 @@ for(const game of releases.releases||[]){
   const steamId=String(game.external_ids?.steam||'');
   const previous=game.anticipation||{};
   const steamPosition=steamPositions.get(steamId)||Number(previous.steam_popular_upcoming_position||0)||null;
-  const families=[...new Set((popularItem?.families||[]).filter(Boolean))];
-  const independentPublishers=[...new Set((popularItem?.news_publishers||[]).filter(Boolean))];
-  const publicationCount=Math.max(Number(popularItem?.news_sources||0),independentPublishers.length);
-  const popularIndex=popularItem?Number(popularItem.score||0):null;
-  const popularConfidence=popularItem?Number(popularItem.confidence||0):null;
-  const nonSteamFamilies=families.filter(family=>family!=='steam_chart');
-  const crossSiteCoverage=publicationCount>=2&&nonSteamFamilies.length>=1;
+  const families=[...new Set((popularItem?.families||previous.evidence_families||[]).filter(Boolean))];
+  const independentPublishers=[...new Set((popularItem?.news_publishers||previous.independent_publishers||[]).filter(Boolean))];
+  const publicationCount=Math.max(Number(popularItem?.news_sources||0),independentPublishers.length,Number(previous.independent_publication_count||0));
+  const popularIndex=popularItem?Number(popularItem.score||0):Number(previous.popular_index||0)||null;
+  const popularConfidence=popularItem?Number(popularItem.confidence||0):Number(previous.popular_confidence||0)||null;
+  const nonSteamFamilies=families.filter(family=>!['steam_chart','steam','official_store','store','rawg'].includes(String(family).toLowerCase()));
+  const crossSiteCoverage=publicationCount>=2&&nonSteamFamilies.length>=2;
   const strongCrossSite=Boolean(popularItem)&&popularIndex>=10&&popularConfidence>=0.5&&crossSiteCoverage;
-  const strongSteamWithIndependent=Boolean(steamPosition&&steamPosition<=20&&publicationCount>=1);
+  const broadCoverage=Boolean(popularItem)&&publicationCount>=3&&nonSteamFamilies.length>=2&&popularIndex>=8&&popularConfidence>=0.45;
+  const strongSteamWithIndependent=Boolean(popularItem)&&Boolean(steamPosition&&steamPosition<=10)&&publicationCount>=2&&nonSteamFamilies.length>=1&&popularIndex>=8;
   const manuallyFeatured=game.editorial_quality?.manual_anticipated===true;
-  const homepageEligible=manuallyFeatured||strongCrossSite||strongSteamWithIndependent;
-  const steamScore=steamPosition?Math.max(0,35-Math.min(34,steamPosition-1)*1.5):0;
-  const breadthScore=Math.min(25,publicationCount*3)+Math.min(15,nonSteamFamilies.length*5);
-  const anticipationScore=Math.round((Math.min(40,Number(popularIndex||0))+steamScore+breadthScore)*10)/10;
+  const homepageEligible=manuallyFeatured||strongCrossSite||broadCoverage||strongSteamWithIndependent;
+  const steamScore=steamPosition?Math.max(0,30-Math.min(29,steamPosition-1)*2):0;
+  const breadthScore=Math.min(30,publicationCount*4)+Math.min(20,nonSteamFamilies.length*6);
+  const anticipationScore=Math.round((Math.min(50,Number(popularIndex||0))+steamScore+breadthScore)*10)/10;
 
   game.anticipation={
     measured_at:checkedAt,
@@ -65,18 +66,19 @@ for(const game of releases.releases||[]){
     independent_publication_count:publicationCount,
     independent_publishers:independentPublishers,
     evidence_families:families,
+    independent_evidence_families:nonSteamFamilies,
     cross_site_coverage:crossSiteCoverage,
     homepage_eligible:homepageEligible,
     anticipation_score:anticipationScore,
-    source:'Steam Popular Upcoming + cross-site news/Reddit/YouTube/Twitch/Steam-chart signals'
+    source:'Steam Popular Upcoming corroborated by independent news, Reddit, YouTube and Twitch/Popular signals'
   };
 
   const quality=game.editorial_quality||{};
   const retainedSignals=(quality.signals||[]).filter(signal=>!['published_page','current_popular','cross_site_coverage','steam_popular_upcoming'].includes(signal));
   const anticipationSignals=[
-    strongCrossSite?'current_popular':null,
+    strongCrossSite||broadCoverage?'current_popular':null,
     crossSiteCoverage?'cross_site_coverage':null,
-    steamPosition?'steam_popular_upcoming':null
+    strongSteamWithIndependent?'steam_popular_upcoming':null
   ].filter(Boolean);
   game.editorial_quality={
     ...quality,
@@ -87,7 +89,7 @@ for(const game of releases.releases||[]){
     source_families:[...new Set([...(quality.source_families||[]),...families])],
     signals:[...new Set([...retainedSignals,...anticipationSignals])],
     homepage_reason:homepageEligible
-      ? manuallyFeatured?'manual_editorial_mark':strongCrossSite?'cross_site_popularity':'steam_top20_plus_independent_coverage'
+      ? manuallyFeatured?'manual_editorial_mark':strongCrossSite?'cross_site_popularity':broadCoverage?'broad_cross_site_coverage':'steam_top10_plus_cross_site_confirmation'
       : 'insufficient_global_anticipation_evidence'
   };
 }
@@ -97,11 +99,11 @@ releases.anticipation={
   steam_popular_upcoming_count:steamPositions.size,
   popular_snapshot_generated_at:popular.generated_at||null,
   steam_status:steamStatus,
-  homepage_policy:'cross-site evidence required; a published page alone is not anticipation evidence'
+  homepage_policy:'Global anticipation needs several independent signals; Steam/store rank or a published page alone never qualifies.'
 };
 write('data/releases/current.json',releases);
 write('data/parser-runs/release-anticipation.json',{
-  schema_version:2,
+  schema_version:3,
   status:steamStatus,
   checked_at:checkedAt,
   steam_popular_upcoming_count:steamPositions.size,

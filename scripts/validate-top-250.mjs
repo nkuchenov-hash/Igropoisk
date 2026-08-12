@@ -26,10 +26,14 @@ for (let i = 0; i < ranking.length; i += 1) {
   const expectedGameUrl = `/Igropoisk/game/${encodeURIComponent(item.slug)}/`;
   const expectedReviewUrl = `/Igropoisk/article/${encodeURIComponent(item.slug)}/`;
   const score = Number(item.score);
+  const imageCandidates = [...new Set([item.image, ...(item.image_candidates || [])].filter(Boolean))];
+  const summary = String(item.summary || '').trim();
   if (Number(item.rank) !== i + 1) errors.push(`rank mismatch at index ${i}`);
   if (!item.game_id) errors.push(`missing game_id at rank ${i + 1}`);
   if (!item.slug) errors.push(`missing slug at rank ${i + 1}`);
   if (!item.title) errors.push(`missing title at rank ${i + 1}`);
+  if (!imageCandidates.length) errors.push(`missing cover candidates for ${item.slug}`);
+  if (!summary) errors.push(`missing short game summary for ${item.slug}`);
   if (!Number.isFinite(score) || score <= 0 || score > 10) errors.push(`invalid Игропоиск rating for ${item.slug}: ${item.score}`);
   if (score > previousScore) errors.push(`rating order is not descending at ${item.slug}`);
   previousScore = score;
@@ -40,7 +44,7 @@ for (let i = 0; i < ranking.length; i += 1) {
   slugs.add(item.slug);
   if (item.game_url !== expectedGameUrl) errors.push(`Top-250 item must lead to canonical game page: ${item.slug}`);
   if (!fs.existsSync(gamePath)) errors.push(`missing game page for ${item.slug}`);
-  if (!['published', 'ready_to_render', 'pending'].includes(item.review?.status)) errors.push(`invalid review status for ${item.slug}`);
+  if (!['published', 'withheld_or_ready', 'ready_to_render', 'pending'].includes(item.review?.status)) errors.push(`invalid review status for ${item.slug}`);
   if (item.review?.pipeline && item.review.pipeline !== 'strict') errors.push(`non-strict review pipeline is forbidden for ${item.slug}`);
   if (item.review?.status === 'published') {
     if (item.review.url !== expectedReviewUrl) errors.push(`non-canonical review url for ${item.slug}`);
@@ -60,5 +64,7 @@ console.log(JSON.stringify({
   valid: true,
   count: ranking.length,
   game_pages: ranking.filter(item => item.game_url).length,
+  covers: ranking.filter(item => item.image || item.image_candidates?.length).length,
+  summaries: ranking.filter(item => String(item.summary || '').trim()).length,
   published_reviews: ranking.filter(item => item.review.status === 'published').length
 }, null, 2));

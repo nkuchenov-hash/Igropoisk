@@ -3,7 +3,7 @@
 const rail=document.querySelector('#releaseHomeGrid');
 if(!rail)return;
 document.querySelector('.home-showcase-heading--split a[href="calendar/"]')?.classList.add('ig-button');
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
 const initials=title=>String(title||'').split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
 const identity=value=>String(value||'').normalize('NFKD').toLowerCase().replace(/&amp;/g,' and ').replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
 const primaryEvent=game=>(game.events||[]).slice().sort((a,b)=>String(a.date_start||a.date||'9999').localeCompare(String(b.date_start||b.date||'9999')))[0]||{};
@@ -46,6 +46,12 @@ const candidates=game=>{
     id&&`https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/library_600x900.jpg`
   ].filter(Boolean))];
 };
+const loadFeed=async path=>{
+  if(window.IgropoiskHomeFeeds?.load)return window.IgropoiskHomeFeeds.load(path);
+  const response=await fetch(path,{cache:'no-store'});
+  if(!response.ok)throw new Error(`HTTP ${response.status}`);
+  return response.json();
+};
 let popularByIdentity=new Map();
 const anticipation=game=>game.anticipation||{};
 const popularEvidence=game=>popularByIdentity.get(identity(game.slug))||popularByIdentity.get(identity(game.title))||null;
@@ -59,26 +65,28 @@ const steamPosition=game=>Number(anticipation(game).steam_popular_upcoming_posit
 const evidenceFamilies=game=>[...new Set([...(anticipation(game).evidence_families||[]),...(popularEvidence(game)?.families||[])].filter(Boolean))];
 const popularIndex=game=>Number(anticipation(game).popular_index??popularEvidence(game)?.score??0);
 const popularConfidence=game=>Number(anticipation(game).popular_confidence??popularEvidence(game)?.confidence??0);
+const independentFamilies=game=>evidenceFamilies(game).filter(family=>!['steam_chart','steam','official_store','store','rawg'].includes(String(family).toLowerCase()));
 const crossSiteEligible=game=>{
-  const info=anticipation(game);
-  if(info.homepage_eligible===true)return true;
   const publications=independentCount(game);
-  const families=evidenceFamilies(game);
-  const nonSteamFamilies=families.filter(family=>family!=='steam_chart');
+  const families=independentFamilies(game);
   const currentPopular=popularEvidence(game);
-  const crossSite=Boolean(currentPopular||info.popular_index!=null)&&publications>=2&&popularIndex(game)>=10&&popularConfidence(game)>=0.5&&nonSteamFamilies.length>0;
-  const multiFamily=Boolean(currentPopular)&&popularIndex(game)>=10&&popularConfidence(game)>=0.5&&nonSteamFamilies.length>=2;
-  const strongSteam=steamPosition(game)>0&&steamPosition(game)<=20&&publications>=1;
-  return crossSite||multiFamily||strongSteam||game.editorial_quality?.manual_anticipated===true;
+  const score=popularIndex(game);
+  const confidence=popularConfidence(game);
+  const declaredEligible=game.editorial_quality?.homepage_eligible===true||anticipation(game).homepage_eligible===true;
+  const crossSite=publications>=2&&families.length>=2&&score>=10&&confidence>=0.5;
+  const broadCoverage=publications>=3&&families.length>=2&&Boolean(currentPopular)&&score>=8;
+  const strongSteam=steamPosition(game)>0&&steamPosition(game)<=10&&publications>=2&&families.length>=1&&Boolean(currentPopular)&&score>=8;
+  return game.editorial_quality?.manual_anticipated===true||((crossSite||broadCoverage||strongSteam)&&(declaredEligible||Boolean(currentPopular)));
 };
 const anticipationScore=game=>Number(game.editorial_quality?.anticipation_score||anticipation(game).anticipation_score||popularEvidence(game)?.score||0);
 const anticipationLabel=game=>{
-  if(crossSiteEligible(game)&&popularEvidence(game))return 'Ожидаемость подтверждена несколькими площадками';
-  const info=anticipation(game);
-  if(info.cross_site_coverage===true||independentCount(game)>=2&&popularIndex(game)>=10)return 'Ожидаемость подтверждена несколькими площадками';
+  if(!crossSiteEligible(game))return '';
+  const publications=independentCount(game);
+  const families=independentFamilies(game).length;
+  if(publications>=2&&families>=2)return `Ожидаемость подтверждена: ${publications} издания · ${families} типа сигналов`;
   const position=steamPosition(game);
-  if(position>0&&independentCount(game)>0)return `Steam Popular Upcoming #${position} · есть независимое освещение`;
-  return '';
+  if(position>0)return `Steam Popular Upcoming #${position} + независимое подтверждение`;
+  return 'Ожидаемость подтверждена несколькими площадками';
 };
 const card=(game,kind)=>{
   const event=primaryEvent(game);
@@ -121,9 +129,9 @@ rail.addEventListener('scroll',updateButtons,{passive:true});
 window.addEventListener('resize',updateButtons,{passive:true});
 
 Promise.all([
-  fetch('data/releases/current.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json()}),
+  loadFeed('data/releases/current.json'),
   fetch('features/home-releases/rules.json',{cache:'no-store'}).then(response=>response.ok?response.json():{}),
-  fetch('data/popular/current.json',{cache:'no-store'}).then(response=>response.ok?response.json():{ranking:[]})
+  loadFeed('data/popular/current.json')
 ]).then(([payload,rules,popularPayload])=>{
   popularByIdentity=new Map();
   for(const item of popularPayload.ranking||[]){
@@ -146,7 +154,7 @@ Promise.all([
   const selected=[...recent,...upcoming].slice(0,maximum);
   const rows=selected.map(row=>row.game);
 
-  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Сейчас нет релизов, у которых ожидаемость подтверждена несколькими независимыми сигналами.</div>';
+  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Сейчас нет релизов, у которых глобальная ожидаемость подтверждена несколькими независимыми площадками.</div>';
   bindFallbacks(rows);
   requestAnimationFrame(updateButtons);
 }).catch(error=>{
