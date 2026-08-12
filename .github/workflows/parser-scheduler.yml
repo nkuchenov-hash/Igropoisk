@@ -133,7 +133,7 @@ jobs:
 
       - name: Validate publishable home feeds
         id: validation
-        if: always() && steps.release_calendar.outcome == 'success'
+        if: always()
         continue-on-error: true
         run: node scripts/validate-home-feeds.mjs --fresh-hours 18
 
