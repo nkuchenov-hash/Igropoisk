@@ -31,13 +31,3 @@ export function collectMissingGamePageRequests(items = []) {
   }
   return [...requests.values()];
 }
-
-export function filterUnreadyNewsItems(items = []) {
-  return items.filter(item => !hasMissingGamePage(item));
-}
-
-export function filterNewsPayload(payload) {
-  if (Array.isArray(payload)) return filterUnreadyNewsItems(payload);
-  if (!payload || typeof payload !== 'object' || !Array.isArray(payload.items)) return payload;
-  return { ...payload, items: filterUnreadyNewsItems(payload.items) };
-}
