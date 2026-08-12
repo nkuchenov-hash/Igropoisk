@@ -40,7 +40,7 @@ jobs:
           node --check scripts/validate-central-design-system.mjs
           node --check scripts/render-review-pages.mjs
           node scripts/test-central-design-system.mjs
-          node scripts/validate-central-design-system.mjs --base staging
+          node scripts/validate-central-design-system.mjs --base origin/staging
           git diff --check
       - name: Commit migration output to fix branch
         run: |
