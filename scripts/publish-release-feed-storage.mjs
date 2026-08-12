@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { createYandexObjectStorageClient } from './lib/yandex-object-storage.mjs';
 
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
@@ -11,7 +12,7 @@ const versionId=()=>`${new Date().toISOString().replace(/[-:]/g,'').replace(/\.\
 
 function collectLocalMedia(value,roots,out=new Set()){
   if(typeof value==='string'){if(roots.some(root=>value.startsWith(root)))out.add(value);return out}
-  if(Array.isArray(value)){value.forEach(item=>collectLocalMedia(item,roots,out);return out}
+  if(Array.isArray(value)){value.forEach(item=>collectLocalMedia(item,roots,out));return out}
   if(!value||typeof value!=='object')return out;
   for(const child of Object.values(value))collectLocalMedia(child,roots,out);
   return out;
@@ -100,4 +101,4 @@ export async function publishReleaseFeed({root=process.cwd(),configPath='config/
   return next;
 }
 
-if(import.meta.url===new URL(`file://${process.argv[1]}`).href)await publishReleaseFeed();
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)await publishReleaseFeed();
