@@ -2,23 +2,20 @@
   "schema_version": 4,
   "validator": "game-media-quality",
   "game_slug": "no-more-room-in-hell-2",
-  "checked_at": "2026-08-12T23:51:36.765Z",
+  "checked_at": "2026-08-12T23:55:28.928Z",
   "status": "red-needs-revision",
-  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_hero.jpg",
-  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900.jpg",
+  "hero": "https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900_2x.jpg",
   "screenshots": 9,
   "accepted_screenshots": 9,
   "comments": [
-    "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_hero.jpg",
-    "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900.jpg"
+    "Hero не подтверждён как официальный арт: https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044",
+    "hero: слишком маленький файл 13754 B, минимум 80000 B: https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044"
   ],
   "checks": [
     {
       "role": "hero",
-      "item": {
-        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_hero.jpg",
-        "source_url": "https://store.steampowered.com/app/292000/"
-      },
+      "item": "https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044",
       "rules": {
         "minimum_width_modern": 1200,
         "minimum_height_modern": 675,
@@ -27,24 +24,21 @@
         "minimum_bytes": 80000
       },
       "errors": [
-        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_hero.jpg"
+        "hero: слишком маленький файл 13754 B, минимум 80000 B: https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044"
       ],
       "probe": {
         "ok": true,
-        "width": 1920,
-        "height": 620,
-        "bytes": 667688,
-        "mime": "image/jpeg",
-        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_hero.jpg"
+        "width": 1438,
+        "height": 808,
+        "bytes": 13754,
+        "mime": "image/webp",
+        "resolved_url": "https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044"
       },
       "accepted": false
     },
     {
       "role": "cover",
-      "item": {
-        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900.jpg",
-        "source_url": "https://store.steampowered.com/app/292000/"
-      },
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900_2x.jpg",
       "rules": {
         "minimum_width_modern": 600,
         "minimum_height_modern": 850,
@@ -52,18 +46,16 @@
         "minimum_height_historical": 560,
         "minimum_bytes": 45000
       },
-      "errors": [
-        "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900.jpg"
-      ],
+      "errors": [],
       "probe": {
         "ok": true,
-        "width": 300,
-        "height": 450,
-        "bytes": 95225,
+        "width": 600,
+        "height": 900,
+        "bytes": 362272,
         "mime": "image/jpeg",
-        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900.jpg"
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900_2x.jpg"
       },
-      "accepted": false
+      "accepted": true
     },
     {
       "role": "screenshot",
