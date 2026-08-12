@@ -28,6 +28,12 @@ function run(label,command,args,env={}){const started=Date.now();const child=spa
 function qualityStatus(type,slug){return readJSON(`data/quality-control/${type}-${slug}-control.json`,{status:'red-needs-revision',green:false})}
 function ensureFranchiseSeed(item){const relative=`data/parser-output/${item.slug}.json`;if(exists(relative))return;writeJSON(relative,{schema_version:1,identity:{slug:item.slug,title:item.title,steam_appid:item.steam_appid||null},release:{date_text:item.release_year?String(item.release_year):''},companies:{developers:[],publishers:[]},classification:{genres:[],categories:[],platforms:[]},editorial:{short_description:'',integrated_description:'',features:[]},media:{hero:'',cover:'',screenshots:[],videos:[],artwork:[]},requirements:{pc:{minimum:{raw:''},recommended:{raw:''}},platforms:[]},links:{official:'',store:item.steam_appid?`https://store.steampowered.com/app/${item.steam_appid}/`:''},source:{name:'Franchise discovery',url:item.source_url||'',checked_at:new Date().toISOString()}})}
 
+const relationTask=catalog.find(item=>{const slug=String(item.slug||'');if(!slug)return false;const draft=readJSON(`data/drafts/${slug}.json`);return Boolean(draft?.identity)&&!draft?.relations?.checked_at;});
+if(relationTask&&aiAvailable){
+  const relationOk=run(`relations-migration:${relationTask.slug}`,'node',['scripts/enrich-game-relations.mjs',relationTask.slug]);
+  if(relationOk)run(`similarity-after-relations:${relationTask.slug}`,'node',['scripts/build-similarity-index.mjs',relationTask.slug]);
+}
+
 const franchiseQueue=readJSON('data/content-pipeline/franchise-queue.json',{schema_version:1,items:[]});
 const franchiseTask=(franchiseQueue.items||[]).find(item=>item.status==='queued'||item.status==='needs_revision');
 if(franchiseTask&&aiAvailable){
@@ -60,4 +66,4 @@ for(const task of plan.reviews||[]){
 }
 if(reviewSucceeded&&exists('scripts/render-review-pages.mjs'))run('render-reviews','node',['scripts/render-review-pages.mjs']);
 const finishedAt=new Date().toISOString();const summary={completed:results.filter(item=>item.status==='completed').length,needs_revision:results.filter(item=>item.status==='needs_revision'||item.status==='revision_required').length,total:results.length,editorial_ai_enabled:aiEnabled,editorial_ai_available:aiAvailable,quality_policy:'red -> revise/research/rebuild -> recheck; no terminal quality block'};
-writeJSON('data/content-pipeline/execution-log.json',{schema_version:7,started_at:startedAt,finished_at:finishedAt,summary,results});console.log(JSON.stringify(summary,null,2));
+writeJSON('data/content-pipeline/execution-log.json',{schema_version:8,started_at:startedAt,finished_at:finishedAt,summary,results});console.log(JSON.stringify(summary,null,2));
