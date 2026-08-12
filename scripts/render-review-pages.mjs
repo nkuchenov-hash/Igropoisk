@@ -84,6 +84,12 @@ let failed=false;
 for(const name of fs.readdirSync(articlesDir).filter(name=>name.endsWith('.json')).filter(name=>!requested.size||requested.has(name.replace(/\.json$/,'')))){
   try{
     const article=read(path.join(articlesDir,name));
+    const out=path.join(root,'article',article.slug,'index.html');
+    if(String(article.publication_status||'published').toLowerCase()!=='published'){
+      fs.rmSync(out,{force:true});
+      console.log(`Skipped unpublished review ${article.slug}: ${article.publication_status}`);
+      continue;
+    }
     const mediaPath=path.join(mediaDir,name);
     if(fs.existsSync(mediaPath)){
       const media=read(mediaPath);
@@ -91,7 +97,6 @@ for(const name of fs.readdirSync(articlesDir).filter(name=>name.endsWith('.json'
       article.sections=(article.sections||[]).map(section=>map.has(section.id)?{...section,images:map.get(section.id)}:section);
     }
     const stats=validate(article);
-    const out=path.join(root,'article',article.slug,'index.html');
     fs.mkdirSync(path.dirname(out),{recursive:true});
     fs.writeFileSync(out,page(article,stats));
     console.log(`Rendered ${article.slug}: ${stats.articleWords} words, ${stats.imageCount} unique images`);

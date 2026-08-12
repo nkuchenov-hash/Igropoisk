@@ -13,6 +13,15 @@ let timer=null;
 const mainCard=item=>`<a class="ig-card ig-card--interactive review-day-card" href="article/${encodeURIComponent(item.slug)}/"><div class="ig-card__body review-day-card__copy"><span class="review-day-card__eyebrow">${esc(item.game_title||'Обзор Игропоиска')}</span><h3 class="ig-card__title">${esc(item.title)}</h3><p class="ig-card__summary review-day-card__dek">${esc(item.dek||'')}</p><div class="ig-card__meta review-day-card__meta"><span>${esc(item.author||'Редакция Игропоиска')}</span><span>${esc(item.published_at||'')}</span></div></div><div class="ig-card__media review-day-card__media"><img src="${esc(item.hero||'')}" alt="${esc(item.game_title||item.title)}" loading="eager" decoding="async"></div>${Number.isFinite(Number(item.score))?`<span class="ig-rating review-day-card__score">${Number(item.score).toFixed(1)}</span>`:''}</a>`;
 const miniCard=(item,index)=>`<button class="ig-button review-day-mini${index===activeIndex?' is-active':''}" type="button" data-review-index="${index}" aria-label="Показать обзор ${esc(item.game_title||item.title)}"><img src="${esc(item.hero||'')}" alt="" loading="lazy" decoding="async"><span>${esc(item.game_title||item.title)}</span></button>`;
 
+function revealActiveMini(){
+  const active=rail.querySelector('.is-active');
+  if(!active)return;
+  const left=active.offsetLeft;
+  const right=left+active.offsetWidth;
+  if(left<rail.scrollLeft)rail.scrollTo({left,behavior:'smooth'});
+  else if(right>rail.scrollLeft+rail.clientWidth)rail.scrollTo({left:right-rail.clientWidth,behavior:'smooth'});
+}
+
 function render(){
   const item=items[activeIndex];
   if(!item)return;
@@ -25,7 +34,7 @@ function render(){
     render();
     restartTimer();
   }));
-  rail.querySelector('.is-active')?.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});
+  requestAnimationFrame(revealActiveMini);
 }
 
 function restartTimer(){
@@ -34,9 +43,21 @@ function restartTimer(){
   timer=setInterval(()=>{activeIndex=(activeIndex+1)%items.length;render()},AUTO_ROTATE_MS);
 }
 
-document.querySelectorAll('[data-review-rail]').forEach(button=>{
-  button.addEventListener('click',()=>rail.scrollBy({left:Number(button.dataset.reviewRail)*Math.max(260,rail.clientWidth*.75),behavior:'smooth'}));
+const railButtons=[...document.querySelectorAll('[data-review-rail]')];
+railButtons.forEach(button=>{
+  button.classList.add('ig-icon-button');
+  button.addEventListener('click',()=>{
+    const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
+    const next=Math.max(0,Math.min(max,rail.scrollLeft+Number(button.dataset.reviewRail)*Math.max(260,rail.clientWidth*.75)));
+    rail.scrollTo({left:next,behavior:'smooth'});
+  });
 });
+const updateButtons=()=>{
+  const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
+  railButtons.forEach(button=>button.disabled=button.dataset.reviewRail==='-1'?rail.scrollLeft<=2:rail.scrollLeft>=max-2);
+};
+rail.addEventListener('scroll',updateButtons,{passive:true});
+window.addEventListener('resize',updateButtons,{passive:true});
 
 fetch('data/home-widgets/reviews-of-day.json',{cache:'no-store'})
   .then(response=>{if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json()})
@@ -46,6 +67,7 @@ fetch('data/home-widgets/reviews-of-day.json',{cache:'no-store'})
     activeIndex=0;
     render();
     restartTimer();
+    requestAnimationFrame(updateButtons);
   })
   .catch(error=>{
     console.warn('Reviews of day:',error);
