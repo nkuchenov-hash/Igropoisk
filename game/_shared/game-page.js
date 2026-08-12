@@ -4,7 +4,7 @@
   document.head.appendChild(script);
   const qualityStyle=document.createElement('link');
   qualityStyle.rel='stylesheet';
-  qualityStyle.href='../_shared/game-page-quality.css?v=20260812-1';
+  qualityStyle.href='../_shared/game-page-quality.css?v=20260812-2';
   document.head.appendChild(qualityStyle);
   const quality=document.createElement('script');
   quality.src='../_shared/game-page-quality.js?v=20260812-2';
@@ -18,6 +18,10 @@
   reviewControl.src='../_shared/game-page-review-publication-control.js?v=20260812-2';
   reviewControl.defer=true;
   document.head.appendChild(reviewControl);
+  const materialized=document.createElement('script');
+  materialized.src='../_shared/game-page-materialized-data.js?v=20260812-1';
+  materialized.defer=true;
+  document.head.appendChild(materialized);
   const editions=document.createElement('script');
   editions.src='../_shared/game-editions.js?v=20260807-1';
   document.head.appendChild(editions);
