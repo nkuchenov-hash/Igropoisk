@@ -13,22 +13,26 @@ const executablePath=browserPath();if(!executablePath){server.close();throw new 
 const browser=await puppeteer.launch({executablePath,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 const errors=[];const assert=(condition,message)=>{if(!condition)errors.push(message)};
 const games=[['elden-ring',1245620],['the-witcher-3-wild-hunt',292030],['doom',379720],['control',870780],['hades',1145360]];
+const diagnostics=[];
 try{
   for(const [slug,appid] of games){
     const page=await browser.newPage();await page.setViewport({width:1440,height:1000,deviceScaleFactor:1});
     const pageErrors=[];page.on('pageerror',error=>pageErrors.push(String(error?.stack||error)));
     await page.goto(`http://127.0.0.1:4175/game/${slug}/?smoke=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:30000});
-    await page.waitForFunction(()=>document.querySelector('#gameTitle')?.textContent?.trim()&&document.querySelectorAll('.hero-media__item').length>=6,{timeout:20000,polling:150});
+    try{await page.waitForFunction(()=>document.querySelector('#gameTitle')?.textContent?.trim(),{timeout:12000,polling:150})}catch{}
+    await new Promise(resolve=>setTimeout(resolve,700));
     const state=await page.evaluate(()=>{
       const cover=document.querySelector('#gameCover img');
       const shots=[...document.querySelectorAll('.hero-media__item img')].map(img=>img.currentSrc||img.src).filter(Boolean);
       const fontSelectors=['.breadcrumbs','.hero-meta','.score-line b','.score-line small','.game-tabs button','.game-panel h2','.game-panel h3'];
       const fonts=fontSelectors.flatMap(selector=>[...document.querySelectorAll(selector)].map(node=>({selector,size:parseFloat(getComputedStyle(node).fontSize)})));
       const reviews=[...document.querySelectorAll('#reviewGrid .ig-external-review')];
-      return {title:document.querySelector('#gameTitle')?.textContent?.trim()||'',cover:cover?.getAttribute('src')||'',heroShots:shots.length,uniqueHeroShots:new Set(shots.map(url=>url.split('?')[0])).size,minFont:fonts.length?Math.min(...fonts.map(item=>item.size)):0,smallFonts:fonts.filter(item=>item.size<16),reviewRows:reviews.length,reviewContainers:reviews.length?document.querySelectorAll('#reviewGrid.ig-external-review-grid').length:1};
+      return {title:document.querySelector('#gameTitle')?.textContent?.trim()||'',cover:cover?.getAttribute('src')||'',heroShots:shots.length,heroShotUrls:shots,uniqueHeroShots:new Set(shots.map(url=>url.split('?')[0])).size,minFont:fonts.length?Math.min(...fonts.map(item=>item.size)):0,smallFonts:fonts.filter(item=>item.size<16),reviewRows:reviews.length,reviewContainers:reviews.length?document.querySelectorAll('#reviewGrid.ig-external-review-grid').length:1,bodyStart:document.body.textContent.trim().slice(0,180)};
     });
+    diagnostics.push({slug,game:state,pageErrors});
+    assert(Boolean(state.title),`${slug}: game runtime did not render a title; body=${state.bodyStart}`);
     assert(state.cover.includes(`/apps/${appid}/library_600x900`),`${slug}: portrait cover missing (${state.cover})`);
-    assert(state.heroShots>=6,`${slug}: hero screenshot gallery has ${state.heroShots}/6`);
+    assert(state.heroShots>=6,`${slug}: hero screenshot gallery has ${state.heroShots}/6; urls=${state.heroShotUrls.join(' | ')}`);
     assert(state.uniqueHeroShots===state.heroShots,`${slug}: duplicate hero screenshots ${state.uniqueHeroShots}/${state.heroShots}`);
     assert(state.minFont>=16,`${slug}: game page text below 16px: ${JSON.stringify(state.smallFonts)}`);
     assert(state.reviewContainers===1,`${slug}: external reviews are not inside one list card`);
@@ -38,8 +42,8 @@ try{
     const article=await browser.newPage();await article.setViewport({width:1440,height:1000,deviceScaleFactor:1});
     const articleErrors=[];article.on('pageerror',error=>articleErrors.push(String(error?.stack||error)));
     await article.goto(`http://127.0.0.1:4175/article/${slug}/?smoke=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:30000});
-    await article.waitForFunction(()=>document.querySelector('.article-lead')&&document.querySelectorAll('.article-shot-card__caption').length>=7,{timeout:15000,polling:150});
-    await new Promise(resolve=>setTimeout(resolve,250));
+    try{await article.waitForFunction(()=>document.querySelector('.article-lead'),{timeout:8000,polling:150})}catch{}
+    await new Promise(resolve=>setTimeout(resolve,500));
     const articleState=await article.evaluate(()=>{
       const images=[...document.querySelectorAll('.article-shot-card img')].map(img=>img.currentSrc||img.src).filter(Boolean);
       const captions=[...document.querySelectorAll('.article-shot-card__caption')];
@@ -48,6 +52,7 @@ try{
       const paragraphSizes=paragraphs.map(node=>parseFloat(getComputedStyle(node).fontSize));
       return {images,uniqueImages:new Set(images.map(url=>url.split('?')[0])).size,captions:captions.map(node=>node.textContent.trim()),captionMin:captionSizes.length?Math.min(...captionSizes):0,paragraphMin:paragraphSizes.length?Math.min(...paragraphSizes):0,lead:document.querySelector('.article-lead')?.textContent?.trim()||'',title:document.querySelector('.article-hero h1')?.textContent?.trim()||'',fullText:document.body?.textContent||''};
     });
+    diagnostics.at(-1).article=articleState;diagnostics.at(-1).articleErrors=articleErrors;
     assert(articleState.images.length>=7,`${slug} article: only ${articleState.images.length} screenshots`);
     assert(articleState.uniqueImages===articleState.images.length,`${slug} article: duplicate screenshots ${articleState.uniqueImages}/${articleState.images.length}`);
     assert(articleState.images.every(url=>url.includes(`/apps/${appid}/`)),`${slug} article: screenshot from wrong Steam app`);
@@ -63,12 +68,12 @@ try{
     await article.close();
   }
 
-  const japan=await browser.newPage();await japan.setViewport({width:1440,height:1000});await japan.goto(`http://127.0.0.1:4175/game/3-japan-stigmatized-property/?smoke=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:30000});await japan.waitForFunction(()=>document.querySelector('#gameTitle')?.textContent?.trim(),{timeout:15000});
-  const japanState=await japan.evaluate(()=>({title:document.querySelector('#gameTitle')?.textContent||'',details:document.querySelector('#details')?.textContent||''}));
-  assert(japanState.title==='Japan Stigmatized Property 3',`Japan public title is wrong: ${japanState.title}`);
+  const japan=await browser.newPage();await japan.setViewport({width:1440,height:1000});await japan.goto(`http://127.0.0.1:4175/game/3-japan-stigmatized-property/?smoke=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:30000});try{await japan.waitForFunction(()=>document.querySelector('#gameTitle')?.textContent?.trim(),{timeout:10000})}catch{};
+  const japanState=await japan.evaluate(()=>({title:document.querySelector('#gameTitle')?.textContent||'',details:document.querySelector('#details')?.textContent||'',bodyStart:document.body.textContent.trim().slice(0,220)}));
+  assert(japanState.title==='Japan Stigmatized Property 3',`Japan public title is wrong: ${japanState.title||japanState.bodyStart}`);
   assert(!/[\u3040-\u30ff\u3400-\u9fff]/.test(japanState.title+japanState.details),`Japan public page still exposes Japanese metadata: ${japanState.title} ${japanState.details}`);
   await japan.close();
 
-  console.log(JSON.stringify({checked_games:games.map(([slug])=>slug),japan:japanState,errors},null,2));
+  console.log(JSON.stringify({checked_games:games.map(([slug])=>slug),diagnostics,japan:japanState,errors},null,2));
   if(errors.length)throw new Error(`Game/article QA smoke failed:\n- ${errors.join('\n- ')}`);
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
