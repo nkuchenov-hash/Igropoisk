@@ -10,7 +10,8 @@ async function main(){
   const reviewStatus=String(feed?.publication_gate?.status||''),ratingStatus=String(rating?.status||'');
   const corpusGreen=reviewStatus==='green'&&ratingStatus==='green'&&Number.isFinite(Number(rating?.calculation?.score_10));
   const articleStatus=String(feed?.igropoisk_article?.publication_status||feed?.igropoisk_article?.status||'').toLowerCase();
-  const articleGreen=corpusGreen&&articleStatus==='published'&&Boolean(feed?.igropoisk_article?.url);
+  const articleUrl=String(feed?.igropoisk_article?.url||'');
+  const articleGreen=corpusGreen&&Boolean(articleUrl)&&(articleStatus==='published'||articleStatus==='green'||!articleStatus);
   const explicitRed=reviewStatus==='red-needs-revision'||ratingStatus==='red-needs-revision';
   const enforce=()=>{
     const featured=document.querySelector('#featuredReview');if(!featured)return;
