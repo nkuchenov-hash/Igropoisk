@@ -1,6 +1,8 @@
 .hero-score-card{background:var(--ig-glass-panel)!important;backdrop-filter:blur(20px)!important;box-shadow:var(--ig-shadow)}
 .score-line:first-child strong{color:var(--ig-rating)}
 .score-line:nth-child(2) strong{color:var(--ig-user-score)}
+.game-hero>.game-hero__preview{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:center 35%}
+.game-hero:after{z-index:1!important}.game-hero__inner{z-index:2!important}
 .hero-poster{position:absolute;left:var(--ig-gutter);top:72px;width:184px;aspect-ratio:2/3;overflow:hidden;border:1px solid color-mix(in srgb,var(--ig-line-strong) 85%,transparent);border-radius:var(--ig-radius-md);background:var(--ig-surface-2);box-shadow:var(--ig-shadow)}
 .hero-poster img,.hero-poster .media-placeholder{display:block;width:100%;height:100%;object-fit:cover}.hero-poster .media-placeholder{display:grid;place-items:center}
 .game-hero__inner>.hero-copy{margin-left:216px;max-width:min(680px,calc(100% - 560px))}
