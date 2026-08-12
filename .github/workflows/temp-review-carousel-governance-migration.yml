@@ -29,9 +29,10 @@ jobs:
           from pathlib import Path
           p = Path('scripts/validate-central-design-system.mjs')
           text = p.read_text()
-          text = text.replace('\\\\n    .filter', '\n    .filter')
-          text = text.replace('\\\\n    .map', '\n    .map')
-          text = text.replace('\\\\n    .join', '\n    .join')
+          slash_n = chr(92) + 'n'
+          text = text.replace(slash_n + '    .filter', '\n    .filter')
+          text = text.replace(slash_n + '    .map', '\n    .map')
+          text = text.replace(slash_n + '    .join', '\n    .join')
           p.write_text(text)
           PY
       - name: Validate migration output
