@@ -11,7 +11,7 @@
   quality.defer=true;
   document.head.appendChild(quality);
   const similarity=document.createElement('script');
-  similarity.src='../_shared/game-page-similarity.js?v=20260812-1';
+  similarity.src='../_shared/game-page-similarity.js?v=20260812-2';
   similarity.defer=true;
   document.head.appendChild(similarity);
   const reviewControl=document.createElement('script');
