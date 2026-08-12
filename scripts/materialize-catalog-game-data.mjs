@@ -14,13 +14,18 @@ const preferArray=(draft,parser)=>arr(draft).length?arr(draft):arr(parser);
 const draftDir=path.join(root,'data/drafts');
 const drafts=[];
 if(fs.existsSync(draftDir))for(const file of fs.readdirSync(draftDir).filter(name=>name.endsWith('.json'))){const value=read(`data/drafts/${file}`);if(value)drafts.push({file,value})}
+const technicalTitle=(title,slug)=>{const raw=String(title||'').trim();if(!raw)return true;return norm(raw)===norm(slug)&&(/[-_]/.test(raw)||raw===raw.toLowerCase())};
+function quality(value,slug){let score=0;if(!value)return score;const title=value.identity?.title;if(title&&!technicalTitle(title,slug))score+=100;if(value.identity?.game_id)score+=20;if(value.editorial?.integrated_description)score+=20;if(value.editorial?.short_description)score+=8;score+=Math.min(20,arr(value.editorial?.features).length*2);score+=Math.min(20,arr(value.media?.artwork).length*3);score+=Math.min(20,arr(value.media?.screenshots).length);if(value.relations?.checked_at)score+=20;if(value.requirements?.pc?.minimum?.raw||value.requirements?.pc?.recommended?.raw)score+=10;return score}
 function findLegacy(game,parser){
-  const direct=read(`data/drafts/${game.slug}.json`);if(direct)return direct;
-  const gameId=String(game.game_id||'');const steam=Number(game.steam_appid||parser?.identity?.steam_appid||0);const title=norm(game.title);
-  return drafts.find(({value})=>gameId&&String(value?.identity?.game_id||value?.game_id||'')===gameId)?.value
-    ||drafts.find(({value})=>steam&&Number(value?.identity?.steam_appid||0)===steam)?.value
-    ||drafts.find(({value})=>title&&norm(value?.identity?.title)===title)?.value
-    ||null;
+  const gameId=String(game.game_id||'');const steam=Number(game.steam_appid||parser?.identity?.steam_appid||0);const title=norm(game.title);const direct=read(`data/drafts/${game.slug}.json`);
+  const candidates=[direct,
+    ...drafts.filter(({value})=>gameId&&String(value?.identity?.game_id||value?.game_id||'')===gameId).map(item=>item.value),
+    ...drafts.filter(({value})=>steam&&Number(value?.identity?.steam_appid||0)===steam).map(item=>item.value),
+    ...drafts.filter(({value})=>title&&norm(value?.identity?.title)===title).map(item=>item.value)
+  ].filter(Boolean);
+  const uniqueCandidates=[...new Map(candidates.map(value=>[value,value])).values()];
+  uniqueCandidates.sort((a,b)=>quality(b,game.slug)-quality(a,game.slug));
+  return uniqueCandidates[0]||null;
 }
 let written=0,requirementsRecovered=0,aliasesRecovered=0;
 for(const game of catalog){
@@ -36,7 +41,8 @@ for(const game of catalog){
     platforms:preferArray(legacyRequirements.platforms,parserRequirements.platforms||parser?.classification?.platforms)
   };
   if(parserRequirements.pc?.minimum?.raw||parserRequirements.pc?.recommended?.raw)requirementsRecovered++;
-  const identity={...(parser?.identity||{}),...(legacy?.identity||{}),slug,title:game.title||legacy?.identity?.title||parser?.identity?.title||slug,game_id:game.game_id||legacy?.identity?.game_id||parser?.identity?.game_id||''};
+  const legacyTitle=legacy?.identity?.title;const parserTitle=parser?.identity?.title;const canonicalTitle=!technicalTitle(legacyTitle,slug)?legacyTitle:!technicalTitle(parserTitle,slug)?parserTitle:game.title||legacyTitle||parserTitle||slug;
+  const identity={...(parser?.identity||{}),...(legacy?.identity||{}),slug,title:canonicalTitle,game_id:game.game_id||legacy?.identity?.game_id||parser?.identity?.game_id||''};
   const classification={...(parser?.classification||{}),...(legacy?.classification||{}),genres:preferArray(legacy?.classification?.genres,parser?.classification?.genres),categories:preferArray(legacy?.classification?.categories,parser?.classification?.categories),platforms:preferArray(parser?.classification?.platforms,legacy?.classification?.platforms)};
   const media={...(parser?.media||{}),...(legacy?.media||{}),screenshots:unique([...arr(legacy?.media?.screenshots),...arr(parser?.media?.screenshots)]),videos:unique([...arr(legacy?.media?.videos),...arr(parser?.media?.videos)]),artwork:unique([...arr(legacy?.media?.artwork),...arr(parser?.media?.artwork)])};
   const sources=unique([...arr(legacy?.sources),...(parser?.source?.url?[{title:parser.source.name||'Источник данных игры',source_name:parser.source.name||'',url:parser.source.url,domain:(()=>{try{return new URL(parser.source.url).hostname}catch{return''}})(),checked_at:parser.source.checked_at||''}]:[])],item=>item?.url||'');
