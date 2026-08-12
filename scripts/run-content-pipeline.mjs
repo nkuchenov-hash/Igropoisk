@@ -51,9 +51,20 @@ if(franchiseTask&&aiAvailable){
 let pageSucceeded=false;
 for(const task of plan.pages||[]){
   if(!task.game_id){results.push({label:`page:${task.slug}`,status:'needs_revision',reason:'canonical_game_id_missing'});continue}
-  if(task.steam_appid)run(`parse:${task.slug}`,'node',['scripts/parse-game-data.mjs',task.slug,String(task.steam_appid),task.title||'']);
+  const parserMode=task.steam_appid?String(task.steam_appid):'auto';
+  run(`parse:${task.slug}`,'node',['scripts/parse-game-data.mjs',task.slug,parserMode,task.title||'']);
   const built=run(`page:${task.slug}`,'node',['scripts/build-game-page-basic.mjs',task.game_id]);
-  if(built){run(`page-qc:${task.slug}`,'node',['scripts/quality-control-loop.mjs','page',task.slug,task.game_id]);const qc=qualityStatus('page',task.slug);if(qc.green){pageSucceeded=true;run(`canonicalize-page:${task.slug}`,'node',['scripts/canonicalize-editorial-game-id.mjs',task.slug])}else results.push({label:`page-qc-state:${task.slug}`,status:'needs_revision',comments:qc.comments||[]})}
+  if(built){
+    run(`page-qc:${task.slug}`,'node',['scripts/quality-control-loop.mjs','page',task.slug,task.game_id]);
+    const qc=qualityStatus('page',task.slug);
+    if(qc.green){
+      run(`page-finalize:${task.slug}`,'node',['scripts/build-game-page-basic.mjs',task.game_id,'--finalize-public']);
+      const finalized=readJSON(`data/drafts/${task.slug}.json`,{});
+      const pageReady=finalized?.publication?.public_ready===true&&exists(`game/${task.slug}/index.html`);
+      if(pageReady){pageSucceeded=true;run(`canonicalize-page:${task.slug}`,'node',['scripts/canonicalize-editorial-game-id.mjs',task.slug])}
+      else results.push({label:`page-finalize-state:${task.slug}`,status:'needs_revision',comments:['Media gate passed but the public game page did not finalize.']});
+    }else results.push({label:`page-qc-state:${task.slug}`,status:'needs_revision',comments:qc.comments||[]})
+  }
 }
 if(pageSucceeded){const replanned=run('replan-after-pages','node',['scripts/orchestrate-content.mjs','--finalize']);if(replanned)mergePlan(readJSON('data/content-pipeline/execution-plan.json',{pages:[],reviews:[]}))}
 
