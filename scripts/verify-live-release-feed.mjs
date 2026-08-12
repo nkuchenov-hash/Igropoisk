@@ -10,17 +10,25 @@ async function fetchJson(url) {
   if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
   return response.json();
 }
+function releaseRows(doc = {}) {
+  return [
+    ...(doc.releases || []).map(release => ({...release, visibility: 'global'})),
+    ...(doc.personalized_releases || []).map(release => ({...release, visibility: 'personalized'})),
+  ];
+}
 function releaseSignature(doc = {}) {
-  return (doc.releases || []).map(release => ({
+  return releaseRows(doc).map(release => ({
     id: release.id,
+    visibility: release.visibility,
     game_id: release.game_id || null,
     global_notability: Boolean(release.global_notability?.eligible),
+    regional_regions: (release.regional_notability?.qualifying_regions || []).map(item => item.region).sort(),
     events: (release.events || []).map(event => ({
       id: event.id, precision: event.precision || 'tbd', date: event.date || null,
       date_start: event.date_start || null, date_end: event.date_end || null,
       platforms: [...(event.platforms || [])].sort(),
     })).sort((a,b) => String(a.id).localeCompare(String(b.id))),
-  })).sort((a,b) => String(a.id).localeCompare(String(b.id)));
+  })).sort((a,b) => `${a.visibility}:${a.id}`.localeCompare(`${b.visibility}:${b.id}`));
 }
 
 const manifest = await fetchJson(manifestUrl);
@@ -31,9 +39,9 @@ const mismatches = [];
 if (String(local.generated_at || '') !== String(live.generated_at || '')) mismatches.push(`generated_at local=${local.generated_at || 'none'} live=${live.generated_at || 'none'}`);
 const localSignature = JSON.stringify(releaseSignature(local));
 const liveSignature = JSON.stringify(releaseSignature(live));
-if (localSignature !== liveSignature) mismatches.push('release IDs/game IDs/global gate/events differ between validated local materialization and live runtime feed');
+if (localSignature !== liveSignature) mismatches.push('global/personalized release IDs, game IDs, admission gates or events differ between validated materialization and live runtime feed');
 if (mismatches.length) {
   console.error(mismatches.map(item => `- ${item}`).join('\n'));
   process.exit(1);
 }
-console.log(`Live release feed matches validated materialization: ${(local.releases || []).length} releases, generated_at=${local.generated_at}`);
+console.log(`Live release feed matches validated materialization: ${(local.releases || []).length} global + ${(local.personalized_releases || []).length} personalized releases, generated_at=${local.generated_at}`);
