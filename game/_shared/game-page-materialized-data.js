@@ -8,7 +8,7 @@ const arr=value=>Array.isArray(value)?value:[];
 const fetchJSON=async url=>{try{const response=await fetch(url,{cache:'no-store'});return response.ok?await response.json():null}catch{return null}};
 const waitFor=async selector=>{for(let i=0;i<120;i++){const node=document.querySelector(selector);if(node)return node;await new Promise(resolve=>setTimeout(resolve,100))}return null};
 function removeRatingControls(){for(const selector of ['#rateGame','#rateInline','#ratingDialog'])document.querySelector(selector)?.remove()}
-function installRatingRemoval(){removeRatingControls();const observer=new MutationObserver(removeRatingControls);observer.observe(document.body,{childList:true,subtree:true})}
+async function installRatingRemoval(){for(let i=0;i<80;i++){const marker=document.querySelector('#ratingDialogTitle');if(marker?.textContent?.trim())break;await new Promise(resolve=>setTimeout(resolve,100))}removeRatingControls();const observer=new MutationObserver(removeRatingControls);observer.observe(document.body,{childList:true,subtree:true})}
 const platformLabel=value=>({windows:'Windows',win:'Windows',mac:'macOS',macos:'macOS',linux:'Linux',ps5:'PlayStation 5',ps4:'PlayStation 4',xboxseries:'Xbox Series X|S',xboxone:'Xbox One',switch:'Nintendo Switch'}[String(value||'').toLowerCase()]||String(value||''));
 function parseRequirementRaw(raw){
   if(!raw)return[];
