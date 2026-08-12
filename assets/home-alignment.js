@@ -1,23 +1,6 @@
 (()=>{
 'use strict';
 
-const root=document.documentElement;
-const home=document.querySelector('#home');
-if(!home)return;
-
-const sync=()=>{
-  const gutter=parseFloat(getComputedStyle(root).getPropertyValue('--ig-gutter'))||26;
-  const safeGutter=Math.max(14,gutter);
-  root.style.setProperty('--home-header-left',`${safeGutter}px`);
-  root.style.setProperty('--home-header-right',`${safeGutter}px`);
-};
-
-let frame=0;
-const schedule=()=>{
-  cancelAnimationFrame(frame);
-  frame=requestAnimationFrame(sync);
-};
-
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const initials=title=>String(title||'И').split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
 const heroRating=[
@@ -57,10 +40,6 @@ function removeLegacyHeadingGlyphs(){
   document.querySelectorAll('.home-showcase-heading__icon').forEach(node=>node.remove());
 }
 
-sync();
 installHeroRating();
 removeLegacyHeadingGlyphs();
-window.addEventListener('resize',schedule,{passive:true});
-window.addEventListener('load',schedule,{once:true});
-document.fonts?.ready?.then(schedule).catch(()=>{});
 })();
