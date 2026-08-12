@@ -2,6 +2,7 @@
 'use strict';
 const rail=document.querySelector('#releaseHomeGrid');
 if(!rail)return;
+document.querySelector('.home-showcase-heading--split a[href="calendar/"]')?.classList.add('ig-button');
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const initials=title=>String(title||'').split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
 const primaryEvent=game=>(game.events||[]).slice().sort((a,b)=>String(a.date_start||a.date||'9999').localeCompare(String(b.date_start||b.date||'9999')))[0]||{};
@@ -45,14 +46,26 @@ const candidates=game=>{
   ].filter(Boolean))];
 };
 const anticipation=game=>game.anticipation||{};
-const anticipationScore=game=>Number(game.editorial_quality?.anticipation_score||anticipation(game).anticipation_score||0);
-const homepageEligible=game=>game.editorial_quality?.homepage_eligible===true||anticipation(game).homepage_eligible===true;
-const anticipationLabel=game=>{
-  const quality=game.editorial_quality||{};
+const independentCount=game=>Number(anticipation(game).independent_publication_count||game.editorial_quality?.independent_source_count||0);
+const steamPosition=game=>Number(anticipation(game).steam_popular_upcoming_position||game.editorial_quality?.steam_popular_upcoming_position||0);
+const crossSiteEligible=game=>{
   const info=anticipation(game);
-  if((quality.signals||[]).includes('current_popular')||info.cross_site_coverage&&Number(info.popular_index||0)>=10)return 'Ожидаемость подтверждена несколькими площадками';
-  const position=Number(quality.steam_popular_upcoming_position||info.steam_popular_upcoming_position||0);
-  if(position>0&&Number(info.independent_publication_count||quality.independent_source_count||0)>0)return `Steam Popular Upcoming #${position} · есть независимое освещение`;
+  if(info.homepage_eligible===true)return true;
+  if(info.homepage_eligible===false)return false;
+  const publications=independentCount(game);
+  const popularIndex=Number(info.popular_index||0);
+  const confidence=Number(info.popular_confidence||0);
+  const nonSteamFamilies=(info.evidence_families||[]).filter(family=>family&&family!=='steam_chart');
+  const crossSite=publications>=2&&popularIndex>=10&&confidence>=0.5&&nonSteamFamilies.length>0;
+  const strongSteam=steamPosition(game)>0&&steamPosition(game)<=20&&publications>=1;
+  return crossSite||strongSteam||game.editorial_quality?.manual_anticipated===true;
+};
+const anticipationScore=game=>Number(game.editorial_quality?.anticipation_score||anticipation(game).anticipation_score||0);
+const anticipationLabel=game=>{
+  const info=anticipation(game);
+  if(info.cross_site_coverage===true||independentCount(game)>=2&&Number(info.popular_index||0)>=10)return 'Ожидаемость подтверждена несколькими площадками';
+  const position=steamPosition(game);
+  if(position>0&&independentCount(game)>0)return `Steam Popular Upcoming #${position} · есть независимое освещение`;
   return '';
 };
 const card=(game,kind)=>{
@@ -103,7 +116,7 @@ Promise.all([
   const recentDays=Math.max(1,Number(rules.recent_release_days||7));
   const maximumRecent=Math.min(maximum,Math.max(0,Number(rules.maximum_recent_cards||4)));
   const classified=(payload.releases||[])
-    .filter(homepageEligible)
+    .filter(crossSiteEligible)
     .map(game=>({game,event:primaryEvent(game)}))
     .map(row=>({...row,kind:releaseKind(row.event,recentDays)}))
     .filter(row=>row.kind!=='expired');
