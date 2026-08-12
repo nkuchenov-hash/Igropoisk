@@ -80,6 +80,27 @@ const errors=[
   ...validateVisibleReleaseCovers(publicCalendar),
 ];
 
+const validatedCoverById=new Map(
+  candidates
+    .filter(candidate=>candidate?.image?.local_url&&candidate?.image?.status==='downloaded_verified'&&candidate?.image?.verified===true)
+    .map(candidate=>[candidate.id,candidate.image])
+);
+let synchronizedHomeFeedCovers=0;
+let synchronizedRaw=raw;
+if(!errors.length&&validatedCoverById.size){
+  synchronizedRaw={
+    ...raw,
+    releases:(raw.releases||[]).map(release=>{
+      const image=validatedCoverById.get(release.id);
+      if(!image)return release;
+      const previous=release.image||{};
+      if(previous.local_url===image.local_url&&previous.status===image.status&&previous.verified===image.verified)return release;
+      synchronizedHomeFeedCovers++;
+      return {...release,image};
+    }),
+  };
+}
+
 const candidateDocument={schema_version:5,generated_at:generatedAt,raw_generated_at:raw?.generated_at||null,news_generated_at:newsDoc?.generatedAt||null,popular_generated_at:popularDoc?.generated_at||null,candidates,statistics:publicCalendar.statistics};
 const report={
   schema_version:5,generated_at:generatedAt,
@@ -88,6 +109,7 @@ const report={
     release_notability:{model:'broad global OR established niche/franchise global OR strong personalized regional attention',global_requirements:policy.global_notability||{},regional_requirements:policy.regional_notability||{},rule:'Steam/store rank is never sufficient by itself. Regional qualification is based on measured audience attention, never developer/game origin.'},
     steam_editorial_discovery:{discovered_candidates:steamEditorial.discovered,sources:steamEditorial.sources},
     release_cover_resolution:{strategy:'verified local asset required for every globally or personally visible release',preferred:'Steam library 600x900 cover',fallbacks:['existing official image','Steam capsule','Steam header','Steam background','Steam screenshot'],...coverResolution.statistics,unresolved:coverResolution.unresolved},
+    home_release_cover_sync:{strategy:'copy every validated downloaded visible-release cover back into data/releases/current.json before the full home-feed snapshot is published',synchronized:synchronizedHomeFeedCovers},
     audience_relevance:['Canonical game_id first','Audience regions from explicit audience metadata or configured source audience','Topic/location words are not accepted as audience geography','Repeated high-score regional coverage can qualify only the matching user region'],
     optional_auxiliary:['RAWG enrichment when RAWG_API_KEY is configured'],
     supported_auxiliary:['IGDB/RAWG claims are discovery/cross-check only and cannot confirm a date alone'],
@@ -104,6 +126,12 @@ const report={
   validation_errors:errors,
 };
 await Promise.all([fs.mkdir(path.dirname(paths.candidates),{recursive:true}),fs.mkdir(path.dirname(paths.public),{recursive:true})]);
-await Promise.all([fs.writeFile(paths.candidates,`${JSON.stringify(candidateDocument,null,2)}\n`),fs.writeFile(paths.public,`${JSON.stringify(publicCalendar,null,2)}\n`),fs.writeFile(paths.report,`${JSON.stringify(report,null,2)}\n`)]);
+const writes=[
+  fs.writeFile(paths.candidates,`${JSON.stringify(candidateDocument,null,2)}\n`),
+  fs.writeFile(paths.public,`${JSON.stringify(publicCalendar,null,2)}\n`),
+  fs.writeFile(paths.report,`${JSON.stringify(report,null,2)}\n`),
+];
+if(!errors.length&&synchronizedHomeFeedCovers)writes.push(fs.writeFile(paths.raw,`${JSON.stringify(synchronizedRaw,null,2)}\n`));
+await Promise.all(writes);
 console.log(JSON.stringify(report,null,2));
 if(errors.length)process.exitCode=1;
