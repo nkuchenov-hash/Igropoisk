@@ -11,10 +11,21 @@ on:
       - 'data/drafts/**'
       - 'data/article-media/**'
       - 'data/game-media/**'
+      - 'data/reviews/**'
+      - 'data/ratings/**'
+      - 'data/similarity/**'
+      - 'data/franchises/**'
+      - 'config/game-page-quality-v2.json'
       - 'config/game-media-steam-overrides.json'
       - 'scripts/repair-game-media-from-steam.mjs'
       - 'scripts/validate-game-media-quality.mjs'
-      - 'scripts/build-game-page.mjs'
+      - 'scripts/build-similarity-index.mjs'
+      - 'scripts/enrich-game-relations.mjs'
+      - 'scripts/prepare-review-research.mjs'
+      - 'scripts/calculate-ratings-from-research.mjs'
+      - 'scripts/quality-control-loop.mjs'
+      - 'scripts/run-content-pipeline.mjs'
+      - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/smoke-game-page-browser.mjs'
       - '.github/workflows/game-page-quality.yml'
 
@@ -31,18 +42,29 @@ jobs:
           node-version: '22'
       - name: Install browser validation dependency
         run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
-      - name: Verify shared game runtime syntax
+      - name: Verify shared runtime and quality-controller syntax
         run: |
           node --check game/_shared/game-page-v3-bootstrap.js
           node --check game/_shared/game-page.js
+          node --check game/_shared/game-page-quality.js
           node --check game/_shared/game-media-recovery.js
           node --check article/_shared/review-carousel.js
           node --check scripts/repair-game-media-from-steam.mjs
+          node --check scripts/validate-game-media-quality.mjs
+          node --check scripts/build-similarity-index.mjs
+          node --check scripts/enrich-game-relations.mjs
+          node --check scripts/prepare-review-research.mjs
+          node --check scripts/calculate-ratings-from-research.mjs
+          node --check scripts/quality-control-loop.mjs
+          node --check scripts/run-content-pipeline.mjs
+          node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/smoke-game-page-browser.mjs
       - name: Exercise verified Steam media repair
         run: node scripts/repair-game-media-from-steam.mjs
-      - name: Verify game media quality after repair
+      - name: Produce media quality diagnoses
         run: node scripts/validate-game-media-quality.mjs
+      - name: Rebuild similarity reasons
+        run: node scripts/build-similarity-index.mjs
       - name: Verify target game pages and review rendering in browser
         run: node scripts/smoke-game-page-browser.mjs
       - name: Verify GTA VI release and media contract
