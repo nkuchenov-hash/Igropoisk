@@ -4,6 +4,7 @@
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const setState=(target,title,text)=>{target.innerHTML=`<div class="popular-state"><strong>${esc(title)}</strong><span>${esc(text)}</span></div>`};
 const reducedMotion=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+const MAXIMUM_COUNT=20;
 
 function ensureControls(target){
   const heading=target.closest('.section')?.querySelector('.section-head');
@@ -167,7 +168,7 @@ async function load(){
     ]);
     if(!popularResponse.ok)throw new Error(`Popularity HTTP ${popularResponse.status}`);
     const data=await popularResponse.json();
-    const ranking=Array.isArray(data.ranking)?data.ranking:[];
+    const ranking=Array.isArray(data.ranking)?data.ranking.slice(0,MAXIMUM_COUNT):[];
     if(!ranking.length)throw new Error('Popularity ranking is empty');
     const catalog=catalogResponse.ok?await catalogResponse.json():[];
     const existing=new Set((catalog||[]).map(item=>item.slug));
