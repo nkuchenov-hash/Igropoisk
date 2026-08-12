@@ -1,50 +1,74 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-import { GameRegistryApi } from './lib/game-registry.mjs';
-import { collectNewsGamePageReferences } from './lib/news-game-page-trigger.mjs';
+import { GameRegistryApi, validateForPublication } from './lib/game-registry.mjs';
+import { decodeNewsGameRequests, registerNewsGameCandidates } from './lib/news-game-registry-discovery.mjs';
 
 const root = process.cwd();
 const readJSON = (relative, fallback = null) => { try { return JSON.parse(fs.readFileSync(path.join(root, relative), 'utf8')); } catch { return fallback; } };
 const writeJSON = (relative, value) => { const target = path.join(root, relative); fs.mkdirSync(path.dirname(target), { recursive: true }); fs.writeFileSync(target, `${JSON.stringify(value, null, 2)}\n`); };
-const requestedGameIds = String(process.env.NEWS_GAME_IDS || '').split(',').map(value => value.trim()).filter(Boolean);
-const newsPayload = readJSON('tmp/live-news-events.json', readJSON('data/news-events.json', { items: [] }));
-const registry = readJSON('data/game-registry/registry.transition.json');
+const requests = decodeNewsGameRequests(process.env.NEWS_GAME_REQUESTS_B64 || '');
+const registryPath = 'data/game-registry/registry.transition.json';
+const registry = readJSON(registryPath);
 if (!registry) throw new Error('Canonical Game Registry is missing before news page planning.');
-const api = new GameRegistryApi(registry);
-const references = collectNewsGamePageReferences(newsPayload, api, { requestedGameIds });
+
+const discovery = registerNewsGameCandidates(registry, requests);
+if (discovery.created > 0) writeJSON(registryPath, discovery.registry);
+const api = new GameRegistryApi(discovery.registry);
 const queuePayload = readJSON('data/content-pipeline/queue.json', { items: [] });
 const plan = readJSON('data/content-pipeline/execution-plan.json', { pages: [], reviews: [] });
-const pageTypes = new Set(['build_page', 'enrich_game']);
 const queue = Array.isArray(queuePayload?.items) ? queuePayload.items : [];
-const newsTasks = queue
-  .filter(item => pageTypes.has(item?.type) && references.has(item?.game_id))
-  .map(item => {
-    const reference = references.get(item.game_id);
-    return {
-      ...item,
-      priority: Math.max(2000, Number(item.priority || 0)),
-      news_reference: true,
-      news_mentions: reference.mentions,
-      news_latest_published_at: reference.latestPublishedAt || ''
-    };
+const byGameId = new Map(queue.filter(item => ['build_page', 'enrich_game'].includes(item?.type)).map(item => [item.game_id, item]));
+const requestedById = new Map();
+for (const item of discovery.resolved) {
+  const previous = requestedById.get(item.game_id);
+  requestedById.set(item.game_id, previous ? {
+    ...previous,
+    news_ids: [...new Set([...(previous.news_ids || []), item.news_id].filter(Boolean))]
+  } : { ...item, news_ids: [item.news_id].filter(Boolean) });
+}
+
+const newsTasks = [];
+for (const request of requestedById.values()) {
+  const entity = api.findById(request.game_id);
+  if (!entity) continue;
+  const slug = String(entity.identity?.slug?.value || request.slug || '');
+  if (!slug || fs.existsSync(path.join(root, 'game', slug, 'index.html'))) continue;
+  const existing = byGameId.get(entity.id);
+  const gate = validateForPublication(entity, { allowNoRelease: false });
+  newsTasks.push({
+    ...(existing || {}),
+    type: existing?.type || (gate.passed ? 'build_page' : 'enrich_game'),
+    game_id: entity.id,
+    slug,
+    title: String(entity.identity?.canonicalTitle?.value || request.title || slug),
+    steam_appid: existing?.steam_appid || (entity.externalIds?.steamAppId ? Number(entity.externalIds.steamAppId) : null),
+    priority: Math.max(2000, Number(existing?.priority || 0)),
+    reason: existing?.reason || (gate.passed ? 'news requires canonical game page' : `news requires enrichment: ${gate.errors.join(', ')}`),
+    news_reference: true,
+    news_ids: request.news_ids || [],
+    news_source_url: request.source_url || null
   });
+}
 const newsSlugs = new Set(newsTasks.map(item => item.slug));
 const existingPages = Array.isArray(plan.pages) ? plan.pages.filter(item => !newsSlugs.has(item.slug)) : [];
 plan.pages = [...newsTasks, ...existingPages]
   .sort((a, b) => Number(b.priority || 0) - Number(a.priority || 0) || String(a.slug || '').localeCompare(String(b.slug || '')));
 plan.news = {
-  requested_game_ids: requestedGameIds,
-  referenced_games: references.size,
-  page_tasks: newsTasks.length,
-  unresolved_or_already_public: [...references.keys()].filter(gameId => !newsTasks.some(task => task.game_id === gameId))
+  requested: requests.length,
+  canonical_resolved: requestedById.size,
+  created_in_registry: discovery.created,
+  matched_in_registry: discovery.matched,
+  identity_issues: discovery.issues,
+  page_tasks: newsTasks.length
 };
 writeJSON('data/content-pipeline/execution-plan.json', plan);
 writeJSON('tmp/news-game-page-plan.json', {
-  schema_version: 1,
+  schema_version: 2,
   generated_at: new Date().toISOString(),
-  requested_game_ids: requestedGameIds,
-  referenced_games: [...references.values()],
+  requested: requests,
+  resolved: [...requestedById.values()],
+  identity_issues: discovery.issues,
   page_tasks: newsTasks.map(item => ({ game_id: item.game_id, slug: item.slug, type: item.type, priority: item.priority }))
 });
-console.log(JSON.stringify({ requested: requestedGameIds.length, referenced: references.size, page_tasks: newsTasks.length, total_page_tasks: plan.pages.length }, null, 2));
+console.log(JSON.stringify({ requested: requests.length, canonical_resolved: requestedById.size, created: discovery.created, issues: discovery.issues.length, page_tasks: newsTasks.length, total_page_tasks: plan.pages.length }, null, 2));
