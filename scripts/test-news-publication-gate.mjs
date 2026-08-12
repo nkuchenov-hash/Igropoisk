@@ -18,7 +18,7 @@ assert.equal(hasMissingGamePage(ready), false);
 assert.equal(hasMissingGamePage(missingByReason), true);
 assert.equal(hasMissingGamePage(missingCanonical), true);
 assert.equal(hasMissingGamePage(missingExternal), true);
-assert.equal(hasMissingGamePage(ambiguousOnly), false, 'Ambiguous unresolved names expose no broken game hashtag and do not trigger a wrong page.');
+assert.equal(hasMissingGamePage(ambiguousOnly), false, 'Ambiguous unresolved names expose no game hashtag and do not trigger a wrong page.');
 
 const sourceItems = [ready, missingCanonical, missingExternal, ambiguousOnly];
 const requests = collectMissingGamePageRequests(sourceItems);
@@ -29,6 +29,6 @@ assert.equal(requests.find(item => item.game_id === 'news_game_abc')?.confidence
 assert.deepEqual(sourceItems.map(item => item.id), ['ready', 'canonical', 'external', 'ambiguous'], 'Request extraction must not remove or mutate news stories.');
 
 const newsCss = fs.readFileSync('features/news/styles/index.css', 'utf8');
-assert.match(newsCss, /\.ig-news-game-unlinked\s*\{\s*display\s*:\s*none\s*!important\s*\}/, 'A game hashtag without a page must not be visible to users.');
+assert.doesNotMatch(newsCss, /\.ig-news-game-unlinked\s*\{[^}]*display\s*:\s*none/i, 'A game hashtag must stay visible even while its page is being created.');
 
-console.log('News game-page request tests passed.');
+console.log('News game-page request and visible hashtag tests passed.');
