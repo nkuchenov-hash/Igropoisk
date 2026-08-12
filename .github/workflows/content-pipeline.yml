@@ -10,7 +10,9 @@ on:
       - 'scripts/hydrate-live-home-feeds.mjs'
       - 'scripts/orchestrate-content.mjs'
       - 'scripts/run-content-pipeline.mjs'
+      - 'scripts/build-game-page.mjs'
       - 'scripts/build-game-page-basic.mjs'
+      - 'scripts/canonicalize-editorial-game-id.mjs'
       - 'scripts/repair-public-catalog-game-ids.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/prepare-review-research.mjs'
@@ -54,7 +56,9 @@ jobs:
           node --check scripts/hydrate-live-home-feeds.mjs
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
+          node --check scripts/build-game-page.mjs
           node --check scripts/build-game-page-basic.mjs
+          node --check scripts/canonicalize-editorial-game-id.mjs
           node --check scripts/repair-public-catalog-game-ids.mjs
           node --check scripts/render-review-pages.mjs
           node --check scripts/prepare-review-research.mjs
