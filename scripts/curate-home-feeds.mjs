@@ -256,12 +256,15 @@ for (const game of releases.releases || []) {
     popularIdentities,
     significantGenres,
     minimumQuality: minimumReleaseQuality,
+    minimumIndependentCoverage: Number(config.releases.minimum_independent_coverage || 2),
+    maximumSteamWishlistPosition: Number(config.releases.maximum_steam_popular_upcoming_position || 50),
     duplicateSuffixPatterns,
     checkedAt
   });
   const reasons = unique([...preflightReasons, ...(evaluated.reasons || [])]);
   const homepageEligible = evaluated.homepage_eligible && preflightReasons.length === 0;
   game.editorial_quality = {
+    ...game.editorial_quality,
     ...evaluated,
     homepage_eligible: homepageEligible,
     reasons,
@@ -353,5 +356,6 @@ console.log(JSON.stringify({
   popular_platform_chart: selected.filter(item => item.editorial_tier === 'platform_chart').length,
   popular_carryover: selected.filter(item => item.editorial_tier === 'carryover').length,
   releases_homepage_eligible: selectedReleaseAudit.length,
+  release_titles: selectedReleaseAudit.map(item => item.title),
   blocking: false
 }, null, 2));
