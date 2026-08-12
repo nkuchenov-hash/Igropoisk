@@ -100,7 +100,10 @@ function getAddedLines(base) {
 }
 
 function validateRegistry(errors, governance, featureRegistry) {
-  const library = fs.readFileSync(governance.component_library, 'utf8');
+  const library = [governance.component_library, ...(governance.official_central_extensions || [])]
+    .filter(file => fs.existsSync(file))
+    .map(file => fs.readFileSync(file, 'utf8'))
+    .join('\n');
   const seenClasses = new Set();
   for (const component of governance.components) {
     if (!component.class || !component.role) errors.push('Every central component registry entry requires class and role.');

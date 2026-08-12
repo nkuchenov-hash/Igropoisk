@@ -23,37 +23,139 @@
     "scripts/test-central-design-system.mjs"
   ],
   "components": [
-    { "class": "ig-card", "role": "card" },
-    { "class": "ig-card--interactive", "role": "card-variant" },
-    { "class": "ig-card__media", "role": "card-part" },
-    { "class": "ig-card__body", "role": "card-part" },
-    { "class": "ig-card__meta", "role": "card-part" },
-    { "class": "ig-card__title", "role": "card-part" },
-    { "class": "ig-card__summary", "role": "card-part" },
-    { "class": "ig-button", "role": "button" },
-    { "class": "ig-icon-button", "role": "button" },
-    { "class": "ig-filter-chip", "role": "button" },
-    { "class": "ig-action", "role": "button" },
-    { "class": "ig-input", "role": "field" },
-    { "class": "ig-chip", "role": "tag" },
-    { "class": "ig-hashtag", "role": "tag" },
-    { "class": "ig-chip-list", "role": "tag-list" },
-    { "class": "ig-pill", "role": "tag" },
-    { "class": "ig-toolbar", "role": "toolbar" },
-    { "class": "ig-panel", "role": "panel" },
-    { "class": "ig-empty-state", "role": "state" },
-    { "class": "ig-page-title", "role": "title" },
-    { "class": "ig-tabs", "role": "tabs" }
+    {
+      "class": "ig-card",
+      "role": "card"
+    },
+    {
+      "class": "ig-card--interactive",
+      "role": "card-variant"
+    },
+    {
+      "class": "ig-card__media",
+      "role": "card-part"
+    },
+    {
+      "class": "ig-card__body",
+      "role": "card-part"
+    },
+    {
+      "class": "ig-card__meta",
+      "role": "card-part"
+    },
+    {
+      "class": "ig-card__title",
+      "role": "card-part"
+    },
+    {
+      "class": "ig-card__summary",
+      "role": "card-part"
+    },
+    {
+      "class": "ig-button",
+      "role": "button"
+    },
+    {
+      "class": "ig-icon-button",
+      "role": "button"
+    },
+    {
+      "class": "ig-filter-chip",
+      "role": "button"
+    },
+    {
+      "class": "ig-action",
+      "role": "button"
+    },
+    {
+      "class": "ig-input",
+      "role": "field"
+    },
+    {
+      "class": "ig-chip",
+      "role": "tag"
+    },
+    {
+      "class": "ig-hashtag",
+      "role": "tag"
+    },
+    {
+      "class": "ig-chip-list",
+      "role": "tag-list"
+    },
+    {
+      "class": "ig-pill",
+      "role": "tag"
+    },
+    {
+      "class": "ig-toolbar",
+      "role": "toolbar"
+    },
+    {
+      "class": "ig-panel",
+      "role": "panel"
+    },
+    {
+      "class": "ig-empty-state",
+      "role": "state"
+    },
+    {
+      "class": "ig-page-title",
+      "role": "title"
+    },
+    {
+      "class": "ig-tabs",
+      "role": "tabs"
+    },
+    {
+      "class": "article-shot-card",
+      "role": "card"
+    },
+    {
+      "class": "article-shot-card__arrow",
+      "role": "button"
+    },
+    {
+      "class": "article-shot-card__dot",
+      "role": "button"
+    }
   ],
   "element_roles": {
-    "button": ["ig-button", "ig-icon-button", "ig-filter-chip", "ig-action"],
-    "field": ["ig-input"],
-    "card": ["ig-card"],
-    "panel": ["ig-panel", "ig-toolbar"],
-    "tag": ["ig-chip", "ig-hashtag", "ig-pill"],
-    "tag_list": ["ig-chip-list"],
-    "state": ["ig-empty-state"],
-    "title": ["ig-page-title"],
-    "tabs": ["ig-tabs"]
+    "button": [
+      "ig-button",
+      "ig-icon-button",
+      "ig-filter-chip",
+      "ig-action",
+      "article-shot-card__arrow",
+      "article-shot-card__dot"
+    ],
+    "field": [
+      "ig-input"
+    ],
+    "card": [
+      "ig-card",
+      "article-shot-card"
+    ],
+    "panel": [
+      "ig-panel",
+      "ig-toolbar"
+    ],
+    "tag": [
+      "ig-chip",
+      "ig-hashtag",
+      "ig-pill"
+    ],
+    "tag_list": [
+      "ig-chip-list"
+    ],
+    "state": [
+      "ig-empty-state"
+    ],
+    "title": [
+      "ig-page-title"
+    ],
+    "tabs": [
+      "ig-tabs"
+    ]
   }
 }
