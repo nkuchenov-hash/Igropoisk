@@ -15,6 +15,7 @@ on:
       - 'data/ratings/**'
       - 'data/similarity/**'
       - 'data/franchises/**'
+      - 'data/guides/**'
       - 'config/game-page-quality-v2.json'
       - 'config/game-media-steam-overrides.json'
       - 'scripts/build-game-page.mjs'
@@ -26,6 +27,9 @@ on:
       - 'scripts/validate-game-media-quality.mjs'
       - 'scripts/build-similarity-index.mjs'
       - 'scripts/enrich-game-relations.mjs'
+      - 'scripts/materialize-catalog-game-data.mjs'
+      - 'scripts/run-game-catalog-enrichment.mjs'
+      - 'scripts/prepare-guide-research.mjs'
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/synthesize-review-adaptive.mjs'
@@ -56,6 +60,7 @@ jobs:
           node --check game/_shared/game-page-quality.js
           node --check game/_shared/game-page-similarity.js
           node --check game/_shared/game-page-review-publication-control.js
+          node --check game/_shared/game-page-materialized-data.js
           node --check game/_shared/game-media-recovery.js
           node --check article/_shared/review-carousel.js
           node --check article/_shared/review-article.js
@@ -68,6 +73,9 @@ jobs:
           node --check scripts/validate-game-media-quality.mjs
           node --check scripts/build-similarity-index.mjs
           node --check scripts/enrich-game-relations.mjs
+          node --check scripts/materialize-catalog-game-data.mjs
+          node --check scripts/run-game-catalog-enrichment.mjs
+          node --check scripts/prepare-guide-research.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/synthesize-review-adaptive.mjs
@@ -76,11 +84,13 @@ jobs:
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/smoke-game-page-browser.mjs
           node --check scripts/smoke-game-page-quality-v2.mjs
+      - name: Exercise canonical catalog materialization
+        run: node scripts/materialize-catalog-game-data.mjs
       - name: Exercise verified Steam media repair
         run: node scripts/repair-game-media-from-steam.mjs
       - name: Produce media quality diagnoses
         run: node scripts/validate-game-media-quality.mjs
-      - name: Rebuild similarity reasons
+      - name: Rebuild similarity reasons for the full catalog
         run: node scripts/build-similarity-index.mjs
       - name: Verify target game pages and review rendering in browser
         run: node scripts/smoke-game-page-browser.mjs
