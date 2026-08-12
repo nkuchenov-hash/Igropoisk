@@ -1,6 +1,71 @@
 (()=>{
 'use strict';
 const sourceUrl='../_shared/game-page-v3.js?v=20260803-2';
+const pageSlug=decodeURIComponent(location.pathname.split('/').filter(Boolean).at(-1)||'');
+const draftMediaUrl=item=>typeof item==='string'?item:String(item?.url||item?.src||item?.source_url||'');
+const cleanDraftScreenshots=list=>{
+  const seen=new Set();
+  return (Array.isArray(list)?list:[]).map(draftMediaUrl).filter(Boolean).filter(url=>{
+    if(/scribdassets\.com|document_thumbnails|bing\.com\/images|google\.[^/]+\/search|yandex\.[^/]+\/images/i.test(url))return false;
+    const key=url.split(/[?#]/)[0].toLowerCase();
+    if(!key||seen.has(key))return false;
+    seen.add(key);
+    return true;
+  });
+};
+async function installVerifiedDraftGallery(){
+  if(!pageSlug)return;
+  let draft;
+  try{
+    const response=await fetch(`../../data/drafts/${encodeURIComponent(pageSlug)}.json`,{cache:'no-store'});
+    if(!response.ok)return;
+    draft=await response.json();
+  }catch{return}
+  const draftSlug=String(draft?.identity?.slug||draft?.slug||draft?.game_slug||'');
+  if(draftSlug!==pageSlug)return;
+  const screenshots=cleanDraftScreenshots(draft?.media?.screenshots);
+  if(screenshots.length<6)return;
+  let rail=null,hero=null,title='';
+  for(let attempt=0;attempt<80;attempt++){
+    rail=document.querySelector('#heroMedia');
+    hero=document.querySelector('#gameHero');
+    title=document.querySelector('#gameTitle')?.textContent?.trim()||draft?.identity?.title||pageSlug;
+    if(rail&&hero&&document.querySelector('#gameTitle')?.textContent?.trim())break;
+    await new Promise(resolve=>setTimeout(resolve,100));
+  }
+  if(!rail||!hero)return;
+  let preview=hero.querySelector('.game-hero__preview');
+  if(!preview){
+    preview=document.createElement('img');
+    preview.className='game-hero__preview';
+    preview.alt='';
+    preview.decoding='async';
+    hero.prepend(preview);
+  }
+  const fragment=document.createDocumentFragment();
+  screenshots.forEach((url,index)=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className=`ig-button hero-media__item${index===0?' active':''}`;
+    button.dataset.image=url;
+    button.setAttribute('aria-label',`Показать скриншот ${index+1}: ${title}`);
+    const image=document.createElement('img');
+    image.src=url;
+    image.alt=`${title} — скриншот ${index+1}`;
+    image.loading=index<2?'eager':'lazy';
+    image.decoding='async';
+    button.appendChild(image);
+    button.addEventListener('click',()=>{
+      rail.querySelectorAll('.hero-media__item').forEach(item=>item.classList.toggle('active',item===button));
+      preview.src=url;
+    });
+    fragment.appendChild(button);
+  });
+  rail.replaceChildren(fragment);
+  preview.src=screenshots[0];
+  rail.dispatchEvent(new Event('scroll'));
+}
+
 fetch(sourceUrl,{cache:'no-store'})
   .then(response=>{if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.text()})
   .then(source=>{
@@ -49,6 +114,7 @@ fetch(sourceUrl,{cache:'no-store'})
       "const releaseInfo=releasePresentation(game);document.querySelector('#details').innerHTML=`<dt>Статус</dt><dd>${releaseInfo.upcoming?'Ожидается':'Вышла'}</dd><dt>Дата выхода</dt><dd>${esc(releaseInfo.raw)}</dd><dt>Разработчик</dt>"
     );
     Function(corrected)();
+    installVerifiedDraftGallery().catch(error=>console.warn('Игропоиск: verified draft gallery',error));
   })
   .catch(error=>{
     console.error('Игропоиск: не удалось загрузить страницу игры v3',error);
