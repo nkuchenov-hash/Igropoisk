@@ -14,6 +14,10 @@
   similarity.src='../_shared/game-page-similarity.js?v=20260812-1';
   similarity.defer=true;
   document.head.appendChild(similarity);
+  const reviewControl=document.createElement('script');
+  reviewControl.src='../_shared/game-page-review-publication-control.js?v=20260812-1';
+  reviewControl.defer=true;
+  document.head.appendChild(reviewControl);
   const editions=document.createElement('script');
   editions.src='../_shared/game-editions.js?v=20260807-1';
   document.head.appendChild(editions);
