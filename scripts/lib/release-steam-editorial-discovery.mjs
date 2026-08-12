@@ -31,7 +31,7 @@ export function rawReleaseFromSteamDetails(data, appid, signals = [], checkedAt 
   const title = String(data.name || '').trim();
   const claim = parseReleaseDateClaim(data.release_date?.date || '');
   if (!title || !claim.date_start) return null;
-  const slug = slugify(title); const sourceId = `steam:${appid}`;
+  const slug = slugify(title) || `steam-${appid}`; const sourceId = `steam:${appid}`;
   const dateIdentity = claim.date || `${claim.precision}-${claim.date_start}`;
   return {
     id: sourceId, slug, title, aliases: [], release_type: 'full',
