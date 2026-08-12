@@ -27,7 +27,7 @@ jobs:
       - name: Validate shared game runtime
         run: |
           node --check game/_shared/game-page-v3.js
-          node scripts/validate-game-pages.mjs
+          node scripts/validate-game-v3.mjs
           git diff --check
       - name: Commit runtime change
         run: |
