@@ -17,7 +17,7 @@ const maximum=Number(quality.review_corpus?.maximum_sources||20);
 const available=Math.min(maximum,Array.isArray(reviews.reviews)?reviews.reviews.length:0);
 if(available<minimum){
   console.log(JSON.stringify({slug,status:'needs_revision',reason:`professional review corpus ${available}/${minimum}`},null,2));
-  process.exit(0);
+  process.exit(2);
 }
 const adaptiveRequired=Math.max(minimum,available);
 config.publication_gate={...(config.publication_gate||{}),editorial_reviews_required:adaptiveRequired,independent_publications_required:adaptiveRequired,publish_below_gate:false};
@@ -40,4 +40,4 @@ for(const relative of [`data/articles/${slug}.json`,`data/article-drafts/${slug}
 }
 if(child?.status===0){console.log(JSON.stringify({slug,status:'completed',sources:adaptiveRequired},null,2));process.exit(0)}
 console.log(JSON.stringify({slug,status:'needs_revision',sources:adaptiveRequired,reason:'synthesis requires another revision cycle'},null,2));
-process.exit(0);
+process.exit(2);
