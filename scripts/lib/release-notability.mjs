@@ -90,6 +90,9 @@ export function measureGlobalNotability(candidate, {newsEvents = [], popularRank
   const popularStrong = popularScore >= Number(cfg.popular_minimum_score || 10)
     && popularConfidence >= Number(cfg.popular_minimum_confidence || 0.5)
     && popularFamilies.length >= Number(cfg.popular_minimum_families || 2);
+  const intenseCrossSite = popularScore >= Number(cfg.intense_cross_site_popular_score_minimum || 15)
+    && popularConfidence >= Number(cfg.intense_cross_site_popular_confidence_minimum || 0.6)
+    && popularFamilies.length >= Number(cfg.intense_cross_site_popular_families_minimum || 3);
   const globalMomentum = globalEligibleEvent && (
     globalScore >= Number(cfg.global_score_minimum || 450)
     || trendScore >= Number(cfg.trend_score_minimum || 450)
@@ -103,14 +106,14 @@ export function measureGlobalNotability(candidate, {newsEvents = [], popularRank
   const broadReasons = [];
   if (independentPublications >= broadMinimum) broadReasons.push('broad-independent-gaming-coverage');
   if (independentPublications >= corroboratedMinimum && (popularStrong || globalMomentum)) broadReasons.push('independent-coverage-plus-global-momentum');
-  if (independentPublications >= intenseMinimum && popularStrong && globalMomentum) broadReasons.push('cross-site-popularity-plus-independent-coverage');
+  if (independentPublications >= intenseMinimum && intenseCrossSite) broadReasons.push('strong-cross-site-attention-plus-independent-coverage');
   const reasons = [...broadReasons];
   if (nicheEligible) reasons.push('established-franchise-niche-attention');
   const broadEligible = broadReasons.length > 0;
   const eligible = broadEligible || nicheEligible;
 
   return {
-    model: 'release-notability-v3',
+    model: 'release-notability-v4',
     eligible,
     qualification: broadEligible ? 'broad-global' : nicheEligible ? 'niche-global' : 'none',
     reasons,
@@ -126,9 +129,10 @@ export function measureGlobalNotability(candidate, {newsEvents = [], popularRank
       popular_score: popularScore,
       popular_confidence: popularConfidence,
       popular_families: popularFamilies,
+      intense_cross_site: intenseCrossSite,
       steam_signals: steamSignals,
     },
-    rule: 'A release may qualify through broad global attention or established niche/franchise attention. Steam/store rank, an official announcement or a local page never qualifies by itself. Strong regional audience attention is evaluated separately for personalized admission.'
+    rule: 'A release may qualify through broad global attention, strong cross-site attention corroborated by independent coverage, or established niche/franchise attention. Steam/store rank, an official announcement or a local page never qualifies by itself. Strong regional audience attention is evaluated separately for personalized admission.'
   };
 }
 
