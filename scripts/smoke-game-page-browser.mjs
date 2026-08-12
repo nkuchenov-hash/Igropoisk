@@ -12,13 +12,7 @@ await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(4
 const executablePath=browserPath();if(!executablePath){server.close();throw new Error('Chrome/Chromium executable was not found.')}
 const browser=await puppeteer.launch({executablePath,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 const errors=[];const assert=(condition,message)=>{if(!condition)errors.push(message)};
-const games=[
-  ['elden-ring',1245620],
-  ['the-witcher-3-wild-hunt',292030],
-  ['doom',379720],
-  ['control',870780],
-  ['hades',1145360]
-];
+const games=[['elden-ring',1245620],['the-witcher-3-wild-hunt',292030],['doom',379720],['control',870780],['hades',1145360]];
 try{
   for(const [slug,appid] of games){
     const page=await browser.newPage();await page.setViewport({width:1440,height:1000,deviceScaleFactor:1});
@@ -31,7 +25,7 @@ try{
       const fontSelectors=['.breadcrumbs','.hero-meta','.score-line b','.score-line small','.game-tabs button','.game-panel h2','.game-panel h3'];
       const fonts=fontSelectors.flatMap(selector=>[...document.querySelectorAll(selector)].map(node=>({selector,size:parseFloat(getComputedStyle(node).fontSize)})));
       const reviews=[...document.querySelectorAll('#reviewGrid .ig-external-review')];
-      return {title:document.querySelector('#gameTitle')?.textContent?.trim()||'',cover:cover?.getAttribute('src')||'',heroShots:shots.length,uniqueHeroShots:new Set(shots.map(url=>url.split('?')[0])).size,minFont:fonts.length?Math.min(...fonts.map(item=>item.size)):0,smallFonts:fonts.filter(item=>item.size<16),reviewRows:reviews.length,reviewContainers:reviews.length?document.querySelectorAll('#reviewGrid.ig-external-review-grid').length:1,pageErrors:[]};
+      return {title:document.querySelector('#gameTitle')?.textContent?.trim()||'',cover:cover?.getAttribute('src')||'',heroShots:shots.length,uniqueHeroShots:new Set(shots.map(url=>url.split('?')[0])).size,minFont:fonts.length?Math.min(...fonts.map(item=>item.size)):0,smallFonts:fonts.filter(item=>item.size<16),reviewRows:reviews.length,reviewContainers:reviews.length?document.querySelectorAll('#reviewGrid.ig-external-review-grid').length:1};
     });
     assert(state.cover.includes(`/apps/${appid}/library_600x900`),`${slug}: portrait cover missing (${state.cover})`);
     assert(state.heroShots>=6,`${slug}: hero screenshot gallery has ${state.heroShots}/6`);
@@ -52,9 +46,7 @@ try{
       const paragraphs=[...document.querySelectorAll('.article-body p')];
       const captionSizes=captions.map(node=>parseFloat(getComputedStyle(node).fontSize));
       const paragraphSizes=paragraphs.map(node=>parseFloat(getComputedStyle(node).fontSize));
-      const captionColors=new Set(captions.map(node=>getComputedStyle(node).color));
-      const bodyColors=new Set(paragraphs.map(node=>getComputedStyle(node).color));
-      return {images,uniqueImages:new Set(images.map(url=>url.split('?')[0])).size,captions:captions.map(node=>node.textContent.trim()),captionMin:captionSizes.length?Math.min(...captionSizes):0,paragraphMin:paragraphSizes.length?Math.min(...paragraphSizes):0,captionColors:[...captionColors],bodyColors:[...bodyColors],lead:document.querySelector('.article-lead')?.textContent?.trim()||'',title:document.querySelector('.article-hero h1')?.textContent?.trim()||''};
+      return {images,uniqueImages:new Set(images.map(url=>url.split('?')[0])).size,captions:captions.map(node=>node.textContent.trim()),captionMin:captionSizes.length?Math.min(...captionSizes):0,paragraphMin:paragraphSizes.length?Math.min(...paragraphSizes):0,lead:document.querySelector('.article-lead')?.textContent?.trim()||'',title:document.querySelector('.article-hero h1')?.textContent?.trim()||'',fullText:document.body?.textContent||''};
     });
     assert(articleState.images.length>=7,`${slug} article: only ${articleState.images.length} screenshots`);
     assert(articleState.uniqueImages===articleState.images.length,`${slug} article: duplicate screenshots ${articleState.uniqueImages}/${articleState.images.length}`);
@@ -65,7 +57,7 @@ try{
     if(slug==='elden-ring'){
       assert(new Set(articleState.captions).size===articleState.captions.length,'elden-ring article: repeated screenshot captions remain');
       assert(articleState.captions.every(text=>!/^Официальный игровой скриншот Elden Ring из Steam\.?$/i.test(text)),'elden-ring article: generic repeated captions remain');
-      assert(/кооператив|вторжен|онлайн|сетев/i.test(articleState.lead)||/кооператив|вторжен|онлайн|сетев/i.test(document.body?.textContent||''),'elden-ring article: network layer not explained');
+      assert(/кооператив|вторжен|онлайн|сетев/i.test(articleState.lead+articleState.fullText),'elden-ring article: network layer not explained');
     }
     assert(!articleErrors.length,`${slug} article: browser errors: ${articleErrors.slice(0,3).join(' | ')}`);
     await article.close();
