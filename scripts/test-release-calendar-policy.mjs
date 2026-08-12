@@ -1,101 +1,38 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
 import { buildCandidates, buildPublicCalendar, validateCalendar } from './lib/release-calendar-policy.mjs';
 import { attachCanonicalGameIdsToPublicCalendar, linkReleaseCandidatesToRegistry } from './lib/release-game-registry-adapter.mjs';
 import { attachAudienceAffinity, buildPersonalizedReleases, validatePersonalizedReleases } from './lib/release-audience-relevance.mjs';
+import { applyGlobalNotabilityGate, validateGlobalNotability } from './lib/release-notability.mjs';
+import { parseReleaseDateClaim } from './lib/release-date-precision.mjs';
+import { rawReleaseFromSteamDetails } from './lib/release-steam-editorial-discovery.mjs';
 import { createGameEntity, createRegistry, rebuildIndexes } from './lib/game-registry.mjs';
 
-const steamSource = (id) => ({ id: `steam:${id}`, family: 'official_store', title: 'Steam', url: `https://store.steampowered.com/app/${id}/`, platforms: ['PC'] });
-const event = (id, title, platforms = ['PC'], sourceIds = [`steam:${id}`], date = '2026-10-10') => ({
-  id: `steam:${id}`, slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-'), title, release_type: 'full',
-  external_ids: {steam: id},
-  sources: [steamSource(id)], events: [{ id: `e:${id}`, date, date_start: date, date_end: date, precision: 'exact', region: 'worldwide', platforms, confidence: 0.97, source_ids: sourceIds }],
-  editorial_quality: { homepage_eligible: true, quality_score: 10, signals: ['current_popular'] },
-});
-const raw = [
-  event(1, 'Important Game'),
-  event(2, 'Important Game Demo'),
-  event(3, 'Important Game Playtest'),
-  event(4, 'Important Game Deluxe Edition'),
-  event(5, 'Console Leak', ['PlayStation 5']),
-  ...Array.from({ length: 20 }, (_, index) => event(100 + index, `Notable ${index}`)),
-];
-const editorial = { decisions: {
-  'steam:1': { decision: 'rejected', rejection_reason: 'editorial ban', publication_forbidden: true, locked_fields: ['decision'] },
-  'steam:100': { decision: 'published', event_overrides: [{ event_id: 'e:100', date: '2026-10-11', date_start: '2026-10-11', date_end: '2026-10-11', precision: 'exact', platforms: ['PC'], source_ids: ['steam:100'] }] },
-}};
-const claims = [{ slug: 'console-leak', platforms: ['PlayStation 5'], date: '2026-10-12', source: { id: 'ps-store:5', family: 'platform_store', title: 'PlayStation Store', url: 'https://store.playstation.com/example', platforms: ['PlayStation 5'] }, confidence: 0.98 }];
-const policy = { minimum_significance_score: 1, max_public_releases_per_day: 12 };
-const candidates = buildCandidates({ rawReleases: raw, editorial, officialClaims: claims, policy });
-const byId = new Map(candidates.map((candidate) => [candidate.id, candidate]));
-assert.equal(byId.get('steam:1').moderation.status, 'rejected', 'manual rejection must survive');
-assert.equal(byId.get('steam:2').moderation.rejection_reason, 'demo');
-assert.equal(byId.get('steam:3').moderation.rejection_reason, 'playtest');
-assert.equal(byId.get('steam:4').moderation.rejection_reason, 'duplicate_edition');
-assert.equal(byId.get('steam:5').events.some((item) => item.platform_confirmations['PlayStation 5']?.includes('ps-store:5')), true);
-assert.equal(byId.get('steam:100').events.some((item) => item.date === '2026-10-11'), true, 'manual date correction must survive');
-const publicCalendar = buildPublicCalendar(candidates, '2026-08-06T00:00:00Z');
-assert.ok(publicCalendar.statistics.max_exact_releases_in_one_day <= 12, 'daily cap must prevent raw flood');
-assert.deepEqual(validateCalendar({ candidates, publicCalendar, policy }), []);
+const steamSource=id=>({id:`steam:${id}`,family:'official_store',title:'Steam',url:`https://store.steampowered.com/app/${id}/`,platforms:['PC']});
+const event=(id,title,platforms=['PC'],sourceIds=[`steam:${id}`],date='2026-10-10')=>({id:`steam:${id}`,slug:title.toLowerCase().replace(/[^a-z0-9]+/g,'-'),title,release_type:'full',external_ids:{steam:id},sources:[steamSource(id)],events:[{id:`e:${id}`,date,date_start:date,date_end:date,precision:'exact',region:'worldwide',platforms,confidence:0.97,source_ids:sourceIds}],editorial_quality:{homepage_eligible:true,quality_score:10,signals:['current_popular']}});
 
-const registry = createRegistry({generatedAt: '2026-08-06T00:00:00Z'});
-const exactGame = createGameEntity({
-  title: 'Canonical Exact Game', steamAppId: 9001, releaseYear: 2026, kind: 'game',
-}, {now: '2026-08-06T00:00:00Z'});
-const conflictingGame = createGameEntity({
-  title: 'Shared Identity', releaseYear: 2026, kind: 'game',
-}, {now: '2026-08-06T00:00:00Z'});
-registry.games[exactGame.id] = exactGame;
-registry.games[conflictingGame.id] = conflictingGame;
-rebuildIndexes(registry);
+const raw=[event(1,'Important Game'),event(2,'Important Game Demo'),event(3,'Important Game Playtest'),event(4,'Important Game Deluxe Edition'),event(5,'Console Leak',['PlayStation 5']),...Array.from({length:20},(_,index)=>event(100+index,`Notable ${index}`))];
+const editorial={decisions:{'steam:1':{decision:'rejected',rejection_reason:'editorial ban',publication_forbidden:true,locked_fields:['decision']},'steam:100':{decision:'published',event_overrides:[{event_id:'e:100',date:'2026-10-11',date_start:'2026-10-11',date_end:'2026-10-11',precision:'exact',platforms:['PC'],source_ids:['steam:100']}]}}};
+const claims=[{slug:'console-leak',platforms:['PlayStation 5'],date:'2026-10-12',source:{id:'ps-store:5',family:'platform_store',title:'PlayStation Store',url:'https://store.playstation.com/example',platforms:['PlayStation 5']},confidence:0.98}];
+const policy={minimum_significance_score:1,max_public_releases_per_day:12};
+const candidates=buildCandidates({rawReleases:raw,editorial,officialClaims:claims,policy});
+const byId=new Map(candidates.map(candidate=>[candidate.id,candidate]));
+assert.equal(byId.get('steam:1').moderation.status,'rejected');assert.equal(byId.get('steam:2').moderation.rejection_reason,'demo');assert.equal(byId.get('steam:3').moderation.rejection_reason,'playtest');assert.equal(byId.get('steam:4').moderation.rejection_reason,'duplicate_edition');assert.equal(byId.get('steam:5').events.some(item=>item.platform_confirmations['PlayStation 5']?.includes('ps-store:5')),true);assert.equal(byId.get('steam:100').events.some(item=>item.date==='2026-10-11'),true);
+const policyCalendar=buildPublicCalendar(candidates,'2026-08-06T00:00:00Z');assert.ok(policyCalendar.statistics.max_exact_releases_in_one_day<=12);assert.deepEqual(validateCalendar({candidates,publicCalendar:policyCalendar,policy}),[]);
 
-const adapterCandidates = [
-  {...event(9001, 'Store Title Changed'), moderation: {status: 'published'}},
-  {...event(9002, 'Shared Identity'), release_type: 'expansion', external_ids: {}, moderation: {status: 'review'}},
-  {...event(9003, 'Completely Unknown'), external_ids: {}, moderation: {status: 'review'}},
-];
-const linked = linkReleaseCandidatesToRegistry(adapterCandidates, registry);
-const linkedById = new Map(linked.candidates.map(candidate => [candidate.id, candidate]));
-assert.equal(linkedById.get('steam:9001').game_resolution.status, 'matched', 'exact Steam ID must resolve to canonical game');
-assert.equal(linkedById.get('steam:9001').game_id, exactGame.id);
-assert.equal(linkedById.get('steam:9002').game_resolution.status, 'needs_review', 'kind conflict must never force a canonical link');
-assert.equal(Object.hasOwn(linkedById.get('steam:9002'), 'game_id'), false);
-assert.equal(linkedById.get('steam:9003').game_resolution.status, 'unresolved', 'unknown release must remain unresolved');
-assert.equal(linkedById.get('steam:9002').moderation.status, 'review', 'registry linkage must not change release moderation');
+const registry=createRegistry({generatedAt:'2026-08-06T00:00:00Z'});const exactGame=createGameEntity({title:'Canonical Exact Game',steamAppId:9001,releaseYear:2026,kind:'game'},{now:'2026-08-06T00:00:00Z'});const conflictingGame=createGameEntity({title:'Shared Identity',releaseYear:2026,kind:'game'},{now:'2026-08-06T00:00:00Z'});registry.games[exactGame.id]=exactGame;registry.games[conflictingGame.id]=conflictingGame;rebuildIndexes(registry);
+const adapterCandidates=[{...event(9001,'Store Title Changed'),moderation:{status:'published'}},{...event(9002,'Shared Identity'),release_type:'expansion',external_ids:{},moderation:{status:'review'}},{...event(9003,'Completely Unknown'),external_ids:{},moderation:{status:'review'}}];
+const linked=linkReleaseCandidatesToRegistry(adapterCandidates,registry);const linkedById=new Map(linked.candidates.map(candidate=>[candidate.id,candidate]));assert.equal(linkedById.get('steam:9001').game_resolution.status,'matched');assert.equal(linkedById.get('steam:9001').game_id,exactGame.id);assert.equal(linkedById.get('steam:9002').game_resolution.status,'needs_review');assert.equal(Object.hasOwn(linkedById.get('steam:9002'),'game_id'),false);assert.equal(linkedById.get('steam:9003').game_resolution.status,'unresolved');assert.equal(linkedById.get('steam:9002').moderation.status,'review');
+const linkedPublic=attachCanonicalGameIdsToPublicCalendar({releases:adapterCandidates.map(candidate=>({id:candidate.id,title:candidate.title}))},linked.candidates);assert.equal(linkedPublic.releases.find(item=>item.id==='steam:9001').game_id,exactGame.id);assert.equal(Object.hasOwn(linkedPublic.releases.find(item=>item.id==='steam:9002'),'game_id'),false);assert.deepEqual(linked.statistics,{matched:1,needs_review:1,unresolved:1});
 
-const linkedPublic = attachCanonicalGameIdsToPublicCalendar({
-  releases: adapterCandidates.map(candidate => ({id: candidate.id, title: candidate.title})),
-}, linked.candidates);
-assert.equal(linkedPublic.releases.find(item => item.id === 'steam:9001').game_id, exactGame.id);
-assert.equal(Object.hasOwn(linkedPublic.releases.find(item => item.id === 'steam:9002'), 'game_id'), false, 'ambiguous release must not expose canonical game_id');
-assert.deepEqual(linked.statistics, {matched: 1, needs_review: 1, unresolved: 1});
+const notabilityPolicy={global_notability:{broad_press_minimum:4,corroborated_press_minimum:3,intense_cross_site_press_minimum:2,popular_minimum_score:10,popular_minimum_confidence:0.5,popular_minimum_families:2,global_score_minimum:450,trend_score_minimum:450,discussion_minimum:3}};
+const steamOnly={...event(7001,'BOMBANANA!'),game_id:'game-bombanana',moderation:{status:'published',automatic_reasons:[]},significance:{score:28,signals:['steam_popular_upcoming']},editorial_quality:{signals:['steam_popular_upcoming'],independent_source_count:0}};
+const globallyTalked={...event(7002,'Big Walk'),game_id:'game-big-walk',moderation:{status:'review',automatic_reasons:[]},significance:{score:8,signals:['steam_popular_new']},editorial_quality:{signals:['steam_popular_new'],independent_source_count:4}};
+const gated=applyGlobalNotabilityGate([steamOnly,globallyTalked],{newsEvents:[],popularRanking:[],policy:notabilityPolicy});assert.equal(gated.find(item=>item.id==='steam:7001').moderation.status,'review','Steam alone must never publish a release');assert.equal(gated.find(item=>item.id==='steam:7001').global_notability.eligible,false);assert.equal(gated.find(item=>item.id==='steam:7002').moderation.status,'published','broad independent global coverage must pass the global gate');assert.deepEqual(validateGlobalNotability({candidates:gated,publicCalendar:{releases:[{id:'steam:7002'}]}}),[]);assert.ok(validateGlobalNotability({candidates:gated,publicCalendar:{releases:[{id:'steam:7001'}]}}).length>0,'validator must reject a Steam-only publication');
 
-const regionalCandidate = buildCandidates({
-  rawReleases: [event(777, 'IL-2 Sturmovik Korea')],
-  policy: {minimum_significance_score: 25, max_public_releases_per_day: 12, signal_weights: {current_popular: 18}},
-})[0];
-assert.equal(regionalCandidate.moderation.status, 'review', 'a niche candidate must stay out of the global feed below the global threshold');
-const regionalEvents = [{
-  id: 'news-il2',
-  titleEn: 'The global release of the flight simulator Korea took place. IL-2 series',
-  titleRu: 'Состоялся глобальный релиз авиасимулятора Корея. Серия Ил-2',
-  regionalEligible: true,
-  regionalScore: 275,
-  regions: ['cis'],
-}];
-const audienceCandidates = attachAudienceAffinity([regionalCandidate], regionalEvents);
-assert.ok(audienceCandidates[0].audience_affinity.score >= 160, 'regional demand evidence must produce a measurable audience affinity');
-const personalizedCalendar = {
-  releases: [],
-  personalized_releases: buildPersonalizedReleases(audienceCandidates, {
-    minimum_personalized_region_score: 160,
-    max_personalized_releases_per_day: 6,
-  }),
-};
-assert.equal(personalizedCalendar.personalized_releases.length, 1, 'audience evidence may admit a review-gated game only to the personalized pool');
-assert.deepEqual(validatePersonalizedReleases({
-  candidates: audienceCandidates,
-  publicCalendar: personalizedCalendar,
-  policy: {minimum_personalized_region_score: 160},
-}), []);
+const il2={...event(777,'Korea. IL-2 Series'),game_id:'game-il2',moderation:{status:'published'},global_notability:{eligible:true}};const regionalEvents=[{id:'news-il2',titleEn:'The global release of Korea. IL-2 Series',regionalEligible:true,regionalScore:275,regions:['korea'],gameIds:['game-il2'],primarySource:'PlayGround.ru',sources:[{name:'PlayGround.ru',official:false}]}];const audience=attachAudienceAffinity([il2],regionalEvents,{audience_source_regions:{'PlayGround.ru':['cis']}})[0];assert.equal(audience.audience_affinity.regions.cis,275,'source audience must identify CIS relevance');assert.equal(Object.hasOwn(audience.audience_affinity.regions,'korea'),false,'game subject/location must not become audience geography');assert.equal(audience.audience_affinity.evidence[0].match_basis,'canonical-game-id');assert.deepEqual(buildPersonalizedReleases([audience],{}),[],'regional relevance must never admit a globally rejected release');assert.deepEqual(validatePersonalizedReleases({publicCalendar:{personalized_releases:[]}}),[]);
 
+const month=parseReleaseDateClaim('August 2026');assert.deepEqual(month,{precision:'month',date:null,date_start:'2026-08-01',date_end:'2026-08-31',raw_date:'August 2026'});const discoveredMonth=rawReleaseFromSteamDetails({type:'game',name:'Month Only Game',release_date:{date:'August 2026'},genres:[],developers:['Studio'],publishers:['Publisher']},8080,['steam_popular_upcoming'],'2026-08-01T00:00:00Z');assert.equal(discoveredMonth.events[0].precision,'month');assert.equal(discoveredMonth.events[0].date,null);assert.equal(discoveredMonth.events[0].date_start,'2026-08-01');const exact=parseReleaseDateClaim('Aug 4, 2026');assert.equal(exact.precision,'exact');assert.equal(exact.date,'2026-08-04');
+
+const runtime=await fs.readFile('assets/release-calendar.js','utf8');new Function(runtime);assert.match(runtime,/home-feeds\/manifests\/current\.json/,'calendar must read the live validated home-feed manifest first');assert.match(runtime,/repository-fallback/,'calendar must retain a repository fallback');assert.doesNotMatch(runtime,/mergePersonalized\(/,'regional relevance must not merge extra releases into the global calendar');
 console.log('release-calendar-policy tests passed');

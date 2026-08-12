@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "minimum_significance_score": 25,
   "minimum_personalized_region_score": 160,
   "personalized_client_minimum_score": 90,
@@ -7,16 +7,32 @@
   "max_personalized_releases_per_day": 6,
   "max_personalized_pool": 80,
   "signal_weights": {
-    "igropoisk_page": 35,
-    "independent_coverage": 30,
-    "official_announcement": 18,
+    "igropoisk_page": 12,
+    "independent_coverage": 18,
+    "official_announcement": 8,
     "home_quality_gate": 18,
     "current_popular": 18,
-    "published_page": 30,
-    "steam_popular_upcoming": 28,
-    "steam_popular_new": 28,
-    "steam_popular_upcoming_discovery": 8,
-    "steam_popular_new_discovery": 8
+    "published_page": 10,
+    "steam_popular_upcoming": 8,
+    "steam_popular_new": 8,
+    "steam_popular_upcoming_discovery": 3,
+    "steam_popular_new_discovery": 3
+  },
+  "global_notability": {
+    "broad_press_minimum": 4,
+    "corroborated_press_minimum": 3,
+    "intense_cross_site_press_minimum": 2,
+    "popular_minimum_score": 10,
+    "popular_minimum_confidence": 0.5,
+    "popular_minimum_families": 2,
+    "global_score_minimum": 450,
+    "trend_score_minimum": 450,
+    "discussion_minimum": 3
+  },
+  "audience_source_regions": {
+    "Игромания": ["cis"],
+    "StopGame": ["cis"],
+    "PlayGround.ru": ["cis"]
   },
   "steam_popular_upcoming_limit": 80,
   "steam_popular_new_limit": 80,

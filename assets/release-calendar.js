@@ -1,86 +1,31 @@
 (()=>{
 'use strict';
 const $=(s,r=document)=>r.querySelector(s); const $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
 const MONTHS=['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
 const GEN=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 const WD=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
-const COUNTRY_REGIONS={
-  RU:'cis',KZ:'cis',BY:'cis',AM:'cis',AZ:'cis',GE:'cis',KG:'cis',MD:'cis',TJ:'cis',TM:'cis',UZ:'cis',
-  US:'north-america',CA:'north-america',MX:'north-america',
-  JP:'japan',KR:'korea',CN:'china',HK:'china',MO:'china',TW:'china',
-  BR:'latam',AR:'latam',CL:'latam',CO:'latam',PE:'latam',
-  AE:'mena',SA:'mena',TR:'mena',IL:'mena',EG:'mena',
-  SG:'sea',MY:'sea',ID:'sea',TH:'sea',VN:'sea',PH:'sea',
-  AU:'oceania',NZ:'oceania',
-  GB:'europe',IE:'europe',FR:'europe',DE:'europe',ES:'europe',IT:'europe',PT:'europe',NL:'europe',BE:'europe',LU:'europe',
-  PL:'europe',CZ:'europe',SK:'europe',HU:'europe',RO:'europe',BG:'europe',GR:'europe',AT:'europe',CH:'europe',NO:'europe',SE:'europe',FI:'europe',DK:'europe',IS:'europe',EE:'europe',LV:'europe',LT:'europe',SI:'europe',HR:'europe',RS:'europe',BA:'europe',ME:'europe',MK:'europe',AL:'europe'
-};
+const LIVE_MANIFEST='https://storage.yandexcloud.net/igropoisk-content/home-feeds/manifests/current.json';
+const RELEASE_FILE='data/releases/public.json';
+const COUNTRY_REGIONS={RU:'cis',KZ:'cis',BY:'cis',AM:'cis',AZ:'cis',GE:'cis',KG:'cis',MD:'cis',TJ:'cis',TM:'cis',UZ:'cis',US:'north-america',CA:'north-america',MX:'north-america',JP:'japan',KR:'korea',CN:'china',HK:'china',MO:'china',TW:'china',BR:'latam',AR:'latam',CL:'latam',CO:'latam',PE:'latam',AE:'mena',SA:'mena',TR:'mena',IL:'mena',EG:'mena',SG:'sea',MY:'sea',ID:'sea',TH:'sea',VN:'sea',PH:'sea',AU:'oceania',NZ:'oceania',GB:'europe',IE:'europe',FR:'europe',DE:'europe',ES:'europe',IT:'europe',PT:'europe',NL:'europe',BE:'europe',LU:'europe',PL:'europe',CZ:'europe',SK:'europe',HU:'europe',RO:'europe',BG:'europe',GR:'europe',AT:'europe',CH:'europe',NO:'europe',SE:'europe',FI:'europe',DK:'europe',IS:'europe',EE:'europe',LV:'europe',LT:'europe',SI:'europe',HR:'europe',RS:'europe',BA:'europe',ME:'europe',MK:'europe',AL:'europe'};
 const LANGUAGE_REGIONS={ru:'cis',ja:'japan',ko:'korea',zh:'china'};
-const state={releases:[],view:matchMedia('(max-width:760px)').matches?'list':'calendar',cursor:new Date(Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth(),1)),bookmarks:new Set(JSON.parse(localStorage.getItem('igroReleaseBookmarks')||'[]'))};
+const state={releases:[],view:matchMedia('(max-width:760px)').matches?'list':'calendar',cursor:new Date(Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth(),1)),bookmarks:new Set(JSON.parse(localStorage.getItem('igroReleaseBookmarks')||'[]')),feedSource:'unknown'};
 const events=g=>Array.isArray(g.events)?g.events:[];
 const primary=g=>events(g).slice().sort((a,b)=>String(a.date_start||a.date||'9999').localeCompare(String(b.date_start||b.date||'9999')))[0]||{};
 const d=v=>v?new Date(`${v}T12:00:00Z`):null;
 const image=g=>{const u=g.image?.local_url||g.image?.source_url||'';return u&&u.startsWith('assets/')?`../${u}`:u};
 const platforms=g=>[...new Set(events(g).flatMap(e=>e.platforms||[]))];
 const fmt=e=>{if(!e||e.precision==='tbd'||!e.date_start)return 'Дата уточняется';const x=d(e.date_start);if(e.precision==='year')return `${x.getUTCFullYear()} год`;if(e.precision==='quarter')return `${Math.floor(x.getUTCMonth()/3)+1} квартал ${x.getUTCFullYear()}`;if(e.precision==='month')return `${MONTHS[x.getUTCMonth()]} ${x.getUTCFullYear()}`;return `${x.getUTCDate()} ${GEN[x.getUTCMonth()]} ${x.getUTCFullYear()}`};
-
-function countryCode(value){
-  const code=String(value||'').trim().toUpperCase();
-  return /^[A-Z]{2}$/.test(code)?code:'';
-}
-function profileCountry(){
-  try{
-    const session=window.IgropoiskAuth?.session?.();
-    if(!session)return '';
-    const data=window.IgropoiskAuth?.getUserData?.(session)||{};
-    return countryCode(data.country||data.profile?.country||session.user?.country||session.user?.countryCode);
-  }catch{return ''}
-}
-function browserCountry(){
-  for(const locale of navigator.languages||[navigator.language||'']){
-    const code=countryCode(String(locale).match(/[-_]([A-Za-z]{2})\b/)?.[1]);
-    if(code&&COUNTRY_REGIONS[code])return code;
-  }
-  return '';
-}
-function browserLanguageRegion(){
-  for(const locale of navigator.languages||[navigator.language||'']){
-    const lang=String(locale).toLowerCase().split(/[-_]/)[0];
-    if(LANGUAGE_REGIONS[lang])return LANGUAGE_REGIONS[lang];
-  }
-  return '';
-}
-function siteLanguageRegion(){
-  const lang=String(document.documentElement.lang||'').toLowerCase().split(/[-_]/)[0];
-  return LANGUAGE_REGIONS[lang]||'';
-}
-function audienceContext(){
-  const profile=profileCountry();
-  if(profile&&COUNTRY_REGIONS[profile])return {region:COUNTRY_REGIONS[profile],confidence:1,source:'profile-country'};
-  const browser=browserCountry();
-  if(browser&&COUNTRY_REGIONS[browser])return {region:COUNTRY_REGIONS[browser],confidence:.8,source:'browser-country'};
-  const browserRegion=browserLanguageRegion();
-  if(browserRegion)return {region:browserRegion,confidence:.65,source:'browser-language'};
-  const siteRegion=siteLanguageRegion();
-  if(siteRegion)return {region:siteRegion,confidence:.55,source:'site-language'};
-  return {region:'',confidence:0,source:'none'};
-}
-function personalizedForUser(release,minimum){
-  const context=audienceContext();
-  if(!context.region)return false;
-  const regionScore=Number(release?.audience_affinity?.regions?.[context.region]||0);
-  return regionScore*context.confidence>=minimum;
-}
-function mergePersonalized(doc){
-  const global=Array.isArray(doc?.releases)?doc.releases:[];
-  const personalized=Array.isArray(doc?.personalized_releases)?doc.personalized_releases:[];
-  const minimum=Number(doc?.personalization?.client_minimum_score||90);
-  const seen=new Set(global.map(item=>item.id));
-  const selected=personalized.filter(item=>personalizedForUser(item,minimum)&&!seen.has(item.id));
-  return [...global,...selected];
-}
-
+function countryCode(value){const code=String(value||'').trim().toUpperCase();return /^[A-Z]{2}$/.test(code)?code:''}
+function profileCountry(){try{const session=window.IgropoiskAuth?.session?.();if(!session)return'';const data=window.IgropoiskAuth?.getUserData?.(session)||{};return countryCode(data.country||data.profile?.country||session.user?.country||session.user?.countryCode)}catch{return''}}
+function browserCountry(){for(const locale of navigator.languages||[navigator.language||'']){const code=countryCode(String(locale).match(/[-_]([A-Za-z]{2})\b/)?.[1]);if(code&&COUNTRY_REGIONS[code])return code}return''}
+function browserLanguageRegion(){for(const locale of navigator.languages||[navigator.language||'']){const lang=String(locale).toLowerCase().split(/[-_]/)[0];if(LANGUAGE_REGIONS[lang])return LANGUAGE_REGIONS[lang]}return''}
+function siteLanguageRegion(){const lang=String(document.documentElement.lang||'').toLowerCase().split(/[-_]/)[0];return LANGUAGE_REGIONS[lang]||''}
+function optionalGeoCountry(){try{return countryCode(window.IgropoiskGeo?.countryCode||window.IgropoiskGeo?.country||'')}catch{return''}}
+function audienceContext(){const profile=profileCountry();if(profile&&COUNTRY_REGIONS[profile])return{region:COUNTRY_REGIONS[profile],confidence:1,source:'profile-country'};const site=siteLanguageRegion();if(site)return{region:site,confidence:.8,source:'site-language'};const browser=browserCountry();if(browser&&COUNTRY_REGIONS[browser])return{region:COUNTRY_REGIONS[browser],confidence:.65,source:'browser-country'};const browserRegion=browserLanguageRegion();if(browserRegion)return{region:browserRegion,confidence:.55,source:'browser-language'};const geo=optionalGeoCountry();if(geo&&COUNTRY_REGIONS[geo])return{region:COUNTRY_REGIONS[geo],confidence:.3,source:'optional-ip-geo'};return{region:'',confidence:0,source:'none'}}
+function userRelevanceScore(release){const context=audienceContext();if(!context.region)return 0;return Number(release?.audience_affinity?.regions?.[context.region]||0)*context.confidence}
+async function fetchJson(url){const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);return res.json()}
+async function fetchReleaseDocument(){try{const manifest=await fetchJson(LIVE_MANIFEST);const liveUrl=manifest?.files?.[RELEASE_FILE]?.url;if(!liveUrl)throw new Error('release feed missing from live manifest');const doc=await fetchJson(liveUrl);state.feedSource='live-object-storage';return doc}catch(error){console.warn('[releases] live feed fallback:',error);const doc=await fetchJson('../data/releases/public.json');state.feedSource='repository-fallback';return doc}}
 function media(g,cls){const u=image(g);return `<div class="${cls}">${u?`<img src="${esc(u)}" alt="Обложка ${esc(g.title)}" loading="lazy" decoding="async">`:''}</div>`}
 function selectedTypes(){return $$('input[name="releaseType"]:checked').map(x=>x.value)}
 function overlaps(e){if(!e.date_start)return true;const y=state.cursor.getUTCFullYear(),m=state.cursor.getUTCMonth();const start=Date.UTC(y,m,1),end=Date.UTC(y,m+1,1)-1;const a=Date.parse(`${e.date_start}T00:00:00Z`),b=Date.parse(`${e.date_end||e.date_start}T23:59:59Z`);return a<=end&&b>=start}
@@ -90,7 +35,7 @@ function item(g){return `<button class="ig-action release-calendar-item" type="b
 function calendar(rows){const y=state.cursor.getUTCFullYear(),m=state.cursor.getUTCMonth(),first=new Date(Date.UTC(y,m,1)),offset=(first.getUTCDay()+6)%7,start=new Date(Date.UTC(y,m,1-offset)),map=new Map(),approx=[];for(const g of rows){const e=primary(g);if(e.precision==='exact'&&e.date){if(!map.has(e.date))map.set(e.date,[]);map.get(e.date).push(g)}else approx.push(g)}let cells='';for(let i=0;i<42;i++){const day=new Date(start);day.setUTCDate(start.getUTCDate()+i);const key=day.toISOString().slice(0,10),games=map.get(key)||[],other=day.getUTCMonth()!==m;cells+=`<div class="release-day ${other?'is-other':''}" data-date="${key}"><div class="release-day__number"><span>${day.getUTCDate()}</span>${games.length?`<span class="release-day__count">${games.length}</span>`:''}</div><div class="release-day-items">${games.slice(0,2).map(item).join('')}${games.length>2?`<button class="ig-action release-calendar-more" type="button" data-day="${key}">+ ещё ${games.length-2}</button>`:''}</div></div>`}const ap=approx.length?`<section class="release-approximate"><h3>Без точного дня</h3><div class="release-approximate-grid">${approx.map(g=>`<button class="ig-filter-chip release-approximate-chip" type="button" data-release="${esc(g.slug)}">${esc(g.title)} · ${esc(fmt(primary(g)))}</button>`).join('')}</div></section>`:'';return `<div class="release-calendar-shell"><div class="release-weekdays">${WD.map(x=>`<span>${x}</span>`).join('')}</div><div class="release-calendar-grid">${cells}</div>${ap}</div>`}
 function list(rows){const groups=new Map();for(const g of rows){const e=primary(g),key=e.precision==='exact'&&e.date?e.date:`${e.precision}:${e.date_start||'tbd'}`;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(g)}return `<div class="release-list">${[...groups.values()].map(gs=>{const e=primary(gs[0]),x=e.date?d(e.date):null;return `<section class="release-list-group"><header class="release-list-date"><strong>${x?x.getUTCDate():'—'}</strong><div><span>${x?GEN[x.getUTCMonth()]:fmt(e)}</span><small>${x?new Intl.DateTimeFormat('ru-RU',{weekday:'short',timeZone:'UTC'}).format(x):e.precision}</small></div></header>${gs.map(g=>`<article class="release-list-item" data-release="${esc(g.slug)}">${media(g,'release-list-item__media')}<div><h3>${esc(g.title)}</h3><p>${esc(g.developer||'Разработчик уточняется')} · ${esc(compact(g))}</p><div class="release-list-item__meta"><span>${esc((g.genres||[]).slice(0,2).join(' · ')||'Жанр уточняется')}</span><span>Опубликовано</span></div></div><button class="ig-icon-button release-bookmark" type="button" data-bookmark="${esc(g.slug)}">${state.bookmarks.has(g.slug)?'◆':'◇'}</button></article>`).join('')}</section>`}).join('')}</div>`}
 function feed(rows){return `<div class="release-feed">${rows.map(g=>`<article class="ig-card release-feed-card" data-release="${esc(g.slug)}"><div class="ig-card__media release-feed-card__hero">${media(g,'release-feed-card__image')}<span class="release-feed-date">${esc(fmt(primary(g)))}</span></div><div class="ig-card__body release-feed-card__body"><h3>${esc(g.title)}</h3><p>${esc(g.developer||'Разработчик уточняется')} · ${esc(compact(g))}</p><div class="ig-card__meta release-feed-card__footer"><span>${esc((g.genres||[]).slice(0,2).join(' · ')||'Игра')}</span><span>Подтверждено редакцией</span></div></div></article>`).join('')}</div>`}
-function renderUpcoming(){const now=new Date().toISOString().slice(0,10),rows=filtered(false).filter(g=>!primary(g).date_start||primary(g).date_start>=now).slice(0,6);$('#releaseUpcoming').innerHTML=rows.map(g=>`<article class="release-upcoming-item" data-release="${esc(g.slug)}">${media(g,'release-upcoming-item__media')}<div><h3>${esc(g.title)}</h3><span>${esc(fmt(primary(g)))}</span></div></article>`).join('')||'<div class="release-empty">Нет ближайших релизов.</div>'}
+function renderUpcoming(){const now=new Date().toISOString().slice(0,10),rows=filtered(false).filter(g=>!primary(g).date_start||primary(g).date_start>=now).sort((a,b)=>String(primary(a).date_start||'9999').localeCompare(String(primary(b).date_start||'9999'))||userRelevanceScore(b)-userRelevanceScore(a)).slice(0,6);$('#releaseUpcoming').innerHTML=rows.map(g=>`<article class="release-upcoming-item" data-release="${esc(g.slug)}" data-regional-score="${userRelevanceScore(g).toFixed(1)}">${media(g,'release-upcoming-item__media')}<div><h3>${esc(g.title)}</h3><span>${esc(fmt(primary(g)))}</span></div></article>`).join('')||'<div class="release-empty">Нет ближайших релизов.</div>'}
 function render(){const rows=filtered();$('#releasePeriodTitle').textContent=`${MONTHS[state.cursor.getUTCMonth()]} ${state.cursor.getUTCFullYear()}`;$('#releaseResultCount').textContent=`Найдено: ${rows.length}`;if($('#releaseTotal'))$('#releaseTotal').textContent=rows.length;const view=$('#releaseView');view.innerHTML=!rows.length?'<div class="release-empty">В этом периоде нет опубликованных релизов по выбранным фильтрам.</div>':state.view==='calendar'&&!matchMedia('(max-width:760px)').matches?calendar(rows):state.view==='feed'?feed(rows):list(rows);$$('.release-view-tabs button').forEach(b=>{const a=b.dataset.view===state.view;b.classList.toggle('active',a);b.setAttribute('aria-selected',String(a))});renderUpcoming();bind()}
 function detail(g){const e=primary(g),sources=(g.sources||[]).filter(s=>s.url).map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer"><span>${esc(s.title||s.family)}</span><span>Источник ↗</span></a>`).join('');return `<section class="release-detail-hero">${media(g,'release-detail-cover')}<div class="release-detail-copy"><h2 id="releaseModalTitle">${esc(g.title)}</h2><span class="release-detail-label">Дата выхода</span><strong class="release-detail-date">${esc(fmt(e))}</strong><div class="release-detail-platforms">${esc(compact(g))}</div><p>${esc(g.developer||'Разработчик уточняется')}${g.publisher?` · ${esc(g.publisher)}`:''}</p><button class="ig-button" type="button" data-modal-bookmark="${esc(g.slug)}">${state.bookmarks.has(g.slug)?'◆ Отслеживается':'◇ Отслеживать'}</button></div></section><section class="release-detail-sources"><h3>Подтверждающие источники</h3>${sources||'<p>Источники сохранены в редакционной базе.</p>'}</section>`}
 function open(slug){const g=state.releases.find(x=>x.slug===slug);if(!g)return;$('#releaseModalContent').innerHTML=detail(g);$('#releaseModal').hidden=false;bind()}
@@ -98,7 +43,7 @@ function close(){if(!$('#releaseModal'))return;$('#releaseModal').hidden=true}
 function toggle(slug){state.bookmarks.has(slug)?state.bookmarks.delete(slug):state.bookmarks.add(slug);localStorage.setItem('igroReleaseBookmarks',JSON.stringify([...state.bookmarks]));render()}
 function bind(){$$('[data-release]').forEach(x=>{x.onclick=e=>{if(e.target.closest('[data-bookmark]'))return;open(x.dataset.release)}});$$('[data-bookmark]').forEach(x=>x.onclick=e=>{e.stopPropagation();toggle(x.dataset.bookmark)});const mb=$('[data-modal-bookmark]');if(mb)mb.onclick=()=>toggle(mb.dataset.modalBookmark);$$('img').forEach(img=>img.addEventListener('error',()=>img.hidden=true,{once:true}))}
 function filters(){const ps=[...new Set(state.releases.flatMap(platforms))].sort((a,b)=>a.localeCompare(b,'ru')),gs=[...new Set(state.releases.flatMap(g=>g.genres||[]))].sort((a,b)=>a.localeCompare(b,'ru'));$('#releasePlatform').insertAdjacentHTML('beforeend',ps.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join(''));$('#releaseGenre').insertAdjacentHTML('beforeend',gs.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join(''))}
-async function init(){try{const res=await fetch('../data/releases/public.json',{cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);const doc=await res.json();state.releases=mergePersonalized(doc);filters();$('#releaseChanges').innerHTML='<div class="release-change"><strong>Персональная релевантность</strong><span>К общему календарю добавляются только релизы с измеримым интересом для вашей аудитории.</span></div>';render()}catch(err){console.error(err);$('#releaseView').innerHTML='<div class="release-empty">Не удалось загрузить опубликованный календарь релизов.</div>'}}
+async function init(){try{const doc=await fetchReleaseDocument();state.releases=Array.isArray(doc?.releases)?doc.releases:[];filters();$('#releaseChanges').innerHTML='<div class="release-change"><strong>Глобальная значимость + персональная релевантность</strong><span>В календарь попадают только релизы, прошедшие глобальный порог. Региональный интерес влияет только на персональную релевантность и не может добавить локально заметную, но глобально незначимую игру.</span></div>';render()}catch(err){console.error(err);$('#releaseView').innerHTML='<div class="release-empty">Не удалось загрузить опубликованный календарь релизов.</div>'}}
 $$('.release-view-tabs button').forEach(b=>b.addEventListener('click',()=>{state.view=b.dataset.view;render()}));['releasePlatform','releaseGenre','releasePrecision'].forEach(id=>$('#'+id)?.addEventListener('change',render));$$('input[name="releaseType"]').forEach(x=>x.addEventListener('change',render));$('#releasePrev')?.addEventListener('click',()=>{state.cursor.setUTCMonth(state.cursor.getUTCMonth()-1);render()});$('#releaseNext')?.addEventListener('click',()=>{state.cursor.setUTCMonth(state.cursor.getUTCMonth()+1);render()});$('#releaseToday')?.addEventListener('click',()=>{const n=new Date();state.cursor=new Date(Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),1));render()});$$('[data-close-release]').forEach(x=>x.addEventListener('click',close));document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
 init();
 })();
