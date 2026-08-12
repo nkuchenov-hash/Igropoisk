@@ -28,6 +28,7 @@ on:
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/smoke-game-page-browser.mjs'
+      - 'scripts/smoke-game-page-quality-v2.mjs'
       - '.github/workflows/game-page-quality.yml'
 
 permissions:
@@ -63,6 +64,7 @@ jobs:
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/smoke-game-page-browser.mjs
+          node --check scripts/smoke-game-page-quality-v2.mjs
       - name: Exercise verified Steam media repair
         run: node scripts/repair-game-media-from-steam.mjs
       - name: Produce media quality diagnoses
@@ -71,6 +73,8 @@ jobs:
         run: node scripts/build-similarity-index.mjs
       - name: Verify target game pages and review rendering in browser
         run: node scripts/smoke-game-page-browser.mjs
+      - name: Verify global Game Page quality rules on BG3 control example
+        run: node scripts/smoke-game-page-quality-v2.mjs
       - name: Verify GTA VI release and media contract
         run: |
           node - <<'NODE'
