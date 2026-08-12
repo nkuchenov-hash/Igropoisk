@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { collectMissingGamePageRequests, hasMissingGamePage } from './lib/news-publication-gate.mjs';
 
 const ready = { id: 'ready', games: [{ gameId: 'game_ready', title: 'Ready Game', slug: 'ready-game', pageExists: true, pageUrl: 'game/ready-game/' }], gameReviewReasons: [] };
@@ -26,5 +27,8 @@ assert.equal(requests.find(item => item.game_id === 'game_future')?.slug, 'futur
 assert.equal(requests.find(item => item.game_id === 'news_game_abc')?.verified_external, true);
 assert.equal(requests.find(item => item.game_id === 'news_game_abc')?.confidence, 0.93);
 assert.deepEqual(sourceItems.map(item => item.id), ['ready', 'canonical', 'external', 'ambiguous'], 'Request extraction must not remove or mutate news stories.');
+
+const newsCss = fs.readFileSync('features/news/styles/index.css', 'utf8');
+assert.match(newsCss, /\.ig-news-game-unlinked\s*\{\s*display\s*:\s*none\s*!important\s*\}/, 'A game hashtag without a page must not be visible to users.');
 
 console.log('News game-page request tests passed.');
