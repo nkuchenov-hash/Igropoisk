@@ -38,6 +38,7 @@ on:
       - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/smoke-game-page-browser.mjs'
       - 'scripts/smoke-game-page-quality-v2.mjs'
+      - 'scripts/smoke-game-page-visible-data-v3.mjs'
       - '.github/workflows/game-page-quality.yml'
 
 permissions:
@@ -84,6 +85,7 @@ jobs:
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/smoke-game-page-browser.mjs
           node --check scripts/smoke-game-page-quality-v2.mjs
+          node --check scripts/smoke-game-page-visible-data-v3.mjs
       - name: Exercise canonical catalog materialization
         run: node scripts/materialize-catalog-game-data.mjs
       - name: Exercise verified Steam media repair
@@ -96,6 +98,8 @@ jobs:
         run: node scripts/smoke-game-page-browser.mjs
       - name: Verify global Game Page quality rules on BG3 control example
         run: node scripts/smoke-game-page-quality-v2.mjs
+      - name: Verify visible BG3 requirements, rating removal and similarity
+        run: node scripts/smoke-game-page-visible-data-v3.mjs
       - name: Preserve BG3 acceptance diagnostics
         if: always()
         uses: actions/upload-artifact@v4
