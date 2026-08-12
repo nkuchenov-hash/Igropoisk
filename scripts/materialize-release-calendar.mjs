@@ -3,7 +3,7 @@ import path from 'node:path';
 import { buildCandidates, buildPublicCalendar, validateCalendar } from './lib/release-calendar-policy.mjs';
 import { migrateRepository } from './lib/game-registry-migration.mjs';
 import { attachCanonicalGameIdsToPublicCalendar, linkReleaseCandidatesToRegistry } from './lib/release-game-registry-adapter.mjs';
-import { attachAudienceAffinity, validatePersonalizedReleases } from './lib/release-audience-relevance.mjs';
+import { attachAudienceAffinity, buildPersonalizedReleases, validatePersonalizedReleases } from './lib/release-audience-relevance.mjs';
 import { enrichRawReleasesFromSteamEditorial } from './lib/release-steam-editorial-discovery.mjs';
 import { applyGlobalNotabilityGate, validateGlobalNotability } from './lib/release-notability.mjs';
 import { ensureVisibleReleaseCovers, validateVisibleReleaseCovers } from './lib/release-cover-resolver.mjs';
@@ -21,13 +21,9 @@ const paths = {
   public: path.join(ROOT, 'data/releases/public.json'),
   report: path.join(ROOT, 'data/releases/materialization-report.json'),
 };
-
 async function readJson(file, fallback) {
   try { return JSON.parse(await fs.readFile(file, 'utf8')); }
-  catch (error) {
-    if (error.code === 'ENOENT') return fallback;
-    throw new Error(`Cannot read ${path.relative(ROOT, file)}: ${error.message}`);
-  }
+  catch (error) { if (error.code === 'ENOENT') return fallback; throw new Error(`Cannot read ${path.relative(ROOT, file)}: ${error.message}`); }
 }
 function deduplicateCandidates(candidates) {
   const byId = new Map(); const statusRank = {rejected:0,review:1,published:2};
@@ -48,36 +44,34 @@ const generatedAt=new Date().toISOString();
 const steamEditorial=await enrichRawReleasesFromSteamEditorial(Array.isArray(raw?.releases)?raw.releases:[],policy,generatedAt);
 const rawById=new Map(steamEditorial.releases.map(item=>[item.id,item]));
 let rawCandidates=buildCandidates({rawReleases:steamEditorial.releases,editorial,officialClaims:Array.isArray(claimsDoc?.claims)?claimsDoc.claims:[],policy});
-rawCandidates=rawCandidates.map(candidate=>{
-  const source=rawById.get(candidate.id)||{};
-  return {...candidate,editorial_quality:source.editorial_quality||{},anticipation:source.anticipation||null};
-});
+rawCandidates=rawCandidates.map(candidate=>{const source=rawById.get(candidate.id)||{};return {...candidate,editorial_quality:source.editorial_quality||{},anticipation:source.anticipation||null}});
 const deduplicatedCandidates=deduplicateCandidates(rawCandidates);
 const registryMigration=migrateRepository(ROOT,{dryRun:true,now:generatedAt,baseCommit:process.env.GITHUB_SHA||null,publicBaseUrl:'/game'});
 const linkage=linkReleaseCandidatesToRegistry(deduplicatedCandidates,registryMigration.registry);
 const newsEvents=[...items(newsDoc),...items(rankedNewsDoc)];
 const popularRanking=Array.isArray(popularDoc?.ranking)?popularDoc.ranking:[];
-let candidates=applyGlobalNotabilityGate(linkage.candidates,{newsEvents,popularRanking,policy});
-candidates=attachAudienceAffinity(candidates,newsEvents,policy);
+let candidates=attachAudienceAffinity(linkage.candidates,newsEvents,policy);
+candidates=applyGlobalNotabilityGate(candidates,{newsEvents,popularRanking,policy});
 
-const visibleIds=new Set(candidates.filter(candidate=>candidate.moderation?.status==='published'&&!candidate.moderation?.publication_forbidden).map(candidate=>candidate.id));
+const personalizedPreview=buildPersonalizedReleases(candidates,policy);
+const visibleIds=new Set([
+  ...candidates.filter(candidate=>candidate.moderation?.status==='published'&&!candidate.moderation?.publication_forbidden).map(candidate=>candidate.id),
+  ...personalizedPreview.map(release=>release.id),
+]);
 const coverResolution=await ensureVisibleReleaseCovers(candidates,{root:ROOT,visibleIds,minimumBytes:4_000,concurrency:6});
 candidates=coverResolution.candidates;
 
 let publicCalendar=buildPublicCalendar(candidates,generatedAt);
 publicCalendar=attachCanonicalGameIdsToPublicCalendar(publicCalendar,candidates);
 const candidateById=new Map(candidates.map(candidate=>[candidate.id,candidate]));
-publicCalendar.releases=(publicCalendar.releases||[]).map(release=>{
-  const candidate=candidateById.get(release.id);
-  return {...release,global_notability:candidate?.global_notability||null,audience_affinity:candidate?.audience_affinity||{score:0,regions:{},evidence_count:0,evidence:[],role:'ranking-bonus-only'}};
-});
-publicCalendar.personalized_releases=[];
+publicCalendar.releases=(publicCalendar.releases||[]).map(release=>{const candidate=candidateById.get(release.id);return {...release,global_notability:candidate?.global_notability||null,audience_affinity:candidate?.audience_affinity||null,regional_notability:candidate?.regional_notability||null}});
+publicCalendar.personalized_releases=buildPersonalizedReleases(candidates,policy);
 publicCalendar.personalization={
-  model:'global-notability-required-region-bonus-v2',
-  rule:'Regional/user relevance can rank globally qualified releases but can never add a release that failed the global gate.',
+  model:'broad-global-or-niche-global-or-strong-user-region-v3',
+  rule:'Global releases qualify through broad global attention or established niche/franchise attention. A non-global release may additionally appear only for users whose region has strong measured repeated/corroborated audience attention. Origin or language support alone never qualifies.',
   client_minimum_score:Number(policy.personalized_client_minimum_score||90),
 };
-publicCalendar.statistics.personalized=0;
+publicCalendar.statistics.personalized=publicCalendar.personalized_releases.length;
 publicCalendar.statistics.coverage_percent=coverResolution.statistics.coverage_percent;
 const errors=[
   ...validateCalendar({candidates,publicCalendar,policy}),
@@ -86,22 +80,27 @@ const errors=[
   ...validateVisibleReleaseCovers(publicCalendar),
 ];
 
-const candidateDocument={schema_version:4,generated_at:generatedAt,raw_generated_at:raw?.generated_at||null,news_generated_at:newsDoc?.generatedAt||null,popular_generated_at:popularDoc?.generated_at||null,candidates,statistics:publicCalendar.statistics};
+const candidateDocument={schema_version:5,generated_at:generatedAt,raw_generated_at:raw?.generated_at||null,news_generated_at:newsDoc?.generatedAt||null,popular_generated_at:popularDoc?.generated_at||null,candidates,statistics:publicCalendar.statistics};
 const report={
-  schema_version:4,generated_at:generatedAt,
+  schema_version:5,generated_at:generatedAt,
   sources:{
     active_discovery:['Steam coming-soon/appdetails (PC only)','Steam Popular Upcoming discovery signal','Steam Popular New discovery signal'],
-    global_notability:{model:'canonical game_id global evidence aggregation',requirements:policy.global_notability||{},rule:'Steam/store rank is never sufficient. Independent worldwide coverage is mandatory; cross-site momentum can corroborate it.'},
+    release_notability:{model:'broad global OR established niche/franchise global OR strong personalized regional attention',global_requirements:policy.global_notability||{},regional_requirements:policy.regional_notability||{},rule:'Steam/store rank is never sufficient by itself. Regional qualification is based on measured audience attention, never developer/game origin.'},
     steam_editorial_discovery:{discovered_candidates:steamEditorial.discovered,sources:steamEditorial.sources},
-    release_cover_resolution:{strategy:'verified local asset required for every globally visible release',preferred:'Steam library 600x900 cover',fallbacks:['existing official image','Steam capsule','Steam header','Steam background','Steam screenshot'],...coverResolution.statistics,unresolved:coverResolution.unresolved},
-    audience_relevance:['Canonical game_id first','Audience regions from explicit audience metadata or configured source audience','Topic/location words are not accepted as audience geography'],
+    release_cover_resolution:{strategy:'verified local asset required for every globally or personally visible release',preferred:'Steam library 600x900 cover',fallbacks:['existing official image','Steam capsule','Steam header','Steam background','Steam screenshot'],...coverResolution.statistics,unresolved:coverResolution.unresolved},
+    audience_relevance:['Canonical game_id first','Audience regions from explicit audience metadata or configured source audience','Topic/location words are not accepted as audience geography','Repeated high-score regional coverage can qualify only the matching user region'],
     optional_auxiliary:['RAWG enrichment when RAWG_API_KEY is configured'],
     supported_auxiliary:['IGDB/RAWG claims are discovery/cross-check only and cannot confirm a date alone'],
     console_authority:['Official platform stores','publisher/developer sites','official announcements via config/release-official-claims.json'],
   },
   statistics:publicCalendar.statistics,
   game_registry_linkage:{canonical_games_considered:registryMigration.report.canonicalGames,...linkage.statistics},
-  global_notability:{eligible:candidates.filter(item=>item.global_notability?.eligible).length,blocked:candidates.filter(item=>!item.global_notability?.eligible&&!item.moderation?.rejection_reason).length},
+  notability:{
+    broad_global:candidates.filter(item=>item.global_notability?.qualification==='broad-global').length,
+    niche_global:candidates.filter(item=>item.global_notability?.qualification==='niche-global').length,
+    personalized_regional:publicCalendar.personalized_releases.length,
+    blocked:candidates.filter(item=>!item.global_notability?.eligible&&!item.regional_notability?.eligible&&!item.moderation?.rejection_reason).length,
+  },
   validation_errors:errors,
 };
 await Promise.all([fs.mkdir(path.dirname(paths.candidates),{recursive:true}),fs.mkdir(path.dirname(paths.public),{recursive:true})]);
