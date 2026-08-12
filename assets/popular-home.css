@@ -1,6 +1,6 @@
 @import url('./home-wide-rails.css?v=20260803-2');
 
-:root{--home-popular-card:214px}
+#home{--home-popular-card:214px}
 #home .game-row{scroll-snap-type:none!important}
 #home .game-row>.popular-card{flex:0 0 var(--home-popular-card);width:var(--home-popular-card);scroll-snap-align:none!important}
 .popular-card{position:relative;display:flex;min-width:var(--home-popular-card);flex-direction:column;scroll-snap-align:none}
@@ -19,7 +19,7 @@
 .popular-state strong,.popular-state span{font-size:var(--ig-font-min);line-height:1.45}
 .stable-rail{scroll-snap-type:none!important;overscroll-behavior-inline:contain;scroll-behavior:auto}
 .stable-rail .popular-card{user-select:none;scroll-snap-align:none!important}
-@media(min-width:1800px){:root{--home-popular-card:224px}}
-@media(min-width:2400px){:root{--home-popular-card:238px}}
-@media(min-width:3200px){:root{--home-popular-card:250px}}
-@media(max-width:720px){:root{--home-popular-card:174px}.popular-updated{display:none}.popular-card .card-body{min-height:92px;padding:13px 13px 15px}.popular-card h3{font-size:18px}.popular-meta span{font-size:17px}.popular-rank{min-width:36px;height:36px;font-size:17px}}
+@media(min-width:1800px){#home{--home-popular-card:224px}}
+@media(min-width:2400px){#home{--home-popular-card:238px}}
+@media(min-width:3200px){#home{--home-popular-card:250px}}
+@media(max-width:720px){#home{--home-popular-card:174px}.popular-updated{display:none}.popular-card .card-body{min-height:92px;padding:13px 13px 15px}.popular-card h3{font-size:18px}.popular-meta span{font-size:17px}.popular-rank{min-width:36px;height:36px;font-size:17px}}
