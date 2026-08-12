@@ -30,7 +30,7 @@ async function fetchJson(url) {
   const response = await fetch(url, {
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
     headers: {
-      'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/1.0',
+      'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/1.1',
       'accept-language': 'en-US,en;q=0.9'
     }
   });
@@ -47,11 +47,24 @@ async function steamAppDetails(appid) {
   }
 }
 
+function steamStaticCandidates(appid) {
+  if (!appid) return [];
+  const roots = [
+    `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${appid}`,
+    `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}`,
+  ];
+  return roots.flatMap(root => [
+    `${root}/library_600x900.jpg`,
+    `${root}/header.jpg`,
+    `${root}/capsule_616x353.jpg`,
+    `${root}/capsule_231x87.jpg`,
+  ]);
+}
+
 function steamCoverCandidates(appid, data, image) {
   const screenshots = Array.isArray(data?.screenshots) ? data.screenshots : [];
   return uniq([
-    appid ? `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${appid}/library_600x900.jpg` : null,
-    appid ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg` : null,
+    ...steamStaticCandidates(appid),
     ...(image?.candidate_urls || []),
     image?.source_url,
     data?.capsule_imagev5,
@@ -67,7 +80,7 @@ function steamCoverCandidates(appid, data, image) {
 async function downloadImage(url, minimumBytes) {
   const response = await fetch(url, {
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
-    headers: { 'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/1.0' }
+    headers: { 'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/1.1' }
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const contentType = String(response.headers.get('content-type') || '').split(';')[0].toLowerCase();
