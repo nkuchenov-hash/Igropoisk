@@ -36,12 +36,14 @@ try{
   await page.setCacheEnabled(false);
   await page.goto(new URL(`?smoke=${Date.now()}`,baseUrl).href,{waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>document.querySelectorAll('#popular .popular-card').length===20&&document.querySelectorAll('#reviewsOfDayRail .review-day-mini').length>=6,{timeout:30000,polling:200});
-  await page.waitForFunction(()=>document.querySelector('[data-home-hero-rating]')&&document.querySelectorAll('[data-home-hero-rating] .home-hero-rating__row').length===4,{timeout:10000,polling:100});
+  await page.waitForFunction(()=>document.querySelectorAll('[data-home-hero-rating]').length===1&&document.querySelectorAll('[data-home-hero-rating] .home-hero-rating__row').length>4,{timeout:10000,polling:100});
   await sleep(500);
 
   const state=await page.evaluate(()=>{
     const style=node=>node?getComputedStyle(node):null;
-    const heroPanel=document.querySelector('[data-home-hero-rating]');
+    const heroPanels=[...document.querySelectorAll('[data-home-hero-rating]')];
+    const heroPanel=heroPanels[0]||null;
+    const heroList=heroPanel?.querySelector('.home-hero-rating__list')||null;
     const heroCopy=document.querySelector('.hero-copy');
     const reviews=document.querySelector('.reviews-of-day');
     const releases=document.querySelector('.home-releases');
@@ -59,8 +61,14 @@ try{
       popularTitleMin:popularTitles.length?Math.min(...popularTitles.map(node=>parseFloat(style(node).fontSize))):0,
       popularMetaMin:popularMeta.length?Math.min(...popularMeta.map(node=>parseFloat(style(node).fontSize))):0,
       popularCardWidth:document.querySelector('#popular .popular-card')?.getBoundingClientRect().width||0,
+      heroPanels:heroPanels.length,
       heroRows:document.querySelectorAll('[data-home-hero-rating] .home-hero-rating__row').length,
       heroCovers:document.querySelectorAll('[data-home-hero-rating] .home-hero-rating__cover img').length,
+      heroHeading:heroPanel?.querySelector('.top250-home-title')?.textContent?.trim()||'',
+      heroKicker:heroPanel?.querySelector('.top250-home-kicker')?.textContent?.trim()||'',
+      heroListOverflowY:style(heroList)?.overflowY||'',
+      heroListClientHeight:heroList?.clientHeight||0,
+      heroListScrollHeight:heroList?.scrollHeight||0,
       heroPanelLeft:heroPanel?.getBoundingClientRect().left||0,
       heroCopyRight:heroCopy?.getBoundingClientRect().right||0,
       heroBackdrop:style(heroPanel)?.backdropFilter||style(heroPanel)?.webkitBackdropFilter||'none',
@@ -87,8 +95,13 @@ try{
   assert(state.popularMetaMin>=16,`Popular meta font too small: ${state.popularMetaMin}px`);
   assert(state.popularCardWidth>=200,`Popular cards too narrow: ${state.popularCardWidth}px`);
   assert(nextDisabled,'Popular next control must disable at the end instead of snapping/bouncing');
-  assert(state.heroRows===4,`Hero rating rows: ${state.heroRows}/4`);
-  assert(state.heroCovers===4,`Hero rating covers: ${state.heroCovers}/4`);
+  assert(state.heroPanels===1,`Homepage must contain exactly one Top-250 widget, found ${state.heroPanels}`);
+  assert(state.heroRows>4,`Top-250 widget must expose the ranking as a scrollable list, rows: ${state.heroRows}`);
+  assert(state.heroCovers>=4,`Top-250 widget covers: ${state.heroCovers}`);
+  assert(state.heroHeading==='Топ-250',`Top-250 widget heading mismatch: ${state.heroHeading}`);
+  assert(state.heroKicker==='Рейтинг Игропоиска',`Top-250 widget kicker mismatch: ${state.heroKicker}`);
+  assert(['auto','scroll'].includes(state.heroListOverflowY),`Top-250 list is not vertically scrollable: ${state.heroListOverflowY}`);
+  assert(state.heroListScrollHeight>state.heroListClientHeight,`Top-250 list does not overflow inside the widget: ${state.heroListScrollHeight}/${state.heroListClientHeight}`);
   assert(state.heroPanelLeft>=state.heroCopyRight-2,`Hero rating is not positioned to the right (${state.heroPanelLeft} < ${state.heroCopyRight})`);
   assert(state.heroBackdrop&&state.heroBackdrop!=='none',`Hero rating must be translucent/blurred: ${state.heroBackdrop}`);
   assert(state.glyphs===0,`Decorative heading glyphs remain: ${state.glyphs}`);
