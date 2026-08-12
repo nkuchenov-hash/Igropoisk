@@ -43,6 +43,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: central-parser-scheduler-storage
@@ -168,6 +169,12 @@ jobs:
           YC_S3_REGION: ru-central1
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
         run: node scripts/publish-home-feeds-storage.mjs
+
+      - name: Trigger game lifecycle for refreshed Popular Now
+        if: steps.publication.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run content-pipeline.yml --ref staging
 
       - name: Keep last validated snapshot when any publication boundary fails
         if: always() && (steps.validation.outcome != 'success' || steps.release_calendar.outcome != 'success')

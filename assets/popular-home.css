@@ -1,25 +1,24 @@
 @import url('./home-wide-rails.css?v=20260803-2');
 
-#home{--home-popular-card:214px}
-#home .game-row{scroll-snap-type:none!important}
+#home{--home-popular-card:184px}
+#home .game-row{align-items:flex-start;scroll-snap-type:none!important}
 #home .game-row>.popular-card{flex:0 0 var(--home-popular-card);width:var(--home-popular-card);scroll-snap-align:none!important}
 .popular-card{position:relative;display:flex;min-width:var(--home-popular-card);flex-direction:column;scroll-snap-align:none}
 .popular-rank{position:absolute;z-index:3;top:10px;left:10px;min-width:38px;height:38px;display:grid;place-items:center;padding:0 10px;border:1px solid var(--ig-line-strong);border-radius:999px;background:var(--ig-surface);color:var(--ig-text);font-size:18px;font-weight:850}
 .popular-poster{width:100%;aspect-ratio:2/3;overflow:hidden;background:linear-gradient(145deg,var(--ig-surface-2),var(--ig-surface-3))}
 .popular-poster img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;transform:none!important}
 .popular-placeholder{display:grid;place-items:center;width:100%;height:100%;min-height:100%;background:linear-gradient(145deg,var(--ig-surface-2),var(--ig-surface-3));font:800 36px/1 var(--ig-game-display);color:var(--ig-muted)}
-.popular-card .card-body{display:flex;min-height:96px;flex:1;flex-direction:column;gap:6px;padding:15px 15px 17px}
-.popular-card h3{min-height:0;margin:0;color:var(--ig-text);font-size:20px;line-height:1.24;font-weight:800;letter-spacing:-.018em}
-.popular-meta{display:flex;align-items:center;margin-top:2px;gap:8px}
-.popular-meta span{color:var(--ig-rating);font-size:18px;line-height:1.3;font-weight:850}
-.popular-pending{display:block;margin-top:2px;color:var(--ig-muted);font-size:var(--ig-font-min);line-height:1.35}
+.popular-card .card-body{display:flex;flex-direction:column;gap:5px;padding:11px 13px 12px}
+.popular-card h3{min-height:0;margin:0;color:var(--ig-text);font-size:19px;line-height:1.22;font-weight:800;letter-spacing:-.018em}
+.popular-meta{display:flex;align-items:center;margin-top:1px;gap:8px}
+.popular-meta span{color:var(--ig-rating);font-size:17px;line-height:1.25;font-weight:850}
 .popular-updated{margin-left:auto;font-size:var(--ig-font-min);color:var(--ig-muted)}
 .popular-updated[data-stale="true"]{color:var(--ig-muted)}
 .popular-state{display:grid;gap:5px;min-width:min(100%,320px);padding:18px;border:1px solid var(--ig-line);border-radius:var(--ig-radius-md);background:var(--ig-surface)}
 .popular-state strong,.popular-state span{font-size:var(--ig-font-min);line-height:1.45}
 .stable-rail{scroll-snap-type:none!important;overscroll-behavior-inline:contain;scroll-behavior:auto}
 .stable-rail .popular-card{user-select:none;scroll-snap-align:none!important}
-@media(min-width:1800px){#home{--home-popular-card:224px}}
-@media(min-width:2400px){#home{--home-popular-card:238px}}
-@media(min-width:3200px){#home{--home-popular-card:250px}}
-@media(max-width:720px){#home{--home-popular-card:174px}.popular-updated{display:none}.popular-card .card-body{min-height:92px;padding:13px 13px 15px}.popular-card h3{font-size:18px}.popular-meta span{font-size:17px}.popular-rank{min-width:36px;height:36px;font-size:17px}}
+@media(min-width:1800px){#home{--home-popular-card:192px}}
+@media(min-width:2400px){#home{--home-popular-card:202px}}
+@media(min-width:3200px){#home{--home-popular-card:214px}}
+@media(max-width:720px){#home{--home-popular-card:158px}.popular-updated{display:none}.popular-card .card-body{padding:10px 11px 11px}.popular-card h3{font-size:17px}.popular-meta span{font-size:16px}.popular-rank{min-width:34px;height:34px;font-size:16px}}

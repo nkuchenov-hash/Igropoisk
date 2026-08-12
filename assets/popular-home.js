@@ -172,19 +172,24 @@ async function load(){
     if(!ranking.length)throw new Error('Popularity ranking is empty');
     const catalog=catalogResponse.ok?await catalogResponse.json():[];
     const existing=new Set((catalog||[]).map(item=>item.slug));
+    const publishedRanking=ranking.filter(item=>existing.has(item.slug));
+    if(!publishedRanking.length)throw new Error('Popular ranking has no published game pages');
+    if(publishedRanking.length!==ranking.length){
+      const missing=ranking.filter(item=>!existing.has(item.slug)).map(item=>item.slug);
+      console.warn('Игропоиск: Popular Now withheld games without published pages',missing);
+    }
 
-    target.innerHTML=ranking.map((item,index)=>{
-      const clickable=existing.has(item.slug);
+    target.innerHTML=publishedRanking.map((item,index)=>{
       const candidates=coverCandidates(item);
       const src=candidates[0]||'';
       const poster=src
         ? `<img src="${esc(src)}" data-cover-candidates='${esc(JSON.stringify(candidates))}' alt="${esc(item.title)}" loading="${index<6?'eager':'lazy'}" fetchpriority="${index<3?'high':'auto'}" decoding="async" width="600" height="900">`
         : `<div class="popular-placeholder" data-cover-missing="${index}" role="img" aria-label="Ищем обложку">${esc(initials(item.title))}</div>`;
-      return `<article class="ig-card ig-card--interactive popular-card"${clickable?` data-game="${esc(item.slug)}"`:''} aria-label="${esc(item.title)}"><div class="popular-rank">${index+1}</div><div class="ig-card__media popular-poster">${poster}</div><div class="ig-card__body card-body"><h3 class="ig-card__title">${esc(item.title)}</h3><div class="ig-card__meta popular-meta"><span>Индекс ${esc(Number(item.score||0).toFixed(1))}</span></div>${clickable?'':'<span class="popular-pending">Страница готовится</span>'}</div></article>`;
+      return `<article class="ig-card ig-card--interactive popular-card" data-game="${esc(item.slug)}" aria-label="${esc(item.title)}"><div class="popular-rank">${index+1}</div><div class="ig-card__media popular-poster">${poster}</div><div class="ig-card__body card-body"><h3 class="ig-card__title">${esc(item.title)}</h3><div class="ig-card__meta popular-meta"><span>Индекс ${esc(Number(item.score||0).toFixed(1))}</span></div></div></article>`;
     }).join('');
 
     wireCoverFallbacks(target);
-    await hydrateMissingCovers(target,ranking);
+    await hydrateMissingCovers(target,publishedRanking);
     attachStableRail(target);
     updateFreshness(target,data.generated_at);
   }catch(error){
