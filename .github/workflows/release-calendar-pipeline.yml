@@ -11,6 +11,7 @@ on:
       - "scripts/lib/release-audience-relevance.mjs"
       - "scripts/lib/release-notability.mjs"
       - "scripts/enrich-release-anticipation.mjs"
+      - "scripts/repair-release-slugs.mjs"
       - "scripts/materialize-release-calendar.mjs"
       - "scripts/validate-release-calendar.mjs"
       - "scripts/test-release-calendar-policy.mjs"
@@ -29,6 +30,7 @@ on:
       - "scripts/lib/release-audience-relevance.mjs"
       - "scripts/lib/release-notability.mjs"
       - "scripts/enrich-release-anticipation.mjs"
+      - "scripts/repair-release-slugs.mjs"
       - "config/release-calendar.json"
       - "config/release-official-claims.json"
       - "data/release-candidates/**"
@@ -73,6 +75,8 @@ jobs:
         env:
           RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
         run: node scripts/parse-releases.mjs
+      - name: Repair release slugs generated from non-Latin titles
+        run: node scripts/repair-release-slugs.mjs
       - name: Measure current broad, niche and franchise attention
         run: node scripts/enrich-release-anticipation.mjs
       - name: Build candidate database and public calendar
