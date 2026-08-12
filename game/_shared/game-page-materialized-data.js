@@ -35,12 +35,19 @@ function renderRequirements(parser){
   const target=document.querySelector('#platformRequirements');
   if(target&&platforms.length)target.innerHTML=platforms.map(platform=>`<div><b>${esc(platformLabel(platform))}</b><small>Подтверждено источником данных игры</small></div>`).join('');
 }
+function franchiseCard(game){
+  const year=esc(game.release_year||game.year||'');
+  const body=`<b>${esc(game.title)}</b><span>${year}</span>`;
+  if(game.page_available===false)return `<div class="ig-card franchise-game franchise-game--queued">${body}<small>Страница готовится</small></div>`;
+  const gameSlug=game.slug||String(game.title).toLowerCase().replace(/[^a-z0-9а-яё]+/gi,'-').replace(/^-|-$/g,'');
+  return `<a class="ig-card franchise-game" href="../${encodeURIComponent(gameSlug)}/">${body}</a>`;
+}
 function renderFranchise(data,title){
   const games=arr(data?.games).filter(game=>game?.title&&String(game.title).toLowerCase()!==String(title||'').toLowerCase());
   if(!data?.name||!games.length)return;
   const overview=document.querySelector('#overview .lower-grid');if(!overview)return;
   let panel=document.querySelector('#franchisePanel');if(!panel){panel=document.createElement('section');panel.id='franchisePanel';panel.className='ig-panel game-panel franchise-panel';overview.appendChild(panel)}
-  panel.innerHTML=`<div class="ig-toolbar franchise-panel__head"><div><h2>Игры серии</h2><span>${esc(data.name)}</span></div></div><div class="franchise-row">${games.map(game=>{const gameSlug=game.slug||String(game.title).toLowerCase().replace(/[^a-z0-9а-яё]+/gi,'-').replace(/^-|-$/g,'');return `<a class="ig-card franchise-game" href="../${encodeURIComponent(gameSlug)}/"><b>${esc(game.title)}</b><span>${esc(game.release_year||game.year||'')}</span></a>`}).join('')}</div>`;
+  panel.innerHTML=`<div class="ig-toolbar franchise-panel__head"><div><h2>Игры серии</h2><span>${esc(data.name)}</span></div></div><div class="franchise-row">${games.map(franchiseCard).join('')}</div>`;
 }
 function renderGuides(payload,title,hero){
   const guides=arr(payload?.guides||payload?.items).filter(item=>item?.title&&item?.url);
