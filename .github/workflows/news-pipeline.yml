@@ -133,9 +133,12 @@ jobs:
         run: |
           node - <<'NODE' >> "$GITHUB_OUTPUT"
           const fs = require('fs');
-          const payload = JSON.parse(fs.readFileSync('data/news-game-review.json', 'utf8'));
-          const items = Array.isArray(payload?.items) ? payload.items : [];
-          const missing = items.filter(item => Array.isArray(item?.reasons) && item.reasons.includes('missing-game-page'));
+          const payload = JSON.parse(fs.readFileSync('data/news-events.json', 'utf8'));
+          const items = Array.isArray(payload) ? payload : (Array.isArray(payload?.items) ? payload.items : []);
+          const missing = items.filter(item =>
+            (Array.isArray(item?.gameReviewReasons) && item.gameReviewReasons.includes('missing-game-page')) ||
+            (Array.isArray(item?.games) && item.games.some(game => game && typeof game === 'object' && game.pageExists === false))
+          );
           const ids = [...new Set(missing.flatMap(item => [
             ...(Array.isArray(item.gameIds) ? item.gameIds : []),
             ...(Array.isArray(item.games) ? item.games.map(game => game?.gameId || game?.game_id) : [])
