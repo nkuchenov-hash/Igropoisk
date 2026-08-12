@@ -4,7 +4,7 @@
   "game_slug": "gears-of-war-e-day",
   "game_id": "game_33f5e6ca790810309305",
   "canonical_title": "gears-of-war-e-day",
-  "checked_at": "2026-08-12T23:52:44.064Z",
+  "checked_at": "2026-08-12T23:56:49.790Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
@@ -13,13 +13,7 @@
   ],
   "revision_history": [
     {
-      "label": "canonical-title-repair",
-      "status": "completed",
-      "from": "Gears of War: E-Day",
-      "to": "gears-of-war-e-day"
-    },
-    {
-      "attempt": 2,
+      "attempt": 1,
       "label": "review-research-1",
       "script": "scripts/prepare-review-research.mjs",
       "status": "revision-required",
@@ -28,7 +22,7 @@
       "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:36:14\n\nNode.js v22.23.1\n"
     },
     {
-      "attempt": 3,
+      "attempt": 2,
       "label": "rating-1",
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",
@@ -37,7 +31,7 @@
       "stderr": ""
     },
     {
-      "attempt": 4,
+      "attempt": 3,
       "label": "review-research-2",
       "script": "scripts/prepare-review-research.mjs",
       "status": "revision-required",
@@ -46,7 +40,7 @@
       "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:36:14\n\nNode.js v22.23.1\n"
     },
     {
-      "attempt": 5,
+      "attempt": 4,
       "label": "rating-2",
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",
@@ -55,7 +49,7 @@
       "stderr": ""
     },
     {
-      "attempt": 6,
+      "attempt": 5,
       "label": "review-research-3",
       "script": "scripts/prepare-review-research.mjs",
       "status": "revision-required",
@@ -64,7 +58,7 @@
       "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:36:14\n\nNode.js v22.23.1\n"
     },
     {
-      "attempt": 7,
+      "attempt": 6,
       "label": "rating-3",
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",
@@ -73,7 +67,7 @@
       "stderr": ""
     },
     {
-      "attempt": 8,
+      "attempt": 7,
       "label": "review-research-4",
       "script": "scripts/prepare-review-research.mjs",
       "status": "revision-required",
@@ -82,7 +76,7 @@
       "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:36:14\n\nNode.js v22.23.1\n"
     },
     {
-      "attempt": 9,
+      "attempt": 8,
       "label": "rating-4",
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",

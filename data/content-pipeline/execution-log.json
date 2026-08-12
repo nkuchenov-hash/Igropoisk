@@ -1,41 +1,77 @@
 {
   "schema_version": 8,
-  "started_at": "2026-08-12T23:51:07.839Z",
-  "finished_at": "2026-08-12T23:53:02.392Z",
+  "started_at": "2026-08-12T23:55:19.038Z",
+  "finished_at": "2026-08-12T23:57:12.721Z",
   "summary": {
-    "completed": 34,
-    "needs_revision": 17,
-    "total": 51,
+    "completed": 41,
+    "needs_revision": 16,
+    "total": 57,
     "editorial_ai_enabled": true,
     "editorial_ai_available": true,
     "quality_policy": "red -> revise/research/rebuild -> recheck; no terminal quality block"
   },
   "results": [
     {
-      "label": "relations-migration:metal-gear-solid-v-the-phantom-pain",
-      "command": "node scripts/enrich-game-relations.mjs metal-gear-solid-v-the-phantom-pain",
+      "label": "relations-migration:fallout-4",
+      "command": "node scripts/enrich-game-relations.mjs fallout-4",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 1102,
-      "stdout": "{\n  \"slug\": \"metal-gear-solid-v-the-phantom-pain\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n",
+      "duration_ms": 992,
+      "stdout": "{\n  \"slug\": \"fallout-4\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n",
       "stderr": ""
     },
     {
-      "label": "similarity-after-relations:metal-gear-solid-v-the-phantom-pain",
-      "command": "node scripts/build-similarity-index.mjs metal-gear-solid-v-the-phantom-pain",
+      "label": "similarity-after-relations:fallout-4",
+      "command": "node scripts/build-similarity-index.mjs fallout-4",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 70,
-      "stdout": "{\n  \"catalog_games\": 79,\n  \"profiles\": 85,\n  \"similarity_files_written\": 1,\n  \"year_proximity_used\": false\n}\n",
+      "duration_ms": 73,
+      "stdout": "{\n  \"catalog_games\": 79,\n  \"profiles\": 87,\n  \"similarity_files_written\": 1,\n  \"year_proximity_used\": false\n}\n",
       "stderr": ""
+    },
+    {
+      "label": "parse:no-more-room-in-hell-2",
+      "command": "node scripts/parse-game-data.mjs no-more-room-in-hell-2 292000 No More Room in Hell 2",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 629,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"no-more-room-in-hell-2\",\n  \"checked_at\": \"2026-08-12T23:55:20.135Z\",\n  \"duration_ms\": 594,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=292000&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"No More Room in Hell 2\",\n    \"steam_appid\": 292000,\n    \"developers\": [\n      \"Torn Banner Studios\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 9,\n    \"videos\": 6,\n    \"hero\": \"https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/no-more-room-in-hell-2.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "page:no-more-room-in-hell-2",
+      "command": "node scripts/build-game-page-basic.mjs game_f5db7308be84c62ed593",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 84,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"game_id\": \"game_f5db7308be84c62ed593\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 9,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"media/review quality loops\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "page-qc:no-more-room-in-hell-2",
+      "command": "node scripts/quality-control-loop.mjs page no-more-room-in-hell-2 game_f5db7308be84c62ed593",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 8827,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"Hero не подтверждён как официальный арт: https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044\",\n    \"hero: слишком маленький файл 13754 B, минимум 80000 B: https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "page-qc-state:no-more-room-in-hell-2",
+      "status": "needs_revision",
+      "comments": [
+        "Hero не подтверждён как официальный арт: https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044",
+        "hero: слишком маленький файл 13754 B, минимум 80000 B: https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044",
+        "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.1\n"
+      ]
     },
     {
       "label": "parse:hell-let-loose-vietnam",
       "command": "node scripts/parse-game-data.mjs hell-let-loose-vietnam 3079210 Hell Let Loose: Vietnam",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 314,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"hell-let-loose-vietnam\",\n  \"checked_at\": \"2026-08-12T23:51:09.039Z\",\n  \"duration_ms\": 282,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3079210&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Hell Let Loose: Vietnam\",\n    \"developers\": [\n      \"Expression Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Massively Multiplayer\",\n      \"Simulation\",\n      \"Strategy\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 7,\n    \"videos\": 3\n  },\n  \"output\": \"data/parser-output/hell-let-loose-vietnam.json\"\n}\n",
+      "duration_ms": 1369,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"hell-let-loose-vietnam\",\n  \"checked_at\": \"2026-08-12T23:55:29.675Z\",\n  \"duration_ms\": 1334,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3079210&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Hell Let Loose: Vietnam\",\n    \"steam_appid\": 3079210,\n    \"developers\": [\n      \"Expression Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Massively Multiplayer\",\n      \"Simulation\",\n      \"Strategy\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 7,\n    \"videos\": 3,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3079210/11f2f56dd8945194aed2ee44376b54b1bee6c122/page_bg_raw.jpg?t=1786120175\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/3079210/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/hell-let-loose-vietnam.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -44,7 +80,7 @@
       "status": "completed",
       "exit_code": 0,
       "duration_ms": 85,
-      "stdout": "{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"game_id\": \"game_91b8109a5d837b4f0bbc\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 7,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"next\": \"review/rating quality loop\"\n}\n",
+      "stdout": "{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"game_id\": \"game_91b8109a5d837b4f0bbc\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 7,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"media/review quality loops\"\n}\n",
       "stderr": ""
     },
     {
@@ -52,51 +88,15 @@
       "command": "node scripts/quality-control-loop.mjs page hell-let-loose-vietnam game_91b8109a5d837b4f0bbc",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 9495,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3079210/library_600x900.jpg\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
+      "duration_ms": 7908,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3079210/library_600x900_2x.jpg\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
       "stderr": ""
     },
     {
       "label": "page-qc-state:hell-let-loose-vietnam",
       "status": "needs_revision",
       "comments": [
-        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3079210/library_600x900.jpg",
-        "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.1\n"
-      ]
-    },
-    {
-      "label": "parse:no-more-room-in-hell-2",
-      "command": "node scripts/parse-game-data.mjs no-more-room-in-hell-2 292000 No More Room in Hell 2",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 596,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"no-more-room-in-hell-2\",\n  \"checked_at\": \"2026-08-12T23:51:18.933Z\",\n  \"duration_ms\": 564,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=292000&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"No More Room in Hell 2\",\n    \"developers\": [\n      \"Torn Banner Studios\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 9,\n    \"videos\": 6\n  },\n  \"output\": \"data/parser-output/no-more-room-in-hell-2.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "page:no-more-room-in-hell-2",
-      "command": "node scripts/build-game-page-basic.mjs game_f5db7308be84c62ed593",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 83,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"game_id\": \"game_f5db7308be84c62ed593\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 9,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"next\": \"review/rating quality loop\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "page-qc:no-more-room-in-hell-2",
-      "command": "node scripts/quality-control-loop.mjs page no-more-room-in-hell-2 game_f5db7308be84c62ed593",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 17789,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_hero.jpg\",\n    \"cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900.jpg\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "page-qc-state:no-more-room-in-hell-2",
-      "status": "needs_revision",
-      "comments": [
-        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_hero.jpg",
-        "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900.jpg",
+        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3079210/library_600x900_2x.jpg",
         "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.1\n"
       ]
     },
@@ -105,8 +105,8 @@
       "command": "node scripts/parse-game-data.mjs wardogs 1867240 WARDOGS",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 641,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"wardogs\",\n  \"checked_at\": \"2026-08-12T23:51:37.402Z\",\n  \"duration_ms\": 611,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1867240&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"WARDOGS\",\n    \"developers\": [\n      \"BULKHEAD\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\",\n      \"Massively Multiplayer\",\n      \"Simulation\",\n      \"Early Access\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 14,\n    \"videos\": 3\n  },\n  \"output\": \"data/parser-output/wardogs.json\"\n}\n",
+      "duration_ms": 1367,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"wardogs\",\n  \"checked_at\": \"2026-08-12T23:55:39.036Z\",\n  \"duration_ms\": 1334,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1867240&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"WARDOGS\",\n    \"steam_appid\": 1867240,\n    \"developers\": [\n      \"BULKHEAD\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\",\n      \"Massively Multiplayer\",\n      \"Simulation\",\n      \"Early Access\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 14,\n    \"videos\": 3,\n    \"hero\": \"https://store.akamai.steamstatic.com/images/storepagebackground/app/1867240?t=1786467028\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/wardogs.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -114,8 +114,8 @@
       "command": "node scripts/build-game-page-basic.mjs game_002e37b098eb99b64d97",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 85,
-      "stdout": "{\n  \"slug\": \"wardogs\",\n  \"game_id\": \"game_002e37b098eb99b64d97\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 14,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"next\": \"review/rating quality loop\"\n}\n",
+      "duration_ms": 87,
+      "stdout": "{\n  \"slug\": \"wardogs\",\n  \"game_id\": \"game_002e37b098eb99b64d97\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 14,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"media/review quality loops\"\n}\n",
       "stderr": ""
     },
     {
@@ -123,16 +123,17 @@
       "command": "node scripts/quality-control-loop.mjs page wardogs game_002e37b098eb99b64d97",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 10322,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"wardogs\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"hero: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_hero.jpg\",\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900.jpg\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
+      "duration_ms": 10076,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"wardogs\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"Hero не подтверждён как официальный арт: https://store.akamai.steamstatic.com/images/storepagebackground/app/1867240?t=1786467028\",\n    \"hero: слишком маленький файл 18766 B, минимум 80000 B: https://store.akamai.steamstatic.com/images/storepagebackground/app/1867240?t=1786467028\",\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900_2x.jpg\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
       "stderr": ""
     },
     {
       "label": "page-qc-state:wardogs",
       "status": "needs_revision",
       "comments": [
-        "hero: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_hero.jpg",
-        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900.jpg",
+        "Hero не подтверждён как официальный арт: https://store.akamai.steamstatic.com/images/storepagebackground/app/1867240?t=1786467028",
+        "hero: слишком маленький файл 18766 B, минимум 80000 B: https://store.akamai.steamstatic.com/images/storepagebackground/app/1867240?t=1786467028",
+        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900_2x.jpg",
         "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.1\n"
       ]
     },
@@ -141,8 +142,8 @@
       "command": "node scripts/parse-game-data.mjs the-lord-of-the-rings-war-in-the-northtm-legacy-edition 2523770 The Lord of the Rings: War in the North™ - Legacy Edition",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 342,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"the-lord-of-the-rings-war-in-the-northtm-legacy-edition\",\n  \"checked_at\": \"2026-08-12T23:51:48.451Z\",\n  \"duration_ms\": 312,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2523770&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"The Lord of the Rings: War in the North™ - Legacy Edition\",\n    \"developers\": [\n      \"Aspyr Media\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/the-lord-of-the-rings-war-in-the-northtm-legacy-edition.json\"\n}\n",
+      "duration_ms": 1350,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"the-lord-of-the-rings-war-in-the-northtm-legacy-edition\",\n  \"checked_at\": \"2026-08-12T23:55:50.568Z\",\n  \"duration_ms\": 1316,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2523770&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"The Lord of the Rings: War in the North™ - Legacy Edition\",\n    \"steam_appid\": 2523770,\n    \"developers\": [\n      \"Aspyr Media\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 1,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2523770/df36e1803332c567fe1818966aa58824a341d202/page_bg_raw.jpg?t=1786466870\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/2523770/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/the-lord-of-the-rings-war-in-the-northtm-legacy-edition.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -150,7 +151,7 @@
       "command": "node scripts/build-game-page-basic.mjs game_cb9d553d172b9b8bb442",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 85,
+      "duration_ms": 84,
       "stdout": "{\n  \"slug\": \"the-lord-of-the-rings-war-in-the-northtm-legacy-edition\",\n  \"game_id\": \"game_cb9d553d172b9b8bb442\",\n  \"status\": \"needs_revision\",\n  \"missing\": [\n    \"screenshots:5/6\"\n  ],\n  \"next\": \"quality-control-loop will research/rebuild/recheck\"\n}\n",
       "stderr": ""
     },
@@ -159,8 +160,8 @@
       "command": "node scripts/quality-control-loop.mjs page the-lord-of-the-rings-war-in-the-northtm-legacy-edition game_cb9d553d172b9b8bb442",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 8300,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"the-lord-of-the-rings-war-in-the-northtm-legacy-edition\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"Недостаточно скриншотов высокого качества: 5/6.\",\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/2523770/library_600x900.jpg\",\n    \"После quality gate осталось только 5/6 допустимых скриншотов.\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
+      "duration_ms": 11268,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"the-lord-of-the-rings-war-in-the-northtm-legacy-edition\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"Недостаточно скриншотов высокого качества: 5/6.\",\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/2523770/library_600x900_2x.jpg\",\n    \"После quality gate осталось только 5/6 допустимых скриншотов.\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
       "stderr": ""
     },
     {
@@ -168,7 +169,7 @@
       "status": "needs_revision",
       "comments": [
         "Недостаточно скриншотов высокого качества: 5/6.",
-        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/2523770/library_600x900.jpg",
+        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/2523770/library_600x900_2x.jpg",
         "После quality gate осталось только 5/6 допустимых скриншотов.",
         "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.1\n"
       ]
@@ -178,8 +179,8 @@
       "command": "node scripts/parse-game-data.mjs 100-mystic-cats 4326430 100 Mystic Cats",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 371,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"100-mystic-cats\",\n  \"checked_at\": \"2026-08-12T23:51:57.177Z\",\n  \"duration_ms\": 342,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4326430&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"100 Mystic Cats\",\n    \"developers\": [\n      \"100 Cozy Games\",\n      \"Cats\"\n    ],\n    \"genres\": [\n      \"Casual\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 10,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/100-mystic-cats.json\"\n}\n",
+      "duration_ms": 1767,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"100-mystic-cats\",\n  \"checked_at\": \"2026-08-12T23:56:03.272Z\",\n  \"duration_ms\": 1732,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4326430&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"100 Mystic Cats\",\n    \"steam_appid\": 4326430,\n    \"developers\": [\n      \"100 Cozy Games\",\n      \"Cats\"\n    ],\n    \"genres\": [\n      \"Casual\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 10,\n    \"videos\": 1,\n    \"hero\": \"https://store.akamai.steamstatic.com/images/storepagebackground/app/4326430?t=1786287753\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/4326430/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/100-mystic-cats.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -187,8 +188,8 @@
       "command": "node scripts/build-game-page-basic.mjs game_c2bf9099249a66dab3bc",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 88,
-      "stdout": "{\n  \"slug\": \"100-mystic-cats\",\n  \"game_id\": \"game_c2bf9099249a66dab3bc\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 10,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"next\": \"review/rating quality loop\"\n}\n",
+      "duration_ms": 90,
+      "stdout": "{\n  \"slug\": \"100-mystic-cats\",\n  \"game_id\": \"game_c2bf9099249a66dab3bc\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 10,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"media/review quality loops\"\n}\n",
       "stderr": ""
     },
     {
@@ -196,8 +197,8 @@
       "command": "node scripts/quality-control-loop.mjs page 100-mystic-cats game_c2bf9099249a66dab3bc",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 13807,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"100-mystic-cats\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"Hero не подтверждён как официальный арт: https://store.akamai.steamstatic.com/images/storepagebackground/app/4326430?t=1786287753\",\n    \"hero: невозможно подтвердить размер файла: https://store.akamai.steamstatic.com/images/storepagebackground/app/4326430?t=1786287753\",\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/4326430/library_600x900.jpg\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
+      "duration_ms": 9503,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"100-mystic-cats\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"Hero не подтверждён как официальный арт: https://store.akamai.steamstatic.com/images/storepagebackground/app/4326430?t=1786287753\",\n    \"hero: невозможно подтвердить размер файла: https://store.akamai.steamstatic.com/images/storepagebackground/app/4326430?t=1786287753\",\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/4326430/library_600x900_2x.jpg\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
       "stderr": ""
     },
     {
@@ -206,7 +207,7 @@
       "comments": [
         "Hero не подтверждён как официальный арт: https://store.akamai.steamstatic.com/images/storepagebackground/app/4326430?t=1786287753",
         "hero: невозможно подтвердить размер файла: https://store.akamai.steamstatic.com/images/storepagebackground/app/4326430?t=1786287753",
-        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/4326430/library_600x900.jpg",
+        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/4326430/library_600x900_2x.jpg",
         "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.1\n"
       ]
     },
@@ -215,8 +216,8 @@
       "command": "node scripts/parse-game-data.mjs agefield-high-rock-the-school 3562580 Agefield High: Rock the School",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 271,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"agefield-high-rock-the-school\",\n  \"checked_at\": \"2026-08-12T23:52:11.444Z\",\n  \"duration_ms\": 241,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3562580&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Agefield High: Rock the School\",\n    \"developers\": [\n      \"Refugium Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 15,\n    \"videos\": 2\n  },\n  \"output\": \"data/parser-output/agefield-high-rock-the-school.json\"\n}\n",
+      "duration_ms": 495,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"agefield-high-rock-the-school\",\n  \"checked_at\": \"2026-08-12T23:56:14.629Z\",\n  \"duration_ms\": 462,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3562580&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Agefield High: Rock the School\",\n    \"steam_appid\": 3562580,\n    \"developers\": [\n      \"Refugium Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 15,\n    \"videos\": 2,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3562580/fd4ffb786543f91a455f237a742b39d92db93eab/page_bg_raw.jpg?t=1786549826\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/3562580/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/agefield-high-rock-the-school.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -224,8 +225,8 @@
       "command": "node scripts/build-game-page-basic.mjs game_acf87e355c1d3ef3e58a",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 82,
-      "stdout": "{\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"game_id\": \"game_acf87e355c1d3ef3e58a\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 15,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"next\": \"review/rating quality loop\"\n}\n",
+      "duration_ms": 89,
+      "stdout": "{\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"game_id\": \"game_acf87e355c1d3ef3e58a\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 15,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"media/review quality loops\"\n}\n",
       "stderr": ""
     },
     {
@@ -233,24 +234,43 @@
       "command": "node scripts/quality-control-loop.mjs page agefield-high-rock-the-school game_acf87e355c1d3ef3e58a",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 9578,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/3562580/library_600x900.jpg\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
+      "duration_ms": 1614,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"status\": \"green\",\n  \"attempts\": 3,\n  \"comments\": []\n}\n",
       "stderr": ""
     },
     {
-      "label": "page-qc-state:agefield-high-rock-the-school",
-      "status": "needs_revision",
-      "comments": [
-        "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/3562580/library_600x900.jpg",
-        "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.1\n"
-      ]
+      "label": "page-finalize:agefield-high-rock-the-school",
+      "command": "node scripts/build-game-page-basic.mjs game_acf87e355c1d3ef3e58a --finalize-public",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 87,
+      "stdout": "{\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"game_id\": \"game_acf87e355c1d3ef3e58a\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 15,\n  \"gate_passed\": true,\n  \"media_green\": true,\n  \"public_ready\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "canonicalize-page:agefield-high-rock-the-school",
+      "command": "node scripts/canonicalize-editorial-game-id.mjs agefield-high-rock-the-school",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 3025,
+      "stdout": "{\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"game_id\": \"game_acf87e355c1d3ef3e58a\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 3,\n  \"artifacts_changed\": 2\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "parse:lost-ark",
+      "command": "node scripts/parse-game-data.mjs lost-ark auto lost-ark",
+      "status": "revision_required",
+      "exit_code": 1,
+      "duration_ms": 267,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"error\",\n  \"game_slug\": \"lost-ark\",\n  \"checked_at\": \"2026-08-12T23:56:19.941Z\",\n  \"duration_ms\": 233,\n  \"error\": \"Steam identity ambiguous for lost-ark: ARK: Lost Colony (0.67), ARK -the lost fairytale- (0.50)\"\n}\n",
+      "stderr": ""
     },
     {
       "label": "page:lost-ark",
       "command": "node scripts/build-game-page-basic.mjs game_30b2f98c2d737263e28d",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 80,
+      "duration_ms": 85,
       "stdout": "{\n  \"slug\": \"lost-ark\",\n  \"game_id\": \"game_30b2f98c2d737263e28d\",\n  \"status\": \"needs_revision\",\n  \"missing\": [\n    \"identity.source\",\n    \"companies.developers\",\n    \"classification.genres\",\n    \"classification.platforms\",\n    \"media.hero_or_cover\",\n    \"screenshots:0/6\"\n  ],\n  \"next\": \"quality-control-loop will research/rebuild/recheck\"\n}\n",
       "stderr": ""
     },
@@ -259,7 +279,7 @@
       "command": "node scripts/quality-control-loop.mjs page lost-ark game_30b2f98c2d737263e28d",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 5922,
+      "duration_ms": 5872,
       "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"lost-ark\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"Нет отдельного официального арта для большой верхней картинки; скриншот нельзя использовать как hero.\",\n    \"Нет основной обложки.\",\n    \"Недостаточно скриншотов высокого качества: 0/6.\",\n    \"После quality gate осталось только 0/6 допустимых скриншотов.\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -275,12 +295,21 @@
       ]
     },
     {
+      "label": "parse:grand-theft-auto-v",
+      "command": "node scripts/parse-game-data.mjs grand-theft-auto-v auto grand-theft-auto-v",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 968,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"grand-theft-auto-v\",\n  \"checked_at\": \"2026-08-12T23:56:26.163Z\",\n  \"duration_ms\": 935,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3240220&l=english&cc=us\",\n  \"steam_resolution\": {\n    \"appid\": 3240220,\n    \"name\": \"Grand Theft Auto V Enhanced\",\n    \"search_url\": \"https://store.steampowered.com/api/storesearch/?term=grand-theft-auto-v&l=english&cc=us\",\n    \"confidence\": 0.8\n  },\n  \"summary\": {\n    \"title\": \"Grand Theft Auto V Enhanced\",\n    \"steam_appid\": 3240220,\n    \"developers\": [\n      \"Rockstar North\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"Racing\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 11,\n    \"videos\": 12,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3240220/page_bg_raw.jpg?t=1781187782\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/3240220/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/grand-theft-auto-v.json\"\n}\n",
+      "stderr": ""
+    },
+    {
       "label": "page:grand-theft-auto-v",
       "command": "node scripts/build-game-page-basic.mjs game_3ba6d718699536fbeefc",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 81,
-      "stdout": "{\n  \"slug\": \"grand-theft-auto-v\",\n  \"game_id\": \"game_3ba6d718699536fbeefc\",\n  \"status\": \"needs_revision\",\n  \"missing\": [\n    \"identity.source\",\n    \"companies.developers\",\n    \"classification.genres\",\n    \"classification.platforms\",\n    \"media.hero_or_cover\",\n    \"screenshots:0/6\"\n  ],\n  \"next\": \"quality-control-loop will research/rebuild/recheck\"\n}\n",
+      "duration_ms": 88,
+      "stdout": "{\n  \"slug\": \"grand-theft-auto-v\",\n  \"game_id\": \"game_3ba6d718699536fbeefc\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2025,\n  \"sources\": 1,\n  \"screenshots\": 11,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"media/review quality loops\"\n}\n",
       "stderr": ""
     },
     {
@@ -288,28 +317,44 @@
       "command": "node scripts/quality-control-loop.mjs page grand-theft-auto-v game_3ba6d718699536fbeefc",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 6414,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"grand-theft-auto-v\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"Нет отдельного официального арта для большой верхней картинки; скриншот нельзя использовать как hero.\",\n    \"Нет основной обложки.\",\n    \"Недостаточно скриншотов высокого качества: 0/6.\",\n    \"После quality gate осталось только 0/6 допустимых скриншотов.\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
+      "duration_ms": 1404,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"grand-theft-auto-v\",\n  \"status\": \"green\",\n  \"attempts\": 3,\n  \"comments\": []\n}\n",
       "stderr": ""
     },
     {
-      "label": "page-qc-state:grand-theft-auto-v",
-      "status": "needs_revision",
-      "comments": [
-        "Нет отдельного официального арта для большой верхней картинки; скриншот нельзя использовать как hero.",
-        "Нет основной обложки.",
-        "Недостаточно скриншотов высокого качества: 0/6.",
-        "После quality gate осталось только 0/6 допустимых скриншотов.",
-        "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.1\n"
-      ]
+      "label": "page-finalize:grand-theft-auto-v",
+      "command": "node scripts/build-game-page-basic.mjs game_3ba6d718699536fbeefc --finalize-public",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 87,
+      "stdout": "{\n  \"slug\": \"grand-theft-auto-v\",\n  \"game_id\": \"game_3ba6d718699536fbeefc\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2025,\n  \"sources\": 1,\n  \"screenshots\": 11,\n  \"gate_passed\": true,\n  \"media_green\": true,\n  \"public_ready\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "canonicalize-page:grand-theft-auto-v",
+      "command": "node scripts/canonicalize-editorial-game-id.mjs grand-theft-auto-v",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 3045,
+      "stdout": "{\n  \"slug\": \"grand-theft-auto-v\",\n  \"game_id\": \"game_3ba6d718699536fbeefc\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 3,\n  \"artifacts_changed\": 2\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "parse:grounded-2",
+      "command": "node scripts/parse-game-data.mjs grounded-2 auto grounded-2",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 1667,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"grounded-2\",\n  \"checked_at\": \"2026-08-12T23:56:31.756Z\",\n  \"duration_ms\": 1633,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2661300&l=english&cc=us\",\n  \"steam_resolution\": {\n    \"appid\": 2661300,\n    \"name\": \"Grounded 2\",\n    \"search_url\": \"https://store.steampowered.com/api/storesearch/?term=grounded-2&l=english&cc=us\",\n    \"confidence\": 1\n  },\n  \"summary\": {\n    \"title\": \"Grounded 2\",\n    \"steam_appid\": 2661300,\n    \"developers\": [\n      \"Obsidian Entertainment\",\n      \"Eidos-Montréal\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"Early Access\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 13,\n    \"videos\": 6,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2661300/040f057db336ec2a67993e66bd89a7de2aa2ff30/page_bg_raw.jpg?t=1786556879\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/2661300/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/grounded-2.json\"\n}\n",
+      "stderr": ""
     },
     {
       "label": "page:grounded-2",
       "command": "node scripts/build-game-page-basic.mjs game_9aa14edece9c809f1ee5",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 83,
-      "stdout": "{\n  \"slug\": \"grounded-2\",\n  \"game_id\": \"game_9aa14edece9c809f1ee5\",\n  \"status\": \"needs_revision\",\n  \"missing\": [\n    \"identity.source\",\n    \"companies.developers\",\n    \"classification.genres\",\n    \"classification.platforms\",\n    \"media.hero_or_cover\",\n    \"screenshots:0/6\"\n  ],\n  \"next\": \"quality-control-loop will research/rebuild/recheck\"\n}\n",
+      "duration_ms": 90,
+      "stdout": "{\n  \"slug\": \"grounded-2\",\n  \"game_id\": \"game_9aa14edece9c809f1ee5\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2025,\n  \"sources\": 1,\n  \"screenshots\": 13,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"media/review quality loops\"\n}\n",
       "stderr": ""
     },
     {
@@ -317,28 +362,34 @@
       "command": "node scripts/quality-control-loop.mjs page grounded-2 game_9aa14edece9c809f1ee5",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 7406,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"grounded-2\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"Нет отдельного официального арта для большой верхней картинки; скриншот нельзя использовать как hero.\",\n    \"Нет основной обложки.\",\n    \"Недостаточно скриншотов высокого качества: 0/6.\",\n    \"После quality gate осталось только 0/6 допустимых скриншотов.\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
+      "duration_ms": 10172,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"grounded-2\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 16,\n  \"comments\": [\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/2661300/library_600x900_2x.jpg\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\\n\\nNode.js v22.23.1\\n\"\n  ]\n}\n",
       "stderr": ""
     },
     {
       "label": "page-qc-state:grounded-2",
       "status": "needs_revision",
       "comments": [
-        "Нет отдельного официального арта для большой верхней картинки; скриншот нельзя использовать как hero.",
-        "Нет основной обложки.",
-        "Недостаточно скриншотов высокого качества: 0/6.",
-        "После quality gate осталось только 0/6 допустимых скриншотов.",
+        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/2661300/library_600x900_2x.jpg",
         "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.1\n"
       ]
+    },
+    {
+      "label": "replan-after-pages",
+      "command": "node scripts/orchestrate-content.mjs --finalize",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 3394,
+      "stdout": "{\n  \"schema_version\": 5,\n  \"generated_at\": \"2026-08-12T23:56:43.696Z\",\n  \"mode\": \"finalize\",\n  \"canonical_registry\": \"data/game-registry/registry.transition.json\",\n  \"summary\": {\n    \"source_records\": 1298,\n    \"games\": 502,\n    \"published_pages\": 81,\n    \"published_reviews\": 0,\n    \"registry_review_flags_published\": 78,\n    \"ready_for_page\": 1,\n    \"awaiting_sources\": 420,\n    \"queued\": 503,\n    \"runnable_pages\": 8,\n    \"required_popular_pages\": 6,\n    \"runnable_reviews\": 1,\n    \"blocked_identity\": 1,\n    \"popular_ranked_games\": 20,\n    \"popular_registered\": 0,\n    \"popular_unresolved\": 0,\n    \"public_release_games\": 414,\n    \"releases_registered\": 0,\n    \"releases_unresolved\": 1\n  },\n  \"next\": {\n    \"pages\": [\n      {\n        \"type\": \"build_page\",\n        \"game_id\": \"game_f5db7308be84c62ed593\",\n        \"slug\": \"no-more-room-in-hell-2\",\n        \"title\": \"No More Room in Hell 2\",\n        \"steam_appid\": 292000,\n        \"popular_rank\": 13,\n        \"release_candidate\": true,\n        \"priority\": 260,\n        \"reason\": \"canonical publication gate passed\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_91b8109a5d837b4f0bbc\",\n        \"slug\": \"hell-let-loose-vietnam\",\n        \"title\": \"Hell Let Loose: Vietnam\",\n        \"steam_appid\": 3079210,\n        \"popular_rank\": 11,\n        \"release_candidate\": true,\n        \"priority\": 240,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_002e37b098eb99b64d97\",\n        \"slug\": \"wardogs\",\n        \"title\": \"WARDOGS\",\n        \"steam_appid\": 1867240,\n        \"popular_rank\": 14,\n        \"release_candidate\": true,\n        \"priority\": 225,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_cb9d553d172b9b8bb442\",\n        \"slug\": \"the-lord-of-the-rings-war-in-the-northtm-legacy-edition\",\n        \"title\": \"The Lord of the Rings: War in the North™ - Legacy Edition\",\n        \"steam_appid\": 2523770,\n        \"popular_rank\": 19,\n        \"release_candidate\": true,\n        \"priority\": 185,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_30b2f98c2d737263e28d\",\n        \"slug\": \"lost-ark\",\n        \"title\": \"lost-ark\",\n        \"steam_appid\": null,\n        \"popular_rank\": 7,\n        \"release_candidate\": false,\n        \"priority\": 135,\n        \"reason\": \"release_confirmation, cover_or_hero\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_9aa14edece9c809f1ee5\",\n        \"slug\": \"grounded-2\",\n        \"title\": \"grounded-2\",\n        \"steam_appid\": 2661300,\n        \"popular_rank\": 18,\n        \"release_candidate\": false,\n        \"priority\": 95,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_c2bf9099249a66dab3bc\",\n        \"slug\": \"100-mystic-cats\",\n        \"title\": \"100 Mystic Cats\",\n        \"steam_appid\": 4326430,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 155,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_2a7ceb637cbcf1a28770\",\n        \"slug\": \"pax-autocratica\",\n        \"title\": \"Pax Autocratica\",\n        \"steam_appid\": 1067360,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 155,\n        \"reason\": \"release_confirmation\"\n      }\n    ],\n    \"reviews\": [\n      {\n        \"type\": \"build_review\",\n        \"game_id\": \"game_33f5e6ca790810309305\",\n        \"slug\": \"gears-of-war-e-day\",\n        \"title\": \"gears-of-war-e-day\",\n        \"popular_rank\": 1,\n        \"release_candidate\": true,\n        \"priority\": 299,\n        \"reason\": \"review_quality_needs_revision:missing\"\n      }\n    ]\n  }\n}\n",
+      "stderr": ""
     },
     {
       "label": "review-qc:gears-of-war-e-day",
       "command": "node scripts/quality-control-loop.mjs review gears-of-war-e-day game_33f5e6ca790810309305",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 2732,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"gears-of-war-e-day\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 9,\n  \"comments\": [\n    \"Корпус рецензий: 7/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
+      "duration_ms": 2740,
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"gears-of-war-e-day\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 7/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
       "stderr": ""
     },
     {
@@ -354,7 +405,7 @@
       "command": "node scripts/quality-control-loop.mjs review baldurs-gate-3 game_86b06ca351d4e4d36e13",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 2696,
+      "duration_ms": 2495,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"baldurs-gate-3\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 0/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -371,7 +422,7 @@
       "command": "node scripts/quality-control-loop.mjs review alan-wake-2 game_7361dca900d754eae998",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 2472,
+      "duration_ms": 2628,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"alan-wake-2\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 20/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -388,7 +439,7 @@
       "command": "node scripts/quality-control-loop.mjs review black-myth-wukong game_ddfb49802e631e4d0acb",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 2552,
+      "duration_ms": 2617,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"black-myth-wukong\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 20/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -405,7 +456,7 @@
       "command": "node scripts/quality-control-loop.mjs review big-walk game_72bf0963b99d4c9b1ab4",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 2709,
+      "duration_ms": 2442,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"big-walk\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 9/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -422,7 +473,7 @@
       "command": "node scripts/quality-control-loop.mjs review marvel-to-kon-fighting-souls game_2f6cb0ba8d380ecee329",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 2640,
+      "duration_ms": 7631,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"marvel-to-kon-fighting-souls\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 5/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -439,7 +490,7 @@
       "command": "node scripts/quality-control-loop.mjs review apex-legends game_44c22e7e81909d292fd7",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 2795,
+      "duration_ms": 2388,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"apex-legends\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 20/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -456,7 +507,7 @@
       "command": "node scripts/quality-control-loop.mjs review 3-japan-stigmatized-property game_c0774d83a817ad00ec72",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 2457,
+      "duration_ms": 2722,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"3-japan-stigmatized-property\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 0/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
       "stderr": ""
     },

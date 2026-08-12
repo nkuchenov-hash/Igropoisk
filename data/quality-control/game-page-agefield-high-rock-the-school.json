@@ -2,15 +2,13 @@
   "schema_version": 4,
   "validator": "game-media-quality",
   "game_slug": "agefield-high-rock-the-school",
-  "checked_at": "2026-08-12T23:52:20.704Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-12T23:56:16.781Z",
+  "status": "green",
   "hero": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3562580/fd4ffb786543f91a455f237a742b39d92db93eab/page_bg_raw.jpg?t=1786549826",
-  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/3562580/library_600x900.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/3562580/library_600x900_2x.jpg",
   "screenshots": 15,
   "accepted_screenshots": 15,
-  "comments": [
-    "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/3562580/library_600x900.jpg"
-  ],
+  "comments": [],
   "checks": [
     {
       "role": "hero",
@@ -35,10 +33,7 @@
     },
     {
       "role": "cover",
-      "item": {
-        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3562580/library_600x900.jpg",
-        "source_url": "https://store.steampowered.com/app/3562580/"
-      },
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/3562580/library_600x900_2x.jpg",
       "rules": {
         "minimum_width_modern": 600,
         "minimum_height_modern": 850,
@@ -46,18 +41,16 @@
         "minimum_height_historical": 560,
         "minimum_bytes": 45000
       },
-      "errors": [
-        "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/3562580/library_600x900.jpg"
-      ],
+      "errors": [],
       "probe": {
         "ok": true,
-        "width": 300,
-        "height": 450,
-        "bytes": 79443,
+        "width": 600,
+        "height": 900,
+        "bytes": 248626,
         "mime": "image/jpeg",
-        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3562580/library_600x900.jpg"
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3562580/library_600x900_2x.jpg"
       },
-      "accepted": false
+      "accepted": true
     },
     {
       "role": "screenshot",

@@ -2,23 +2,21 @@
   "schema_version": 4,
   "validator": "game-media-quality",
   "game_slug": "wardogs",
-  "checked_at": "2026-08-12T23:51:47.676Z",
+  "checked_at": "2026-08-12T23:55:49.679Z",
   "status": "red-needs-revision",
-  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_hero.jpg",
-  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900.jpg",
+  "hero": "https://store.akamai.steamstatic.com/images/storepagebackground/app/1867240?t=1786467028",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900_2x.jpg",
   "screenshots": 14,
   "accepted_screenshots": 14,
   "comments": [
-    "hero: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_hero.jpg",
-    "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900.jpg"
+    "Hero не подтверждён как официальный арт: https://store.akamai.steamstatic.com/images/storepagebackground/app/1867240?t=1786467028",
+    "hero: слишком маленький файл 18766 B, минимум 80000 B: https://store.akamai.steamstatic.com/images/storepagebackground/app/1867240?t=1786467028",
+    "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900_2x.jpg"
   ],
   "checks": [
     {
       "role": "hero",
-      "item": {
-        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_hero.jpg",
-        "source_url": "https://store.steampowered.com/app/1867240/"
-      },
+      "item": "https://store.akamai.steamstatic.com/images/storepagebackground/app/1867240?t=1786467028",
       "rules": {
         "minimum_width_modern": 1200,
         "minimum_height_modern": 675,
@@ -27,20 +25,21 @@
         "minimum_bytes": 80000
       },
       "errors": [
-        "hero: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_hero.jpg"
+        "hero: слишком маленький файл 18766 B, минимум 80000 B: https://store.akamai.steamstatic.com/images/storepagebackground/app/1867240?t=1786467028"
       ],
       "probe": {
-        "ok": false,
-        "status": 404
+        "ok": true,
+        "width": 1438,
+        "height": 808,
+        "bytes": 18766,
+        "mime": "image/webp",
+        "resolved_url": "https://store.akamai.steamstatic.com/images/storepagebackground/app/1867240?t=1786467028"
       },
       "accepted": false
     },
     {
       "role": "cover",
-      "item": {
-        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900.jpg",
-        "source_url": "https://store.steampowered.com/app/1867240/"
-      },
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900_2x.jpg",
       "rules": {
         "minimum_width_modern": 600,
         "minimum_height_modern": 850,
@@ -49,7 +48,7 @@
         "minimum_bytes": 45000
       },
       "errors": [
-        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900.jpg"
+        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900_2x.jpg"
       ],
       "probe": {
         "ok": false,
