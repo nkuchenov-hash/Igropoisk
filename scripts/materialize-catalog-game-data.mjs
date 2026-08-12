@@ -41,7 +41,9 @@ for(const game of catalog){
     platforms:preferArray(legacyRequirements.platforms,parserRequirements.platforms||parser?.classification?.platforms)
   };
   if(parserRequirements.pc?.minimum?.raw||parserRequirements.pc?.recommended?.raw)requirementsRecovered++;
-  const legacyTitle=legacy?.identity?.title;const parserTitle=parser?.identity?.title;const canonicalTitle=!technicalTitle(legacyTitle,slug)?legacyTitle:!technicalTitle(parserTitle,slug)?parserTitle:game.title||legacyTitle||parserTitle||slug;
+  const legacyTitle=legacy?.identity?.title;const parserTitle=parser?.identity?.title;const catalogTitle=game.title;
+  const richTitle=!technicalTitle(legacyTitle,slug)?legacyTitle:!technicalTitle(parserTitle,slug)?parserTitle:'';
+  const canonicalTitle=catalogTitle&&richTitle&&norm(catalogTitle)===norm(richTitle)?catalogTitle:richTitle||catalogTitle||legacyTitle||parserTitle||slug;
   const identity={...(parser?.identity||{}),...(legacy?.identity||{}),slug,title:canonicalTitle,game_id:game.game_id||legacy?.identity?.game_id||parser?.identity?.game_id||''};
   const classification={...(parser?.classification||{}),...(legacy?.classification||{}),genres:preferArray(legacy?.classification?.genres,parser?.classification?.genres),categories:preferArray(legacy?.classification?.categories,parser?.classification?.categories),platforms:preferArray(parser?.classification?.platforms,legacy?.classification?.platforms)};
   const media={...(parser?.media||{}),...(legacy?.media||{}),screenshots:unique([...arr(legacy?.media?.screenshots),...arr(parser?.media?.screenshots)]),videos:unique([...arr(legacy?.media?.videos),...arr(parser?.media?.videos)]),artwork:unique([...arr(legacy?.media?.artwork),...arr(parser?.media?.artwork)])};
