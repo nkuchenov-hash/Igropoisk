@@ -3,7 +3,7 @@
 const rail=document.querySelector('#releaseHomeGrid');
 if(!rail)return;
 document.querySelector('.home-showcase-heading--split a[href="calendar/"]')?.classList.add('ig-button');
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
 const initials=title=>String(title||'').split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
 const identity=value=>String(value||'').normalize('NFKD').toLowerCase().replace(/&amp;/g,' and ').replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
 const primaryEvent=game=>(game.events||[]).slice().sort((a,b)=>String(a.date_start||a.date||'9999').localeCompare(String(b.date_start||b.date||'9999')))[0]||{};
@@ -72,10 +72,11 @@ const crossSiteEligible=game=>{
   const currentPopular=popularEvidence(game);
   const score=popularIndex(game);
   const confidence=popularConfidence(game);
+  const declaredEligible=game.editorial_quality?.homepage_eligible===true||anticipation(game).homepage_eligible===true;
   const crossSite=publications>=2&&families.length>=2&&score>=10&&confidence>=0.5;
   const broadCoverage=publications>=3&&families.length>=2&&Boolean(currentPopular)&&score>=8;
   const strongSteam=steamPosition(game)>0&&steamPosition(game)<=10&&publications>=2&&families.length>=1&&Boolean(currentPopular)&&score>=8;
-  return crossSite||broadCoverage||strongSteam||game.editorial_quality?.manual_anticipated===true;
+  return game.editorial_quality?.manual_anticipated===true||((crossSite||broadCoverage||strongSteam)&&(declaredEligible||Boolean(currentPopular)));
 };
 const anticipationScore=game=>Number(game.editorial_quality?.anticipation_score||anticipation(game).anticipation_score||popularEvidence(game)?.score||0);
 const anticipationLabel=game=>{
