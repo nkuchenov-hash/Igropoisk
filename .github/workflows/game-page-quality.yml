@@ -86,6 +86,14 @@ jobs:
         run: node scripts/smoke-game-page-browser.mjs
       - name: Verify global Game Page quality rules on BG3 control example
         run: node scripts/smoke-game-page-quality-v2.mjs
+      - name: Preserve BG3 acceptance diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bg3-game-page-quality-${{ github.run_id }}-${{ github.run_attempt }}
+          path: data/quality-control/bg3-smoke.json
+          if-no-files-found: warn
+          retention-days: 7
       - name: Verify GTA VI release and media contract
         run: |
           node - <<'NODE'
