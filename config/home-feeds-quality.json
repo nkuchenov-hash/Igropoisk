@@ -1,5 +1,5 @@
 {
-  "schema_version": 7,
+  "schema_version": 9,
   "popular": {
     "maximum_cards": 20,
     "maximum_snapshot_age_hours": 12,
@@ -49,12 +49,14 @@
       "\\s*[™®]$",
       "\\s*[-:]?\\s*(demo|prologue|playtest)$"
     ],
-    "significant_genres": ["Action", "Adventure", "RPG", "Strategy", "Simulation", "Fighting", "Файтинг"],
     "minimum_homepage_quality": 7,
+    "minimum_independent_coverage": 2,
+    "maximum_steam_popular_upcoming_position": 50,
     "required_relevance_signals": [
-      "published_page",
+      "gaming_press",
       "current_popular",
-      "independent_source",
+      "steam_popular_upcoming",
+      "cross_site_coverage",
       "manual_feature"
     ]
   }

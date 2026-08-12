@@ -1,20 +1,15 @@
 {
   "slug": "mafia",
-  "requested_at": "2026-08-03T22:50:00Z",
-  "reason": "Full rebuild after media-quality failure. Discover screenshots independently from text sources. Continue Google Images, Yandex Images, Bing Images, official galleries, press kits, archives and game databases until every article section has at least three unique visually approved screenshots. Replace the current hero and all existing screenshot boxes; do not reuse the current GameSpot thumbnails or other tiny/blurred files.",
+  "title": "Mafia",
+  "year": 2002,
+  "requested_at": "2026-08-11T12:25:08.974Z",
+  "scope": "full_review_article",
+  "source": "catalog-visible",
+  "rebuild": true,
   "requirements": {
-    "replace_all_existing_article_images": true,
-    "replace_hero": true,
-    "minimum_new_images_per_section": 3,
-    "allow_one_or_two_images_per_section": false,
-    "search_until_filled": true,
-    "media_search_independent_from_text_sources": true,
-    "reject_tiny_subject_inside_large_canvas": true,
-    "reject_excessive_empty_canvas": true,
-    "reject_visible_upscale": true,
-    "reject_blur": true,
-    "reject_soft_resampling": true,
-    "reject_stretched_images": true,
-    "excluded_domains_or_patterns": ["gamespot.com/wp-content/uploads/original/gamespot/images/2002/pc/act/mafia/214907", "_m.jpg"]
+    "design_system_only": true,
+    "hero_art_only": true,
+    "minimum_unique_screenshots_per_section": 3,
+    "no_repeated_scenes": true
   }
 }

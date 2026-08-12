@@ -2,8 +2,10 @@
 'use strict';
 const rail=document.querySelector('#releaseHomeGrid');
 if(!rail)return;
+document.querySelector('.home-showcase-heading--split a[href="calendar/"]')?.classList.add('ig-button');
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const initials=title=>String(title||'').split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
+const identity=value=>String(value||'').normalize('NFKD').toLowerCase().replace(/&amp;/g,' and ').replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
 const primaryEvent=game=>(game.events||[]).slice().sort((a,b)=>String(a.date_start||a.date||'9999').localeCompare(String(b.date_start||b.date||'9999')))[0]||{};
 const dateValue=event=>event.date||event.date_start||null;
 const dateEndValue=event=>event.date_end||event.date||event.date_start||null;
@@ -21,8 +23,8 @@ const dateLabel=event=>{
   const diff=dayDiff(value);
   if(diff===0)return 'Сегодня';
   if(diff===1)return 'Завтра';
-  if(diff===-1)return 'Релиз вчера';
-  if(Number.isFinite(diff)&&diff<0)return `Релиз ${formattedDate(value)}`;
+  if(diff===-1)return 'Вышла вчера';
+  if(Number.isFinite(diff)&&diff<0)return `Вышла ${formattedDate(value)}`;
   return formattedDate(value);
 };
 const releaseKind=(event,recentDays)=>{
@@ -41,22 +43,66 @@ const candidates=game=>{
     game.image?.source_url,
     ...(game.image_candidates||[]),
     id&&`https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/library_600x900.jpg`,
-    id&&`https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/library_600x900.jpg`,
-    id&&`https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/header.jpg`
+    id&&`https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/library_600x900.jpg`
   ].filter(Boolean))];
+};
+const loadFeed=async path=>{
+  if(window.IgropoiskHomeFeeds?.load)return window.IgropoiskHomeFeeds.load(path);
+  const response=await fetch(path,{cache:'no-store'});
+  if(!response.ok)throw new Error(`HTTP ${response.status}`);
+  return response.json();
+};
+let popularByIdentity=new Map();
+const anticipation=game=>game.anticipation||{};
+const popularEvidence=game=>popularByIdentity.get(identity(game.slug))||popularByIdentity.get(identity(game.title))||null;
+const independentCount=game=>Math.max(
+  Number(anticipation(game).independent_publication_count||0),
+  Number(game.editorial_quality?.independent_source_count||0),
+  Number(popularEvidence(game)?.news_sources||0),
+  Number(popularEvidence(game)?.news_publishers?.length||0)
+);
+const steamPosition=game=>Number(anticipation(game).steam_popular_upcoming_position||game.editorial_quality?.steam_popular_upcoming_position||0);
+const evidenceFamilies=game=>[...new Set([...(anticipation(game).evidence_families||[]),...(popularEvidence(game)?.families||[])].filter(Boolean))];
+const popularIndex=game=>Number(anticipation(game).popular_index??popularEvidence(game)?.score??0);
+const popularConfidence=game=>Number(anticipation(game).popular_confidence??popularEvidence(game)?.confidence??0);
+const independentFamilies=game=>evidenceFamilies(game).filter(family=>!['steam_chart','steam','official_store','store','rawg'].includes(String(family).toLowerCase()));
+const crossSiteEligible=game=>{
+  const publications=independentCount(game);
+  const families=independentFamilies(game);
+  const score=popularIndex(game);
+  const confidence=popularConfidence(game);
+  const position=steamPosition(game);
+  const declaredEligible=game.editorial_quality?.homepage_eligible===true||anticipation(game).homepage_eligible===true;
+  const pressDominant=publications>=5;
+  const pressPlusSteam=publications>=3&&position>0&&position<=50;
+  const pressPlusPopular=publications>=2&&score>=8&&confidence>=0.4;
+  const multiFamilyPopular=publications>=2&&families.length>=2&&score>=8&&confidence>=0.4;
+  return game.editorial_quality?.manual_anticipated===true||(declaredEligible&&(pressDominant||pressPlusSteam||pressPlusPopular||multiFamilyPopular));
+};
+const anticipationScore=game=>Number(game.editorial_quality?.anticipation_score||anticipation(game).anticipation_score||popularEvidence(game)?.score||0);
+const anticipationLabel=game=>{
+  if(!crossSiteEligible(game))return '';
+  const publications=independentCount(game);
+  const position=steamPosition(game);
+  if(publications>=5)return `Ожидаемость: ${publications} независимых игровых изданий`;
+  if(publications>=3&&position>0)return `${publications} игровых издания · Steam Popular Upcoming #${position}`;
+  if(publications>=2)return `Ожидаемость подтверждена ${publications} независимыми изданиями`;
+  return 'Ожидаемость подтверждена несколькими площадками';
 };
 const card=(game,kind)=>{
   const event=primaryEvent(game);
   const diff=dayDiff(dateValue(event));
   const image=candidates(game)[0]||'';
-  const meta=[...(game.genres||[]).slice(0,1),...(event.platforms||[]).slice(0,1)].join(' · ');
-  return `<article class="ig-card ig-card--interactive home-release-card" data-release="${esc(game.slug)}" data-release-kind="${esc(kind)}"><a class="ig-card__part home-release-card__link" href="calendar/#game=${encodeURIComponent(game.slug)}"><div class="ig-card__media home-release-card__media" data-initials="${esc(initials(game.title))}">${image?`<img src="${esc(image)}" alt="Обложка ${esc(game.title)}" loading="eager" decoding="async" data-cover-index="0">`:''}<span class="home-release-card__date ${kind==='recent'||Number.isFinite(diff)&&diff>=0&&diff<=7?'is-near':''}">${esc(dateLabel(event))}</span></div><div class="ig-card__part home-release-card__body"><h3>${esc(game.title)}</h3><div class="ig-card__part home-release-card__meta">${esc(meta)}</div></div></a></article>`;
+  const relevance=anticipationLabel(game);
+  const meta=[relevance,...(event.platforms||[]).slice(0,1)].filter(Boolean).join(' · ');
+  return `<article class="ig-card ig-card--interactive home-release-card" data-release="${esc(game.slug)}" data-release-kind="${esc(kind)}"><a class="ig-card__part home-release-card__link" href="calendar/#game=${encodeURIComponent(game.slug)}"><div class="ig-card__media home-release-card__media" data-initials="${esc(initials(game.title))}">${image?`<img src="${esc(image)}" alt="Обложка ${esc(game.title)}" loading="lazy" decoding="async" data-cover-index="0">`:''}<span class="home-release-card__date ${kind==='recent'||Number.isFinite(diff)&&diff>=0&&diff<=7?'is-near':''}">${esc(dateLabel(event))}</span></div><div class="ig-card__part home-release-card__body"><h3>${esc(game.title)}</h3>${meta?`<div class="ig-card__part home-release-card__meta">${esc(meta)}</div>`:''}</div></a></article>`;
 };
 const bindFallbacks=games=>{
   rail.querySelectorAll('.home-release-card').forEach(cardElement=>{
     const game=games.find(item=>item.slug===cardElement.dataset.release);
     const image=cardElement.querySelector('img');
-    if(!game||!image)return;
+    if(!game)return;
+    if(!image){cardElement.querySelector('.home-release-card__media')?.classList.add('is-broken');return}
     const urls=candidates(game);
     image.addEventListener('error',()=>{
       const next=Number(image.dataset.coverIndex||0)+1;
@@ -66,37 +112,52 @@ const bindFallbacks=games=>{
     });
   });
 };
-const bindRail=()=>{
-  document.querySelectorAll('[data-release-rail]').forEach(button=>{
-    button.onclick=()=>rail.scrollBy({left:Number(button.dataset.releaseRail)*Math.max(320,rail.clientWidth*.82),behavior:'smooth'});
+
+const railButtons=[...document.querySelectorAll('[data-release-rail]')];
+railButtons.forEach(button=>{
+  button.classList.add('ig-icon-button');
+  button.addEventListener('click',()=>{
+    const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
+    const next=Math.max(0,Math.min(max,rail.scrollLeft+Number(button.dataset.releaseRail)*Math.max(320,rail.clientWidth*.82)));
+    rail.scrollTo({left:next,behavior:'smooth'});
   });
-  rail.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)<=Math.abs(event.deltaX))return;event.preventDefault();rail.scrollBy({left:event.deltaY,behavior:'auto'})},{passive:false});
+});
+const updateButtons=()=>{
+  const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
+  railButtons.forEach(button=>button.disabled=button.dataset.releaseRail==='-1'?rail.scrollLeft<=2:rail.scrollLeft>=max-2);
 };
+rail.addEventListener('scroll',updateButtons,{passive:true});
+window.addEventListener('resize',updateButtons,{passive:true});
 
 Promise.all([
-  fetch('data/releases/current.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json()}),
-  fetch('features/home-releases/rules.json',{cache:'no-store'}).then(response=>response.ok?response.json():{})
-]).then(([payload,rules])=>{
-  const maximum=Math.max(6,Number(rules.maximum_cards||12));
-  const recentDays=Math.max(1,Number(rules.recent_release_days||7));
+  loadFeed('data/releases/current.json'),
+  fetch('features/home-releases/rules.json',{cache:'no-store'}).then(response=>response.ok?response.json():{}),
+  loadFeed('data/popular/current.json')
+]).then(([payload,rules,popularPayload])=>{
+  popularByIdentity=new Map();
+  for(const item of popularPayload.ranking||[]){
+    for(const key of [identity(item.slug),identity(item.title)])if(key&&!popularByIdentity.has(key))popularByIdentity.set(key,item);
+  }
+  const maximum=Math.max(8,Number(rules.maximum_cards||12));
+  const recentDays=Math.max(1,Number(rules.recent_release_days||14));
   const maximumRecent=Math.min(maximum,Math.max(0,Number(rules.maximum_recent_cards||4)));
   const classified=(payload.releases||[])
-    .filter(game=>game.editorial_quality?.homepage_eligible===true)
+    .filter(crossSiteEligible)
     .map(game=>({game,event:primaryEvent(game)}))
     .map(row=>({...row,kind:releaseKind(row.event,recentDays)}))
     .filter(row=>row.kind!=='expired');
 
   const recent=classified.filter(row=>row.kind==='recent')
-    .sort((left,right)=>String(dateEndValue(right.event)||'').localeCompare(String(dateEndValue(left.event)||''))||String(left.game.title).localeCompare(String(right.game.title),'ru'))
+    .sort((a,b)=>anticipationScore(b.game)-anticipationScore(a.game)||String(dateEndValue(b.event)||'').localeCompare(String(dateEndValue(a.event)||'')))
     .slice(0,maximumRecent);
   const upcoming=classified.filter(row=>row.kind==='upcoming')
-    .sort((left,right)=>String(dateValue(left.event)||'9999').localeCompare(String(dateValue(right.event)||'9999'))||String(left.game.title).localeCompare(String(right.game.title),'ru'));
+    .sort((a,b)=>anticipationScore(b.game)-anticipationScore(a.game)||String(dateValue(a.event)||'9999').localeCompare(String(dateValue(b.event)||'9999')));
   const selected=[...recent,...upcoming].slice(0,maximum);
   const rows=selected.map(row=>row.game);
 
-  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Проверенные новые и ожидаемые релизы пока не найдены.</div>';
+  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Сейчас нет релизов, у которых глобальная ожидаемость подтверждена несколькими независимыми игровыми изданиями.</div>';
   bindFallbacks(rows);
-  bindRail();
+  requestAnimationFrame(updateButtons);
 }).catch(error=>{
   console.warn('Home releases:',error);
   rail.innerHTML='<div class="home-release-empty">Календарь временно недоступен.</div>';

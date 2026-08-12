@@ -36,13 +36,11 @@ function releaseState(game, catalogEntry) {
   const release = game?.release || {};
   const status = String(release.status || '').trim().toLowerCase();
   if (/(upcoming|expected|announced|coming|tba|pre[-_ ]?release|ожида)/i.test(status)) return { released: false, reason: 'status' };
-
   const exact = String(release.date || '').trim();
   if (exact) {
     const parsed = Date.parse(exact);
     if (Number.isFinite(parsed) && parsed > now.getTime()) return { released: false, reason: 'future_date' };
   }
-
   const text = String(release.date_text || catalogEntry?.year || '').trim();
   const year = Number(text.match(/(?:19|20)\d{2}/)?.[0] || catalogEntry?.year || 0);
   if (year > currentYear) return { released: false, reason: 'future_year' };
@@ -56,6 +54,33 @@ function scoreFor(slug, game) {
   const editorial = Number(game?.ratings?.igropoisk);
   if (Number.isFinite(editorial) && editorial > 0 && editorial <= 10) return { score: editorial, source: 'game_content' };
   return null;
+}
+
+function presentationFor(slug, game, draft) {
+  const appid = Number(draft?.identity?.steam_appid || game?.identity?.steam_appid || 0);
+  const articleMedia = readOptional(`data/article-media/${slug}.json`);
+  const articleShot = (articleMedia?.sections || []).flatMap(section => section.images || []).find(image => image?.url)?.url || '';
+  const imageCandidates = [...new Set([
+    draft?.media?.cover,
+    game?.media?.cover,
+    appid ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900_2x.jpg` : '',
+    appid ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg` : '',
+    appid ? `https://shared.akamai.steamstatic.com/steam/apps/${appid}/library_600x900.jpg` : '',
+    popularImages.get(slug),
+    draft?.media?.hero,
+    game?.media?.hero,
+    articleMedia?.cover?.url,
+    articleMedia?.hero?.url,
+    articleShot
+  ].filter(Boolean))];
+  const summary = String(
+    game?.editorial?.short_description ||
+    game?.editorial?.integrated_description ||
+    draft?.editorial?.short_description ||
+    draft?.editorial?.integrated_description ||
+    ''
+  ).trim();
+  return { image: imageCandidates[0] || '', image_candidates: imageCandidates, summary, steam_appid: appid || null };
 }
 
 const eligible = [];
@@ -75,6 +100,7 @@ for (const item of catalog) {
 
   const slug = entity.identity?.slug?.value || item.slug;
   const game = records.get(slug) || readOptional(`data/drafts/${slug}.json`);
+  const draft = readOptional(`data/drafts/${slug}.json`);
   if (!game) { excludedUnrated += 1; continue; }
 
   const release = releaseState(game, item);
@@ -88,22 +114,27 @@ for (const item of catalog) {
 
   const articleJson = `data/articles/${slug}.json`;
   const articlePage = `article/${slug}/index.html`;
-  const strictReviewData = exists(articleJson);
-  const reviewPublished = strictReviewData && exists(articlePage);
+  const article = readOptional(articleJson);
+  const strictReviewData = Boolean(article);
+  const articleStatus = String(article?.publication_status || '').toLowerCase();
+  const reviewPublished = strictReviewData && articleStatus === 'published' && exists(articlePage);
   const year = Number(String(game.release?.date || game.release?.date_text || item.year || '').match(/(?:19|20)\d{2}/)?.[0] || item.year || 0) || null;
-  const image = game.media?.cover || game.media?.hero || popularImages.get(slug) || '';
+  const presentation = presentationFor(slug, game, draft);
 
   eligible.push({
     game_id: entity.id,
     slug,
     title: entity.identity?.canonicalTitle?.value || game.identity?.title || item.title || slug,
     year,
-    image,
+    image: presentation.image,
+    image_candidates: presentation.image_candidates,
+    steam_appid: presentation.steam_appid,
+    summary: presentation.summary,
     score: rating.score,
     rating_source: rating.source,
     game_url: `/Igropoisk/game/${encodeURIComponent(slug)}/`,
     review: {
-      status: reviewPublished ? 'published' : strictReviewData ? 'ready_to_render' : 'pending',
+      status: reviewPublished ? 'published' : strictReviewData ? 'withheld_or_ready' : 'pending',
       url: reviewPublished ? `/Igropoisk/article/${encodeURIComponent(slug)}/` : null,
       pipeline: strictReviewData ? 'strict' : null
     }
@@ -114,7 +145,7 @@ eligible.sort((a, b) => b.score - a.score || Number(b.year || 0) - Number(a.year
 const ranking = eligible.slice(0, limit).map((item, index) => ({ rank: index + 1, ...item }));
 
 const output = {
-  schema_version: 3,
+  schema_version: 5,
   name: 'Игропоиск Топ-250',
   generated_at: new Date().toISOString(),
   source: 'released games with valid Игропоиск rating',
@@ -135,5 +166,7 @@ console.log(JSON.stringify({
   excluded_unreleased: excludedUnreleased,
   excluded_unrated: excludedUnrated,
   excluded_missing_page: excludedMissingPage,
+  with_images: ranking.filter(item => item.image_candidates?.length).length,
+  with_summaries: ranking.filter(item => item.summary).length,
   first: ranking.slice(0, 10).map(item => ({ rank: item.rank, slug: item.slug, score: item.score }))
 }, null, 2));

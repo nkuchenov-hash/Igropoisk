@@ -1,10 +1,20 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "component_library": "assets/design-system.css",
   "official_central_extensions": [
     "assets/site-header.css",
     "assets/site-system.css",
-    "assets/design-system-news.css"
+    "assets/design-system-news.css",
+    "assets/design-system-game-v3.css",
+    "assets/home-page.css",
+    "assets/popular-home.css",
+    "assets/reviews-of-day/index.css",
+    "assets/home-releases/index.css",
+    "assets/top-250-quality.css",
+    "game/_shared/game-page-v3.css",
+    "article/_shared/review-article.css",
+    "article/_shared/review-shot-card.css",
+    "article/_shared/review-readable.css"
   ],
   "layout_contract_files": [
     "assets/layout-contract.css"
@@ -33,12 +43,15 @@
     { "class": "ig-panel", "role": "panel" },
     { "class": "ig-empty-state", "role": "state" },
     { "class": "ig-page-title", "role": "title" },
-    { "class": "ig-tabs", "role": "tabs" }
+    { "class": "ig-tabs", "role": "tabs" },
+    { "class": "article-shot-card", "role": "card" },
+    { "class": "article-shot-card__arrow", "role": "button" },
+    { "class": "article-shot-card__dot", "role": "button" }
   ],
   "element_roles": {
-    "button": ["ig-button", "ig-icon-button", "ig-filter-chip", "ig-action"],
+    "button": ["ig-button", "ig-icon-button", "ig-filter-chip", "ig-action", "article-shot-card__arrow", "article-shot-card__dot"],
     "field": ["ig-input"],
-    "card": ["ig-card"],
+    "card": ["ig-card", "article-shot-card"],
     "panel": ["ig-panel", "ig-toolbar"],
     "tag": ["ig-chip", "ig-hashtag", "ig-pill"],
     "tag_list": ["ig-chip-list"],

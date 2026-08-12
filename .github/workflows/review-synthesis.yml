@@ -13,6 +13,8 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
+  models: read
 
 concurrency:
   group: review-staging-${{ github.event_name }}
@@ -29,26 +31,38 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
       - name: Resolve requested game slug
         id: target
         shell: bash
         run: |
+          set -euo pipefail
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             SLUG="${{ inputs.slug }}"
           else
-            REQUEST_FILE=$(ls -t data/review-build-requests/*.json | head -n 1)
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.sha }}"
+            REQUEST_FILE="$(git diff --name-only "$BEFORE" "$AFTER" -- 'data/review-build-requests/*.json' | tail -n 1)"
+            if [ -z "$REQUEST_FILE" ]; then
+              REQUEST_FILE="$(git log -1 --format= --name-only "$AFTER" -- 'data/review-build-requests/*.json' | sed '/^$/d' | tail -n 1)"
+            fi
+            if [ -z "$REQUEST_FILE" ] || [ ! -f "$REQUEST_FILE" ]; then
+              echo "Could not resolve review request from triggering commit $AFTER" >&2
+              exit 2
+            fi
             SLUG=$(node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));if(!d.slug)process.exit(2);process.stdout.write(d.slug)" "$REQUEST_FILE")
+            echo "Resolved request file: $REQUEST_FILE"
           fi
           echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
           echo "Building review for $SLUG"
       - name: Validate JavaScript
         run: |
           node --check scripts/sync-review-policy.mjs
+          node --check scripts/apply-review-supplemental-sources.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/discover-review-media.mjs
-          node --check scripts/synthesize-review.mjs
-          node --check scripts/enrich-review-media.mjs
+          node --check scripts/synthesize-review-github-models.mjs
+          node --check scripts/enrich-review-media-github-models.mjs
           node --check scripts/validate-review-output.mjs
           node --check scripts/render-review-pages.mjs
           node --check scripts/canonicalize-editorial-game-id.mjs
@@ -56,7 +70,9 @@ jobs:
           node --check article/_shared/review-carousel.js
       - name: Synchronize text, media and layout gates
         run: node scripts/sync-review-policy.mjs
-      - name: Discover and validate professional sources
+      - name: Apply verified supplemental review sources
+        run: node scripts/apply-review-supplemental-sources.mjs "${{ steps.target.outputs.slug }}"
+      - name: Discover or revalidate professional sources
         run: node scripts/prepare-review-research.mjs "${{ steps.target.outputs.slug }}"
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -64,39 +80,49 @@ jobs:
           OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
       - name: Bind research to canonical Game Registry identity
         run: node scripts/canonicalize-editorial-game-id.mjs "${{ steps.target.outputs.slug }}"
-      - name: Discover a broad screenshot corpus
+      - name: Verify official game-specific screenshot corpus
         run: node scripts/discover-review-media.mjs "${{ steps.target.outputs.slug }}"
+      - name: Write game-specific article through GitHub Models
+        run: node scripts/synthesize-review-github-models.mjs "${{ steps.target.outputs.slug }}"
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
-          OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
-      - name: Plan, write and audit full article
-        run: node scripts/synthesize-review.mjs "${{ steps.target.outputs.slug }}"
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
-          OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
-          OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REVIEW_MODEL: openai/gpt-4.1
       - name: Bind synthesized artifacts to canonical Game Registry identity
         run: node scripts/canonicalize-editorial-game-id.mjs "${{ steps.target.outputs.slug }}"
-      - name: Measure, deduplicate and build screenshot carousels
-        run: node scripts/enrich-review-media.mjs "${{ steps.target.outputs.slug }}"
+      - name: Match unique verified screenshots to article sections
+        run: node scripts/enrich-review-media-github-models.mjs "${{ steps.target.outputs.slug }}"
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
-          OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REVIEW_MODEL: openai/gpt-4.1
+          GITHUB_VISION_MODEL: openai/gpt-4.1
       - name: Enforce article depth, dimensions and zero duplicates
         run: node scripts/validate-review-output.mjs "${{ steps.target.outputs.slug }}"
       - name: Re-bind generated media/report artifacts to canonical identity
         run: node scripts/canonicalize-editorial-game-id.mjs "${{ steps.target.outputs.slug }}"
       - name: Render static pages for every published review
         run: node scripts/render-review-pages.mjs
-      - name: Commit research, candidates, articles and generated pages to staging
+      - name: Publish audited review through isolated PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
+          set -euo pipefail
+          slug="${{ steps.target.outputs.slug }}"
+          git add config/parsers/review-synthesis.json data/research data/reviews data/media-candidates data/articles data/article-drafts data/article-media data/parser-runs data/drafts article
+          if git diff --cached --quiet; then
+            echo "No audited review changes to publish."
+            exit 0
+          fi
+          git diff --cached --check
+          branch="automation/review-${slug}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git config user.name "igropoisk-editor[bot]"
           git config user.email "igropoisk-editor[bot]@users.noreply.github.com"
-          git add config/parsers/review-synthesis.json data/research data/reviews data/media-candidates data/articles data/article-drafts data/article-media data/parser-runs data/drafts article
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Build audited review for ${{ steps.target.outputs.slug }}"
-          git pull --rebase origin staging
-          git push origin HEAD:staging
+          git checkout -b "$branch"
+          git commit -m "Build audited review for ${slug}"
+          git push origin "$branch"
+          pr_url="$(gh pr create \
+            --base staging \
+            --head "$branch" \
+            --title "Audited review: ${slug}" \
+            --body "Generated only after the configured Review Synthesizer passed source, identity, article-depth, media-deduplication and visual-quality gates for ${slug}. Existing complete professional source packs are revalidated without paid discovery; article text and visual matching use GitHub Models with repository-scoped Actions permissions. The workflow never writes review content directly to staging.")"
+          gh pr merge "$pr_url" --merge --delete-branch
