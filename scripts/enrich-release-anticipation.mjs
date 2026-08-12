@@ -24,10 +24,10 @@ let pressError=null;
 
 const trustedPublishers=new Set([
   ...(popularConfig.sources||[]).filter(source=>source.family==='news').map(source=>canonical(source.name)),
-  'gamesradar','video games chronicle','vgc','game informer','push square','nintendo life','pure xbox','vg247','kotaku','destructoid','gematsu','the gamer','thegamer','gamesbeat','digital trends','the verge','windows central','techradar','pcgamesn','shacknews','hardcore gamer','gamingbolt','wccftech','dualshockers','playstation lifestyle','gamingtrend','meristation','gamepressure','game reactor','gamereactor','game developer','pc gamer','rock paper shotgun'
+  'gamesradar','video games chronicle','vgc','game informer','push square','nintendo life','pure xbox','vg247','kotaku','destructoid','gematsu','the gamer','thegamer','gamesbeat','digital trends','the verge','windows central','techradar','pcgamesn','shacknews','hardcore gamer','gamingbolt','wccftech','dualshockers','playstation lifestyle','gamingtrend','meristation','gamepressure','game reactor','gamereactor','game developer','pc gamer','rock paper shotgun','eurogamer','ign','gamespot','polygon'
 ].map(canonical).filter(Boolean));
 const publisherAliases=new Map([
-  ['gamesradar+','gamesradar'],['rock paper shotgun','rock paper shotgun'],['video games chronicle','video games chronicle'],['v g c','vgc'],['pcgamesn','pcgamesn'],['pc gamer','pc gamer']
+  ['gamesradar+','gamesradar'],['rock paper shotgun','rock paper shotgun'],['video games chronicle','video games chronicle'],['v g c','vgc'],['pcgamesn','pcgamesn'],['pc gamer','pc gamer'],['polygon.com','polygon'],['eurogamer.net','eurogamer']
 ].map(([from,to])=>[canonical(from),canonical(to)]));
 const officialPublisherPattern=/\b(steam|electronic arts|ea games|playstation|xbox|nintendo|bandai namco|ubisoft|rockstar games|bethesda|focus entertainment|lucasfilm|starwars\.com|epic games|developer|publisher)\b/i;
 const franchiseStopWords=new Set(['series','game','games','edition','remastered','remaster','complete','ultimate','definitive','deluxe','simulator','simulation','the','a','an']);
@@ -58,25 +58,38 @@ function researchPriority(game){
   if(!relevantDate&&!popularItem)return null;
   if(position<=100)return position;
   if(popularItem)return 120-Number(popularItem.score||0);
+  if(relevantDate)return 200+Math.abs(delta);
   return null;
 }
-async function fetchText(url){const response=await fetch(url,{signal:AbortSignal.timeout(18000),headers:{'user-agent':'Mozilla/5.0 IgropoiskReleaseAnticipation/6.0','accept-language':'en-US,en;q=0.9'}});if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.text()}
-async function researchQuery(term,days,family){
+async function fetchText(url){const response=await fetch(url,{signal:AbortSignal.timeout(18000),headers:{'user-agent':'Mozilla/5.0 IgropoiskReleaseAnticipation/6.1','accept-language':'en-US,en;q=0.9'}});if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.text()}
+async function researchQuery(term,days,family,{excludeRecentDays=0}={}){
   if(String(term||'').trim().length<3)return{publishers:[],evidence:[]};
   const query=`\"${term}\" (game OR gaming OR simulator OR preview OR release) when:${days}d`;
   const url=`https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US%3Aen`;
   const items=parseGoogleNews(await fetchText(url));const publishers=new Map();const evidence=[];const wanted=identity(term);
-  for(const item of items){const observed=Date.parse(item.date||'');if(Number.isFinite(observed)&&now-observed>days*86400000)continue;const titleIdentity=identity(item.title);if(wanted&&!titleIdentity.includes(wanted))continue;if(!isTrustedPublisher(item.publisher))continue;const publisher=normalizedPublisher(item.publisher);if(publishers.has(publisher))continue;publishers.set(publisher,item.publisher);evidence.push({publisher:item.publisher,title:item.title,url:item.url,observed_at:item.date||null,family})}
+  for(const item of items){
+    const observed=Date.parse(item.date||'');
+    if(Number.isFinite(observed)){
+      const age=now-observed;
+      if(age>days*86400000)continue;
+      if(excludeRecentDays&&age<excludeRecentDays*86400000)continue;
+    }
+    const titleIdentity=identity(item.title);if(wanted&&!titleIdentity.includes(wanted))continue;if(!isTrustedPublisher(item.publisher))continue;
+    const publisher=normalizedPublisher(item.publisher);if(publishers.has(publisher))continue;publishers.set(publisher,item.publisher);evidence.push({publisher:item.publisher,title:item.title,url:item.url,observed_at:item.date||null,family});
+  }
   return{publishers:[...publishers.values()],evidence:evidence.slice(0,16)};
 }
 async function researchPress(game){
   const cleanTitle=String(game.title||'').replace(/[™®]/g,'').trim();
   const franchise=franchiseTerm(cleanTitle);
-  const [current,historical]=await Promise.all([researchQuery(cleanTitle,120,'gaming_news'),researchQuery(franchise,730,'franchise_history')]);
+  const [current,historical]=await Promise.all([
+    researchQuery(cleanTitle,120,'gaming_news'),
+    researchQuery(franchise,1825,'franchise_history',{excludeRecentDays:180})
+  ]);
   return{current,historical,franchise};
 }
 async function runPool(items,worker,concurrency=6){let cursor=0;const workers=Array.from({length:Math.min(concurrency,items.length)},async()=>{while(cursor<items.length){const index=cursor++;const item=items[index];try{await worker(item)}catch(error){pressStatus='partial';pressError=pressError||String(error.message||error)}}});await Promise.all(workers)}
-async function fetchSteamChart(filter,sortBy,target){const url=`https://store.steampowered.com/search/results/?query&start=0&count=100&dynamic_data=&sort_by=${encodeURIComponent(sortBy)}&filter=${encodeURIComponent(filter)}&infinite=1&cc=us&l=english&json=1`;const response=await fetch(url,{signal:AbortSignal.timeout(25000),headers:{'user-agent':'Mozilla/5.0 IgropoiskReleaseAnticipation/6.0','accept-language':'en-US,en;q=0.9'}});if(!response.ok)throw new Error(`${filter}: HTTP ${response.status}`);const payload=await response.json();parseSteamRows(payload.results_html).forEach((item,index)=>target.set(String(item.appid),index+1))}
+async function fetchSteamChart(filter,sortBy,target){const url=`https://store.steampowered.com/search/results/?query&start=0&count=100&dynamic_data=&sort_by=${encodeURIComponent(sortBy)}&filter=${encodeURIComponent(filter)}&infinite=1&cc=us&l=english&json=1`;const response=await fetch(url,{signal:AbortSignal.timeout(25000),headers:{'user-agent':'Mozilla/5.0 IgropoiskReleaseAnticipation/6.1','accept-language':'en-US,en;q=0.9'}});if(!response.ok)throw new Error(`${filter}: HTTP ${response.status}`);const payload=await response.json();parseSteamRows(payload.results_html).forEach((item,index)=>target.set(String(item.appid),index+1))}
 
 try{await Promise.all([fetchSteamChart('popularcomingsoon','Released_ASC',steamUpcomingPositions),fetchSteamChart('popularnew','Released_DESC',steamNewPositions)])}catch(error){steamStatus='partial';steamError=String(error.message||error)}
 const researchCandidates=(releases.releases||[]).map(game=>({game,priority:researchPriority(game)})).filter(row=>row.priority!==null).sort((a,b)=>a.priority-b.priority).slice(0,64).map(row=>row.game);
@@ -99,7 +112,7 @@ for(const game of releases.releases||[]){
   const pressDominant=publicationCount>=5;const pressPlusStrongSteam=publicationCount>=3&&Boolean(steamPosition&&steamPosition<=50);const pressPlusPopular=publicationCount>=2&&Boolean(popularItem)&&Number(popularIndex||0)>=8&&Number(popularConfidence||0)>=0.4;const strongCrossSite=Boolean(popularItem)&&Number(popularIndex||0)>=10&&Number(popularConfidence||0)>=0.5&&crossSiteCoverage;
   const homepageEligible=game.editorial_quality?.manual_anticipated===true||pressDominant||pressPlusStrongSteam||pressPlusPopular||strongCrossSite;
   const steamScore=steamPosition?Math.max(0,30-Math.min(29,steamPosition-1)*1.25):0;const pressScore=Math.min(36,publicationCount*6);const familyScore=Math.min(16,nonSteamFamilies.length*5);const anticipationScore=Math.round((Math.min(40,Number(popularIndex||0))+steamScore+pressScore+familyScore)*10)/10;
-  game.anticipation={measured_at:checkedAt,steam_popular_position:steamPosition,steam_popular_upcoming_position:upcomingPosition,steam_popular_new_position:newPosition,popular_index:popularIndex,popular_confidence:popularConfidence,independent_publication_count:publicationCount,independent_publishers:independentPublishers,franchise_query:research.franchise,franchise_independent_publication_count:franchisePublicationCount,franchise_independent_publishers:franchisePublishers,evidence_families:families,independent_evidence_families:nonSteamFamilies,cross_site_coverage:crossSiteCoverage,homepage_eligible:homepageEligible,anticipation_score:anticipationScore,press_evidence:research.current.evidence,franchise_evidence:research.historical.evidence,source:'Steam Popular Upcoming + Popular New + 120-day current gaming press + 730-day measured franchise/niche history + current Popular signals'};
+  game.anticipation={measured_at:checkedAt,steam_popular_position:steamPosition,steam_popular_upcoming_position:upcomingPosition,steam_popular_new_position:newPosition,popular_index:popularIndex,popular_confidence:popularConfidence,independent_publication_count:publicationCount,independent_publishers:independentPublishers,franchise_query:research.franchise,franchise_independent_publication_count:franchisePublicationCount,franchise_independent_publishers:franchisePublishers,evidence_families:families,independent_evidence_families:nonSteamFamilies,cross_site_coverage:crossSiteCoverage,homepage_eligible:homepageEligible,anticipation_score:anticipationScore,press_evidence:research.current.evidence,franchise_evidence:research.historical.evidence,source:'Steam Popular Upcoming + Popular New + 120-day current gaming press + 5-year pre-release franchise/niche history excluding the latest 180 days + current Popular signals'};
   const quality=game.editorial_quality||{};const retainedSignals=(quality.signals||[]).filter(signal=>!['published_page','current_popular','cross_site_coverage','steam_popular_upcoming','steam_popular_new','gaming_press','franchise_history'].includes(signal));const anticipationSignals=[popularItem?'current_popular':null,crossSiteCoverage?'cross_site_coverage':null,upcomingPosition?'steam_popular_upcoming':null,newPosition?'steam_popular_new':null,research.current.publishers.length?'gaming_press':null,franchisePublicationCount?'franchise_history':null].filter(Boolean);
   game.editorial_quality={...quality,homepage_eligible:homepageEligible,anticipation_score:anticipationScore,steam_popular_position:steamPosition,steam_popular_upcoming_position:upcomingPosition,steam_popular_new_position:newPosition,independent_source_count:publicationCount,franchise_independent_source_count:franchisePublicationCount,source_families:[...new Set([...(quality.source_families||[]),...families])],signals:[...new Set([...retainedSignals,...anticipationSignals])],homepage_reason:homepageEligible?'measured_global_attention':'insufficient_broad_global_attention'};
 }
