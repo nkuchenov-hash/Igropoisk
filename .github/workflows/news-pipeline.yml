@@ -41,6 +41,8 @@ on:
       - 'scripts/build-home-news.mjs'
       - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
+      - 'scripts/prepare-news-game-page-requests.mjs'
+      - 'scripts/prepare-news-publication.mjs'
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
       - 'scripts/test-news-pipeline-health.mjs'
@@ -49,16 +51,19 @@ on:
       - 'scripts/test-news-game-linker.mjs'
       - 'scripts/test-news-game-context-resolver.mjs'
       - 'scripts/test-news-primary-game-refiner.mjs'
+      - 'scripts/test-news-publication-gate.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/lib/news-game-linker.mjs'
       - 'scripts/lib/news-game-registry-adapter.mjs'
       - 'scripts/lib/news-game-context-resolver.mjs'
       - 'scripts/lib/news-primary-game-refiner.mjs'
+      - 'scripts/lib/news-publication-gate.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/publish-news-storage.mjs'
       - '.github/workflows/news-pipeline.yml'
 
 permissions:
+  actions: write
   contents: read
   models: read
 
@@ -88,8 +93,11 @@ jobs:
           node --check scripts/build-news-pipeline-health.mjs
           node --check scripts/validate-news-pipeline.mjs
           node --check scripts/resolve-news-game-context.mjs
+          node --check scripts/prepare-news-game-page-requests.mjs
+          node --check scripts/prepare-news-publication.mjs
           node --check scripts/lib/news-game-context-resolver.mjs
           node --check scripts/lib/news-primary-game-refiner.mjs
+          node --check scripts/lib/news-publication-gate.mjs
           node --check scripts/lib/yandex-object-storage.mjs
           node --check scripts/publish-news-storage.mjs
           node scripts/test-news-pipeline.mjs
@@ -99,6 +107,7 @@ jobs:
           node scripts/test-news-game-linker.mjs
           node scripts/test-news-game-context-resolver.mjs
           node scripts/test-news-primary-game-refiner.mjs
+          node scripts/test-news-publication-gate.mjs
 
       - name: Collect validate and prepare one isolated snapshot
         env:
@@ -120,6 +129,21 @@ jobs:
           echo "status=$status" >> "$GITHUB_OUTPUT"
           echo "Pipeline status: $status"
 
+      - name: Prepare canonical game-page requests from news
+        if: steps.pipeline.outputs.status == 'success'
+        id: game_pages
+        run: |
+          node scripts/prepare-news-game-page-requests.mjs
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs = require('fs');
+          const result = JSON.parse(fs.readFileSync('tmp/news-game-page-requests.json', 'utf8'));
+          process.stdout.write(`count=${result.count}\nrequests_b64=${result.requests_b64}\n`);
+          NODE
+
+      - name: Remove news whose resolved game page is not ready from this public snapshot
+        if: steps.pipeline.outputs.status == 'success'
+        run: node scripts/prepare-news-publication.mjs
+
       - name: Publish immutable news snapshot and switch manifest
         if: steps.pipeline.outputs.status == 'success'
         env:
@@ -129,6 +153,13 @@ jobs:
           YC_S3_REGION: ru-central1
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
         run: node scripts/publish-news-storage.mjs
+
+      - name: Trigger canonical game lifecycle for news game pages
+        if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEWS_GAME_REQUESTS_B64: ${{ steps.game_pages.outputs.requests_b64 }}
+        run: gh workflow run content-pipeline.yml --ref staging -f news_game_requests_b64="$NEWS_GAME_REQUESTS_B64"
 
       - name: Prove that the pipeline did not write to GitHub
         run: |
@@ -142,6 +173,7 @@ jobs:
           name: news-pipeline-report-${{ github.run_id }}
           path: |
             tmp/news-pipeline-report.json
+            tmp/news-game-page-requests.json
             data/news-pipeline-health.json
           if-no-files-found: warn
           retention-days: 14
