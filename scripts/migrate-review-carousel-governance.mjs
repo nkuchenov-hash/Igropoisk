@@ -39,14 +39,15 @@ if (!renderer.includes('article-shot-card__dot ${index===0')) throw new Error('F
 write(rendererPath, renderer);
 
 const targets = ['elden-ring', 'the-witcher-3-wild-hunt', 'doom', 'control', 'hades'];
+const dotPattern = new RegExp('<' + 'button type="button" data-index="([^\"]+)" class="([^\"]*)" aria-label="Скриншот', 'g');
 for (const slug of targets) {
   const file = `article/${slug}/index.html`;
   if (!fs.existsSync(file)) continue;
   let html = read(file);
-  html = html.replace(/<button type="button" data-index="([^"]+)" class="([^"]*)" aria-label="Скриншот/g, (_, index, current) => {
+  html = html.replace(dotPattern, (_, index, current) => {
     const classes = current.split(/\s+/).filter(Boolean).filter(value => value !== 'article-shot-card__dot');
     classes.unshift('article-shot-card__dot');
-    return `<button type="button" data-index="${index}" class="${classes.join(' ')}" aria-label="Скриншот`;
+    return '<' + `button type="button" data-index="${index}" class="${classes.join(' ')}" aria-label="Скриншот`;
   });
   write(file, html);
 }
