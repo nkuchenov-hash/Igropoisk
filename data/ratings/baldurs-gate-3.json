@@ -1,8 +1,8 @@
 {
   "schema_version": 3,
   "game_slug": "baldurs-gate-3",
-  "checked_at": "2026-08-12T18:15:00.000Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-12T22:55:00.000Z",
+  "status": "green",
   "method": {
     "name": "Среднее независимых профессиональных оценок",
     "formula": "sum(normalized_10) / source_count",
@@ -11,12 +11,23 @@
     "output_scale": 10,
     "rounding_decimals": 1
   },
-  "sources": [],
+  "sources": [
+    {"publication":"PC Gamer","title":"Baldur's Gate 3 review","url":"https://www.pcgamer.com/baldurs-gate-3-review/","original_score":{"display":"97/100","score":97,"scale":100,"grade":""},"normalized_10":9.7},
+    {"publication":"GameSpot","title":"Baldur’s Gate 3 Review – Let Freedom Reign","url":"https://www.gamespot.com/reviews/baldurs-gate-3-review-let-freedom-reign/1900-6418131/","original_score":{"display":"10/10","score":10,"scale":10,"grade":""},"normalized_10":10},
+    {"publication":"GamesRadar+","title":"Baldur's Gate 3 Review: A new gold standard for RPGs","url":"https://www.gamesradar.com/baldurs-gate-3-review/","original_score":{"display":"5/5","score":5,"scale":5,"grade":""},"normalized_10":10},
+    {"publication":"Shacknews","title":"Baldur's Gate 3 review: A natural 20","url":"https://www.shacknews.com/article/137897/baldurs-gate-3-review-score","original_score":{"display":"10/10","score":10,"scale":10,"grade":""},"normalized_10":10},
+    {"publication":"Push Square","title":"Baldur's Gate 3 Review (PS5)","url":"https://www.pushsquare.com/reviews/ps5/baldurs-gate-3","original_score":{"display":"10/10","score":10,"scale":10,"grade":""},"normalized_10":10},
+    {"publication":"RPGFan","title":"Baldur’s Gate III","url":"https://www.rpgfan.com/review/baldurs-gate-3/","original_score":{"display":"95/100","score":95,"scale":100,"grade":""},"normalized_10":9.5},
+    {"publication":"RPG Site","title":"Baldur's Gate 3 Review","url":"https://www.rpgsite.net/review/14610-baldurs-gate-3-review","original_score":{"display":"10/10","score":10,"scale":10,"grade":""},"normalized_10":10},
+    {"publication":"CGMagazine","title":"Baldur’s Gate 3 (PC) review","url":"https://www.cgmagonline.com/review/game/baldurs-gate-3-pc-review/","original_score":{"display":"10/10","score":10,"scale":10,"grade":""},"normalized_10":10},
+    {"publication":"GamingTrend","title":"Baldur’s Gate 3 review — Natural 20 Critical Success","url":"https://gamingtrend.com/reviews/baldurs-gate-3-natural-20-critical-success/","original_score":{"display":"100/100","score":100,"scale":100,"grade":""},"normalized_10":10},
+    {"publication":"KeenGamer","title":"Baldur’s Gate 3 Review | Natural 20 (PC)","url":"https://www.keengamer.com/articles/reviews/pc-reviews/baldurs-gate-3-review-natural-20-pc/","original_score":{"display":"10/10","score":10,"scale":10,"grade":""},"normalized_10":10}
+  ],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null,
-    "status": "red-needs-revision"
+    "source_count": 10,
+    "values": [9.7,10,10,10,10,9.5,10,10,10,10],
+    "mean_10": 9.92,
+    "score_10": 9.9,
+    "status": "green"
   }
 }
