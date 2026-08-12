@@ -80,9 +80,13 @@ function semanticReviewState(game) {
   const article = readJSON(`data/articles/${slug}.json`);
   const articleHtml = path.join(root, 'article', slug, 'index.html');
   const feed = readJSON(`data/reviews/${slug}.json`);
+  const rating = readJSON(`data/ratings/${slug}.json`);
   if (!article || !fs.existsSync(articleHtml)) return {published:false, reason:'article_pair_missing'};
   if (String(article.game_slug || article.slug || '') !== slug) return {published:false, reason:'article_slug_mismatch'};
   if (String(article.publication_status || 'published').toLowerCase() !== 'published') return {published:false, reason:`article_status:${article.publication_status}`};
+  if (!feed || String(feed.game_slug || '') !== slug) return {published:false, reason:'review_feed_missing_or_mismatched'};
+  if (String(feed.publication_gate?.status || '') !== 'green') return {published:false, reason:`review_quality_needs_revision:${feed.publication_gate?.status || 'missing'}`};
+  if (String(rating?.status || '') !== 'green' || !Number.isFinite(Number(rating?.calculation?.score_10))) return {published:false, reason:`rating_quality_needs_revision:${rating?.status || 'missing'}`};
   const draft = readJSON(`data/drafts/${slug}.json`);
   if (draft) {
     const explicit = String(draft.game_id || draft.gameId || '').trim();
@@ -102,10 +106,8 @@ function semanticReviewState(game) {
       }
     }
   }
-  if (!feed || String(feed.game_slug || '') !== slug || !articleUrlMatches(feed.igropoisk_article?.url, slug)) {
-    return {published:false, reason:'article_not_exposed_by_game_page'};
-  }
-  return {published:true, reason:'semantic_publication_verified'};
+  if (!articleUrlMatches(feed.igropoisk_article?.url, slug)) return {published:false, reason:'article_not_exposed_by_game_page'};
+  return {published:true, reason:'semantic_publication_verified_green'};
 }
 
 const reviewStateById = new Map();
@@ -141,7 +143,7 @@ const runnableReviews = queue.filter(item => item.type === 'build_review').slice
 const games = Object.values(api.registry.games);
 const semanticPublishedReviews = [...reviewStateById.values()].filter(item => item.published).length;
 const status = {
-  schema_version: 4,
+  schema_version: 5,
   generated_at: now,
   mode: finalize ? 'finalize' : 'plan',
   canonical_registry: 'data/game-registry/registry.transition.json',
@@ -178,9 +180,9 @@ const legacyItems = games.filter(game=>game.workflow?.status!=='merged_into_anot
   review: {published: reviewStateById.get(game.id)?.published ?? false, reason: reviewStateById.get(game.id)?.reason ?? 'review_state_missing'},
   problems: game.conflicts.map(item => item.field)
 }));
-writeJSON('data/content-pipeline/registry.json', {schema_version: 4, generated_at: now, canonical_registry: 'data/game-registry/registry.transition.json', items: legacyItems});
-writeJSON('data/content-pipeline/queue.json', {schema_version: 4, generated_at: now, items: queue});
+writeJSON('data/content-pipeline/registry.json', {schema_version: 5, generated_at: now, canonical_registry: 'data/game-registry/registry.transition.json', items: legacyItems});
+writeJSON('data/content-pipeline/queue.json', {schema_version: 5, generated_at: now, items: queue});
 writeJSON('data/content-pipeline/status.json', status);
-writeJSON('data/content-pipeline/execution-plan.json', {schema_version: 4, generated_at: now, pages: runnablePages, reviews: runnableReviews});
+writeJSON('data/content-pipeline/execution-plan.json', {schema_version: 5, generated_at: now, pages: runnablePages, reviews: runnableReviews});
 writeJSON('data/parser-runs/content-pipeline.json', {parser: 'content-pipeline', status: 'success', checked_at: now, summary: status.summary, output: 'data/content-pipeline/status.json'});
 console.log(JSON.stringify(status, null, 2));

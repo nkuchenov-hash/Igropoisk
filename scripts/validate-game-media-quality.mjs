@@ -2,55 +2,20 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const root=process.cwd();
-const requested=process.argv[2]||'';
-const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
-const catalog=read('data/catalog-visible.json',[]);
-const slugs=requested?[requested]:catalog.map(item=>item.slug).filter(Boolean);
-const records=new Map();
-const contentDir=path.join(root,'data/game-content');
-if(fs.existsSync(contentDir))for(const file of fs.readdirSync(contentDir).filter(name=>name.endsWith('.json'))){const payload=read(`data/game-content/${file}`,{});for(const [slug,game] of Object.entries(payload.games||{}))records.set(slug,game)}
-const errors=[];
-const warnings=[];
-const badSource=value=>/bing\.com\/images|google\.[^/]+\/search|yandex\.[^/]+\/images/i.test(String(value||''));
-const badUrl=value=>/scribdassets\.com|document_thumbnails/i.test(String(value||''));
-const urlOf=item=>typeof item==='string'?item:String(item?.url||item?.src||item?.image||item?.thumbnail||'');
-const valid=item=>{const url=urlOf(item);return (/^https?:\/\//i.test(url)||url.startsWith('/Igropoisk/'))&&!badUrl(url)&&!badSource(item?.source_url)};
-const unique=items=>{const seen=new Set();return items.filter(item=>{if(!valid(item))return false;const url=urlOf(item);if(seen.has(url))return false;seen.add(url);return true})};
-
+const root=process.cwd();const requested=process.argv[2]&&!process.argv[2].startsWith('--')?process.argv[2]:'';
+const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,`${JSON.stringify(value,null,2)}\n`)};
+const policy=read('config/game-page-quality-v2.json',{}).images||{};const catalog=read('data/catalog-visible.json',[]);const slugs=requested?[requested]:catalog.map(x=>x.slug).filter(Boolean);const reports=[];
+const urlOf=item=>typeof item==='string'?item:String(item?.url||item?.src||item?.image||'');const unique=list=>[...new Map(list.filter(Boolean).map(item=>[urlOf(item).split(/[?#]/)[0].toLowerCase(),item])).values()];
+function png(buf){if(buf.length>=24&&buf.slice(1,4).toString()==='PNG')return{width:buf.readUInt32BE(16),height:buf.readUInt32BE(20)}}
+function jpeg(buf){if(buf.length<4||buf[0]!==0xff||buf[1]!==0xd8)return null;let i=2;while(i+9<buf.length){if(buf[i]!==0xff){i++;continue}const marker=buf[i+1];const len=buf.readUInt16BE(i+2);if([0xc0,0xc1,0xc2,0xc3,0xc5,0xc6,0xc7,0xc9,0xca,0xcb,0xcd,0xce,0xcf].includes(marker))return{height:buf.readUInt16BE(i+5),width:buf.readUInt16BE(i+7)};if(len<2)break;i+=2+len}return null}
+function webp(buf){if(buf.length<30||buf.slice(0,4).toString()!=='RIFF'||buf.slice(8,12).toString()!=='WEBP')return null;const type=buf.slice(12,16).toString();if(type==='VP8X')return{width:1+buf.readUIntLE(24,3),height:1+buf.readUIntLE(27,3)};if(type==='VP8 '&&buf.length>=30&&buf[23]===0x9d&&buf[24]===0x01&&buf[25]===0x2a)return{width:buf.readUInt16LE(26)&0x3fff,height:buf.readUInt16LE(28)&0x3fff};return null}
+async function probe(url){try{const r=await fetch(url,{redirect:'follow',headers:{Range:'bytes=0-262143','user-agent':'IgropoiskMediaQuality/2.0'},signal:AbortSignal.timeout(12000)});if(!r.ok)return{ok:false,status:r.status};const data=Buffer.from(await r.arrayBuffer());const size=png(data)||jpeg(data)||webp(data)||{};let bytes=Number(r.headers.get('content-length')||0);const range=r.headers.get('content-range')||'';const total=Number(range.match(/\/(\d+)$/)?.[1]||0);if(total)bytes=total;return{ok:true,width:size.width||0,height:size.height||0,bytes,mime:r.headers.get('content-type')||'',resolved_url:r.url}}catch(error){return{ok:false,error:error.message}}}
+const officialMedia=(item,draft)=>{const url=urlOf(item);if(/(?:steamstatic|akamai\.steamstatic|rockstargames|playstation|xbox|nintendo|epicgames|gogcdn|cloudfront).*\.(?:jpe?g|png|webp)/i.test(url))return true;const source=String(item?.source_url||'');const known=[draft.links?.official,draft.links?.store,draft.links?.developer,draft.links?.publisher].filter(Boolean);return known.some(base=>{try{return new URL(source).hostname===new URL(base).hostname}catch{return false}})};
 for(const slug of slugs){
-  const draft=read(`data/drafts/${slug}.json`,{});
-  const curated=records.get(slug)||{};
-  const override=read(`data/game-media/${slug}.json`,{});
-  const article=read(`data/articles/${slug}.json`,read(`data/article-drafts/${slug}.json`,{}));
-  const articleMedia=read(`data/article-media/${slug}.json`,{});
-  const articleMediaShots=(articleMedia.sections||[]).flatMap(section=>section.images||[]);
-  const articleShots=(article.sections||[]).flatMap(section=>section.images||[]);
-  const draftShots=draft.media?.screenshots||[];
-  const curatedShots=curated.media?.screenshots||[];
-  const goodShots=unique([...(override.screenshots||[]),...curatedShots,...draftShots,...articleMediaShots,...articleShots]);
-  const rejectedDraft=draftShots.filter(item=>!valid(item)).map(urlOf);
-  const appid=Number(curated.identity?.steam_appid||draft.identity?.steam_appid||0);
-  const steamHero=appid?`https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_hero.jpg`:'';
-  const steamCover=appid?`https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg`:'';
-  const cover=urlOf(override.cover)||urlOf(curated.media?.cover)||urlOf(draft.media?.cover)||steamCover||urlOf(article.hero);
-  const hero=urlOf(override.hero)||urlOf(curated.media?.hero)||urlOf(draft.media?.hero)||steamHero||urlOf(article.hero)||(goodShots[0]&&urlOf(goodShots[0]));
-  const art=unique([
-    ...(override.artwork||[]),
-    ...(curated.media?.artwork||[]),
-    ...(draft.media?.artwork||[]),
-    cover&&{url:cover},
-    hero&&{url:hero},
-    article.hero&&{url:article.hero,source_url:article.sources?.[0]?.url||''}
-  ].filter(Boolean));
-  const minimumScreenshots=Math.max(1,Number(override.minimum_screenshots||6));
-  if(goodShots.length<minimumScreenshots)errors.push(`${slug}: only ${goodShots.length} valid screenshots after effective runtime recovery; minimum is ${minimumScreenshots}`);
-  if(!cover||badUrl(cover))errors.push(`${slug}: no valid effective cover`);
-  if(!hero||badUrl(hero))errors.push(`${slug}: no valid effective hero`);
-  if(art.length<2)warnings.push(`${slug}: only ${art.length} unique cover/art image; page will still render but needs richer artwork`);
-  if(rejectedDraft.length)warnings.push(`${slug}: ${rejectedDraft.length} rejected search/junk media item(s)`);
+  const draft=read(`data/drafts/${slug}.json`,{});const appid=Number(draft.identity?.steam_appid||0);const year=Number(String(draft.release?.date||draft.release?.date_text||'').match(/(?:19|20)\d{2}/)?.[0]||9999);const modern=year>=Number(policy.modern_year_floor||2010);const comments=[];const screenshots=unique(draft.media?.screenshots||[]);const screenshotUrls=new Set(screenshots.map(urlOf));const artwork=unique(draft.media?.artwork||[]);const fallbackHero=appid?{url:`https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_hero.jpg`,source_url:draft.links?.store||`https://store.steampowered.com/app/${appid}/`}:null;const fallbackCover=appid?{url:`https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg`,source_url:draft.links?.store||`https://store.steampowered.com/app/${appid}/`}:null;const heroCandidates=unique([...artwork,fallbackHero,draft.media?.hero].filter(Boolean));const hero=heroCandidates.find(item=>!screenshotUrls.has(urlOf(item)))||null;const rawCover=draft.media?.cover||null;const cover=appid&&/header|background|hero/i.test(urlOf(rawCover))?fallbackCover:(rawCover||fallbackCover);
+  if(!hero)comments.push('Нет отдельного официального арта для большой верхней картинки; скриншот нельзя использовать как hero.');if(hero&&!officialMedia(hero,draft))comments.push(`Hero не подтверждён как официальный арт: ${urlOf(hero)}`);if(!cover)comments.push('Нет основной обложки.');if(cover&&!officialMedia(cover,draft))comments.push(`Обложка не подтверждена официальным источником: ${urlOf(cover)}`);if(screenshots.length<Number(policy.screenshot?.minimum_count||6))comments.push(`Недостаточно скриншотов высокого качества: ${screenshots.length}/${policy.screenshot?.minimum_count||6}.`);
+  const checks=[];if(hero)checks.push({role:'hero',item:hero,rules:policy.hero||{},errors:[]});if(cover)checks.push({role:'cover',item:cover,rules:policy.cover||{},errors:[]});for(const item of screenshots)checks.push({role:'screenshot',item,rules:policy.screenshot||{},errors:[]});
+  for(const check of checks){const issue=message=>{check.errors.push(message);comments.push(message)};const url=urlOf(check.item);if(!/^https?:\/\//i.test(url)){issue(`${check.role}: невалидный URL ${url||'(пусто)'}`);check.accepted=false;continue}if(check.role==='screenshot'&&!officialMedia(check.item,draft))issue(`screenshot: источник изображения не подтверждён: ${url}`);const result=await probe(url);check.probe=result;if(!result.ok){issue(`${check.role}: изображение недоступно ${url}`);check.accepted=false;continue}const minW=Number(check.rules[modern?'minimum_width_modern':'minimum_width_historical']||0),minH=Number(check.rules[modern?'minimum_height_modern':'minimum_height_historical']||0),minBytes=Number(check.rules.minimum_bytes||0);if(!result.width||!result.height)issue(`${check.role}: невозможно надёжно определить размеры изображения: ${url}`);else{if(result.width<minW||result.height<minH)issue(`${check.role}: слишком маленькое ${result.width}×${result.height}, минимум ${minW}×${minH}: ${url}`);const aspect=result.width/result.height;if(check.role==='cover'&&(aspect<0.5||aspect>0.85))issue(`cover: неверная ориентация/пропорции ${aspect.toFixed(2)}; нужна вертикальная обложка: ${url}`);if(check.role==='hero'&&aspect<1.25)issue(`hero: арт недостаточно широкоформатный (${aspect.toFixed(2)}): ${url}`);if(check.role==='screenshot'&&aspect<1.15)issue(`screenshot: подозрительные пропорции (${aspect.toFixed(2)}): ${url}`)}if(!result.bytes)issue(`${check.role}: невозможно подтвердить размер файла: ${url}`);else if(result.bytes<minBytes)issue(`${check.role}: слишком маленький файл ${result.bytes} B, минимум ${minBytes} B: ${url}`);const q=check.item?.quality||{};if(q.visible_upscale===true||q.upscaled===true)issue(`${check.role}: заметный upscale: ${url}`);if(q.blurred===true||q.muddy===true||Number(q.sharpness||1)<0.75)issue(`${check.role}: размытое изображение: ${url}`);if(q.heavy_compression===true||Number(q.compression||1)<0.72)issue(`${check.role}: сильное сжатие: ${url}`);if(q.stretched===true)issue(`${check.role}: растянутое изображение: ${url}`);check.accepted=check.errors.length===0}
+  const acceptedScreenshots=checks.filter(check=>check.role==='screenshot'&&check.accepted).length;if(acceptedScreenshots<Number(policy.screenshot?.minimum_count||6))comments.push(`После quality gate осталось только ${acceptedScreenshots}/${policy.screenshot?.minimum_count||6} допустимых скриншотов.`);const status=comments.length?'red-needs-revision':'green';const report={schema_version:4,validator:'game-media-quality',game_slug:slug,checked_at:new Date().toISOString(),status,hero:urlOf(hero),cover:urlOf(cover),screenshots:screenshots.length,accepted_screenshots:acceptedScreenshots,comments:[...new Set(comments)],checks};write(`data/quality-control/game-page-${slug}.json`,report);reports.push(report);console.log(JSON.stringify({slug,status,comments:report.comments.length,accepted_screenshots:acceptedScreenshots},null,2));
 }
-
-if(warnings.length){console.warn('Game media warnings:');for(const warning of warnings)console.warn(`- ${warning}`)}
-if(errors.length){console.error(`Game media quality failed (${errors.length})`);for(const error of errors)console.error(`- ${error}`);process.exit(2)}
-console.log(JSON.stringify({valid:true,checked:slugs.length,warnings:warnings.length},null,2));
+if(!requested)write('data/quality-control/game-page-summary.json',{schema_version:1,checked_at:new Date().toISOString(),green:reports.filter(x=>x.status==='green').length,red:reports.filter(x=>x.status!=='green').length,reports:reports.map(x=>({slug:x.game_slug,status:x.status,comments:x.comments}))});

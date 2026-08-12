@@ -10,13 +10,24 @@ on:
       - 'scripts/hydrate-live-home-feeds.mjs'
       - 'scripts/orchestrate-content.mjs'
       - 'scripts/run-content-pipeline.mjs'
+      - 'scripts/build-game-page.mjs'
       - 'scripts/build-game-page-basic.mjs'
+      - 'scripts/canonicalize-editorial-game-id.mjs'
       - 'scripts/repair-public-catalog-game-ids.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
+      - 'scripts/prepare-review-research.mjs'
+      - 'scripts/calculate-ratings-from-research.mjs'
+      - 'scripts/synthesize-review-adaptive.mjs'
+      - 'scripts/quality-control-loop.mjs'
+      - 'scripts/validate-game-media-quality.mjs'
+      - 'scripts/build-similarity-index.mjs'
+      - 'scripts/enrich-game-relations.mjs'
       - 'scripts/audit-review-publication.mjs'
+      - 'scripts/validate-automation-publish-diff.mjs'
       - 'scripts/lib/editorial-game-registry-adapter.mjs'
       - 'scripts/lib/system-game-registry-adapter.mjs'
       - 'config/content-pipeline.json'
+      - 'config/game-page-quality-v2.json'
       - 'config/home-feeds-storage.json'
       - '.github/workflows/content-pipeline.yml'
 
@@ -45,10 +56,18 @@ jobs:
           node --check scripts/hydrate-live-home-feeds.mjs
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
+          node --check scripts/build-game-page.mjs
           node --check scripts/build-game-page-basic.mjs
+          node --check scripts/canonicalize-editorial-game-id.mjs
           node --check scripts/repair-public-catalog-game-ids.mjs
           node --check scripts/render-review-pages.mjs
+          node --check scripts/prepare-review-research.mjs
           node --check scripts/calculate-ratings-from-research.mjs
+          node --check scripts/synthesize-review-adaptive.mjs
+          node --check scripts/quality-control-loop.mjs
+          node --check scripts/validate-game-media-quality.mjs
+          node --check scripts/build-similarity-index.mjs
+          node --check scripts/enrich-game-relations.mjs
           node --check scripts/validate-automation-publish-diff.mjs
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/audit-review-publication.mjs
@@ -61,11 +80,11 @@ jobs:
         run: node scripts/hydrate-live-home-feeds.mjs
       - name: Repair public catalog canonical identities
         run: node scripts/repair-public-catalog-game-ids.mjs
-      - name: Restore identity-safe publication links before planning new work
+      - name: Restore only green identity-safe publication links before planning new work
         run: node scripts/materialize-review-publication-feed.mjs
       - name: Build canonical registry and semantic work queue
         run: node scripts/orchestrate-content.mjs --finalize
-      - name: Build selected game pages and optional reviews
+      - name: Build selected game pages and revise red work until green
         run: node scripts/run-content-pipeline.mjs
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -73,7 +92,7 @@ jobs:
           OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
           OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
           OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
-      - name: Materialize newly validated reviews into runtime feed
+      - name: Materialize newly green reviews into runtime feed
         run: node scripts/materialize-review-publication-feed.mjs
       - name: Recalculate lifecycle state
         if: always()
@@ -81,11 +100,16 @@ jobs:
       - name: Audit actual review publication state
         if: always()
         run: node scripts/audit-review-publication.mjs
-      - name: Stage isolated lifecycle output
+      - name: Stage isolated lifecycle and revision state
         run: |
           paths=(
+            data/content-pipeline
+            data/quality-control
+            data/franchises
+            data/similarity
             data/reviews
             data/parser-output
+            data/parser-runs
             data/drafts
             data/game-content
             data/catalog-visible.json
@@ -106,13 +130,13 @@ jobs:
           if ! git diff --cached --quiet; then
             node scripts/validate-automation-publish-diff.mjs --profile content-pipeline
           fi
-      - name: Validate complete candidate before merge
+      - name: Validate complete candidate and retained revision state
         if: success()
         run: |
           if git diff --cached --quiet; then exit 0; fi
           node scripts/validate-game-v3.mjs
           node scripts/validate-game-media-quality.mjs
-          node scripts/audit-review-publication.mjs --strict
+          node scripts/audit-review-publication.mjs
           node scripts/validate-editorial-pipeline.mjs
           node scripts/validate-production-boundaries.mjs
           node scripts/validate-top-250.mjs
@@ -123,22 +147,22 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if git diff --cached --quiet; then
-            echo "No validated lifecycle content changes."
+            echo "No lifecycle or revision-state changes."
             exit 0
           fi
           branch="automation/game-lifecycle-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git config user.name "igropoisk-content[bot]"
           git config user.email "igropoisk-content[bot]@users.noreply.github.com"
           git checkout -b "$branch"
-          git commit -m "Build queued game lifecycle output"
+          git commit -m "Build and revise queued game lifecycle output"
           git push origin "$branch"
           pr_url="$(gh pr create \
             --base staging \
             --head "$branch" \
             --title "Automated game lifecycle ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
-            --body "Validated autonomous game lifecycle output. Pages are built from structured sources without requiring AI; editorial AI remains optional. The producing workflow ran publication, media, identity, layout and boundary gates before this PR was opened.")"
+            --body "Autonomous game lifecycle output. Green content is exposed publicly; red quality findings are retained only as revision state and automatically return to research/rebuild/recheck on the next lifecycle pass. The workflow never treats a red quality result as terminal.")"
           gh pr merge "$pr_url" --merge --delete-branch
-      - name: Preserve lifecycle queue and audit
+      - name: Preserve lifecycle queue and quality audit
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -149,6 +173,8 @@ jobs:
             data/content-pipeline/queue.json
             data/content-pipeline/execution-plan.json
             data/content-pipeline/execution-log.json
+            data/content-pipeline/franchise-queue.json
+            data/quality-control
             data/audits/review-publication.json
             data/audits/review-feed-materialization.json
           if-no-files-found: warn

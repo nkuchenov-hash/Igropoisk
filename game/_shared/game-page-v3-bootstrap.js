@@ -3,7 +3,7 @@
 const sourceUrl='../_shared/game-page-v3.js?v=20260803-2';
 const pageSlug=decodeURIComponent(location.pathname.split('/').filter(Boolean).at(-1)||'');
 const draftMediaUrl=item=>typeof item==='string'?item:String(item?.url||item?.src||item?.source_url||'');
-const cleanDraftScreenshots=list=>{
+const cleanDraftMedia=list=>{
   const seen=new Set();
   return (Array.isArray(list)?list:[]).map(draftMediaUrl).filter(Boolean).filter(url=>{
     if(/scribdassets\.com|document_thumbnails|bing\.com\/images|google\.[^/]+\/search|yandex\.[^/]+\/images/i.test(url))return false;
@@ -23,13 +23,20 @@ async function installVerifiedDraftGallery(){
   }catch{return}
   const draftSlug=String(draft?.identity?.slug||draft?.slug||draft?.game_slug||'');
   if(draftSlug!==pageSlug)return;
-  const screenshots=cleanDraftScreenshots(draft?.media?.screenshots);
+  const screenshots=cleanDraftMedia(draft?.media?.screenshots);
   if(screenshots.length<6)return;
+  const artwork=cleanDraftMedia(draft?.media?.artwork);
+  const appid=Number(draft?.identity?.steam_appid||0);
+  const officialHero=appid?`https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_hero.jpg`:'';
+  const screenshotKeys=new Set(screenshots.map(url=>url.split(/[?#]/)[0].toLowerCase()));
+  const artCandidates=[...artwork,officialHero,draftMediaUrl(draft?.media?.hero),draftMediaUrl(draft?.media?.cover)].filter(Boolean);
+  const primaryArt=artCandidates.find(url=>!screenshotKeys.has(url.split(/[?#]/)[0].toLowerCase()))||officialHero||artCandidates[0]||'';
+  if(!primaryArt)return;
   let rail=null,hero=null,title='';
   for(let attempt=0;attempt<80;attempt++){
     rail=document.querySelector('#heroMedia');
     hero=document.querySelector('#gameHero');
-    title=document.querySelector('#gameTitle')?.textContent?.trim()||draft?.identity?.title||pageSlug;
+    title=document.body.dataset.title||document.querySelector('#gameTitle')?.textContent?.trim()||draft?.identity?.title||pageSlug;
     if(rail&&hero&&document.querySelector('#gameTitle')?.textContent?.trim())break;
     await new Promise(resolve=>setTimeout(resolve,100));
   }
@@ -42,27 +49,28 @@ async function installVerifiedDraftGallery(){
     preview.decoding='async';
     hero.prepend(preview);
   }
+  const items=[{url:primaryArt,label:'официальный арт'},...screenshots.map((url,index)=>({url,label:`скриншот ${index+1}`}))];
   const fragment=document.createDocumentFragment();
-  screenshots.forEach((url,index)=>{
+  items.forEach((item,index)=>{
     const button=document.createElement('button');
     button.type='button';
     button.className=`ig-button hero-media__item${index===0?' active':''}`;
-    button.dataset.image=url;
-    button.setAttribute('aria-label',`Показать скриншот ${index+1}: ${title}`);
+    button.dataset.image=item.url;
+    button.setAttribute('aria-label',`Показать ${item.label}: ${title}`);
     const image=document.createElement('img');
-    image.src=url;
-    image.alt=`${title} — скриншот ${index+1}`;
+    image.src=item.url;
+    image.alt=`${title} — ${item.label}`;
     image.loading=index<2?'eager':'lazy';
     image.decoding='async';
     button.appendChild(image);
     button.addEventListener('click',()=>{
-      rail.querySelectorAll('.hero-media__item').forEach(item=>item.classList.toggle('active',item===button));
-      preview.src=url;
+      rail.querySelectorAll('.hero-media__item').forEach(node=>node.classList.toggle('active',node===button));
+      preview.src=item.url;
     });
     fragment.appendChild(button);
   });
   rail.replaceChildren(fragment);
-  preview.src=screenshots[0];
+  preview.src=primaryArt;
   rail.dispatchEvent(new Event('scroll'));
 }
 
