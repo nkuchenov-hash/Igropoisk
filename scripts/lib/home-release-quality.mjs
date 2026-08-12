@@ -23,7 +23,7 @@ export function evaluateHomeReleaseQuality(game, options = {}) {
 
   const popularSignal = Boolean(identity && popularIdentities.has(identity));
   const steamWishlistPosition = Number(anticipation.steam_popular_upcoming_position || 0);
-  const maximumSteamPosition = Math.min(10, Math.max(1, Number(options.maximumSteamWishlistPosition || 10)));
+  const maximumSteamPosition = Math.max(1, Number(options.maximumSteamWishlistPosition || 50));
   const wishlistSignal = steamWishlistPosition > 0 && steamWishlistPosition <= maximumSteamPosition;
   const coverageCount = Math.max(Number(anticipation.independent_publication_count || 0), independentSources.length);
   const coverageFamilies = new Set([
@@ -32,12 +32,17 @@ export function evaluateHomeReleaseQuality(game, options = {}) {
     ...independentSources.map(source => source.family)
   ].filter(family => family && !STORE_FAMILIES.has(String(family).trim().toLowerCase())));
   const minimumIndependentCoverage = Math.max(2, Number(options.minimumIndependentCoverage || 2));
-  const crossSiteSignal = coverageCount >= minimumIndependentCoverage && coverageFamilies.size >= 2;
+  const multiPublicationSignal = coverageCount >= Math.max(3, minimumIndependentCoverage);
+  const multiFamilySignal = coverageCount >= minimumIndependentCoverage && coverageFamilies.size >= 2;
+  const crossSiteSignal = multiPublicationSignal || multiFamilySignal;
   const popularIndex = Number(anticipation.popular_index || 0);
   const popularConfidence = Number(anticipation.popular_confidence || 0);
-  const measuredPopularSignal = popularSignal || (popularIndex >= 8 && popularConfidence >= 0.45);
+  const measuredPopularSignal = popularSignal || (popularIndex >= 8 && popularConfidence >= 0.4);
+  const pressDominant = coverageCount >= 5;
+  const strongSteamWithPress = wishlistSignal && coverageCount >= 3;
+  const pressWithPopular = coverageCount >= 2 && measuredPopularSignal;
   const manualFeature = editorial.featured === true || editorial.manual_anticipated === true;
-  const globalAnticipation = manualFeature || (crossSiteSignal && measuredPopularSignal) || (wishlistSignal && crossSiteSignal && measuredPopularSignal);
+  const globalAnticipation = manualFeature || pressDominant || strongSteamWithPress || pressWithPopular || (crossSiteSignal && measuredPopularSignal);
   const publishedPage = Boolean(editorial.has_page || editorial.status === 'published');
   const hasVerifiedCover = Boolean(
     (game?.image?.verified || game?.image?.status === 'downloaded_verified' || game?.image?.status === 'deployment_cached' || game?.image?.status === 'remote_verified') &&
@@ -47,13 +52,15 @@ export function evaluateHomeReleaseQuality(game, options = {}) {
   const signals = [];
   if (measuredPopularSignal) signals.push('current_popular');
   if (wishlistSignal) signals.push('steam_popular_upcoming');
+  if (coverageCount >= 3) signals.push('gaming_press');
   if (crossSiteSignal) signals.push('cross_site_coverage');
   if (manualFeature) signals.push('manual_feature');
 
   let score = 0;
   if (measuredPopularSignal) score += 10;
-  if (wishlistSignal) score += Math.max(3, 8 - Math.floor((steamWishlistPosition - 1) / 3));
-  if (crossSiteSignal) score += Math.min(10, 4 + coverageCount + coverageFamilies.size);
+  if (wishlistSignal) score += Math.max(3, 9 - Math.floor((steamWishlistPosition - 1) / 8));
+  if (coverageCount >= 2) score += Math.min(18, coverageCount * 3);
+  if (coverageFamilies.size >= 2) score += Math.min(6, coverageFamilies.size * 2);
   if (manualFeature) score += 12;
   if (!upcoming && publishedPage) score += 2;
   if (event?.precision === 'exact') score += 1;
