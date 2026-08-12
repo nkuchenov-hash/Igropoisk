@@ -1,4 +1,5 @@
 import { normalizeGameIdentity } from './home-feed-identity.mjs';
+import { sourceDisappearanceOnly } from './release-press-quality.mjs';
 
 const STORE_FAMILIES = new Set(['official_store', 'store', 'steam', 'steam_chart', 'rawg']);
 
@@ -45,9 +46,11 @@ export function evaluateHomeReleaseQuality(game, options = {}) {
   const globalAnticipation = manualFeature || pressDominant || strongSteamWithPress || pressWithPopular || (crossSiteSignal && measuredPopularSignal);
   const publishedPage = Boolean(editorial.has_page || editorial.status === 'published');
   const hasVerifiedCover = Boolean(
-    (game?.image?.verified || game?.image?.status === 'downloaded_verified' || game?.image?.status === 'deployment_cached' || game?.image?.status === 'remote_verified') &&
+    (game?.image?.verified || game?.image?.status === 'downloaded_verified' || game?.image?.status === 'deployment_cached' || game?.image?.status === 'remote_verified' || game?.image?.status === 'remote_fallback') &&
     (game?.image?.local_url || game?.image?.source_url || (game?.image_candidates || []).length)
   );
+  const eventConfidence = Number(event?.confidence || 0);
+  const reviewIsOnlySourceDisappearance = sourceDisappearanceOnly(editorial) && event?.precision === 'exact' && eventConfidence >= 0.9 && coverageCount >= 3 && globalAnticipation && hasVerifiedCover;
 
   const signals = [];
   if (measuredPopularSignal) signals.push('current_popular');
@@ -55,6 +58,7 @@ export function evaluateHomeReleaseQuality(game, options = {}) {
   if (coverageCount >= 3) signals.push('gaming_press');
   if (crossSiteSignal) signals.push('cross_site_coverage');
   if (manualFeature) signals.push('manual_feature');
+  if (reviewIsOnlySourceDisappearance) signals.push('source_disappearance_override');
 
   let score = 0;
   if (measuredPopularSignal) score += 10;
@@ -68,7 +72,7 @@ export function evaluateHomeReleaseQuality(game, options = {}) {
   const reasons = [];
   if (game?.release_type && game.release_type !== 'full') reasons.push('non_full_release');
   if (!event) reasons.push('missing_event');
-  if (editorial.needs_review || editorial.status === 'needs_review') reasons.push('needs_review');
+  if ((editorial.needs_review || editorial.status === 'needs_review') && !reviewIsOnlySourceDisappearance) reasons.push('needs_review');
   if (!hasVerifiedCover) reasons.push('unverified_cover');
   if (!globalAnticipation) reasons.push('no_global_anticipation_signal');
   if (upcoming && !globalAnticipation) reasons.push('upcoming_without_measured_global_interest');
@@ -85,6 +89,7 @@ export function evaluateHomeReleaseQuality(game, options = {}) {
     independent_source_count: coverageCount,
     independent_evidence_families: [...coverageFamilies].sort(),
     steam_popular_upcoming_position: steamWishlistPosition || null,
+    source_disappearance_override: reviewIsOnlySourceDisappearance,
     checked_at: options.checkedAt || null
   };
 }
