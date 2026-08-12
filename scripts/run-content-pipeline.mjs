@@ -9,10 +9,13 @@ const exists=relative=>fs.existsSync(path.join(root,relative));
 let plan=readJSON('data/content-pipeline/execution-plan.json',{pages:[],reviews:[]});
 const catalog=readJSON('data/catalog-visible.json',[]);
 plan.pages=Array.isArray(plan.pages)?plan.pages:[];plan.reviews=Array.isArray(plan.reviews)?plan.reviews:[];
-const reviewSlugs=new Set(plan.reviews.map(item=>item.slug));
-const mergePlan=next=>{for(const task of next?.pages||[])if(!plan.pages.some(item=>item.slug===task.slug))plan.pages.push(task);for(const task of next?.reviews||[])if(!reviewSlugs.has(task.slug)){plan.reviews.push(task);reviewSlugs.add(task.slug)}};
+const pageSlugs=new Set(plan.pages.map(item=>item.slug));const reviewSlugs=new Set(plan.reviews.map(item=>item.slug));
+const mergePlan=next=>{for(const task of next?.pages||[])if(!pageSlugs.has(task.slug)){plan.pages.push(task);pageSlugs.add(task.slug)}for(const task of next?.reviews||[])if(!reviewSlugs.has(task.slug)){plan.reviews.push(task);reviewSlugs.add(task.slug)}};
 for(const game of catalog){
-  const slug=String(game.slug||'');if(!slug||reviewSlugs.has(slug))continue;
+  const slug=String(game.slug||'');if(!slug)continue;
+  const pageControl=readJSON(`data/quality-control/page-${slug}-control.json`);const mediaControl=readJSON(`data/quality-control/game-page-${slug}.json`);
+  if(!pageSlugs.has(slug)&&(pageControl?.status==='red-needs-revision'||mediaControl?.status==='red-needs-revision')){plan.pages.push({type:'build_page',game_id:String(game.game_id||pageControl?.game_id||''),slug,title:game.title||slug,steam_appid:game.steam_appid||null,priority:1100,reason:'game_page_quality_needs_revision'});pageSlugs.add(slug)}
+  if(reviewSlugs.has(slug))continue;
   const feed=readJSON(`data/reviews/${slug}.json`);const rating=readJSON(`data/ratings/${slug}.json`);
   const corpusRed=feed?.publication_gate?.status==='red-needs-revision';const ratingRed=rating?.status==='red-needs-revision';
   if(!corpusRed&&!ratingRed)continue;
@@ -34,10 +37,7 @@ if(franchiseTask&&aiAvailable){
   if(built){
     run(`franchise-page-qc:${franchiseTask.slug}`,'node',['scripts/quality-control-loop.mjs','page',franchiseTask.slug]);const qc=qualityStatus('page',franchiseTask.slug);
     franchiseTask.status=qc.green?'page_green':'needs_revision';
-    if(qc.green){
-      const replanned=run('replan-after-franchise-page','node',['scripts/orchestrate-content.mjs','--finalize']);
-      if(replanned){run(`canonicalize-franchise:${franchiseTask.slug}`,'node',['scripts/canonicalize-editorial-game-id.mjs',franchiseTask.slug]);mergePlan(readJSON('data/content-pipeline/execution-plan.json',{pages:[],reviews:[]}));}
-    }
+    if(qc.green){const replanned=run('replan-after-franchise-page','node',['scripts/orchestrate-content.mjs','--finalize']);if(replanned){run(`canonicalize-franchise:${franchiseTask.slug}`,'node',['scripts/canonicalize-editorial-game-id.mjs',franchiseTask.slug]);mergePlan(readJSON('data/content-pipeline/execution-plan.json',{pages:[],reviews:[]}));}}
   }else franchiseTask.status='needs_revision';
   franchiseTask.updated_at=new Date().toISOString();franchiseQueue.updated_at=franchiseTask.updated_at;writeJSON('data/content-pipeline/franchise-queue.json',franchiseQueue);
 }
@@ -60,4 +60,4 @@ for(const task of plan.reviews||[]){
 }
 if(reviewSucceeded&&exists('scripts/render-review-pages.mjs'))run('render-reviews','node',['scripts/render-review-pages.mjs']);
 const finishedAt=new Date().toISOString();const summary={completed:results.filter(item=>item.status==='completed').length,needs_revision:results.filter(item=>item.status==='needs_revision'||item.status==='revision_required').length,total:results.length,editorial_ai_enabled:aiEnabled,editorial_ai_available:aiAvailable,quality_policy:'red -> revise/research/rebuild -> recheck; no terminal quality block'};
-writeJSON('data/content-pipeline/execution-log.json',{schema_version:6,started_at:startedAt,finished_at:finishedAt,summary,results});console.log(JSON.stringify(summary,null,2));
+writeJSON('data/content-pipeline/execution-log.json',{schema_version:7,started_at:startedAt,finished_at:finishedAt,summary,results});console.log(JSON.stringify(summary,null,2));
