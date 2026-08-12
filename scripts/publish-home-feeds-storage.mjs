@@ -24,11 +24,21 @@ function replaceLocalMedia(value,map){
   return Object.fromEntries(Object.entries(value).map(([key,child])=>[key,replaceLocalMedia(child,map)]));
 }
 async function exists(storage,key){try{await storage.headObject(key);return true}catch(error){if(/failed with 404/.test(error.message))return false;throw error}}
+function releaseRows(doc={}){
+  return [
+    ...(doc.releases||[]).map(release=>({...release,visibility:'global'})),
+    ...(doc.personalized_releases||[]).map(release=>({...release,visibility:'personalized'})),
+  ];
+}
 function releaseRuntimeSignature(doc={}){
-  return JSON.stringify((doc.releases||[]).map(release=>({
-    id:release.id,game_id:release.game_id||null,global_notability:Boolean(release.global_notability?.eligible),
+  return JSON.stringify(releaseRows(doc).map(release=>({
+    id:release.id,
+    visibility:release.visibility,
+    game_id:release.game_id||null,
+    global_notability:Boolean(release.global_notability?.eligible),
+    regional_regions:(release.regional_notability?.qualifying_regions||[]).map(item=>item.region).sort(),
     events:(release.events||[]).map(event=>({id:event.id,precision:event.precision||'tbd',date:event.date||null,date_start:event.date_start||null,date_end:event.date_end||null,platforms:[...(event.platforms||[])].sort()})).sort((a,b)=>String(a.id).localeCompare(String(b.id)))
-  })).sort((a,b)=>String(a.id).localeCompare(String(b.id))));
+  })).sort((a,b)=>`${a.visibility}:${a.id}`.localeCompare(`${b.visibility}:${b.id}`)));
 }
 
 export async function publishHomeFeeds({root=process.cwd(),configPath='config/home-feeds-storage.json',storage=createYandexObjectStorageClient(),dryRun=false,bootstrapOnly=false}={}){
