@@ -48,7 +48,7 @@ function renderGuides(payload,title,hero){
   const featured=document.querySelector('#featuredGuide'),grid=document.querySelector('#guideGrid'),quick=document.querySelector('#guideQuickLinks'),updated=document.querySelector('#guideUpdated');
   const first=guides[0];
   if(featured)featured.innerHTML=`${hero?`<img src="${esc(hero)}" alt="${esc(title)}" loading="lazy">`:''}<div><small>${esc(first.category||'ГАЙД')}</small><h2><a href="${esc(first.url)}" target="_blank" rel="noopener noreferrer">${esc(first.title)}</a></h2><p>${esc(first.description||'')}</p></div>`;
-  if(grid)grid.innerHTML=guides.slice(1).map(item=>`<article class="game-panel guide-card"><div><small>${esc(item.publication||item.source||item.category||'Гайд')}</small><h3><a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.title)}</a></h3><p>${esc(item.description||'')}</p></div></article>`).join('');
+  if(grid)grid.innerHTML=guides.slice(1).map(item=>`<article class="ig-card game-panel guide-card"><div><small>${esc(item.publication||item.source||item.category||'Гайд')}</small><h3><a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.title)}</a></h3><p>${esc(item.description||'')}</p></div></article>`).join('');
   if(quick)quick.innerHTML=[...new Set(guides.map(item=>item.category).filter(Boolean))].slice(0,6).map(category=>`<span>${esc(category)}</span>`).join('');
   if(updated)updated.innerHTML=`<div class="updated-guide"><span>Проверено</span><b>${esc(String(payload.checked_at||payload.updated_at||'').slice(0,10))}</b></div>`;
 }
