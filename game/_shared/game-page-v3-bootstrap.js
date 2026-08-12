@@ -10,7 +10,7 @@ fetch(sourceUrl,{cache:'no-store'})
     );
     corrected=corrected.replace(
       "function draftMatches(curated,draft){\n  if(!draft?.identity)return false;\n  const expectedId=Number(curated?.identity?.steam_appid),actualId=Number(draft.identity.steam_appid);\n  return expectedId&&actualId?expectedId===actualId:canonical(draft.identity.title)===canonical(curated?.identity?.title||seedTitle);\n}",
-      "function draftMatches(curated,draft){\n  if(!draft)return false;\n  const draftSlug=canonical(first(draft.slug,draft.game_slug,''));\n  if(draftSlug&&draftSlug===canonical(slug))return true;\n  if(!draft.identity)return false;\n  const expectedId=Number(curated?.identity?.steam_appid),actualId=Number(draft.identity.steam_appid);\n  return expectedId&&actualId?expectedId===actualId:canonical(draft.identity.title)===canonical(curated?.identity?.title||seedTitle);\n}"
+      "function draftMatches(curated,draft){\n  if(!draft)return false;\n  const draftSlug=canonical(first(draft.slug,draft.game_slug,draft.identity?.slug,''));\n  if(draftSlug&&draftSlug===canonical(slug))return true;\n  if(!draft.identity)return false;\n  const expectedId=Number(curated?.identity?.steam_appid),actualId=Number(draft.identity.steam_appid);\n  return expectedId&&actualId?expectedId===actualId:canonical(draft.identity.title)===canonical(curated?.identity?.title||seedTitle);\n}"
     );
     corrected=corrected.replace(
       "const unique=list=>list.filter((value,index,items)=>value&&items.indexOf(value)===index);",
