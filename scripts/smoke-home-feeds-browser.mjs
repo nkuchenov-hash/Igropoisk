@@ -27,7 +27,6 @@ if(!executablePath){if(server)server.close();throw new Error('Chrome/Chromium ex
 const browser=await puppeteer.launch({executablePath,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 const errors=[];
 const assert=(condition,message)=>{if(!condition)errors.push(message)};
-const px=value=>Number.parseFloat(String(value||'0'))||0;
 
 try{
   const page=await browser.newPage();
@@ -51,7 +50,7 @@ try{
     const popularMeta=[...document.querySelectorAll('#popular .popular-meta span')];
     const reviewText=[...document.querySelectorAll('.review-day-card__dek,.review-day-mini span')];
     const calendar=document.querySelector('.home-showcase-heading--split a[href="calendar/"]');
-    const next=document.querySelector('[data-controls-for="popular"] [data-direction="1"]');
+    const next=document.querySelector('[data-controls-for="popular"] [data-direction="next"]');
     if(popular){popular.scrollLeft=Math.max(0,popular.scrollWidth-popular.clientWidth);popular.dispatchEvent(new Event('scroll'))}
     return {
       popularCards:document.querySelectorAll('#popular .popular-card').length,
@@ -79,7 +78,7 @@ try{
     };
   });
   await sleep(100);
-  const nextDisabled=await page.evaluate(()=>Boolean(document.querySelector('[data-controls-for="popular"] [data-direction="1"]')?.disabled));
+  const nextDisabled=await page.evaluate(()=>Boolean(document.querySelector('[data-controls-for="popular"] [data-direction="next"]')?.disabled));
 
   assert(state.popularCards===20,`Popular cards: ${state.popularCards}/20`);
   assert(state.popularUniqueTitles===20,`Popular unique titles: ${state.popularUniqueTitles}/20`);
