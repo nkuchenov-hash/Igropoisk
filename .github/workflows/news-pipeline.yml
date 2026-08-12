@@ -42,7 +42,6 @@ on:
       - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
       - 'scripts/prepare-news-game-page-requests.mjs'
-      - 'scripts/prepare-news-publication.mjs'
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
       - 'scripts/test-news-pipeline-health.mjs'
@@ -94,7 +93,6 @@ jobs:
           node --check scripts/validate-news-pipeline.mjs
           node --check scripts/resolve-news-game-context.mjs
           node --check scripts/prepare-news-game-page-requests.mjs
-          node --check scripts/prepare-news-publication.mjs
           node --check scripts/lib/news-game-context-resolver.mjs
           node --check scripts/lib/news-primary-game-refiner.mjs
           node --check scripts/lib/news-publication-gate.mjs
@@ -139,10 +137,6 @@ jobs:
           const result = JSON.parse(fs.readFileSync('tmp/news-game-page-requests.json', 'utf8'));
           process.stdout.write(`count=${result.count}\nrequests_b64=${result.requests_b64}\n`);
           NODE
-
-      - name: Remove news whose resolved game page is not ready from this public snapshot
-        if: steps.pipeline.outputs.status == 'success'
-        run: node scripts/prepare-news-publication.mjs
 
       - name: Publish immutable news snapshot and switch manifest
         if: steps.pipeline.outputs.status == 'success'
