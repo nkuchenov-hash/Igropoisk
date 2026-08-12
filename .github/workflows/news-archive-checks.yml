@@ -12,7 +12,6 @@ on:
       - 'scripts/normalize-news-records.mjs'
       - 'scripts/plan-news-game-pages.mjs'
       - 'scripts/prepare-news-game-page-requests.mjs'
-      - 'scripts/prepare-news-publication.mjs'
       - 'scripts/lib/news-game-linker.mjs'
       - 'scripts/lib/news-game-registry-discovery.mjs'
       - 'scripts/lib/news-publication-gate.mjs'
@@ -49,7 +48,6 @@ jobs:
           node --check scripts/build-news-events.mjs
           node --check scripts/plan-news-game-pages.mjs
           node --check scripts/prepare-news-game-page-requests.mjs
-          node --check scripts/prepare-news-publication.mjs
           node scripts/test-news-archive.mjs
           node scripts/test-news-game-linker.mjs
           node scripts/test-news-game-registry-discovery.mjs
