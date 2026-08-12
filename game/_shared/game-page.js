@@ -7,9 +7,13 @@
   qualityStyle.href='../_shared/game-page-quality.css?v=20260812-1';
   document.head.appendChild(qualityStyle);
   const quality=document.createElement('script');
-  quality.src='../_shared/game-page-quality.js?v=20260812-1';
+  quality.src='../_shared/game-page-quality.js?v=20260812-2';
   quality.defer=true;
   document.head.appendChild(quality);
+  const similarity=document.createElement('script');
+  similarity.src='../_shared/game-page-similarity.js?v=20260812-1';
+  similarity.defer=true;
+  document.head.appendChild(similarity);
   const editions=document.createElement('script');
   editions.src='../_shared/game-editions.js?v=20260807-1';
   document.head.appendChild(editions);
