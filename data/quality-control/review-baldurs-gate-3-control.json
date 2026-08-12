@@ -1,0 +1,100 @@
+{
+  "schema_version": 2,
+  "type": "review",
+  "game_slug": "baldurs-gate-3",
+  "game_id": "game_86b06ca351d4e4d36e13",
+  "canonical_title": "Baldur’s Gate 3",
+  "checked_at": "2026-08-12T19:50:11.395Z",
+  "status": "red-needs-revision",
+  "green": false,
+  "comments": [
+    "Корпус рецензий: 0/10.",
+    "Рейтинг: 0/10."
+  ],
+  "revision_history": [
+    {
+      "label": "canonical-title-repair",
+      "status": "completed",
+      "from": "baldurs-gate-3",
+      "to": "Baldur’s Gate 3"
+    },
+    {
+      "attempt": 2,
+      "label": "review-research-1",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:36:14\n\nNode.js v22.23.1\n"
+    },
+    {
+      "attempt": 3,
+      "label": "rating-1",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"baldurs-gate-3\",\n  \"status\": \"red-needs-revision\",\n  \"sources\": 0,\n  \"score_10\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 4,
+      "label": "review-research-2",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:36:14\n\nNode.js v22.23.1\n"
+    },
+    {
+      "attempt": 5,
+      "label": "rating-2",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"baldurs-gate-3\",\n  \"status\": \"red-needs-revision\",\n  \"sources\": 0,\n  \"score_10\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 6,
+      "label": "review-research-3",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:36:14\n\nNode.js v22.23.1\n"
+    },
+    {
+      "attempt": 7,
+      "label": "rating-3",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"baldurs-gate-3\",\n  \"status\": \"red-needs-revision\",\n  \"sources\": 0,\n  \"score_10\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 8,
+      "label": "review-research-4",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:36:14\n\nNode.js v22.23.1\n"
+    },
+    {
+      "attempt": 9,
+      "label": "rating-4",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"baldurs-gate-3\",\n  \"status\": \"red-needs-revision\",\n  \"sources\": 0,\n  \"score_10\": null\n}\n",
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "quality_never_terminally_blocks": true,
+    "red_means_revise_again": true,
+    "immediate_revision_attempts": 4,
+    "keep_queued_until_green": true
+  }
+}
