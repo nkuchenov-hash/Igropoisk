@@ -43,19 +43,6 @@
     </div>`;
 
   const list = card.querySelector('[data-top250-home-list]');
-  const titleLink = card.querySelector('.top250-home-title');
-  list.style.maxHeight = '320px';
-  list.style.overflowY = 'auto';
-  list.style.overflowX = 'hidden';
-  list.style.overscrollBehavior = 'contain';
-  list.style.scrollbarWidth = 'thin';
-  list.style.paddingRight = '4px';
-  if (titleLink) {
-    titleLink.style.fontSize = '20px';
-    titleLink.style.lineHeight = '1.35';
-    titleLink.style.fontWeight = '800';
-    titleLink.style.color = 'var(--ig-text)';
-  }
 
   const normalizeImage = image => {
     if (!image) return '';
