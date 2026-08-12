@@ -23,6 +23,7 @@ on:
       - 'scripts/enrich-game-relations.mjs'
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
+      - 'scripts/synthesize-review-adaptive.mjs'
       - 'scripts/quality-control-loop.mjs'
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
@@ -47,6 +48,8 @@ jobs:
           node --check game/_shared/game-page-v3-bootstrap.js
           node --check game/_shared/game-page.js
           node --check game/_shared/game-page-quality.js
+          node --check game/_shared/game-page-similarity.js
+          node --check game/_shared/game-page-review-publication-control.js
           node --check game/_shared/game-media-recovery.js
           node --check article/_shared/review-carousel.js
           node --check scripts/repair-game-media-from-steam.mjs
@@ -55,6 +58,7 @@ jobs:
           node --check scripts/enrich-game-relations.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/calculate-ratings-from-research.mjs
+          node --check scripts/synthesize-review-adaptive.mjs
           node --check scripts/quality-control-loop.mjs
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/materialize-review-publication-feed.mjs
