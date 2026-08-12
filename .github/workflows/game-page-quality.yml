@@ -17,6 +17,11 @@ on:
       - 'data/franchises/**'
       - 'config/game-page-quality-v2.json'
       - 'config/game-media-steam-overrides.json'
+      - 'scripts/build-game-page.mjs'
+      - 'scripts/build-game-page-basic.mjs'
+      - 'scripts/orchestrate-content.mjs'
+      - 'scripts/canonicalize-editorial-game-id.mjs'
+      - 'scripts/audit-review-publication.mjs'
       - 'scripts/repair-game-media-from-steam.mjs'
       - 'scripts/validate-game-media-quality.mjs'
       - 'scripts/build-similarity-index.mjs'
@@ -53,6 +58,12 @@ jobs:
           node --check game/_shared/game-page-review-publication-control.js
           node --check game/_shared/game-media-recovery.js
           node --check article/_shared/review-carousel.js
+          node --check article/_shared/review-article.js
+          node --check scripts/build-game-page.mjs
+          node --check scripts/build-game-page-basic.mjs
+          node --check scripts/orchestrate-content.mjs
+          node --check scripts/canonicalize-editorial-game-id.mjs
+          node --check scripts/audit-review-publication.mjs
           node --check scripts/repair-game-media-from-steam.mjs
           node --check scripts/validate-game-media-quality.mjs
           node --check scripts/build-similarity-index.mjs
