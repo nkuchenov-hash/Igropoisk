@@ -7,6 +7,16 @@ const readJSON=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(
 const writeJSON=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,`${JSON.stringify(value,null,2)}\n`)};
 const exists=relative=>fs.existsSync(path.join(root,relative));
 let plan=readJSON('data/content-pipeline/execution-plan.json',{pages:[],reviews:[]});
+const catalog=readJSON('data/catalog-visible.json',[]);
+plan.pages=Array.isArray(plan.pages)?plan.pages:[];plan.reviews=Array.isArray(plan.reviews)?plan.reviews:[];
+const reviewSlugs=new Set(plan.reviews.map(item=>item.slug));
+for(const game of catalog){
+  const slug=String(game.slug||'');if(!slug||reviewSlugs.has(slug))continue;
+  const feed=readJSON(`data/reviews/${slug}.json`);const rating=readJSON(`data/ratings/${slug}.json`);
+  const corpusRed=feed?.publication_gate?.status==='red-needs-revision';const ratingRed=rating?.status==='red-needs-revision';
+  if(!corpusRed&&!ratingRed)continue;
+  plan.reviews.push({type:'build_review',game_id:String(game.game_id||feed?.game_id||''),slug,title:game.title||slug,steam_appid:game.steam_appid||null,priority:1000,reason:[corpusRed?'review_corpus_needs_revision':'',ratingRed?'rating_needs_revision':''].filter(Boolean).join('+')});reviewSlugs.add(slug);
+}
 const startedAt=new Date().toISOString();const results=[];
 const aiEnabled=/^(1|true|yes|on)$/i.test(String(process.env.EDITORIAL_AI_ENABLED||''))||Boolean(process.env.OPENAI_API_KEY);
 const aiAvailable=Boolean(process.env.OPENAI_API_KEY);
@@ -31,7 +41,7 @@ for(const task of plan.pages||[]){
   const built=run(`page:${task.slug}`,'node',['scripts/build-game-page-basic.mjs',task.game_id]);
   if(built){run(`page-qc:${task.slug}`,'node',['scripts/quality-control-loop.mjs','page',task.slug,task.game_id]);const qc=qualityStatus('page',task.slug);if(qc.green)pageSucceeded=true;else results.push({label:`page-qc-state:${task.slug}`,status:'needs_revision',comments:qc.comments||[]})}
 }
-if(pageSucceeded){const replanned=run('replan-after-pages','node',['scripts/orchestrate-content.mjs','--finalize']);if(replanned)plan=readJSON('data/content-pipeline/execution-plan.json',plan)}
+if(pageSucceeded){const replanned=run('replan-after-pages','node',['scripts/orchestrate-content.mjs','--finalize']);if(replanned){const next=readJSON('data/content-pipeline/execution-plan.json',plan);plan.pages=Array.isArray(next.pages)?next.pages:plan.pages;for(const task of next.reviews||[])if(!reviewSlugs.has(task.slug)){plan.reviews.push(task);reviewSlugs.add(task.slug)}}}
 
 let reviewSucceeded=false;
 for(const task of plan.reviews||[]){
@@ -42,4 +52,4 @@ for(const task of plan.reviews||[]){
 }
 if(reviewSucceeded&&exists('scripts/render-review-pages.mjs'))run('render-reviews','node',['scripts/render-review-pages.mjs']);
 const finishedAt=new Date().toISOString();const summary={completed:results.filter(item=>item.status==='completed').length,needs_revision:results.filter(item=>item.status==='needs_revision'||item.status==='revision_required').length,total:results.length,editorial_ai_enabled:aiEnabled,editorial_ai_available:aiAvailable,quality_policy:'red -> revise/research/rebuild -> recheck; no terminal quality block'};
-writeJSON('data/content-pipeline/execution-log.json',{schema_version:4,started_at:startedAt,finished_at:finishedAt,summary,results});console.log(JSON.stringify(summary,null,2));
+writeJSON('data/content-pipeline/execution-log.json',{schema_version:5,started_at:startedAt,finished_at:finishedAt,summary,results});console.log(JSON.stringify(summary,null,2));
