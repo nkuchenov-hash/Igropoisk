@@ -11,10 +11,7 @@ const contentType=file=>({'.json':'application/json; charset=utf-8','.jpg':'imag
 const versionId=()=>`${new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'')}-${String(process.env.GITHUB_SHA||'local').slice(0,12)}-${String(process.env.GITHUB_RUN_ID||'manual')}`;
 
 function collectLocalMedia(value,roots,out=new Set()){
-  if(typeof value==='string'){
-    if(roots.some(root=>value.startsWith(root)))out.add(value);
-    return out;
-  }
+  if(typeof value==='string'){if(roots.some(root=>value.startsWith(root)))out.add(value);return out}
   if(Array.isArray(value)){value.forEach(item=>collectLocalMedia(item,roots,out));return out}
   if(!value||typeof value!=='object')return out;
   for(const child of Object.values(value))collectLocalMedia(child,roots,out);
@@ -27,55 +24,45 @@ function replaceLocalMedia(value,map){
   return Object.fromEntries(Object.entries(value).map(([key,child])=>[key,replaceLocalMedia(child,map)]));
 }
 async function exists(storage,key){try{await storage.headObject(key);return true}catch(error){if(/failed with 404/.test(error.message))return false;throw error}}
+function releaseRows(doc={}){
+  return [
+    ...(doc.releases||[]).map(release=>({...release,visibility:'global'})),
+    ...(doc.personalized_releases||[]).map(release=>({...release,visibility:'personalized'})),
+  ];
+}
+function releaseRuntimeSignature(doc={}){
+  return JSON.stringify(releaseRows(doc).map(release=>({
+    id:release.id,
+    visibility:release.visibility,
+    game_id:release.game_id||null,
+    global_notability:Boolean(release.global_notability?.eligible),
+    regional_regions:(release.regional_notability?.qualifying_regions||[]).map(item=>item.region).sort(),
+    events:(release.events||[]).map(event=>({id:event.id,precision:event.precision||'tbd',date:event.date||null,date_start:event.date_start||null,date_end:event.date_end||null,platforms:[...(event.platforms||[])].sort()})).sort((a,b)=>String(a.id).localeCompare(String(b.id)))
+  })).sort((a,b)=>`${a.visibility}:${a.id}`.localeCompare(`${b.visibility}:${b.id}`)));
+}
 
 export async function publishHomeFeeds({root=process.cwd(),configPath='config/home-feeds-storage.json',storage=createYandexObjectStorageClient(),dryRun=false,bootstrapOnly=false}={}){
-  const config=readJson(path.join(root,configPath));
-  const storageConfig=config.storage||{};
-  const currentManifest=storageConfig.current_manifest||'home-feeds/manifests/current.json';
-  if(bootstrapOnly&&!dryRun&&await exists(storage,currentManifest))return {skipped:true,reason:'current-manifest-exists',manifest:null,dryRun:false};
-  const version=versionId();
-  const snapshotRoot=`${storageConfig.snapshot_prefix||'home-feeds/snapshots'}/${version}`;
-  const mediaPrefix=storageConfig.media_prefix||'home-feeds/media';
-  const immutableCache=storageConfig.immutable_cache_control||'public, max-age=31536000, immutable';
-  const manifestCache=storageConfig.manifest_cache_control||'no-store, max-age=0';
-  const payloads=new Map();
-  for(const relative of config.required_files||[]){
-    const absolute=path.join(root,relative);
-    if(!fs.existsSync(absolute))throw new Error(`Required home-feed output is missing: ${relative}`);
-    payloads.set(relative,readJson(absolute));
-  }
-  const mediaPaths=new Set();
-  for(const payload of payloads.values())collectLocalMedia(payload,config.media_roots||[],mediaPaths);
-  const mediaUrls=new Map();
-  let mediaBytes=0;
-  for(const relative of [...mediaPaths].sort()){
-    const absolute=path.join(root,relative);
-    if(!fs.existsSync(absolute))continue;
-    const body=fs.readFileSync(absolute);mediaBytes+=body.length;
-    const key=`${mediaPrefix}/${sha256(body)}${path.extname(relative).toLowerCase()}`;
-    mediaUrls.set(relative,storage.publicUrl(key));
-    if(!dryRun&&!(await exists(storage,key)))await storage.putObject(key,body,{contentType:contentType(relative),cacheControl:immutableCache});
-  }
-  const files={};let snapshotBytes=0;
-  for(const [relative,payload] of payloads){
-    const body=jsonBuffer(replaceLocalMedia(payload,mediaUrls));snapshotBytes+=body.length;
-    const key=`${snapshotRoot}/${relative}`;
-    files[relative]={key,url:storage.publicUrl(key),sha256:sha256(body),bytes:body.length};
-    if(!dryRun)await storage.putObject(key,body,{contentType:'application/json; charset=utf-8',cacheControl:immutableCache});
-  }
+  const config=readJson(path.join(root,configPath));const storageConfig=config.storage||{};const currentManifest=storageConfig.current_manifest||'home-feeds/manifests/current.json';
+  if(bootstrapOnly&&!dryRun&&await exists(storage,currentManifest))return{skipped:true,reason:'current-manifest-exists',manifest:null,dryRun:false};
+  const version=versionId();const snapshotRoot=`${storageConfig.snapshot_prefix||'home-feeds/snapshots'}/${version}`;const mediaPrefix=storageConfig.media_prefix||'home-feeds/media';const immutableCache=storageConfig.immutable_cache_control||'public, max-age=31536000, immutable';const manifestCache=storageConfig.manifest_cache_control||'no-store, max-age=0';const payloads=new Map();
+  for(const relative of config.required_files||[]){const absolute=path.join(root,relative);if(!fs.existsSync(absolute))throw new Error(`Required home-feed output is missing: ${relative}`);payloads.set(relative,readJson(absolute))}
+  const mediaPaths=new Set();for(const payload of payloads.values())collectLocalMedia(payload,config.media_roots||[],mediaPaths);const mediaUrls=new Map();let mediaBytes=0;
+  for(const relative of [...mediaPaths].sort()){const absolute=path.join(root,relative);if(!fs.existsSync(absolute))continue;const body=fs.readFileSync(absolute);mediaBytes+=body.length;const key=`${mediaPrefix}/${sha256(body)}${path.extname(relative).toLowerCase()}`;mediaUrls.set(relative,storage.publicUrl(key));if(!dryRun&&!(await exists(storage,key)))await storage.putObject(key,body,{contentType:contentType(relative),cacheControl:immutableCache})}
+  const files={};const transformedPayloads=new Map();let snapshotBytes=0;
+  for(const [relative,payload] of payloads){const transformed=replaceLocalMedia(payload,mediaUrls);transformedPayloads.set(relative,transformed);const body=jsonBuffer(transformed);snapshotBytes+=body.length;const key=`${snapshotRoot}/${relative}`;files[relative]={key,url:storage.publicUrl(key),sha256:sha256(body),bytes:body.length};if(!dryRun)await storage.putObject(key,body,{contentType:'application/json; charset=utf-8',cacheControl:immutableCache})}
   if(snapshotBytes>Number(storageConfig.maximum_snapshot_bytes||50000000))throw new Error(`Home-feed snapshot is too large: ${snapshotBytes}`);
-  const manifest={schemaVersion:1,channel:config.channel||'home-feeds',version,publishedAt:new Date().toISOString(),sourceCommit:process.env.GITHUB_SHA||'',sourceRunId:process.env.GITHUB_RUN_ID||'',files,media:{count:mediaUrls.size,bytes:mediaBytes},repositoryFallback:true};
-  const body=jsonBuffer(manifest);
+  const manifest={schemaVersion:1,channel:config.channel||'home-feeds',version,publishedAt:new Date().toISOString(),sourceCommit:process.env.GITHUB_SHA||'',sourceRunId:process.env.GITHUB_RUN_ID||'',files,media:{count:mediaUrls.size,bytes:mediaBytes},repositoryFallback:true};const body=jsonBuffer(manifest);
   if(!dryRun){
     await storage.putObject(`${snapshotRoot}/manifest.json`,body,{contentType:'application/json; charset=utf-8',cacheControl:immutableCache});
     await storage.putObject(currentManifest,body,{contentType:'application/json; charset=utf-8',cacheControl:manifestCache});
-    const readBack=await (await storage.getObject(currentManifest)).json();
+    const readBack=await(await storage.getObject(currentManifest)).json();
     if(readBack.version!==version||readBack.channel!==(config.channel||'home-feeds'))throw new Error('Current home-feed manifest did not switch to the verified snapshot.');
+    const releasePath='data/releases/public.json';
+    if(files[releasePath]){
+      const liveRelease=await(await storage.getObject(files[releasePath].key)).json();const expectedRelease=transformedPayloads.get(releasePath);
+      if(String(liveRelease.generated_at||'')!==String(expectedRelease?.generated_at||'')||releaseRuntimeSignature(liveRelease)!==releaseRuntimeSignature(expectedRelease))throw new Error('Published release runtime feed does not match the exact validated materialization.');
+    }
   }
-  return {skipped:false,manifest,dryRun};
+  return{skipped:false,manifest,dryRun};
 }
-if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
-  const result=await publishHomeFeeds({dryRun:process.argv.includes('--dry-run'),bootstrapOnly:process.argv.includes('--bootstrap-only')});
-  if(result.skipped)console.log(`Home-feed bootstrap skipped: ${result.reason}.`);
-  else console.log(`${result.dryRun?'Prepared':'Published'} home-feed snapshot ${result.manifest.version}.`);
-}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const result=await publishHomeFeeds({dryRun:process.argv.includes('--dry-run'),bootstrapOnly:process.argv.includes('--bootstrap-only')});if(result.skipped)console.log(`Home-feed bootstrap skipped: ${result.reason}.`);else console.log(`${result.dryRun?'Prepared':'Published'} home-feed snapshot ${result.manifest.version}.`)}
