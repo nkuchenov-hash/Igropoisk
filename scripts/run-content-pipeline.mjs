@@ -10,6 +10,7 @@ let plan=readJSON('data/content-pipeline/execution-plan.json',{pages:[],reviews:
 const catalog=readJSON('data/catalog-visible.json',[]);
 plan.pages=Array.isArray(plan.pages)?plan.pages:[];plan.reviews=Array.isArray(plan.reviews)?plan.reviews:[];
 const reviewSlugs=new Set(plan.reviews.map(item=>item.slug));
+const mergePlan=next=>{for(const task of next?.pages||[])if(!plan.pages.some(item=>item.slug===task.slug))plan.pages.push(task);for(const task of next?.reviews||[])if(!reviewSlugs.has(task.slug)){plan.reviews.push(task);reviewSlugs.add(task.slug)}};
 for(const game of catalog){
   const slug=String(game.slug||'');if(!slug||reviewSlugs.has(slug))continue;
   const feed=readJSON(`data/reviews/${slug}.json`);const rating=readJSON(`data/ratings/${slug}.json`);
@@ -30,7 +31,14 @@ if(franchiseTask&&aiAvailable){
   ensureFranchiseSeed(franchiseTask);
   if(franchiseTask.steam_appid)run(`franchise-parse:${franchiseTask.slug}`,'node',['scripts/parse-game-data.mjs',franchiseTask.slug,String(franchiseTask.steam_appid),franchiseTask.title||'']);
   const built=run(`franchise-page:${franchiseTask.slug}`,'node',['scripts/build-game-page.mjs',franchiseTask.slug]);
-  if(built){run(`franchise-page-qc:${franchiseTask.slug}`,'node',['scripts/quality-control-loop.mjs','page',franchiseTask.slug]);const qc=qualityStatus('page',franchiseTask.slug);franchiseTask.status=qc.green?'page_green':'needs_revision';if(qc.green)run('replan-after-franchise-page','node',['scripts/orchestrate-content.mjs','--finalize'])}else franchiseTask.status='needs_revision';
+  if(built){
+    run(`franchise-page-qc:${franchiseTask.slug}`,'node',['scripts/quality-control-loop.mjs','page',franchiseTask.slug]);const qc=qualityStatus('page',franchiseTask.slug);
+    franchiseTask.status=qc.green?'page_green':'needs_revision';
+    if(qc.green){
+      const replanned=run('replan-after-franchise-page','node',['scripts/orchestrate-content.mjs','--finalize']);
+      if(replanned){run(`canonicalize-franchise:${franchiseTask.slug}`,'node',['scripts/canonicalize-editorial-game-id.mjs',franchiseTask.slug]);mergePlan(readJSON('data/content-pipeline/execution-plan.json',{pages:[],reviews:[]}));}
+    }
+  }else franchiseTask.status='needs_revision';
   franchiseTask.updated_at=new Date().toISOString();franchiseQueue.updated_at=franchiseTask.updated_at;writeJSON('data/content-pipeline/franchise-queue.json',franchiseQueue);
 }
 
@@ -39,17 +47,17 @@ for(const task of plan.pages||[]){
   if(!task.game_id){results.push({label:`page:${task.slug}`,status:'needs_revision',reason:'canonical_game_id_missing'});continue}
   if(task.steam_appid)run(`parse:${task.slug}`,'node',['scripts/parse-game-data.mjs',task.slug,String(task.steam_appid),task.title||'']);
   const built=run(`page:${task.slug}`,'node',['scripts/build-game-page-basic.mjs',task.game_id]);
-  if(built){run(`page-qc:${task.slug}`,'node',['scripts/quality-control-loop.mjs','page',task.slug,task.game_id]);const qc=qualityStatus('page',task.slug);if(qc.green)pageSucceeded=true;else results.push({label:`page-qc-state:${task.slug}`,status:'needs_revision',comments:qc.comments||[]})}
+  if(built){run(`page-qc:${task.slug}`,'node',['scripts/quality-control-loop.mjs','page',task.slug,task.game_id]);const qc=qualityStatus('page',task.slug);if(qc.green){pageSucceeded=true;run(`canonicalize-page:${task.slug}`,'node',['scripts/canonicalize-editorial-game-id.mjs',task.slug])}else results.push({label:`page-qc-state:${task.slug}`,status:'needs_revision',comments:qc.comments||[]})}
 }
-if(pageSucceeded){const replanned=run('replan-after-pages','node',['scripts/orchestrate-content.mjs','--finalize']);if(replanned){const next=readJSON('data/content-pipeline/execution-plan.json',plan);plan.pages=Array.isArray(next.pages)?next.pages:plan.pages;for(const task of next.reviews||[])if(!reviewSlugs.has(task.slug)){plan.reviews.push(task);reviewSlugs.add(task.slug)}}}
+if(pageSucceeded){const replanned=run('replan-after-pages','node',['scripts/orchestrate-content.mjs','--finalize']);if(replanned)mergePlan(readJSON('data/content-pipeline/execution-plan.json',{pages:[],reviews:[]}))}
 
 let reviewSucceeded=false;
 for(const task of plan.reviews||[]){
   const slug=task.slug;if(!task.game_id){results.push({label:`review:${slug}`,status:'needs_revision',reason:'canonical_game_id_missing'});continue}
   if(!exists(`data/drafts/${slug}.json`)){results.push({label:`review:${slug}`,status:'needs_revision',reason:`missing data/drafts/${slug}.json`});continue}
   if(!aiAvailable){results.push({label:`review:${slug}`,status:'needs_revision',reason:'AI revision service unavailable; item remains queued'});continue}
-  run(`review-qc:${slug}`,'node',['scripts/quality-control-loop.mjs','review',slug,task.game_id]);const qc=qualityStatus('review',slug);if(qc.green)reviewSucceeded=true;else results.push({label:`review-qc-state:${slug}`,status:'needs_revision',comments:qc.comments||[]});
+  run(`review-qc:${slug}`,'node',['scripts/quality-control-loop.mjs','review',slug,task.game_id]);const qc=qualityStatus('review',slug);if(qc.green){reviewSucceeded=true;run(`canonicalize-review:${slug}`,'node',['scripts/canonicalize-editorial-game-id.mjs',slug])}else results.push({label:`review-qc-state:${slug}`,status:'needs_revision',comments:qc.comments||[]});
 }
 if(reviewSucceeded&&exists('scripts/render-review-pages.mjs'))run('render-reviews','node',['scripts/render-review-pages.mjs']);
 const finishedAt=new Date().toISOString();const summary={completed:results.filter(item=>item.status==='completed').length,needs_revision:results.filter(item=>item.status==='needs_revision'||item.status==='revision_required').length,total:results.length,editorial_ai_enabled:aiEnabled,editorial_ai_available:aiAvailable,quality_policy:'red -> revise/research/rebuild -> recheck; no terminal quality block'};
-writeJSON('data/content-pipeline/execution-log.json',{schema_version:5,started_at:startedAt,finished_at:finishedAt,summary,results});console.log(JSON.stringify(summary,null,2));
+writeJSON('data/content-pipeline/execution-log.json',{schema_version:6,started_at:startedAt,finished_at:finishedAt,summary,results});console.log(JSON.stringify(summary,null,2));
