@@ -36,7 +36,7 @@ for(const game of catalog){
     platforms:preferArray(legacyRequirements.platforms,parserRequirements.platforms||parser?.classification?.platforms)
   };
   if(parserRequirements.pc?.minimum?.raw||parserRequirements.pc?.recommended?.raw)requirementsRecovered++;
-  const identity={...(parser?.identity||{}),...(legacy?.identity||{}),slug,title:game.title||legacy?.identity?.title||parser?.identity?.title||slug,game_id:game.game_id||legacy?.identity?.game_id||parser?.identity?.game_id||''};
+  const identity={...(parser?.identity||{}),...(legacy?.identity||{}),slug,title:legacy?.identity?.title||game.title||parser?.identity?.title||slug,game_id:game.game_id||legacy?.identity?.game_id||parser?.identity?.game_id||''};
   const classification={...(parser?.classification||{}),...(legacy?.classification||{}),genres:preferArray(legacy?.classification?.genres,parser?.classification?.genres),categories:preferArray(legacy?.classification?.categories,parser?.classification?.categories),platforms:preferArray(parser?.classification?.platforms,legacy?.classification?.platforms)};
   const media={...(parser?.media||{}),...(legacy?.media||{}),screenshots:unique([...arr(legacy?.media?.screenshots),...arr(parser?.media?.screenshots)]),videos:unique([...arr(legacy?.media?.videos),...arr(parser?.media?.videos)]),artwork:unique([...arr(legacy?.media?.artwork),...arr(parser?.media?.artwork)])};
   const sources=unique([...arr(legacy?.sources),...(parser?.source?.url?[{title:parser.source.name||'Источник данных игры',source_name:parser.source.name||'',url:parser.source.url,domain:(()=>{try{return new URL(parser.source.url).hostname}catch{return''}})(),checked_at:parser.source.checked_at||''}]:[])],item=>item?.url||'');
