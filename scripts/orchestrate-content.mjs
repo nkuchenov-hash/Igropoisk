@@ -138,7 +138,14 @@ for (const game of Object.values(api.registry.games)) {
 }
 queue.sort((a,b) => b.priority - a.priority || a.slug.localeCompare(b.slug));
 
-const runnablePages = queue.filter(item => item.type === 'build_page' || (item.type === 'enrich_game' && (item.popular_rank || item.release_candidate))).slice(0, Number(limits.pages_per_run ?? 2));
+const pageCandidates = queue.filter(item => item.type === 'build_page' || (item.type === 'enrich_game' && (item.popular_rank || item.release_candidate)));
+const requiredPopularPages = pageCandidates.filter(item => Number.isFinite(Number(item.popular_rank)) && Number(item.popular_rank) > 0);
+const requiredPopularIds = new Set(requiredPopularPages.map(item => item.game_id));
+const ordinaryPageCandidates = pageCandidates.filter(item => !requiredPopularIds.has(item.game_id));
+const runnablePages = [
+  ...requiredPopularPages,
+  ...ordinaryPageCandidates.slice(0, Number(limits.pages_per_run ?? 2))
+];
 const runnableReviews = queue.filter(item => item.type === 'build_review').slice(0, Number(limits.reviews_per_run ?? 1));
 const games = Object.values(api.registry.games);
 const semanticPublishedReviews = [...reviewStateById.values()].filter(item => item.published).length;
@@ -157,6 +164,7 @@ const status = {
     awaiting_sources: migration.report.awaitingSources,
     queued: queue.length,
     runnable_pages: runnablePages.length,
+    required_popular_pages: requiredPopularPages.length,
     runnable_reviews: runnableReviews.length,
     blocked_identity: migration.report.ambiguousCases,
     popular_ranked_games: popularRankById.size,
