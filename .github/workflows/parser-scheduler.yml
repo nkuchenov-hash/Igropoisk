@@ -21,6 +21,7 @@ on:
       - 'features/home-releases/rules.json'
       - 'scripts/run-scheduled-parsers.mjs'
       - 'scripts/parse-releases.mjs'
+      - 'scripts/repair-release-slugs.mjs'
       - 'scripts/enrich-release-anticipation.mjs'
       - 'scripts/parse-popular.mjs'
       - 'scripts/enrich-global-popular-youtube.mjs'
@@ -69,6 +70,7 @@ jobs:
         run: |
           node --check scripts/run-scheduled-parsers.mjs
           node --check scripts/parse-releases.mjs
+          node --check scripts/repair-release-slugs.mjs
           node --check scripts/enrich-release-anticipation.mjs
           node --check scripts/parse-popular.mjs
           node --check scripts/curate-home-feeds.mjs
@@ -105,6 +107,12 @@ jobs:
         run: |
           mkdir -p assets/covers/releases assets/covers/popular data/release-drafts data/parser-runs
           node scripts/run-scheduled-parsers.mjs
+
+      - name: Repair release slugs generated from non-Latin titles
+        id: release_slug_repair
+        if: always()
+        continue-on-error: true
+        run: node scripts/repair-release-slugs.mjs
 
       - name: Measure release anticipation from Steam and cross-site Popular signals
         id: anticipation
