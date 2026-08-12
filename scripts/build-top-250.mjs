@@ -58,16 +58,20 @@ function scoreFor(slug, game) {
 
 function presentationFor(slug, game, draft) {
   const appid = Number(draft?.identity?.steam_appid || game?.identity?.steam_appid || 0);
+  const articleMedia = readOptional(`data/article-media/${slug}.json`);
+  const articleShot = (articleMedia?.sections || []).flatMap(section => section.images || []).find(image => image?.url)?.url || '';
   const imageCandidates = [...new Set([
     draft?.media?.cover,
     game?.media?.cover,
-    draft?.media?.hero,
-    game?.media?.hero,
-    popularImages.get(slug),
     appid ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900_2x.jpg` : '',
     appid ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg` : '',
     appid ? `https://shared.akamai.steamstatic.com/steam/apps/${appid}/library_600x900.jpg` : '',
-    appid ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/header.jpg` : ''
+    popularImages.get(slug),
+    draft?.media?.hero,
+    game?.media?.hero,
+    articleMedia?.cover?.url,
+    articleMedia?.hero?.url,
+    articleShot
   ].filter(Boolean))];
   const summary = String(
     game?.editorial?.short_description ||
@@ -110,8 +114,10 @@ for (const item of catalog) {
 
   const articleJson = `data/articles/${slug}.json`;
   const articlePage = `article/${slug}/index.html`;
-  const strictReviewData = exists(articleJson);
-  const reviewPublished = strictReviewData && exists(articlePage);
+  const article = readOptional(articleJson);
+  const strictReviewData = Boolean(article);
+  const articleStatus = String(article?.publication_status || '').toLowerCase();
+  const reviewPublished = strictReviewData && articleStatus === 'published' && exists(articlePage);
   const year = Number(String(game.release?.date || game.release?.date_text || item.year || '').match(/(?:19|20)\d{2}/)?.[0] || item.year || 0) || null;
   const presentation = presentationFor(slug, game, draft);
 
@@ -128,7 +134,7 @@ for (const item of catalog) {
     rating_source: rating.source,
     game_url: `/Igropoisk/game/${encodeURIComponent(slug)}/`,
     review: {
-      status: reviewPublished ? 'published' : strictReviewData ? 'ready_to_render' : 'pending',
+      status: reviewPublished ? 'published' : strictReviewData ? 'withheld_or_ready' : 'pending',
       url: reviewPublished ? `/Igropoisk/article/${encodeURIComponent(slug)}/` : null,
       pipeline: strictReviewData ? 'strict' : null
     }
@@ -139,7 +145,7 @@ eligible.sort((a, b) => b.score - a.score || Number(b.year || 0) - Number(a.year
 const ranking = eligible.slice(0, limit).map((item, index) => ({ rank: index + 1, ...item }));
 
 const output = {
-  schema_version: 4,
+  schema_version: 5,
   name: 'Игропоиск Топ-250',
   generated_at: new Date().toISOString(),
   source: 'released games with valid Игропоиск rating',
