@@ -22,7 +22,7 @@ fetch(sourceUrl,{cache:'no-store'})
     );
     corrected=corrected.replace(
       "game.requirements.platforms=arr(game.requirements.platforms).length?arr(game.requirements.platforms):arr(game.classification.platforms);\n  return game;",
-      "game.requirements.platforms=arr(game.requirements.platforms).length?arr(game.requirements.platforms):arr(game.classification.platforms);\n  game.media.cover=portraitCover(game)||game.media.cover;\n  return applyDisplayOverride(game);"
+      "game.requirements.platforms=arr(game.requirements.platforms).length?arr(game.requirements.platforms):arr(game.classification.platforms);\n  if(canonical(draftRaw?.identity?.slug)===canonical(slug)){game.media.screenshots=uniqueMedia([...arr(draftRaw.media?.screenshots),...arr(game.media.screenshots)]);game.media.videos=uniqueMedia([...arr(draftRaw.media?.videos),...arr(game.media.videos)]);game.media.artwork=uniqueMedia([...arr(draftRaw.media?.artwork),...arr(game.media.artwork)])}\n  game.media.cover=portraitCover(game)||game.media.cover;\n  return applyDisplayOverride(game);"
     );
     corrected=corrected.replace(
       '<div class="breadcrumbs"><a href="../../index.html">Главное</a> / <a href="../../index.html#search">Игры</a> / <span id="crumb"></span></div><div class="hero-copy">',
