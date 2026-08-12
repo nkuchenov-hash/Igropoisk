@@ -9,6 +9,7 @@ const canonical=value=>String(value||'').normalize('NFKD').toLowerCase().replace
 const unique=list=>[...new Set(list.filter(Boolean))];
 const fetchJSON=async url=>{try{const r=await fetch(url,{cache:'no-store'});return r.ok?await r.json():null}catch{return null}};
 const waitFor=async selector=>{for(let i=0;i<120;i++){const node=document.querySelector(selector);if(node)return node;await new Promise(r=>setTimeout(r,100))}return null};
+const displayTitle=draft=>{const draftTitle=String(draft?.identity?.title||'').trim();const shellTitle=String(document.body.dataset.title||'').trim();const technical=!draftTitle||canonical(draftTitle)===canonical(slug)||/^[a-z0-9]+(?:-[a-z0-9]+)+$/i.test(draftTitle);return technical?(shellTitle||draftTitle||slug):(draftTitle||shellTitle||slug)};
 const scoreText=item=>{
   if(item?.original_score?.display)return item.original_score.display;
   if(item?.grade)return String(item.grade);
@@ -23,7 +24,7 @@ const forbiddenReview=item=>{
   try{const host=new URL(item.url).hostname.replace(/^www\./,'').toLowerCase();return ['store.steampowered.com','steamcommunity.com','metacritic.com','opencritic.com','reddit.com','youtube.com','youtu.be','fandom.com'].some(domain=>host===domain||host.endsWith(`.${domain}`))}catch{return true}
 };
 function exactTitle(draft){
-  const title=String(draft?.identity?.title||document.body.dataset.title||'').trim();
+  const title=displayTitle(draft);
   if(!title)return;
   document.body.dataset.title=title;
   const pageTitle=document.querySelector('#gameTitle');if(pageTitle)pageTitle.textContent=title;
@@ -38,12 +39,12 @@ function installHeroArt(draft){
   const artwork=unique(arr(draft?.media?.artwork).map(mediaUrl));
   const appid=Number(draft?.identity?.steam_appid||0);
   const officialFallback=appid?`https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_hero.jpg`:'';
-  const candidates=unique([...artwork,mediaUrl(draft?.media?.hero),officialFallback,mediaUrl(draft?.media?.cover)]);
+  const candidates=unique([...artwork,officialFallback,mediaUrl(draft?.media?.hero),mediaUrl(draft?.media?.cover)]);
   const primaryArt=candidates.find(url=>!screenshotKeys.has(url.split(/[?#]/)[0].toLowerCase()))||candidates[0]||'';
   let preview=hero.querySelector('.game-hero__preview');
   if(!preview){preview=document.createElement('img');preview.className='game-hero__preview';preview.alt='';preview.decoding='async';hero.prepend(preview)}
   if(primaryArt)preview.src=primaryArt;
-  const title=draft?.identity?.title||document.body.dataset.title||slug;
+  const title=displayTitle(draft);
   const items=unique([primaryArt,...screenshots]);
   rail.innerHTML=items.map((url,index)=>`<button class="hero-media__item${index===0?' active':''}" type="button" data-image="${esc(url)}"><img src="${esc(url)}" alt="${esc(index===0?`${title} — официальный арт`:`${title} — скриншот ${index}`)}" loading="${index<2?'eager':'lazy'}"></button>`).join('');
   rail.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{
@@ -53,7 +54,7 @@ function installHeroArt(draft){
 }
 function installFranchise(draft){
   const franchise=draft?.relations?.franchise;
-  const games=arr(franchise?.games).filter(game=>game&&canonical(game.title)!==canonical(draft?.identity?.title));
+  const games=arr(franchise?.games).filter(game=>game&&canonical(game.title)!==canonical(displayTitle(draft)));
   if(!franchise?.name||!games.length)return;
   const overview=document.querySelector('#overview .lower-grid');if(!overview)return;
   let panel=document.querySelector('#franchisePanel');
@@ -88,7 +89,7 @@ async function installSimilarity(){
 }
 function installReviews(reviewFeed,ratingFeed,draft){
   const grid=document.querySelector('#reviewGrid');if(!grid)return;
-  const title=draft?.identity?.title||document.body.dataset.title||slug;
+  const title=displayTitle(draft);
   const reviews=arr(reviewFeed?.reviews).filter(item=>item?.url&&!forbiddenReview(item)&&scoreText(item));
   const count=document.querySelector('#externalReviewCount');if(count)count.textContent=reviews.length?`${reviews.length} рецензий`:'';
   grid.classList.add('quality-review-table');
