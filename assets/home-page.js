@@ -175,6 +175,14 @@ function loadEnhancedSearch() {
   document.body.appendChild(script);
 }
 
+function loadTop250Home() {
+  if (document.querySelector('script[data-top250-home-runtime]')) return;
+  const script = document.createElement('script');
+  script.src = 'assets/top250-home.js?v=20260813-1';
+  script.dataset.top250HomeRuntime = 'true';
+  document.body.appendChild(script);
+}
+
 document.querySelector('.primary')?.classList.add('ig-button');
 bindNavigation();
 routeFromLocation();
@@ -183,4 +191,5 @@ bindFilters();
 renderHome();
 renderResults();
 loadCatalog().finally(loadEnhancedSearch);
+loadTop250Home();
 startHero();
