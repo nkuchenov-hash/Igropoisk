@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "type": "page",
+  "game_slug": "crimson-desert",
+  "game_id": "game_cf8dab821d4493289fa3",
+  "canonical_title": "Crimson Desert",
+  "checked_at": "2026-08-13T10:31:38.070Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
+  "revision_history": [
+    {
+      "attempt": 1,
+      "label": "relations-1",
+      "script": "scripts/enrich-game-relations.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"crimson-desert\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 2,
+      "label": "similarity-1",
+      "script": "scripts/build-similarity-index.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 82,\n  \"profiles\": 94,\n  \"similarity_files_written\": 1,\n  \"year_proximity_used\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 3,
+      "label": "media-validation-1",
+      "script": "scripts/validate-game-media-quality.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"crimson-desert\",\n  \"status\": \"green\",\n  \"comments\": 0,\n  \"accepted_screenshots\": 13\n}\n",
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "quality_never_terminally_blocks": true,
+    "red_means_revise_again": true,
+    "immediate_revision_attempts": 4,
+    "keep_queued_until_green": true
+  }
+}
