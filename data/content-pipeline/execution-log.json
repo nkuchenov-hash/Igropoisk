@@ -1,7 +1,7 @@
 {
   "schema_version": 9,
-  "started_at": "2026-08-13T22:19:38.964Z",
-  "finished_at": "2026-08-13T22:24:54.285Z",
+  "started_at": "2026-08-13T22:29:07.188Z",
+  "finished_at": "2026-08-13T22:32:51.476Z",
   "summary": {
     "completed": 24,
     "needs_revision": 14,
@@ -16,8 +16,8 @@
       "command": "node scripts/parse-game-data.mjs duskfade 2542020 Duskfade",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 3029,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"duskfade\",\n  \"checked_at\": \"2026-08-13T22:19:38.994Z\",\n  \"duration_ms\": 2999,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2542020&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Duskfade\",\n    \"steam_appid\": 2542020,\n    \"developers\": [\n      \"Weird Beluga\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 12,\n    \"videos\": 5,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2542020/4c327d7436667e9ffb1103700ce97bdd75952323/page_bg_raw.jpg?t=1786631734\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/2542020/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/duskfade.json\"\n}\n",
+      "duration_ms": 1518,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"duskfade\",\n  \"checked_at\": \"2026-08-13T22:29:07.222Z\",\n  \"duration_ms\": 1482,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2542020&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Duskfade\",\n    \"steam_appid\": 2542020,\n    \"developers\": [\n      \"Weird Beluga\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 12,\n    \"videos\": 5,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2542020/4c327d7436667e9ffb1103700ce97bdd75952323/page_bg_raw.jpg?t=1786631734\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/2542020/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/duskfade.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -25,7 +25,7 @@
       "command": "node scripts/build-game-page-basic.mjs game_dc5231876c0dd6cc435d",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 96,
+      "duration_ms": 100,
       "stdout": "{\n  \"slug\": \"duskfade\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": true,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"build_review\"\n}\n",
       "stderr": ""
     },
@@ -34,7 +34,7 @@
       "command": "node scripts/quality-control-loop.mjs page duskfade game_dc5231876c0dd6cc435d",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 9566,
+      "duration_ms": 6705,
       "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/2542020/library_600x900_2x.jpg\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -50,8 +50,8 @@
       "command": "node scripts/parse-game-data.mjs hell-let-loose-vietnam 3079210 Hell Let Loose: Vietnam",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 1646,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"hell-let-loose-vietnam\",\n  \"checked_at\": \"2026-08-13T22:19:51.689Z\",\n  \"duration_ms\": 1613,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3079210&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Hell Let Loose: Vietnam\",\n    \"steam_appid\": 3079210,\n    \"developers\": [\n      \"Expression Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Massively Multiplayer\",\n      \"Simulation\",\n      \"Strategy\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 7,\n    \"videos\": 3,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3079210/11f2f56dd8945194aed2ee44376b54b1bee6c122/page_bg_raw.jpg?t=1786637345\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/3079210/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/hell-let-loose-vietnam.json\"\n}\n",
+      "duration_ms": 683,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"hell-let-loose-vietnam\",\n  \"checked_at\": \"2026-08-13T22:29:15.545Z\",\n  \"duration_ms\": 649,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3079210&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Hell Let Loose: Vietnam\",\n    \"steam_appid\": 3079210,\n    \"developers\": [\n      \"Expression Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Massively Multiplayer\",\n      \"Simulation\",\n      \"Strategy\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 7,\n    \"videos\": 3,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3079210/11f2f56dd8945194aed2ee44376b54b1bee6c122/page_bg_raw.jpg?t=1786637345\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/3079210/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/hell-let-loose-vietnam.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -68,7 +68,7 @@
       "command": "node scripts/quality-control-loop.mjs page hell-let-loose-vietnam game_91b8109a5d837b4f0bbc",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 8197,
+      "duration_ms": 6859,
       "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3079210/library_600x900_2x.jpg\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -84,8 +84,8 @@
       "command": "node scripts/parse-game-data.mjs crimson-moon 4317690 Crimson Moon",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 1523,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"crimson-moon\",\n  \"checked_at\": \"2026-08-13T22:20:01.628Z\",\n  \"duration_ms\": 1490,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4317690&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Crimson Moon\",\n    \"steam_appid\": 4317690,\n    \"developers\": [\n      \"ProbablyMonsters\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 8,\n    \"videos\": 3,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4317690/ea900744a22dd05e7e73e064c5ed2caeaf67d93c/page_bg_raw.jpg?t=1786045423\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/4317690/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/crimson-moon.json\"\n}\n",
+      "duration_ms": 595,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"crimson-moon\",\n  \"checked_at\": \"2026-08-13T22:29:23.182Z\",\n  \"duration_ms\": 562,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4317690&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Crimson Moon\",\n    \"steam_appid\": 4317690,\n    \"developers\": [\n      \"ProbablyMonsters\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 8,\n    \"videos\": 3,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4317690/ea900744a22dd05e7e73e064c5ed2caeaf67d93c/page_bg_raw.jpg?t=1786045423\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/4317690/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/crimson-moon.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -93,7 +93,7 @@
       "command": "node scripts/build-game-page-basic.mjs game_727403d61f49b295ca47",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 97,
+      "duration_ms": 96,
       "stdout": "{\n  \"slug\": \"crimson-moon\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": false,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"media_quality\"\n}\n",
       "stderr": ""
     },
@@ -102,7 +102,7 @@
       "command": "node scripts/quality-control-loop.mjs page crimson-moon game_727403d61f49b295ca47",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 9439,
+      "duration_ms": 9138,
       "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"crimson-moon\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/4317690/library_600x900_2x.jpg\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -118,8 +118,8 @@
       "command": "node scripts/parse-game-data.mjs defender-of-the-crown-the-legend-returns 4208140 Defender of the Crown: The Legend Returns",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 2565,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"checked_at\": \"2026-08-13T22:20:12.685Z\",\n  \"duration_ms\": 2535,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4208140&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Defender of the Crown: The Legend Returns\",\n    \"steam_appid\": 4208140,\n    \"developers\": [\n      \"Black Tower Basement\"\n    ],\n    \"genres\": [\n      \"RPG\",\n      \"Strategy\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 9,\n    \"videos\": 3,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4208140/a7d6b4fa1a62512504dd3ec211d03872e9475bc5/page_bg_raw.jpg?t=1786625969\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/4208140/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/defender-of-the-crown-the-legend-returns.json\"\n}\n",
+      "duration_ms": 1420,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"checked_at\": \"2026-08-13T22:29:33.012Z\",\n  \"duration_ms\": 1386,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4208140&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Defender of the Crown: The Legend Returns\",\n    \"steam_appid\": 4208140,\n    \"developers\": [\n      \"Black Tower Basement\"\n    ],\n    \"genres\": [\n      \"RPG\",\n      \"Strategy\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 9,\n    \"videos\": 3,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4208140/a7d6b4fa1a62512504dd3ec211d03872e9475bc5/page_bg_raw.jpg?t=1786625969\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/4208140/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/defender-of-the-crown-the-legend-returns.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -136,7 +136,7 @@
       "command": "node scripts/quality-control-loop.mjs page defender-of-the-crown-the-legend-returns game_df88548a3500d52d5ac7",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 8844,
+      "duration_ms": 7974,
       "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/4208140/library_600x900_2x.jpg\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -152,8 +152,8 @@
       "command": "node scripts/parse-game-data.mjs escape-from-tarkov 3932890 Escape from Tarkov",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 1761,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"escape-from-tarkov\",\n  \"checked_at\": \"2026-08-13T22:20:24.194Z\",\n  \"duration_ms\": 1729,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3932890&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Escape from Tarkov\",\n    \"steam_appid\": 3932890,\n    \"developers\": [\n      \"Battlestate Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Massively Multiplayer\",\n      \"RPG\",\n      \"Simulation\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 20,\n    \"videos\": 5,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3932890/509c1f55460374f2286a5010eeff788557b2bcdc/page_bg_raw.jpg?t=1785782094\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/3932890/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/escape-from-tarkov.json\"\n}\n",
+      "duration_ms": 900,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"escape-from-tarkov\",\n  \"checked_at\": \"2026-08-13T22:29:42.506Z\",\n  \"duration_ms\": 867,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3932890&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Escape from Tarkov\",\n    \"steam_appid\": 3932890,\n    \"developers\": [\n      \"Battlestate Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Massively Multiplayer\",\n      \"RPG\",\n      \"Simulation\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 20,\n    \"videos\": 5,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3932890/509c1f55460374f2286a5010eeff788557b2bcdc/page_bg_raw.jpg?t=1785782094\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/3932890/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/escape-from-tarkov.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -170,7 +170,7 @@
       "command": "node scripts/quality-control-loop.mjs page escape-from-tarkov game_31def3495793b8549681",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 10788,
+      "duration_ms": 6842,
       "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"escape-from-tarkov\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3932890/library_600x900_2x.jpg\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -186,8 +186,8 @@
       "command": "node scripts/parse-game-data.mjs throne-and-liberty auto throne-and-liberty",
       "status": "revision_required",
       "exit_code": 1,
-      "duration_ms": 339,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"error\",\n  \"game_slug\": \"throne-and-liberty\",\n  \"checked_at\": \"2026-08-13T22:20:36.848Z\",\n  \"duration_ms\": 305,\n  \"error\": \"Steam search returned no candidates for throne-and-liberty\"\n}\n",
+      "duration_ms": 238,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"error\",\n  \"game_slug\": \"throne-and-liberty\",\n  \"checked_at\": \"2026-08-13T22:29:50.349Z\",\n  \"duration_ms\": 205,\n  \"error\": \"Steam search returned no candidates for throne-and-liberty\"\n}\n",
       "stderr": ""
     },
     {
@@ -195,7 +195,7 @@
       "command": "node scripts/build-game-page-basic.mjs game_9f1865f2c47b8440b79f",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 90,
+      "duration_ms": 89,
       "stdout": "{\n  \"slug\": \"throne-and-liberty\",\n  \"status\": \"needs_revision\",\n  \"missing\": [\n    \"identity.source\",\n    \"companies.developers\",\n    \"classification.genres\",\n    \"classification.platforms\",\n    \"media.hero_or_cover\",\n    \"screenshots:0/6\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -204,7 +204,7 @@
       "command": "node scripts/quality-control-loop.mjs page throne-and-liberty game_9f1865f2c47b8440b79f",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 6008,
+      "duration_ms": 4436,
       "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"throne-and-liberty\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Нет отдельного официального арта для большой верхней картинки; скриншот нельзя использовать как hero.\",\n    \"Нет основной обложки.\",\n    \"Недостаточно скриншотов высокого качества: 0/6.\",\n    \"После quality gate осталось только 0/6 допустимых скриншотов.\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -223,7 +223,7 @@
       "command": "node scripts/quality-control-loop.mjs review big-walk game_72bf0963b99d4c9b1ab4",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 37229,
+      "duration_ms": 26150,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"big-walk\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 2/5\",\n    \"Оценённые издания: 1/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -240,7 +240,7 @@
       "command": "node scripts/quality-control-loop.mjs review baldurs-gate-3 game_86b06ca351d4e4d36e13",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 34091,
+      "duration_ms": 25619,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"baldurs-gate-3\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -257,7 +257,7 @@
       "command": "node scripts/quality-control-loop.mjs review agefield-high-rock-the-school game_acf87e355c1d3ef3e58a",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 32951,
+      "duration_ms": 25000,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 1/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -274,7 +274,7 @@
       "command": "node scripts/quality-control-loop.mjs review grand-theft-auto-v game_3ba6d718699536fbeefc",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 33666,
+      "duration_ms": 24802,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"grand-theft-auto-v\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -291,7 +291,7 @@
       "command": "node scripts/quality-control-loop.mjs review crimson-desert game_cf8dab821d4493289fa3",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 34204,
+      "duration_ms": 22941,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"crimson-desert\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -308,7 +308,7 @@
       "command": "node scripts/quality-control-loop.mjs review death-of-the-reprobate game_1b6c415929d3887ac5df",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 39405,
+      "duration_ms": 24924,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"death-of-the-reprobate\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -325,7 +325,7 @@
       "command": "node scripts/quality-control-loop.mjs review kusan-city-of-wolves game_673d6b80b8df77b0b712",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 39481,
+      "duration_ms": 26955,
       "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"kusan-city-of-wolves\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
