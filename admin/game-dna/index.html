@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Game DNA — админка Игропоиска</title>
+<link rel="stylesheet" href="../../assets/design-system.css?v=20260803-8">
+<link rel="stylesheet" href="../../assets/design-system-admin-responsive.css?v=20260803-8">
+<link rel="stylesheet" href="../../assets/admin-home-v2.css?v=20260803-8">
+<link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">
+<link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">
+</head>
+<body><div class="ig-admin-layout">
+<aside class="ig-admin-sidebar" aria-label="Разделы админки"><a class="ig-logo" href="../index.html">ИГРОПОИСК</a><a href="../">Обзор</a><a href="../games/">Игры</a><a class="active" href="./">Game DNA</a><a href="../content-pipeline/">Контентный конвейер</a></aside>
+<main class="ig-admin-main"><div class="ig-kicker">Admin / Game DNA</div><h1 class="ig-admin-title">DNA игры</h1><p class="ig-admin-lead">Отдельная каноническая сущность для характеристик, по которым рассчитываются похожие игры. Страница игры использует материализованный результат similarity.</p>
+<div id="mode" class="ig-panel">Загрузка Game DNA…</div><section id="summary" class="ig-admin-grid" aria-label="Сводка"></section>
+<div class="ig-toolbar"><input class="ig-input" id="search" type="search" placeholder="Название, slug или game ID"><select class="ig-input" id="status"><option value="">Все статусы DNA</option></select></div>
+<div class="ig-card ig-admin-card ig-table-scroll"><table class="ig-data-table"><thead><tr><th>Игра</th><th>DNA</th><th>Основные оси</th><th>Обновлено</th><th>Действия</th></tr></thead><tbody id="rows"></tbody></table></div>
+<section id="editor" class="ig-card ig-admin-card" hidden>
+<div class="ig-kicker">Game DNA editor</div><h2 id="editorTitle">DNA</h2><p id="editorMeta"></p>
+<div class="ig-toolbar"><label>Статус <select class="ig-input" id="editorStatus"></select></label><a class="ig-button secondary" id="publicPage" target="_blank">Страница игры ↗</a></div>
+<div class="ig-table-scroll"><table class="ig-data-table"><thead><tr><th>Характеристика</th><th>Значения через запятую</th><th>Не менять автоматически</th></tr></thead><tbody id="axes"></tbody></table></div>
+<label>Редакционная заметка<textarea class="ig-input" id="notes" rows="3" placeholder="Почему профиль изменён вручную"></textarea></label>
+<div class="ig-toolbar"><button class="ig-button" id="save" type="button">Сохранить DNA</button><button class="ig-button secondary" id="rebuild" type="button">Пересчитать похожие</button><button class="ig-button secondary" id="copy" type="button">Скопировать JSON</button><button class="ig-button secondary" id="close" type="button">Закрыть</button></div>
+<div id="editorMessage" class="ig-panel" hidden></div>
+</section>
+</main></div>
+<script src="../../assets/auth.js?v=20260804-6"></script><script type="module" src="./app.js"></script>
+<script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>
+<script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>
+</body></html>
