@@ -60,7 +60,7 @@ const KEYWORDS = {
     cover_based: ['cover-based', 'cover based', 'take cover', 'укрыти'],
     soulslike: ['soulslike', 'souls-like', 'souls like'],
     hack_and_slash: ['hack and slash', 'hack-and-slash', 'слэшер'],
-    tactical: ['tactical combat', 'тактич'],
+    tactical: ['tactical combat', 'deep tactical', 'tactical battles', 'тактич'],
     turn_based: ['turn-based', 'turn based', 'пошаг'],
     real_time: ['real-time combat', 'real time combat', 'реальном времени'],
     stealth_combat: ['stealth combat', 'silent takedown', 'скрытн устран'],
@@ -122,7 +122,7 @@ const KEYWORDS = {
     fixed_protagonist: ['play as ', 'protagonist', 'главн герой'],
     character_creation: ['character creation', 'create your character', 'создан персонаж'],
     dialogue_choices: ['dialogue choices', 'dialogue options', 'выбор в диалог'],
-    branching_story: ['branching story', 'choices matter', 'multiple endings', 'ветвящ', 'несколько концов'],
+    branching_story: ['branching story', 'choices matter', 'choices shape', 'choices have consequences', 'your choices', 'every choice', 'all choices', 'multiple endings', 'ветвящ', 'несколько концов'],
     systemic_choices: ['systemic choices', 'emergent choices', 'системн выбор'],
     role_playing_builds: ['character builds', 'role-playing build', 'ролевая сборк'],
   },
@@ -135,7 +135,7 @@ const KEYWORDS = {
   narrative: {
     cinematic: ['cinematic', 'cutscene', 'кинематограф'],
     story_heavy: ['story-rich', 'story rich', 'narrative-driven', 'сюжетн', 'истори'],
-    choice_driven: ['choices matter', 'branching', 'choice-driven', 'выбор', 'ветвящ'],
+    choice_driven: ['choices matter', 'choices shape', 'choices have consequences', 'your choices', 'every choice', 'all choices', 'branching', 'choice-driven', 'выбор', 'ветвящ'],
     emergent: ['emergent narrative', 'emergent story', 'процедурн истор'],
     environmental: ['environmental storytelling', 'повествован окруж'],
     minimal: ['minimal story', 'story-light', 'минимальн сюжет'],
@@ -143,7 +143,7 @@ const KEYWORDS = {
   setting: {
     modern: ['modern day', 'modern-day', 'современн'],
     historical: ['historical', 'историч'],
-    fantasy: ['fantasy', 'фэнтези'],
+    fantasy: ['fantasy', 'dungeons & dragons', 'dungeons and dragons', 'elf', 'elves', 'dwarf', 'dwarves', 'sorcery', 'фэнтези'],
     dark_fantasy: ['dark fantasy', 'темн фэнтези'],
     science_fiction: ['science fiction', 'sci-fi', 'sci fi', 'научн фантаст'],
     cyberpunk: ['cyberpunk', 'киберпанк'],
@@ -170,7 +170,7 @@ const KEYWORDS = {
     competitive: ['pvp', 'competitive', 'соревнов'],
     mmo: ['mmo', 'massively multiplayer', 'массов многопольз'],
     shared_world: ['shared world', 'shared-world', 'общ мир'],
-    local_multiplayer: ['local multiplayer', 'couch co-op', 'локальн мультиплеер'],
+    local_multiplayer: ['local multiplayer', 'couch co-op', 'split-screen', 'split screen', 'локальн мультиплеер'],
   },
   mechanics: {
     stealth: ['stealth', 'стелс'],
@@ -185,7 +185,7 @@ const KEYWORDS = {
     cover_shooting: ['cover shooting', 'стрельб из укрыт'],
     parry: ['parry', 'парирован'],
     dodge: ['dodge', 'уклонен'],
-    companions: ['companions', 'спутник'],
+    companions: ['companions', 'party-based', 'party based', 'gather your party', 'party of up to', 'спутник'],
     vehicles: ['vehicles', 'driving', 'транспорт'],
     base_building: ['base building', 'строител баз'],
   },
@@ -208,8 +208,14 @@ const STORE_FEATURE_FRAGMENTS = [
   'steam_', 'controller', 'adjustable_', 'camera_comfort', 'color_alternatives', 'volume_controls',
   'narrated_game_menus', 'timed_input', 'dualshock', 'dualsense', 'save_anytime', 'input_api',
   'stereo_sound', 'subtitle', 'surround_sound', 'steam_cloud', 'hdr_available', 'family_sharing',
-  'achievements', 'trading_cards', 'remote_play', 'workshop', 'cloud_saves',
+  'achievements', 'trading_cards', 'remote_play', 'workshop', 'cloud_saves', 'captions_available',
 ];
+
+const NON_SUBGENRE_TAGS = new Set([
+  'single_player', 'multi_player', 'pvp', 'online_pvp', 'co_op', 'online_co_op', 'lan_co_op',
+  'shared_split_screen_pvp', 'shared_split_screen_co_op', 'shared_split_screen',
+  'cross_platform_multiplayer', 'local_multiplayer', 'online_multiplayer',
+]);
 
 const LEGACY_AXIS_MAP = {
   combat_style: 'combat',
@@ -252,7 +258,7 @@ function canonicalLegacyValues(axis, values) {
 }
 
 function meaningfulLegacyTags(values) {
-  return normalizeTagList(values).filter((tag) => !STORE_FEATURE_FRAGMENTS.some((fragment) => tag.includes(fragment)) && tag !== 'single_player');
+  return normalizeTagList(values).filter((tag) => !STORE_FEATURE_FRAGMENTS.some((fragment) => tag.includes(fragment)) && !NON_SUBGENRE_TAGS.has(tag));
 }
 
 export function normalizeDnaProfile(profile = {}) {
@@ -288,6 +294,16 @@ export function inferGameDna(game = {}) {
   if ([...genreSet].some((value) => value.includes('platform'))) profile.core_loop = mergeTags(profile.core_loop, ['platforming']);
   if ([...genreSet].some((value) => value.includes('racing'))) profile.core_loop = mergeTags(profile.core_loop, ['racing']);
   if ([...genreSet].some((value) => value.includes('sports'))) profile.core_loop = mergeTags(profile.core_loop, ['sports']);
+
+  const isRpg = genreSet.has('rpg') || [...genreSet].some((value) => value.endsWith('_rpg') || value.includes('role_playing'));
+  const isStrategy = genreSet.has('strategy') || [...genreSet].some((value) => value.includes('strategy'));
+  const partyBased = containsAny(text, ['party-based', 'party based', 'gather your party', 'party of up to', 'party members', 'companions']);
+  if (isRpg) profile.progression = mergeTags(profile.progression, ['stats_builds']);
+  if (isRpg && partyBased) {
+    profile.core_loop = mergeTags(profile.core_loop, ['combat']);
+    profile.mechanics = mergeTags(profile.mechanics, ['companions']);
+  }
+  if (isRpg && isStrategy && partyBased) profile.combat_style = mergeTags(profile.combat_style, ['tactical']);
 
   const franchise = game?.relations?.franchise?.name || game?.classification?.franchise || game?.classification?.series || '';
   profile.franchise = normalizeTag(franchise);
