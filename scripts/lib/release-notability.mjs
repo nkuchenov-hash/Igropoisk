@@ -1,4 +1,9 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { buildMediaIntersection } from './release-media-panel.mjs';
+
+let defaultMediaSourceConfig = {sources:[]};
+try { defaultMediaSourceConfig = JSON.parse(fs.readFileSync(path.join(process.cwd(),'config/release-media-sources.json'),'utf8')); } catch {}
 
 const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
 const uniq = values => [...new Set((values || []).filter(Boolean))];
@@ -68,13 +73,14 @@ function confirmedEvent(event = {}, candidate = {}) {
     return String(sourceId || '').startsWith('steam:') || /store\.steampowered\.com/i.test(String(source?.url || ''));
   });
 }
-function measuredIntersection(candidate, news, mediaSourceConfig = {}) {
+function measuredIntersection(candidate, news, popular, mediaSourceConfig = defaultMediaSourceConfig) {
   const anticipation = candidate?.anticipation || {};
   const publisherNames = [
     ...(candidate?.media_intersection?.publishers || []),
     ...(anticipation.independent_publishers || []),
     ...(anticipation.independent_publisher_families || []),
     ...news.items.flatMap(newsMediaNames),
+    ...(popular?.item?.news_publishers || []),
   ];
   const measured = buildMediaIntersection({publisherNames, config: mediaSourceConfig});
   return candidate?.media_intersection?.model === 'fixed-editorial-media-panel-v1'
@@ -82,13 +88,13 @@ function measuredIntersection(candidate, news, mediaSourceConfig = {}) {
     : measured;
 }
 
-export function measureGlobalNotability(candidate, {newsEvents = [], popularRanking = [], policy = {}, mediaSourceConfig = {}} = {}) {
+export function measureGlobalNotability(candidate, {newsEvents = [], popularRanking = [], policy = {}, mediaSourceConfig = defaultMediaSourceConfig} = {}) {
   const cfg = policy.global_notability || {};
   const news = linkedNews(candidate, newsEvents);
   const popular = linkedPopular(candidate, popularRanking);
   const quality = candidate?.editorial_quality || {};
   const anticipation = candidate?.anticipation || {};
-  const mediaIntersection = measuredIntersection(candidate, news, mediaSourceConfig);
+  const mediaIntersection = measuredIntersection(candidate, news, popular, mediaSourceConfig);
   const mediaCount = Number(mediaIntersection.overall_count || 0);
   const legacyCoverage = Number(quality.independent_source_count || anticipation.independent_publication_count || 0);
   const independentPublications = mediaCount || legacyCoverage;
@@ -165,7 +171,7 @@ export function measureGlobalNotability(candidate, {newsEvents = [], popularRank
   };
 }
 
-export function applyGlobalNotabilityGate(candidates = [], {newsEvents = [], popularRanking = [], policy = {}, mediaSourceConfig = {}} = {}) {
+export function applyGlobalNotabilityGate(candidates = [], {newsEvents = [], popularRanking = [], policy = {}, mediaSourceConfig = defaultMediaSourceConfig} = {}) {
   return (candidates || []).map(source => {
     const candidate = clone(source);
     const notability = measureGlobalNotability(candidate, {newsEvents, popularRanking, policy, mediaSourceConfig});
