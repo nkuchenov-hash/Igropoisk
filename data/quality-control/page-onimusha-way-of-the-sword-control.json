@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "type": "page",
+  "game_slug": "onimusha-way-of-the-sword",
+  "game_id": "game_233e3d1603e548a296b4",
+  "canonical_title": "Onimusha: Way of the Sword",
+  "checked_at": "2026-08-13T10:33:11.141Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
+  "revision_history": [
+    {
+      "attempt": 1,
+      "label": "relations-1",
+      "script": "scripts/enrich-game-relations.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"onimusha-way-of-the-sword\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 2,
+      "label": "similarity-1",
+      "script": "scripts/build-similarity-index.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 85,\n  \"profiles\": 101,\n  \"similarity_files_written\": 1,\n  \"year_proximity_used\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 3,
+      "label": "media-validation-1",
+      "script": "scripts/validate-game-media-quality.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"onimusha-way-of-the-sword\",\n  \"status\": \"green\",\n  \"comments\": 0,\n  \"accepted_screenshots\": 10\n}\n",
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "quality_never_terminally_blocks": true,
+    "red_means_revise_again": true,
+    "immediate_revision_attempts": 4,
+    "keep_queued_until_green": true
+  }
+}
