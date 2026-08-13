@@ -1,0 +1,43 @@
+name: Materialize canonical Game Page shells
+
+on:
+  push:
+    branches: [agent/migrate-legacy-game-pages]
+    paths:
+      - 'scripts/materialize-game-shells.mjs'
+      - 'scripts/validate-game-shells.mjs'
+      - '.github/workflows/materialize-game-shells-branch.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: game-shell-materialization-branch
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/migrate-legacy-game-pages
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Materialize canonical shells
+        run: |
+          node scripts/materialize-game-shells.mjs
+          node scripts/validate-game-shells.mjs
+      - name: Commit materialized Game Pages
+        run: |
+          if git diff --quiet -- game; then
+            echo 'No Game Page shell changes required.'
+            exit 0
+          fi
+          git config user.name 'igropoisk-lifecycle'
+          git config user.email 'actions@users.noreply.github.com'
+          git add game/*/index.html
+          git commit -m 'Materialize canonical Game Page shells'
+          git push origin HEAD:agent/migrate-legacy-game-pages
