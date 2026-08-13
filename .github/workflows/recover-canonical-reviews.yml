@@ -1,0 +1,92 @@
+name: Recover canonical review seed
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - 'scripts/discover-review-sources-web.mjs'
+      - 'scripts/quality-control-loop-v3.mjs'
+      - 'scripts/validate-top-250.mjs'
+      - '.github/workflows/recover-canonical-reviews.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  models: read
+
+concurrency:
+  group: canonical-review-recovery
+  cancel-in-progress: true
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate recovery scripts
+        run: |
+          node --check scripts/discover-review-sources-web.mjs
+          node --check scripts/quality-control-loop-v3.mjs
+          node --check scripts/validate-top-250.mjs
+      - name: Revalidate strongest existing professional corpora
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REVIEW_MODEL: ${{ vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
+          GITHUB_VISION_MODEL: ${{ vars.GITHUB_VISION_MODEL || vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
+          OPENAI_API_KEY: ''
+        run: |
+          set -uo pipefail
+          slugs=(
+            elden-ring
+            the-witcher-3-wild-hunt
+            red-dead-redemption-2
+            god-of-war
+            hades
+            cyberpunk-2077
+          )
+          for slug in "${slugs[@]}"; do
+            echo "=== $slug ==="
+            node scripts/quality-control-loop.mjs review "$slug" || true
+            if node -e "const fs=require('fs');const p='data/quality-control/review-${slug}-control.json';const q=fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):{};process.exit(q.green===true?0:1)"; then
+              node scripts/render-review-pages.mjs "$slug"
+            fi
+          done
+      - name: Rebuild canonical publication feed and Top-250
+        run: |
+          node scripts/materialize-review-publication-feed.mjs
+          node scripts/validate-top-250.mjs
+          node scripts/audit-review-publication.mjs
+          node - <<'NODE'
+          const fs=require('fs');
+          const top=JSON.parse(fs.readFileSync('data/top-250/current.json','utf8'));
+          console.log(`Recovered canonical Top-250 entries: ${top.count}`);
+          if(Number(top.count)<1) process.exit(2);
+          NODE
+      - name: Publish recovered canonical state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git add -A -- data/reviews data/research data/parser-runs data/quality-control data/articles data/article-drafts data/article-media data/media-candidates data/top-250 article
+          if git diff --cached --quiet; then
+            echo 'No recovery changes.'
+            exit 0
+          fi
+          node scripts/validate-top-250.mjs
+          git diff --check
+          branch="automation/recover-canonical-reviews-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Recover canonical professional review seed"
+          git push origin "$branch"
+          pr_url="$(gh pr create --base staging --head "$branch" --title "Recover canonical reviews ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" --body "Revalidates existing professional publisher corpora under the canonical review-score contract and rebuilds Top-250 only from green published reviews.")"
+          gh pr merge "$pr_url" --merge --delete-branch
