@@ -65,7 +65,7 @@ export function buildMediaIntersection({ publisherNames = [], evidence = [], con
   const regionCounts = {};
   for (const family of publisherFamilies) {
     const region = families.get(family)?.region || 'global';
-    regionCounts[region] = (regionCounts[region] || 0) + 1;
+    if (region !== 'global') regionCounts[region] = (regionCounts[region] || 0) + 1;
   }
 
   return {
