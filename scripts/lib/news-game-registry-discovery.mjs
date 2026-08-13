@@ -28,8 +28,18 @@ export function registerNewsGameCandidates(registry = {}, requests = []) {
     const title = String(request.title || '').trim();
     const slug = String(request.slug || '').trim();
     const temporaryGameId = String(request.game_id || request.gameId || '').trim();
+    const identityVerified = request.identity_verified === true || request.identityVerified === true;
+    const verifiedExternal = Boolean(request.verified_external || request.verifiedExternal);
     if (!title || !slug) {
       issues.push({ index, game_id: temporaryGameId || null, slug: slug || null, status: 'unresolved', reason: 'news_candidate_missing_identity' });
+      continue;
+    }
+    if (!identityVerified) {
+      issues.push({ index, game_id: temporaryGameId || null, slug, title, status: 'rejected', reason: 'news_candidate_identity_not_verified' });
+      continue;
+    }
+    if (temporaryGameId.startsWith('news_game_') && !verifiedExternal) {
+      issues.push({ index, game_id: temporaryGameId, slug, title, status: 'rejected', reason: 'temporary_news_candidate_requires_external_verification' });
       continue;
     }
 
@@ -42,14 +52,14 @@ export function registerNewsGameCandidates(registry = {}, requests = []) {
         slug,
         source: {
           type: 'automated_inference',
-          name: request.verified_external ? 'news-game-context-verified' : 'news-game-context',
-          url: request.source_url || null
+          name: verifiedExternal ? 'news-game-web-identity-verified' : 'news-game-canonical-identity-verified',
+          url: request.source_url || request.verification_sources?.[0]?.url || null
         },
         sourceRecordId: temporaryGameId || request.news_id || null,
-        discoveryReason: 'resolved_primary_game_in_public_news',
+        discoveryReason: 'web_verified_primary_game_in_public_news',
         status: 'discovered',
-        statusReason: 'resolved as the primary game of a public news item',
-        confidence: clampConfidence(request.confidence, request.verified_external ? 0.9 : 0.78)
+        statusReason: 'verified as a primary video-game identity of a public news item',
+        confidence: clampConfidence(request.confidence, verifiedExternal ? 0.9 : 0.88)
       }, { actor: 'news-registry-adapter' });
       entity = registration.entity || null;
       decision = registration.decision || '';
@@ -68,8 +78,10 @@ export function registerNewsGameCandidates(registry = {}, requests = []) {
       title: String(entity.identity?.canonicalTitle?.value || title),
       news_id: request.news_id || null,
       source_url: request.source_url || null,
-      verified_external: Boolean(request.verified_external),
-      confidence: clampConfidence(request.confidence, request.verified_external ? 0.9 : 0.78)
+      verified_external: verifiedExternal,
+      identity_verified: true,
+      verification_sources: Array.isArray(request.verification_sources) ? request.verification_sources : [],
+      confidence: clampConfidence(request.confidence, verifiedExternal ? 0.9 : 0.88)
     });
   }
 
