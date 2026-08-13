@@ -1,0 +1,1 @@
+import{spawnSync}from'node:child_process';const child=spawnSync(process.execPath,['scripts/calculate-ratings-from-research.mjs',...process.argv.slice(2)],{stdio:'inherit',env:process.env});process.exitCode=child.status??1;
