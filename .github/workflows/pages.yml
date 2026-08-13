@@ -96,6 +96,7 @@ jobs:
         run: |
           node scripts/validate-game-v3.mjs
           node scripts/validate-editorial-pipeline.mjs
+          node scripts/validate-game-shells.mjs
 
       - name: Reject generated or malformed changes
         run: |
@@ -178,7 +179,15 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install browser validation dependency
+        run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+
       - name: Verify deployed game pages and protected shared runtime
         env:
           GAME_RUNTIME_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
         run: node scripts/smoke-game-runtime.mjs
+
+      - name: Verify deployed DOOM uses the complete new Game Page
+        env:
+          DOOM_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: node scripts/smoke-doom-game-page-v4.mjs
