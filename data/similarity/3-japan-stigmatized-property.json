@@ -1,10 +1,24 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "game_slug": "3-japan-stigmatized-property",
-  "generated_at": "2026-08-13T10:12:31.829Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "generated_at": "2026-08-13T10:14:05.042Z",
+  "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "profile_quality": {
+    "populated_axes": 7,
+    "total_axes": 13,
+    "populated": [
+      "genres",
+      "subgenres",
+      "gameplay_type",
+      "party_mode",
+      "tone",
+      "multiplayer",
+      "mechanics"
+    ],
+    "needs_enrichment": false
+  },
   "profile": {
     "genres": [
       "adventure",
@@ -106,5 +120,41 @@
     ],
     "franchise": ""
   },
-  "recommendations": []
+  "recommendations": [
+    {
+      "slug": "stray",
+      "title": "Stray",
+      "year": 2022,
+      "score": 0.3663,
+      "base_score": 0.3663,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    }
+  ]
 }

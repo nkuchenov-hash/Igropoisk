@@ -1,10 +1,26 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "game_slug": "hollow-knight",
-  "generated_at": "2026-08-13T10:12:30.356Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "generated_at": "2026-08-13T10:14:03.431Z",
+  "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "profile_quality": {
+    "populated_axes": 9,
+    "total_axes": 13,
+    "populated": [
+      "genres",
+      "subgenres",
+      "gameplay_type",
+      "party_mode",
+      "progression",
+      "setting",
+      "tone",
+      "multiplayer",
+      "mechanics"
+    ],
+    "needs_enrichment": false
+  },
   "profile": {
     "genres": [
       "action",
@@ -38,7 +54,9 @@
     "combat": [],
     "perspective": [],
     "world_structure": [],
-    "party_mode": [],
+    "party_mode": [
+      "solo"
+    ],
     "narrative": [],
     "progression": [
       "rpg",
@@ -177,60 +195,34 @@
   },
   "recommendations": [
     {
-      "slug": "kingdom-come-deliverance",
-      "title": "Kingdom Come: Deliverance",
-      "year": 2018,
-      "score": 0.4753,
-      "base_score": 0.4753,
-      "reasons": [
-        "прогрессия",
-        "тон",
-        "мультиплеер",
-        "поджанр",
-        "ключевые механики"
-      ],
-      "signals": [
-        {
-          "field": "progression",
-          "label": "прогрессия",
-          "overlap": 1
-        },
-        {
-          "field": "tone",
-          "label": "тон",
-          "overlap": 1
-        },
-        {
-          "field": "multiplayer",
-          "label": "мультиплеер",
-          "overlap": 1
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.889
-        },
-        {
-          "field": "mechanics",
-          "label": "ключевые механики",
-          "overlap": 0.875
-        }
-      ]
-    },
-    {
       "slug": "resident-evil-7-biohazard",
       "title": "Resident Evil 7 Biohazard",
       "year": 2017,
-      "score": 0.4431,
-      "base_score": 0.4431,
+      "score": 0.6021,
+      "base_score": 0.6021,
       "reasons": [
-        "прогрессия",
-        "сеттинг",
-        "мультиплеер",
         "жанр",
-        "поджанр"
+        "тип геймплея",
+        "партия/соло",
+        "прогрессия",
+        "сеттинг"
       ],
       "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
         {
           "field": "progression",
           "label": "прогрессия",
@@ -240,21 +232,6 @@
           "field": "setting",
           "label": "сеттинг",
           "overlap": 1
-        },
-        {
-          "field": "multiplayer",
-          "label": "мультиплеер",
-          "overlap": 1
-        },
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 0.667
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.667
         }
       ]
     },
@@ -262,19 +239,111 @@
       "slug": "outer-wilds",
       "title": "Outer Wilds",
       "year": 2019,
-      "score": 0.4029,
-      "base_score": 0.4029,
+      "score": 0.5967,
+      "base_score": 0.5967,
       "reasons": [
-        "тип геймплея",
-        "тон",
-        "мультиплеер",
         "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
         "прогрессия"
       ],
       "signals": [
         {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
           "field": "gameplay_type",
           "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "kingdom-come-deliverance",
+      "title": "Kingdom Come: Deliverance",
+      "year": 2018,
+      "score": 0.5731,
+      "base_score": 0.5731,
+      "reasons": [
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "прогрессия",
+        "тон"
+      ],
+      "signals": [
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "tone",
+          "label": "тон",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "resident-evil-2",
+      "title": "Resident Evil 2",
+      "year": 2019,
+      "score": 0.5598,
+      "base_score": 0.5598,
+      "reasons": [
+        "жанр",
+        "партия/соло",
+        "сеттинг",
+        "тон",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "setting",
+          "label": "сеттинг",
           "overlap": 1
         },
         {
@@ -286,36 +355,36 @@
           "field": "multiplayer",
           "label": "мультиплеер",
           "overlap": 1
-        },
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 0.667
-        },
-        {
-          "field": "progression",
-          "label": "прогрессия",
-          "overlap": 0.667
         }
       ]
     },
     {
-      "slug": "celeste",
-      "title": "Celeste",
-      "year": 2018,
-      "score": 0.3955,
-      "base_score": 0.3955,
+      "slug": "titanfall-2",
+      "title": "Titanfall® 2",
+      "year": 2016,
+      "score": 0.5223,
+      "base_score": 0.5223,
       "reasons": [
         "жанр",
+        "партия/соло",
+        "прогрессия",
         "мультиплеер",
-        "поджанр",
-        "тип геймплея",
-        "ключевые механики"
+        "поджанр"
       ],
       "signals": [
         {
           "field": "genres",
           "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
           "overlap": 1
         },
         {
@@ -326,34 +395,244 @@
         {
           "field": "subgenres",
           "label": "поджанр",
-          "overlap": 0.9
-        },
-        {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 0.667
-        },
-        {
-          "field": "mechanics",
-          "label": "ключевые механики",
-          "overlap": 0.563
+          "overlap": 0.833
         }
       ]
     },
     {
-      "slug": "resident-evil-2",
-      "title": "Resident Evil 2",
-      "year": 2019,
-      "score": 0.3682,
-      "base_score": 0.3682,
+      "slug": "stray",
+      "title": "Stray",
+      "year": 2022,
+      "score": 0.5172,
+      "base_score": 0.5172,
       "reasons": [
-        "сеттинг",
-        "мультиплеер",
+        "жанр",
         "поджанр",
-        "ключевые механики",
-        "тип геймплея"
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
       ],
       "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "resident-evil-village",
+      "title": "Resident Evil Village",
+      "year": 2021,
+      "score": 0.5113,
+      "base_score": 0.5113,
+      "reasons": [
+        "жанр",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.857
+        }
+      ]
+    },
+    {
+      "slug": "celeste",
+      "title": "Celeste",
+      "year": 2018,
+      "score": 0.4922,
+      "base_score": 0.4922,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "hogwarts-legacy",
+      "title": "Hogwarts Legacy",
+      "year": 2023,
+      "score": 0.4885,
+      "base_score": 0.4885,
+      "reasons": [
+        "тип геймплея",
+        "партия/соло",
+        "прогрессия",
+        "тон",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "tone",
+          "label": "тон",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "half-life-alyx",
+      "title": "Half-Life: Alyx",
+      "year": 2020,
+      "score": 0.4884,
+      "base_score": 0.4884,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "red-dead-redemption-2",
+      "title": "Red Dead Redemption 2",
+      "year": 2018,
+      "score": 0.4767,
+      "base_score": 0.4767,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "сеттинг",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
         {
           "field": "setting",
           "label": "сеттинг",
@@ -363,38 +642,38 @@
           "field": "multiplayer",
           "label": "мультиплеер",
           "overlap": 1
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.895
-        },
-        {
-          "field": "mechanics",
-          "label": "ключевые механики",
-          "overlap": 0.882
-        },
-        {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 0.5
         }
       ]
     },
     {
-      "slug": "stray",
-      "title": "Stray",
-      "year": 2022,
-      "score": 0.3528,
-      "base_score": 0.3528,
+      "slug": "monster-hunter-world",
+      "title": "Monster Hunter: World",
+      "year": 2018,
+      "score": 0.454,
+      "base_score": 0.454,
       "reasons": [
-        "мультиплеер",
-        "поджанр",
-        "ключевые механики",
         "жанр",
-        "тип геймплея"
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр"
       ],
       "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
         {
           "field": "multiplayer",
           "label": "мультиплеер",
@@ -403,63 +682,7 @@
         {
           "field": "subgenres",
           "label": "поджанр",
-          "overlap": 0.889
-        },
-        {
-          "field": "mechanics",
-          "label": "ключевые механики",
-          "overlap": 0.875
-        },
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 0.667
-        },
-        {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 0.5
-        }
-      ]
-    },
-    {
-      "slug": "it-takes-two",
-      "title": "It Takes Two",
-      "year": 2021,
-      "score": 0.3473,
-      "base_score": 0.3473,
-      "reasons": [
-        "тип геймплея",
-        "прогрессия",
-        "жанр",
-        "ключевые механики",
-        "поджанр"
-      ],
-      "signals": [
-        {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 1
-        },
-        {
-          "field": "progression",
-          "label": "прогрессия",
-          "overlap": 1
-        },
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 0.667
-        },
-        {
-          "field": "mechanics",
-          "label": "ключевые механики",
-          "overlap": 0.5
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.458
+          "overlap": 0.833
         }
       ]
     }

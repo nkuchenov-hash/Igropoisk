@@ -1,10 +1,26 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "game_slug": "stardew-valley",
-  "generated_at": "2026-08-13T10:12:30.203Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "generated_at": "2026-08-13T10:14:03.261Z",
+  "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "profile_quality": {
+    "populated_axes": 9,
+    "total_axes": 13,
+    "populated": [
+      "genres",
+      "subgenres",
+      "gameplay_type",
+      "world_structure",
+      "party_mode",
+      "progression",
+      "setting",
+      "multiplayer",
+      "mechanics"
+    ],
+    "needs_enrichment": false
+  },
   "profile": {
     "genres": [
       "indie",
@@ -48,16 +64,21 @@
     "world_structure": [
       "hub"
     ],
-    "party_mode": [],
+    "party_mode": [
+      "solo"
+    ],
     "narrative": [],
     "progression": [
       "rpg",
       "progression"
     ],
-    "setting": [],
+    "setting": [
+      "scifi"
+    ],
     "tone": [],
     "multiplayer": [
       "coop",
+      "competitive",
       "singleplayer"
     ],
     "mechanics": [
@@ -178,5 +199,281 @@
     ],
     "franchise": ""
   },
-  "recommendations": []
+  "recommendations": [
+    {
+      "slug": "fallout-4",
+      "title": "Fallout 4",
+      "year": 2015,
+      "score": 0.456,
+      "base_score": 0.456,
+      "reasons": [
+        "жанр",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.6
+        }
+      ]
+    },
+    {
+      "slug": "undertale",
+      "title": "Undertale",
+      "year": 2015,
+      "score": 0.4256,
+      "base_score": 0.4256,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "партия/соло",
+        "мультиплеер",
+        "тип геймплея"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 0.5
+        }
+      ]
+    },
+    {
+      "slug": "the-witcher-3-wild-hunt",
+      "title": "The Witcher 3: Wild Hunt",
+      "year": 2015,
+      "score": 0.4189,
+      "base_score": 0.4189,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.577
+        }
+      ]
+    },
+    {
+      "slug": "kingdom-come-deliverance",
+      "title": "Kingdom Come: Deliverance",
+      "year": 2018,
+      "score": 0.3795,
+      "base_score": 0.3795,
+      "reasons": [
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер",
+        "поджанр",
+        "тип геймплея"
+      ],
+      "signals": [
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.938
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 0.5
+        }
+      ]
+    },
+    {
+      "slug": "cyberpunk-2077",
+      "title": "Cyberpunk 2077",
+      "year": 2020,
+      "score": 0.3638,
+      "base_score": 0.3638,
+      "reasons": [
+        "жанр",
+        "партия/соло",
+        "мультиплеер",
+        "тип геймплея",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 0.5
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.462
+        }
+      ]
+    },
+    {
+      "slug": "mount-and-blade-ii-bannerlord",
+      "title": "mount-and-blade-ii-bannerlord",
+      "year": 2020,
+      "score": 0.3588,
+      "base_score": 0.3588,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "прогрессия",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "hollow-knight",
+      "title": "Hollow Knight",
+      "year": 2017,
+      "score": 0.3434,
+      "base_score": 0.3434,
+      "reasons": [
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.944
+        }
+      ]
+    }
+  ]
 }

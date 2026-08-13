@@ -1,10 +1,27 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "game_slug": "fallout-4",
-  "generated_at": "2026-08-13T10:12:30.000Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "generated_at": "2026-08-13T10:14:03.031Z",
+  "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "profile_quality": {
+    "populated_axes": 10,
+    "total_axes": 13,
+    "populated": [
+      "genres",
+      "subgenres",
+      "gameplay_type",
+      "combat",
+      "world_structure",
+      "party_mode",
+      "narrative",
+      "progression",
+      "multiplayer",
+      "mechanics"
+    ],
+    "needs_enrichment": false
+  },
   "profile": {
     "genres": [
       "rpg"
@@ -49,7 +66,9 @@
       "open",
       "world"
     ],
-    "party_mode": [],
+    "party_mode": [
+      "solo"
+    ],
     "narrative": [
       "choice",
       "driven"
@@ -191,16 +210,67 @@
       "slug": "kingdom-come-deliverance",
       "title": "Kingdom Come: Deliverance",
       "year": 2018,
-      "score": 0.4418,
-      "base_score": 0.4418,
+      "score": 0.6633,
+      "base_score": 0.6633,
       "reasons": [
+        "жанр",
+        "структура мира",
+        "партия/соло",
         "нарратив",
-        "прогрессия",
-        "мультиплеер",
-        "тип геймплея",
-        "структура мира"
+        "прогрессия"
       ],
       "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "world_structure",
+          "label": "структура мира",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "narrative",
+          "label": "нарратив",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "god-of-war-ragnarok",
+      "title": "God of War Ragnarök",
+      "year": 2022,
+      "score": 0.5784,
+      "base_score": 0.5784,
+      "reasons": [
+        "жанр",
+        "партия/соло",
+        "нарратив",
+        "прогрессия",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
         {
           "field": "narrative",
           "label": "нарратив",
@@ -215,16 +285,47 @@
           "field": "multiplayer",
           "label": "мультиплеер",
           "overlap": 1
-        },
+        }
+      ]
+    },
+    {
+      "slug": "hogwarts-legacy",
+      "title": "Hogwarts Legacy",
+      "year": 2023,
+      "score": 0.5464,
+      "base_score": 0.5464,
+      "reasons": [
+        "жанр",
+        "структура мира",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер"
+      ],
+      "signals": [
         {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 0.667
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
         },
         {
           "field": "world_structure",
           "label": "структура мира",
-          "overlap": 0.667
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
         }
       ]
     },
@@ -232,13 +333,13 @@
       "slug": "cyberpunk-2077",
       "title": "Cyberpunk 2077",
       "year": 2020,
-      "score": 0.4052,
-      "base_score": 0.4052,
+      "score": 0.4912,
+      "base_score": 0.4912,
       "reasons": [
         "жанр",
         "структура мира",
+        "партия/соло",
         "мультиплеер",
-        "тип геймплея",
         "поджанр"
       ],
       "signals": [
@@ -253,39 +354,44 @@
           "overlap": 1
         },
         {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
           "field": "multiplayer",
           "label": "мультиплеер",
           "overlap": 1
         },
         {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 0.667
-        },
-        {
           "field": "subgenres",
           "label": "поджанр",
-          "overlap": 0.5
+          "overlap": 0.76
         }
       ]
     },
     {
-      "slug": "god-of-war-ragnarok",
-      "title": "God of War Ragnarök",
-      "year": 2022,
-      "score": 0.3833,
-      "base_score": 0.3833,
+      "slug": "stardew-valley",
+      "title": "Stardew Valley",
+      "year": 2016,
+      "score": 0.456,
+      "base_score": 0.456,
       "reasons": [
-        "нарратив",
+        "жанр",
+        "партия/соло",
         "прогрессия",
         "мультиплеер",
-        "тип геймплея",
         "поджанр"
       ],
       "signals": [
         {
-          "field": "narrative",
-          "label": "нарратив",
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
           "overlap": 1
         },
         {
@@ -299,14 +405,296 @@
           "overlap": 1
         },
         {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.6
+        }
+      ]
+    },
+    {
+      "slug": "the-witcher-3-wild-hunt",
+      "title": "The Witcher 3: Wild Hunt",
+      "year": 2015,
+      "score": 0.4524,
+      "base_score": 0.4524,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
           "field": "gameplay_type",
           "label": "тип геймплея",
-          "overlap": 0.667
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
         },
         {
           "field": "subgenres",
           "label": "поджанр",
-          "overlap": 0.475
+          "overlap": 0.92
+        }
+      ]
+    },
+    {
+      "slug": "black-myth-wukong",
+      "title": "Black Myth: Wukong",
+      "year": 2024,
+      "score": 0.4464,
+      "base_score": 0.4464,
+      "reasons": [
+        "жанр",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр",
+        "тип геймплея"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.773
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 0.667
+        }
+      ]
+    },
+    {
+      "slug": "god-of-war",
+      "title": "God of War",
+      "year": 2018,
+      "score": 0.4436,
+      "base_score": 0.4436,
+      "reasons": [
+        "жанр",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр",
+        "тип геймплея"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.92
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 0.667
+        }
+      ]
+    },
+    {
+      "slug": "outer-wilds",
+      "title": "Outer Wilds",
+      "year": 2019,
+      "score": 0.4119,
+      "base_score": 0.4119,
+      "reasons": [
+        "структура мира",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "world_structure",
+          "label": "структура мира",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.92
+        }
+      ]
+    },
+    {
+      "slug": "titanfall-2",
+      "title": "Titanfall® 2",
+      "year": 2016,
+      "score": 0.4092,
+      "base_score": 0.4092,
+      "reasons": [
+        "боевая система",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "combat",
+          "label": "боевая система",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.722
+        }
+      ]
+    },
+    {
+      "slug": "undertale",
+      "title": "Undertale",
+      "year": 2015,
+      "score": 0.4031,
+      "base_score": 0.4031,
+      "reasons": [
+        "жанр",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр",
+        "тип геймплея"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.833
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 0.5
+        }
+      ]
+    },
+    {
+      "slug": "resident-evil-2",
+      "title": "Resident Evil 2",
+      "year": 2019,
+      "score": 0.3898,
+      "base_score": 0.3898,
+      "reasons": [
+        "тип геймплея",
+        "боевая система",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "combat",
+          "label": "боевая система",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.789
         }
       ]
     }

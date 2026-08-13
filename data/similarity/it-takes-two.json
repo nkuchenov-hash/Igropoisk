@@ -1,10 +1,25 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "game_slug": "it-takes-two",
-  "generated_at": "2026-08-13T10:12:30.831Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "generated_at": "2026-08-13T10:14:03.938Z",
+  "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "profile_quality": {
+    "populated_axes": 8,
+    "total_axes": 13,
+    "populated": [
+      "genres",
+      "subgenres",
+      "gameplay_type",
+      "perspective",
+      "narrative",
+      "progression",
+      "multiplayer",
+      "mechanics"
+    ],
+    "needs_enrichment": false
+  },
   "profile": {
     "genres": [
       "action",
@@ -58,7 +73,8 @@
     "setting": [],
     "tone": [],
     "multiplayer": [
-      "coop"
+      "coop",
+      "competitive"
     ],
     "mechanics": [
       "multi",
@@ -183,17 +199,17 @@
   },
   "recommendations": [
     {
-      "slug": "resident-evil-7-biohazard",
-      "title": "Resident Evil 7 Biohazard",
-      "year": 2017,
-      "score": 0.3933,
-      "base_score": 0.3933,
+      "slug": "titanfall-2",
+      "title": "Titanfall® 2",
+      "year": 2016,
+      "score": 0.5181,
+      "base_score": 0.5181,
       "reasons": [
         "жанр",
+        "нарратив",
         "прогрессия",
-        "тип геймплея",
-        "ключевые механики",
-        "перспектива"
+        "поджанр",
+        "ключевые механики"
       ],
       "signals": [
         {
@@ -202,23 +218,187 @@
           "overlap": 1
         },
         {
+          "field": "narrative",
+          "label": "нарратив",
+          "overlap": 1
+        },
+        {
           "field": "progression",
           "label": "прогрессия",
           "overlap": 1
         },
         {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
+          "field": "subgenres",
+          "label": "поджанр",
           "overlap": 0.667
         },
         {
           "field": "mechanics",
           "label": "ключевые механики",
-          "overlap": 0.533
+          "overlap": 0.625
+        }
+      ]
+    },
+    {
+      "slug": "forza-horizon-5",
+      "title": "Forza Horizon 5",
+      "year": 2021,
+      "score": 0.4652,
+      "base_score": 0.4652,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "нарратив",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
         },
         {
-          "field": "perspective",
-          "label": "перспектива",
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "narrative",
+          "label": "нарратив",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.591
+        }
+      ]
+    },
+    {
+      "slug": "celeste",
+      "title": "Celeste",
+      "year": 2018,
+      "score": 0.4565,
+      "base_score": 0.4565,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "нарратив",
+        "поджанр",
+        "ключевые механики"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "narrative",
+          "label": "нарратив",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.65
+        },
+        {
+          "field": "mechanics",
+          "label": "ключевые механики",
+          "overlap": 0.533
+        }
+      ]
+    },
+    {
+      "slug": "resident-evil-7-biohazard",
+      "title": "Resident Evil 7 Biohazard",
+      "year": 2017,
+      "score": 0.4468,
+      "base_score": 0.4468,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "прогрессия",
+        "поджанр",
+        "ключевые механики"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.643
+        },
+        {
+          "field": "mechanics",
+          "label": "ключевые механики",
+          "overlap": 0.533
+        }
+      ]
+    },
+    {
+      "slug": "kingdom-come-deliverance",
+      "title": "Kingdom Come: Deliverance",
+      "year": 2018,
+      "score": 0.4228,
+      "base_score": 0.4228,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "прогрессия",
+        "поджанр",
+        "ключевые механики"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.688
+        },
+        {
+          "field": "mechanics",
+          "label": "ключевые механики",
           "overlap": 0.5
         }
       ]
@@ -227,14 +407,14 @@
       "slug": "outer-wilds",
       "title": "Outer Wilds",
       "year": 2019,
-      "score": 0.3672,
-      "base_score": 0.3672,
+      "score": 0.4192,
+      "base_score": 0.4192,
       "reasons": [
         "жанр",
         "тип геймплея",
         "прогрессия",
-        "ключевые механики",
-        "поджанр"
+        "поджанр",
+        "ключевые механики"
       ],
       "signals": [
         {
@@ -250,17 +430,17 @@
         {
           "field": "progression",
           "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
           "overlap": 0.667
         },
         {
           "field": "mechanics",
           "label": "ключевые механики",
           "overlap": 0.421
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.381
         }
       ]
     },
@@ -268,16 +448,21 @@
       "slug": "hollow-knight",
       "title": "Hollow Knight",
       "year": 2017,
-      "score": 0.3473,
-      "base_score": 0.3473,
+      "score": 0.4159,
+      "base_score": 0.4159,
       "reasons": [
+        "жанр",
         "тип геймплея",
         "прогрессия",
-        "жанр",
-        "ключевые механики",
-        "поджанр"
+        "поджанр",
+        "ключевые механики"
       ],
       "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
         {
           "field": "gameplay_type",
           "label": "тип геймплея",
@@ -289,72 +474,28 @@
           "overlap": 1
         },
         {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 0.667
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.611
         },
         {
           "field": "mechanics",
           "label": "ключевые механики",
           "overlap": 0.5
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.458
         }
       ]
     },
     {
-      "slug": "celeste",
-      "title": "Celeste",
-      "year": 2018,
-      "score": 0.3456,
-      "base_score": 0.3456,
-      "reasons": [
-        "нарратив",
-        "жанр",
-        "тип геймплея",
-        "поджанр",
-        "ключевые механики"
-      ],
-      "signals": [
-        {
-          "field": "narrative",
-          "label": "нарратив",
-          "overlap": 1
-        },
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 0.667
-        },
-        {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 0.667
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.542
-        },
-        {
-          "field": "mechanics",
-          "label": "ключевые механики",
-          "overlap": 0.533
-        }
-      ]
-    },
-    {
-      "slug": "half-life-alyx",
-      "title": "Half-Life: Alyx",
-      "year": 2020,
-      "score": 0.3448,
-      "base_score": 0.3448,
+      "slug": "resident-evil-village",
+      "title": "Resident Evil Village",
+      "year": 2021,
+      "score": 0.406,
+      "base_score": 0.406,
       "reasons": [
         "жанр",
         "прогрессия",
+        "поджанр",
+        "ключевые механики",
         "тип геймплея"
       ],
       "signals": [
@@ -369,22 +510,32 @@
           "overlap": 1
         },
         {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.643
+        },
+        {
+          "field": "mechanics",
+          "label": "ключевые механики",
+          "overlap": 0.533
+        },
+        {
           "field": "gameplay_type",
           "label": "тип геймплея",
-          "overlap": 0.667
+          "overlap": 0.5
         }
       ]
     },
     {
-      "slug": "red-dead-redemption-2",
-      "title": "Red Dead Redemption 2",
-      "year": 2018,
-      "score": 0.3437,
-      "base_score": 0.3437,
+      "slug": "god-of-war-ragnarok",
+      "title": "God of War Ragnarök",
+      "year": 2022,
+      "score": 0.3955,
+      "base_score": 0.3955,
       "reasons": [
         "жанр",
         "тип геймплея",
-        "ключевые механики",
+        "прогрессия",
         "поджанр"
       ],
       "signals": [
@@ -399,14 +550,131 @@
           "overlap": 1
         },
         {
-          "field": "mechanics",
-          "label": "ключевые механики",
-          "overlap": 0.467
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
         },
         {
           "field": "subgenres",
           "label": "поджанр",
-          "overlap": 0.458
+          "overlap": 0.5
+        }
+      ]
+    },
+    {
+      "slug": "monster-hunter-world",
+      "title": "Monster Hunter: World",
+      "year": 2018,
+      "score": 0.3923,
+      "base_score": 0.3923,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "мультиплеер",
+        "поджанр",
+        "ключевые механики"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.667
+        },
+        {
+          "field": "mechanics",
+          "label": "ключевые механики",
+          "overlap": 0.471
+        }
+      ]
+    },
+    {
+      "slug": "hogwarts-legacy",
+      "title": "Hogwarts Legacy",
+      "year": 2023,
+      "score": 0.3917,
+      "base_score": 0.3917,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "прогрессия",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.5
+        }
+      ]
+    },
+    {
+      "slug": "resident-evil-2",
+      "title": "Resident Evil 2",
+      "year": 2019,
+      "score": 0.3811,
+      "base_score": 0.3811,
+      "reasons": [
+        "жанр",
+        "нарратив",
+        "поджанр",
+        "тип геймплея",
+        "ключевые механики"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "narrative",
+          "label": "нарратив",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.579
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 0.5
+        },
+        {
+          "field": "mechanics",
+          "label": "ключевые механики",
+          "overlap": 0.471
         }
       ]
     }
