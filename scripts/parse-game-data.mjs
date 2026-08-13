@@ -13,8 +13,9 @@ const overlap=(left,right)=>{const a=tokens(left),b=tokens(right);if(!a.size||!b
 function png(buf){if(buf.length>=24&&buf.slice(1,4).toString()==='PNG')return{width:buf.readUInt32BE(16),height:buf.readUInt32BE(20)}}
 function jpeg(buf){if(buf.length<4||buf[0]!==0xff||buf[1]!==0xd8)return null;let i=2;while(i+9<buf.length){if(buf[i]!==0xff){i++;continue}const marker=buf[i+1];const len=buf.readUInt16BE(i+2);if([0xc0,0xc1,0xc2,0xc3,0xc5,0xc6,0xc7,0xc9,0xca,0xcb,0xcd,0xce,0xcf].includes(marker))return{height:buf.readUInt16BE(i+5),width:buf.readUInt16BE(i+7)};if(len<2)break;i+=2+len}return null}
 function webp(buf){if(buf.length<30||buf.slice(0,4).toString()!=='RIFF'||buf.slice(8,12).toString()!=='WEBP')return null;const type=buf.slice(12,16).toString();if(type==='VP8X')return{width:1+buf.readUIntLE(24,3),height:1+buf.readUIntLE(27,3)};if(type==='VP8 '&&buf.length>=30&&buf[23]===0x9d&&buf[24]===0x01&&buf[25]===0x2a)return{width:buf.readUInt16LE(26)&0x3fff,height:buf.readUInt16LE(28)&0x3fff};return null}
-async function probe(url){try{const response=await fetch(url,{redirect:'follow',headers:{Range:'bytes=0-262143','user-agent':'IgropoiskGameParser/2.0'},signal:AbortSignal.timeout(9000)});if(!response.ok)return null;const data=Buffer.from(await response.arrayBuffer());const size=png(data)||jpeg(data)||webp(data)||{};return{url:response.url||url,width:Number(size.width||0),height:Number(size.height||0)}}catch{return null}}
-async function chooseImage(candidates,{minWidth,minHeight,minAspect=0,maxAspect=Infinity}){for(const candidate of [...new Set(candidates.filter(Boolean))]){const result=await probe(candidate);if(!result?.width||!result?.height)continue;const aspect=result.width/result.height;if(result.width>=minWidth&&result.height>=minHeight&&aspect>=minAspect&&aspect<=maxAspect)return result.url}return''}
+async function probe(url){try{const response=await fetch(url,{redirect:'follow',headers:{Range:'bytes=0-262143','user-agent':'IgropoiskGameParser/2.0'},signal:AbortSignal.timeout(9000)});if(!response.ok)return null;const data=Buffer.from(await response.arrayBuffer());const size=png(data)||jpeg(data)||webp(data)||{};let bytes=Number(response.headers.get('content-length')||0);const range=response.headers.get('content-range')||'';const total=Number(range.match(/\/(\d+)$/)?.[1]||0);if(total)bytes=total;return{url:response.url||url,width:Number(size.width||0),height:Number(size.height||0),bytes}}catch{return null}}
+async function chooseImage(candidates,{minWidth,minHeight,minBytes=0,minAspect=0,maxAspect=Infinity}){for(const candidate of [...new Set(candidates.filter(Boolean))]){const result=await probe(candidate);if(!result?.width||!result?.height||result.bytes<minBytes)continue;const aspect=result.width/result.height;if(result.width>=minWidth&&result.height>=minHeight&&aspect>=minAspect&&aspect<=maxAspect)return result.url}return''}
+const siblingSteamAsset=(headerImage,file)=>{try{const url=new URL(headerImage);url.pathname=url.pathname.replace(/\/[^/]+$/,`/${file}`);url.search='';return url.toString()}catch{return''}};
 async function resolveSteamAppId(term){const searchUrl=`https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(term)}&l=english&cc=us`;
   const response=await fetch(searchUrl,{headers:{'user-agent':'IgropoiskGameParser/2.0'},signal:AbortSignal.timeout(12000)});if(!response.ok)throw new Error(`Steam search HTTP ${response.status}`);const payload=await response.json();const items=(payload?.items||[]).filter(item=>Number.isInteger(Number(item?.id))&&item?.name);if(!items.length)throw new Error(`Steam search returned no candidates for ${term}`);
   const target=normalize(term);const exact=items.find(item=>normalize(item.name)===target);if(exact)return{appid:Number(exact.id),name:exact.name,search_url:searchUrl,confidence:1};
@@ -35,12 +36,16 @@ try{
   const videos=(data.movies||[]).map(item=>({title:item.name,url:item.mp4?.max||item.webm?.max||'',thumbnail:item.thumbnail,source_url:`https://store.steampowered.com/app/${appid}/`})).filter(item=>item.url||item.thumbnail);
   const cdn=`https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}`;
   const akamai=`https://shared.akamai.steamstatic.com/steam/apps/${appid}`;
+  const hashedCover2x=siblingSteamAsset(data.header_image,'library_600x900_2x.jpg');
+  const hashedCover=siblingSteamAsset(data.header_image,'library_600x900.jpg');
+  const hashedHero2x=siblingSteamAsset(data.header_image,'library_hero_2x.jpg');
+  const hashedHero=siblingSteamAsset(data.header_image,'library_hero.jpg');
   const cover=await chooseImage([
-    `${cdn}/library_600x900_2x.jpg`,`${akamai}/library_600x900_2x.jpg`,`${cdn}/library_600x900.jpg`,`${akamai}/library_600x900.jpg`
-  ],{minWidth:600,minHeight:850,minAspect:.5,maxAspect:.85})||`${cdn}/library_600x900_2x.jpg`;
+    hashedCover2x,hashedCover,`${cdn}/library_600x900_2x.jpg`,`${akamai}/library_600x900_2x.jpg`,`${cdn}/library_600x900.jpg`,`${akamai}/library_600x900.jpg`
+  ],{minWidth:600,minHeight:850,minBytes:45000,minAspect:.5,maxAspect:.85});
   const hero=await chooseImage([
-    data.background_raw,data.background,`${cdn}/library_hero_2x.jpg`,`${akamai}/library_hero_2x.jpg`,`${cdn}/library_hero.jpg`,`${akamai}/library_hero.jpg`
-  ],{minWidth:1200,minHeight:675,minAspect:1.25})||data.background_raw||data.background||`${cdn}/library_hero.jpg`;
+    hashedHero2x,hashedHero,`${cdn}/library_hero_2x.jpg`,`${akamai}/library_hero_2x.jpg`,`${cdn}/library_hero.jpg`,`${akamai}/library_hero.jpg`,data.background_raw,data.background
+  ],{minWidth:1200,minHeight:675,minBytes:80000,minAspect:1.25});
   const parsed={
     schema_version:2,
     identity:{slug,title:data.name||resolution?.name||requestedTitle||slug,steam_appid:appid},
