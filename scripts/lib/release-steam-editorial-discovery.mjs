@@ -7,7 +7,7 @@ const canonical = value => String(value || '').normalize('NFKD').toLowerCase().r
 const slugify = value => canonical(value).replace(/\s+/g, '-').slice(0, 90);
 
 async function fetchJSON(url, timeout = DEFAULT_TIMEOUT) {
-  const response = await fetch(url, {signal: AbortSignal.timeout(timeout), headers: {'user-agent':'Mozilla/5.0 IgropoiskReleaseEditorialDiscovery/2.0','accept-language':'en-US,en;q=0.9'}});
+  const response = await fetch(url, {signal: AbortSignal.timeout(timeout), headers: {'user-agent':'Mozilla/5.0 IgropoiskReleaseEditorialDiscovery/2.1','accept-language':'en-US,en;q=0.9'}});
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return response.json();
 }
@@ -74,8 +74,8 @@ export async function enrichRawReleasesFromSteamEditorial(rawReleases = [], poli
   ]);
   const signalByAppId=new Map();
   for(const source of signals)for(const item of source.ranked){if(!signalByAppId.has(item.appid))signalByAppId.set(item.appid,new Set());signalByAppId.get(item.appid).add(item.signal)}
-  const releases=(rawReleases||[]).map(item=>({...item})); const bySteamId=new Map();
-  releases.forEach((release,index)=>{const appid=Number(release?.external_ids?.steam);if(Number.isFinite(appid))bySteamId.set(appid,index)});
+  const releases=(rawReleases||[]).map(item=>({...item})); const bySteamId=new Map(); const bySlug=new Map();
+  releases.forEach((release,index)=>{const appid=Number(release?.external_ids?.steam);if(Number.isFinite(appid))bySteamId.set(appid,index);if(release?.slug&&!bySlug.has(release.slug))bySlug.set(release.slug,index)});
   const missing=[];
   for(const [appid,appSignals] of signalByAppId){const existingIndex=bySteamId.get(appid);if(Number.isInteger(existingIndex)){let updated=releases[existingIndex];for(const signal of appSignals)updated=mergeSignal(updated,signal);releases[existingIndex]=updated}else missing.push({appid,signals:[...appSignals]})}
   const discovered=await mapPool(missing,8,async item=>{
@@ -86,6 +86,17 @@ export async function enrichRawReleasesFromSteamEditorial(rawReleases = [], poli
     if(!Number.isFinite(releaseTime)||releaseTime<lowerBound||releaseTime>upperBound)return null;
     return release;
   });
-  for(const release of discovered.filter(Boolean)){const appid=Number(release.external_ids?.steam);if(!Number.isFinite(appid)||bySteamId.has(appid))continue;bySteamId.set(appid,releases.length);releases.push(release)}
+  for(const release of discovered.filter(Boolean)){
+    const appid=Number(release.external_ids?.steam);
+    if(!Number.isFinite(appid)||bySteamId.has(appid))continue;
+    const duplicateIndex=bySlug.get(release.slug);
+    if(Number.isInteger(duplicateIndex)){
+      let updated=releases[duplicateIndex];
+      for(const signal of release.editorial_quality?.signals||[])updated=mergeSignal(updated,signal);
+      releases[duplicateIndex]=updated;
+      continue;
+    }
+    bySteamId.set(appid,releases.length);bySlug.set(release.slug,releases.length);releases.push(release);
+  }
   return {releases,sources:signals.map(source=>({signal:source.strong_signal,status:source.status,items:source.ids.length,strong_rank:source.strong_rank,url:source.url,duration_ms:source.duration_ms,...(source.error?{error:source.error}:{})})),discovered:Math.max(0,releases.length-(rawReleases||[]).length)};
 }
