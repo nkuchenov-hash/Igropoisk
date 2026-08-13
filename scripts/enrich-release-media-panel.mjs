@@ -37,6 +37,8 @@ await runPool(selected,10,async game=>{const evidence=[];let failed=0;for(const 
 
 let withCoverage=0,cisCoverage=0,maxIntersection=0;
 for(const game of releases){
+  const steamId=Number(game.external_ids?.steam);
+  if(Number.isFinite(steamId))game.image={...(game.image||{}),candidate_urls:[...new Set([...(game.image?.candidate_urls||[]),`https://cdn.cloudflare.steamstatic.com/steam/apps/${steamId}/library_600x900_2x.jpg`])].filter(Boolean)};
   const popular=popularMatch(game);
   const previousNames=[...(game.editorial_quality?.media_publishers||[]),...(game.anticipation?.independent_publishers||[]),...(popular?.news_publishers||[])];
   const fresh=researched.get(game.id);
