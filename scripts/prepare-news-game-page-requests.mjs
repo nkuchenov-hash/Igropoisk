@@ -19,7 +19,7 @@ function existsAtProduction(relative) {
 if (productionRef) {
   for (const item of items) {
     for (const game of Array.isArray(item?.games) ? item.games : []) {
-      if (!game || typeof game !== 'object') continue;
+      if (!game || typeof game !== 'object' || game.identityVerified !== true) continue;
       const gameId = String(game.gameId || game.game_id || '').trim();
       const slug = String(game.slug || '').trim().toLowerCase();
       const title = String(game.title || item.game || '').trim();
@@ -36,6 +36,8 @@ if (productionRef) {
         slug,
         confidence: Number(game.resolutionConfidence || game.confidence || 1),
         verified_external: Boolean(game.verifiedExternal),
+        identity_verified: true,
+        verification_sources: Array.isArray(game.verificationSources) ? game.verificationSources : [],
         matched_by: game.matchedBy || 'canonical-production-audit',
         source_url: item.primaryUrl || item.url || null,
         published_at: item.publishedAt || null,
@@ -48,7 +50,7 @@ if (productionRef) {
 const requests = [...requestsByGame.values()];
 const requestsB64 = Buffer.from(JSON.stringify(requests), 'utf8').toString('base64');
 const output = {
-  schema_version: 2,
+  schema_version: 3,
   generated_at: new Date().toISOString(),
   production_ref: productionRef || null,
   count: requests.length,
