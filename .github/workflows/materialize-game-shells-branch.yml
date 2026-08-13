@@ -26,18 +26,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Materialize canonical shells
+      - name: Materialize canonical shells and deterministic similarity
         run: |
           node scripts/materialize-game-shells.mjs
+          node scripts/build-similarity-index.mjs
           node scripts/validate-game-shells.mjs
-      - name: Commit materialized Game Pages
+      - name: Commit materialized catalog outputs
         run: |
-          if git diff --quiet -- game; then
-            echo 'No Game Page shell changes required.'
+          if git diff --quiet -- game data/similarity; then
+            echo 'No Game Page materialization changes required.'
             exit 0
           fi
           git config user.name 'igropoisk-lifecycle'
           git config user.email 'actions@users.noreply.github.com'
-          git add game/*/index.html
-          git commit -m 'Materialize canonical Game Page shells'
+          git add game/*/index.html data/similarity
+          git commit -m 'Materialize canonical Game Page shells and similarity'
           git push origin HEAD:agent/migrate-legacy-game-pages
