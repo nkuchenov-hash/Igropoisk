@@ -1,0 +1,94 @@
+{
+  "schema_version": 2,
+  "type": "review",
+  "game_slug": "pax-autocratica",
+  "game_id": "game_2a7ceb637cbcf1a28770",
+  "canonical_title": "Pax Autocratica",
+  "checked_at": "2026-08-13T02:46:31.568Z",
+  "status": "red-needs-revision",
+  "green": false,
+  "comments": [
+    "Корпус рецензий: 0/10.",
+    "Рейтинг: 0/10."
+  ],
+  "revision_history": [
+    {
+      "attempt": 1,
+      "label": "review-research-1",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:36:14\n\nNode.js v22.23.1\n"
+    },
+    {
+      "attempt": 2,
+      "label": "rating-1",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "node:fs:440\n    return binding.readFileUtf8(path, stringToFlags(options.flag));\n                   ^\n\nError: ENOENT: no such file or directory, open '/home/runner/work/Igropoisk/Igropoisk/data/reviews/pax-autocratica.json'\n    at Object.readFileSync (node:fs:440:20)\n    at read (file:///home/runner/work/Igropoisk/Igropoisk/scripts/calculate-ratings-from-research.mjs:7:36)\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/calculate-ratings-from-research.mjs:9:13\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {\n  errno: -2,\n  code: 'ENOENT',\n  syscall: 'open',\n  path: '/home/runner/work/Igropoisk/Igropoisk/data/reviews/pax-autocratica.json'\n}\n\nNode.js v22.23.1\n"
+    },
+    {
+      "attempt": 3,
+      "label": "review-research-2",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:36:14\n\nNode.js v22.23.1\n"
+    },
+    {
+      "attempt": 4,
+      "label": "rating-2",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "node:fs:440\n    return binding.readFileUtf8(path, stringToFlags(options.flag));\n                   ^\n\nError: ENOENT: no such file or directory, open '/home/runner/work/Igropoisk/Igropoisk/data/reviews/pax-autocratica.json'\n    at Object.readFileSync (node:fs:440:20)\n    at read (file:///home/runner/work/Igropoisk/Igropoisk/scripts/calculate-ratings-from-research.mjs:7:36)\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/calculate-ratings-from-research.mjs:9:13\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {\n  errno: -2,\n  code: 'ENOENT',\n  syscall: 'open',\n  path: '/home/runner/work/Igropoisk/Igropoisk/data/reviews/pax-autocratica.json'\n}\n\nNode.js v22.23.1\n"
+    },
+    {
+      "attempt": 5,
+      "label": "review-research-3",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:36:14\n\nNode.js v22.23.1\n"
+    },
+    {
+      "attempt": 6,
+      "label": "rating-3",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "node:fs:440\n    return binding.readFileUtf8(path, stringToFlags(options.flag));\n                   ^\n\nError: ENOENT: no such file or directory, open '/home/runner/work/Igropoisk/Igropoisk/data/reviews/pax-autocratica.json'\n    at Object.readFileSync (node:fs:440:20)\n    at read (file:///home/runner/work/Igropoisk/Igropoisk/scripts/calculate-ratings-from-research.mjs:7:36)\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/calculate-ratings-from-research.mjs:9:13\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {\n  errno: -2,\n  code: 'ENOENT',\n  syscall: 'open',\n  path: '/home/runner/work/Igropoisk/Igropoisk/data/reviews/pax-autocratica.json'\n}\n\nNode.js v22.23.1\n"
+    },
+    {
+      "attempt": 7,
+      "label": "review-research-4",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:29:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:36:14\n\nNode.js v22.23.1\n"
+    },
+    {
+      "attempt": 8,
+      "label": "rating-4",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "node:fs:440\n    return binding.readFileUtf8(path, stringToFlags(options.flag));\n                   ^\n\nError: ENOENT: no such file or directory, open '/home/runner/work/Igropoisk/Igropoisk/data/reviews/pax-autocratica.json'\n    at Object.readFileSync (node:fs:440:20)\n    at read (file:///home/runner/work/Igropoisk/Igropoisk/scripts/calculate-ratings-from-research.mjs:7:36)\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/calculate-ratings-from-research.mjs:9:13\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {\n  errno: -2,\n  code: 'ENOENT',\n  syscall: 'open',\n  path: '/home/runner/work/Igropoisk/Igropoisk/data/reviews/pax-autocratica.json'\n}\n\nNode.js v22.23.1\n"
+    }
+  ],
+  "policy": {
+    "quality_never_terminally_blocks": true,
+    "red_means_revise_again": true,
+    "immediate_revision_attempts": 4,
+    "keep_queued_until_green": true
+  }
+}
