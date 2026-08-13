@@ -58,28 +58,40 @@ function confirmedEvent(event = {}, candidate = {}) {
     return String(sourceId || '').startsWith('steam:') || /store\.steampowered\.com/i.test(String(source?.url || ''));
   });
 }
-function regionalQualification(affinity = {}, policy = {}) {
+function regionalQualification(affinity = {}, policy = {}, mediaIntersection = null) {
   const cfg = policy.regional_notability || {};
+  const mediaMinimum = Number(cfg.media_intersection_minimum || 3);
   const strongScore = Number(cfg.strong_score_minimum || 220);
   const strongEvents = Number(cfg.strong_event_minimum || 2);
   const strongSources = Number(cfg.strong_source_minimum || 1);
   const corroboratedScore = Number(cfg.corroborated_score_minimum || 170);
   const corroboratedSources = Number(cfg.corroborated_source_minimum || 2);
+  const mediaCounts = mediaIntersection?.region_counts || {};
+  const regions = uniq([...Object.keys(affinity.regions || {}), ...Object.keys(mediaCounts)]);
   const qualifying = [];
-  for (const [region, scoreValue] of Object.entries(affinity.regions || {})) {
-    const score = Number(scoreValue || 0);
+  for (const region of regions) {
+    const score = Number(affinity.regions?.[region] || 0);
     const eventCount = Number(affinity.region_event_counts?.[region] || 0);
     const sourceCount = Number(affinity.region_source_counts?.[region] || 0);
+    const mediaCount = Number(mediaCounts?.[region] || 0);
+    const mediaIntersectionQualified = mediaCount >= mediaMinimum;
     const strongRepeatedAttention = score >= strongScore && eventCount >= strongEvents && sourceCount >= strongSources;
     const independentlyCorroborated = score >= corroboratedScore && sourceCount >= corroboratedSources;
-    if (strongRepeatedAttention || independentlyCorroborated) {
-      qualifying.push({region, score, event_count: eventCount, source_count: sourceCount, reason: strongRepeatedAttention ? 'strong-repeated-regional-attention' : 'multi-source-regional-attention'});
+    if (mediaIntersectionQualified || strongRepeatedAttention || independentlyCorroborated) {
+      qualifying.push({
+        region,
+        score,
+        event_count: eventCount,
+        source_count: Math.max(sourceCount, mediaCount),
+        media_intersection_count: mediaCount,
+        reason: mediaIntersectionQualified ? 'regional-editorial-media-intersection' : strongRepeatedAttention ? 'strong-repeated-regional-attention' : 'multi-source-regional-attention'
+      });
     }
   }
   return {
     eligible: qualifying.length > 0,
     qualifying_regions: qualifying,
-    rule: 'Regional admission requires measured repeated or independently corroborated audience attention. Developer origin, game origin and language support do not qualify a release.'
+    rule: 'Regional admission may be earned by at least the configured number of independent editorial publisher families from that audience region, or by repeated/corroborated regional attention. Developer origin, game origin and language support never qualify a release.'
   };
 }
 function publicShape(candidate, visibility = 'personalized') {
@@ -101,6 +113,7 @@ function publicShape(candidate, visibility = 'personalized') {
     editorial: {status: visibility, has_page: Boolean(candidate.editorial?.has_page || candidate.page_url)},
     significance: candidate.significance,
     global_notability: candidate.global_notability || null,
+    media_intersection: candidate.media_intersection || null,
     audience_affinity: candidate.audience_affinity || null,
     regional_notability: candidate.regional_notability || null,
     visibility
@@ -142,9 +155,18 @@ export function attachAudienceAffinity(candidates = [], newsEvents = [], policy 
         sources: names.slice(0, 6),
       });
     }
+    const mediaRegionCounts = candidate.media_intersection?.region_counts || {};
+    for (const [region, countValue] of Object.entries(mediaRegionCounts)) {
+      const count = Number(countValue || 0);
+      if (count <= 0) continue;
+      regionScores.set(region, Math.max(regionScores.get(region) || 0, count * 100));
+    }
     const regions = Object.fromEntries([...regionScores.entries()].sort(([a], [b]) => a.localeCompare(b)));
     const regionEventCounts = Object.fromEntries([...regionEvents.entries()].map(([region, ids]) => [region, ids.size]));
-    const regionSourceCounts = Object.fromEntries([...regionSources.entries()].map(([region, names]) => [region, names.size]));
+    const regionSourceCounts = {};
+    for (const region of uniq([...Object.keys(regions), ...Object.keys(mediaRegionCounts)])) {
+      regionSourceCounts[region] = Math.max(regionSources.get(region)?.size || 0, Number(mediaRegionCounts?.[region] || 0));
+    }
     const audienceAffinity = {
       score: Math.max(0, ...Object.values(regions)),
       regions,
@@ -152,9 +174,10 @@ export function attachAudienceAffinity(candidates = [], newsEvents = [], policy 
       evidence: evidence.slice(0, 12),
       region_event_counts: regionEventCounts,
       region_source_counts: regionSourceCounts,
+      media_region_counts: mediaRegionCounts,
       role: 'personalized-admission-or-ranking'
     };
-    return {...candidate, audience_affinity: audienceAffinity, regional_notability: regionalQualification(audienceAffinity, policy)};
+    return {...candidate, audience_affinity: audienceAffinity, regional_notability: regionalQualification(audienceAffinity, policy, candidate.media_intersection)};
   });
 }
 
@@ -169,6 +192,7 @@ export function buildPersonalizedReleases(candidates = [], policy = {}) {
     && (candidate.events || []).some(event => confirmedEvent(event, candidate))
   ).sort((a, b) =>
     Number(b.audience_affinity?.score || 0) - Number(a.audience_affinity?.score || 0)
+    || Number(b.media_intersection?.overall_count || 0) - Number(a.media_intersection?.overall_count || 0)
     || Number(b.global_notability?.metrics?.historical_franchise_publications || 0) - Number(a.global_notability?.metrics?.historical_franchise_publications || 0)
     || String(a.title || '').localeCompare(String(b.title || ''), 'en')
   );
