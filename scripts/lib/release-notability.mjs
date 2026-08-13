@@ -171,12 +171,40 @@ export function measureGlobalNotability(candidate, {newsEvents = [], popularRank
   };
 }
 
+function applyMediaRegionalEvidence(candidate, policy = {}) {
+  const mediaCounts = candidate?.media_intersection?.region_counts || {};
+  const mediaMinimum = Number(policy?.regional_notability?.media_intersection_minimum || 3);
+  const affinity = clone(candidate.audience_affinity || {score:0,regions:{},region_source_counts:{},region_event_counts:{},evidence:[],evidence_count:0,role:'personalized-admission-or-ranking'});
+  affinity.regions ||= {};
+  affinity.region_source_counts ||= {};
+  affinity.media_region_counts = {...(affinity.media_region_counts || {}), ...mediaCounts};
+  const mediaQualified = [];
+  for (const [region, countValue] of Object.entries(mediaCounts)) {
+    const count = Number(countValue || 0);
+    if (count <= 0) continue;
+    affinity.regions[region] = Math.max(Number(affinity.regions[region] || 0), count * 100);
+    affinity.region_source_counts[region] = Math.max(Number(affinity.region_source_counts[region] || 0), count);
+    if (count >= mediaMinimum) mediaQualified.push({region,score:affinity.regions[region],event_count:Number(affinity.region_event_counts?.[region] || 0),source_count:affinity.region_source_counts[region],media_intersection_count:count,reason:'regional-editorial-media-intersection'});
+  }
+  affinity.score = Math.max(Number(affinity.score || 0), ...Object.values(affinity.regions).map(Number));
+  candidate.audience_affinity = affinity;
+  const regional = clone(candidate.regional_notability || {eligible:false,qualifying_regions:[]});
+  const byRegion = new Map((regional.qualifying_regions || []).map(item => [item.region,item]));
+  for (const item of mediaQualified) byRegion.set(item.region,item);
+  regional.qualifying_regions = [...byRegion.values()];
+  regional.eligible = regional.qualifying_regions.length > 0;
+  regional.rule = 'Regional admission may come from repeated/corroborated audience evidence or from the configured minimum number of independent editorial publisher families in that region. Origin and language support do not qualify a release.';
+  candidate.regional_notability = regional;
+  return candidate;
+}
+
 export function applyGlobalNotabilityGate(candidates = [], {newsEvents = [], popularRanking = [], policy = {}, mediaSourceConfig = defaultMediaSourceConfig} = {}) {
   return (candidates || []).map(source => {
     const candidate = clone(source);
     const notability = measureGlobalNotability(candidate, {newsEvents, popularRanking, policy, mediaSourceConfig});
     candidate.global_notability = notability;
     candidate.media_intersection = notability.media_intersection;
+    applyMediaRegionalEvidence(candidate, policy);
     candidate.moderation ||= {};
     candidate.moderation.automatic_reasons = uniq(candidate.moderation.automatic_reasons || []);
     if (candidate.moderation.rejection_reason || candidate.moderation.publication_forbidden || candidate.moderation.status === 'rejected') return candidate;
