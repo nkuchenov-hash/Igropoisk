@@ -1,10 +1,45 @@
 {
-  "schema_version": 2,
+  "schema_version": 4,
   "game_slug": "divinity-original-sin-ii",
-  "generated_at": "2026-08-13T19:41:58.539Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "game_id": "game_321f483288896339f720",
+  "generated_at": "2026-08-13T22:15:38.892Z",
+  "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "source_dna": {
+    "status": "auto",
+    "revision": 1,
+    "quality": {
+      "populated_axes": 13,
+      "total_axes": 16,
+      "core_axes": 4,
+      "total_core_axes": 7,
+      "populated": [
+        "genres",
+        "subgenres",
+        "core_loop",
+        "combat_style",
+        "traversal",
+        "progression",
+        "player_agency",
+        "pacing",
+        "narrative",
+        "setting",
+        "tone",
+        "multiplayer",
+        "mechanics"
+      ],
+      "populated_core": [
+        "core_loop",
+        "combat_style",
+        "traversal",
+        "progression"
+      ],
+      "ready_for_similarity": true,
+      "needs_enrichment": false
+    },
+    "ref": "../game-dna/divinity-original-sin-ii.json"
+  },
   "profile": {
     "genres": [
       "adventure",
@@ -12,63 +47,114 @@
       "strategy"
     ],
     "subgenres": [
-      "single",
-      "player",
-      "multi",
-      "pvp",
-      "online",
-      "shared",
-      "split",
-      "screen",
-      "co",
-      "op",
-      "steam",
-      "achievements",
-      "full",
-      "controller",
-      "support",
-      "trading",
-      "cards",
-      "captions",
-      "available",
-      "workshop",
-      "cloud",
-      "includes",
-      "level",
-      "editor",
-      "remote",
-      "play",
-      "on",
-      "tablet",
-      "tv",
-      "together",
-      "family",
-      "sharing"
+      "includes_level_editor"
     ],
-    "gameplay_type": [],
-    "combat": [],
-    "perspective": [],
+    "core_loop": [
+      "combat",
+      "exploration",
+      "crafting",
+      "racing",
+      "strategy"
+    ],
+    "combat_style": [
+      "tactical",
+      "turn_based"
+    ],
+    "traversal": [
+      "vehicles"
+    ],
     "world_structure": [],
-    "party_mode": [],
-    "narrative": [],
-    "progression": [],
-    "setting": [],
-    "tone": [],
-    "multiplayer": [],
-    "mechanics": [
-      "single",
-      "player",
-      "multi",
-      "pvp",
-      "online",
-      "shared",
-      "split",
-      "screen",
-      "co",
-      "op"
+    "mission_structure": [],
+    "progression": [
+      "abilities",
+      "stats_builds"
     ],
-    "semantic_tokens": [],
+    "perspective": [],
+    "player_agency": [
+      "branching_story"
+    ],
+    "pacing": [
+      "tactical"
+    ],
+    "narrative": [
+      "choice_driven"
+    ],
+    "setting": [
+      "fantasy"
+    ],
+    "tone": [
+      "dark"
+    ],
+    "multiplayer": [
+      "singleplayer",
+      "coop",
+      "competitive",
+      "local_multiplayer"
+    ],
+    "mechanics": [
+      "companions"
+    ],
     "franchise": ""
   },
-  "recommendations": []
+  "recommendations": [
+    {
+      "slug": "baldurs-gate-3",
+      "game_id": "game_86b06ca351d4e4d36e13",
+      "title": "Baldur’s Gate 3",
+      "year": 2023,
+      "score": 0.431,
+      "base_score": 0.431,
+      "penalty": 0,
+      "core_matches": 4,
+      "compared_core_axes": 4,
+      "dna_status": "auto",
+      "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
+      "reasons": [
+        "Основной игровой цикл",
+        "Перемещение",
+        "Свобода игрока",
+        "Боевая модель",
+        "Жанры",
+        "Прогрессия"
+      ],
+      "signals": [
+        {
+          "axis": "core_loop",
+          "overlap": 0.6,
+          "contribution": 0.096,
+          "label": "Основной игровой цикл"
+        },
+        {
+          "axis": "traversal",
+          "overlap": 1,
+          "contribution": 0.08,
+          "label": "Перемещение"
+        },
+        {
+          "axis": "player_agency",
+          "overlap": 1,
+          "contribution": 0.06,
+          "label": "Свобода игрока"
+        },
+        {
+          "axis": "combat_style",
+          "overlap": 0.5,
+          "contribution": 0.05,
+          "label": "Боевая модель"
+        },
+        {
+          "axis": "genres",
+          "overlap": 1,
+          "contribution": 0.04,
+          "label": "Жанры"
+        },
+        {
+          "axis": "progression",
+          "overlap": 0.5,
+          "contribution": 0.04,
+          "label": "Прогрессия"
+        }
+      ]
+    }
+  ]
 }

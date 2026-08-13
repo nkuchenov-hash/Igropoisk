@@ -1,80 +1,144 @@
 {
-  "schema_version": 2,
+  "schema_version": 4,
   "game_slug": "baldurs-gate-3",
-  "generated_at": "2026-08-13T19:41:58.706Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "game_id": "game_86b06ca351d4e4d36e13",
+  "generated_at": "2026-08-13T22:15:38.918Z",
+  "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "source_dna": {
+    "status": "auto",
+    "revision": 1,
+    "quality": {
+      "populated_axes": 9,
+      "total_axes": 16,
+      "core_axes": 4,
+      "total_core_axes": 7,
+      "populated": [
+        "genres",
+        "core_loop",
+        "combat_style",
+        "traversal",
+        "progression",
+        "player_agency",
+        "narrative",
+        "multiplayer",
+        "mechanics"
+      ],
+      "populated_core": [
+        "core_loop",
+        "combat_style",
+        "traversal",
+        "progression"
+      ],
+      "ready_for_similarity": true,
+      "needs_enrichment": false
+    },
+    "ref": "../game-dna/baldurs-gate-3.json"
+  },
   "profile": {
     "genres": [
       "adventure",
       "rpg",
       "strategy"
     ],
-    "subgenres": [
-      "single",
-      "player",
-      "multi",
-      "co",
-      "op",
-      "online",
-      "lan",
-      "cross",
-      "platform",
-      "multiplayer",
-      "steam",
-      "achievements",
-      "full",
-      "controller",
-      "support",
-      "trading",
-      "cards",
-      "adjustable",
-      "text",
-      "size",
-      "camera",
-      "comfort",
-      "color",
-      "alternatives",
-      "custom",
-      "volume",
-      "controls",
-      "difficulty",
-      "playable",
-      "without",
-      "timed",
-      "input",
-      "dualshock",
-      "dualsense",
-      "save",
-      "anytime",
-      "stereo",
-      "sound",
-      "subtitle",
-      "options",
-      "surround",
-      "cloud",
-      "remote",
-      "play",
-      "on",
-      "tv",
-      "together",
-      "family",
-      "sharing"
+    "subgenres": [],
+    "core_loop": [
+      "survival",
+      "strategy",
+      "exploration",
+      "combat"
     ],
-    "gameplay_type": [],
-    "combat": [],
-    "perspective": [],
+    "combat_style": [
+      "tactical"
+    ],
+    "traversal": [
+      "vehicles"
+    ],
     "world_structure": [],
-    "party_mode": [],
-    "narrative": [],
-    "progression": [],
+    "mission_structure": [],
+    "progression": [
+      "stats_builds"
+    ],
+    "perspective": [],
+    "player_agency": [
+      "branching_story"
+    ],
+    "pacing": [],
+    "narrative": [
+      "story_heavy",
+      "choice_driven"
+    ],
     "setting": [],
     "tone": [],
-    "multiplayer": [],
-    "mechanics": [],
-    "semantic_tokens": [],
+    "multiplayer": [
+      "singleplayer",
+      "coop"
+    ],
+    "mechanics": [
+      "companions"
+    ],
     "franchise": ""
   },
-  "recommendations": []
+  "recommendations": [
+    {
+      "slug": "divinity-original-sin-ii",
+      "game_id": "game_321f483288896339f720",
+      "title": "Divinity: Original Sin 2 - Definitive Edition",
+      "year": 2017,
+      "score": 0.431,
+      "base_score": 0.431,
+      "penalty": 0,
+      "core_matches": 4,
+      "compared_core_axes": 4,
+      "dna_status": "auto",
+      "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/435150/page_bg_raw.jpg?t=1765811123",
+      "reasons": [
+        "Основной игровой цикл",
+        "Перемещение",
+        "Свобода игрока",
+        "Боевая модель",
+        "Жанры",
+        "Прогрессия"
+      ],
+      "signals": [
+        {
+          "axis": "core_loop",
+          "overlap": 0.6,
+          "contribution": 0.096,
+          "label": "Основной игровой цикл"
+        },
+        {
+          "axis": "traversal",
+          "overlap": 1,
+          "contribution": 0.08,
+          "label": "Перемещение"
+        },
+        {
+          "axis": "player_agency",
+          "overlap": 1,
+          "contribution": 0.06,
+          "label": "Свобода игрока"
+        },
+        {
+          "axis": "combat_style",
+          "overlap": 0.5,
+          "contribution": 0.05,
+          "label": "Боевая модель"
+        },
+        {
+          "axis": "genres",
+          "overlap": 1,
+          "contribution": 0.04,
+          "label": "Жанры"
+        },
+        {
+          "axis": "progression",
+          "overlap": 0.5,
+          "contribution": 0.04,
+          "label": "Прогрессия"
+        }
+      ]
+    }
+  ]
 }

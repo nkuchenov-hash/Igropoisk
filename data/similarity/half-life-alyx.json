@@ -1,74 +1,86 @@
 {
-  "schema_version": 2,
+  "schema_version": 4,
   "game_slug": "half-life-alyx",
-  "generated_at": "2026-08-13T19:41:58.656Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "game_id": "game_0338a205f0c32e9b79bc",
+  "generated_at": "2026-08-13T22:15:38.909Z",
+  "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "source_dna": {
+    "status": "auto",
+    "revision": 1,
+    "quality": {
+      "populated_axes": 9,
+      "total_axes": 16,
+      "core_axes": 4,
+      "total_core_axes": 7,
+      "populated": [
+        "genres",
+        "subgenres",
+        "core_loop",
+        "world_structure",
+        "mission_structure",
+        "perspective",
+        "setting",
+        "multiplayer",
+        "mechanics"
+      ],
+      "populated_core": [
+        "core_loop",
+        "world_structure",
+        "mission_structure",
+        "perspective"
+      ],
+      "ready_for_similarity": true,
+      "needs_enrichment": false
+    },
+    "ref": "../game-dna/half-life-alyx.json"
+  },
   "profile": {
     "genres": [
       "action",
       "adventure"
     ],
     "subgenres": [
-      "single",
-      "player",
-      "steam",
-      "achievements",
-      "tracked",
-      "controller",
-      "support",
-      "vr",
-      "only",
-      "captions",
-      "available",
-      "workshop",
-      "custom",
-      "volume",
-      "controls",
-      "adjustable",
-      "difficulty",
-      "save",
-      "anytime",
-      "stereo",
-      "sound",
-      "subtitle",
-      "options",
-      "surround",
-      "includes",
-      "level",
-      "editor",
-      "family",
-      "sharing"
+      "vr_only",
+      "vr_support",
+      "includes_level_editor"
     ],
-    "gameplay_type": [],
-    "combat": [],
-    "perspective": [],
-    "world_structure": [],
-    "party_mode": [],
-    "narrative": [],
+    "core_loop": [
+      "combat",
+      "exploration",
+      "puzzle_solving",
+      "survival",
+      "building",
+      "racing"
+    ],
+    "combat_style": [],
+    "traversal": [],
+    "world_structure": [
+      "level_based"
+    ],
+    "mission_structure": [
+      "levels"
+    ],
     "progression": [],
-    "setting": [],
-    "tone": [],
-    "multiplayer": [],
-    "mechanics": [
-      "single",
-      "player",
-      "steam",
-      "achievements",
-      "tracked",
-      "controller",
-      "support",
-      "vr",
-      "only",
-      "captions",
-      "available",
-      "workshop",
-      "custom",
-      "volume",
-      "controls"
+    "perspective": [
+      "vr"
     ],
-    "semantic_tokens": [],
+    "player_agency": [],
+    "pacing": [],
+    "narrative": [],
+    "setting": [
+      "fantasy"
+    ],
+    "tone": [],
+    "multiplayer": [
+      "singleplayer"
+    ],
+    "mechanics": [
+      "vr_only",
+      "vr_support",
+      "puzzles"
+    ],
     "franchise": ""
   },
   "recommendations": []

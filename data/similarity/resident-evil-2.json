@@ -1,65 +1,70 @@
 {
-  "schema_version": 2,
+  "schema_version": 4,
   "game_slug": "resident-evil-2",
-  "generated_at": "2026-08-13T19:41:58.606Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "game_id": "game_f5ec18b2f0b1f5bb1f7b",
+  "generated_at": "2026-08-13T22:15:38.904Z",
+  "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "source_dna": {
+    "status": "auto",
+    "revision": 1,
+    "quality": {
+      "populated_axes": 6,
+      "total_axes": 16,
+      "core_axes": 2,
+      "total_core_axes": 7,
+      "populated": [
+        "genres",
+        "core_loop",
+        "traversal",
+        "tone",
+        "multiplayer",
+        "mechanics"
+      ],
+      "populated_core": [
+        "core_loop",
+        "traversal"
+      ],
+      "ready_for_similarity": false,
+      "needs_enrichment": true
+    },
+    "ref": "../game-dna/resident-evil-2.json"
+  },
   "profile": {
     "genres": [
       "action"
     ],
-    "subgenres": [
-      "single",
-      "player",
-      "steam",
-      "achievements",
-      "full",
-      "controller",
-      "support",
-      "trading",
-      "cards",
-      "cloud",
-      "remote",
-      "play",
-      "on",
-      "tablet",
-      "tv",
-      "hdr",
-      "available",
-      "family",
-      "sharing"
+    "subgenres": [],
+    "core_loop": [
+      "combat",
+      "exploration",
+      "puzzle_solving",
+      "survival",
+      "collecting"
     ],
-    "gameplay_type": [],
-    "combat": [],
-    "perspective": [],
+    "combat_style": [],
+    "traversal": [
+      "vehicles"
+    ],
     "world_structure": [],
-    "party_mode": [],
-    "narrative": [],
+    "mission_structure": [],
     "progression": [],
+    "perspective": [],
+    "player_agency": [],
+    "pacing": [],
+    "narrative": [],
     "setting": [],
-    "tone": [],
-    "multiplayer": [],
-    "mechanics": [
-      "single",
-      "player",
-      "steam",
-      "achievements",
-      "full",
-      "controller",
-      "support",
-      "trading",
-      "cards",
-      "cloud",
-      "remote",
-      "play",
-      "on",
-      "tablet",
-      "tv",
-      "hdr",
-      "available"
+    "tone": [
+      "dark",
+      "horror"
     ],
-    "semantic_tokens": [],
+    "multiplayer": [
+      "singleplayer"
+    ],
+    "mechanics": [
+      "puzzles"
+    ],
     "franchise": ""
   },
   "recommendations": []

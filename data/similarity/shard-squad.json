@@ -1,10 +1,34 @@
 {
-  "schema_version": 2,
+  "schema_version": 4,
   "game_slug": "shard-squad",
-  "generated_at": "2026-08-13T19:41:58.941Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "game_id": "game_c551a11a365506c5617a",
+  "generated_at": "2026-08-13T22:15:38.928Z",
+  "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "source_dna": {
+    "status": "auto",
+    "revision": 1,
+    "quality": {
+      "populated_axes": 4,
+      "total_axes": 16,
+      "core_axes": 2,
+      "total_core_axes": 7,
+      "populated": [
+        "genres",
+        "core_loop",
+        "progression",
+        "multiplayer"
+      ],
+      "populated_core": [
+        "core_loop",
+        "progression"
+      ],
+      "ready_for_similarity": false,
+      "needs_enrichment": true
+    },
+    "ref": "../game-dna/shard-squad.json"
+  },
   "profile": {
     "genres": [
       "action",
@@ -12,56 +36,30 @@
       "casual",
       "indie"
     ],
-    "subgenres": [
-      "single",
-      "player",
-      "multi",
-      "co",
-      "op",
-      "shared",
-      "split",
-      "screen",
-      "steam",
-      "achievements",
-      "full",
-      "controller",
-      "support",
-      "dualshock",
-      "dualsense",
-      "cloud",
-      "remote",
-      "play",
-      "together",
-      "family",
-      "sharing"
+    "subgenres": [],
+    "core_loop": [
+      "combat",
+      "exploration"
     ],
-    "gameplay_type": [],
-    "combat": [],
-    "perspective": [],
+    "combat_style": [],
+    "traversal": [],
     "world_structure": [],
-    "party_mode": [],
+    "mission_structure": [],
+    "progression": [
+      "abilities"
+    ],
+    "perspective": [],
+    "player_agency": [],
+    "pacing": [],
     "narrative": [],
-    "progression": [],
     "setting": [],
     "tone": [],
-    "multiplayer": [],
-    "mechanics": [
-      "single",
-      "player",
-      "multi",
-      "co",
-      "op",
-      "shared",
-      "split",
-      "screen",
-      "steam",
-      "achievements",
-      "full",
-      "controller",
-      "support",
-      "dualshock"
+    "multiplayer": [
+      "singleplayer",
+      "coop",
+      "local_multiplayer"
     ],
-    "semantic_tokens": [],
+    "mechanics": [],
     "franchise": ""
   },
   "recommendations": []
