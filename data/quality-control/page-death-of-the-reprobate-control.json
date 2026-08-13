@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "type": "page",
+  "game_slug": "death-of-the-reprobate",
+  "game_id": "game_1b6c415929d3887ac5df",
+  "canonical_title": "Death of the Reprobate",
+  "checked_at": "2026-08-13T10:31:51.570Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
+  "revision_history": [
+    {
+      "attempt": 1,
+      "label": "relations-1",
+      "script": "scripts/enrich-game-relations.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"death-of-the-reprobate\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 2,
+      "label": "similarity-1",
+      "script": "scripts/build-similarity-index.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 83,\n  \"profiles\": 96,\n  \"similarity_files_written\": 1,\n  \"year_proximity_used\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 3,
+      "label": "media-validation-1",
+      "script": "scripts/validate-game-media-quality.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"death-of-the-reprobate\",\n  \"status\": \"green\",\n  \"comments\": 0,\n  \"accepted_screenshots\": 10\n}\n",
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "quality_never_terminally_blocks": true,
+    "red_means_revise_again": true,
+    "immediate_revision_attempts": 4,
+    "keep_queued_until_green": true
+  }
+}

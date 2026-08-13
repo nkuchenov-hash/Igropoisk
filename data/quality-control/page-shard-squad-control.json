@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "type": "page",
+  "game_slug": "shard-squad",
+  "game_id": "game_c551a11a365506c5617a",
+  "canonical_title": "Shard Squad",
+  "checked_at": "2026-08-13T10:33:47.107Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
+  "revision_history": [
+    {
+      "attempt": 1,
+      "label": "relations-1",
+      "script": "scripts/enrich-game-relations.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"shard-squad\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 2,
+      "label": "similarity-1",
+      "script": "scripts/build-similarity-index.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 87,\n  \"profiles\": 104,\n  \"similarity_files_written\": 1,\n  \"year_proximity_used\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 3,
+      "label": "media-validation-1",
+      "script": "scripts/validate-game-media-quality.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"shard-squad\",\n  \"status\": \"green\",\n  \"comments\": 0,\n  \"accepted_screenshots\": 6\n}\n",
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "quality_never_terminally_blocks": true,
+    "red_means_revise_again": true,
+    "immediate_revision_attempts": 4,
+    "keep_queued_until_green": true
+  }
+}
