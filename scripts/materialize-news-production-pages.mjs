@@ -55,7 +55,7 @@ for (const slug of slugs) {
   if (!entry) throw new Error(`Visible catalog is missing news-required game ${slug}.`);
   mergedCatalog.set(slug, entry);
 }
-writeJson(targetCatalogPath, [...mergedCatalog.values()].sort((a, b) => Number(a.year || 9999) - Number(b.year || 9999) || String(a.title || '').localeCompare(String(b.title || ''), 'en')));
+writeJson(targetCatalogPath, [...mergedCatalog.values()]);
 
 const sourceGameContentRoot = path.join(sourceRoot, 'data/game-content');
 const chunkFiles = fs.existsSync(sourceGameContentRoot) ? fs.readdirSync(sourceGameContentRoot).filter(name => name.endsWith('.json')) : [];
