@@ -16,8 +16,8 @@
 </head>
 <body>
 <div class="ig-admin-layout">
-<aside class="ig-admin-sidebar" aria-label="Разделы админки"><a class="ig-logo" href="../index.html" style="margin:0 12px 24px">ИГРОПОИСК</a><a class="active" href="#overview">Обзор</a><a href="games/">Игры</a><a href="game-dna/">Game DNA</a><a href="content-pipeline/">Контентный конвейер</a><a href="home-widgets/releases/" data-ig-home-release-admin>Ближайшие релизы</a><a href="home-widgets/reviews-of-day/" data-ig-review-day-admin>Обзоры дня</a><a href="parsers/popular/">Популярность</a><a href="parsers/game-data/">Данные игры</a><a href="parsers/releases/">Календарь релизов</a><a href="parsers/news/">Новости</a><a href="parsers/ratings/">Рейтинги</a><a href="parsers/review-synthesis/">AI-обзоры</a><a href="#rating-audit">Аудит рейтинга</a><a href="./design-system/game-page-v3.html">Дизайн-система v3</a></aside>
-<main class="ig-admin-main" id="overview"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px"><div><div class="ig-kicker">Admin / Data pipelines</div><h1 class="ig-admin-title">Парсеры и расчёты</h1><p class="ig-admin-lead">Здесь видно, откуда получены данные игры, какие новости найдены, как извлечены оценки изданий, что сейчас обсуждают больше всего и из каких источников собран обзор Игропоиска.</p></div><button class="ig-button" id="theme" type="button" aria-label="Переключить тему">☀</button></div>
+<aside class="ig-admin-sidebar" aria-label="Разделы админки"><a class="ig-logo" href="../index.html">ИГРОПОИСК</a><a class="active" href="#overview">Обзор</a><a href="games/">Игры</a><a href="game-dna/">Game DNA</a><a href="content-pipeline/">Контентный конвейер</a><a href="home-widgets/releases/" data-ig-home-release-admin>Ближайшие релизы</a><a href="home-widgets/reviews-of-day/" data-ig-review-day-admin>Обзоры дня</a><a href="parsers/popular/">Популярность</a><a href="parsers/game-data/">Данные игры</a><a href="parsers/releases/">Календарь релизов</a><a href="parsers/news/">Новости</a><a href="parsers/ratings/">Рейтинги</a><a href="parsers/review-synthesis/">AI-обзоры</a><a href="#rating-audit">Аудит рейтинга</a><a href="./design-system/game-page-v3.html">Дизайн-система v3</a></aside>
+<main class="ig-admin-main" id="overview"><div><div><div class="ig-kicker">Admin / Data pipelines</div><h1 class="ig-admin-title">Парсеры и расчёты</h1><p class="ig-admin-lead">Здесь видно, откуда получены данные игры, какие новости найдены, как извлечены оценки изданий, что сейчас обсуждают больше всего и из каких источников собран обзор Игропоиска.</p></div><button class="ig-button" id="theme" type="button" aria-label="Переключить тему">☀</button></div>
 <section class="ig-admin-grid" aria-label="Контентный конвейер">
   <article class="ig-admin-card ig-card"><span class="ig-admin-status ok">Единая сущность</span><h2>Игры</h2><p>Канонические ID, источники, полнота, конфликты, дубли, приоритет, история и редакционные блокировки.</p><div class="admin-card-actions ig-toolbar"><a class="ig-button" href="games/">Открыть игры →</a></div></article>
   <article class="ig-admin-card ig-card"><span class="ig-admin-status ok">Отдельная сущность</span><h2>Game DNA</h2><p>Редактируемые характеристики игрового дизайна: основной цикл, бой, перемещение, структура мира, задания, прогрессия и другие оси similarity.</p><div class="admin-card-actions ig-toolbar"><a class="ig-button" href="game-dna/">Открыть DNA →</a></div></article>
@@ -32,7 +32,7 @@
 </section>
 <section class="ig-admin-grid" id="parserCards"></section>
 <section id="rating-audit"><div id="ratingAudit"></div></section>
-<section class="ig-admin-card" id="backendStatus" style="margin-top:18px"></section>
+<section class="ig-admin-card" id="backendStatus"></section>
 </main>
 </div>
 <script src="../assets/auth.js?v=20260804-6"></script>
