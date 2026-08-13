@@ -26,6 +26,7 @@ concurrency:
 jobs:
   full-run:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Checkout proposed pipeline
         uses: actions/checkout@v4
@@ -39,18 +40,25 @@ jobs:
 
       - name: Run contract tests
         run: |
+          node --check scripts/verify-news-game-identities.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
           node scripts/test-news-storage-content-api.mjs
           node scripts/test-news-game-context-resolver.mjs
           node scripts/test-news-primary-game-refiner.mjs
+          node scripts/test-news-publication-gate.mjs
+          node scripts/test-news-game-registry-discovery.mjs
           node scripts/validate-news-module.mjs
           node scripts/validate-production-boundaries.mjs
 
-      - name: Run all source groups without publishing
+      - name: Run all source groups and web-verify game identities without publishing
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
+          OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
+          NEWS_GAME_VERIFY_BATCH: '8'
           NEWS_PIPELINE_REPORT: tmp/news-pipeline-staging-report.json
         run: |
           node scripts/run-news-pipeline.mjs --force
@@ -86,6 +94,8 @@ jobs:
           name: news-pipeline-staging-${{ github.sha }}
           path: |
             tmp/news-pipeline-staging-report.json
+            tmp/news-game-identity-verification.json
+            tmp/news-game-hashtag-normalization.json
             data/news.json
             data/publisher-news.json
             data/youtube-signals.json
