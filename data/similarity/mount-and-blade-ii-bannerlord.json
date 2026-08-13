@@ -1,10 +1,45 @@
 {
-  "schema_version": 2,
+  "schema_version": 4,
   "game_slug": "mount-and-blade-ii-bannerlord",
-  "generated_at": "2026-08-13T19:41:58.648Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "game_id": "game_b8e9303eca33b6e87451",
+  "generated_at": "2026-08-13T22:15:38.907Z",
+  "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "source_dna": {
+    "status": "auto",
+    "revision": 1,
+    "quality": {
+      "populated_axes": 11,
+      "total_axes": 16,
+      "core_axes": 6,
+      "total_core_axes": 7,
+      "populated": [
+        "genres",
+        "subgenres",
+        "core_loop",
+        "combat_style",
+        "traversal",
+        "world_structure",
+        "progression",
+        "perspective",
+        "setting",
+        "multiplayer",
+        "mechanics"
+      ],
+      "populated_core": [
+        "core_loop",
+        "combat_style",
+        "traversal",
+        "world_structure",
+        "progression",
+        "perspective"
+      ],
+      "ready_for_similarity": true,
+      "needs_enrichment": false
+    },
+    "ref": "../game-dna/mount-and-blade-ii-bannerlord.json"
+  },
   "profile": {
     "genres": [
       "action",
@@ -14,56 +49,47 @@
       "strategy"
     ],
     "subgenres": [
-      "single",
-      "player",
-      "multi",
-      "pvp",
-      "online",
-      "steam",
-      "achievements",
-      "trading",
-      "cards",
-      "workshop",
-      "partial",
-      "controller",
-      "support",
-      "cloud",
-      "includes",
-      "level",
-      "editor",
-      "remote",
-      "play",
-      "on",
-      "tablet",
-      "family",
-      "sharing"
+      "includes_level_editor"
     ],
-    "gameplay_type": [],
-    "combat": [],
-    "perspective": [],
-    "world_structure": [],
-    "party_mode": [],
+    "core_loop": [
+      "combat",
+      "exploration",
+      "crafting",
+      "management",
+      "strategy"
+    ],
+    "combat_style": [
+      "tactical"
+    ],
+    "traversal": [
+      "mounts",
+      "vehicles"
+    ],
+    "world_structure": [
+      "sandbox"
+    ],
+    "mission_structure": [],
+    "progression": [
+      "stats_builds"
+    ],
+    "perspective": [
+      "third_person"
+    ],
+    "player_agency": [],
+    "pacing": [],
     "narrative": [],
-    "progression": [],
-    "setting": [],
-    "tone": [],
-    "multiplayer": [],
-    "mechanics": [
-      "single",
-      "player",
-      "multi",
-      "pvp",
-      "online",
-      "steam",
-      "achievements",
-      "trading",
-      "cards",
-      "workshop",
-      "partial",
-      "controller",
-      "support"
+    "setting": [
+      "medieval"
     ],
-    "semantic_tokens": [],
+    "tone": [],
+    "multiplayer": [
+      "singleplayer",
+      "competitive",
+      "mmo"
+    ],
+    "mechanics": [
+      "companions"
+    ],
     "franchise": ""
   },
   "recommendations": []

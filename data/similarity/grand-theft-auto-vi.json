@@ -1,51 +1,65 @@
 {
-  "schema_version": 2,
+  "schema_version": 4,
   "game_slug": "grand-theft-auto-vi",
-  "generated_at": "2026-08-13T19:41:58.766Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "game_id": "game_2b6d6ce5ccb2be3b539a",
+  "generated_at": "2026-08-13T22:15:38.923Z",
+  "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "source_dna": {
+    "status": "auto",
+    "revision": 1,
+    "quality": {
+      "populated_axes": 4,
+      "total_axes": 16,
+      "core_axes": 2,
+      "total_core_axes": 7,
+      "populated": [
+        "genres",
+        "core_loop",
+        "traversal",
+        "mechanics"
+      ],
+      "populated_core": [
+        "core_loop",
+        "traversal"
+      ],
+      "ready_for_similarity": false,
+      "needs_enrichment": true
+    },
+    "ref": "../game-dna/grand-theft-auto-vi.json"
+  },
   "profile": {
     "genres": [
-      "экшен",
-      "открытыи",
-      "мир",
-      "приключения"
+      "action",
+      "открытыи_мир",
+      "adventure"
     ],
     "subgenres": [],
-    "gameplay_type": [],
-    "combat": [],
-    "perspective": [],
+    "core_loop": [
+      "combat",
+      "exploration"
+    ],
+    "combat_style": [],
+    "traversal": [
+      "gliding"
+    ],
     "world_structure": [],
-    "party_mode": [],
-    "narrative": [],
+    "mission_structure": [],
     "progression": [],
+    "perspective": [],
+    "player_agency": [],
+    "pacing": [],
+    "narrative": [],
     "setting": [],
     "tone": [],
     "multiplayer": [],
     "mechanics": [
-      "vice",
-      "city",
-      "и",
-      "штат",
-      "леонида",
-      "два",
-      "центральных",
-      "героя",
-      "джеи",
-      "сон",
-      "люсия",
-      "открытыи",
-      "мир",
-      "релиз",
-      "запланирован",
-      "на",
-      "19",
-      "ноября",
-      "2026",
-      "года"
+      "vice_city_и_штат_леонида",
+      "два_центральных_героя_джеи_сон_и_люсия",
+      "открытыи_мир",
+      "релиз_запланирован_на_19_ноября_2026_года"
     ],
-    "semantic_tokens": [],
     "franchise": ""
   },
   "recommendations": []

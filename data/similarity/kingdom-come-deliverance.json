@@ -1,63 +1,87 @@
 {
-  "schema_version": 2,
+  "schema_version": 4,
   "game_slug": "kingdom-come-deliverance",
-  "generated_at": "2026-08-13T19:41:58.573Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "game_id": "game_4c3313118855bd7c8fad",
+  "generated_at": "2026-08-13T22:15:38.903Z",
+  "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "source_dna": {
+    "status": "auto",
+    "revision": 1,
+    "quality": {
+      "populated_axes": 10,
+      "total_axes": 16,
+      "core_axes": 5,
+      "total_core_axes": 7,
+      "populated": [
+        "genres",
+        "core_loop",
+        "combat_style",
+        "traversal",
+        "world_structure",
+        "progression",
+        "setting",
+        "tone",
+        "multiplayer",
+        "mechanics"
+      ],
+      "populated_core": [
+        "core_loop",
+        "combat_style",
+        "traversal",
+        "world_structure",
+        "progression"
+      ],
+      "ready_for_similarity": true,
+      "needs_enrichment": false
+    },
+    "ref": "../game-dna/kingdom-come-deliverance.json"
+  },
   "profile": {
     "genres": [
       "action",
       "adventure",
       "rpg"
     ],
-    "subgenres": [
-      "single",
-      "player",
-      "steam",
-      "achievements",
-      "full",
-      "controller",
-      "support",
-      "trading",
-      "cards",
-      "cloud",
-      "remote",
-      "play",
-      "on",
-      "tv",
-      "family",
-      "sharing"
+    "subgenres": [],
+    "core_loop": [
+      "combat",
+      "exploration",
+      "stealth"
     ],
-    "gameplay_type": [],
-    "combat": [],
+    "combat_style": [
+      "melee"
+    ],
+    "traversal": [
+      "vehicles"
+    ],
+    "world_structure": [
+      "open_world",
+      "linear"
+    ],
+    "mission_structure": [],
+    "progression": [
+      "stats_builds"
+    ],
     "perspective": [],
-    "world_structure": [],
-    "party_mode": [],
+    "player_agency": [],
+    "pacing": [],
     "narrative": [],
-    "progression": [],
-    "setting": [],
-    "tone": [],
-    "multiplayer": [],
-    "mechanics": [
-      "single",
-      "player",
-      "steam",
-      "achievements",
-      "full",
-      "controller",
-      "support",
-      "trading",
-      "cards",
-      "cloud",
-      "remote",
-      "play",
-      "on",
-      "tv",
-      "family",
-      "sharing"
+    "setting": [
+      "historical",
+      "fantasy",
+      "medieval"
     ],
-    "semantic_tokens": [],
+    "tone": [
+      "dark"
+    ],
+    "multiplayer": [
+      "singleplayer"
+    ],
+    "mechanics": [
+      "stealth"
+    ],
     "franchise": ""
   },
   "recommendations": []

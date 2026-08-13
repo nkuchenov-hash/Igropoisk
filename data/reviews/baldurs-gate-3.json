@@ -1,42 +1,99 @@
 {
-  "schema_version": 4,
+  "schema_version": 6,
   "game_slug": "baldurs-gate-3",
   "game_id": "game_86b06ca351d4e4d36e13",
-  "updated_at": "2026-08-12T18:14:00.000Z",
+  "updated_at": "2026-08-13T22:21:54.565Z",
   "publication_gate": {
-    "minimum": 10,
+    "minimum": 5,
     "target": 20,
     "maximum": 20,
     "accepted": 0,
     "status": "red-needs-revision"
   },
+  "regional_discovery": {
+    "region": "ru",
+    "checks": [
+      {
+        "source_id": "igromania",
+        "name": "Игромания",
+        "status": "not_found",
+        "notes": "no verified direct review"
+      },
+      {
+        "source_id": "stopgame",
+        "name": "StopGame",
+        "status": "not_found",
+        "notes": "no verified direct review"
+      },
+      {
+        "source_id": "kanobu",
+        "name": "Канобу",
+        "status": "not_found",
+        "notes": "no verified direct review"
+      },
+      {
+        "source_id": "playground",
+        "name": "PlayGround.ru",
+        "status": "not_found",
+        "notes": "no verified direct review"
+      },
+      {
+        "source_id": "vgtimes",
+        "name": "VGTimes",
+        "status": "not_found",
+        "notes": "no verified direct review"
+      },
+      {
+        "source_id": "ixbt-games",
+        "name": "iXBT.games",
+        "status": "not_found",
+        "notes": "no verified direct review"
+      },
+      {
+        "source_id": "gamemag",
+        "name": "GameMAG.ru",
+        "status": "not_found",
+        "notes": "no verified direct review"
+      },
+      {
+        "source_id": "vk-play",
+        "name": "VK Play Media",
+        "status": "not_found",
+        "notes": "no verified direct review"
+      },
+      {
+        "source_id": "shazoo",
+        "name": "Shazoo",
+        "status": "not_found",
+        "notes": "no verified direct review"
+      }
+    ],
+    "complete": true,
+    "found_but_not_accepted": []
+  },
   "reviews": [],
-  "rejected": [
-    {
-      "publication": "IGN",
-      "title": "Walkthrough - Baldur's Gate III Guide - IGN",
-      "url": "https://www.ign.com/wikis/baldurs-gate-3/Walkthrough",
-      "reasons": [
-        "non-review content type: walkthrough",
-        "guide/wiki content cannot be used as a professional review or rating source"
-      ]
+  "rejected": [],
+  "review_score": {
+    "status": "red-needs-revision",
+    "owner": "review",
+    "method": {
+      "name": "Среднее оценок независимых профессиональных изданий",
+      "formula": "sum(normalized_10) / source_count",
+      "minimum_sources": 3,
+      "target_sources": 10,
+      "maximum_sources": 20,
+      "output_scale": 10,
+      "rounding_decimals": 1,
+      "one_vote_per_publication": true,
+      "aggregators_forbidden": true,
+      "invented_scores_forbidden": true
     },
-    {
-      "publication": "Steam",
-      "title": "Baldur's Gate 3 on Steam",
-      "url": "https://store.steampowered.com/app/1086940/",
-      "reasons": [
-        "forbidden domain: store.steampowered.com",
-        "store page is not a professional editorial review"
-      ]
+    "sources": [],
+    "calculation": {
+      "source_count": 0,
+      "values": [],
+      "mean_10": null,
+      "score_10": null
     }
-  ],
-  "igropoisk_article": {
-    "url": "../../article/baldurs-gate-3/",
-    "title": "Обзор Baldur’s Gate 3",
-    "description": "Обзор Baldur’s Gate 3 будет пересобран по подтверждённому корпусу независимых профессиональных рецензий.",
-    "score": null,
-    "score_source": "data/ratings/baldurs-gate-3.json",
-    "calculation_status": "red-needs-revision"
   }
 }

@@ -1,7 +1,7 @@
 {
-  "schema_version": 1,
-  "started_at": "2026-08-13T19:41:57.651Z",
-  "finished_at": "2026-08-13T19:42:24.051Z",
+  "schema_version": 2,
+  "started_at": "2026-08-13T22:15:38.574Z",
+  "finished_at": "2026-08-13T22:19:34.656Z",
   "results": [
     {
       "label": "canonical-materialization",
@@ -11,59 +11,94 @@
       "stderr": ""
     },
     {
+      "label": "game-dna-materialization",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 92,\n  \"targeted\": 92,\n  \"created\": 91,\n  \"updated\": 1,\n  \"unchanged\": 0,\n  \"indexed\": 92\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "game-dna-validation",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "Game DNA validation passed for 92 entities.\n",
+      "stderr": ""
+    },
+    {
       "label": "similarity-all-before-ai",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"catalog_games\": 92,\n  \"profiles\": 120,\n  \"similarity_files_written\": 92,\n  \"year_proximity_used\": false\n}\n",
+      "stdout": "{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 92,\n  \"similarity_files_written\": 92,\n  \"profiles_needing_enrichment\": 83,\n  \"games_without_recommendations\": 88,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "relations:forza-horizon-5",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"forza-horizon-5\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "dna-after-relations:forza-horizon-5",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 92,\n  \"targeted\": 1,\n  \"created\": 0,\n  \"updated\": 0,\n  \"unchanged\": 1,\n  \"indexed\": 92\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "dna-validation-after-relations",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "Game DNA validation passed for 92 entities.\n",
       "stderr": ""
     },
     {
       "label": "similarity-all-after-relations",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"catalog_games\": 92,\n  \"profiles\": 120,\n  \"similarity_files_written\": 92,\n  \"year_proximity_used\": false\n}\n",
+      "stdout": "{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 92,\n  \"similarity_files_written\": 92,\n  \"profiles_needing_enrichment\": 83,\n  \"games_without_recommendations\": 88,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n",
       "stderr": ""
     },
     {
       "label": "review:baldurs-gate-3",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"baldurs-gate-3\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 0/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"baldurs-gate-3\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
     {
       "label": "review:agefield-high-rock-the-school",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 0/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 1/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
     {
       "label": "review:crimson-desert",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"crimson-desert\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 0/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"crimson-desert\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
     {
       "label": "review:death-of-the-reprobate",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"death-of-the-reprobate\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 0/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"death-of-the-reprobate\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
     {
       "label": "review:grand-theft-auto-v",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"grand-theft-auto-v\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 0/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"grand-theft-auto-v\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
     {
       "label": "review:kusan-city-of-wolves",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"kusan-city-of-wolves\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 8,\n  \"comments\": [\n    \"Корпус рецензий: 0/10.\",\n    \"Рейтинг: 0/10.\"\n  ]\n}\n",
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"kusan-city-of-wolves\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
     {
@@ -74,13 +109,6 @@
       "stderr": ""
     },
     {
-      "label": "guides:3-japan-stigmatized-property",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"3-japan-stigmatized-property\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\"\n}\n",
-      "stderr": ""
-    },
-    {
       "label": "guides:agefield-high-rock-the-school",
       "status": "completed",
       "exit_code": 0,
@@ -88,38 +116,45 @@
       "stderr": ""
     },
     {
+      "label": "guides:crimson-desert",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"crimson-desert\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "guides:death-of-the-reprobate",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"death-of-the-reprobate\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "guides:grand-theft-auto-v",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"grand-theft-auto-v\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "guides:kusan-city-of-wolves",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"kusan-city-of-wolves\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "guides:3-japan-stigmatized-property",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"3-japan-stigmatized-property\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\"\n}\n",
+      "stderr": ""
+    },
+    {
       "label": "guides:alan-wake-2",
       "status": "completed",
       "exit_code": 0,
       "stdout": "{\n  \"slug\": \"alan-wake-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "guides:apex-legends",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"apex-legends\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "guides:big-walk",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"big-walk\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "guides:black-myth-wukong",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"black-myth-wukong\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "guides:bloodborne",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"bloodborne\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"credit_balance_exhausted\\\"\\n  }\\n}\"\n}\n",
       "stderr": ""
     }
   ]

@@ -1,25 +1,77 @@
 {
-  "schema_version": 2,
+  "schema_version": 4,
   "game_slug": "horizon-zero-dawn",
-  "generated_at": "2026-08-13T19:41:58.520Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "game_id": "game_168d87cabe801e85c190",
+  "generated_at": "2026-08-13T22:15:38.887Z",
+  "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "source_dna": {
+    "status": "auto",
+    "revision": 1,
+    "quality": {
+      "populated_axes": 7,
+      "total_axes": 16,
+      "core_axes": 5,
+      "total_core_axes": 7,
+      "populated": [
+        "core_loop",
+        "combat_style",
+        "world_structure",
+        "mission_structure",
+        "progression",
+        "setting",
+        "mechanics"
+      ],
+      "populated_core": [
+        "core_loop",
+        "combat_style",
+        "world_structure",
+        "mission_structure",
+        "progression"
+      ],
+      "ready_for_similarity": true,
+      "needs_enrichment": true
+    },
+    "ref": "../game-dna/horizon-zero-dawn.json"
+  },
   "profile": {
     "genres": [],
     "subgenres": [],
-    "gameplay_type": [],
-    "combat": [],
+    "core_loop": [
+      "combat",
+      "exploration",
+      "stealth"
+    ],
+    "combat_style": [
+      "ranged"
+    ],
+    "traversal": [],
+    "world_structure": [
+      "open_world",
+      "level_based"
+    ],
+    "mission_structure": [
+      "story_plus_side_content",
+      "levels"
+    ],
+    "progression": [
+      "skill_tree",
+      "abilities"
+    ],
     "perspective": [],
-    "world_structure": [],
-    "party_mode": [],
+    "player_agency": [],
+    "pacing": [],
     "narrative": [],
-    "progression": [],
-    "setting": [],
+    "setting": [
+      "post_apocalyptic"
+    ],
     "tone": [],
     "multiplayer": [],
-    "mechanics": [],
-    "semantic_tokens": [],
+    "mechanics": [
+      "stealth",
+      "skill_tree"
+    ],
     "franchise": ""
   },
   "recommendations": []

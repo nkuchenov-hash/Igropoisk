@@ -1,10 +1,39 @@
 {
-  "schema_version": 2,
+  "schema_version": 4,
   "game_slug": "black-myth-wukong",
-  "generated_at": "2026-08-13T19:41:58.734Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "game_id": "game_ddfb49802e631e4d0acb",
+  "generated_at": "2026-08-13T22:15:38.922Z",
+  "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "source_dna": {
+    "status": "auto",
+    "revision": 1,
+    "quality": {
+      "populated_axes": 8,
+      "total_axes": 16,
+      "core_axes": 3,
+      "total_core_axes": 7,
+      "populated": [
+        "genres",
+        "subgenres",
+        "core_loop",
+        "traversal",
+        "progression",
+        "tone",
+        "multiplayer",
+        "mechanics"
+      ],
+      "populated_core": [
+        "core_loop",
+        "traversal",
+        "progression"
+      ],
+      "ready_for_similarity": true,
+      "needs_enrichment": true
+    },
+    "ref": "../game-dna/black-myth-wukong.json"
+  },
   "profile": {
     "genres": [
       "action",
@@ -12,58 +41,38 @@
       "rpg"
     ],
     "subgenres": [
-      "single",
-      "player",
-      "steam",
-      "achievements",
-      "full",
-      "controller",
-      "support",
-      "trading",
-      "cards",
-      "gamepad",
-      "recommended",
-      "playable",
-      "without",
-      "timed",
-      "input",
-      "dualsense",
-      "stereo",
-      "sound",
-      "surround",
-      "cloud",
-      "family",
-      "sharing"
+      "gamepad_recommended"
     ],
-    "gameplay_type": [],
-    "combat": [],
-    "perspective": [],
+    "core_loop": [
+      "combat",
+      "exploration",
+      "crafting",
+      "strategy"
+    ],
+    "combat_style": [],
+    "traversal": [
+      "vehicles"
+    ],
     "world_structure": [],
-    "party_mode": [],
-    "narrative": [],
-    "progression": [],
-    "setting": [],
-    "tone": [],
-    "multiplayer": [],
-    "mechanics": [
-      "single",
-      "player",
-      "steam",
-      "achievements",
-      "full",
-      "controller",
-      "support",
-      "trading",
-      "cards",
-      "gamepad",
-      "recommended",
-      "playable",
-      "without",
-      "timed",
-      "input",
-      "dualsense"
+    "mission_structure": [],
+    "progression": [
+      "abilities",
+      "stats_builds"
     ],
-    "semantic_tokens": [],
+    "perspective": [],
+    "player_agency": [],
+    "pacing": [],
+    "narrative": [],
+    "setting": [],
+    "tone": [
+      "heroic"
+    ],
+    "multiplayer": [
+      "singleplayer"
+    ],
+    "mechanics": [
+      "gamepad_recommended"
+    ],
     "franchise": ""
   },
   "recommendations": []
