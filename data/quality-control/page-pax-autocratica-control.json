@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "type": "page",
+  "game_slug": "pax-autocratica",
+  "game_id": "game_2a7ceb637cbcf1a28770",
+  "canonical_title": "Pax Autocratica",
+  "checked_at": "2026-08-13T00:00:26.917Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
+  "revision_history": [
+    {
+      "attempt": 1,
+      "label": "relations-1",
+      "script": "scripts/enrich-game-relations.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 2,
+      "label": "similarity-1",
+      "script": "scripts/build-similarity-index.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 81,\n  \"profiles\": 89,\n  \"similarity_files_written\": 1,\n  \"year_proximity_used\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 3,
+      "label": "media-validation-1",
+      "script": "scripts/validate-game-media-quality.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"green\",\n  \"comments\": 0,\n  \"accepted_screenshots\": 34\n}\n",
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "quality_never_terminally_blocks": true,
+    "red_means_revise_again": true,
+    "immediate_revision_attempts": 4,
+    "keep_queued_until_green": true
+  }
+}

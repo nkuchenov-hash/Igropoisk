@@ -506,7 +506,7 @@
         "review_ready": false,
         "media_green": false,
         "mode": "structured_sources",
-        "updated_at": "2026-08-12T23:56:05.042Z",
+        "updated_at": "2026-08-13T00:00:16.310Z",
         "gate": {
           "canonical_game_id": "game_c2bf9099249a66dab3bc",
           "title": true,
@@ -626,9 +626,15 @@
           "url": "https://store.steampowered.com/api/appdetails?appids=4326430&l=english&cc=us",
           "type": "database",
           "checked_at": "2026-08-12T23:56:03.272Z"
+        },
+        {
+          "name": "Steam Store API",
+          "url": "https://store.steampowered.com/api/appdetails?appids=4326430&l=english&cc=us",
+          "type": "database",
+          "checked_at": "2026-08-13T00:00:15.367Z"
         }
       ],
-      "updated_at": "2026-08-12T23:56:05.042Z",
+      "updated_at": "2026-08-13T00:00:16.310Z",
       "relations": {
         "franchise": {
           "name": "",
@@ -662,18 +668,19 @@
           ],
           "semantic_tokens": []
         },
-        "checked_at": "2026-08-12T23:52:08.908Z"
+        "checked_at": "2026-08-12T23:56:12.266Z"
       }
     },
     "pax-autocratica": {
-      "schema_version": 3,
+      "schema_version": 4,
       "publication": {
-        "status": "review",
+        "status": "published",
         "gate_passed": true,
-        "public_ready": false,
+        "public_ready": true,
         "review_ready": false,
+        "media_green": true,
         "mode": "structured_sources",
-        "updated_at": "2026-08-12T11:11:12.650Z",
+        "updated_at": "2026-08-13T00:00:26.950Z",
         "gate": {
           "canonical_game_id": "game_2a7ceb637cbcf1a28770",
           "title": true,
@@ -691,6 +698,7 @@
         "title": "Pax Autocratica",
         "steam_appid": 1067360,
         "aliases": [
+          "pax-autocratica",
           "Pax Autocratica"
         ],
         "excluded_versions": []
@@ -747,7 +755,7 @@
       },
       "media": {
         "hero": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1067360/eaf9f9363d8efaee9b68d45c0dbc84e1fe8c53a7/page_bg_raw.jpg?t=1786526449",
-        "cover": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1067360/d492e901f3aec578ea3b3fc45c25f09784313d8c/header.jpg?t=1786526449",
+        "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900_2x.jpg",
         "screenshots": [
           "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1067360/794019d7a98da85f60757e6be9409dcb829881aa/ss_794019d7a98da85f60757e6be9409dcb829881aa.1920x1080.jpg?t=1786526449",
           "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1067360/6cd6758be1fe8edaf3775b2261fc6d6eb29782b3/ss_6cd6758be1fe8edaf3775b2261fc6d6eb29782b3.1920x1080.jpg?t=1786526449",
@@ -831,20 +839,25 @@
           {
             "title": "Pax Autocratica - Early Access Launch Date",
             "url": "",
-            "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257382242/0c15166e3c58c292da14916817c068950e02deb4/movie_600x337.jpg?t=1786172001"
+            "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257382242/0c15166e3c58c292da14916817c068950e02deb4/movie_600x337.jpg?t=1786172001",
+            "source_url": "https://store.steampowered.com/app/1067360/"
           },
           {
             "title": "Pax Autocratica - Gameplay Trailer 2025",
             "url": "",
-            "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257250184/0655b3563e90b87465ea07992f529cf3e750f0b1/movie_600x337.jpg?t=1786157972"
+            "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257250184/0655b3563e90b87465ea07992f529cf3e750f0b1/movie_600x337.jpg?t=1786157972",
+            "source_url": "https://store.steampowered.com/app/1067360/"
           },
           {
             "title": "Pax Autocratica - The Chaos of the battlefield",
             "url": "",
-            "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257350624/ec27667a79fed8c559bbd46864de62d63705530a/movie_600x337.jpg?t=1780659744"
+            "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257350624/ec27667a79fed8c559bbd46864de62d63705530a/movie_600x337.jpg?t=1780659744",
+            "source_url": "https://store.steampowered.com/app/1067360/"
           }
         ],
-        "artwork": []
+        "artwork": [
+          "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1067360/eaf9f9363d8efaee9b68d45c0dbc84e1fe8c53a7/page_bg_raw.jpg?t=1786526449"
+        ]
       },
       "requirements": {
         "pc": {
@@ -871,9 +884,63 @@
           "url": "https://store.steampowered.com/api/appdetails?appids=1067360&l=english&cc=us",
           "type": "database",
           "checked_at": "2026-08-12T11:11:12.424Z"
+        },
+        {
+          "name": "Steam Store API",
+          "url": "https://store.steampowered.com/api/appdetails?appids=1067360&l=english&cc=us",
+          "type": "database",
+          "checked_at": "2026-08-13T00:00:25.120Z"
         }
       ],
-      "updated_at": "2026-08-12T11:11:12.650Z"
+      "updated_at": "2026-08-13T00:00:26.950Z",
+      "relations": {
+        "franchise": {
+          "name": "",
+          "games": [],
+          "evidence": []
+        },
+        "similarity_profile": {
+          "genres": [
+            "Action",
+            "Indie",
+            "Simulation",
+            "Early Access"
+          ],
+          "subgenres": [
+            "Single-player",
+            "Full controller support",
+            "Custom Volume Controls",
+            "Adjustable Difficulty",
+            "DualShock Controller Support",
+            "DualSense Controller Support",
+            "Save Anytime",
+            "Stereo Sound",
+            "Surround Sound",
+            "Steam Cloud",
+            "Family Sharing"
+          ],
+          "gameplay_type": [],
+          "combat": [],
+          "perspective": [],
+          "world_structure": [],
+          "party_mode": [],
+          "narrative": [],
+          "progression": [],
+          "setting": [],
+          "tone": [],
+          "multiplayer": [],
+          "mechanics": [
+            "Single-player",
+            "Full controller support",
+            "Custom Volume Controls",
+            "Adjustable Difficulty",
+            "DualShock Controller Support",
+            "DualSense Controller Support"
+          ],
+          "semantic_tokens": []
+        },
+        "checked_at": "2026-08-13T00:00:25.529Z"
+      }
     },
     "hell-let-loose-vietnam": {
       "schema_version": 4,
@@ -884,7 +951,7 @@
         "review_ready": false,
         "media_green": false,
         "mode": "structured_sources",
-        "updated_at": "2026-08-12T23:55:31.047Z",
+        "updated_at": "2026-08-12T23:59:49.776Z",
         "gate": {
           "canonical_game_id": "game_91b8109a5d837b4f0bbc",
           "title": true,
@@ -1019,9 +1086,15 @@
           "url": "https://store.steampowered.com/api/appdetails?appids=3079210&l=english&cc=us",
           "type": "database",
           "checked_at": "2026-08-12T23:55:29.675Z"
+        },
+        {
+          "name": "Steam Store API",
+          "url": "https://store.steampowered.com/api/appdetails?appids=3079210&l=english&cc=us",
+          "type": "database",
+          "checked_at": "2026-08-12T23:59:49.250Z"
         }
       ],
-      "updated_at": "2026-08-12T23:55:31.047Z",
+      "updated_at": "2026-08-12T23:59:49.776Z",
       "relations": {
         "franchise": {
           "name": "",
@@ -1063,7 +1136,7 @@
           ],
           "semantic_tokens": []
         },
-        "checked_at": "2026-08-12T23:51:16.155Z"
+        "checked_at": "2026-08-12T23:55:36.876Z"
       }
     },
     "agefield-high-rock-the-school": {
@@ -1262,7 +1335,7 @@
         "review_ready": false,
         "media_green": false,
         "mode": "structured_sources",
-        "updated_at": "2026-08-12T23:55:20.765Z",
+        "updated_at": "2026-08-12T23:59:42.227Z",
         "gate": {
           "canonical_game_id": "game_f5db7308be84c62ed593",
           "title": true,
@@ -1419,9 +1492,15 @@
           "url": "https://store.steampowered.com/api/appdetails?appids=292000&l=english&cc=us",
           "type": "database",
           "checked_at": "2026-08-12T23:55:20.135Z"
+        },
+        {
+          "name": "Steam Store API",
+          "url": "https://store.steampowered.com/api/appdetails?appids=292000&l=english&cc=us",
+          "type": "database",
+          "checked_at": "2026-08-12T23:59:41.820Z"
         }
       ],
-      "updated_at": "2026-08-12T23:55:20.765Z",
+      "updated_at": "2026-08-12T23:59:42.227Z",
       "relations": {
         "franchise": {
           "name": "",
@@ -1465,7 +1544,7 @@
           ],
           "semantic_tokens": []
         },
-        "checked_at": "2026-08-12T23:51:30.330Z"
+        "checked_at": "2026-08-12T23:55:27.397Z"
       }
     },
     "wardogs": {
@@ -1477,7 +1556,7 @@
         "review_ready": false,
         "media_green": false,
         "mode": "structured_sources",
-        "updated_at": "2026-08-12T23:55:40.406Z",
+        "updated_at": "2026-08-12T23:59:57.263Z",
         "gate": {
           "canonical_game_id": "game_002e37b098eb99b64d97",
           "title": true,
@@ -1624,9 +1703,15 @@
           "url": "https://store.steampowered.com/api/appdetails?appids=1867240&l=english&cc=us",
           "type": "database",
           "checked_at": "2026-08-12T23:55:39.036Z"
+        },
+        {
+          "name": "Steam Store API",
+          "url": "https://store.steampowered.com/api/appdetails?appids=1867240&l=english&cc=us",
+          "type": "database",
+          "checked_at": "2026-08-12T23:59:56.603Z"
         }
       ],
-      "updated_at": "2026-08-12T23:55:40.406Z",
+      "updated_at": "2026-08-12T23:59:57.263Z",
       "relations": {
         "franchise": {
           "name": "",
@@ -1673,7 +1758,7 @@
           ],
           "semantic_tokens": []
         },
-        "checked_at": "2026-08-12T23:51:45.859Z"
+        "checked_at": "2026-08-12T23:55:48.143Z"
       }
     },
     "grand-theft-auto-v": {
@@ -1941,7 +2026,7 @@
         "review_ready": false,
         "media_green": false,
         "mode": "structured_sources",
-        "updated_at": "2026-08-12T23:56:33.427Z",
+        "updated_at": "2026-08-13T00:00:37.996Z",
         "gate": {
           "canonical_game_id": "game_9aa14edece9c809f1ee5",
           "title": true,
@@ -2095,9 +2180,15 @@
           "url": "https://store.steampowered.com/api/appdetails?appids=2661300&l=english&cc=us",
           "type": "database",
           "checked_at": "2026-08-12T23:56:31.756Z"
+        },
+        {
+          "name": "Steam Store API",
+          "url": "https://store.steampowered.com/api/appdetails?appids=2661300&l=english&cc=us",
+          "type": "database",
+          "checked_at": "2026-08-13T00:00:36.724Z"
         }
       ],
-      "updated_at": "2026-08-12T23:56:33.427Z",
+      "updated_at": "2026-08-13T00:00:37.996Z",
       "relations": {
         "franchise": {
           "name": "",
@@ -2105,8 +2196,20 @@
           "evidence": []
         },
         "similarity_profile": {
-          "genres": [],
-          "subgenres": [],
+          "genres": [
+            "Action",
+            "Adventure",
+            "Early Access"
+          ],
+          "subgenres": [
+            "Single-player",
+            "Multi-player",
+            "Co-op",
+            "Online Co-op",
+            "Full controller support",
+            "Steam Input API Support",
+            "Family Sharing"
+          ],
           "gameplay_type": [],
           "combat": [],
           "perspective": [],
@@ -2117,10 +2220,18 @@
           "setting": [],
           "tone": [],
           "multiplayer": [],
-          "mechanics": [],
+          "mechanics": [
+            "Single-player",
+            "Multi-player",
+            "Co-op",
+            "Online Co-op",
+            "Full controller support",
+            "Steam Input API Support",
+            "Family Sharing"
+          ],
           "semantic_tokens": []
         },
-        "checked_at": "2026-08-12T23:52:39.855Z"
+        "checked_at": "2026-08-12T23:56:41.323Z"
       }
     }
   }
