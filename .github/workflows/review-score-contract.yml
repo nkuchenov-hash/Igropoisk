@@ -1,0 +1,58 @@
+name: Review score contract
+
+on:
+  push:
+    paths:
+      - 'config/game-page-quality-v2.json'
+      - 'config/parsers/review-sources-ru.json'
+      - 'scripts/prepare-review-research.mjs'
+      - 'scripts/calculate-review-score.mjs'
+      - 'scripts/calculate-ratings-from-research.mjs'
+      - 'scripts/synthesize-review-adaptive-v2.mjs'
+      - 'scripts/audit-review-language.mjs'
+      - 'scripts/quality-control-loop*.mjs'
+      - 'scripts/build-game-page-basic*.mjs'
+      - 'scripts/orchestrate-content*.mjs'
+      - 'scripts/audit-review-publication*.mjs'
+      - 'scripts/build-top-250*.mjs'
+      - 'scripts/validate-review-score-contract.mjs'
+      - 'game/_shared/game-page-review-publication-control.js'
+      - '.github/workflows/review-score-contract.yml'
+  pull_request:
+    branches: [staging]
+    paths:
+      - 'config/game-page-quality-v2.json'
+      - 'config/parsers/review-sources-ru.json'
+      - 'scripts/**review*.mjs'
+      - 'scripts/quality-control-loop*.mjs'
+      - 'scripts/build-game-page-basic*.mjs'
+      - 'scripts/orchestrate-content*.mjs'
+      - 'scripts/build-top-250*.mjs'
+      - 'game/_shared/game-page-review-publication-control.js'
+      - '.github/workflows/review-score-contract.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check canonical review pipeline syntax
+        run: |
+          node --check scripts/prepare-review-research.mjs
+          node --check scripts/calculate-review-score.mjs
+          node --check scripts/calculate-ratings-from-research.mjs
+          node --check scripts/synthesize-review-adaptive-v2.mjs
+          node --check scripts/audit-review-language.mjs
+          node --check scripts/quality-control-loop-v3.mjs
+          node --check scripts/build-game-page-basic-v5.mjs
+          node --check scripts/orchestrate-content-v6.mjs
+          node --check scripts/audit-review-publication-v7.mjs
+          node --check scripts/build-top-250-canonical-review.mjs
+          node --check scripts/validate-review-score-contract.mjs
+          node --check game/_shared/game-page-review-publication-control.js
+      - name: Validate single source of truth
+        run: node scripts/validate-review-score-contract.mjs

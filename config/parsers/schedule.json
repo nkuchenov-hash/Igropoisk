@@ -39,11 +39,12 @@
         "preserve_editor_locked_fields": true,
         "official_conflicts_require_review": true
       },
-      "command": "node scripts/parse-releases.mjs",
+      "command": "node scripts/parse-releases.mjs && node scripts/enrich-release-media-panel.mjs",
       "outputs": [
         "data/releases/current.json",
         "data/releases/changes.json",
         "data/parser-runs/releases.json",
+        "data/parser-runs/release-media-panel.json",
         "data/release-drafts",
         "assets/covers/releases"
       ]

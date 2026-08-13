@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { steamStoreArtworkCandidates } from './steam-store-artwork.mjs';
 
 const DEFAULT_TIMEOUT = 15_000;
 const DEFAULT_MINIMUM_BYTES = 4_000;
@@ -30,7 +31,7 @@ async function fetchJson(url) {
   const response = await fetch(url, {
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
     headers: {
-      'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/1.1',
+      'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/1.2',
       'accept-language': 'en-US,en;q=0.9'
     }
   });
@@ -54,6 +55,7 @@ function steamStaticCandidates(appid) {
     `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}`,
   ];
   return roots.flatMap(root => [
+    `${root}/library_600x900_2x.jpg`,
     `${root}/library_600x900.jpg`,
     `${root}/header.jpg`,
     `${root}/capsule_616x353.jpg`,
@@ -61,11 +63,12 @@ function steamStaticCandidates(appid) {
   ]);
 }
 
-function steamCoverCandidates(appid, data, image) {
+function steamCoverCandidates(appid, data, image, storeArtwork = []) {
   const screenshots = Array.isArray(data?.screenshots) ? data.screenshots : [];
   return uniq([
     ...steamStaticCandidates(appid),
     ...(image?.candidate_urls || []),
+    ...storeArtwork,
     image?.source_url,
     data?.capsule_imagev5,
     data?.capsule_image,
@@ -80,7 +83,7 @@ function steamCoverCandidates(appid, data, image) {
 async function downloadImage(url, minimumBytes) {
   const response = await fetch(url, {
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
-    headers: { 'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/1.1' }
+    headers: { 'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/1.2' }
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const contentType = String(response.headers.get('content-type') || '').split(';')[0].toLowerCase();
@@ -95,8 +98,11 @@ async function resolveOne(root, release, minimumBytes) {
   if (existing) return { release: { ...release, image: existing }, resolved: true, source: 'existing_local' };
 
   const appid = Number(release?.external_ids?.steam);
-  const steamData = Number.isFinite(appid) ? await steamAppDetails(appid) : null;
-  const candidates = steamCoverCandidates(Number.isFinite(appid) ? appid : null, steamData, release?.image || {});
+  const validAppid = Number.isFinite(appid) ? appid : null;
+  const [steamData, storeArtwork] = validAppid
+    ? await Promise.all([steamAppDetails(validAppid), steamStoreArtworkCandidates(validAppid)])
+    : [null, []];
+  const candidates = steamCoverCandidates(validAppid, steamData, release?.image || {}, storeArtwork);
   let lastError = null;
 
   for (const url of candidates) {
