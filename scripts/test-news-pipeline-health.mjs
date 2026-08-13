@@ -37,7 +37,8 @@ const config = {
       'data/news-events.json': 1,
       'data/news-home-ru.json': 1
     },
-    minimum_official_source_success_ratio: 0.15
+    minimum_official_source_success_ratio: 0.15,
+    image_roots: ['assets/news/', 'assets/publisher-news/']
   }
 };
 fs.writeFileSync(path.join(root, 'config/news-pipeline.json'), JSON.stringify(config));
@@ -90,8 +91,18 @@ assert.equal(health.status, 'degraded');
 assert.equal(health.data['data/news.json'].count, 1);
 assert.equal(health.images.missing, 0);
 assert.equal(health.sources.persistent_failures.length, 1);
+assert.equal(health.sources.persistent_failures[0].consecutiveFailures, undefined);
 assert.equal(health.sources.persistent_failures[0].consecutive_failures, 3);
 assert.equal(health.last_successful_run_at, '2026-08-05T09:29:00.000Z');
+
+const remoteEvent = {
+  ...events[0],
+  image: `https://storage.yandexcloud.net/igropoisk-content/news/media/${'a'.repeat(64)}.jpg`
+};
+fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify({ generatedAt: '2026-08-05T09:30:00.000Z', items: [remoteEvent] }));
+fs.rmSync(path.join(root, events[0].image));
+const immutableRemoteMedia = buildNewsPipelineHealth({ root, now, dueGroups: ['global-media'] });
+assert.equal(immutableRemoteMedia.images.missing, 0, 'Immutable hashed news/media Object Storage URLs are valid historical media.');
 
 fs.rmSync(path.join(root, home[0].image));
 const missingImage = buildNewsPipelineHealth({ root, now, dueGroups: ['global-media'] });

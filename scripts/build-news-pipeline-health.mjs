@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { validateNewsImageReference } from './lib/news-image-reference.mjs';
 
 const feedFiles = [
   'data/news.json',
@@ -76,7 +77,7 @@ function sourceHistory(previous, report, checkedOfficial, checkedAt, persistentT
   });
 }
 
-function collectImages(root, payloads) {
+function collectImages(root, payloads, localRoots) {
   const referenced = new Set();
   for (const file of feedFiles) {
     if (file === 'data/youtube-signals.json') continue;
@@ -85,7 +86,7 @@ function collectImages(root, payloads) {
       if (image) referenced.add(image);
     }
   }
-  const missing = [...referenced].filter(file => !fs.existsSync(path.join(root, file)));
+  const missing = [...referenced].filter(image => !validateNewsImageReference({ root, image, localRoots }).ok);
   return {
     referenced: referenced.size,
     missing: missing.length,
@@ -152,7 +153,7 @@ export function buildNewsPipelineHealth({
   else if (successRatio < minimumRatio) blocking.push(`Работает только ${(successRatio * 100).toFixed(1)}% официальных источников.`);
   if (persistentFailures.length) warnings.push(`Систематически не работают источники: ${persistentFailures.map(source => source.id).join(', ')}.`);
 
-  const images = collectImages(root, payloads);
+  const images = collectImages(root, payloads, config.publication?.image_roots || []);
   if (images.missing) blocking.push(`Отсутствуют ${images.missing} изображений, на которые ссылаются новости.`);
 
   const status = blocking.length ? 'error' : warnings.length ? 'degraded' : 'healthy';

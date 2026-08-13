@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import { validateNewsImageReference } from './lib/news-image-reference.mjs';
 
 const feedFiles = [
   'data/news.json',
@@ -68,12 +69,15 @@ function validateFeed(root, file, payload, config, errors) {
 
     if (file !== 'data/youtube-signals.json') {
       const image = String(item.image || '').trim();
-      if (!config.publication.image_roots.some(rootPrefix => image.startsWith(rootPrefix))) {
-        errors.push(`${prefix} has an image outside approved roots: ${image || '(empty)'}.`);
-      } else if (!/^[\w./-]+$/.test(image) || image.includes('..')) {
-        errors.push(`${prefix} has an unsafe image path: ${image}.`);
-      } else if (!fs.existsSync(path.join(root, image))) {
-        errors.push(`${prefix} references a missing image: ${image}.`);
+      const imageStatus = validateNewsImageReference({
+        root,
+        image,
+        localRoots: config.publication.image_roots || []
+      });
+      if (!imageStatus.ok) {
+        if (imageStatus.reason === 'unsafe-local-path') errors.push(`${prefix} has an unsafe image path: ${image}.`);
+        else if (imageStatus.reason === 'missing-local-file') errors.push(`${prefix} references a missing image: ${image}.`);
+        else errors.push(`${prefix} has an image outside approved roots: ${image || '(empty)'}.`);
       }
     }
   });
