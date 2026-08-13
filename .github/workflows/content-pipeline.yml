@@ -238,14 +238,19 @@ jobs:
           git diff --check
           node scripts/validate-game-v3.mjs
           node scripts/validate-production-boundaries.mjs
-          if git diff --quiet -- game data/catalog-visible.json data/drafts data/game-content data/ratings data/reviews data/guides data/articles data/similarity article; then
+          paths=(game data/catalog-visible.json data/drafts data/game-content data/ratings data/reviews data/guides data/articles data/similarity article)
+          existing=()
+          for path in "${paths[@]}"; do
+            if [ -e "$path" ]; then existing+=("$path"); fi
+          done
+          if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
+          if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             branch="automation/news-game-pages-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
             git config user.name "igropoisk-content[bot]"
             git config user.email "igropoisk-content[bot]@users.noreply.github.com"
             git checkout -b "$branch"
-            git add -- game data/catalog-visible.json data/drafts data/game-content data/ratings data/reviews data/guides data/articles data/similarity article
             git commit -m "Publish news-required canonical game pages"
             git push origin "$branch"
             pr_url="$(gh pr create \
