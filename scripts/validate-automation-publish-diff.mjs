@@ -21,6 +21,7 @@ const PROFILES = {
       'data/parser-output/',
       'data/drafts/',
       'data/game-content/',
+      'data/game-dna/',
       'data/research/',
       'data/reviews/',
       'data/ratings/',

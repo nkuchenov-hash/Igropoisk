@@ -1,86 +1,12 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-
-const sourceRoot = process.cwd();
-const targetArg = process.argv.indexOf('--target');
-const targetRoot = targetArg >= 0 ? path.resolve(process.argv[targetArg + 1] || '') : '';
-if (!targetRoot || !fs.existsSync(targetRoot)) throw new Error('Use --target <main-worktree>.');
-
-const readJson = (file, fallback = null) => {
-  try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return fallback; }
-};
-const writeJson = (file, value) => {
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
-};
-const copyIfPresent = relative => {
-  const source = path.join(sourceRoot, relative);
-  if (!fs.existsSync(source)) return false;
-  const target = path.join(targetRoot, relative);
-  fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.copyFileSync(source, target);
-  return true;
-};
-
-const plan = readJson(path.join(sourceRoot, 'tmp/news-game-page-plan.json'), { required_games: [] });
-const required = Array.isArray(plan.required_games) ? plan.required_games : [];
-if (!required.length) {
-  console.log('[news/production] no required game pages');
-  process.exit(0);
-}
-const slugs = [...new Set(required.map(item => String(item.slug || '').trim().toLowerCase()).filter(Boolean))];
-for (const slug of slugs) {
-  if (!/^[a-z0-9][a-z0-9-]*$/.test(slug)) throw new Error(`Unsafe game slug: ${slug}`);
-  for (const relative of [`game/${slug}/index.html`, `data/drafts/${slug}.json`]) {
-    if (!copyIfPresent(relative)) throw new Error(`Required green game output is missing: ${relative}`);
-  }
-  for (const relative of [
-    `data/ratings/${slug}.json`,
-    `data/reviews/${slug}.json`,
-    `data/guides/${slug}.json`,
-    `data/articles/${slug}.json`,
-    `data/similarity/${slug}.json`,
-    `article/${slug}/index.html`
-  ]) copyIfPresent(relative);
-}
-
-const sourceCatalog = readJson(path.join(sourceRoot, 'data/catalog-visible.json'), []);
-const targetCatalogPath = path.join(targetRoot, 'data/catalog-visible.json');
-const targetCatalog = readJson(targetCatalogPath, []);
-const sourceEntries = new Map((Array.isArray(sourceCatalog) ? sourceCatalog : []).map(item => [String(item?.slug || ''), item]));
-const mergedCatalog = new Map((Array.isArray(targetCatalog) ? targetCatalog : []).map(item => [String(item?.slug || ''), item]));
-for (const slug of slugs) {
-  const entry = sourceEntries.get(slug);
-  if (!entry) throw new Error(`Visible catalog is missing news-required game ${slug}.`);
-  mergedCatalog.set(slug, entry);
-}
-writeJson(targetCatalogPath, [...mergedCatalog.values()]);
-
-const sourceGameContentRoot = path.join(sourceRoot, 'data/game-content');
-const chunkFiles = fs.existsSync(sourceGameContentRoot) ? fs.readdirSync(sourceGameContentRoot).filter(name => name.endsWith('.json')) : [];
-const located = new Map();
-for (const name of chunkFiles) {
-  const sourceChunk = readJson(path.join(sourceGameContentRoot, name));
-  if (!sourceChunk?.games || typeof sourceChunk.games !== 'object') continue;
-  const selected = slugs.filter(slug => sourceChunk.games[slug]);
-  if (!selected.length) continue;
-  const targetFile = path.join(targetRoot, 'data/game-content', name);
-  const targetChunk = readJson(targetFile, { schema_version: sourceChunk.schema_version || 4, games: {} });
-  targetChunk.schema_version = Math.max(Number(targetChunk.schema_version || 0), Number(sourceChunk.schema_version || 0)) || 4;
-  targetChunk.games ||= {};
-  for (const slug of selected) {
-    targetChunk.games[slug] = sourceChunk.games[slug];
-    located.set(slug, name);
-  }
-  writeJson(targetFile, targetChunk);
-}
-for (const slug of slugs) if (!located.has(slug)) throw new Error(`Materialized game-content entry is missing for ${slug}.`);
-
-const report = {
-  schema_version: 1,
-  generated_at: new Date().toISOString(),
-  games: slugs.map(slug => ({ slug, game_content: located.get(slug) }))
-};
-writeJson(path.join(sourceRoot, 'tmp/news-production-materialization.json'), report);
-console.log(`[news/production] materialized ${slugs.length} canonical game pages into production worktree.`);
+import {spawnSync} from 'node:child_process';
+const sourceRoot=process.cwd();const i=process.argv.indexOf('--target');const targetRoot=i>=0?path.resolve(process.argv[i+1]||''):'';if(!targetRoot||!fs.existsSync(targetRoot))throw new Error('Use --target <main-worktree>.');
+const read=(file,f=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'))}catch{return f}};const write=(file,v)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(v,null,2)}\n`)};const copy=relative=>{const s=path.join(sourceRoot,relative);if(!fs.existsSync(s))return false;const t=path.join(targetRoot,relative);fs.mkdirSync(path.dirname(t),{recursive:true});fs.copyFileSync(s,t);return true};
+const plan=read(path.join(sourceRoot,'tmp/news-game-page-plan.json'),{required_games:[]});const slugs=[...new Set((plan.required_games||[]).map(x=>String(x.slug||'').trim().toLowerCase()).filter(Boolean))];if(!slugs.length){console.log('[news/production] no required game pages');process.exit(0)}
+for(const slug of slugs){if(!/^[a-z0-9][a-z0-9-]*$/.test(slug))throw new Error(`Unsafe game slug: ${slug}`);for(const r of [`game/${slug}/index.html`,`data/drafts/${slug}.json`,`data/game-dna/${slug}.json`])if(!copy(r))throw new Error(`Required output missing: ${r}`);for(const r of [`data/reviews/${slug}.json`,`data/guides/${slug}.json`,`data/articles/${slug}.json`,`data/similarity/${slug}.json`,`article/${slug}/index.html`])copy(r)}
+const sourceCatalog=read(path.join(sourceRoot,'data/catalog-visible.json'),[]),targetCatalogPath=path.join(targetRoot,'data/catalog-visible.json'),targetCatalog=read(targetCatalogPath,[]);const sourceBySlug=new Map(sourceCatalog.map(x=>[String(x?.slug||''),x])),mergedCatalog=new Map(targetCatalog.map(x=>[String(x?.slug||''),x]));for(const slug of slugs){const entry=sourceBySlug.get(slug);if(!entry)throw new Error(`Visible catalog missing ${slug}`);mergedCatalog.set(slug,entry)}write(targetCatalogPath,[...mergedCatalog.values()]);
+const sourceDnaIndex=read(path.join(sourceRoot,'data/game-dna/index.json'),{entries:[]}),targetDnaPath=path.join(targetRoot,'data/game-dna/index.json'),targetDna=read(targetDnaPath,{entries:[]});const sourceDna=new Map((sourceDnaIndex.entries||[]).map(x=>[String(x.slug||''),x])),mergedDna=new Map((targetDna.entries||[]).map(x=>[String(x.slug||''),x]));for(const slug of slugs){const entry=sourceDna.get(slug);if(!entry)throw new Error(`Game DNA index missing ${slug}`);mergedDna.set(slug,entry)}const dnaEntries=[...mergedDna.values()].sort((a,b)=>String(a.title||a.slug).localeCompare(String(b.title||b.slug),'ru'));write(targetDnaPath,{schema_version:1,entity:'game_dna',count:dnaEntries.length,entries:dnaEntries,generated_at:new Date().toISOString()});
+const sourceContent=path.join(sourceRoot,'data/game-content'),files=fs.existsSync(sourceContent)?fs.readdirSync(sourceContent).filter(n=>n.endsWith('.json')):[],located=new Map();for(const name of files){const chunk=read(path.join(sourceContent,name));if(!chunk?.games)continue;const selected=slugs.filter(slug=>chunk.games[slug]);if(!selected.length)continue;const targetFile=path.join(targetRoot,'data/game-content',name),targetChunk=read(targetFile,{schema_version:chunk.schema_version||4,games:{}});targetChunk.games||={};for(const slug of selected){targetChunk.games[slug]=chunk.games[slug];located.set(slug,name)}write(targetFile,targetChunk)}for(const slug of slugs)if(!located.has(slug))throw new Error(`Materialized game-content missing ${slug}`);
+const staged=spawnSync('git',['add','-A','--','data/game-dna'],{cwd:targetRoot,encoding:'utf8'});if(staged.status!==0)throw new Error(`Could not stage Game DNA: ${staged.stderr||staged.stdout}`);write(path.join(sourceRoot,'tmp/news-production-materialization.json'),{schema_version:2,generated_at:new Date().toISOString(),games:slugs.map(slug=>({slug,game_content:located.get(slug),game_dna:`data/game-dna/${slug}.json`}))});console.log(`[news/production] materialized ${slugs.length} game pages with persisted Game DNA.`);
