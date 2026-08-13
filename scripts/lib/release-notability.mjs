@@ -134,8 +134,10 @@ export function measureGlobalNotability(candidate, {newsEvents = [], popularRank
   if (!mediaCount) {
     const legacyBroad = Number(cfg.broad_press_minimum || 4);
     const legacyCorroborated = Number(cfg.corroborated_press_minimum || 3);
+    const legacyIntense = Number(cfg.intense_cross_site_press_minimum || 2);
     if (independentPublications >= legacyBroad) broadReasons.push('legacy-broad-independent-coverage');
     if (independentPublications >= legacyCorroborated && (popularStrong || globalMomentum)) broadReasons.push('legacy-coverage-plus-current-momentum');
+    if (independentPublications >= legacyIntense && intenseCrossSite) broadReasons.push('legacy-strong-cross-site-attention');
   }
   const reasons = [...broadReasons];
   if (nicheEligible) reasons.push('established-franchise-niche-attention');
