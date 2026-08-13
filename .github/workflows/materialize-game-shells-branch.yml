@@ -33,7 +33,7 @@ jobs:
           node scripts/validate-game-shells.mjs
       - name: Commit materialized catalog outputs
         run: |
-          if git diff --quiet -- game data/similarity; then
+          if [ -z "$(git status --porcelain -- game data/similarity)" ]; then
             echo 'No Game Page materialization changes required.'
             exit 0
           fi
