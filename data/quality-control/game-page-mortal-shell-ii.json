@@ -1,0 +1,168 @@
+{
+  "schema_version": 4,
+  "validator": "game-media-quality",
+  "game_slug": "mortal-shell-ii",
+  "checked_at": "2026-08-13T19:35:20.570Z",
+  "status": "red-needs-revision",
+  "hero": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584270/9a4848315fe4ed614fa9f4aef63186da0b23b4d8/page_bg_raw.jpg?t=1786115206",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/2584270/library_600x900_2x.jpg",
+  "screenshots": 5,
+  "accepted_screenshots": 5,
+  "comments": [
+    "Недостаточно скриншотов высокого качества: 5/6.",
+    "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/2584270/library_600x900_2x.jpg",
+    "После quality gate осталось только 5/6 допустимых скриншотов."
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584270/9a4848315fe4ed614fa9f4aef63186da0b23b4d8/page_bg_raw.jpg?t=1786115206",
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 540,
+        "minimum_bytes": 80000
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1438,
+        "height": 810,
+        "bytes": 1702106,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584270/9a4848315fe4ed614fa9f4aef63186da0b23b4d8/page_bg_raw.jpg?t=1786115206"
+      },
+      "accepted": true
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/2584270/library_600x900_2x.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 400,
+        "minimum_height_historical": 560,
+        "minimum_bytes": 45000
+      },
+      "errors": [
+        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/2584270/library_600x900_2x.jpg"
+      ],
+      "probe": {
+        "ok": false,
+        "status": 404
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584270/a38e76ebe240fb97b0d81e5a38569c0991d3ca63/ss_a38e76ebe240fb97b0d81e5a38569c0991d3ca63.1920x1080.jpg?t=1786115206",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 800,
+        "minimum_height_historical": 600,
+        "minimum_bytes": 70000,
+        "minimum_count": 6
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 308580,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584270/a38e76ebe240fb97b0d81e5a38569c0991d3ca63/ss_a38e76ebe240fb97b0d81e5a38569c0991d3ca63.1920x1080.jpg?t=1786115206"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584270/cb7f0b41a6bbe71705bd0971dcaa0df3dd146381/ss_cb7f0b41a6bbe71705bd0971dcaa0df3dd146381.1920x1080.jpg?t=1786115206",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 800,
+        "minimum_height_historical": 600,
+        "minimum_bytes": 70000,
+        "minimum_count": 6
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 764539,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584270/cb7f0b41a6bbe71705bd0971dcaa0df3dd146381/ss_cb7f0b41a6bbe71705bd0971dcaa0df3dd146381.1920x1080.jpg?t=1786115206"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584270/efa39513f7b6e2ff612323b25b3acb41c950e9fe/ss_efa39513f7b6e2ff612323b25b3acb41c950e9fe.1920x1080.jpg?t=1786115206",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 800,
+        "minimum_height_historical": 600,
+        "minimum_bytes": 70000,
+        "minimum_count": 6
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 723513,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584270/efa39513f7b6e2ff612323b25b3acb41c950e9fe/ss_efa39513f7b6e2ff612323b25b3acb41c950e9fe.1920x1080.jpg?t=1786115206"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584270/9603a790d6379358d9c3f058204adaf8296ff464/ss_9603a790d6379358d9c3f058204adaf8296ff464.1920x1080.jpg?t=1786115206",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 800,
+        "minimum_height_historical": 600,
+        "minimum_bytes": 70000,
+        "minimum_count": 6
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 283161,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584270/9603a790d6379358d9c3f058204adaf8296ff464/ss_9603a790d6379358d9c3f058204adaf8296ff464.1920x1080.jpg?t=1786115206"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584270/2f429025e4eec4bda18faf18f9e0ba8cd606a1cf/ss_2f429025e4eec4bda18faf18f9e0ba8cd606a1cf.1920x1080.jpg?t=1786115206",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 800,
+        "minimum_height_historical": 600,
+        "minimum_bytes": 70000,
+        "minimum_count": 6
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 684179,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2584270/2f429025e4eec4bda18faf18f9e0ba8cd606a1cf/ss_2f429025e4eec4bda18faf18f9e0ba8cd606a1cf.1920x1080.jpg?t=1786115206"
+      },
+      "accepted": true
+    }
+  ]
+}

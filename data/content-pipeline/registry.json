@@ -1,6 +1,6 @@
 {
   "schema_version": 5,
-  "generated_at": "2026-08-13T19:23:10.661Z",
+  "generated_at": "2026-08-13T19:38:27.207Z",
   "canonical_registry": "data/game-registry/registry.transition.json",
   "items": [
     {
@@ -7821,15 +7821,12 @@
       "title": "Defender of the Crown: The Legend Returns",
       "year": 2026,
       "steam_appid": 4208140,
-      "origin": "data/content-pipeline/registry.json+release-calendar:data/releases/current.json",
-      "state": "enriching",
+      "origin": "data/content-pipeline/registry.json+game-content:2023-2025.json+drafts:data/drafts/defender-of-the-crown-the-legend-returns.json+parser-output:data/parser-output/defender-of-the-crown-the-legend-returns.json+release-calendar:data/releases/current.json",
+      "state": "ready_for_page",
       "page": {
-        "curated": false,
+        "curated": true,
         "gate_passed": false,
-        "missing": [
-          "description",
-          "cover_or_hero"
-        ]
+        "missing": []
       },
       "review": {
         "published": false,
@@ -8950,15 +8947,12 @@
       "title": "Mortal Shell II",
       "year": 2026,
       "steam_appid": 2584270,
-      "origin": "data/content-pipeline/registry.json+release-calendar:data/releases/current.json",
-      "state": "enriching",
+      "origin": "data/content-pipeline/registry.json+drafts:data/drafts/mortal-shell-ii.json+parser-output:data/parser-output/mortal-shell-ii.json+release-calendar:data/releases/current.json",
+      "state": "ready_for_page",
       "page": {
         "curated": false,
         "gate_passed": false,
-        "missing": [
-          "description",
-          "cover_or_hero"
-        ]
+        "missing": []
       },
       "review": {
         "published": false,
@@ -13291,6 +13285,49 @@
       "review": {
         "published": false,
         "reason": "review_quality_needs_revision:missing"
+      },
+      "problems": []
+    },
+    {
+      "game_id": "game_f96ca1a51754b656b6ba",
+      "slug": "night-school",
+      "title": "Night School",
+      "year": 0,
+      "steam_appid": 4192240,
+      "origin": "drafts:data/drafts/night-school.json+parser-output:data/parser-output/night-school.json",
+      "state": "enriching",
+      "page": {
+        "curated": false,
+        "gate_passed": false,
+        "missing": [
+          "release_confirmation"
+        ]
+      },
+      "review": {
+        "published": false,
+        "reason": "article_pair_missing"
+      },
+      "problems": []
+    },
+    {
+      "game_id": "game_248dc7ef9731da44a239",
+      "slug": "the-lords-of-the-end-times",
+      "title": "The Lords of the End Times",
+      "year": 0,
+      "steam_appid": null,
+      "origin": "drafts:data/drafts/the-lords-of-the-end-times.json",
+      "state": "enriching",
+      "page": {
+        "curated": false,
+        "gate_passed": false,
+        "missing": [
+          "release_confirmation",
+          "cover_or_hero"
+        ]
+      },
+      "review": {
+        "published": false,
+        "reason": "article_pair_missing"
       },
       "problems": []
     }
