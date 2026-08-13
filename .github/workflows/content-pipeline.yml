@@ -26,10 +26,14 @@ on:
       - 'scripts/canonicalize-editorial-game-id.mjs'
       - 'scripts/repair-public-catalog-game-ids.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
+      - 'scripts/discover-review-sources-web.mjs'
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/synthesize-review-adaptive.mjs'
+      - 'scripts/synthesize-review-github-models.mjs'
+      - 'scripts/enrich-review-media-github-models.mjs'
       - 'scripts/quality-control-loop.mjs'
+      - 'scripts/quality-control-loop-v3.mjs'
       - 'scripts/validate-game-media-quality.mjs'
       - 'scripts/build-similarity-index.mjs'
       - 'scripts/enrich-game-relations.mjs'
@@ -41,6 +45,7 @@ on:
       - 'scripts/lib/system-game-registry-adapter.mjs'
       - 'config/content-pipeline.json'
       - 'config/game-page-quality-v2.json'
+      - 'config/parsers/review-sources-ru.json'
       - 'config/home-feeds-storage.json'
       - '.github/workflows/content-pipeline.yml'
 
@@ -48,6 +53,7 @@ permissions:
   actions: write
   contents: write
   pull-requests: write
+  models: read
 
 concurrency:
   group: content-lifecycle-staging
@@ -80,10 +86,14 @@ jobs:
           node --check scripts/canonicalize-editorial-game-id.mjs
           node --check scripts/repair-public-catalog-game-ids.mjs
           node --check scripts/render-review-pages.mjs
+          node --check scripts/discover-review-sources-web.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/synthesize-review-adaptive.mjs
+          node --check scripts/synthesize-review-github-models.mjs
+          node --check scripts/enrich-review-media-github-models.mjs
           node --check scripts/quality-control-loop.mjs
+          node --check scripts/quality-control-loop-v3.mjs
           node --check scripts/validate-game-media-quality.mjs
           node --check scripts/build-similarity-index.mjs
           node --check scripts/enrich-game-relations.mjs
@@ -107,6 +117,9 @@ jobs:
       - name: Materialize and enrich the visible game catalog
         run: node scripts/run-game-catalog-enrichment.mjs
         env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REVIEW_MODEL: ${{ vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
+          GITHUB_VISION_MODEL: ${{ vars.GITHUB_VISION_MODEL || vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
           OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
@@ -123,6 +136,9 @@ jobs:
       - name: Build selected game pages and revise red work until green
         run: node scripts/run-content-pipeline.mjs
         env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REVIEW_MODEL: ${{ vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
+          GITHUB_VISION_MODEL: ${{ vars.GITHUB_VISION_MODEL || vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
           OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
