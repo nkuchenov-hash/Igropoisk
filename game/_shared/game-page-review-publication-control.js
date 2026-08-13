@@ -1,33 +1,3 @@
-(()=>{
-'use strict';
-const slug=document.body.dataset.slug||location.pathname.split('/').filter(Boolean).at(-1)||'';
-if(!slug)return;
-const fetchJSON=async url=>{try{const r=await fetch(url,{cache:'no-store'});return r.ok?await r.json():null}catch{return null}};
-const wait=async()=>{for(let i=0;i<100;i++){const node=document.querySelector('#featuredReview');if(node)return node;await new Promise(resolve=>setTimeout(resolve,100))}return null};
-const setText=(node,value)=>{if(node&&node.textContent!==value)node.textContent=value};
-async function main(){
-  const [feed,rating]=await Promise.all([fetchJSON(`../../data/reviews/${encodeURIComponent(slug)}.json`),fetchJSON(`../../data/ratings/${encodeURIComponent(slug)}.json`)]);
-  const reviewStatus=String(feed?.publication_gate?.status||''),ratingStatus=String(rating?.status||'');
-  const green=reviewStatus==='green'&&ratingStatus==='green'&&Number.isFinite(Number(rating?.calculation?.score_10));
-  if(green)return;
-  const explicitRed=reviewStatus==='red-needs-revision'||ratingStatus==='red-needs-revision';
-  const enforce=()=>{
-    const featured=document.querySelector('#featuredReview');if(!featured)return;
-    setText(featured.querySelector('.ig-review-feature__score'),'—');
-    const meta=featured.querySelector('.ig-review-feature__meta span');
-    if(!explicitRed){setText(meta,'Рейтинг пересчитывается по новой системе');return}
-    featured.querySelectorAll('.ig-review-link').forEach(link=>link.remove());
-    setText(meta,'Идёт повторный поиск и проверка профессиональных рецензий');
-    let note=featured.querySelector('.article-source-note');
-    if(!note){note=document.createElement('div');note.className='article-source-note';featured.querySelector('.ig-review-feature__body')?.appendChild(note)}
-    setText(note,'Материал автоматически пересобирается и появится здесь после зелёной проверки качества.');
-  };
-  await wait();enforce();
-  if(explicitRed){
-    const observer=new MutationObserver(enforce);
-    observer.observe(document.body,{subtree:true,childList:true});
-    window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
-  }
-}
-main().catch(error=>console.warn('Игропоиск: review publication control',error));
-})();
+(()=>{'use strict';const slug=document.body.dataset.slug||location.pathname.split('/').filter(Boolean).at(-1)||'';if(!slug)return;const json=async u=>{try{const r=await fetch(u,{cache:'no-store'});return r.ok?await r.json():null}catch{return null}},wait=async()=>{for(let i=0;i<100;i++){const n=document.querySelector('#featuredReview');if(n)return n;await new Promise(r=>setTimeout(r,100))}return null},set=(n,v)=>{if(n&&n.textContent!==v)n.textContent=v},fmt=v=>Number.isFinite(Number(v))?Number(v).toFixed(1).replace(/\.0$/,''):'—';
+const released=d=>{const s=String(d?.release?.status||'').toLowerCase();if(/upcoming|expected|announced|coming|tba|pre[-_ ]?release|ожида/i.test(s))return false;const x=Date.parse(String(d?.release?.date||''));if(Number.isFinite(x)&&x>Date.now())return false;const y=Number(String(d?.release?.date_text||document.body.dataset.year||'').match(/(?:19|20)\d{2}/)?.[0]||0);return !y||y<=new Date().getFullYear()};
+async function main(){const[feed,article,draft]=await Promise.all([json(`../../data/reviews/${encodeURIComponent(slug)}.json`),json(`../../data/articles/${encodeURIComponent(slug)}.json`),json(`../../data/drafts/${encodeURIComponent(slug)}.json`)]),node=await wait();if(!node)return;const score=node.querySelector('.ig-review-feature__score'),meta=node.querySelector('.ig-review-feature__meta span'),body=node.querySelector('.ig-review-feature__body'),isReleased=released(draft),canonical=Number(feed?.review_score?.calculation?.score_10),green=feed?.publication_gate?.status==='green'&&feed?.review_score?.status==='green'&&Number.isFinite(canonical)&&String(article?.publication_status||'').toLowerCase()==='published'&&String(article?.game_slug||article?.slug||'')===slug&&Number(article?.score)===canonical;node.querySelectorAll('.article-source-note').forEach(n=>n.remove());if(!isReleased){set(score,'—');set(meta,'Оценка появится после выхода игры');node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());return}if(!green){set(score,'—');set(meta,'Канонический обзор проходит обязательную проверку');node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());const note=document.createElement('div');note.className='article-source-note';note.textContent='Вышедшая игра не получает отдельную или предварительную оценку: цифра появляется только вместе с проверенным обзором.';body?.appendChild(note);return}set(score,fmt(canonical));set(meta,`Среднее ${feed.review_score.sources?.length||0} независимых профессиональных оценок`);let link=node.querySelector('.ig-review-link');if(!link&&body){link=document.createElement('a');link.className='ig-review-link';body.appendChild(link)}if(link){link.href=`../../article/${encodeURIComponent(slug)}/`;link.textContent='Читать обзор Игропоиска'}}main().catch(e=>console.warn('Игропоиск: canonical review publication control',e));})();
