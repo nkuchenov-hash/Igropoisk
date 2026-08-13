@@ -12,7 +12,8 @@ export function collectMissingGamePageRequests(items = []) {
       const gameId = String(game.gameId || game.game_id || '').trim();
       const slug = String(game.slug || '').trim();
       const title = String(game.title || item.game || '').trim();
-      if (!slug || !title) continue;
+      const identityVerified = game.identityVerified === true;
+      if (!slug || !title || !identityVerified) continue;
       const key = gameId || `${slug}:${title}`;
       const candidate = {
         news_id: item.id || null,
@@ -21,6 +22,8 @@ export function collectMissingGamePageRequests(items = []) {
         slug,
         confidence: Number(game.resolutionConfidence || game.confidence || 0),
         verified_external: Boolean(game.verifiedExternal),
+        identity_verified: identityVerified,
+        verification_sources: Array.isArray(game.verificationSources) ? game.verificationSources : [],
         matched_by: game.matchedBy || null,
         source_url: item.primaryUrl || item.url || null,
         published_at: item.publishedAt || null

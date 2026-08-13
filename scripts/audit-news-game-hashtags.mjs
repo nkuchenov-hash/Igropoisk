@@ -9,7 +9,10 @@ const refIndex = args.indexOf('--production-ref');
 const productionRef = refIndex >= 0 ? String(args[refIndex + 1] || '').trim() : '';
 const eventsPath = 'data/news-events.json';
 const reportPath = 'tmp/news-game-hashtag-audit.json';
-const explicitResolutionReasons = new Set(['unknown-explicit-game', 'ambiguous-explicit-name', 'ambiguous-alias', 'manual-game-not-found']);
+const explicitResolutionReasons = new Set([
+  'unknown-explicit-game', 'ambiguous-explicit-name', 'ambiguous-alias', 'manual-game-not-found',
+  'unverified-primary-game', 'ambiguous-primary-game-verification'
+]);
 
 const payload = JSON.parse(fs.readFileSync(eventsPath, 'utf8'));
 const items = Array.isArray(payload) ? payload : (payload.items || []);
@@ -19,6 +22,7 @@ const uniqueGames = new Map();
 const collisions = [];
 const inconsistent = [];
 const temporary = [];
+const unverified = [];
 const missingPages = [];
 const productionMissingPages = [];
 const badPageUrls = [];
@@ -47,7 +51,8 @@ for (const item of items) {
     if (identity && seen.has(identity)) duplicateArticleGames.push({ news_id: item.id || null, game_id: gameId || null, slug });
     if (identity) seen.add(identity);
 
-    if (!gameId || gameId.startsWith('news_game_')) temporary.push({ news_id: item.id || null, game_id: gameId || null, slug, title, hashtag });
+    if (game.identityVerified !== true) unverified.push({ news_id: item.id || null, game_id: gameId || null, slug, title, hashtag });
+    if (!gameId || gameId.startsWith('news_game_')) temporary.push({ news_id: item.id || null, game_id: gameId || null, slug, title, hashtag, verified_external: Boolean(game.verifiedExternal), identity_verified: game.identityVerified === true });
     if (!slug || !title || !hashtag) continue;
     uniqueGames.set(gameId || slug, { game_id: gameId || null, slug, title, hashtag });
 
@@ -85,7 +90,7 @@ for (const item of items) {
 
 const dedupeBy = (values, key) => [...new Map(values.map(value => [key(value), value])).values()];
 const report = {
-  schema_version: 1,
+  schema_version: 2,
   generated_at: new Date().toISOString(),
   production_ref: productionRef || null,
   articles: items.length,
@@ -96,6 +101,7 @@ const report = {
   collisions,
   inconsistent_game_hashtags: inconsistent,
   duplicate_article_games: duplicateArticleGames,
+  unverified_game_references: dedupeBy(unverified, item => `${item.news_id}:${item.game_id || item.slug}`),
   temporary_game_references: dedupeBy(temporary, item => `${item.game_id}:${item.slug}`),
   missing_staging_pages: dedupeBy(missingPages, item => item.game_id || item.slug),
   missing_production_pages: dedupeBy(productionMissingPages, item => item.game_id || item.slug),
@@ -105,7 +111,7 @@ const report = {
 
 fs.mkdirSync('tmp', { recursive: true });
 fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
-const blocking = collisions.length + inconsistent.length + duplicateArticleGames.length + temporary.length + badPageUrls.length + unresolvedExplicit.length
+const blocking = collisions.length + inconsistent.length + duplicateArticleGames.length + unverified.length + temporary.length + badPageUrls.length + unresolvedExplicit.length
   + (productionRef ? report.missing_production_pages.length : report.missing_staging_pages.length);
-console.log(`[news/hashtag-audit] ${items.length} articles; ${uniqueGames.size} canonical games; ${hashtagOwner.size} unique hashtags; ${report.missing_staging_pages.length} staging pages missing; ${report.missing_production_pages.length} production pages missing; ${blocking} blocking findings.`);
+console.log(`[news/hashtag-audit] ${items.length} articles; ${uniqueGames.size} verified game identities; ${hashtagOwner.size} unique hashtags; ${report.unverified_game_references.length} unverified refs; ${report.missing_staging_pages.length} staging pages missing; ${report.missing_production_pages.length} production pages missing; ${blocking} blocking findings.`);
 if (strict && blocking) process.exit(1);
