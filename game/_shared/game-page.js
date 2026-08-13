@@ -15,11 +15,11 @@
   similarity.defer=true;
   document.head.appendChild(similarity);
   const reviewControl=document.createElement('script');
-  reviewControl.src='../_shared/game-page-review-publication-control.js?v=20260812-2';
+  reviewControl.src='../_shared/game-page-review-publication-control.js?v=20260812-3';
   reviewControl.defer=true;
   document.head.appendChild(reviewControl);
   const materialized=document.createElement('script');
-  materialized.src='../_shared/game-page-materialized-data.js?v=20260812-1';
+  materialized.src='../_shared/game-page-materialized-data.js?v=20260812-2';
   materialized.defer=true;
   document.head.appendChild(materialized);
   const editions=document.createElement('script');

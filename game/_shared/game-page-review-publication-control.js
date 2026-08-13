@@ -8,22 +8,34 @@ const setText=(node,value)=>{if(node&&node.textContent!==value)node.textContent=
 async function main(){
   const [feed,rating]=await Promise.all([fetchJSON(`../../data/reviews/${encodeURIComponent(slug)}.json`),fetchJSON(`../../data/ratings/${encodeURIComponent(slug)}.json`)]);
   const reviewStatus=String(feed?.publication_gate?.status||''),ratingStatus=String(rating?.status||'');
-  const green=reviewStatus==='green'&&ratingStatus==='green'&&Number.isFinite(Number(rating?.calculation?.score_10));
-  if(green)return;
+  const corpusGreen=reviewStatus==='green'&&ratingStatus==='green'&&Number.isFinite(Number(rating?.calculation?.score_10));
+  const articleStatus=String(feed?.igropoisk_article?.publication_status||feed?.igropoisk_article?.status||'').toLowerCase();
+  const articleUrl=String(feed?.igropoisk_article?.url||'');
+  const articleGreen=corpusGreen&&Boolean(articleUrl)&&(articleStatus==='published'||articleStatus==='green'||!articleStatus);
   const explicitRed=reviewStatus==='red-needs-revision'||ratingStatus==='red-needs-revision';
   const enforce=()=>{
     const featured=document.querySelector('#featuredReview');if(!featured)return;
-    setText(featured.querySelector('.ig-review-feature__score'),'—');
+    const score=featured.querySelector('.ig-review-feature__score');
     const meta=featured.querySelector('.ig-review-feature__meta span');
-    if(!explicitRed){setText(meta,'Рейтинг пересчитывается по новой системе');return}
+    if(!corpusGreen){
+      setText(score,'—');
+      if(!explicitRed){setText(meta,'Рейтинг пересчитывается по новой системе');return}
+      featured.querySelectorAll('.ig-review-link').forEach(link=>link.remove());
+      setText(meta,'Идёт повторный поиск и проверка профессиональных рецензий');
+      let note=featured.querySelector('.article-source-note');
+      if(!note){note=document.createElement('div');note.className='article-source-note';featured.querySelector('.ig-review-feature__body')?.appendChild(note)}
+      setText(note,'Материал автоматически пересобирается и появится здесь после зелёной проверки качества.');
+      return;
+    }
+    if(articleGreen)return;
     featured.querySelectorAll('.ig-review-link').forEach(link=>link.remove());
-    setText(meta,'Идёт повторный поиск и проверка профессиональных рецензий');
+    setText(meta,`Рейтинг рассчитан по ${rating?.sources?.length||feed?.reviews?.length||0} независимым профессиональным рецензиям`);
     let note=featured.querySelector('.article-source-note');
     if(!note){note=document.createElement('div');note.className='article-source-note';featured.querySelector('.ig-review-feature__body')?.appendChild(note)}
-    setText(note,'Материал автоматически пересобирается и появится здесь после зелёной проверки качества.');
+    setText(note,'Редакционный обзор Игропоиска пересобирается отдельно и будет опубликован только после собственной зелёной проверки.');
   };
   await wait();enforce();
-  if(explicitRed){
+  if(explicitRed||!articleGreen){
     const observer=new MutationObserver(enforce);
     observer.observe(document.body,{subtree:true,childList:true});
     window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
