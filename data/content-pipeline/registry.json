@@ -1,6 +1,6 @@
 {
   "schema_version": 5,
-  "generated_at": "2026-08-13T12:11:47.922Z",
+  "generated_at": "2026-08-13T14:02:36.890Z",
   "canonical_registry": "data/game-registry/registry.transition.json",
   "items": [
     {
@@ -1736,6 +1736,25 @@
       "year": 2026,
       "steam_appid": 1921490,
       "origin": "data/catalog-visible.json+data/content-pipeline/registry.json+game-content:2023-2025.json+drafts:data/drafts/wild-blue-skies.json+parser-output:data/parser-output/wild-blue-skies.json+release-calendar:data/releases/current.json+game/wild-blue-skies/index.html",
+      "state": "published",
+      "page": {
+        "curated": true,
+        "gate_passed": true,
+        "missing": []
+      },
+      "review": {
+        "published": false,
+        "reason": "article_pair_missing"
+      },
+      "problems": []
+    },
+    {
+      "game_id": "game_9cc09014876d3bd27b3a",
+      "slug": "starfield",
+      "title": "starfield",
+      "year": 2023,
+      "steam_appid": 1716740,
+      "origin": "data/catalog-visible.json+data/content-pipeline/registry.json+game-content:2023-2025.json+drafts:data/drafts/starfield.json+parser-output:data/parser-output/starfield.json+game/starfield/index.html",
       "state": "published",
       "page": {
         "curated": true,
@@ -9116,15 +9135,12 @@
       "title": "The Lantern of the Laughless Saint",
       "year": 2026,
       "steam_appid": 3849000,
-      "origin": "data/content-pipeline/registry.json+release-calendar:data/releases/current.json",
-      "state": "enriching",
+      "origin": "data/content-pipeline/registry.json+game-content:2023-2025.json+drafts:data/drafts/the-lantern-of-the-laughless-saint.json+parser-output:data/parser-output/the-lantern-of-the-laughless-saint.json+release-calendar:data/releases/current.json",
+      "state": "ready_for_page",
       "page": {
-        "curated": false,
+        "curated": true,
         "gate_passed": false,
-        "missing": [
-          "description",
-          "cover_or_hero"
-        ]
+        "missing": []
       },
       "review": {
         "published": false,
@@ -11361,13 +11377,57 @@
       "title": "Game of Thrones",
       "year": 0,
       "steam_appid": 208730,
-      "origin": "game-content:2002-2015.json+drafts:data/drafts/game-of-thrones.json+parser-output:data/parser-output/game-of-thrones.json",
+      "origin": "data/content-pipeline/registry.json+game-content:2002-2015.json+drafts:data/drafts/game-of-thrones.json+parser-output:data/parser-output/game-of-thrones.json",
       "state": "enriching",
       "page": {
         "curated": true,
         "gate_passed": false,
         "missing": [
           "release_confirmation"
+        ]
+      },
+      "review": {
+        "published": false,
+        "reason": "article_pair_missing"
+      },
+      "problems": []
+    },
+    {
+      "game_id": "game_58847ee8a9fe2063c1a4",
+      "slug": "hello-kitty",
+      "title": "hello-kitty",
+      "year": 0,
+      "steam_appid": null,
+      "origin": "data/content-pipeline/registry.json+drafts:data/drafts/hello-kitty.json",
+      "state": "enriching",
+      "page": {
+        "curated": false,
+        "gate_passed": false,
+        "missing": [
+          "release_confirmation",
+          "cover_or_hero"
+        ]
+      },
+      "review": {
+        "published": false,
+        "reason": "article_pair_missing"
+      },
+      "problems": []
+    },
+    {
+      "game_id": "game_c5614a965a7862797f3d",
+      "slug": "nvidia",
+      "title": "nvidia",
+      "year": 0,
+      "steam_appid": null,
+      "origin": "data/content-pipeline/registry.json+drafts:data/drafts/nvidia.json",
+      "state": "enriching",
+      "page": {
+        "curated": false,
+        "gate_passed": false,
+        "missing": [
+          "release_confirmation",
+          "cover_or_hero"
         ]
       },
       "review": {
