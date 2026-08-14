@@ -1,7 +1,7 @@
 (()=>{
 'use strict';
 
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const setState=(target,title,text)=>{target.innerHTML=`<div class="popular-state"><strong>${esc(title)}</strong><span>${esc(text)}</span></div>`};
 const reducedMotion=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 const MAXIMUM_COUNT=20;
@@ -178,6 +178,7 @@ async function load(){
   const target=document.querySelector('#popular');
   if(!target)return;
   target._igStableRailCleanup?.();
+  target.dataset.popularState='loading';
   setState(target,'Обновляем рейтинг','Загружаем актуальный топ игр.');
   try{
     const stamp=Date.now();
@@ -207,8 +208,10 @@ async function load(){
     await hydrateMissingCovers(target,publishedRanking);
     attachStableRail(target);
     updateFreshness(target,data.generated_at);
+    target.dataset.popularState='ready';
   }catch(error){
     console.warn('Игропоиск: popular feed unavailable',error);
+    target.dataset.popularState='error';
     setState(target,'Рейтинг временно недоступен','Не удалось загрузить опубликованный рейтинг.');
   }
 }
