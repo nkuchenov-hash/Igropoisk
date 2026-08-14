@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/apex-legends.json#review_score",
   "game_slug": "apex-legends",
-  "checked_at": "2026-08-14T22:55:49.224Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:10:15.036Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:55:48.594Z",
+        "checked_at": "2026-08-14T23:10:14.545Z",
         "url": "https://www.ign.com/articles/2019/02/12/apex-legends-review",
         "configured_source_id": "ign",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:55:48.594Z",
+        "checked_at": "2026-08-14T23:10:14.545Z",
         "url": "https://gameinformer.com/review/apex-legends/embracing-the-new-frontier",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "Apex Legends Review | Battle royale will never be the same",
+      "url": "https://www.gamerevolution.com/review/494359-apex-legends-review-pc-ps4-xbox",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:10:14.997Z",
+        "url": "https://www.gamerevolution.com/review/494359-apex-legends-review-pc-ps4-xbox",
+        "configured_source_id": "game-revolution",
         "direct_publisher": true
       }
     }
@@ -86,12 +108,6 @@
       "reason": "variant_or_port:switch_port"
     },
     {
-      "configured_source_id": "game-revolution",
-      "publication": "GameRevolution",
-      "url": "https://www.gamerevolution.com/review/494359-apex-legends-review-pc-ps4-xbox",
-      "reason": "canonical_version"
-    },
-    {
       "configured_source_id": "guardian-games",
       "publication": "The Guardian",
       "url": "https://www.theguardian.com/games/2019/feb/15/apex-legends-review-fortnite-has-some-stiff-competition",
@@ -99,12 +115,13 @@
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       9,
-      9.25
+      9.25,
+      9
     ],
-    "mean_10": 9.125,
+    "mean_10": 9.0833,
     "score_10": 9.1
   }
 }

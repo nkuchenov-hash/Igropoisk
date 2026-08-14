@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/dark-souls-iii.json#review_score",
   "game_slug": "dark-souls-iii",
-  "checked_at": "2026-08-14T22:48:15.526Z",
+  "checked_at": "2026-08-14T23:02:09.161Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -37,9 +37,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:48:15.402Z",
+        "checked_at": "2026-08-14T23:02:09.013Z",
         "url": "https://www.ign.com/articles/2016/04/04/dark-souls-3-review",
         "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "Dark Souls III Review",
+      "url": "https://www.gamerevolution.com/review/70185-dark-souls-iii-review",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:02:09.117Z",
+        "url": "https://www.gamerevolution.com/review/70185-dark-souls-iii-review",
+        "configured_source_id": "game-revolution",
         "direct_publisher": true
       }
     }
@@ -62,20 +84,15 @@
       "publication": "Ars Technica",
       "url": "https://arstechnica.com/gaming/2016/04/dark-souls-3-review-marching-towards-masochism",
       "reason": "canonical_version"
-    },
-    {
-      "configured_source_id": "game-revolution",
-      "publication": "GameRevolution",
-      "url": "https://www.gamerevolution.com/review/70185-dark-souls-iii-review",
-      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 1,
+    "source_count": 2,
     "values": [
-      9.5
+      9.5,
+      9
     ],
-    "mean_10": 9.5,
-    "score_10": 9.5
+    "mean_10": 9.25,
+    "score_10": 9.3
   }
 }

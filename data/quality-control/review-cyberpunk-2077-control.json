@@ -4,13 +4,10 @@
   "game_slug": "cyberpunk-2077",
   "game_id": null,
   "canonical_title": "Cyberpunk 2077",
-  "checked_at": "2026-08-14T22:50:59.623Z",
-  "status": "red-needs-revision",
-  "green": false,
-  "comments": [
-    "Корпус: 6/5",
-    "Оценённые издания: 2/3"
-  ],
+  "checked_at": "2026-08-14T23:05:30.329Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
   "revision_history": [
     {
       "label": "web-discovery-full-registry",
@@ -33,15 +30,31 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"cyberpunk-2077\",\n  \"accepted\": 6,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"updates\": 2,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"cyberpunk-2077\",\n  \"accepted\": 6,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"updates\": 3,\n  \"preserved\": 0\n}\n",
       "stderr": ""
     },
     {
       "label": "score-1",
       "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"cyberpunk-2077\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 2,\n  \"excluded_sources\": 4,\n  \"score_10\": 9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"cyberpunk-2077\",\n  \"status\": \"green\",\n  \"scored_sources\": 3,\n  \"excluded_sources\": 3,\n  \"score_10\": 8.3,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rebind-1",
+      "script": "scripts/rebind-existing-review.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "cyberpunk-2077: passed — 3187 words, 32 visually approved unique screenshots\n{\n  \"slug\": \"cyberpunk-2077\",\n  \"status\": \"green\",\n  \"score\": 8.3,\n  \"full_corpus_sources\": 6,\n  \"article_sources\": 6,\n  \"words\": 3187,\n  \"sections\": 8,\n  \"prose_regenerated\": false,\n  \"language_disposition\": \"legacy-published-audit-deferred\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "render-rebound-1",
+      "script": "scripts/render-review-pages.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "Rendered cyberpunk-2077: 3187 words, 32 unique images\n",
       "stderr": ""
     }
   ],

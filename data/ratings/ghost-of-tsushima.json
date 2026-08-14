@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/ghost-of-tsushima.json#review_score",
   "game_slug": "ghost-of-tsushima",
-  "checked_at": "2026-08-14T22:51:50.952Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:05:43.600Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:51:50.091Z",
+        "checked_at": "2026-08-14T23:05:43.046Z",
         "url": "https://www.ign.com/articles/ghost-of-tsushima-review",
         "configured_source_id": "ign",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:51:50.091Z",
+        "checked_at": "2026-08-14T23:05:43.046Z",
         "url": "https://gameinformer.com/review/ghost-of-tsushima/ghost-of-tsushima-review-a-most-honorable-epic",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-7",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "Ghost of Tsushima Review | Honorable execution",
+      "url": "https://www.gamerevolution.com/review/652081-ghost-of-tsushima-review-ps4-2020",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:05:43.559Z",
+        "url": "https://www.gamerevolution.com/review/652081-ghost-of-tsushima-review-ps4-2020",
+        "configured_source_id": "game-revolution",
         "direct_publisher": true
       }
     }
@@ -90,21 +112,16 @@
       "publication": "Destructoid",
       "url": "https://www.destructoid.com/stories/review-ghost-of-tsushima-595478.phtml",
       "reason": "canonical_version"
-    },
-    {
-      "configured_source_id": "game-revolution",
-      "publication": "GameRevolution",
-      "url": "https://www.gamerevolution.com/review/652081-ghost-of-tsushima-review-ps4-2020",
-      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       9,
-      9.5
+      9.5,
+      8
     ],
-    "mean_10": 9.25,
-    "score_10": 9.3
+    "mean_10": 8.8333,
+    "score_10": 8.8
   }
 }

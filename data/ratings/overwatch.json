@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/overwatch.json#review_score",
   "game_slug": "overwatch",
-  "checked_at": "2026-08-14T22:48:23.293Z",
+  "checked_at": "2026-08-14T23:03:02.903Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,18 +20,35 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-2",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "Overwatch Review",
+      "url": "https://www.gamerevolution.com/review/70416-overwatch-review",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:03:02.859Z",
+        "url": "https://www.gamerevolution.com/review/70416-overwatch-review",
+        "configured_source_id": "game-revolution",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [
     {
       "configured_source_id": "gamespot",
       "publication": "GameSpot",
       "url": "https://www.gamespot.com/articles/overwatch-update-makes-for-friendlier-post-matches/1100-6460040",
-      "reason": "canonical_version"
-    },
-    {
-      "configured_source_id": "game-revolution",
-      "publication": "GameRevolution",
-      "url": "https://www.gamerevolution.com/review/70416-overwatch-review",
       "reason": "canonical_version"
     },
     {
@@ -48,9 +65,11 @@
     }
   ],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      9
+    ],
+    "mean_10": 9,
+    "score_10": 9
   }
 }

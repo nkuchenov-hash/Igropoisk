@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "cyberpunk-2077",
-  "checked_at": "2026-08-14T22:50:59.581Z",
+  "checked_at": "2026-08-14T23:05:30.122Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 6,
-  "scored": 2,
+  "scored": 3,
   "context_only_versions": 0,
   "updates": [
     {
@@ -22,6 +22,15 @@
       "score": 9,
       "scale": 10,
       "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "score": 7,
+      "scale": 10,
+      "method": "registry:game-revolution",
       "scope": "editorial_review",
       "canonical_score_eligible": true
     }
@@ -87,10 +96,10 @@
       "publication": "GameRevolution",
       "url": "https://www.gamerevolution.com/review/669957-cyberpunk-2077-review-pc-ps4-xbox-cd-projekt-red",
       "final_url": "https://www.gamerevolution.com/review/669957-cyberpunk-2077-review-pc-ps4-xbox-cd-projekt-red",
-      "status": "no_explicit_editorial_score",
+      "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,
-      "trusted_editorial_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     }
   ]

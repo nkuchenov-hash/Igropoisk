@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "it-takes-two",
-  "checked_at": "2026-08-14T22:51:55.195Z",
+  "checked_at": "2026-08-14T23:06:35.931Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 6,
-  "scored": 2,
+  "scored": 3,
   "context_only_versions": 1,
   "updates": [
     {
@@ -33,6 +33,15 @@
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": false
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "score": 10,
+      "scale": 10,
+      "method": "registry:game-revolution",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
     }
   ],
   "checks": [
@@ -96,10 +105,10 @@
       "publication": "GameRevolution",
       "url": "https://www.gamerevolution.com/review/677097-it-takes-two-review-ps5-ps4-xbox-series-x-pc",
       "final_url": "https://www.gamerevolution.com/review/677097-it-takes-two-review-ps5-ps4-xbox-series-x-pc",
-      "status": "no_explicit_editorial_score",
+      "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,
-      "trusted_editorial_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     }
   ]

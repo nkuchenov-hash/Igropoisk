@@ -4,13 +4,10 @@
   "game_slug": "mafia-definitive-edition",
   "game_id": null,
   "canonical_title": "Mafia: Definitive Edition",
-  "checked_at": "2026-08-14T22:54:19.366Z",
-  "status": "red-needs-revision",
-  "green": false,
-  "comments": [
-    "Корпус: 8/5",
-    "Оценённые издания: 2/3"
-  ],
+  "checked_at": "2026-08-14T23:08:43.383Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
   "revision_history": [
     {
       "label": "web-discovery-full-registry",
@@ -33,15 +30,31 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"mafia-definitive-edition\",\n  \"accepted\": 8,\n  \"scored\": 2,\n  \"context_only_versions\": 2,\n  \"updates\": 3,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"mafia-definitive-edition\",\n  \"accepted\": 8,\n  \"scored\": 3,\n  \"context_only_versions\": 2,\n  \"updates\": 4,\n  \"preserved\": 0\n}\n",
       "stderr": ""
     },
     {
       "label": "score-1",
       "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"mafia-definitive-edition\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 2,\n  \"excluded_sources\": 6,\n  \"score_10\": 6.8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"mafia-definitive-edition\",\n  \"status\": \"green\",\n  \"scored_sources\": 3,\n  \"excluded_sources\": 5,\n  \"score_10\": 6.2,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rebind-1",
+      "script": "scripts/rebind-existing-review.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "mafia-definitive-edition: passed — 3126 words, 32 visually approved unique screenshots\n{\n  \"slug\": \"mafia-definitive-edition\",\n  \"status\": \"green\",\n  \"score\": 6.2,\n  \"full_corpus_sources\": 8,\n  \"article_sources\": 8,\n  \"words\": 3126,\n  \"sections\": 8,\n  \"prose_regenerated\": false,\n  \"language_disposition\": \"legacy-published-audit-deferred\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "render-rebound-1",
+      "script": "scripts/render-review-pages.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "Rendered mafia-definitive-edition: 3126 words, 32 unique images\n",
       "stderr": ""
     }
   ],

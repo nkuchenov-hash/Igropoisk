@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/the-last-of-us-part-ii.json#review_score",
   "game_slug": "the-last-of-us-part-ii",
-  "checked_at": "2026-08-14T22:51:09.104Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:05:42.683Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:51:08.253Z",
+        "checked_at": "2026-08-14T23:05:42.115Z",
         "url": "https://www.ign.com/articles/the-last-of-us-part-2-review",
         "configured_source_id": "ign",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:51:08.253Z",
+        "checked_at": "2026-08-14T23:05:42.116Z",
         "url": "https://gameinformer.com/review/the-last-of-us-part-ii/the-last-of-us-part-ii-review-a-perfect-circle",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-7",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "The Last of Us 2 Review | A Bloater stuffed to the brim",
+      "url": "https://www.gamerevolution.com/review/648897-the-last-of-us-2-review-ps4",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:05:42.621Z",
+        "url": "https://www.gamerevolution.com/review/648897-the-last-of-us-2-review-ps4",
+        "configured_source_id": "game-revolution",
         "direct_publisher": true
       }
     }
@@ -90,21 +112,16 @@
       "publication": "Destructoid",
       "url": "https://www.destructoid.com/stories/review-the-last-of-us-part-ii-592974.phtml",
       "reason": "canonical_version"
-    },
-    {
-      "configured_source_id": "game-revolution",
-      "publication": "GameRevolution",
-      "url": "https://www.gamerevolution.com/review/648897-the-last-of-us-2-review-ps4",
-      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       10,
-      10
+      10,
+      7
     ],
-    "mean_10": 10,
-    "score_10": 10
+    "mean_10": 9,
+    "score_10": 9
   }
 }

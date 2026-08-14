@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/god-of-war.json#review_score",
   "game_slug": "god-of-war",
-  "checked_at": "2026-08-14T22:49:46.893Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:04:18.722Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:49:46.782Z",
+        "checked_at": "2026-08-14T23:04:18.581Z",
         "url": "https://www.ign.com/articles/2018/04/12/god-of-war-review",
         "configured_source_id": "ign",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:49:46.782Z",
+        "checked_at": "2026-08-14T23:04:18.582Z",
         "url": "https://gameinformer.com/games/god_of_war/b/playstation4/archive/2018/04/12/god-of-war-ps4-review-game-informer.aspx",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "God of War Review – An Olympian Feat",
+      "url": "https://www.gamerevolution.com/review/381919-god-war-review-olympian-feat",
+      "original_score": {
+        "score": 10,
+        "scale": 10,
+        "grade": null,
+        "display": "10/10"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:04:18.677Z",
+        "url": "https://www.gamerevolution.com/review/381919-god-war-review-olympian-feat",
+        "configured_source_id": "game-revolution",
         "direct_publisher": true
       }
     }
@@ -78,21 +100,16 @@
       "publication": "GameSpot",
       "url": "https://www.gamespot.com/reviews/god-of-war-review-divine-bloodshed/1900-6416893",
       "reason": "canonical_version"
-    },
-    {
-      "configured_source_id": "game-revolution",
-      "publication": "GameRevolution",
-      "url": "https://www.gamerevolution.com/review/381919-god-war-review-olympian-feat",
-      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       10,
-      9.75
+      9.75,
+      10
     ],
-    "mean_10": 9.875,
+    "mean_10": 9.9167,
     "score_10": 9.9
   }
 }

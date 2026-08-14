@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/it-takes-two.json#review_score",
   "game_slug": "it-takes-two",
-  "checked_at": "2026-08-14T22:51:55.231Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:06:35.974Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:51:54.579Z",
+        "checked_at": "2026-08-14T23:06:35.488Z",
         "url": "https://www.ign.com/articles/it-takes-two-review",
         "configured_source_id": "ign",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:51:54.579Z",
+        "checked_at": "2026-08-14T23:06:35.488Z",
         "url": "https://gameinformer.com/review/it-takes-two/it-takes-two-review-the-joys-and-heartbreak-of-love",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "It Takes Two Review: &#039;Recaptures that childhood magic better than any game has in years&#039;",
+      "url": "https://www.gamerevolution.com/review/677097-it-takes-two-review-ps5-ps4-xbox-series-x-pc",
+      "original_score": {
+        "score": 10,
+        "scale": 10,
+        "grade": null,
+        "display": "10/10"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:06:35.931Z",
+        "url": "https://www.gamerevolution.com/review/677097-it-takes-two-review-ps5-ps4-xbox-series-x-pc",
+        "configured_source_id": "game-revolution",
         "direct_publisher": true
       }
     }
@@ -84,21 +106,16 @@
       "publication": "Nintendo Life",
       "url": "https://www.nintendolife.com/reviews/nintendo-switch/it-takes-two",
       "reason": "variant_or_port:switch_port"
-    },
-    {
-      "configured_source_id": "game-revolution",
-      "publication": "GameRevolution",
-      "url": "https://www.gamerevolution.com/review/677097-it-takes-two-review-ps5-ps4-xbox-series-x-pc",
-      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       9,
-      9.25
+      9.25,
+      10
     ],
-    "mean_10": 9.125,
-    "score_10": 9.1
+    "mean_10": 9.4167,
+    "score_10": 9.4
   }
 }

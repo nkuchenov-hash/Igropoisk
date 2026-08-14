@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "monster-hunter-world",
-  "updated_at": "2026-08-14T22:50:36.096Z",
+  "updated_at": "2026-08-14T23:04:31.732Z",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
@@ -56,7 +56,7 @@
       "domain": "ign.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T22:49:24.257Z",
+        "checked_at": "2026-08-14T23:03:20.627Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -70,7 +70,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:50:36.060Z",
+        "checked_at": "2026-08-14T23:04:31.689Z",
         "url": "https://www.ign.com/articles/2018/01/25/monster-hunter-world-review",
         "configured_source_id": "ign",
         "direct_publisher": true
@@ -98,7 +98,7 @@
       },
       "validation": {
         "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-14T22:49:24.257Z",
+        "checked_at": "2026-08-14T23:03:20.627Z",
         "method": "registered-direct-publisher-preserved-v8",
         "reason": "HTTP 403"
       },
@@ -153,7 +153,7 @@
       "domain": "polygon.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T22:49:24.257Z",
+        "checked_at": "2026-08-14T23:03:20.627Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -211,17 +211,25 @@
       "domain": "gamerevolution.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T22:49:24.257Z",
+        "checked_at": "2026-08-14T23:03:20.627Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
       },
-      "score": null,
-      "scale": null,
+      "score": 9,
+      "scale": 10,
       "grade": "",
-      "score_eligible": false
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:04:31.690Z",
+        "url": "https://www.gamerevolution.com/review/366295-monster-hunter-world-review-whole-new-world",
+        "configured_source_id": "game-revolution",
+        "direct_publisher": true
+      }
     }
   ],
   "game_id": "game_bfafe163ca6b078afd0c",
@@ -333,9 +341,31 @@
         "score_evidence": {
           "method": "jsonld.reviewRating",
           "scope": "editorial_review",
-          "checked_at": "2026-08-14T22:50:36.060Z",
+          "checked_at": "2026-08-14T23:04:31.689Z",
           "url": "https://www.ign.com/articles/2018/01/25/monster-hunter-world-review",
           "configured_source_id": "ign",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-4",
+        "configured_source_id": "game-revolution",
+        "publication": "GameRevolution",
+        "title": "Monster Hunter World Review - A Whole New World",
+        "url": "https://www.gamerevolution.com/review/366295-monster-hunter-world-review-whole-new-world",
+        "original_score": {
+          "score": 9,
+          "scale": 10,
+          "grade": null,
+          "display": "9/10"
+        },
+        "normalized_10": 9,
+        "score_evidence": {
+          "method": "registry:game-revolution",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-14T23:04:31.690Z",
+          "url": "https://www.gamerevolution.com/review/366295-monster-hunter-world-review-whole-new-world",
+          "configured_source_id": "game-revolution",
           "direct_publisher": true
         }
       }
@@ -352,21 +382,16 @@
         "publication": "Polygon",
         "url": "https://www.polygon.com/2018/1/26/16934076/monster-hunter-world-review-ps4-xbox-pc-release",
         "reason": "canonical_version"
-      },
-      {
-        "configured_source_id": "game-revolution",
-        "publication": "GameRevolution",
-        "url": "https://www.gamerevolution.com/review/366295-monster-hunter-world-review-whole-new-world",
-        "reason": "canonical_version"
       }
     ],
     "calculation": {
-      "source_count": 1,
+      "source_count": 2,
       "values": [
-        9.5
+        9.5,
+        9
       ],
-      "mean_10": 9.5,
-      "score_10": 9.5
+      "mean_10": 9.25,
+      "score_10": 9.3
     }
   }
 }
