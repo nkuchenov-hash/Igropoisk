@@ -1,0 +1,59 @@
+{
+  "schema_version": 6,
+  "type": "review",
+  "game_slug": "duskfade",
+  "game_id": "game_dc5231876c0dd6cc435d",
+  "canonical_title": "Duskfade",
+  "checked_at": "2026-08-14T01:38:11.794Z",
+  "status": "red-needs-revision",
+  "green": false,
+  "comments": [
+    "Корпус: 0/5",
+    "Оценённые издания: 0/3"
+  ],
+  "revision_history": [
+    {
+      "label": "web-discovery",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"regional_complete\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "explicit-score-enrichment",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"updates\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "research-1",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:31\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"credit_balance_exhausted\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:31:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:42:12\n\nNode.js v22.23.1\n"
+    },
+    {
+      "label": "score-1",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"score_10\": null,\n  \"compatibility_adapter\": true\n}\n",
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "keep_queued_until_green": true,
+    "review_score_source": "data/reviews/{slug}.json#review_score",
+    "research_fallback": "direct-publisher-web-bounded",
+    "score_enrichment": "direct-publisher-structured-markup",
+    "article_reuse": "rebind-existing-before-regeneration",
+    "synthesis_fallback": "local-ollama",
+    "visual_audit_fallback": "local-ollama-multimodal",
+    "language_audit_fallback": "local-ollama",
+    "web_discovery_attempts_per_qc": 1
+  }
+}

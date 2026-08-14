@@ -1,14 +1,14 @@
 {
-  "schema_version": 4,
+  "schema_version": 6,
   "type": "page",
   "game_slug": "hell-let-loose-vietnam",
   "game_id": "game_91b8109a5d837b4f0bbc",
   "canonical_title": "Hell Let Loose: Vietnam",
-  "checked_at": "2026-08-13T22:29:23.150Z",
+  "checked_at": "2026-08-14T01:37:17.602Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
-    "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3079210/library_600x900_2x.jpg"
+    "Нет проверенной основной обложки."
   ],
   "revision_history": [
     {
@@ -32,7 +32,7 @@
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": 1,\n  \"accepted_screenshots\": 7\n}\n",
+      "stdout": "{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 7\n}\n",
       "stderr": ""
     },
     {
@@ -64,7 +64,7 @@
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": 1,\n  \"accepted_screenshots\": 7\n}\n",
+      "stdout": "{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 7\n}\n",
       "stderr": ""
     },
     {
@@ -96,7 +96,7 @@
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": 1,\n  \"accepted_screenshots\": 7\n}\n",
+      "stdout": "{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 7\n}\n",
       "stderr": ""
     },
     {
@@ -128,7 +128,7 @@
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": 1,\n  \"accepted_screenshots\": 7\n}\n",
+      "stdout": "{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 7\n}\n",
       "stderr": ""
     },
     {
@@ -143,7 +143,12 @@
   "policy": {
     "keep_queued_until_green": true,
     "review_score_source": "data/reviews/{slug}.json#review_score",
-    "research_fallback": "direct-publisher-web",
-    "synthesis_fallback": "github-models"
+    "research_fallback": "direct-publisher-web-bounded",
+    "score_enrichment": "direct-publisher-structured-markup",
+    "article_reuse": "rebind-existing-before-regeneration",
+    "synthesis_fallback": "local-ollama",
+    "visual_audit_fallback": "local-ollama-multimodal",
+    "language_audit_fallback": "local-ollama",
+    "web_discovery_attempts_per_qc": 1
   }
 }

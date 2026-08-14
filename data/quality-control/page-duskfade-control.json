@@ -1,14 +1,14 @@
 {
-  "schema_version": 4,
+  "schema_version": 6,
   "type": "page",
   "game_slug": "duskfade",
   "game_id": "game_dc5231876c0dd6cc435d",
   "canonical_title": "Duskfade",
-  "checked_at": "2026-08-13T22:29:15.511Z",
+  "checked_at": "2026-08-14T01:37:01.050Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
-    "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/2542020/library_600x900_2x.jpg"
+    "Нет проверенной основной обложки."
   ],
   "revision_history": [
     {
@@ -32,7 +32,7 @@
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": 1,\n  \"accepted_screenshots\": 12\n}\n",
+      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 12\n}\n",
       "stderr": ""
     },
     {
@@ -64,7 +64,7 @@
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": 1,\n  \"accepted_screenshots\": 12\n}\n",
+      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 12\n}\n",
       "stderr": ""
     },
     {
@@ -96,7 +96,7 @@
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": 1,\n  \"accepted_screenshots\": 12\n}\n",
+      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 12\n}\n",
       "stderr": ""
     },
     {
@@ -128,7 +128,7 @@
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": 1,\n  \"accepted_screenshots\": 12\n}\n",
+      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 12\n}\n",
       "stderr": ""
     },
     {
@@ -143,7 +143,12 @@
   "policy": {
     "keep_queued_until_green": true,
     "review_score_source": "data/reviews/{slug}.json#review_score",
-    "research_fallback": "direct-publisher-web",
-    "synthesis_fallback": "github-models"
+    "research_fallback": "direct-publisher-web-bounded",
+    "score_enrichment": "direct-publisher-structured-markup",
+    "article_reuse": "rebind-existing-before-regeneration",
+    "synthesis_fallback": "local-ollama",
+    "visual_audit_fallback": "local-ollama-multimodal",
+    "language_audit_fallback": "local-ollama",
+    "web_discovery_attempts_per_qc": 1
   }
 }
