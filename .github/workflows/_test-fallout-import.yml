@@ -1,0 +1,37 @@
+name: Test Fallout verified import
+on:
+  push:
+    branches: [feature/fallout-series-import]
+    paths: [.github/workflows/_test-fallout-import.yml]
+permissions:
+  contents: read
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/fallout-series-import
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate import contracts
+        run: |
+          node scripts/test-verified-game-import.mjs
+          node scripts/validate-new-game-lifecycle.mjs
+      - name: Plan Fallout import
+        run: node scripts/plan-game-imports.mjs
+      - name: Require nine resolved canonical identities
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const p=JSON.parse(fs.readFileSync('data/content-pipeline/verified-import-status.json','utf8'));
+          const req=JSON.parse(fs.readFileSync('data/game-import-requests.json','utf8'));
+          const rows=p.resolved||[];
+          const fallout4=rows.find(x=>x.import_id==='fallout-4-2015');
+          const bos=rows.find(x=>x.import_id==='fallout-brotherhood-of-steel-2004');
+          const unique=new Set(rows.map(x=>x.game_id));
+          console.log(JSON.stringify({requested:req.imports.length,resolved:rows.length,issues:p.issues?.length||0,unique_game_ids:unique.size,created:rows.filter(x=>x.decision==='created').length,matched:rows.filter(x=>x.decision!=='created').length,fallout4,bos},null,2));
+          if(req.imports.length!==9||rows.length!==9||(p.issues?.length||0)!==0||unique.size!==9||!fallout4?.game_id||!bos?.parser_seed)process.exit(2);
+          NODE
