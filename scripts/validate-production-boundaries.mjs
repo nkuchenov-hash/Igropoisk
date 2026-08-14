@@ -39,20 +39,62 @@ if (stagingWatcher.includes('Autonomous news pipeline')) {
   fail('External news publication is incorrectly treated as a staging repository write.');
 }
 
+const productionPrProfiles = [
+  {
+    branchPrefix: 'automation/news-game-pages-',
+    materializer: 'node scripts/materialize-news-production-pages.mjs --target'
+  },
+  {
+    branchPrefix: 'automation/popular-game-pages-',
+    materializer: 'node scripts/materialize-popular-production-pages.mjs --target'
+  }
+];
+
+function workflowStepBlock(lines, index) {
+  let start = index;
+  while (start > 0 && !/^\s*-\s+name:/.test(lines[start])) start -= 1;
+  let end = index + 1;
+  while (end < lines.length && !/^\s*-\s+name:/.test(lines[end])) end += 1;
+  return lines.slice(start, end).join('\n');
+}
+
+function approvedIsolatedPrPush(content, step, line) {
+  if (!/git\s+push\s+origin\s+"?\$branch"?/.test(line)) return false;
+  const branch = step.match(/branch="(automation\/[^"\n]+)"/)?.[1] || '';
+  if (!branch || !branch.includes('${GITHUB_RUN_ID}')) return false;
+  if (!/gh\s+pr\s+create[\s\S]*--head\s+"?\$branch"?/.test(step)) return false;
+  if (!/gh\s+pr\s+merge\s+"?\$pr_url"?[\s\S]*--merge/.test(step)) return false;
+
+  if (/--base\s+staging/.test(step)) return true;
+  if (!/--base\s+main/.test(step)) return false;
+
+  const profile = productionPrProfiles.find(item => branch.startsWith(item.branchPrefix));
+  if (!profile || !content.includes(profile.materializer)) return false;
+  for (const required of [
+    'git diff --check',
+    'node scripts/validate-game-v3.mjs',
+    'node scripts/validate-production-boundaries.mjs'
+  ]) {
+    if (!step.includes(required)) return false;
+  }
+  if (/git\s+push[^\n]*(?:HEAD:main|refs\/heads\/main)/.test(step)) return false;
+  return true;
+}
+
 for (const name of fs.readdirSync(WORKFLOWS).filter(file => /\.ya?ml$/i.test(file))) {
   const relative = `.github/workflows/${name}`;
   const content = read(relative);
   const lines = content.split('\n');
-  const isolatedAutomationPrWriter = /branch="automation\/[^"\n]*\$\{GITHUB_RUN_ID\}[^"\n]*"/.test(content)
-    && /gh\s+pr\s+create[\s\S]*--base\s+staging/.test(content);
 
   for (const [index, line] of lines.entries()) {
     if (/\bgh\s+workflow\s+run\s+pages\.yml\b/.test(line)) {
       fail(`${relative}:${index + 1} dispatches production deployment outside a main merge.`);
     }
     if (/\bgit\s+push\b/.test(line) && !/staging/.test(line)) {
-      const pushesIsolatedPrBranch = isolatedAutomationPrWriter && /git\s+push\s+origin\s+"?\$branch"?/.test(line);
-      if (!pushesIsolatedPrBranch) fail(`${relative}:${index + 1} pushes without an explicit staging target or approved isolated PR branch.`);
+      const step = workflowStepBlock(lines, index);
+      if (!approvedIsolatedPrPush(content, step, line)) {
+        fail(`${relative}:${index + 1} pushes without an explicit staging target or approved isolated PR branch.`);
+      }
     }
     if (/\bgit\s+pull\b/.test(line) && /origin\s+main/.test(line)) {
       fail(`${relative}:${index + 1} rebases generated content directly on main.`);
@@ -74,4 +116,4 @@ if (errors.length) {
   throw new Error(`Production boundary validation failed:\n${errors.map(error => `- ${error}`).join('\n')}`);
 }
 
-console.log('Production is read-only; repository writers target staging or an approved isolated PR branch, and news publishes only to external content storage.');
+console.log('Production is read-only; repository writers target staging or a validated isolated PR branch, and news publishes only to external content storage.');
