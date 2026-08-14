@@ -14,14 +14,17 @@ on:
       - 'scripts/curate-home-feeds.mjs'
       - 'scripts/lib/home-feed-identity.mjs'
       - 'scripts/lib/home-release-quality.mjs'
+      - 'scripts/lib/popular-entity-resolution.mjs'
       - 'scripts/test-home-feed-quality.mjs'
       - 'scripts/parse-popular.mjs'
+      - 'scripts/enrich-global-popular-youtube.mjs'
       - 'scripts/filter-popular.mjs'
       - 'scripts/resolve-popular-covers.mjs'
       - 'scripts/parse-releases.mjs'
       - 'scripts/run-scheduled-parsers.mjs'
       - 'scripts/validate-home-feeds.mjs'
       - 'scripts/smoke-home-feeds-browser.mjs'
+      - 'tests/popular-entity-resolution.mjs'
       - '.github/workflows/parser-scheduler.yml'
       - '.github/workflows/home-feeds-check.yml'
       - '.github/workflows/pages.yml'
@@ -38,14 +41,17 @@ on:
       - 'scripts/curate-home-feeds.mjs'
       - 'scripts/lib/home-feed-identity.mjs'
       - 'scripts/lib/home-release-quality.mjs'
+      - 'scripts/lib/popular-entity-resolution.mjs'
       - 'scripts/test-home-feed-quality.mjs'
       - 'scripts/parse-popular.mjs'
+      - 'scripts/enrich-global-popular-youtube.mjs'
       - 'scripts/filter-popular.mjs'
       - 'scripts/resolve-popular-covers.mjs'
       - 'scripts/parse-releases.mjs'
       - 'scripts/run-scheduled-parsers.mjs'
       - 'scripts/validate-home-feeds.mjs'
       - 'scripts/smoke-home-feeds-browser.mjs'
+      - 'tests/popular-entity-resolution.mjs'
       - '.github/workflows/parser-scheduler.yml'
       - '.github/workflows/home-feeds-check.yml'
       - '.github/workflows/pages.yml'
@@ -72,11 +78,16 @@ jobs:
           node --check scripts/curate-home-feeds.mjs
           node --check scripts/lib/home-feed-identity.mjs
           node --check scripts/lib/home-release-quality.mjs
+          node --check scripts/lib/popular-entity-resolution.mjs
           node --check scripts/test-home-feed-quality.mjs
+          node --check scripts/parse-popular.mjs
+          node --check scripts/enrich-global-popular-youtube.mjs
+          node --check tests/popular-entity-resolution.mjs
           node --check scripts/validate-home-feeds.mjs
           node --check scripts/smoke-home-feeds-browser.mjs
           node --check assets/home-releases/index.js
           node scripts/test-home-feed-quality.mjs
+          node tests/popular-entity-resolution.mjs
 
       - name: Verify published data contracts
         run: node scripts/validate-home-feeds.mjs

@@ -1,5 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {
+  createPopularEntityResolver,
+  recomputePopularityIndices
+} from './lib/popular-entity-resolution.mjs';
 
 const root = process.cwd();
 const read = file => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
@@ -23,24 +27,26 @@ if (!key) {
   process.exit(0);
 }
 
-const canonical = value => String(value || '').normalize('NFKD').toLowerCase()
-  .replace(/[^a-z0-9а-яё]+/gi, ' ').replace(/\s+/g, ' ').trim();
 const timeout = 25_000;
 const fetchJSON = async url => {
   const response = await fetch(url, {
     signal: AbortSignal.timeout(timeout),
-    headers: { 'user-agent': 'IgropoiskPopularityEnricher/1.0' }
+    headers: { 'user-agent': 'IgropoiskPopularityEnricher/2.0' }
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return response.json();
 };
-const exactMention = (candidate, text) => {
-  const haystack = ` ${canonical(text)} `;
-  return [candidate.title, ...(candidate.aliases || [])]
-    .map(canonical)
-    .filter(alias => alias.length >= 5)
-    .some(alias => haystack.includes(` ${alias} `));
-};
+
+const resolverCandidates = new Map();
+for (const entry of [...(config.global_candidates || []), ...(config.aliases || [])]) {
+  if (!entry?.slug) continue;
+  const existing = resolverCandidates.get(entry.slug) || { ...entry, aliases: [] };
+  existing.title ||= entry.title;
+  existing.aliases = [...new Set([...(existing.aliases || []), ...(entry.aliases || []), entry.title].filter(Boolean))];
+  resolverCandidates.set(entry.slug, existing);
+}
+const entityResolver = createPopularEntityResolver([...resolverCandidates.values()], config);
+const isCandidateSubject = (candidate, text) => entityResolver.resolve(text, { mode: 'editorial' })?.slug === candidate.slug;
 
 const bySlug = new Map((data.ranking || []).map(item => [item.slug, item]));
 const statuses = [];
@@ -62,7 +68,7 @@ for (const candidate of config.global_candidates || []) {
     }).toString();
     const search = await fetchJSON(searchUrl);
     const searchItems = (search.items || []).filter(item =>
-      item?.id?.videoId && exactMention(candidate, `${item.snippet?.title || ''} ${item.snippet?.description || ''}`)
+      item?.id?.videoId && isCandidateSubject(candidate, item.snippet?.title || '')
     );
     const ids = [...new Set(searchItems.map(item => item.id.videoId))];
     if (!ids.length) {
@@ -77,7 +83,7 @@ for (const candidate of config.global_candidates || []) {
       key
     }).toString();
     const details = await fetchJSON(detailsUrl);
-    const videos = (details.items || []).filter(video => exactMention(candidate, `${video.snippet?.title || ''} ${video.snippet?.description || ''}`));
+    const videos = (details.items || []).filter(video => isCandidateSubject(candidate, video.snippet?.title || ''));
     const evidence = videos.map(video => {
       const views = Number(video.statistics?.viewCount || 0);
       const comments = Number(video.statistics?.commentCount || 0);
@@ -124,9 +130,12 @@ for (const candidate of config.global_candidates || []) {
     existing.evidence = [...(existing.evidence || []), ...freshEvidence]
       .sort((a, b) => Number(b.value || 0) - Number(a.value || 0))
       .slice(0, 30);
-    existing.families = [...new Set([...(existing.families || []), 'youtube'])];
     existing.signals ||= { news: 0, reddit: 0, youtube: 0, twitch: 0, steam_chart: 0 };
-    existing.signals.youtube = Math.max(Number(existing.signals.youtube || 0), evidence.reduce((sum, item) => sum + item.value, 0));
+    // Keep a single YouTube family signal. Do not replace the public score with a second capped formula.
+    existing.signals.youtube = Math.max(
+      Number(existing.signals.youtube || 0),
+      evidence.reduce((sum, item) => sum + Number(item.value || 0), 0)
+    );
     existing.youtube_community = {
       window_hours: 72,
       unique_videos: evidence.length,
@@ -135,11 +144,7 @@ for (const candidate of config.global_candidates || []) {
       total_comments: totalComments,
       checked_at: checkedAt
     };
-    const communityScore = Math.min(35,
-      6 + 3 * Math.log10(totalViews + 1) + 1.5 * Math.log1p(evidence.length) + 1.5 * Math.log1p(channels.size)
-    );
     const communityConfidence = Math.min(0.92, 0.38 + 0.04 * evidence.length + 0.05 * channels.size);
-    existing.score = Number(Math.max(Number(existing.score || 0), communityScore).toFixed(1));
     existing.confidence = Number(Math.max(Number(existing.confidence || 0), communityConfidence).toFixed(2));
     existing.global_candidate = true;
     bySlug.set(candidate.slug, existing);
@@ -156,11 +161,11 @@ for (const candidate of config.global_candidates || []) {
   }
 }
 
-data.ranking = [...bySlug.values()]
+data.ranking = recomputePopularityIndices([...bySlug.values()])
   .sort((a, b) => Number(b.score || 0) - Number(a.score || 0) || Number(b.confidence || 0) - Number(a.confidence || 0))
   .slice(0, 80);
 data.method ||= {};
-data.method.global_youtube_search = 'Recent exact-title gaming videos from distinct channels over 72 hours';
+data.method.global_youtube_search = 'Recent subject-matched gaming videos from distinct channels over 72 hours; folded into the same normalized YouTube family used by the main index';
 data.source_statuses = [...(data.source_statuses || []), {
   id: 'youtube-global-search',
   status: statuses.some(item => item.status === 'success') ? 'success' : 'error',

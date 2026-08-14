@@ -1,5 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {
+  POPULAR_WEIGHTS,
+  calculatePopularityIndex,
+  canonicalPopularText,
+  createPopularEntityResolver,
+  popularityMaxima
+} from './lib/popular-entity-resolution.mjs';
 
 const root = process.cwd();
 const readJSON = file => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
@@ -9,8 +16,7 @@ const now = Date.now();
 const checkedAt = new Date(now).toISOString();
 const timeout = 25_000;
 
-const canonical = value => String(value || '').normalize('NFKD').toLowerCase()
-  .replace(/&amp;/g, ' and ').replace(/[^a-z0-9а-яё]+/gi, ' ').replace(/\s+/g, ' ').trim();
+const canonical = canonicalPopularText;
 const slugify = value => canonical(value).replace(/\s+/g, '-').slice(0, 90);
 const decode = value => String(value || '')
   .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/<[^>]+>/g, ' ')
@@ -22,7 +28,7 @@ async function fetchText(url, options = {}) {
     ...options,
     signal: AbortSignal.timeout(timeout),
     headers: {
-      'user-agent': 'Mozilla/5.0 IgropoiskPopularityParser/7.0',
+      'user-agent': 'Mozilla/5.0 IgropoiskPopularityParser/8.0',
       'accept-language': 'en-US,en;q=0.9',
       ...(options.headers || {})
     }
@@ -96,6 +102,7 @@ for (const item of catalog) {
 for (const candidate of config.global_candidates || []) registerGame({ ...candidate, global_candidate: true });
 for (const alias of config.aliases || []) registerGame(alias);
 
+const entityResolver = createPopularEntityResolver(games, config);
 const signals = new Map();
 const statuses = [];
 function ensure(game) {
@@ -107,30 +114,8 @@ function ensure(game) {
   });
   return signals.get(game.slug);
 }
-function resolve(title) {
-  const normalized = canonical(title);
-  const value = ` ${normalized} `;
-  for (const rule of config.disambiguation || []) {
-    const matched = (rule.prefer_aliases || [])
-      .map(canonical)
-      .filter(Boolean)
-      .some(alias => value.includes(` ${alias} `));
-    if (matched) {
-      const preferred = bySlug.get(rule.prefer_slug);
-      if (preferred) return preferred;
-    }
-  }
-  const exact = byTitle.get(normalized);
-  if (exact) return exact;
-  let best = null;
-  for (const game of games) {
-    for (const alias of game.aliases || []) {
-      const words = alias.split(' ').length;
-      if (words === 1 && alias.length < 5) continue;
-      if (value.includes(` ${alias} `) && (!best || alias.length > best.alias.length)) best = { game, alias };
-    }
-  }
-  return best?.game || null;
+function resolve(title, options = {}) {
+  return entityResolver.resolve(title, options);
 }
 function recency(date, windowHours = 96, halfLife = 24) {
   const time = Date.parse(date);
@@ -175,7 +160,7 @@ async function collectNews() {
       for (const item of items) {
         const freshness = recency(item.date);
         if (!freshness) continue;
-        const game = resolve(item.title);
+        const game = resolve(item.title, { mode: 'editorial' });
         if (!game) continue;
         const row = ensure(game);
         if (row.evidence.some(e => e.url && e.url === item.url)) continue;
@@ -211,7 +196,7 @@ async function collectReddit() {
       for (const child of data?.data?.children || []) {
         const post = child.data || {};
         items++;
-        const game = resolve(`${post.title || ''} ${post.link_flair_text || ''}`);
+        const game = resolve(`${post.title || ''} ${post.link_flair_text || ''}`, { mode: 'editorial' });
         if (!game) continue;
         const observedAt = new Date(Number(post.created_utc || 0) * 1000).toISOString();
         const age = recency(observedAt, 72, 18);
@@ -247,7 +232,8 @@ async function collectYouTube() {
       for (const video of data.items || []) {
         items++;
         const title = video.snippet?.title || '';
-        const game = resolve(`${title} ${(video.snippet?.tags || []).join(' ')}`);
+        // Tags frequently contain unrelated games. Popularity credit requires the game to be the video subject.
+        const game = resolve(title, { mode: 'editorial' });
         if (!game) continue;
         const views = Number(video.statistics?.viewCount || 0);
         const comments = Number(video.statistics?.commentCount || 0);
@@ -278,7 +264,7 @@ async function collectTwitch() {
     let matched = 0;
     for (const [index, category] of (data.data || []).entries()) {
       const image = String(category.box_art_url || '').replace('{width}', '600').replace('{height}', '900');
-      const game = resolve(category.name) || registerGame({ title: category.name, image, global_candidate: true });
+      const game = resolve(category.name, { mode: 'platform' }) || registerGame({ title: category.name, image, global_candidate: true });
       if (!game) continue;
       game.image ||= image;
       const value = Math.max(0.01, 1 - index / 100);
@@ -351,30 +337,19 @@ async function imageCandidates(game) {
 const started = Date.now();
 await Promise.all([collectNews(), collectReddit(), collectYouTube(), collectTwitch(), collectSteam()]);
 const rows = [...signals.values()];
-const maxima = {};
-for (const family of ['news', 'reddit', 'youtube', 'twitch', 'steam_chart']) {
-  maxima[family] = Math.max(...rows.map(row => row.families[family] || 0), 1);
-}
-const weights = { news: 0.30, reddit: 0.15, youtube: 0.15, twitch: 0.20, steam_chart: 0.15, breadth: 0.05 };
+const maxima = popularityMaxima(rows);
 const excluded = new Set(['steam-deck', 'steam-machine', 'valve-index', 'steam-controller', 'steam-link']);
 const ranking = [];
 for (const row of rows) {
   if (excluded.has(row.game.slug)) continue;
-  const normalized = {};
-  for (const family of ['news', 'reddit', 'youtube', 'twitch', 'steam_chart']) normalized[family] = (row.families[family] || 0) / maxima[family];
-  const activeFamilies = ['news', 'reddit', 'youtube', 'twitch', 'steam_chart'].filter(family => normalized[family] > 0.01);
+  const calculation = calculatePopularityIndex({
+    signals: row.families,
+    maxima,
+    newsSources: row.publishers.size
+  });
+  const { score, normalized, activeFamilies, activeCommunityFamilies } = calculation;
   if (!activeFamilies.length) continue;
-  const activeCommunityFamilies = ['news', 'reddit', 'youtube', 'twitch'].filter(family => normalized[family] > 0.02);
   const hasPlatform = normalized.steam_chart > 0 || normalized.twitch > 0;
-  const breadth = Math.min(1, (row.publishers.size + activeCommunityFamilies.length) / 8);
-  const score = 100 * (
-    weights.news * normalized.news +
-    weights.reddit * normalized.reddit +
-    weights.youtube * normalized.youtube +
-    weights.twitch * normalized.twitch +
-    weights.steam_chart * normalized.steam_chart +
-    weights.breadth * breadth
-  );
   const candidates = await imageCandidates(row.game);
   ranking.push({
     slug: row.game.slug,
@@ -382,7 +357,7 @@ for (const row of rows) {
     year: row.game.year || null,
     image: candidates[0] || '',
     image_candidates: candidates,
-    score: Number(score.toFixed(1)),
+    score,
     confidence: Number(Math.min(1, 0.35 + 0.09 * activeCommunityFamilies.length + 0.04 * Math.min(row.publishers.size, 6) + (hasPlatform ? 0.1 : 0)).toFixed(2)),
     delta: null,
     families: activeFamilies,
@@ -397,14 +372,15 @@ for (const row of rows) {
 ranking.sort((a, b) => b.score - a.score || b.confidence - a.confidence || a.title.localeCompare(b.title, 'en'));
 
 const output = {
-  schema_version: 7,
+  schema_version: 8,
   generated_at: checkedAt,
   window_hours: 96,
   method: {
     formula: '30% news + 15% Reddit + 15% YouTube + 20% Twitch chart + 15% Steam chart + 5% breadth',
-    family_weights: weights,
+    family_weights: POPULAR_WEIGHTS,
     news_sources_are_publishers: true,
     candidate_universe: 'catalog + global candidates + Steam chart + Twitch chart',
+    entity_matching: 'canonical subject-only resolver; ambiguous franchise, collection, comparison and context-only mentions are rejected',
     image_fallback: 'catalog/manual → Twitch box art → Steam vertical poster → Steam app details → Wikipedia image'
   },
   ranking: ranking.slice(0, 60),
@@ -423,7 +399,7 @@ const run = {
   sources_success: statuses.filter(item => item.status === 'success').length,
   sources_total: statuses.length,
   output: 'data/popular/current.json',
-  note: 'Кандидаты рассчитаны по независимым изданиям, YouTube, Reddit и текущим чартам Twitch/Steam; финальный отбор выполняется отдельным куратором.',
+  note: 'Кандидаты рассчитаны по одной шкале из независимых изданий, YouTube, Reddit и текущих чартов Twitch/Steam; неоднозначные упоминания конкретным играм не засчитываются.',
   source_statuses: statuses
 };
 fs.writeFileSync(path.join(root, 'data', 'parser-runs', 'popular.json'), `${JSON.stringify(run, null, 2)}\n`);
