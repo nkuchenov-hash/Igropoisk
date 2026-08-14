@@ -2,7 +2,7 @@
   "schema_version": 4,
   "game_slug": "mewgenics",
   "game_id": "game_a50cc9ff46e923650473",
-  "generated_at": "2026-08-14T17:40:52.672Z",
+  "generated_at": "2026-08-14T18:19:28.242Z",
   "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
@@ -10,18 +10,20 @@
     "status": "auto",
     "revision": 1,
     "quality": {
-      "populated_axes": 7,
+      "populated_axes": 9,
       "total_axes": 16,
       "core_axes": 4,
       "total_core_axes": 7,
       "populated": [
         "genres",
+        "subgenres",
         "core_loop",
         "combat_style",
         "world_structure",
         "progression",
         "pacing",
-        "multiplayer"
+        "multiplayer",
+        "mechanics"
       ],
       "populated_core": [
         "core_loop",
@@ -30,7 +32,7 @@
         "progression"
       ],
       "ready_for_similarity": true,
-      "needs_enrichment": true
+      "needs_enrichment": false
     },
     "ref": "../game-dna/mewgenics.json"
   },
@@ -42,7 +44,9 @@
       "simulation",
       "strategy"
     ],
-    "subgenres": [],
+    "subgenres": [
+      "mouse_only_option"
+    ],
     "core_loop": [
       "collecting",
       "strategy",
@@ -71,7 +75,9 @@
     "multiplayer": [
       "singleplayer"
     ],
-    "mechanics": [],
+    "mechanics": [
+      "mouse_only_option"
+    ],
     "franchise": ""
   },
   "recommendations": []
