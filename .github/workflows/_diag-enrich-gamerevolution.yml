@@ -1,0 +1,26 @@
+name: Trace GameRevolution production enrichment
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-enrich-gamerevolution.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run production enrichment and print GameRevolution checks
+        run: |
+          for slug in metal-gear-solid-v-the-phantom-pain dark-souls-iii; do
+            echo "=== $slug ==="
+            node scripts/enrich-review-explicit-scores.mjs "$slug"
+            node - "$slug" <<'NODE'
+          const fs=require('fs');const slug=process.argv[2];const r=JSON.parse(fs.readFileSync(`data/parser-runs/review-explicit-scores-${slug}.json`,'utf8'));console.log(JSON.stringify(r.checks.filter(x=>x.configured_source_id==='game-revolution'),null,2));
+          NODE
+          done
