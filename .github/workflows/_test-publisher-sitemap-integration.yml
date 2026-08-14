@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Prove RDR2 and Ghost Recon canonical score gates
+      - name: Prove RDR2 and Ghost Recon canonical score gates after canonical-year fix
         run: |
           for slug in red-dead-redemption-2 tom-clancy-s-ghost-recon-wildlands; do
             echo "=== $slug ==="
@@ -28,8 +28,10 @@ jobs:
           const fs=require('fs'),slug=process.argv[2];
           const r=JSON.parse(fs.readFileSync(`data/reviews/${slug}.json`,'utf8'));
           const m=JSON.parse(fs.readFileSync(`data/research/${slug}-source-matrix.json`,'utf8'));
+          const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
+          const catalogItem=catalog.find(x=>x.slug===slug);
           const discovered=(m.accepted||[]).filter(x=>['pc-gamer','gamesradar'].includes(x.configured_source_id)).map(x=>({id:x.configured_source_id,url:x.resolved_url||x.url,score:x.score,scale:x.scale,eligible:x.score_eligible}));
-          console.log(JSON.stringify({slug,accepted:r.publication_gate?.accepted,score_status:r.review_score?.status,score_sources:r.review_score?.sources?.length,score_10:r.review_score?.calculation?.score_10,discovered},null,2));
+          console.log(JSON.stringify({slug,canonical_year:catalogItem?.year,accepted:r.publication_gate?.accepted,score_status:r.review_score?.status,score_sources:r.review_score?.sources?.length,score_10:r.review_score?.calculation?.score_10,discovered},null,2));
           if(r.publication_gate?.status!=='green'||r.review_score?.status!=='green'||Number(r.review_score?.sources?.length||0)<3||!discovered.length)process.exit(2);
           NODE
           done
