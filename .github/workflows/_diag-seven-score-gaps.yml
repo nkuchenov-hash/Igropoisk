@@ -1,0 +1,24 @@
+name: Inspect remaining seven score gaps
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-seven-score-gaps.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Print accepted source/score state for the seven remaining games
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');const read=(p,f=null)=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return f}};
+          const slugs=['metal-gear-solid-v-the-phantom-pain','dark-souls-iii','red-dead-redemption-2','half-life-alyx','deathloop','alan-wake-2','tom-clancy-s-ghost-recon-wildlands'];
+          for(const slug of slugs){const r=read(`data/reviews/${slug}.json`,{});console.log('\nGAME '+slug);for(const s of r.reviews||[])console.log(JSON.stringify({id:s.configured_source_id,pub:s.publication,url:s.resolved_url||s.url,validation:s.validation?.status,score:s.score,scale:s.scale,eligible:s.score_eligible,canonical:s.canonical_score_eligible}));}
+          NODE
