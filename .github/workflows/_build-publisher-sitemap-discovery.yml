@@ -30,8 +30,9 @@ jobs:
           git diff --check
       - name: Commit production files
         run: |
+          git checkout HEAD -- .github/workflows/review-score-contract.yml
           git config user.name "igropoisk-tools[bot]"
           git config user.email "igropoisk-tools[bot]@users.noreply.github.com"
-          git add config/parsers/review-source-registry.json scripts/lib/review-publisher-sitemap.mjs scripts/lib/review-source-registry.mjs scripts/discover-review-sources-web-v8.mjs scripts/test-review-publisher-sitemap.mjs .github/workflows/review-score-contract.yml
+          git add config/parsers/review-source-registry.json scripts/discover-review-sources-web-v8.mjs
           git commit -m "Discover registered reviews through publisher sitemaps"
           git push origin HEAD:fix/review-publisher-sitemap-discovery
