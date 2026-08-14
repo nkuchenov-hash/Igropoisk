@@ -10,9 +10,10 @@ if(!slug)throw new Error('Usage: discover-review-sources-web <slug> [--all]');
 const read=(relative,fallback={})=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
 const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n')};
 const game=read(`data/drafts/${slug}.json`),old=read(`data/reviews/${slug}.json`),oldResearch=read(`data/research/${slug}-source-matrix.json`),article=read(`data/articles/${slug}.json`),cfg=read('config/parsers/review-synthesis.json'),registry=loadReviewSourceRegistry(cfg.source_registry),quality=read('config/game-page-quality-v2.json');
+const catalog=read('data/catalog-visible.json',[]),catalogItem=Array.isArray(catalog)?catalog.find(item=>item?.slug===slug):null;
 if(!game.identity)throw new Error('Missing game draft');
 
-const corpus=quality.review_corpus||{},minimum=Number(corpus.minimum_sources||5),target=Number(corpus.target_sources||20),maximum=Number(corpus.maximum_sources||20),title=game.identity.title||slug,year=Number(String(game.release?.date||game.release?.date_text||'').match(/(?:19|20)\d{2}/)?.[0]||0),historical=year>0&&year<2010,now=new Date().toISOString();
+const corpus=quality.review_corpus||{},minimum=Number(corpus.minimum_sources||5),target=Number(corpus.target_sources||20),maximum=Number(corpus.maximum_sources||20),title=catalogItem?.title||game.identity.title||slug,year=Number(catalogItem?.year||String(game.release?.date||game.release?.date_text||'').match(/(?:19|20)\d{2}/)?.[0]||0),historical=year>0&&year<2010,now=new Date().toISOString();
 const SEARCH_TIMEOUT=6500,PAGE_TIMEOUT=9000,BATCH=4;
 const decode=value=>String(value||'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>');
 const host=value=>{try{return new URL(value).hostname.replace(/^www\./,'').toLowerCase()}catch{return''}};
