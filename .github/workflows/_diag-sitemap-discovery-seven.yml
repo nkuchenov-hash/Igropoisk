@@ -1,0 +1,40 @@
+name: Test sitemap discovery on seven score gaps
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-sitemap-discovery-seven.yml]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Discover direct scored reviews from publisher sitemaps
+        run: |
+          node --input-type=module - <<'NODE'
+          import {loadReviewSourceRegistry,findRegisteredSource,classifyReviewPage,classifyCanonicalVersion} from './scripts/lib/review-source-registry.mjs';
+          import {extractExplicitEditorialScore} from './scripts/lib/review-score-extractor.mjs';
+          const games=[
+            ['metal-gear-solid-v-the-phantom-pain','Metal Gear Solid V: The Phantom Pain',2015],
+            ['dark-souls-iii','Dark Souls III',2016],
+            ['red-dead-redemption-2','Red Dead Redemption 2',2018],
+            ['half-life-alyx','Half-Life: Alyx',2020],
+            ['deathloop','Deathloop',2021],
+            ['alan-wake-2','Alan Wake 2',2023],
+            ['tom-clancy-s-ghost-recon-wildlands',"Tom Clancy's Ghost Recon Wildlands",2017]
+          ];
+          const sources=[['pc-gamer','https://www.pcgamer.com/sitemap.xml'],['gamesradar','https://www.gamesradar.com/sitemap.xml']];
+          const registry=loadReviewSourceRegistry('config/parsers/review-source-registry.json');
+          const text=s=>String(s||'').replace(/<script\b[\s\S]*?<\/script>/gi,' ').replace(/<style\b[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+          const tokens=title=>String(title).toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').split(' ').filter(x=>x.length>2||/^\d+$/.test(x)).filter(x=>!new Set(['the','and','for','with','wild','hunt','game','edition','tom','clancy']).has(x)).slice(0,6);
+          const identity=(title,url)=>{const ts=tokens(title),l=url.toLowerCase();return ts.filter(t=>l.includes(t)||({v:'5',iii:'3',ii:'2',iv:'4'}[t]&&l.includes({v:'5',iii:'3',ii:'2',iv:'4'}[t]))).length/Math.max(1,ts.length)>=Math.min(.66,2/Math.max(2,ts.length));};
+          const get=async url=>{const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskSitemapDiscovery/1.0)'}});return{ok:r.ok,status:r.status,url:r.url,body:await r.text()}};
+          for(const [slug,title,year] of games){console.log('\nGAME '+slug);for(const [id,indexUrl] of sources){const source=findRegisteredSource(registry,{configured_source_id:id}),idx=await get(indexUrl),children=[...idx.body.matchAll(/<loc>([\s\S]*?)<\/loc>/gi)].map(m=>m[1].trim().replace(/&amp;/g,'&')).filter(u=>new RegExp(`sitemap-(?:${year}|${year+1})-\\d{2}\\.xml$`).test(u));let urls=[];for(let i=0;i<children.length;i+=6){const batch=await Promise.all(children.slice(i,i+6).map(get));for(const c of batch)if(c.ok)urls.push(...[...c.body.matchAll(/<loc>([\s\S]*?)<\/loc>/gi)].map(m=>m[1].trim().replace(/&amp;/g,'&')))}urls=[...new Set(urls.filter(u=>/review/i.test(u)&&identity(title,u)))];let found=[];for(const u of urls.slice(0,8)){const p=await get(u);if(!p.ok)continue;const pageTitle=text((p.body.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)/i)||[])[1]||(p.body.match(/<title[^>]*>([\s\S]*?)<\/title>/i)||[])[1]||'');const cls=classifyReviewPage(source,{url:p.url,title:pageTitle,bodyText:text(p.body).slice(0,10000)});const score=extractExplicitEditorialScore(p.body,source);const draft={identity:{title},release:{date_text:String(year)}};const version=classifyCanonicalVersion({title:pageTitle,url:p.url,game:draft});if(cls.accepted)found.push({url:p.url,title:pageTitle,score,version});}console.log(JSON.stringify({source:id,sitemaps:children.length,candidates:urls.length,found},null,2));}}
+          NODE
