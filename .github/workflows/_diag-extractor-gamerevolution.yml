@@ -1,0 +1,25 @@
+name: Run actual GameRevolution extractor
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-extractor-gamerevolution.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run production extractor on direct pages
+        run: |
+          node --input-type=module - <<'NODE'
+          import {loadReviewSourceRegistry,findRegisteredSource} from './scripts/lib/review-source-registry.mjs';
+          import {extractExplicitEditorialScore} from './scripts/lib/review-score-extractor.mjs';
+          const registry=loadReviewSourceRegistry('config/parsers/review-source-registry.json');const source=findRegisteredSource(registry,{configured_source_id:'game-revolution'});console.log(JSON.stringify(source.review.score));
+          for(const url of ['https://www.gamerevolution.com/review/68894-metal-gear-solid-v-the-phantom-pain-review','https://www.gamerevolution.com/review/70185-dark-souls-iii-review','https://www.gamerevolution.com/review/381919-god-war-review-olympian-feat']){const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskScoreDiagnostic/1.0)'}});const h=await r.text();const hit=extractExplicitEditorialScore(h,source);console.log(JSON.stringify({url,http:r.status,hit}));}
+          NODE
