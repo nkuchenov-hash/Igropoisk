@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {loadReviewSourceRegistry,editorialSources,regionalEditorialSources,sourceDiscoveryDef,registeredEditorialSource,classifyReviewPage,classifyCanonicalVersion} from './lib/review-source-registry.mjs';
 import {isTrustedEditorialScore} from './lib/review-score-extractor.mjs';
+import {publisherSitemapCandidates} from './lib/review-publisher-sitemap.mjs';
 
 const root=process.cwd(),slug=process.argv[2],auditAll=process.argv.includes('--all');
 if(!slug)throw new Error('Usage: discover-review-sources-web <slug> [--all]');
@@ -31,7 +32,18 @@ async function get(url,timeout=PAGE_TIMEOUT){try{const response=await fetch(url,
 function links(html,base='https://example.invalid'){const out=[];for(const match of String(html||'').matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)){let url=decode(match[1]);try{url=new URL(url,base).href}catch{continue}const label=text(match[2]);if(/^https?:/i.test(url)&&!out.some(item=>item.url===canon(url)))out.push({url:canon(url),title:label})}return out}
 function searchResults(html){const out=[];for(const match of String(html||'').matchAll(/href=["']([^"']+)["'][^>]*>([^<]{4,220})<\/a>/gi)){let url=decode(match[1]);try{const parsed=new URL(url,'https://html.duckduckgo.com');if(parsed.hostname.endsWith('duckduckgo.com')&&parsed.searchParams.get('uddg'))url=decodeURIComponent(parsed.searchParams.get('uddg'));else url=parsed.href}catch{}if(/^https?:/i.test(url)&&!out.some(item=>item.url===canon(url)))out.push({url:canon(url),title:text(match[2])})}return out}
 function queryVariants(def,domain){const local=def.regional,exact=`site:${domain} "${title}" ${local?'обзор рецензия':'review verdict'}${year?' '+year:''}`,loose=`site:${domain} ${looseTitle} ${local?'обзор рецензия отзыв':'review score verdict'}${year?' '+year:''}`;return[...new Set([exact,loose])]}
-async function search(def){const source=registry.sources.find(item=>item.id===def.id),domain=(source?.domains||[])[0];if(!domain)return{def,reachable:false,items:[]};const requests=[];for(const query of queryVariants(def,domain)){requests.push(get(`https://www.bing.com/search?count=12&q=${encodeURIComponent(query)}`,SEARCH_TIMEOUT));requests.push(get(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`,SEARCH_TIMEOUT))}const responses=await Promise.all(requests),items=[];for(const response of responses)if(response.ok)for(const item of searchResults(response.body))if(host(item.url)===domain||host(item.url).endsWith('.'+domain))if(!items.some(found=>found.url===item.url))items.push(item);return{def,reachable:responses.some(response=>response.ok),items:items.slice(0,16)}}
+async function search(def){
+  const source=registry.sources.find(item=>item.id===def.id),domain=(source?.domains||[])[0];
+  if(!domain)return{def,reachable:false,items:[]};
+  const sitemap=def.sitemap_index&&year?await publisherSitemapCandidates({sourceId:def.id,indexUrl:def.sitemap_index,title,year,yearOffsets:def.sitemap_year_offsets,limit:12}):{reachable:false,items:[]};
+  const requests=[];
+  for(const query of queryVariants(def,domain)){requests.push(get(`https://www.bing.com/search?count=12&q=${encodeURIComponent(query)}`,SEARCH_TIMEOUT));requests.push(get(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`,SEARCH_TIMEOUT))}
+  const responses=await Promise.all(requests),items=[];
+  const add=item=>{const url=canon(item.url);if(!url||items.some(found=>found.url===url))return;items.push({...item,url})};
+  for(const item of sitemap.items||[])add({...item,discovery_method:'publisher_sitemap'});
+  for(const response of responses)if(response.ok)for(const item of searchResults(response.body))if(host(item.url)===domain||host(item.url).endsWith('.'+domain))add({...item,discovery_method:'external_search'});
+  return{def,reachable:Boolean(sitemap.reachable)||responses.some(response=>response.ok),items:items.slice(0,16)};
+}
 
 const accepted=[],rejected=[],seenUrls=new Set(),checks=[];
 const acceptedFor=sourceId=>accepted.find(item=>item.configured_source_id===sourceId)||null;
