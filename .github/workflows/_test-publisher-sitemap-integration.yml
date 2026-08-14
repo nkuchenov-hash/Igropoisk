@@ -8,7 +8,6 @@ permissions:
 jobs:
   integration:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -16,22 +15,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Trace RDR2 accepted sitemap source and score enrichment
+      - name: Inspect RDR2 catalog and Game Registry release history
         run: |
-          slug=red-dead-redemption-2
-          node scripts/discover-review-sources-web-v8.mjs "$slug" --all
-          node scripts/promote-review-source-audit.mjs "$slug"
-          node - "$slug" <<'NODE'
-          const fs=require('fs'),slug=process.argv[2],m=JSON.parse(fs.readFileSync(`data/research/${slug}-source-matrix.json`,'utf8'));
-          console.log('SITEMAP SOURCES',JSON.stringify((m.accepted||[]).filter(x=>['pc-gamer','gamesradar'].includes(x.configured_source_id)),null,2));
-          NODE
-          node scripts/enrich-review-explicit-scores.mjs "$slug"
-          node - "$slug" <<'NODE'
-          const fs=require('fs'),slug=process.argv[2],r=JSON.parse(fs.readFileSync(`data/parser-runs/review-explicit-scores-${slug}.json`,'utf8'));
-          console.log('SITEMAP CHECKS',JSON.stringify((r.checks||[]).filter(x=>['pc-gamer','gamesradar'].includes(x.configured_source_id)),null,2));
-          NODE
-          node scripts/calculate-ratings-from-research.mjs "$slug" || true
-          node - "$slug" <<'NODE'
-          const fs=require('fs'),slug=process.argv[2],r=JSON.parse(fs.readFileSync(`data/reviews/${slug}.json`,'utf8'));
-          console.log('FINAL',JSON.stringify({accepted:r.publication_gate?.accepted,status:r.review_score?.status,sources:r.review_score?.sources?.length,score:r.review_score?.calculation?.score_10},null,2));
+          node - <<'NODE'
+          const fs=require('fs');
+          const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
+          const item=catalog.find(x=>x.slug==='red-dead-redemption-2');
+          const registry=JSON.parse(fs.readFileSync('data/game-registry/registry.transition.json','utf8'));
+          const entities=Array.isArray(registry.entities)?registry.entities:Object.values(registry.entities||registry.games||{});
+          const entity=entities.find(x=>x?.id===item?.game_id||x?.identity?.slug?.value==='red-dead-redemption-2');
+          console.log('CATALOG',JSON.stringify(item,null,2));
+          console.log('ENTITY',JSON.stringify(entity,null,2));
           NODE
