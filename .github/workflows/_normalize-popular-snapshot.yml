@@ -1,0 +1,38 @@
+name: Normalize Popular snapshot
+on:
+  push:
+    branches: [fix/production-popular-order]
+    paths: [.github/workflows/_normalize-popular-snapshot.yml]
+permissions:
+  contents: write
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/production-popular-order
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Normalize committed snapshots and verify home feed
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          for(const file of ['data/popular/current.json','data/popular/published.json']){
+            const value=JSON.parse(fs.readFileSync(file,'utf8'));
+            if(Array.isArray(value.ranking)) value.ranking.sort((a,b)=>Number(b.score||0)-Number(a.score||0)||Number(b.confidence||0)-Number(a.confidence||0)||String(a.title||'').localeCompare(String(b.title||''),'ru'));
+            fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');
+          }
+          NODE
+          node scripts/validate-home-feeds.mjs
+          git diff --check
+      - name: Commit normalized snapshots
+        run: |
+          set -euo pipefail
+          git config user.name 'igropoisk-feed[bot]'
+          git config user.email 'igropoisk-feed[bot]@users.noreply.github.com'
+          git add data/popular/current.json data/popular/published.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Normalize Popular snapshot ordering'
+          git push origin HEAD:fix/production-popular-order
