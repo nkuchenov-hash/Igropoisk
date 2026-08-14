@@ -71,13 +71,13 @@ if (popular) {
   if (ranking.length > 20) errors.push(`Popular feed contains ${ranking.length} cards; homepage maximum is 20.`);
   const slugs = new Set();
   const identities = new Map();
-  let previousTier = -1;
-  const tierOrder = new Map([
-    ['confirmed', 0],
-    ['community_dominant', 1],
-    ['platform_corroborated', 2],
-    ['platform_chart', 3],
-    ['carryover', 4]
+  let previousScore = Infinity;
+  const validTiers = new Set([
+    'confirmed',
+    'community_dominant',
+    'platform_corroborated',
+    'platform_chart',
+    'carryover'
   ]);
   for (const [index, item] of ranking.entries()) {
     if (!item?.slug || !item?.title) errors.push(`Popular item ${index + 1} has no slug or title.`);
@@ -93,12 +93,14 @@ if (popular) {
     }
 
     const score = Number(item?.score);
-    if (!Number.isFinite(score)) errors.push(`Popular item ${item?.slug || index + 1} has an invalid score.`);
-    if (quality || item?.editorial_tier) {
-      const tier = tierOrder.get(item?.editorial_tier);
-      if (!Number.isFinite(tier)) errors.push(`Popular item ${item?.slug || index + 1} has no valid editorial tier.`);
-      if (Number.isFinite(tier) && tier < previousTier) errors.push(`Popular editorial tiers are out of order at ${item?.slug || index + 1}.`);
-      if (Number.isFinite(tier)) previousTier = tier;
+    if (!Number.isFinite(score)) {
+      errors.push(`Popular item ${item?.slug || index + 1} has an invalid score.`);
+    } else {
+      if (score > previousScore + 1e-9) errors.push(`Popular public index is out of descending order at ${item?.slug || index + 1}.`);
+      previousScore = score;
+    }
+    if ((quality || item?.editorial_tier) && !validTiers.has(item?.editorial_tier)) {
+      errors.push(`Popular item ${item?.slug || index + 1} has no valid editorial tier.`);
     }
     const images = [item?.image, ...(item?.image_candidates || [])].filter(Boolean);
     if (!images.length) errors.push(`Popular item ${item?.slug || index + 1} has no cover candidate.`);
