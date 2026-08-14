@@ -1,15 +1,17 @@
 {
-  "schema_version": 9,
+  "schema_version": 11,
   "game_slug": "big-walk",
   "game_id": "game_72bf0963b99d4c9b1ab4",
-  "updated_at": "2026-08-14T12:02:37.451Z",
+  "updated_at": "2026-08-14T12:52:01.925Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "maximum": 20,
-    "accepted": 2,
-    "status": "red-needs-revision"
+    "accepted": 3,
+    "status": "red-needs-revision",
+    "full_registry_scan": true,
+    "checked_registered_sources": 37,
+    "applicable_registered_sources": 37
   },
   "regional_discovery": {
     "region": "ru",
@@ -106,8 +108,8 @@
       "domain": "ign.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T12:01:31.556Z",
-        "method": "registered-direct-publisher-http-v6",
+        "checked_at": "2026-08-14T12:50:52.623Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
@@ -115,9 +117,11 @@
       },
       "score_evidence": {
         "method": "jsonld.reviewRating",
-        "checked_at": "2026-08-14T12:02:36.742Z",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T12:52:01.890Z",
         "url": "https://www.ign.com/articles/big-walk-review",
-        "configured_source_id": "ign"
+        "configured_source_id": "ign",
+        "direct_publisher": true
       }
     },
     {
@@ -158,34 +162,52 @@
       "domain": "theguardian.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T12:01:31.556Z",
-        "method": "registered-direct-publisher-http-v6",
+        "checked_at": "2026-08-14T12:50:52.623Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
       }
-    }
-  ],
-  "rejected": [
+    },
     {
-      "publication": "GameSpot",
       "url": "https://www.gamespot.com/reviews/big-walk-is-one-of-the-best-co-op-games-ever",
-      "reasons": [
-        "HTTP 403"
-      ],
-      "prior_verified": false
+      "publication": "GameSpot",
+      "title": "Big Walk Is One Of The Best Co-Op Games Ever - GameSpot",
+      "id": "source-3",
+      "configured_source_id": "gamespot",
+      "resolved_url": "https://www.gamespot.com/reviews/big-walk-is-one-of-the-best-co-op-games-ever",
+      "source_kind": "review",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-14T12:50:52.623Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
     }
   ],
+  "rejected": [],
   "review_score": {
     "status": "red-needs-revision",
     "owner": "review",
     "method": {
-      "name": "Среднее оценок независимых профессиональных изданий",
+      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
       "formula": "sum(normalized_10) / source_count",
       "minimum_sources": 3,
       "target_sources": 10,
-      "maximum_sources": 20,
+      "maximum_sources": null,
+      "use_all_eligible_sources": true,
+      "required_evidence_scope": "editorial_review",
       "output_scale": 10,
       "rounding_decimals": 1,
       "one_vote_per_publication": true,
@@ -209,9 +231,11 @@
         "normalized_10": 9,
         "score_evidence": {
           "method": "jsonld.reviewRating",
-          "checked_at": "2026-08-14T12:02:36.742Z",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-14T12:52:01.890Z",
           "url": "https://www.ign.com/articles/big-walk-review",
-          "configured_source_id": "ign"
+          "configured_source_id": "ign",
+          "direct_publisher": true
         }
       }
     ],
@@ -220,6 +244,12 @@
         "configured_source_id": "guardian-games",
         "publication": "The Guardian",
         "url": "https://www.theguardian.com/games/2026/aug/04/big-walk-review-larking-around-with-mates-elevated-to-an-artform",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "gamespot",
+        "publication": "GameSpot",
+        "url": "https://www.gamespot.com/reviews/big-walk-is-one-of-the-best-co-op-games-ever",
         "reason": "canonical_version"
       }
     ],

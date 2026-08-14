@@ -1,7 +1,7 @@
 {
-  "schema_version": 10,
+  "schema_version": 11,
   "game_slug": "big-walk",
-  "generated_at": "2026-08-14T12:01:31.556Z",
+  "generated_at": "2026-08-14T12:50:52.623Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -9,10 +9,12 @@
     "maximum_sources": 20,
     "historical": false,
     "regional_discovery_required": true,
-    "discovery_provider": "registered-direct-publisher-web-v6",
-    "audit_all": false,
+    "discovery_provider": "registered-direct-publisher-web-v8",
+    "audit_all": true,
     "canonical_score_requires_exact_version": true,
-    "prior_verified_sources_survive_bot_block": true
+    "score_extraction_separate": true,
+    "search_title_variants": true,
+    "review_hub_following": true
   },
   "accepted": [
     {
@@ -48,8 +50,8 @@
       "domain": "ign.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T12:01:31.556Z",
-        "method": "registered-direct-publisher-http-v6",
+        "checked_at": "2026-08-14T12:50:52.623Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
@@ -57,9 +59,11 @@
       },
       "score_evidence": {
         "method": "jsonld.reviewRating",
-        "checked_at": "2026-08-14T12:02:36.742Z",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T12:52:01.890Z",
         "url": "https://www.ign.com/articles/big-walk-review",
-        "configured_source_id": "ign"
+        "configured_source_id": "ign",
+        "direct_publisher": true
       }
     },
     {
@@ -100,25 +104,41 @@
       "domain": "theguardian.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T12:01:31.556Z",
-        "method": "registered-direct-publisher-http-v6",
+        "checked_at": "2026-08-14T12:50:52.623Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
       }
-    }
-  ],
-  "rejected": [
+    },
     {
-      "publication": "GameSpot",
       "url": "https://www.gamespot.com/reviews/big-walk-is-one-of-the-best-co-op-games-ever",
-      "reasons": [
-        "HTTP 403"
-      ],
-      "prior_verified": false
+      "publication": "GameSpot",
+      "title": "Big Walk Is One Of The Best Co-Op Games Ever - GameSpot",
+      "id": "source-3",
+      "configured_source_id": "gamespot",
+      "resolved_url": "https://www.gamespot.com/reviews/big-walk-is-one-of-the-best-co-op-games-ever",
+      "source_kind": "review",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-14T12:50:52.623Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
     }
   ],
+  "rejected": [],
   "source_checks": [
     {
       "source_id": "igromania",
@@ -194,8 +214,8 @@
       "source_id": "gamespot",
       "name": "GameSpot",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "found",
+      "notes": "verified direct review"
     },
     {
       "source_id": "ign",
@@ -444,13 +464,13 @@
   "coverage": {
     "registered_editorial": 37,
     "checked": 37,
-    "accepted": 2,
+    "accepted": 3,
     "scored": 1,
     "context_only_versions": 0,
-    "blocked_verified": 0,
-    "contemporary": 2,
+    "blocked_verified": 1,
+    "contemporary": 3,
     "green": false,
     "passed": false,
-    "needs_more": 3
+    "needs_more": 2
   }
 }

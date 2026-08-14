@@ -1,0 +1,61 @@
+{
+  "schema_version": 7,
+  "type": "review",
+  "game_slug": "no-more-room-in-hell-2",
+  "game_id": "game_f5db7308be84c62ed593",
+  "canonical_title": "No More Room in Hell 2",
+  "checked_at": "2026-08-14T13:01:18.323Z",
+  "status": "red-needs-revision",
+  "green": false,
+  "comments": [
+    "Корпус: 0/5",
+    "Оценённые издания: 0/3"
+  ],
+  "revision_history": [
+    {
+      "label": "web-discovery-full-registry",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "promote-full-registry-audit",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "explicit-score-enrichment",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "score-1",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "keep_queued_until_green": true,
+    "review_score_source": "data/reviews/{slug}.json#review_score",
+    "research_primary": "complete-registered-source-direct-publisher-scan",
+    "research_fallback": "registered-publisher-research-only-if-full-scan-missing",
+    "score_enrichment": "direct-publisher-structured-markup-preserve-verified",
+    "score_aggregation": "all-eligible-explicit-publisher-scores",
+    "article_reuse": "surgical-rebind-before-regeneration",
+    "synthesis_fallback": "local-ollama",
+    "visual_audit_fallback": "local-ollama-multimodal",
+    "language_audit_fallback": "local-ollama",
+    "web_discovery_attempts_per_qc": 1
+  }
+}

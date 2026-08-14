@@ -1,7 +1,7 @@
 {
-  "schema_version": 10,
+  "schema_version": 11,
   "game_slug": "baldurs-gate-3",
-  "generated_at": "2026-08-14T12:00:23.355Z",
+  "generated_at": "2026-08-14T12:52:01.996Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -9,10 +9,12 @@
     "maximum_sources": 20,
     "historical": false,
     "regional_discovery_required": true,
-    "discovery_provider": "registered-direct-publisher-web-v6",
-    "audit_all": false,
+    "discovery_provider": "registered-direct-publisher-web-v8",
+    "audit_all": true,
     "canonical_score_requires_exact_version": true,
-    "prior_verified_sources_survive_bot_block": true
+    "score_extraction_separate": true,
+    "search_title_variants": true,
+    "review_hub_following": true
   },
   "accepted": [
     {
@@ -54,18 +56,20 @@
       "domain": "playground.ru",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T12:00:23.355Z",
-        "method": "registered-direct-publisher-http-v6",
+        "checked_at": "2026-08-14T12:52:01.996Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
-          "reason": "review_path"
+          "reason": "publisher_rule"
         }
       },
       "score_evidence": {
         "method": "jsonld.reviewRating",
-        "checked_at": "2026-08-14T12:01:30.880Z",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T12:53:14.141Z",
         "url": "https://www.playground.ru/baldurs_gate_3/opinion/obzor_baldurs_gate_3_luchshaya_rpg_sovremennosti-1644244",
-        "configured_source_id": "playground"
+        "configured_source_id": "playground",
+        "direct_publisher": true
       }
     },
     {
@@ -102,8 +106,8 @@
       "domain": "stopgame.ru",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T12:00:23.355Z",
-        "method": "registered-direct-publisher-http-v6",
+        "checked_at": "2026-08-14T12:52:01.996Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"

@@ -1,15 +1,17 @@
 {
-  "schema_version": 9,
+  "schema_version": 11,
   "game_slug": "death-of-the-reprobate",
   "game_id": "game_1b6c415929d3887ac5df",
-  "updated_at": "2026-08-14T12:06:59.205Z",
+  "updated_at": "2026-08-14T12:57:50.831Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "maximum": 20,
     "accepted": 0,
-    "status": "red-needs-revision"
+    "status": "red-needs-revision",
+    "full_registry_scan": true,
+    "checked_registered_sources": 37,
+    "applicable_registered_sources": 37
   },
   "regional_discovery": {
     "region": "ru",
@@ -78,11 +80,13 @@
     "status": "red-needs-revision",
     "owner": "review",
     "method": {
-      "name": "Среднее оценок независимых профессиональных изданий",
+      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
       "formula": "sum(normalized_10) / source_count",
       "minimum_sources": 3,
       "target_sources": 10,
-      "maximum_sources": 20,
+      "maximum_sources": null,
+      "use_all_eligible_sources": true,
+      "required_evidence_scope": "editorial_review",
       "output_scale": 10,
       "rounding_decimals": 1,
       "one_vote_per_publication": true,
