@@ -6,14 +6,17 @@ import {loadReviewSourceRegistry,editorialSources,findRegisteredSource} from './
 const root=process.cwd(),slug=process.argv[2];
 if(!slug)throw new Error('Usage: audit-review-source-coverage <slug>');
 const read=(file,fallback={})=>{try{return JSON.parse(fs.readFileSync(path.join(root,file),'utf8'))}catch{return fallback}};
-const synthesis=read('config/parsers/review-synthesis.json'),registry=loadReviewSourceRegistry(synthesis.source_registry),review=read(`data/reviews/${slug}.json`),research=read(`data/research/${slug}-source-matrix.json`),checks=new Map((research.source_checks||[]).map(item=>[item.source_id,item]));
+const synthesis=read('config/parsers/review-synthesis.json'),registry=loadReviewSourceRegistry(synthesis.source_registry),review=read(`data/reviews/${slug}.json`),research=read(`data/research/${slug}-source-matrix.json`),game=read(`data/drafts/${slug}.json`),checks=new Map((research.source_checks||[]).map(item=>[item.source_id,item]));
+const year=Number(String(game.release?.date||game.release?.date_text||'').match(/(?:19|20)\d{2}/)?.[0]||0),historical=year>0&&year<2010;
 const bySource=new Map();
-for(const item of [...(review.reviews||[]),...(research.accepted||[])]){
+// Prefer the fresh registry audit/enriched research result over older persisted review rows.
+for(const item of [...(research.accepted||[]),...(review.reviews||[])]){
  const source=findRegisteredSource(registry,item);if(source&&!bySource.has(source.id))bySource.set(source.id,item);
 }
 const rows=editorialSources(registry,{historical:true}).map(source=>{
- const item=bySource.get(source.id),check=checks.get(source.id),score=Number(item?.score),scale=Number(item?.scale),scored=Number.isFinite(score)&&Number.isFinite(scale)&&scale>0;
- return {source_id:source.id,publication:source.name,language:source.language,regions:source.regions,corpus_status:item?'found':check?.status||'unchecked',review_url:item?.resolved_url||item?.url||'',score:scored?score:null,scale:scored?scale:null,score_eligible:scored||Boolean(item?.grade),grade:item?.grade||'',check_notes:check?.notes||''};
+ const applicable=!source.historical_only||historical,item=bySource.get(source.id),check=checks.get(source.id),score=Number(item?.score),scale=Number(item?.scale),scored=Number.isFinite(score)&&Number.isFinite(scale)&&scale>0;
+ return {source_id:source.id,publication:source.name,language:source.language,regions:source.regions,applicable,corpus_status:!applicable?'not_applicable':item?'found':check?.status||'unchecked',review_url:item?.resolved_url||item?.url||'',score:scored?score:null,scale:scored?scale:null,score_10:scored?Number((score/scale*10).toFixed(4)):null,score_eligible:scored||Boolean(item?.grade),grade:item?.grade||'',check_notes:!applicable?'historical-only source outside game era':check?.notes||''};
 });
-const summary={schema_version:1,game_slug:slug,source_registry:synthesis.source_registry,generated_at:new Date().toISOString(),registered_editorial:rows.length,found:rows.filter(x=>x.corpus_status==='found').length,scored:rows.filter(x=>x.score_eligible).length,not_found:rows.filter(x=>x.corpus_status==='not_found').length,unavailable:rows.filter(x=>x.corpus_status==='unavailable').length,unchecked:rows.filter(x=>x.corpus_status==='unchecked').length,sources:rows};
+const applicableRows=rows.filter(x=>x.applicable),scoreRows=applicableRows.filter(x=>x.score_eligible&&Number.isFinite(x.score_10)),mean=scoreRows.length?Number((scoreRows.reduce((sum,x)=>sum+x.score_10,0)/scoreRows.length).toFixed(4)):null;
+const summary={schema_version:2,game_slug:slug,source_registry:synthesis.source_registry,generated_at:new Date().toISOString(),registered_editorial:rows.length,applicable_editorial:applicableRows.length,found:applicableRows.filter(x=>x.corpus_status==='found').length,scored:scoreRows.length,explicit_score_mean_10:mean,not_found:applicableRows.filter(x=>x.corpus_status==='not_found').length,unavailable:applicableRows.filter(x=>x.corpus_status==='unavailable').length,unchecked:applicableRows.filter(x=>x.corpus_status==='unchecked').length,not_applicable:rows.filter(x=>x.corpus_status==='not_applicable').length,sources:rows};
 const out=`data/research/${slug}-registry-coverage.json`;fs.mkdirSync(path.dirname(path.join(root,out)),{recursive:true});fs.writeFileSync(path.join(root,out),JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary,null,2));
