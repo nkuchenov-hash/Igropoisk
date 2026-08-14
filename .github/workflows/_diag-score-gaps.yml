@@ -1,0 +1,25 @@
+name: Tally review score gaps
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-score-gaps.yml]
+permissions:
+  contents: read
+jobs:
+  tally:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: diag/review-readiness-20260814
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Count accepted-but-unscored publishers
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),path=require('path');const read=(p,f=null)=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return f}};
+          const rows=[],counts=new Map(),examples=new Map(),scoredCounts=new Map();
+          for(const item of read('data/catalog-visible.json',[])){const slug=item.slug;if(!slug)continue;const d=read(`data/drafts/${slug}.json`,{}),rel=d.release||{},s=String(rel.status||'').toLowerCase();if(/upcoming|expected|announced|coming|tba|pre[-_ ]?release|ожида/i.test(s))continue;const r=read(`data/reviews/${slug}.json`);if(!r||r.publication_gate?.status!=='green'||r.review_score?.status==='green')continue;for(const src of r.reviews||[]){const id=src.configured_source_id||src.publication||'unknown';if(src.score_eligible===true&&Number.isFinite(Number(src.score))){scoredCounts.set(id,(scoredCounts.get(id)||0)+1);continue;}counts.set(id,(counts.get(id)||0)+1);const a=examples.get(id)||[];if(a.length<8)a.push({slug,url:src.resolved_url||src.url,status:src.validation?.status||'',publication:src.publication});examples.set(id,a);}}
+          const sorted=[...counts].sort((a,b)=>b[1]-a[1]);console.log('UNSCORED_ACCEPTED_BY_SOURCE');for(const [id,n] of sorted)console.log(JSON.stringify({id,unscored:n,scored:scoredCounts.get(id)||0,examples:examples.get(id)||[]}));
+          NODE
