@@ -8,7 +8,7 @@ permissions:
 jobs:
   integration:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -16,14 +16,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Trace PC Gamer discovery acceptance
+      - name: Prove RDR2 and Ghost Recon canonical score gates
         run: |
-          slug=red-dead-redemption-2
-          node scripts/discover-review-sources-web-v8.mjs "$slug" --all
-          node - "$slug" <<'NODE'
-          const fs=require('fs'),slug=process.argv[2],m=JSON.parse(fs.readFileSync(`data/research/${slug}-source-matrix.json`,'utf8'));
-          console.log('PCG ACCEPTED',JSON.stringify(m.accepted.filter(x=>x.configured_source_id==='pc-gamer'),null,2));
-          console.log('PCG CHECK',JSON.stringify((m.source_checks||[]).filter(x=>x.source_id==='pc-gamer'),null,2));
-          console.log('PCG REJECTED',JSON.stringify((m.rejected||[]).filter(x=>/PC Gamer/i.test(x.publication||'')),null,2));
-          console.log('GAMESRADAR ACCEPTED',JSON.stringify(m.accepted.filter(x=>x.configured_source_id==='gamesradar'),null,2));
+          for slug in red-dead-redemption-2 tom-clancy-s-ghost-recon-wildlands; do
+            echo "=== $slug ==="
+            node scripts/discover-review-sources-web-v8.mjs "$slug" --all
+            node scripts/promote-review-source-audit.mjs "$slug"
+            node scripts/enrich-review-explicit-scores.mjs "$slug"
+            node scripts/calculate-ratings-from-research.mjs "$slug"
+            node - "$slug" <<'NODE'
+          const fs=require('fs'),slug=process.argv[2];
+          const r=JSON.parse(fs.readFileSync(`data/reviews/${slug}.json`,'utf8'));
+          const m=JSON.parse(fs.readFileSync(`data/research/${slug}-source-matrix.json`,'utf8'));
+          const discovered=(m.accepted||[]).filter(x=>['pc-gamer','gamesradar'].includes(x.configured_source_id)).map(x=>({id:x.configured_source_id,url:x.resolved_url||x.url,score:x.score,scale:x.scale,eligible:x.score_eligible}));
+          console.log(JSON.stringify({slug,accepted:r.publication_gate?.accepted,score_status:r.review_score?.status,score_sources:r.review_score?.sources?.length,score_10:r.review_score?.calculation?.score_10,discovered},null,2));
+          if(r.publication_gate?.status!=='green'||r.review_score?.status!=='green'||Number(r.review_score?.sources?.length||0)<3||!discovered.length)process.exit(2);
           NODE
+          done
