@@ -189,10 +189,11 @@ for (const [rankIndex, item] of (popular.ranking || []).entries()) {
   });
 }
 
+// Tiers are admission gates. Once admitted, every game is ordered by the same public index.
 eligible.sort((left, right) =>
-  (tierOrder.get(left.editorial_tier) ?? 99) - (tierOrder.get(right.editorial_tier) ?? 99) ||
   Number(right.score || 0) - Number(left.score || 0) ||
   Number(right.confidence || 0) - Number(left.confidence || 0) ||
+  (tierOrder.get(left.editorial_tier) ?? 99) - (tierOrder.get(right.editorial_tier) ?? 99) ||
   String(left.title).localeCompare(String(right.title), 'ru')
 );
 
@@ -334,7 +335,7 @@ popular.editorial_quality = {
   requested_cards: maximumCards,
   published_cards: selected.length,
   blocking: false,
-  rules: 'three-publishers-or-multi-family-or-strong-youtube-community-then-platform-fill-with-canonical-identity-deduplication'
+  rules: 'eligibility-tiers-as-gates-then-single-index-order-with-canonical-identity-deduplication'
 };
 write('data/popular/current.json', popular);
 write('data/popular/published.json', popular);
