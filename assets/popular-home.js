@@ -168,16 +168,15 @@ async function load(){
     ]);
     if(!popularResponse.ok)throw new Error(`Popularity HTTP ${popularResponse.status}`);
     const data=await popularResponse.json();
-    const ranking=Array.isArray(data.ranking)?data.ranking.slice(0,MAXIMUM_COUNT):[];
+    const ranking=Array.isArray(data.ranking)?data.ranking:[];
     if(!ranking.length)throw new Error('Popularity ranking is empty');
     const catalog=catalogResponse.ok?await catalogResponse.json():[];
     const existing=new Set((catalog||[]).map(item=>item.slug));
-    const publishedRanking=ranking.filter(item=>existing.has(item.slug));
+    // Page availability is a publication condition, not a reason to waste a top-20 slot.
+    const publishedRanking=ranking.filter(item=>existing.has(item.slug)).slice(0,MAXIMUM_COUNT);
     if(!publishedRanking.length)throw new Error('Popular ranking has no published game pages');
-    if(publishedRanking.length!==ranking.length){
-      const missing=ranking.filter(item=>!existing.has(item.slug)).map(item=>item.slug);
-      console.warn('Игропоиск: Popular Now withheld games without published pages',missing);
-    }
+    const missing=ranking.filter(item=>!existing.has(item.slug)).slice(0,MAXIMUM_COUNT).map(item=>item.slug);
+    if(missing.length)console.warn('Игропоиск: Popular Now withheld games without published pages',missing);
 
     target.innerHTML=publishedRanking.map((item,index)=>{
       const candidates=coverCandidates(item);
