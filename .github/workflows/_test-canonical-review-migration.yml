@@ -1,0 +1,37 @@
+name: Test canonical review migration
+on:
+  push:
+    branches: [feature/canonical-review-migration]
+    paths: [.github/workflows/_test-canonical-review-migration.yml]
+permissions:
+  contents: read
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/canonical-review-migration
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate migration tooling
+        run: |
+          node --check scripts/recover-canonical-review-backlog.mjs
+          node --check scripts/quality-control-loop-v4.mjs
+          node --check scripts/rebind-existing-review.mjs
+      - name: Migrate Witcher 3 without AI
+        run: node scripts/recover-canonical-review-backlog.mjs --only the-witcher-3-wild-hunt --concurrency 1 --timeout-ms 900000
+        env:
+          OPENAI_API_KEY: ''
+      - name: Show migrated state
+        if: always()
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync('data/reviews/the-witcher-3-wild-hunt.json','utf8'));
+          const c=JSON.parse(fs.readFileSync('data/quality-control/review-the-witcher-3-wild-hunt-control.json','utf8'));
+          console.log(JSON.stringify({schema:r.schema_version,publication_gate:r.publication_gate,regional:r.regional_discovery,review_score:r.review_score,control:{green:c.green,comments:c.comments}},null,2));
+          if(!r.publication_gate?.status||!r.review_score?.status) process.exit(2);
+          NODE
