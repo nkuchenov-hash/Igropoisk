@@ -76,6 +76,22 @@ jobs:
           node --check assets/site-shell.js
       - name: Verify unified review source registry
         run: node scripts/validate-review-source-registry.mjs
+      - name: Audit The Witcher 3 against every registered review source
+        run: |
+          node scripts/discover-review-sources-web.mjs the-witcher-3-wild-hunt --all || true
+          node scripts/enrich-review-explicit-scores.mjs the-witcher-3-wild-hunt || true
+          node scripts/audit-review-source-coverage.mjs the-witcher-3-wild-hunt
+      - name: Preserve Witcher registry audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: witcher-3-review-source-registry-audit
+          path: |
+            data/research/the-witcher-3-wild-hunt-source-matrix.json
+            data/research/the-witcher-3-wild-hunt-registry-coverage.json
+            data/parser-runs/review-explicit-scores-the-witcher-3-wild-hunt.json
+            data/parser-runs/review-web-discovery-the-witcher-3-wild-hunt.json
+          retention-days: 7
       - name: Verify complete new-game lifecycle contract
         run: node scripts/validate-new-game-lifecycle.mjs
       - name: Verify deliberate game import rules
