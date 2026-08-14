@@ -7,10 +7,16 @@ on:
       - 'scripts/lib/game-registry*.mjs'
       - 'scripts/lib/system-game-registry-adapter.mjs'
       - 'scripts/lib/verified-game-import.mjs'
+      - 'scripts/lib/review-source-registry.mjs'
       - 'scripts/migrate-game-registry.mjs'
       - 'scripts/canonicalize-system-game-identity.mjs'
       - 'scripts/validate-system-game-registry-integration.mjs'
       - 'scripts/validate-new-game-lifecycle.mjs'
+      - 'scripts/validate-review-source-registry.mjs'
+      - 'scripts/discover-review-sources-web.mjs'
+      - 'scripts/prepare-review-research.mjs'
+      - 'scripts/enrich-review-explicit-scores.mjs'
+      - 'scripts/audit-review-source-coverage.mjs'
       - 'scripts/plan-game-imports.mjs'
       - 'scripts/plan-news-game-pages.mjs'
       - 'scripts/test-verified-game-import.mjs'
@@ -32,6 +38,9 @@ on:
       - 'assets/site-shell.js'
       - 'assets/what-to-play.js'
       - 'config/game-registry.json'
+      - 'config/parsers/review-source-registry.json'
+      - 'config/parsers/review-synthesis.json'
+      - 'config/parsers/review-sources-ru.json'
       - 'admin/games/**'
       - 'docs/game-registry-architecture.md'
       - '.github/workflows/game-registry-ci.yml'
@@ -51,14 +60,22 @@ jobs:
         run: |
           node --check scripts/lib/system-game-registry-adapter.mjs
           node --check scripts/lib/verified-game-import.mjs
+          node --check scripts/lib/review-source-registry.mjs
           node --check scripts/plan-game-imports.mjs
           node --check scripts/plan-news-game-pages.mjs
           node --check scripts/ensure-local-editorial-runtime.mjs
           node --check scripts/canonicalize-system-game-identity.mjs
           node --check scripts/validate-system-game-registry-integration.mjs
           node --check scripts/validate-new-game-lifecycle.mjs
+          node --check scripts/validate-review-source-registry.mjs
+          node --check scripts/discover-review-sources-web.mjs
+          node --check scripts/prepare-review-research.mjs
+          node --check scripts/enrich-review-explicit-scores.mjs
+          node --check scripts/audit-review-source-coverage.mjs
           node --check scripts/build-game-page-from-registry.mjs
           node --check assets/site-shell.js
+      - name: Verify unified review source registry
+        run: node scripts/validate-review-source-registry.mjs
       - name: Verify complete new-game lifecycle contract
         run: node scripts/validate-new-game-lifecycle.mjs
       - name: Verify deliberate game import rules
