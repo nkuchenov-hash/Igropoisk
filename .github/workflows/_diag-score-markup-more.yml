@@ -1,0 +1,29 @@
+name: Inspect more score markup
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-score-markup-more.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect direct publisher score containers
+        run: |
+          node - <<'NODE'
+          const urls={
+            nintendo:'https://www.nintendolife.com/reviews/nintendo-switch/it-takes-two',
+            guardian:'https://www.theguardian.com/games/2020/mar/25/half-life-alyx-review-a-spectacular-immersive-experience',
+            worthplaying:'https://worthplaying.com/article/2004/3/30/reviews/16139-xbox-review-mafia',
+            gry:'https://www.gry-online.pl/recenzje/mafia-the-city-of-lost-heaven-recenzja-gry/zc7c2',
+            pushsquare:'https://www.pushsquare.com/reviews/ps4/mafia-definitive-edition'
+          };
+          for(const [name,url] of Object.entries(urls)){
+            try{const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskScoreDiagnostic/1.0)','accept-language':'en,pl;q=.8'}});const h=await r.text();console.log(`\n=== ${name} HTTP ${r.status} bytes ${h.length} ===`);for(const rx of [/class=["'][^"']*(?:score|rating|stars?)[^"']*["'][^>]*>[\s\S]{0,220}/ig,/(?:Great|Good|Excellent|Superb|Score|Rating|Ocena)[^<>]{0,80}(?:[0-9](?:\.[0-9])?\s*\/\s*10|[0-9](?:\.[0-9])?)/ig,/review[^<>]{0,80}(?:score|rating)/ig]){let n=0;for(const m of h.matchAll(rx)){const i=m.index||0;console.log(h.slice(Math.max(0,i-250),Math.min(h.length,i+500)).replace(/\s+/g,' '));if(++n>=8)break;}}for(const m of h.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)){if(/reviewRating|ratingValue/i.test(m[1]))console.log('JSONLD',m[1].slice(0,2500).replace(/\s+/g,' '));}}
+            catch(e){console.log(name,'ERROR',e.message)}
+          }
+          NODE
