@@ -1,0 +1,26 @@
+name: Inspect PC Gamer score markup
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-pcgamer-score-markup.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect and run generic extractor on direct PC Gamer reviews
+        run: |
+          node --input-type=module - <<'NODE'
+          import {loadReviewSourceRegistry,findRegisteredSource} from './scripts/lib/review-source-registry.mjs';
+          import {extractExplicitEditorialScore} from './scripts/lib/review-score-extractor.mjs';
+          const urls=['https://www.pcgamer.com/metal-gear-solid-5-review/','https://www.pcgamer.com/dark-souls-3-review/','https://www.pcgamer.com/half-life-alyx-review/','https://www.pcgamer.com/red-dead-redemption-2-review/'];
+          const registry=loadReviewSourceRegistry('config/parsers/review-source-registry.json'),source=findRegisteredSource(registry,{configured_source_id:'pc-gamer'});
+          for(const url of urls){const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskScoreDiagnostic/1.0)'}});const h=await r.text(),hit=extractExplicitEditorialScore(h,source),snips=[];for(const rx of [/The Verdict/ig,/class=["'][^"']*(?:verdict|score|rating)[^"']*["']/ig]){let n=0;for(const m of h.matchAll(rx)){const i=m.index||0;snips.push(h.slice(Math.max(0,i-300),Math.min(h.length,i+700)).replace(/\s+/g,' '));if(++n>=3)break;}}console.log(JSON.stringify({url,http:r.status,bytes:h.length,hit,snips:snips.slice(0,6)}));}
+          NODE
