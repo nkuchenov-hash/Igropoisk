@@ -24,3 +24,4 @@ if(source.includes('seenUrls'))throw new Error('seenUrls remains after patch');
 if(!source.includes("length>0||url.searchParams.has('p')"))throw new Error('single-segment direct URL fix not applied');
 if(!source.includes('acceptedUrls.has(url)'))throw new Error('accepted-only dedupe fix not applied');
 fs.writeFileSync(file,source);
+// one-shot trigger; remove helper after production v8 commit is verified.
