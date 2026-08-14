@@ -1,0 +1,51 @@
+{
+  "schema_version": 8,
+  "type": "page",
+  "game_slug": "surviving-deponia",
+  "game_id": "game_368d5e41db742d504040",
+  "canonical_title": "Surviving Deponia",
+  "checked_at": "2026-08-14T18:21:05.733Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
+  "revision_history": [
+    {
+      "label": "relations-1",
+      "script": "scripts/enrich-game-relations.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"surviving-deponia\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "similarity-1",
+      "script": "scripts/build-similarity-index.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media-1",
+      "script": "scripts/validate-game-media-quality.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"surviving-deponia\",\n  \"status\": \"green\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": true,\n  \"accepted_screenshots\": 7\n}\n",
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "keep_queued_until_green": true,
+    "deterministic_only": false,
+    "review_score_source": "data/reviews/{slug}.json#review_score",
+    "research_primary": "complete-registered-source-direct-publisher-scan",
+    "research_fallback": "registered-publisher-research-only-if-full-scan-missing",
+    "score_enrichment": "direct-publisher-structured-markup-preserve-verified",
+    "score_aggregation": "all-eligible-explicit-publisher-scores",
+    "article_reuse": "surgical-rebind-before-regeneration",
+    "synthesis_fallback": "local-ollama-only-after-deterministic-recovery",
+    "visual_audit_fallback": "local-ollama-multimodal",
+    "language_audit_fallback": "local-ollama",
+    "web_discovery_attempts_per_qc": 1
+  }
+}
