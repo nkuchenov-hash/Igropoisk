@@ -2,7 +2,7 @@
   "schema_version": 6,
   "game_slug": "big-walk",
   "game_id": "game_72bf0963b99d4c9b1ab4",
-  "updated_at": "2026-08-13T22:30:21.223Z",
+  "updated_at": "2026-08-14T01:39:40.564Z",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
@@ -17,55 +17,55 @@
         "source_id": "igromania",
         "name": "Игромания",
         "status": "not_found",
-        "notes": "no verified direct review"
+        "notes": "search completed; no verified direct review"
       },
       {
         "source_id": "stopgame",
         "name": "StopGame",
         "status": "not_found",
-        "notes": "no verified direct review"
+        "notes": "search completed; no verified direct review"
       },
       {
         "source_id": "kanobu",
         "name": "Канобу",
         "status": "not_found",
-        "notes": "no verified direct review"
+        "notes": "search completed; no verified direct review"
       },
       {
         "source_id": "playground",
         "name": "PlayGround.ru",
         "status": "not_found",
-        "notes": "no verified direct review"
+        "notes": "search completed; no verified direct review"
       },
       {
         "source_id": "vgtimes",
         "name": "VGTimes",
         "status": "not_found",
-        "notes": "no verified direct review"
+        "notes": "search completed; no verified direct review"
       },
       {
         "source_id": "ixbt-games",
         "name": "iXBT.games",
         "status": "not_found",
-        "notes": "no verified direct review"
+        "notes": "search completed; no verified direct review"
       },
       {
         "source_id": "gamemag",
         "name": "GameMAG.ru",
         "status": "not_found",
-        "notes": "no verified direct review"
+        "notes": "search completed; no verified direct review"
       },
       {
         "source_id": "vk-play",
         "name": "VK Play Media",
         "status": "not_found",
-        "notes": "no verified direct review"
+        "notes": "search completed; no verified direct review"
       },
       {
         "source_id": "shazoo",
         "name": "Shazoo",
         "status": "not_found",
-        "notes": "no verified direct review"
+        "notes": "search completed; no verified direct review"
       }
     ],
     "complete": true,
@@ -74,7 +74,7 @@
   "reviews": [
     {
       "id": "source-1",
-      "configured_source_id": "",
+      "configured_source_id": "ign",
       "publication": "IGN",
       "title": "Big Walk Is Unlike Any Other Co-op Game Around, Pushing You to Solve Clever Puzzles With Your Friends by Truly Working Together",
       "url": "https://www.ign.com/articles/big-walk-review",
@@ -100,13 +100,18 @@
       "domain": "ign.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-13T22:30:14.751Z",
-        "method": "direct-publisher-http"
+        "checked_at": "2026-08-14T01:38:41.240Z",
+        "method": "direct-publisher-http-v3"
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "checked_at": "2026-08-14T01:39:39.996Z",
+        "url": "https://www.ign.com/articles/big-walk-review"
       }
     },
     {
       "id": "source-2",
-      "configured_source_id": "",
+      "configured_source_id": "guardian-games",
       "publication": "The Guardian",
       "title": "Big Walk review – larking around with mates elevated to an artform",
       "url": "https://www.theguardian.com/games/2026/aug/04/big-walk-review-larking-around-with-mates-elevated-to-an-artform",
@@ -137,12 +142,20 @@
       "domain": "theguardian.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-13T22:30:14.751Z",
-        "method": "direct-publisher-http"
+        "checked_at": "2026-08-14T01:38:41.240Z",
+        "method": "direct-publisher-http-v3"
       }
     }
   ],
-  "rejected": [],
+  "rejected": [
+    {
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/big-walk-is-one-of-the-best-co-op-games-ever",
+      "reasons": [
+        "HTTP 403"
+      ]
+    }
+  ],
   "review_score": {
     "status": "red-needs-revision",
     "owner": "review",
