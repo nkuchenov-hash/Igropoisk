@@ -1,0 +1,22 @@
+name: Test RSS review discovery
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-bing-rss-review-discovery.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Query Bing RSS for high-yield publishers
+        run: |
+          node - <<'NODE'
+          const games=[['Metal Gear Solid V The Phantom Pain',2015],['Dark Souls III',2016],['Red Dead Redemption 2',2018],['Half-Life Alyx',2020],['Deathloop',2021],['Alan Wake 2',2023],['Ghost Recon Wildlands',2017]];
+          const domains=['pcgamer.com','gamesradar.com','shacknews.com','ign.com'];
+          const decode=s=>String(s||'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
+          for(const [title,year] of games){console.log('\nGAME '+title);for(const domain of domains){const q=`site:${domain} "${title}" review ${year}`;try{const r=await fetch(`https://www.bing.com/search?format=rss&count=10&q=${encodeURIComponent(q)}`,{headers:{'user-agent':'Mozilla/5.0'}});const xml=await r.text();const items=[...xml.matchAll(/<item>[\s\S]*?<title>([\s\S]*?)<\/title>[\s\S]*?<link>([\s\S]*?)<\/link>[\s\S]*?<\/item>/gi)].map(m=>({title:decode(m[1].replace(/<!\[CDATA\[|\]\]>/g,'')),url:decode(m[2].replace(/<!\[CDATA\[|\]\]>/g,''))}));console.log(JSON.stringify({domain,http:r.status,items:items.slice(0,5)}));}catch(e){console.log(JSON.stringify({domain,error:e.message}))}}}
+          NODE
