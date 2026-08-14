@@ -42,7 +42,8 @@ export function sourceDiscoveryDef(source){
     enabled:source.enabled!==false,family:'editorial',language:source.language||'',regions:source.regions||[],
     modern:source.modern===true,historical_only:source.historical_only===true,trust:Number(source.trust||0),weight:Number(source.weight||0),
     score_policy:source.review?.score?.policy||'explicit_only',score_profile:source.review?.score?.extractor_profile||'generic-explicit',
-    default_scale:source.review?.score?.default_scale??null
+    default_scale:source.review?.score?.default_scale??null,
+    sitemap_index:source.review?.sitemap_index||'',sitemap_year_offsets:Array.isArray(source.review?.sitemap_year_offsets)?source.review.sitemap_year_offsets:[0,1]
   };
 }
 
