@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/mafia.json#review_score",
   "game_slug": "mafia",
-  "checked_at": "2026-08-14T22:53:50.409Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:08:18.681Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,9 +37,53 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:53:48.872Z",
+        "checked_at": "2026-08-14T23:08:17.493Z",
         "url": "https://www.ign.com/articles/2002/08/29/mafia-review",
         "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "A Made Man. Review",
+      "url": "https://www.gamerevolution.com/review/32759-mafia-review",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:08:17.493Z",
+        "url": "https://www.gamerevolution.com/review/32759-mafia-review",
+        "configured_source_id": "game-revolution",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "gry-online",
+      "publication": "GRYOnline",
+      "title": "Mafia: The City of Lost Heaven - recenzja gry - review - GRYOnline.pl",
+      "url": "https://www.gry-online.pl/recenzje/mafia-the-city-of-lost-heaven-recenzja-gry/zc7c2",
+      "original_score": {
+        "score": 9.1,
+        "scale": 10,
+        "grade": null,
+        "display": "9.1/10"
+      },
+      "normalized_10": 9.1,
+      "score_evidence": {
+        "method": "registry:gry-online",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:08:18.634Z",
+        "url": "https://www.gry-online.pl/recenzje/mafia-the-city-of-lost-heaven-recenzja-gry/zc7c2",
+        "configured_source_id": "gry-online",
         "direct_publisher": true
       }
     },
@@ -59,9 +103,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:53:50.370Z",
+        "checked_at": "2026-08-14T23:08:18.634Z",
         "url": "https://www.playground.ru/mafia_the_city_of_lost_heaven/opinion/mafia_the_city_of_lost_heaven-402127",
         "configured_source_id": "playground",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-8",
+      "configured_source_id": "worthplaying",
+      "publication": "WorthPlaying",
+      "title": "Xbox Review - 'Mafia'",
+      "url": "https://worthplaying.com/article/2004/3/30/reviews/16139-xbox-review-mafia",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "registry:worthplaying",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:08:18.634Z",
+        "url": "https://worthplaying.com/article/2004/3/30/reviews/16139-xbox-review-mafia/",
+        "configured_source_id": "worthplaying",
         "direct_publisher": true
       }
     }
@@ -80,37 +146,22 @@
       "reason": "canonical_version"
     },
     {
-      "configured_source_id": "game-revolution",
-      "publication": "GameRevolution",
-      "url": "https://www.gamerevolution.com/review/32759-mafia-review",
-      "reason": "canonical_version"
-    },
-    {
-      "configured_source_id": "gry-online",
-      "publication": "GRYOnline",
-      "url": "https://www.gry-online.pl/recenzje/mafia-the-city-of-lost-heaven-recenzja-gry/zc7c2",
-      "reason": "canonical_version"
-    },
-    {
       "configured_source_id": "absolute-games-archive",
       "publication": "Absolute Games",
       "url": "https://ag.ru/reviews/995903",
       "reason": "canonical_version"
-    },
-    {
-      "configured_source_id": "worthplaying",
-      "publication": "WorthPlaying",
-      "url": "https://worthplaying.com/article/2004/3/30/reviews/16139-xbox-review-mafia",
-      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 5,
     "values": [
       9.2,
-      9
+      9,
+      9.1,
+      9,
+      7
     ],
-    "mean_10": 9.1,
-    "score_10": 9.1
+    "mean_10": 8.66,
+    "score_10": 8.7
   }
 }

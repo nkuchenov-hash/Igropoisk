@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "the-last-of-us-part-ii",
-  "checked_at": "2026-08-14T22:51:09.062Z",
+  "checked_at": "2026-08-14T23:05:42.621Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 7,
-  "scored": 2,
+  "scored": 3,
   "context_only_versions": 0,
   "updates": [
     {
@@ -22,6 +22,15 @@
       "score": 10,
       "scale": 10,
       "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "score": 7,
+      "scale": 10,
+      "method": "registry:game-revolution",
       "scope": "editorial_review",
       "canonical_score_eligible": true
     }
@@ -98,10 +107,10 @@
       "publication": "GameRevolution",
       "url": "https://www.gamerevolution.com/review/648897-the-last-of-us-2-review-ps4",
       "final_url": "https://www.gamerevolution.com/review/648897-the-last-of-us-2-review-ps4",
-      "status": "no_explicit_editorial_score",
+      "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,
-      "trusted_editorial_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     }
   ]

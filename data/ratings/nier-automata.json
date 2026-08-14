@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/nier-automata.json#review_score",
   "game_slug": "nier-automata",
-  "checked_at": "2026-08-14T22:49:26.793Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:03:20.503Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:49:25.937Z",
+        "checked_at": "2026-08-14T23:03:20.011Z",
         "url": "https://www.ign.com/articles/2017/03/06/nier-automata-review",
         "configured_source_id": "ign",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:49:25.937Z",
+        "checked_at": "2026-08-14T23:03:20.011Z",
         "url": "https://gameinformer.com/games/nier_automata/b/playstation4/archive/2017/03/06/nier-automata-game-informer-review.aspx",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "NieR: Automata Review",
+      "url": "https://www.gamerevolution.com/review/71818-nier-automata-review",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:03:20.460Z",
+        "url": "https://www.gamerevolution.com/review/71818-nier-automata-review",
+        "configured_source_id": "game-revolution",
         "direct_publisher": true
       }
     }
@@ -84,21 +106,16 @@
       "publication": "Ars Technica",
       "url": "https://arstechnica.com/gaming/2017/03/nier-automata-review",
       "reason": "canonical_version"
-    },
-    {
-      "configured_source_id": "game-revolution",
-      "publication": "GameRevolution",
-      "url": "https://www.gamerevolution.com/review/71818-nier-automata-review",
-      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       8.9,
-      7.75
+      7.75,
+      8
     ],
-    "mean_10": 8.325,
-    "score_10": 8.3
+    "mean_10": 8.2167,
+    "score_10": 8.2
   }
 }

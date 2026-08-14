@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "mafia",
-  "checked_at": "2026-08-14T22:53:50.370Z",
+  "checked_at": "2026-08-14T23:08:18.635Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 8,
-  "scored": 2,
+  "scored": 5,
   "context_only_versions": 0,
   "updates": [
     {
@@ -17,11 +17,38 @@
       "canonical_score_eligible": true
     },
     {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "score": 9,
+      "scale": 10,
+      "method": "registry:game-revolution",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gry-online",
+      "publication": "GRYOnline",
+      "score": 9.1,
+      "scale": 10,
+      "method": "registry:gry-online",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
       "configured_source_id": "playground",
       "publication": "PlayGround.ru",
       "score": 9,
       "scale": 10,
       "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "worthplaying",
+      "publication": "WorthPlaying",
+      "score": 7,
+      "scale": 10,
+      "method": "registry:worthplaying",
       "scope": "editorial_review",
       "canonical_score_eligible": true
     }
@@ -65,10 +92,10 @@
       "publication": "GameRevolution",
       "url": "https://www.gamerevolution.com/review/32759-mafia-review",
       "final_url": "https://www.gamerevolution.com/review/32759-mafia-review",
-      "status": "no_explicit_editorial_score",
+      "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,
-      "trusted_editorial_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     },
     {
@@ -76,10 +103,10 @@
       "publication": "GRYOnline",
       "url": "https://www.gry-online.pl/recenzje/mafia-the-city-of-lost-heaven-recenzja-gry/zc7c2",
       "final_url": "https://www.gry-online.pl/recenzje/mafia-the-city-of-lost-heaven-recenzja-gry/zc7c2",
-      "status": "no_explicit_editorial_score",
+      "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,
-      "trusted_editorial_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     },
     {
@@ -109,10 +136,10 @@
       "publication": "WorthPlaying",
       "url": "https://worthplaying.com/article/2004/3/30/reviews/16139-xbox-review-mafia",
       "final_url": "https://worthplaying.com/article/2004/3/30/reviews/16139-xbox-review-mafia/",
-      "status": "no_explicit_editorial_score",
+      "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,
-      "trusted_editorial_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     }
   ]

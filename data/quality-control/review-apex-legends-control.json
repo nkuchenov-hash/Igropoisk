@@ -4,12 +4,11 @@
   "game_slug": "apex-legends",
   "game_id": null,
   "canonical_title": "apex-legends",
-  "checked_at": "2026-08-14T22:55:49.232Z",
+  "checked_at": "2026-08-14T23:10:15.126Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
-    "Корпус: 7/5",
-    "Оценённые издания: 2/3"
+    "Existing article could not be deterministically rebound; queued for prose/media repair."
   ],
   "revision_history": [
     {
@@ -33,16 +32,24 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"apex-legends\",\n  \"accepted\": 7,\n  \"scored\": 2,\n  \"context_only_versions\": 1,\n  \"updates\": 3,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"apex-legends\",\n  \"accepted\": 7,\n  \"scored\": 3,\n  \"context_only_versions\": 1,\n  \"updates\": 4,\n  \"preserved\": 0\n}\n",
       "stderr": ""
     },
     {
       "label": "score-1",
       "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"apex-legends\",\n  \"status\": \"green\",\n  \"scored_sources\": 3,\n  \"excluded_sources\": 4,\n  \"score_10\": 9.1,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rebind-1",
+      "script": "scripts/rebind-existing-review.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"apex-legends\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 2,\n  \"excluded_sources\": 5,\n  \"score_10\": 9.1,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
-      "stderr": ""
+      "stdout": "",
+      "stderr": "apex-legends: blocked\n- duplicate scenes: apex-legends-8d079841d281177a05531885\napex-legends: review output validation failed\n"
     }
   ],
   "policy": {

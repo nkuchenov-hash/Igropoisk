@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "monster-hunter-world",
-  "checked_at": "2026-08-14T22:50:36.060Z",
+  "checked_at": "2026-08-14T23:04:31.690Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 4,
-  "scored": 1,
+  "scored": 2,
   "context_only_versions": 0,
   "updates": [
     {
@@ -13,6 +13,15 @@
       "score": 9.5,
       "scale": 10,
       "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "score": 9,
+      "scale": 10,
+      "method": "registry:game-revolution",
       "scope": "editorial_review",
       "canonical_score_eligible": true
     }
@@ -56,10 +65,10 @@
       "publication": "GameRevolution",
       "url": "https://www.gamerevolution.com/review/366295-monster-hunter-world-review-whole-new-world",
       "final_url": "https://www.gamerevolution.com/review/366295-monster-hunter-world-review-whole-new-world",
-      "status": "no_explicit_editorial_score",
+      "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,
-      "trusted_editorial_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     }
   ]

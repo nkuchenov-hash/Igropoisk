@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/stray.json#review_score",
   "game_slug": "stray",
-  "checked_at": "2026-08-14T22:53:06.094Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:07:31.060Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:53:05.295Z",
+        "checked_at": "2026-08-14T23:07:30.184Z",
         "url": "https://www.ign.com/articles/stray-review",
         "configured_source_id": "ign",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:53:05.295Z",
+        "checked_at": "2026-08-14T23:07:30.184Z",
         "url": "https://gameinformer.com/review/stray/furry-friends",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-7",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "Stray Review (PS5, PC, PS4): &#039;It&#039;s All Cute Until Alien Headcrabs Latch Onto Your Furry Skull&#039;",
+      "url": "https://www.gamerevolution.com/review/710908-stray-game-review-ps5-pc-ps4-worth-buying-cat",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:07:31.012Z",
+        "url": "https://www.gamerevolution.com/review/710908-stray-game-review-ps5-pc-ps4-worth-buying-cat",
+        "configured_source_id": "game-revolution",
         "direct_publisher": true
       }
     }
@@ -90,17 +112,12 @@
       "publication": "Nintendo Life",
       "url": "https://www.nintendolife.com/reviews/switch-eshop/stray",
       "reason": "variant_or_port:switch_port"
-    },
-    {
-      "configured_source_id": "game-revolution",
-      "publication": "GameRevolution",
-      "url": "https://www.gamerevolution.com/review/710908-stray-game-review-ps5-pc-ps4-worth-buying-cat",
-      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
+      8,
       8,
       8
     ],

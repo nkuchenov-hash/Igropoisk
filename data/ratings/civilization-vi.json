@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/civilization-vi.json#review_score",
   "game_slug": "civilization-vi",
-  "checked_at": "2026-08-14T22:48:34.094Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:03:08.105Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:48:33.967Z",
+        "checked_at": "2026-08-14T23:03:07.979Z",
         "url": "https://www.ign.com/articles/2016/10/26/sid-meiers-civilization-vi-review",
         "configured_source_id": "ign",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:48:33.967Z",
+        "checked_at": "2026-08-14T23:03:07.979Z",
         "url": "https://gameinformer.com/games/sid_meiers_civilization_vi/b/pc/archive/2016/10/25/civilization-vi-game-informer-review.aspx",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "Sid Meier&#039;s Civilization VI Review",
+      "url": "https://www.gamerevolution.com/review/71136-sid-meiers-civilization-vi-review",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:03:08.065Z",
+        "url": "https://www.gamerevolution.com/review/71136-sid-meiers-civilization-vi-review",
+        "configured_source_id": "game-revolution",
         "direct_publisher": true
       }
     }
@@ -78,21 +100,16 @@
       "publication": "Polygon",
       "url": "https://www.polygon.com/2016/10/25/13398612/sid-meiers-civilization-6-review-PC-mac-windows",
       "reason": "canonical_version"
-    },
-    {
-      "configured_source_id": "game-revolution",
-      "publication": "GameRevolution",
-      "url": "https://www.gamerevolution.com/review/71136-sid-meiers-civilization-vi-review",
-      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       9.4,
-      9.5
+      9.5,
+      9
     ],
-    "mean_10": 9.45,
-    "score_10": 9.4
+    "mean_10": 9.3,
+    "score_10": 9.3
   }
 }

@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/horizon-forbidden-west.json#review_score",
   "game_slug": "horizon-forbidden-west",
-  "checked_at": "2026-08-14T22:53:01.743Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:06:55.375Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:53:01.543Z",
+        "checked_at": "2026-08-14T23:06:55.228Z",
         "url": "https://www.ign.com/articles/horizon-forbidden-west-review",
         "configured_source_id": "ign",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T22:53:01.543Z",
+        "checked_at": "2026-08-14T23:06:55.228Z",
         "url": "https://gameinformer.com/review/horizon-forbidden-west/horizon-forbidden-west-review-leaping-to-greater-heights",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "Horizon Forbidden West Review: &#039;An Early Contender for Game of the Year&#039;",
+      "url": "https://www.gamerevolution.com/review/702212-horizon-forbidden-west-review-is-it-worth-buying-playing-ps4-ps5",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:06:55.332Z",
+        "url": "https://www.gamerevolution.com/review/702212-horizon-forbidden-west-review-is-it-worth-buying-playing-ps4-ps5",
+        "configured_source_id": "game-revolution",
         "direct_publisher": true
       }
     }
@@ -80,12 +102,6 @@
       "reason": "canonical_version"
     },
     {
-      "configured_source_id": "game-revolution",
-      "publication": "GameRevolution",
-      "url": "https://www.gamerevolution.com/review/702212-horizon-forbidden-west-review-is-it-worth-buying-playing-ps4-ps5",
-      "reason": "canonical_version"
-    },
-    {
       "configured_source_id": "destructoid",
       "publication": "Destructoid",
       "url": "https://www.destructoid.com/reviews/review-horizon-forbidden-west-ps5-version",
@@ -99,12 +115,13 @@
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       9,
-      9.25
+      9.25,
+      9
     ],
-    "mean_10": 9.125,
+    "mean_10": 9.0833,
     "score_10": 9.1
   }
 }

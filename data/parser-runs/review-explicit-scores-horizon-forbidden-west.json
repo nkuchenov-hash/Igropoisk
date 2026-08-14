@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "horizon-forbidden-west",
-  "checked_at": "2026-08-14T22:53:01.701Z",
+  "checked_at": "2026-08-14T23:06:55.332Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 7,
-  "scored": 2,
+  "scored": 3,
   "context_only_versions": 0,
   "updates": [
     {
@@ -22,6 +22,15 @@
       "score": 9.25,
       "scale": 10,
       "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "score": 9,
+      "scale": 10,
+      "method": "registry:game-revolution",
       "scope": "editorial_review",
       "canonical_score_eligible": true
     }
@@ -76,10 +85,10 @@
       "publication": "GameRevolution",
       "url": "https://www.gamerevolution.com/review/702212-horizon-forbidden-west-review-is-it-worth-buying-playing-ps4-ps5",
       "final_url": "https://www.gamerevolution.com/review/702212-horizon-forbidden-west-review-is-it-worth-buying-playing-ps4-ps5",
-      "status": "no_explicit_editorial_score",
+      "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,
-      "trusted_editorial_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     },
     {

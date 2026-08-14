@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "dark-souls-iii",
-  "checked_at": "2026-08-14T22:48:15.489Z",
+  "checked_at": "2026-08-14T23:02:09.117Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 5,
-  "scored": 1,
+  "scored": 2,
   "context_only_versions": 0,
   "updates": [
     {
@@ -13,6 +13,15 @@
       "score": 9.5,
       "scale": 10,
       "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "score": 9,
+      "scale": 10,
+      "method": "registry:game-revolution",
       "scope": "editorial_review",
       "canonical_score_eligible": true
     }
@@ -67,10 +76,10 @@
       "publication": "GameRevolution",
       "url": "https://www.gamerevolution.com/review/70185-dark-souls-iii-review",
       "final_url": "https://www.gamerevolution.com/review/70185-dark-souls-iii-review",
-      "status": "no_explicit_editorial_score",
+      "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,
-      "trusted_editorial_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     }
   ]

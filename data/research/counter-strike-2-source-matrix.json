@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "counter-strike-2",
-  "generated_at": "2026-08-14T22:55:49.299Z",
+  "generated_at": "2026-08-14T23:10:15.194Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -39,34 +39,9 @@
       },
       "validation": {
         "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-14T22:55:49.299Z",
+        "checked_at": "2026-08-14T23:10:15.194Z",
         "method": "registered-direct-publisher-preserved-v8",
         "reason": "HTTP 403"
-      },
-      "score": null,
-      "scale": null,
-      "grade": "",
-      "score_eligible": false
-    },
-    {
-      "url": "https://web.archive.org/web/20010602234021/http://www.planethalflife.com/counter-strike/csinfo/models",
-      "publication": "GameSpy",
-      "title": "Counter-Strike 2 — GameSpy review reference",
-      "id": "source-2",
-      "configured_source_id": "gamespy-archive",
-      "resolved_url": "https://web.archive.org/web/20010602234021/http://www.planethalflife.com/counter-strike/csinfo/models",
-      "source_kind": "review",
-      "language": "en",
-      "canonical_score_eligible": true,
-      "version_validation": {
-        "score_eligible": true,
-        "reason": "canonical_version"
-      },
-      "validation": {
-        "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-14T22:55:49.299Z",
-        "method": "registered-direct-publisher-preserved-v8",
-        "reason": "HTTP The operation was aborted due to timeout"
       },
       "score": null,
       "scale": null,
@@ -75,6 +50,14 @@
     }
   ],
   "rejected": [
+    {
+      "publication": "GameSpy",
+      "url": "https://web.archive.org/web/20010602234021/http://www.planethalflife.com/counter-strike/csinfo/models",
+      "title": "The Models",
+      "reasons": [
+        "no_review_signal"
+      ]
+    },
     {
       "publication": "Polygon",
       "url": "https://www.polygon.com/2013/3/6/4072666/counter-strike-condition-zero-now-available-linux-steam",
@@ -409,13 +392,13 @@
   "coverage": {
     "registered_editorial": 37,
     "checked": 37,
-    "accepted": 2,
+    "accepted": 1,
     "scored": 0,
     "context_only_versions": 0,
-    "blocked_verified": 2,
-    "contemporary": 2,
+    "blocked_verified": 1,
+    "contemporary": 1,
     "green": false,
     "passed": false,
-    "needs_more": 3
+    "needs_more": 4
   }
 }

@@ -1,11 +1,11 @@
 {
   "schema_version": 11,
   "game_slug": "counter-strike-2",
-  "updated_at": "2026-08-14T22:57:11.738Z",
+  "updated_at": "2026-08-14T23:11:25.794Z",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "accepted": 2,
+    "accepted": 1,
     "status": "red-needs-revision",
     "full_registry_scan": true,
     "checked_registered_sources": 37,
@@ -34,34 +34,9 @@
       },
       "validation": {
         "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-14T22:55:49.299Z",
+        "checked_at": "2026-08-14T23:10:15.194Z",
         "method": "registered-direct-publisher-preserved-v8",
         "reason": "HTTP 403"
-      },
-      "score": null,
-      "scale": null,
-      "grade": "",
-      "score_eligible": false
-    },
-    {
-      "url": "https://web.archive.org/web/20010602234021/http://www.planethalflife.com/counter-strike/csinfo/models",
-      "publication": "GameSpy",
-      "title": "Counter-Strike 2 — GameSpy review reference",
-      "id": "source-2",
-      "configured_source_id": "gamespy-archive",
-      "resolved_url": "https://web.archive.org/web/20010602234021/http://www.planethalflife.com/counter-strike/csinfo/models",
-      "source_kind": "review",
-      "language": "en",
-      "canonical_score_eligible": true,
-      "version_validation": {
-        "score_eligible": true,
-        "reason": "canonical_version"
-      },
-      "validation": {
-        "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-14T22:55:49.299Z",
-        "method": "registered-direct-publisher-preserved-v8",
-        "reason": "HTTP The operation was aborted due to timeout"
       },
       "score": null,
       "scale": null,
@@ -135,6 +110,14 @@
   },
   "rejected": [
     {
+      "publication": "GameSpy",
+      "url": "https://web.archive.org/web/20010602234021/http://www.planethalflife.com/counter-strike/csinfo/models",
+      "title": "The Models",
+      "reasons": [
+        "no_review_signal"
+      ]
+    },
+    {
       "publication": "Polygon",
       "url": "https://www.polygon.com/2013/3/6/4072666/counter-strike-condition-zero-now-available-linux-steam",
       "title": "Counter-Strike: Condition Zero now available for Linux on Steam",
@@ -167,12 +150,6 @@
         "configured_source_id": "gamespot",
         "publication": "GameSpot",
         "url": "http://www.gamespot.com/gamespot/features/all/greatestgames/p-12.html",
-        "reason": "canonical_version"
-      },
-      {
-        "configured_source_id": "gamespy-archive",
-        "publication": "GameSpy",
-        "url": "https://web.archive.org/web/20010602234021/http://www.planethalflife.com/counter-strike/csinfo/models",
         "reason": "canonical_version"
       }
     ],
