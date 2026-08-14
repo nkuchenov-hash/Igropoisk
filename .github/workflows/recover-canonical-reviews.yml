@@ -73,7 +73,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          git add -A -- data/reviews data/research data/ratings data/parser-runs data/quality-control data/articles data/article-drafts data/article-media data/media-candidates article
+          git add -A -- data article
           if git diff --cached --quiet; then
             echo 'No deterministic recovery changes to checkpoint.'
             exit 0
@@ -184,7 +184,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          git add -A -- data/reviews data/research data/ratings data/parser-runs data/quality-control data/articles data/article-drafts data/article-media data/media-candidates data/top-250 article
+          git add -A -- data article
           if git diff --cached --quiet; then
             echo 'No recovery changes.'
             exit 0
