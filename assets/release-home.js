@@ -38,10 +38,14 @@ const card=game=>{
   const platforms=(event.platforms||[]).slice(0,2).join(' · ');
   const genres=(game.genres||[]).slice(0,2).join(' · ');
   const image=imageUrl(game);
-  return `<article class="release-home-card"><a class="release-home-card__link" href="calendar/#game=${encodeURIComponent(game.slug)}" aria-label="${esc(game.title)} — ${esc(dateLabel(event))}"><div class="release-home-card__media" data-initials="${esc(initials(game.title))}">${image?`<img src="${esc(image)}" alt="Обложка ${esc(game.title)}" loading="lazy" decoding="async">`:''}<span class="release-home-date ${dateClass}">${esc(dateLabel(event))}</span></div><div class="release-home-card__body"><h3>${esc(game.title)}</h3><div class="release-home-meta">${genres?`<span>${esc(genres)}</span>`:''}${platforms?`<span>${esc(platforms)}</span>`:''}</div><div class="release-home-status ${event.status==='confirmed'?'confirmed':''}">${event.status==='confirmed'?'Дата подтверждена':'Ожидает подтверждения'}</div></div></a></article>`;
+  const target=game.page_url||`calendar/#game=${encodeURIComponent(game.slug)}`;
+  return `<article class="release-home-card"><a class="release-home-card__link" href="${esc(target)}" aria-label="${esc(game.title)} — ${esc(dateLabel(event))}"><div class="release-home-card__media" data-initials="${esc(initials(game.title))}">${image?`<img src="${esc(image)}" alt="Обложка ${esc(game.title)}" loading="lazy" decoding="async">`:''}<span class="release-home-date ${dateClass}">${esc(dateLabel(event))}</span></div><div class="release-home-card__body"><h3>${esc(game.title)}</h3><div class="release-home-meta">${genres?`<span>${esc(genres)}</span>`:''}${platforms?`<span>${esc(platforms)}</span>`:''}</div><div class="release-home-status ${event.status==='confirmed'?'confirmed':''}">${event.status==='confirmed'?'Дата подтверждена':'Ожидает подтверждения'}</div></div></a></article>`;
 };
-fetch('data/releases/current.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json()}).then(data=>{
-  const rows=(data.releases||[]).filter(game=>{const event=primaryEvent(game);const value=event.date_end||event.date||event.date_start;if(!value)return true;return Date.parse(`${value}T23:59:59Z`)>=Date.now()-86400000}).sort((a,b)=>String(dateValue(primaryEvent(a))||'9999').localeCompare(String(dateValue(primaryEvent(b))||'9999'))).slice(0,6);
+const chronologicalKey=game=>dateValue(primaryEvent(game))||'9999-12-31';
+fetch('data/releases/public.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json()}).then(data=>{
+  const rows=(data.releases||[])
+    .filter(game=>{const event=primaryEvent(game);const value=event.date_end||event.date||event.date_start;if(!value)return true;return Date.parse(`${value}T23:59:59Z`)>=Date.now()-86400000})
+    .sort((a,b)=>chronologicalKey(a).localeCompare(chronologicalKey(b))||Number(b.expected_score?.score||0)-Number(a.expected_score?.score||0)||String(a.title||'').localeCompare(String(b.title||''),'ru'));
   grid.innerHTML=rows.length?rows.map(card).join(''):'<div class="release-home-empty">Ближайшие релизы пока не найдены.</div>';
   grid.querySelectorAll('img').forEach(img=>img.addEventListener('error',()=>img.closest('.release-home-card__media')?.classList.add('is-broken'),{once:true}));
 }).catch(error=>{console.warn('Release block:',error);grid.innerHTML='<div class="release-home-empty">Календарь временно недоступен.</div>'});
