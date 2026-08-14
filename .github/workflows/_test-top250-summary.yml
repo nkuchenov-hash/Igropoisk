@@ -1,0 +1,33 @@
+name: Test Top-250 summary fallback
+on:
+  push:
+    branches: [fix/top250-summary-fallback]
+    paths: [.github/workflows/_test-top250-summary.yml]
+permissions:
+  contents: read
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/top250-summary-fallback
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Recover one known canonical review
+        env:
+          OPENAI_API_KEY: ''
+        run: node scripts/recover-canonical-review-backlog.mjs --only doom-the-dark-ages --concurrency 1 --timeout-ms 240000 --strict
+      - name: Build and validate Top-250
+        run: |
+          node scripts/materialize-review-publication-feed.mjs
+          node scripts/validate-top-250.mjs
+          node - <<'NODE'
+          const fs=require('fs');
+          const t=JSON.parse(fs.readFileSync('data/top-250/current.json','utf8'));
+          const row=t.ranking.find(x=>x.slug==='doom-the-dark-ages');
+          console.log(JSON.stringify({count:t.count,row},null,2));
+          if(!row||!String(row.summary||'').trim())process.exit(2);
+          NODE
