@@ -18,6 +18,8 @@ export function loadReviewSourceRegistry(configPath='config/parsers/review-sourc
 const key=value=>String(value||'').toLowerCase().replace(/[^a-zа-яё0-9]+/gi,'');
 const host=value=>{try{return new URL(value).hostname.replace(/^www\./,'').toLowerCase()}catch{return''}};
 const pathText=value=>{try{return decodeURIComponent(new URL(value).pathname).toLowerCase()}catch{return String(value||'').toLowerCase()}};
+const normalizedText=value=>String(value||'').toLowerCase().replace(/ё/g,'е').replace(/\s+/g,' ').trim();
+const compile=patterns=>(patterns||[]).map(pattern=>{try{return new RegExp(pattern,'i')}catch{return null}}).filter(Boolean);
 
 export function editorialSources(registry,{historical=true}={}){
   return (registry.sources||[]).filter(source=>{
@@ -61,3 +63,43 @@ export function registeredEditorialSource(registry,raw={}){
   const source=findRegisteredSource(registry,raw);return source?.review?source:null;
 }
 export function configuredSourceId(registry,raw={}){return findRegisteredSource(registry,raw)?.id||''}
+
+const genericBadPath=/(?:^|\/)(?:game|games|file|files|download|downloads|news|guide|guides|wiki|video|videos|screenshots?|gallery|forum|forums|cheats?|trainer|mods?)(?:\/|$)/i;
+const genericReviewPath=/(?:review|reviews|opinion|recenzi|retsenzi|obzor|reviewed)/i;
+const genericReviewText=/(?:\breview\b|\bverdict\b|\brecension\b|\brecenzj|\bобзор\b|\bрецензи)/i;
+
+export function classifyReviewPage(source,{url='',title='',bodyText=''}={}){
+  if(!source?.review)return{accepted:false,reason:'source_not_editorial'};
+  const pathname=pathText(url),combined=normalizedText(`${title} ${bodyText}`),rules=source.review.page_rules||{};
+  const deny=compile(rules.url_deny);if(deny.some(rx=>rx.test(pathname)))return{accepted:false,reason:'publisher_url_deny'};
+  const allow=compile(rules.url_allow),explicitAllow=allow.length&&allow.some(rx=>rx.test(pathname));
+  if(allow.length&&!explicitAllow)return{accepted:false,reason:'publisher_url_not_allowed'};
+  if(!explicitAllow&&genericBadPath.test(pathname))return{accepted:false,reason:'non_review_path'};
+  const titleSignals=compile(rules.title_allow),explicitTitle=titleSignals.length&&titleSignals.some(rx=>rx.test(title));
+  const genericSignal=genericReviewPath.test(pathname)||genericReviewText.test(`${title} ${bodyText.slice(0,1800)}`);
+  if(!explicitAllow&&!explicitTitle&&!genericSignal)return{accepted:false,reason:'no_review_signal'};
+  return{accepted:true,reason:explicitAllow||explicitTitle?'publisher_rule':'generic_review_signal'};
+}
+
+const versionMarkers=[
+  {id:'next_gen',rx:/\bnext[- ]?gen(?:eration)?\b/i},
+  {id:'complete_edition',rx:/\bcomplete edition\b/i},
+  {id:'definitive_edition',rx:/\bdefinitive edition\b/i},
+  {id:'remaster',rx:/\bremaster(?:ed)?\b/i},
+  {id:'remake',rx:/\bremake\b/i},
+  {id:'enhanced_edition',rx:/\benhanced edition\b/i},
+  {id:'goty_edition',rx:/\bgame of the year edition\b|\bgoty edition\b/i},
+  {id:'switch_port',rx:/\bnintendo switch\b|\bswitch version\b|\bswitch port\b/i}
+];
+
+export function classifyCanonicalVersion({title='',url='',versionContext='',game={}}={}){
+  const hay=normalizedText(`${title} ${url} ${versionContext}`),identity=game.identity||{},explicitExcluded=[...(identity.excluded_titles||[]),...(identity.excluded_versions||[])].map(normalizedText).filter(Boolean);
+  for(const excluded of explicitExcluded)if(hay.includes(excluded))return{score_eligible:false,reason:`excluded_version:${excluded}`};
+  const canonicalTitle=normalizedText(identity.title||'');
+  for(const marker of versionMarkers){
+    if(!marker.rx.test(hay))continue;
+    if(canonicalTitle&&marker.rx.test(canonicalTitle))continue;
+    return{score_eligible:false,reason:`variant_or_port:${marker.id}`};
+  }
+  return{score_eligible:true,reason:'canonical_version'};
+}
