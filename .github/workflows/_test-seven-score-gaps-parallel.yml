@@ -1,0 +1,45 @@
+name: Test seven review score gaps in parallel
+on:
+  push:
+    branches: [fix/review-publisher-sitemap-discovery]
+    paths: [.github/workflows/_test-seven-score-gaps-parallel.yml]
+permissions:
+  contents: read
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        slug:
+          - metal-gear-solid-v-the-phantom-pain
+          - dark-souls-iii
+          - red-dead-redemption-2
+          - half-life-alyx
+          - deathloop
+          - alan-wake-2
+          - tom-clancy-s-ghost-recon-wildlands
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/review-publisher-sitemap-discovery
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require canonical review score green
+        run: |
+          slug='${{ matrix.slug }}'
+          node scripts/discover-review-sources-web-v8.mjs "$slug" --all
+          node scripts/promote-review-source-audit.mjs "$slug"
+          node scripts/enrich-review-explicit-scores.mjs "$slug"
+          node scripts/calculate-ratings-from-research.mjs "$slug"
+          node - "$slug" <<'NODE'
+          const fs=require('fs'),slug=process.argv[2];
+          const review=JSON.parse(fs.readFileSync(`data/reviews/${slug}.json`,'utf8'));
+          const research=JSON.parse(fs.readFileSync(`data/research/${slug}-source-matrix.json`,'utf8'));
+          const direct=(research.accepted||[]).filter(x=>['pc-gamer','gamesradar'].includes(x.configured_source_id)).map(x=>({id:x.configured_source_id,url:x.resolved_url||x.url,score:x.score,scale:x.scale,eligible:x.score_eligible}));
+          const result={slug,accepted:review.publication_gate?.accepted,score_status:review.review_score?.status,score_sources:review.review_score?.sources?.length,score_10:review.review_score?.calculation?.score_10,direct};
+          console.log(JSON.stringify(result,null,2));
+          if(review.publication_gate?.status!=='green'||review.review_score?.status!=='green'||Number(review.review_score?.sources?.length||0)<3)process.exit(2);
+          NODE
