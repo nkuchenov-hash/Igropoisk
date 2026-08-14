@@ -278,7 +278,19 @@
         "global"
       ],
       "review": {
-        "discovery_url": "https://www.gamerevolution.com/review"
+        "discovery_url": "https://www.gamerevolution.com/review",
+        "score": {
+          "policy": "explicit_only",
+          "default_scale": 10,
+          "patterns": [
+            {
+              "pattern": "<div\\s+class=[\"\\'][^\"\\']*xe-review-reports__rating[^\"\\']*[\"\\'][^>]*>\\s*<p[^>]*>\\s*([0-9]+(?:\\.[0-9]+)?)\\s*</p>",
+              "html": true,
+              "score_group": 1,
+              "scale": 10
+            }
+          ]
+        }
       },
       "trust": 0.84,
       "weight": 0.9,
@@ -379,7 +391,19 @@
         "global"
       ],
       "review": {
-        "discovery_url": "https://www.gry-online.pl/recenzje.asp"
+        "discovery_url": "https://www.gry-online.pl/recenzje.asp",
+        "score": {
+          "policy": "explicit_only",
+          "default_scale": 10,
+          "patterns": [
+            {
+              "pattern": "oce-game-box[^>]*oce-gre[^>]*>[\\s\\S]{0,300}?oce-rate[^>]*>\\s*([0-9]+(?:[.,][0-9]+)?)\\s*</div>[\\s\\S]{0,350}?<p[^>]*>\\s*GRYOnline\\s*</p>",
+              "html": true,
+              "score_group": 1,
+              "scale": 10
+            }
+          ]
+        }
       },
       "trust": 0.84,
       "weight": 0.85,
@@ -402,7 +426,19 @@
         "global"
       ],
       "review": {
-        "discovery_url": "https://worthplaying.com/reviews/"
+        "discovery_url": "https://worthplaying.com/reviews/",
+        "score": {
+          "policy": "explicit_only",
+          "default_scale": 10,
+          "patterns": [
+            {
+              "pattern": "<strong[^>]*>\\s*Score:\\s*([0-9]+(?:\\.[0-9]+)?)\\s*/\\s*(10)\\s*</strong>",
+              "html": true,
+              "score_group": 1,
+              "scale_group": 2
+            }
+          ]
+        }
       },
       "trust": 0.8,
       "aliases": [],
