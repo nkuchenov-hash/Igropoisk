@@ -1,15 +1,38 @@
 {
-  "parser": "review-explicit-score-enrichment",
+  "parser": "review-explicit-score-enrichment-registry-v3",
   "game_slug": "big-walk",
-  "checked_at": "2026-08-14T08:41:45.987Z",
+  "checked_at": "2026-08-14T10:14:54.229Z",
+  "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 2,
+  "unregistered_rejected": [],
   "scored": 1,
+  "context_only_versions": 0,
   "updates": [
     {
+      "configured_source_id": "ign",
       "publication": "IGN",
       "score": 9,
       "scale": 10,
-      "method": "jsonld.reviewRating"
+      "method": "jsonld.reviewRating",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/big-walk-review",
+      "final_url": "https://www.ign.com/articles/big-walk-review",
+      "status": "explicit_score_found",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/games/2026/aug/04/big-walk-review-larking-around-with-mates-elevated-to-an-artform",
+      "final_url": "https://www.theguardian.com/games/2026/aug/04/big-walk-review-larking-around-with-mates-elevated-to-an-artform",
+      "status": "no_explicit_score",
+      "canonical_score_eligible": true
     }
   ]
 }

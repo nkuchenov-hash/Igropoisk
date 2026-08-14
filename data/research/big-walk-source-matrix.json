@@ -1,16 +1,18 @@
 {
-  "schema_version": 7,
+  "schema_version": 10,
   "game_slug": "big-walk",
-  "generated_at": "2026-08-14T08:40:46.785Z",
+  "generated_at": "2026-08-14T10:13:49.071Z",
+  "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
     "target_sources": 20,
-    "desired_sources_per_pass": 10,
     "maximum_sources": 20,
     "historical": false,
-    "min_contemporary": 5,
     "regional_discovery_required": true,
-    "discovery_provider": "direct-publisher-web-v3-bounded"
+    "discovery_provider": "registered-direct-publisher-web-v6",
+    "audit_all": false,
+    "canonical_score_requires_exact_version": true,
+    "prior_verified_sources_survive_bot_block": true
   },
   "accepted": [
     {
@@ -25,11 +27,16 @@
       "version_context": "",
       "published_at": "",
       "author": "",
-      "language": "",
+      "language": "en",
       "score": 9,
       "scale": 10,
       "grade": "",
       "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
       "identity_evidence": "Direct publisher page verified for Big Walk.",
       "evidence_points": [
         "Each of these puzzles rewards us with another red bean we have to take care of as we bring it back to a bean tower for deposit. Once you&#x27;ve found enough beans for a given tower, you get a special key to unlock something new and helpful: stuff you otherwise couldn&#x27;t figure out how to operate, like a stalled train or an island-spanning chair lift. And in this progression, Big Walk further embeds the ethos that these discoveries are yours to make.",
@@ -41,13 +48,18 @@
       "domain": "ign.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T08:40:46.785Z",
-        "method": "direct-publisher-http-v3"
+        "checked_at": "2026-08-14T10:13:49.071Z",
+        "method": "registered-direct-publisher-http-v6",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
       },
       "score_evidence": {
         "method": "jsonld.reviewRating",
-        "checked_at": "2026-08-14T08:41:45.986Z",
-        "url": "https://www.ign.com/articles/big-walk-review"
+        "checked_at": "2026-08-14T10:14:54.228Z",
+        "url": "https://www.ign.com/articles/big-walk-review",
+        "configured_source_id": "ign"
       }
     },
     {
@@ -62,11 +74,16 @@
       "version_context": "",
       "published_at": "",
       "author": "",
-      "language": "",
+      "language": "en",
       "score": null,
       "scale": null,
       "grade": "",
       "score_eligible": false,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
       "identity_evidence": "Direct publisher page verified for Big Walk.",
       "evidence_points": [
         "Switch 2, PlayStation 5, PC; House House The creators of Untitled Goose Game return with an online, open-world adventure that delivers slapstick silliness and bucolic majesty in nearly equal measure",
@@ -83,8 +100,12 @@
       "domain": "theguardian.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T08:40:46.785Z",
-        "method": "direct-publisher-http-v3"
+        "checked_at": "2026-08-14T10:13:49.071Z",
+        "method": "registered-direct-publisher-http-v6",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
       }
     }
   ],
@@ -94,7 +115,269 @@
       "url": "https://www.gamespot.com/reviews/big-walk-is-one-of-the-best-co-op-games-ever",
       "reasons": [
         "HTTP 403"
-      ]
+      ],
+      "prior_verified": false
+    }
+  ],
+  "source_checks": [
+    {
+      "source_id": "igromania",
+      "name": "Игромания",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "stopgame",
+      "name": "StopGame",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "kanobu",
+      "name": "Канобу",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "playground",
+      "name": "PlayGround.ru",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "vgtimes",
+      "name": "VGTimes",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ixbt-games",
+      "name": "iXBT.games",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamemag",
+      "name": "GameMAG.ru",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "vk-play",
+      "name": "VK Play Media",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "shazoo",
+      "name": "Shazoo",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pc-gamer",
+      "name": "PC Gamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamespot",
+      "name": "GameSpot",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ign",
+      "name": "IGN",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "eurogamer",
+      "name": "Eurogamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-informer",
+      "name": "Game Informer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamesradar",
+      "name": "GamesRadar+",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "polygon",
+      "name": "Polygon",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rock-paper-shotgun",
+      "name": "Rock Paper Shotgun",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-revolution",
+      "name": "GameRevolution",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ars-technica",
+      "name": "Ars Technica",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezone",
+      "name": "GameZone",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamepressure",
+      "name": "Gamepressure",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gry-online",
+      "name": "GRYOnline",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "worthplaying",
+      "name": "WorthPlaying",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rpgfan",
+      "name": "RPGFan",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rpgamer",
+      "name": "RPGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "destructoid",
+      "name": "Destructoid",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "shacknews",
+      "name": "Shacknews",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pcworld",
+      "name": "PCWorld",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "guardian-games",
+      "name": "The Guardian",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "push-square",
+      "name": "Push Square",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "nintendo-life",
+      "name": "Nintendo Life",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "digital-trends",
+      "name": "Digital Trends",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "wired",
+      "name": "WIRED",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "egm",
+      "name": "EGM",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamebanshee",
+      "name": "GameBanshee",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "den-of-geek",
+      "name": "Den of Geek",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "videogamer",
+      "name": "VideoGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_discovery": {
@@ -159,8 +442,12 @@
     "found_but_not_accepted": []
   },
   "coverage": {
+    "registered_editorial": 37,
+    "checked": 37,
     "accepted": 2,
     "scored": 1,
+    "context_only_versions": 0,
+    "blocked_verified": 0,
     "contemporary": 2,
     "green": false,
     "passed": false,

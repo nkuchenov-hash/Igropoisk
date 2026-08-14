@@ -1,9 +1,9 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/kusan-city-of-wolves.json#review_score",
   "game_slug": "kusan-city-of-wolves",
-  "checked_at": "2026-08-14T08:46:42.904Z",
+  "checked_at": "2026-08-14T10:20:21.286Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее оценок независимых профессиональных изданий",
@@ -15,9 +15,11 @@
     "rounding_decimals": 1,
     "one_vote_per_publication": true,
     "aggregators_forbidden": true,
-    "invented_scores_forbidden": true
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
   },
   "sources": [],
+  "excluded_sources": [],
   "calculation": {
     "source_count": 0,
     "values": [],

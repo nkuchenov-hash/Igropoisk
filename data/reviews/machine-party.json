@@ -1,8 +1,9 @@
 {
-  "schema_version": 6,
+  "schema_version": 9,
   "game_slug": "machine-party",
   "game_id": "game_6756815f56ba6605d4e4",
-  "updated_at": "2026-08-14T08:48:41.407Z",
+  "updated_at": "2026-08-14T10:22:31.757Z",
+  "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
@@ -86,9 +87,11 @@
       "rounding_decimals": 1,
       "one_vote_per_publication": true,
       "aggregators_forbidden": true,
-      "invented_scores_forbidden": true
+      "invented_scores_forbidden": true,
+      "exact_canonical_version_required": true
     },
     "sources": [],
+    "excluded_sources": [],
     "calculation": {
       "source_count": 0,
       "values": [],
