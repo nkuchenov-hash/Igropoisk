@@ -1,0 +1,71 @@
+name: Salvage review checkpoint
+on:
+  push:
+    branches: [salvage/review-checkpoint-31819248532-final]
+    paths: [.github/workflows/_salvage-review-checkpoint.yml]
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  salvage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - name: Overlay non-conflicting deterministic recovery data on fresh staging
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BASE=60fb622dcaef39c9c307541ba2d81e87d7b7af9a
+          CHECKPOINT=33ef2fec1e7ee4b02a32dd159ee4871de3c0c4ca
+          git fetch origin staging automation/recover-canonical-reviews-checkpoint-31819248532-1
+          FRESH="$(git rev-parse origin/staging)"
+          git checkout -B salvage-result "$FRESH"
+          applied=0
+          skipped=0
+          : > /tmp/skipped.txt
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
+            base_obj="$(git rev-parse "$BASE:$f" 2>/dev/null || echo __missing__)"
+            fresh_obj="$(git rev-parse "$FRESH:$f" 2>/dev/null || echo __missing__)"
+            checkpoint_obj="$(git rev-parse "$CHECKPOINT:$f" 2>/dev/null || echo __missing__)"
+            if [ "$fresh_obj" = "$checkpoint_obj" ]; then
+              continue
+            fi
+            if [ "$fresh_obj" = "$base_obj" ]; then
+              if [ "$checkpoint_obj" = "__missing__" ]; then
+                rm -f -- "$f"
+              else
+                git checkout "$CHECKPOINT" -- "$f"
+              fi
+              applied=$((applied+1))
+            else
+              echo "$f" >> /tmp/skipped.txt
+              skipped=$((skipped+1))
+            fi
+          done < <(git diff --name-only "$BASE" "$CHECKPOINT" -- data article)
+          echo "Applied checkpoint paths: $applied"
+          echo "Preserved newer staging paths: $skipped"
+          if [ -s /tmp/skipped.txt ]; then
+            echo 'Preserved newer paths:'
+            cat /tmp/skipped.txt
+          fi
+          git add -A -- data article
+          if git diff --cached --quiet; then
+            echo 'Nothing to salvage.'
+            exit 0
+          fi
+          git diff --check
+          branch="automation/salvage-review-checkpoint-${GITHUB_RUN_ID}"
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Salvage deterministic canonical review checkpoint"
+          git push origin "$branch"
+          body="Safely overlays deterministic review recovery output from checkpoint 33ef2fec onto the latest staging tip. Paths changed independently since the recovery started are preserved from staging rather than overwritten. Applied: ${applied}; preserved newer paths: ${skipped}."
+          pr_url="$(gh pr create --base staging --head "$branch" --title "Salvage deterministic canonical review checkpoint" --body "$body")"
+          gh pr merge "$pr_url" --merge --delete-branch
