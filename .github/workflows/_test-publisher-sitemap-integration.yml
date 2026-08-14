@@ -8,7 +8,7 @@ permissions:
 jobs:
   integration:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 70
     steps:
       - uses: actions/checkout@v4
         with:
@@ -16,25 +16,30 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Compare direct sitemap candidates with v8 result
+      - name: Require all seven former score gaps to become green
         run: |
-          node --input-type=module - <<'NODE'
-          import fs from 'node:fs';
-          import {loadReviewSourceRegistry,findRegisteredSource,sourceDiscoveryDef} from './scripts/lib/review-source-registry.mjs';
-          import {publisherSitemapCandidates} from './scripts/lib/review-publisher-sitemap.mjs';
-          const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
-          const item=catalog.find(x=>x.slug==='red-dead-redemption-2');
-          const registry=loadReviewSourceRegistry('config/parsers/review-source-registry.json');
-          for(const id of ['pc-gamer','gamesradar']){
-            const source=findRegisteredSource(registry,{configured_source_id:id}),def=sourceDiscoveryDef(source);
-            const result=await publisherSitemapCandidates({sourceId:id,indexUrl:def.sitemap_index,title:item.title,year:item.year,yearOffsets:def.sitemap_year_offsets,limit:8});
-            console.log('DIRECT',JSON.stringify({id,def,year:item.year,title:item.title,reachable:result.reachable,items:result.items},null,2));
-          }
+          slugs=(
+            metal-gear-solid-v-the-phantom-pain
+            dark-souls-iii
+            red-dead-redemption-2
+            half-life-alyx
+            deathloop
+            alan-wake-2
+            tom-clancy-s-ghost-recon-wildlands
+          )
+          for slug in "${slugs[@]}"; do
+            echo "=== $slug ==="
+            node scripts/discover-review-sources-web-v8.mjs "$slug" --all
+            node scripts/promote-review-source-audit.mjs "$slug"
+            node scripts/enrich-review-explicit-scores.mjs "$slug"
+            node scripts/calculate-ratings-from-research.mjs "$slug"
+            node - "$slug" <<'NODE'
+          const fs=require('fs'),slug=process.argv[2];
+          const review=JSON.parse(fs.readFileSync(`data/reviews/${slug}.json`,'utf8'));
+          const research=JSON.parse(fs.readFileSync(`data/research/${slug}-source-matrix.json`,'utf8'));
+          const direct=(research.accepted||[]).filter(x=>['pc-gamer','gamesradar'].includes(x.configured_source_id)).map(x=>({id:x.configured_source_id,url:x.resolved_url||x.url,score:x.score,scale:x.scale,eligible:x.score_eligible,validation:x.validation?.status}));
+          const result={slug,accepted:review.publication_gate?.accepted,score_status:review.review_score?.status,score_sources:review.review_score?.sources?.length,score_10:review.review_score?.calculation?.score_10,direct};
+          console.log(JSON.stringify(result,null,2));
+          if(review.publication_gate?.status!=='green'||review.review_score?.status!=='green'||Number(review.review_score?.sources?.length||0)<3||!direct.length)process.exit(2);
           NODE
-          node scripts/discover-review-sources-web-v8.mjs red-dead-redemption-2 --all
-          node - <<'NODE'
-          const fs=require('fs'),m=JSON.parse(fs.readFileSync('data/research/red-dead-redemption-2-source-matrix.json','utf8'));
-          console.log('V8 ACCEPTED',JSON.stringify((m.accepted||[]).map(x=>({id:x.configured_source_id,url:x.resolved_url||x.url})),null,2));
-          console.log('V8 CHECKS',JSON.stringify((m.source_checks||[]).filter(x=>['pc-gamer','gamesradar'].includes(x.source_id)),null,2));
-          console.log('V8 REJECTED',JSON.stringify((m.rejected||[]).filter(x=>/PC Gamer|GamesRadar/i.test(x.publication||'')),null,2));
-          NODE
+          done
