@@ -8,6 +8,7 @@ permissions:
 jobs:
   integration:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -15,15 +16,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Inspect RDR2 catalog and Game Registry release history
+      - name: Compare direct sitemap candidates with v8 result
         run: |
-          node - <<'NODE'
-          const fs=require('fs');
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          import {loadReviewSourceRegistry,findRegisteredSource,sourceDiscoveryDef} from './scripts/lib/review-source-registry.mjs';
+          import {publisherSitemapCandidates} from './scripts/lib/review-publisher-sitemap.mjs';
           const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
           const item=catalog.find(x=>x.slug==='red-dead-redemption-2');
-          const registry=JSON.parse(fs.readFileSync('data/game-registry/registry.transition.json','utf8'));
-          const entities=Array.isArray(registry.entities)?registry.entities:Object.values(registry.entities||registry.games||{});
-          const entity=entities.find(x=>x?.id===item?.game_id||x?.identity?.slug?.value==='red-dead-redemption-2');
-          console.log('CATALOG',JSON.stringify(item,null,2));
-          console.log('ENTITY',JSON.stringify(entity,null,2));
+          const registry=loadReviewSourceRegistry('config/parsers/review-source-registry.json');
+          for(const id of ['pc-gamer','gamesradar']){
+            const source=findRegisteredSource(registry,{configured_source_id:id}),def=sourceDiscoveryDef(source);
+            const result=await publisherSitemapCandidates({sourceId:id,indexUrl:def.sitemap_index,title:item.title,year:item.year,yearOffsets:def.sitemap_year_offsets,limit:8});
+            console.log('DIRECT',JSON.stringify({id,def,year:item.year,title:item.title,reachable:result.reachable,items:result.items},null,2));
+          }
+          NODE
+          node scripts/discover-review-sources-web-v8.mjs red-dead-redemption-2 --all
+          node - <<'NODE'
+          const fs=require('fs'),m=JSON.parse(fs.readFileSync('data/research/red-dead-redemption-2-source-matrix.json','utf8'));
+          console.log('V8 ACCEPTED',JSON.stringify((m.accepted||[]).map(x=>({id:x.configured_source_id,url:x.resolved_url||x.url})),null,2));
+          console.log('V8 CHECKS',JSON.stringify((m.source_checks||[]).filter(x=>['pc-gamer','gamesradar'].includes(x.source_id)),null,2));
+          console.log('V8 REJECTED',JSON.stringify((m.rejected||[]).filter(x=>/PC Gamer|GamesRadar/i.test(x.publication||'')),null,2));
           NODE
