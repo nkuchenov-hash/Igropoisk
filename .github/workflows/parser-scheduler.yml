@@ -39,6 +39,7 @@ on:
       - 'scripts/publish-release-feed-storage.mjs'
       - 'scripts/lib/**'
       - 'tests/home-release-anticipation.mjs'
+      - 'tests/popular-entity-resolution.mjs'
       - '.github/workflows/parser-scheduler.yml'
 
 permissions:
@@ -74,6 +75,7 @@ jobs:
           node --check scripts/repair-release-slugs.mjs
           node --check scripts/enrich-release-anticipation.mjs
           node --check scripts/parse-popular.mjs
+          node --check scripts/enrich-global-popular-youtube.mjs
           node --check scripts/curate-home-feeds.mjs
           node --check scripts/validate-home-feeds.mjs
           node --check scripts/canonicalize-system-game-identity.mjs
@@ -82,9 +84,12 @@ jobs:
           node --check scripts/publish-home-feeds-storage.mjs
           node --check scripts/publish-release-feed-storage.mjs
           node --check scripts/lib/home-release-quality.mjs
+          node --check scripts/lib/popular-entity-resolution.mjs
           node --check scripts/lib/yandex-object-storage.mjs
+          node --check tests/popular-entity-resolution.mjs
           node scripts/test-release-calendar-policy.mjs
           node tests/home-release-anticipation.mjs
+          node tests/popular-entity-resolution.mjs
 
       - name: Bootstrap last repository snapshot into Object Storage if empty
         env:
