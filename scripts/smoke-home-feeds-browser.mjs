@@ -35,7 +35,11 @@ try{
   page.on('pageerror',error=>pageErrors.push(String(error?.stack||error)));
   await page.setCacheEnabled(false);
   await page.goto(new URL(`?smoke=${Date.now()}`,baseUrl).href,{waitUntil:'domcontentloaded',timeout:30000});
-  await page.waitForFunction(()=>document.querySelectorAll('#popular .popular-card').length===20&&document.querySelectorAll('#reviewsOfDayRail .review-day-mini').length>=6,{timeout:30000,polling:200});
+  await page.waitForFunction(()=>{
+    const popular=document.querySelector('#popular');
+    const popularSettled=['ready','error'].includes(popular?.dataset?.popularState||'');
+    return popularSettled&&document.querySelectorAll('#reviewsOfDayRail .review-day-mini').length>=6;
+  },{timeout:30000,polling:200});
   await page.waitForFunction(()=>document.querySelectorAll('[data-home-hero-rating]').length===1&&document.querySelectorAll('[data-home-hero-rating] .home-hero-rating__row').length>4,{timeout:10000,polling:100});
   await sleep(500);
 
@@ -55,6 +59,7 @@ try{
     const next=document.querySelector('[data-controls-for="popular"] [data-direction="next"]');
     if(popular){popular.scrollLeft=Math.max(0,popular.scrollWidth-popular.clientWidth);popular.dispatchEvent(new Event('scroll'))}
     return {
+      popularRuntimeState:popular?.dataset?.popularState||'',
       popularCards:document.querySelectorAll('#popular .popular-card').length,
       popularImages:document.querySelectorAll('#popular .popular-card img').length,
       popularUniqueTitles:new Set(popularTitles.map(node=>node.textContent.trim())).size,
@@ -88,6 +93,7 @@ try{
   await sleep(100);
   const nextDisabled=await page.evaluate(()=>Boolean(document.querySelector('[data-controls-for="popular"] [data-direction="next"]')?.disabled));
 
+  assert(state.popularRuntimeState==='ready',`Popular runtime state: ${state.popularRuntimeState||'missing'}`);
   assert(state.popularCards===20,`Popular cards: ${state.popularCards}/20`);
   assert(state.popularUniqueTitles===20,`Popular unique titles: ${state.popularUniqueTitles}/20`);
   assert(state.popularImages===20,`Popular images: ${state.popularImages}/20`);
