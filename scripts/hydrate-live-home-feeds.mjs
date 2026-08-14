@@ -13,16 +13,26 @@ const manifest=await response.json();
 if(!manifest||manifest.channel!==(config.channel||'home-feeds')||!manifest.files)throw new Error('Invalid home feeds manifest.');
 const wanted=new Set(['data/popular/current.json','data/popular/published.json','data/releases/current.json','data/releases/public.json']);
 const hydrated=[];
+const normalizePopular=value=>{
+  if(!value||!Array.isArray(value.ranking))return value;
+  value.ranking=[...value.ranking].sort((left,right)=>
+    Number(right?.score||0)-Number(left?.score||0)||
+    Number(right?.confidence||0)-Number(left?.confidence||0)||
+    String(left?.title||'').localeCompare(String(right?.title||''),'ru')
+  );
+  return value;
+};
 for(const relative of wanted){
   const descriptor=manifest.files?.[relative];
   if(!descriptor?.url)continue;
   const fileResponse=await fetch(descriptor.url,{cache:'no-store'});
   if(!fileResponse.ok)throw new Error(`Home feed ${relative} HTTP ${fileResponse.status}`);
-  const value=await fileResponse.json();
+  let value=await fileResponse.json();
+  if(relative.startsWith('data/popular/'))value=normalizePopular(value);
   const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n');
   hydrated.push(relative);
 }
 if(!hydrated.includes('data/popular/current.json'))throw new Error('Live Popular snapshot was not hydrated.');
 fs.mkdirSync(path.join(root,'data/parser-runs'),{recursive:true});
-fs.writeFileSync(path.join(root,'data/parser-runs/home-feed-hydration.json'),JSON.stringify({schema_version:1,checked_at:new Date().toISOString(),manifest_version:manifest.version||null,manifest_published_at:manifest.publishedAt||null,hydrated},null,2)+'\n');
-console.log(JSON.stringify({manifest_version:manifest.version||null,hydrated},null,2));
+fs.writeFileSync(path.join(root,'data/parser-runs/home-feed-hydration.json'),JSON.stringify({schema_version:2,checked_at:new Date().toISOString(),manifest_version:manifest.version||null,manifest_published_at:manifest.publishedAt||null,hydrated,popular_order_normalized:true},null,2)+'\n');
+console.log(JSON.stringify({manifest_version:manifest.version||null,hydrated,popular_order_normalized:true},null,2));
