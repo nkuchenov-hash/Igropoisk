@@ -9,10 +9,12 @@ import { applyGlobalNotabilityGate, validateGlobalNotability } from './lib/relea
 import { ensureVisibleReleaseCovers, validateVisibleReleaseCovers } from './lib/release-cover-resolver.mjs';
 import { loadPublicationSourceRegistry, publicationRegistryStats } from './lib/publication-source-registry.mjs';
 import { loadOfficialSourceRegistry, attachOfficialSourceChecks, summarizeOfficialSourceCoverage, validateOfficialSourceRegistryWiring } from './lib/official-source-registry.mjs';
+import { mergePublicationRecords } from './lib/release-publication-discovery.mjs';
 
 const ROOT = process.cwd();
 const paths = {
   raw: path.join(ROOT, 'data/releases/current.json'),
+  publicationDiscovery: path.join(ROOT, 'data/release-candidates/publication-discovery.json'),
   editorial: path.join(ROOT, 'data/release-candidates/editorial.json'),
   claims: path.join(ROOT, 'config/release-official-claims.json'),
   policy: path.join(ROOT, 'config/release-calendar.json'),
@@ -40,8 +42,8 @@ function deduplicateCandidates(candidates) {
 }
 function items(doc){return Array.isArray(doc)?doc:(Array.isArray(doc?.items)?doc.items:[])}
 
-const [raw,editorial,claimsDoc,policy,parserConfig,newsDoc,rankedNewsDoc,popularDoc]=await Promise.all([
-  readJson(paths.raw,{releases:[]}),readJson(paths.editorial,{schema_version:1,decisions:{}}),readJson(paths.claims,{schema_version:1,claims:[]}),readJson(paths.policy,{}),readJson(paths.parserConfig,{}),readJson(paths.news,{items:[]}),readJson(paths.rankedNews,{items:[]}),readJson(paths.popular,{ranking:[]}),
+const [raw,publicationDiscovery,editorial,claimsDoc,policy,parserConfig,newsDoc,rankedNewsDoc,popularDoc]=await Promise.all([
+  readJson(paths.raw,{releases:[]}),readJson(paths.publicationDiscovery,{schema_version:1,releases:[],statistics:{},sources:[]}),readJson(paths.editorial,{schema_version:1,decisions:{}}),readJson(paths.claims,{schema_version:1,claims:[]}),readJson(paths.policy,{}),readJson(paths.parserConfig,{}),readJson(paths.news,{items:[]}),readJson(paths.rankedNews,{items:[]}),readJson(paths.popular,{ranking:[]}),
 ]);
 const generatedAt=new Date().toISOString();
 if(!parserConfig.publication_source_registry)throw new Error('Release parser must configure publication_source_registry');
@@ -49,12 +51,17 @@ if(!parserConfig.official_source_registry)throw new Error('Release parser must c
 const publicationRegistry=loadPublicationSourceRegistry(parserConfig.publication_source_registry);
 const officialRegistry=loadOfficialSourceRegistry(parserConfig.official_source_registry);
 const publicationStats=publicationRegistryStats(publicationRegistry);
-const rawWithOfficialChecks={
+if(publicationDiscovery.registry_id&&publicationDiscovery.registry_id!==publicationRegistry.id)throw new Error(`Publication discovery snapshot registry mismatch: ${publicationDiscovery.registry_id} != ${publicationRegistry.id}`);
+
+const rawBaseWithOfficialChecks={
   ...raw,
   releases:attachOfficialSourceChecks(Array.isArray(raw?.releases)?raw.releases:[],officialRegistry,generatedAt),
 };
-const officialCoverage=summarizeOfficialSourceCoverage(rawWithOfficialChecks.releases,officialRegistry);
-const steamEditorial=await enrichRawReleasesFromSteamEditorial(rawWithOfficialChecks.releases,policy,generatedAt);
+const publicationRecords=Array.isArray(publicationDiscovery?.releases)?publicationDiscovery.releases:[];
+const discoveryMerged=mergePublicationRecords(rawBaseWithOfficialChecks.releases,publicationRecords);
+const discoveryMergedWithOfficialChecks=attachOfficialSourceChecks(discoveryMerged,officialRegistry,generatedAt);
+const officialCoverage=summarizeOfficialSourceCoverage(discoveryMergedWithOfficialChecks,officialRegistry);
+const steamEditorial=await enrichRawReleasesFromSteamEditorial(discoveryMergedWithOfficialChecks,policy,generatedAt);
 const rawById=new Map(steamEditorial.releases.map(item=>[item.id,item]));
 let rawCandidates=buildCandidates({rawReleases:steamEditorial.releases,editorial,officialClaims:Array.isArray(claimsDoc?.claims)?claimsDoc.claims:[],policy});
 rawCandidates=rawCandidates.map(candidate=>{const source=rawById.get(candidate.id)||{};return {...candidate,editorial_quality:source.editorial_quality||{},anticipation:source.anticipation||null,media_intersection:source.media_intersection||null,official_source_checks:source.official_source_checks||null}});
@@ -91,7 +98,7 @@ const errors=[
   ...validateGlobalNotability({candidates,publicCalendar}),
   ...validatePersonalizedReleases({candidates,publicCalendar,policy}),
   ...validateVisibleReleaseCovers(publicCalendar),
-  ...validateOfficialSourceRegistryWiring({registry:officialRegistry,records:rawWithOfficialChecks.releases}),
+  ...validateOfficialSourceRegistryWiring({registry:officialRegistry,records:discoveryMergedWithOfficialChecks}),
 ];
 if(publicationStats.release_coverage_sources<1)errors.push('Publication Registry has no release coverage sources');
 if(publicationStats.calendar_discovery_sources<1)errors.push('Publication Registry has no calendar discovery sources');
@@ -102,11 +109,11 @@ const validatedCoverById=new Map(
     .map(candidate=>[candidate.id,candidate.image])
 );
 let synchronizedHomeFeedCovers=0;
-let synchronizedRaw=rawWithOfficialChecks;
+let synchronizedRaw=rawBaseWithOfficialChecks;
 if(!errors.length&&validatedCoverById.size){
   synchronizedRaw={
-    ...rawWithOfficialChecks,
-    releases:(rawWithOfficialChecks.releases||[]).map(release=>{
+    ...rawBaseWithOfficialChecks,
+    releases:(rawBaseWithOfficialChecks.releases||[]).map(release=>{
       const image=validatedCoverById.get(release.id);
       if(!image)return release;
       const previous=release.image||{};
@@ -117,13 +124,14 @@ if(!errors.length&&validatedCoverById.size){
   };
 }
 
-const candidateDocument={schema_version:7,generated_at:generatedAt,raw_generated_at:raw?.generated_at||null,news_generated_at:newsDoc?.generatedAt||null,popular_generated_at:popularDoc?.generated_at||null,candidates,statistics:publicCalendar.statistics,source_registries:{publication:publicationStats,official:officialCoverage}};
+const candidateDocument={schema_version:8,generated_at:generatedAt,raw_generated_at:raw?.generated_at||null,publication_discovery_generated_at:publicationDiscovery?.generated_at||null,news_generated_at:newsDoc?.generatedAt||null,popular_generated_at:popularDoc?.generated_at||null,candidates,statistics:publicCalendar.statistics,source_registries:{publication:publicationStats,official:officialCoverage},publication_discovery:publicationDiscovery?.statistics||{}};
 const intersections=candidates.map(item=>Number(item.media_intersection?.overall_count||0));
 const report={
-  schema_version:7,generated_at:generatedAt,
+  schema_version:8,generated_at:generatedAt,
   sources:{
-    active_discovery:['Steam coming-soon/appdetails (PC only)','Publication Registry editorial coverage/upcoming signals','Steam Popular Upcoming discovery signal','Steam Popular New discovery signal'],
+    active_discovery:['Steam coming-soon/appdetails (PC only)','Publication Registry calendar discovery snapshot','Publication Registry editorial coverage/upcoming signals','Steam Popular Upcoming discovery signal','Steam Popular New discovery signal'],
     publication_registry:{path:parserConfig.publication_source_registry,...publicationStats},
+    publication_calendar_discovery:{path:'data/release-candidates/publication-discovery.json',generated_at:publicationDiscovery?.generated_at||null,status:publicationDiscovery?.status||'missing',statistics:publicationDiscovery?.statistics||{},source_statuses:publicationDiscovery?.sources||[]},
     official_source_registry:{path:parserConfig.official_source_registry,registry_id:officialRegistry.id,registered_sources:officialRegistry.sources.length,policy:officialRegistry.policies},
     release_notability:{model:'permanent editorial media intersection OR established niche/franchise global OR strong personalized regional attention',global_requirements:policy.global_notability||{},regional_requirements:policy.regional_notability||{},rule:'Every configured editorial publisher family counts once and the intersection count is not capped. Steam/store rank is never sufficient by itself.'},
     steam_editorial_discovery:{discovered_candidates:steamEditorial.discovered,sources:steamEditorial.sources},
