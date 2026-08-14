@@ -1,0 +1,40 @@
+name: Validate production source lifecycle
+
+on:
+  push:
+    branches: [validation/production-gate-source-lifecycle]
+    paths: [.github/workflows/_validate-production-source-lifecycle.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  production-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 20c3ff4a8378f4545f81795f3e6712b5f66570b6
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Exact production gates
+        run: |
+          set -euo pipefail
+          node scripts/verify-deployment-source.mjs
+          node scripts/validate-production-boundaries.mjs
+          node scripts/test-news-content-api.mjs
+          node scripts/test-news-pipeline.mjs
+          node scripts/test-news-pipeline-health.mjs
+          node scripts/validate-news-pipeline.mjs
+          node scripts/validate-news-module.mjs
+          node scripts/validate-home-feeds.mjs
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-game-media-quality.mjs
+          node scripts/audit-review-publication.mjs --strict
+          node scripts/validate-editorial-pipeline.mjs
+          node scripts/validate-top-250.mjs
+          python3 scripts/enforce_layout_contract.py --check
+          git diff --check
+          test -z "$(git status --porcelain)"
