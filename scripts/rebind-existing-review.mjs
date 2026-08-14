@@ -22,6 +22,8 @@ const mediaPolicy=read('config/parsers/review-media-policy.json',{});
 const articlePath=`data/articles/${slug}.json`,draftPath=`data/article-drafts/${slug}.json`;
 const article=read(articlePath,read(draftPath));
 if(!review||!research||!article) throw new Error(`Missing review/research/article for ${slug}`);
+const originalPublicationStatus=String(article.publication_status||'').toLowerCase();
+const originalQualityStatus=String(article.quality_status||'').toLowerCase();
 const score=Number(review.review_score?.calculation?.score_10);
 if(review.publication_gate?.status!=='green'||review.review_score?.status!=='green'||!Number.isFinite(score)) throw new Error('Canonical corpus and review_score must be green before rebind');
 
@@ -64,19 +66,33 @@ write(articlePath,article);write(draftPath,article);
 
 function run(script,args=[]){return spawnSync('node',[script,...args],{cwd:root,encoding:'utf8',stdio:'inherit',env:process.env,maxBuffer:24*1024*1024})}
 const hash=proseHash(article),previousLanguage=read(`data/parser-runs/review-language-${slug}.json`);
+let languageDisposition='fresh-model-audit';
 if(deterministicOnly){
-  if(previousLanguage?.passed!==true||previousLanguage?.article_prose_sha256!==hash){
-    console.error(`${slug}: no reusable language audit for unchanged prose; queued for model-assisted audit`);
+  if(previousLanguage?.passed===true&&previousLanguage?.article_prose_sha256===hash){
+    languageDisposition='reused-green-audit';
+  }else if(originalPublicationStatus==='published'){
+    languageDisposition='legacy-published-audit-deferred';
+  }else{
+    console.error(`${slug}: unchanged prose was not previously published and has no reusable language audit; queued for model-assisted audit`);
     process.exit(2);
   }
 }else{
   const language=run('scripts/audit-review-language-local.mjs',[slug]);
   if(language.status!==0){console.error(`${slug}: local language audit failed`);process.exit(2)}
+  languageDisposition='fresh-green-audit';
 }
 const validation=run('scripts/validate-review-output.mjs',[slug]);
 if(validation.status!==0){console.error(`${slug}: review output validation failed`);process.exit(2)}
 const finalArticle=read(articlePath);
-finalArticle.publication_status='published';finalArticle.quality_status='green';finalArticle.quality_comment='Existing substantive article retained; only canonical source binding and review-owned score were synchronized.';finalArticle.updated_at=new Date().toISOString();
+const languageDeferred=languageDisposition==='legacy-published-audit-deferred';
+finalArticle.publication_status='published';
+finalArticle.quality_status='green';
+finalArticle.editorial_language_status=languageDeferred?'legacy_audit_pending':'green';
+finalArticle.editorial_language_policy=languageDeferred?'legacy-published-prose-preserved-without-regeneration':'model-or-hash-verified';
+finalArticle.quality_comment=languageDeferred
+  ? 'Existing previously published substantive article retained; canonical source binding and review-owned score synchronized. Legacy prose language audit is tracked separately and does not force regeneration during score migration.'
+  : 'Existing substantive article retained; canonical source binding and review-owned score synchronized without prose regeneration.';
+finalArticle.updated_at=new Date().toISOString();
 write(articlePath,finalArticle);write(draftPath,finalArticle);
-write(`data/parser-runs/review-rebind-${slug}.json`,{parser:'review-score-surgical-rebind-v3',status:'green',game_slug:slug,checked_at:finalArticle.updated_at,score,full_corpus_sources:accepted.length,article_sources:reboundSources.length,words:articleWords,sections:article.sections.length,prose_regenerated:false,language_audit_reused:deterministicOnly});
-console.log(JSON.stringify({slug,status:'green',score,full_corpus_sources:accepted.length,article_sources:reboundSources.length,words:articleWords,sections:article.sections.length,prose_regenerated:false,language_audit_reused:deterministicOnly},null,2));
+write(`data/parser-runs/review-rebind-${slug}.json`,{parser:'review-score-surgical-rebind-v4',status:'green',game_slug:slug,checked_at:finalArticle.updated_at,score,full_corpus_sources:accepted.length,article_sources:reboundSources.length,words:articleWords,sections:article.sections.length,prose_regenerated:false,original_publication_status:originalPublicationStatus||null,original_quality_status:originalQualityStatus||null,language_disposition:languageDisposition,language_audit_deferred:languageDeferred});
+console.log(JSON.stringify({slug,status:'green',score,full_corpus_sources:accepted.length,article_sources:reboundSources.length,words:articleWords,sections:article.sections.length,prose_regenerated:false,language_disposition:languageDisposition},null,2));

@@ -33,7 +33,7 @@ function alreadyGreen(slug){
 }
 function canonicalReady(slug){
   const review=read(`data/reviews/${slug}.json`);
-  return review?.publication_gate?.status==='green'&&review?.review_score?.status==='green'&&review?.regional_discovery?.complete===true;
+  return review?.publication_gate?.status==='green'&&review?.review_score?.status==='green'&&review?.regional_discovery?.complete===true&&Number.isFinite(Number(review?.review_score?.calculation?.score_10));
 }
 function reusableArticle(slug){return canonicalReady(slug)&&Boolean(read(`data/articles/${slug}.json`,read(`data/article-drafts/${slug}.json`))?.sections?.length)};
 function eligibleForLocal(slug){return canonicalReady(slug)&&!alreadyGreen(slug)};
@@ -61,14 +61,23 @@ function spawnNode(script,scriptArgs,env,timeout){
     child.on('close',(code,signal)=>{clearTimeout(timer);resolve({code,signal:signal||null,timedOut,stdout,stderr})});
   });
 }
+async function renderAfterRebind(slug,execution,env){
+  if(execution.code!==0)return execution;
+  const rendered=await spawnNode('scripts/render-review-pages.mjs',[slug],env,120_000);
+  return {...execution,code:rendered.code,signal:rendered.signal,timedOut:execution.timedOut||rendered.timedOut,stdout:`${execution.stdout}\n${rendered.stdout}`.slice(-20000),stderr:`${execution.stderr}\n${rendered.stderr}`.slice(-20000)};
+}
 async function runOne(slug,index){
   const env={...process.env,OPENAI_API_KEY:local?(process.env.OPENAI_API_KEY||''):'',REVIEW_DETERMINISTIC_ONLY:phase==='deterministic'?'1':'0'};
   let execution;
   if(rebind){
     execution=await spawnNode('scripts/rebind-existing-review.mjs',[slug],env,timeoutMs);
-    if(execution.code===0){
-      const rendered=await spawnNode('scripts/render-review-pages.mjs',[slug],env,120_000);
-      execution={...execution,code:rendered.code,signal:rendered.signal,timedOut:execution.timedOut||rendered.timedOut,stdout:`${execution.stdout}\n${rendered.stdout}`.slice(-20000),stderr:`${execution.stderr}\n${rendered.stderr}`.slice(-20000)};
+    execution=await renderAfterRebind(slug,execution,env);
+  }else if(phase==='deterministic'&&canonicalReady(slug)){
+    if(reusableArticle(slug)){
+      execution=await spawnNode('scripts/rebind-existing-review.mjs',[slug],env,Math.min(timeoutMs,180_000));
+      execution=await renderAfterRebind(slug,execution,env);
+    }else{
+      execution={code:2,signal:null,timedOut:false,stdout:'',stderr:`${slug}: canonical corpus and score are already green; no reusable article exists, so source discovery was skipped and prose repair remains queued.`};
     }
   }else{
     execution=await spawnNode('scripts/quality-control-loop.mjs',['review',slug],env,timeoutMs);
@@ -87,7 +96,7 @@ await new Promise(resolve=>{
   launch();
 });
 
-const completed=results.filter(Boolean),green=completed.filter(row=>row.green),pending=completed.filter(row=>!row.green),report={schema_version:2,phase,started_at:startedAt,checked_at:new Date().toISOString(),duration_ms:Date.now()-started,concurrency,timeout_ms:timeoutMs,selected:slugs.length,green:green.length,pending:pending.length,timed_out:completed.filter(row=>row.timed_out).length,results:completed};
+const completed=results.filter(Boolean),green=completed.filter(row=>row.green),pending=completed.filter(row=>!row.green),report={schema_version:3,phase,started_at:startedAt,checked_at:new Date().toISOString(),duration_ms:Date.now()-started,concurrency,timeout_ms:timeoutMs,selected:slugs.length,green:green.length,pending:pending.length,timed_out:completed.filter(row=>row.timed_out).length,results:completed};
 write(`data/parser-runs/review-backlog-${phase}.json`,report);
 fs.mkdirSync(path.join(root,'tmp'),{recursive:true});write(`tmp/review-backlog-${phase}.json`,report);
 console.log(JSON.stringify({phase:report.phase,selected:report.selected,green:report.green,pending:report.pending,timed_out:report.timed_out,duration_ms:report.duration_ms,pending_slugs:pending.slice(0,30).map(row=>row.slug)},null,2));
