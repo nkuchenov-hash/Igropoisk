@@ -21,13 +21,16 @@ for(const source of ru)if(source.review?.score?.policy!=='explicit_only')errors.
 const witcherPath='data/reviews/the-witcher-3-wild-hunt.json';
 if(fs.existsSync(path.join(root,witcherPath))){const witcher=readJson(witcherPath),missing=[];for(const review of witcher.reviews||[])if(!findRegisteredSource(registry,review))missing.push(`${review.publication||review.source}: ${review.url||''}`);if(missing.length)errors.push(`Witcher 3 contains unregistered publishers: ${missing.join(' | ')}`)}
 
-const stopgame=findRegisteredSource(registry,{configured_source_id:'stopgame'}),playground=findRegisteredSource(registry,{configured_source_id:'playground'}),gamespot=findRegisteredSource(registry,{configured_source_id:'gamespot'}),nintendo=findRegisteredSource(registry,{configured_source_id:'nintendo-life'});
+const stopgame=findRegisteredSource(registry,{configured_source_id:'stopgame'}),playground=findRegisteredSource(registry,{configured_source_id:'playground'}),vgtimes=findRegisteredSource(registry,{configured_source_id:'vgtimes'}),gamemag=findRegisteredSource(registry,{configured_source_id:'gamemag'}),gamespot=findRegisteredSource(registry,{configured_source_id:'gamespot'}),nintendo=findRegisteredSource(registry,{configured_source_id:'nintendo-life'});
 const pageCases=[
  {name:'reject StopGame game card',source:stopgame,input:{url:'https://stopgame.ru/game/witcher_3_wild_hunt',title:'The Witcher 3: Wild Hunt'},want:false},
  {name:'accept StopGame review',source:stopgame,input:{url:'https://stopgame.ru/show/56607/the_witcher_3_wild_hunt_review',title:'The Witcher 3: Wild Hunt: Обзор'},want:true},
- {name:'reject PlayGround file',source:playground,input:{url:'https://www.playground.ru/witcher_3_wild_hunt/file/gameplay',title:'The Witcher 3 gameplay'},want:false},
- {name:'reject PlayGround review hub',source:playground,input:{url:'https://www.playground.ru/witcher_3_wild_hunt/opinion/reviews',title:'The Witcher 3: Wild Hunt: Обзоры'},want:false},
- {name:'accept PlayGround editorial review',source:playground,input:{url:'https://www.playground.ru/witcher_3_wild_hunt/opinion/shevelis_plotva_retsenziya_na_the_witcher_3_wild_hunt-448217',title:'Рецензия на The Witcher 3: Wild Hunt'},want:true}
+ {name:'reject PlayGround file',source:playground,input:{url:'https://www.playground.ru/witcher_3_wild_hunt/file/gameplay',title:'The Witcher 3 gameplay',bodyText:'От редакции'},want:false},
+ {name:'reject PlayGround review hub',source:playground,input:{url:'https://www.playground.ru/witcher_3_wild_hunt/opinion/reviews',title:'The Witcher 3: Wild Hunt: Обзоры',bodyText:'От редакции'},want:false},
+ {name:'reject PlayGround user review without editorial marker',source:playground,input:{url:'https://www.playground.ru/witcher_3_wild_hunt/opinion/obzor-448999',title:'Обзор The Witcher 3: Wild Hunt',bodyText:'Пользовательский обзор'},want:false},
+ {name:'accept PlayGround editorial review',source:playground,input:{url:'https://www.playground.ru/witcher_3_wild_hunt/opinion/shevelis_plotva_retsenziya_na_the_witcher_3_wild_hunt-448217',title:'Рецензия на The Witcher 3: Wild Hunt',bodyText:'Обзоры, От редакции'},want:true},
+ {name:'accept VGTimes article review',source:vgtimes,input:{url:'https://vgtimes.ru/articles/24223-obzor-vedmak-3-dikaya-ohota-vozvraschenie-korolya.html',title:'Обзор Ведьмак 3: Дикая Охота'},want:true},
+ {name:'accept GameMAG review',source:gamemag,input:{url:'https://gamemag.ru/reviews/the-witcher-3-wild-hunt',title:'Обзор The Witcher 3: Wild Hunt'},want:true}
 ];
 for(const test of pageCases){const actual=classifyReviewPage(test.source,test.input).accepted;if(actual!==test.want)errors.push(`${test.name}: expected ${test.want}, got ${actual}`)}
 
@@ -45,7 +48,10 @@ const scoreCases=[
  {name:'reject JSON-LD AggregateRating',source:gamespot,html:'<script type="application/ld+json">{"@type":"VideoGame","aggregateRating":{"@type":"AggregateRating","ratingValue":"9.6","bestRating":"10"}}</script>',want:null},
  {name:'reject generic rating widget',source:stopgame,html:'<div class="rating">4.7</div>',want:null},
  {name:'reject generic Russian rating text',source:playground,html:'<div>Рейтинг: 9.6</div>',want:null},
- {name:'accept explicit editorial label',source:gamespot,html:'<section>Overall Score: 8/10</section>',want:8}
+ {name:'accept explicit editorial label',source:gamespot,html:'<section>Overall Score: 8/10</section>',want:8},
+ {name:'accept PlayGround editorial verdict score',source:playground,html:'<article>Оценка: 9.8 Вердикт: отличный релиз Обзоры От редакции</article>',want:9.8},
+ {name:'accept VGTimes final score',source:vgtimes,html:'<article>Сюжет 10 Управление 9.0 9.5 / 10 Плюсы — мир</article>',want:9.5},
+ {name:'accept GameMAG selected review score',source:gamemag,html:'<article>1-2 злое говно 3-4 не надо 5-6 общепит 7-8 в самый раз 9 9 очень круто 10 шедевр!</article>',want:9}
 ];
 for(const test of scoreCases){const hit=extractExplicitEditorialScore(test.html,test.source),actual=hit?.score??null;if(actual!==test.want)errors.push(`${test.name}: expected ${test.want}, got ${actual}`);if(hit&&hit.scope!=='editorial_review')errors.push(`${test.name}: accepted score must carry editorial_review scope`)}
 
