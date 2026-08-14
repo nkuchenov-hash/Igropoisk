@@ -1,0 +1,143 @@
+name: Publish Popular Now game pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [staging]
+    paths:
+      - 'game/**'
+      - 'data/drafts/**'
+      - 'data/game-content/**'
+      - 'data/game-dna/**'
+      - 'data/catalog-visible.json'
+      - 'data/quality-control/**'
+      - 'scripts/plan-popular-game-pages.mjs'
+      - 'scripts/materialize-popular-production-pages.mjs'
+      - '.github/workflows/popular-production-pages.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: popular-production-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate Popular production scripts
+        run: |
+          node --check scripts/hydrate-live-home-feeds.mjs
+          node --check scripts/plan-popular-game-pages.mjs
+          node --check scripts/materialize-popular-production-pages.mjs
+
+      - name: Hydrate the currently published Popular Now snapshot
+        run: node scripts/hydrate-live-home-feeds.mjs
+
+      - name: Resolve the full Popular Now page set
+        run: node scripts/plan-popular-game-pages.mjs
+
+      - name: Materialize ready Popular pages into an isolated production worktree
+        id: materialize
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git fetch origin main:refs/remotes/origin/main --force
+          production="$RUNNER_TEMP/popular-production-main"
+          rm -rf "$production"
+          git worktree add "$production" origin/main
+          node scripts/materialize-popular-production-pages.mjs --target "$production"
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs = require('fs');
+          const value = JSON.parse(fs.readFileSync('tmp/popular-production-materialization.json', 'utf8'));
+          const games = Array.isArray(value.games) ? value.games : [];
+          const pending = Array.isArray(value.pending) ? value.pending : [];
+          process.stdout.write(`ready_count=${games.length}\npending_count=${pending.length}\ngames_b64=${Buffer.from(JSON.stringify(games), 'utf8').toString('base64')}\n`);
+          NODE
+
+      - name: Validate and publish isolated Popular game-page changes
+        id: production_publish
+        if: steps.materialize.outputs.ready_count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          production="$RUNNER_TEMP/popular-production-main"
+          cd "$production"
+          git diff --check
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-production-boundaries.mjs
+          paths=(game data/catalog-visible.json data/drafts data/game-content data/game-dna data/ratings data/reviews data/guides data/articles data/similarity article)
+          existing=()
+          for path in "${paths[@]}"; do
+            if [ -e "$path" ]; then existing+=("$path"); fi
+          done
+          if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          branch="automation/popular-game-pages-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Publish Popular Now canonical game pages"
+          git push origin "$branch"
+          pr_url="$(gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "Publish Popular Now game pages ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
+            --body "Isolated production promotion for canonical game pages required by the current Popular Now feed. Only ready per-game page/content assets are copied from staging; unrelated staging changes are excluded.")"
+          gh pr merge "$pr_url" --merge --delete-branch
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Wait until promoted Popular pages are live
+        if: steps.materialize.outputs.ready_count != '0'
+        env:
+          POPULAR_GAMES_B64: ${{ steps.materialize.outputs.games_b64 }}
+        run: |
+          set -euo pipefail
+          slugs="$(node -e "const a=JSON.parse(Buffer.from(process.env.POPULAR_GAMES_B64,'base64').toString('utf8'));process.stdout.write(a.map(x=>x.slug).join(' '))")"
+          base="https://nkuchenov-hash.github.io/Igropoisk"
+          ready=false
+          for attempt in $(seq 1 90); do
+            missing=0
+            for slug in $slugs; do
+              code="$(curl -L -sS -o /dev/null -w '%{http_code}' "$base/game/$slug/" || true)"
+              if [ "$code" != "200" ]; then missing=$((missing+1)); fi
+            done
+            if [ "$missing" = "0" ]; then ready=true; break; fi
+            sleep 5
+          done
+          if [ "$ready" != "true" ]; then
+            echo "One or more ready Popular Now pages did not become live."
+            exit 1
+          fi
+
+      - name: Report pages still in lifecycle revision
+        if: steps.materialize.outputs.pending_count != '0'
+        run: echo "${{ steps.materialize.outputs.pending_count }} current Popular Now pages remain in the lifecycle queue and will be retried on the next lifecycle pass."
+
+      - name: Preserve Popular production audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: popular-production-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            tmp/popular-game-page-plan.json
+            tmp/popular-production-materialization.json
+          if-no-files-found: warn
+          retention-days: 14
