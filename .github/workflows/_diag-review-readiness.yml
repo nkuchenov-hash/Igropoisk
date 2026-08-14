@@ -1,0 +1,34 @@
+name: Diagnose review readiness
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-review-readiness.yml]
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: diag/review-readiness-20260814
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Summarize released review state
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const read=(p,f=null)=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return f}};
+          const catalog=read('data/catalog-visible.json',[]), rows=[];
+          const released=(slug,item)=>{const d=read(`data/drafts/${slug}.json`,{}),r=d.release||{},s=String(r.status||'').toLowerCase();if(/upcoming|expected|announced|coming|tba|pre[-_ ]?release|ожида/i.test(s))return false;const x=Date.parse(String(r.date||''));if(Number.isFinite(x))return x<=Date.now();const y=Number(String(r.date_text||item.year||'').match(/(?:19|20)\d{2}/)?.[0]||item.year||0);return !y||y<=new Date().getUTCFullYear()};
+          for(const item of catalog){const slug=item.slug;if(!slug||!released(slug,item))continue;const r=read(`data/reviews/${slug}.json`,{}),a=read(`data/articles/${slug}.json`,read(`data/article-drafts/${slug}.json`,{})),score=Number(r?.review_score?.calculation?.score_10),rendered=fs.existsSync(path.join('article',slug,'index.html'));rows.push({slug,corpus:r?.publication_gate?.status||'missing',score:r?.review_score?.status||'missing',regional:r?.regional_discovery?.complete===true,accepted:Number(r?.publication_gate?.accepted||r?.reviews?.length||0),scored:Number(r?.review_score?.sources?.length||0),article:a?.publication_status||'missing',article_score:Number.isFinite(Number(a?.score))?Number(a.score):null,canonical_score:Number.isFinite(score)?score:null,rendered,canonical_ready:r?.publication_gate?.status==='green'&&r?.review_score?.status==='green'&&r?.regional_discovery?.complete===true,fully_green:r?.publication_gate?.status==='green'&&r?.review_score?.status==='green'&&r?.regional_discovery?.complete===true&&a?.publication_status==='published'&&Number(a?.score)===score&&rendered});}
+          const count=pred=>rows.filter(pred).length;
+          const summary={released:rows.length,corpus_green:count(x=>x.corpus==='green'),score_green:count(x=>x.score==='green'),regional_complete:count(x=>x.regional),canonical_ready:count(x=>x.canonical_ready),fully_green:count(x=>x.fully_green),corpus_red_score_red:count(x=>x.corpus!=='green'&&x.score!=='green'),corpus_green_score_red:count(x=>x.corpus==='green'&&x.score!=='green'),canonical_ready_article_pending:count(x=>x.canonical_ready&&!x.fully_green)};
+          console.log('SUMMARY '+JSON.stringify(summary));
+          for(const group of [
+            ['CORPUS_RED_SCORE_RED',x=>x.corpus!=='green'&&x.score!=='green'],
+            ['CORPUS_GREEN_SCORE_RED',x=>x.corpus==='green'&&x.score!=='green'],
+            ['CANONICAL_READY_ARTICLE_PENDING',x=>x.canonical_ready&&!x.fully_green]
+          ]){console.log('\n'+group[0]);for(const x of rows.filter(group[1]))console.log(JSON.stringify(x));}
+          NODE
