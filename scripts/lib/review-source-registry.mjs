@@ -75,10 +75,13 @@ export function classifyReviewPage(source,{url='',title='',bodyText=''}={}){
   const allow=compile(rules.url_allow),explicitAllow=allow.length&&allow.some(rx=>rx.test(pathname));
   if(allow.length&&!explicitAllow)return{accepted:false,reason:'publisher_url_not_allowed'};
   const titleSignals=compile(rules.title_allow),explicitTitle=titleSignals.length&&titleSignals.some(rx=>rx.test(title));
-  const genericSignal=genericReviewPath.test(pathname)||genericReviewText.test(title);
-  if(!explicitAllow&&!explicitTitle&&!genericSignal&&genericBadPath.test(pathname))return{accepted:false,reason:'non_review_path'};
-  if(!explicitAllow&&!explicitTitle&&!genericSignal)return{accepted:false,reason:'no_review_signal'};
-  return{accepted:true,reason:explicitAllow||explicitTitle?'publisher_rule':'generic_review_signal'};
+  const pathSignal=genericReviewPath.test(pathname),titleSignal=genericReviewText.test(title);
+  // A generic game/file/news/etc. path is never enough on its own. It must itself contain a review marker.
+  // This rejects game cards such as /game/... even when their SEO title says “reviews and ratings”, while
+  // preserving legacy review URLs such as Game Informer's /games/.../the-witcher-3-...-review-....
+  if(!explicitAllow&&genericBadPath.test(pathname)&&!pathSignal)return{accepted:false,reason:'non_review_path'};
+  if(!explicitAllow&&!explicitTitle&&!pathSignal&&!titleSignal)return{accepted:false,reason:'no_review_signal'};
+  return{accepted:true,reason:explicitAllow||explicitTitle?'publisher_rule':pathSignal?'review_path':'review_title'};
 }
 
 const versionMarkers=[
