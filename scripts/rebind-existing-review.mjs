@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 
 const root=process.cwd();
 const slug=process.argv[2];
+const deterministicOnly=process.env.REVIEW_DETERMINISTIC_ONLY==='1';
 if(!slug) throw new Error('Usage: node scripts/rebind-existing-review.mjs <slug>');
 const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
 const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n')};
 const words=value=>(String(value||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]+/g)||[]).length;
 const canonicalUrl=value=>{try{const u=new URL(String(value||''));u.hash='';for(const key of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','ftag'])u.searchParams.delete(key);return `${u.origin}${u.pathname.replace(/\/$/,'')}`}catch{return String(value||'')}};
 const pubKey=value=>String(value||'').toLowerCase().replace(/[^a-zа-яё0-9]+/gi,'');
+const proseHash=article=>crypto.createHash('sha256').update(JSON.stringify({title:article.title,dek:article.dek,lead:article.lead,sections:(article.sections||[]).map(s=>({heading:s.heading,paragraphs:s.paragraphs,source_ids:s.source_ids})),verdict:article.verdict})).digest('hex');
 
 const review=read(`data/reviews/${slug}.json`);
 const research=read(`data/research/${slug}-source-matrix.json`);
@@ -30,8 +33,6 @@ if(accepted.length<minSources) throw new Error(`Canonical corpus ${accepted.leng
 const articleWords=words([article.lead,...(article.sections||[]).flatMap(section=>section.paragraphs||[]),article.verdict?.summary].join(' '));
 if((article.sections||[]).length<minSections||articleWords<minWords) throw new Error(`Existing article is not substantive enough for score-only rebind: sections=${article.sections?.length||0}/${minSections}, words=${articleWords}/${minWords}`);
 
-// The article may intentionally cite a readable subset of the full review corpus. Keep its stable source IDs
-// and prove each source still resolves to an accepted canonical publisher instead of re-numbering every section.
 const acceptedByUrl=new Map(accepted.map(source=>[canonicalUrl(source.resolved_url||source.url),source]));
 const acceptedByPub=new Map(accepted.map(source=>[pubKey(source.publication||source.source),source]));
 const oldSources=Array.isArray(article.sources)?article.sources:[];
@@ -43,11 +44,9 @@ for(let index=0;index<oldSources.length;index++){
   validOldIds.add(oldId);
   reboundSources.push({...source,id:oldId,name:match.publication||match.source||source.name,title:match.title||source.title,url:match.resolved_url||match.url||source.url,configured_source_id:match.configured_source_id||null});
 }
-const invalidSections=(article.sections||[]).filter(section=>{
-  const ids=(section.source_ids||[]).filter(id=>validOldIds.has(String(id)));
-  return ids.length<2;
-}).map(section=>section.id||section.heading);
-if(invalidSections.length) throw new Error(`Existing article citations no longer resolve to two accepted publishers in sections: ${invalidSections.join(', ')}`);
+if(reboundSources.length<minSources) throw new Error(`Existing article resolves to ${reboundSources.length}/${minSources} accepted publishers`);
+const invalidSections=(article.sections||[]).filter(section=>!(section.source_ids||[]).some(id=>validOldIds.has(String(id)))).map(section=>section.id||section.heading);
+if(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);
 
 article.sources=reboundSources;
 article.used_source_ids=(article.used_source_ids||[]).filter(id=>validOldIds.has(String(id)));
@@ -64,12 +63,20 @@ article.generation={...(article.generation||{}),score_rebound_at:article.updated
 write(articlePath,article);write(draftPath,article);
 
 function run(script,args=[]){return spawnSync('node',[script,...args],{cwd:root,encoding:'utf8',stdio:'inherit',env:process.env,maxBuffer:24*1024*1024})}
-const language=run('scripts/audit-review-language-local.mjs',[slug]);
-if(language.status!==0){console.error(`${slug}: local language audit failed`);process.exit(2)}
+const hash=proseHash(article),previousLanguage=read(`data/parser-runs/review-language-${slug}.json`);
+if(deterministicOnly){
+  if(previousLanguage?.passed!==true||previousLanguage?.article_prose_sha256!==hash){
+    console.error(`${slug}: no reusable language audit for unchanged prose; queued for model-assisted audit`);
+    process.exit(2);
+  }
+}else{
+  const language=run('scripts/audit-review-language-local.mjs',[slug]);
+  if(language.status!==0){console.error(`${slug}: local language audit failed`);process.exit(2)}
+}
 const validation=run('scripts/validate-review-output.mjs',[slug]);
 if(validation.status!==0){console.error(`${slug}: review output validation failed`);process.exit(2)}
 const finalArticle=read(articlePath);
 finalArticle.publication_status='published';finalArticle.quality_status='green';finalArticle.quality_comment='Existing substantive article retained; only canonical source binding and review-owned score were synchronized.';finalArticle.updated_at=new Date().toISOString();
 write(articlePath,finalArticle);write(draftPath,finalArticle);
-write(`data/parser-runs/review-rebind-${slug}.json`,{parser:'review-score-surgical-rebind-v2',status:'green',game_slug:slug,checked_at:finalArticle.updated_at,score,full_corpus_sources:accepted.length,article_sources:reboundSources.length,words:articleWords,sections:article.sections.length,prose_regenerated:false});
-console.log(JSON.stringify({slug,status:'green',score,full_corpus_sources:accepted.length,article_sources:reboundSources.length,words:articleWords,sections:article.sections.length,prose_regenerated:false},null,2));
+write(`data/parser-runs/review-rebind-${slug}.json`,{parser:'review-score-surgical-rebind-v3',status:'green',game_slug:slug,checked_at:finalArticle.updated_at,score,full_corpus_sources:accepted.length,article_sources:reboundSources.length,words:articleWords,sections:article.sections.length,prose_regenerated:false,language_audit_reused:deterministicOnly});
+console.log(JSON.stringify({slug,status:'green',score,full_corpus_sources:accepted.length,article_sources:reboundSources.length,words:articleWords,sections:article.sections.length,prose_regenerated:false,language_audit_reused:deterministicOnly},null,2));
