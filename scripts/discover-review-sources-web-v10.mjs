@@ -31,6 +31,18 @@ export function bingRssToSearchHtml(xml){
   return anchors.join('\n');
 }
 
+export function publisherHubLinksToSearchHtml(html,baseUrl,{pathPattern=/\/review\//i}={}){
+  const anchors=[];
+  for(const match of String(html||'').matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)){
+    let url;
+    try{url=new URL(decodeXml(match[1]),baseUrl)}catch{continue}
+    if(!pathPattern.test(url.pathname))continue;
+    const title=decodeXml(match[2]).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+    if(!anchors.some(item=>item.url===url.href))anchors.push({url:url.href,title:title||url.href});
+  }
+  return anchors.map(item=>`<a href="${escapeAttr(item.url)}">${escapeText(item.title)}</a>`).join('\n');
+}
+
 export function bingRssSearchUrls(searchUrl){
   let original;
   try{original=new URL(String(searchUrl||''))}catch{return[]}
@@ -46,6 +58,16 @@ export function bingRssSearchUrls(searchUrl){
     url.searchParams.set('format','rss');
     return url;
   });
+}
+
+function publisherHubRequest(searchUrl,{slug=process.argv[2]||''}={}){
+  if(!slug)return null;
+  let query='';
+  try{query=new URL(String(searchUrl||'')).searchParams.get('q')||''}catch{return null}
+  if(/(?:^|\s)site:(?:www\.)?gamerevolution\.com(?:\s|$)/i.test(query)){
+    return{url:`https://www.gamerevolution.com/game/${encodeURIComponent(slug)}`,pathPattern:/\/review\//i};
+  }
+  return null;
 }
 
 export function validateBingRssAdapter(){
@@ -66,6 +88,12 @@ export function validateBingRssAdapter(){
   }
   const ign=bingRssSearchUrls('https://www.bing.com/search?q=site%3Aign.com+Rainbow+Six+Siege+review');
   if(ign.length!==1)throw new Error('Unconfigured path-scoped search must stay publisher-specific.');
+  const hub=publisherHubRequest('https://www.bing.com/search?q=site%3Agamerevolution.com+Rainbow+Six+Siege+review',{slug:'tom-clancys-rainbow-six-siege'});
+  if(hub?.url!=='https://www.gamerevolution.com/game/tom-clancys-rainbow-six-siege')throw new Error('GameRevolution game-hub request contract failed.');
+  const hubHtml='<a href="/review/69596-tom-clancys-rainbow-six-siege-review"><span>Tom Clancy’s Rainbow Six: Siege Review</span></a><a href="/guides/1-other">Guide</a>';
+  const convertedHub=publisherHubLinksToSearchHtml(hubHtml,hub.url,hub);
+  if(!convertedHub.includes('https://www.gamerevolution.com/review/69596-tom-clancys-rainbow-six-siege-review'))throw new Error('Publisher hub review-link extraction failed.');
+  if(convertedHub.includes('/guides/'))throw new Error('Publisher hub leaked non-review links.');
   return true;
 }
 
@@ -76,12 +104,19 @@ globalThis.fetch=async(input,init)=>{
   if(!/^https:\/\/www\.bing\.com\/search\?/i.test(original))return networkFetch(input,init);
   const html=[];
   try{
-    for(const rssUrl of bingRssSearchUrls(original)){
+    const requests=bingRssSearchUrls(original).map(async rssUrl=>{
       const response=await networkFetch(rssUrl,init);
-      if(!response.ok)continue;
-      const converted=bingRssToSearchHtml(await response.text());
-      if(converted)html.push(converted);
-    }
+      if(!response.ok)return'';
+      return bingRssToSearchHtml(await response.text());
+    });
+    const hub=publisherHubRequest(original);
+    if(hub)requests.push((async()=>{
+      const response=await networkFetch(hub.url,init);
+      if(!response.ok)return'';
+      return publisherHubLinksToSearchHtml(await response.text(),response.url||hub.url,hub);
+    })());
+    const parts=await Promise.allSettled(requests);
+    for(const part of parts)if(part.status==='fulfilled'&&part.value)html.push(part.value);
     if(html.length)return new Response(html.join('\n'),{status:200,headers:{'content-type':'text/html; charset=utf-8'}});
   }catch{}
   return networkFetch(input,init);
