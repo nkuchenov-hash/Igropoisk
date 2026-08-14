@@ -61,9 +61,9 @@ function spawnNode(script,scriptArgs,env,timeout){
     child.on('close',(code,signal)=>{clearTimeout(timer);resolve({code,signal:signal||null,timedOut,stdout,stderr})});
   });
 }
-async function renderAfterRebind(execution,env){
+async function renderAfterRebind(slug,execution,env){
   if(execution.code!==0)return execution;
-  const rendered=await spawnNode('scripts/render-review-pages.mjs',[],env,120_000);
+  const rendered=await spawnNode('scripts/render-review-pages.mjs',[slug],env,120_000);
   return {...execution,code:rendered.code,signal:rendered.signal,timedOut:execution.timedOut||rendered.timedOut,stdout:`${execution.stdout}\n${rendered.stdout}`.slice(-20000),stderr:`${execution.stderr}\n${rendered.stderr}`.slice(-20000)};
 }
 async function runOne(slug,index){
@@ -71,11 +71,11 @@ async function runOne(slug,index){
   let execution;
   if(rebind){
     execution=await spawnNode('scripts/rebind-existing-review.mjs',[slug],env,timeoutMs);
-    execution=await renderAfterRebind(execution,env);
+    execution=await renderAfterRebind(slug,execution,env);
   }else if(phase==='deterministic'&&canonicalReady(slug)){
     if(reusableArticle(slug)){
       execution=await spawnNode('scripts/rebind-existing-review.mjs',[slug],env,Math.min(timeoutMs,180_000));
-      execution=await renderAfterRebind(execution,env);
+      execution=await renderAfterRebind(slug,execution,env);
     }else{
       execution={code:2,signal:null,timedOut:false,stdout:'',stderr:`${slug}: canonical corpus and score are already green; no reusable article exists, so source discovery was skipped and prose repair remains queued.`};
     }
