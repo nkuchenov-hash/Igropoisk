@@ -1,0 +1,25 @@
+name: Probe publisher sitemaps
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-publisher-sitemaps.yml]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Search publisher sitemaps for known review URLs
+        run: |
+          node - <<'NODE'
+          const tests=[
+            ['pcgamer','https://www.pcgamer.com/sitemap.xml',['metal-gear-solid-5-review','dark-souls-3-review','red-dead-redemption-2-review','half-life-alyx-review','deathloop-review','alan-wake-2-review','ghost-recon-wildlands-review']],
+            ['gamesradar','https://www.gamesradar.com/sitemap.xml',['red-dead-redemption-2-review','alan-wake-2-review']]
+          ];
+          const decode=s=>String(s||'').replace(/&amp;/g,'&');
+          async function fetchText(url){const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskSitemapProbe/1.0)'}});return{status:r.status,text:await r.text()}}
+          for(const [name,url,needles] of tests){const top=await fetchText(url);const locs=[...top.text.matchAll(/<loc>([\s\S]*?)<\/loc>/gi)].map(m=>decode(m[1].trim()));console.log(JSON.stringify({name,top_status:top.status,top_bytes:top.text.length,locs:locs.length,first:locs.slice(0,10)}));const childUrls=locs.filter(x=>/sitemap/i.test(x)).slice(-80);const found={};for(const child of childUrls){const c=await fetchText(child);for(const needle of needles){if(found[needle])continue;const i=c.text.toLowerCase().indexOf(needle);if(i>=0){const m=c.text.slice(Math.max(0,i-300),i+500).match(/https?:\/\/[^<\s]+/i);found[needle]={sitemap:child,url:m?decode(m[0]):'',snippet:c.text.slice(Math.max(0,i-180),i+260).replace(/\s+/g,' ')}}}if(Object.keys(found).length===needles.length)break;}console.log(JSON.stringify({name,children_checked:childUrls.length,found},null,2));}
+          NODE
