@@ -20,6 +20,7 @@ on:
       - 'scripts/lib/local-editorial-model.mjs'
       - 'scripts/quality-control-loop-v4.mjs'
       - 'scripts/quality-control-loop.mjs'
+      - 'scripts/build-top-250-canonical-review.mjs'
       - 'scripts/validate-top-250.mjs'
       - '.github/workflows/recover-canonical-reviews.yml'
   schedule:
@@ -60,11 +61,32 @@ jobs:
           node --check scripts/rebind-existing-review.mjs
           node --check scripts/recover-canonical-review-backlog.mjs
           node --check scripts/quality-control-loop-v4.mjs
+          node --check scripts/build-top-250-canonical-review.mjs
           node --check scripts/validate-top-250.mjs
           node scripts/validate-review-source-registry.mjs
 
       - name: Upgrade every released legacy review deterministically
         run: node scripts/recover-canonical-review-backlog.mjs --concurrency 6 --timeout-ms 720000
+
+      - name: Checkpoint deterministic canonical review state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git add -A -- data/reviews data/research data/ratings data/parser-runs data/quality-control data/articles data/article-drafts data/article-media data/media-candidates article
+          if git diff --cached --quiet; then
+            echo 'No deterministic recovery changes to checkpoint.'
+            exit 0
+          fi
+          git diff --check
+          branch="automation/recover-canonical-reviews-checkpoint-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Checkpoint deterministic canonical review recovery"
+          git push origin "$branch"
+          pr_url="$(gh pr create --base staging --head "$branch" --title "Checkpoint canonical review recovery ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" --body "Persists deterministic registered-publisher discovery, review schema migration, explicit-score extraction and surgical source/score rebind before any downstream Top-250 or model-assisted step. This prevents a later validation or model failure from discarding completed source research.")"
+          gh pr merge "$pr_url" --merge --delete-branch
 
       - name: Rebuild canonical state after deterministic migration
         run: |
