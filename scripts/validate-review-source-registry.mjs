@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {loadReviewSourceRegistry,editorialSources,regionalEditorialSources,findRegisteredSource,classifyReviewPage,classifyCanonicalVersion} from './lib/review-source-registry.mjs';
+import {extractExplicitEditorialScore} from './lib/review-score-extractor.mjs';
 
 const root=process.cwd(),errors=[];
 const readJson=relative=>JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'));
@@ -25,9 +26,11 @@ const pageCases=[
  {name:'reject StopGame game card',source:stopgame,input:{url:'https://stopgame.ru/game/witcher_3_wild_hunt',title:'The Witcher 3: Wild Hunt'},want:false},
  {name:'accept StopGame review',source:stopgame,input:{url:'https://stopgame.ru/show/56607/the_witcher_3_wild_hunt_review',title:'The Witcher 3: Wild Hunt: Обзор'},want:true},
  {name:'reject PlayGround file',source:playground,input:{url:'https://www.playground.ru/witcher_3_wild_hunt/file/gameplay',title:'The Witcher 3 gameplay'},want:false},
+ {name:'reject PlayGround review hub',source:playground,input:{url:'https://www.playground.ru/witcher_3_wild_hunt/opinion/reviews',title:'The Witcher 3: Wild Hunt: Обзоры'},want:false},
  {name:'accept PlayGround editorial review',source:playground,input:{url:'https://www.playground.ru/witcher_3_wild_hunt/opinion/shevelis_plotva_retsenziya_na_the_witcher_3_wild_hunt-448217',title:'Рецензия на The Witcher 3: Wild Hunt'},want:true}
 ];
 for(const test of pageCases){const actual=classifyReviewPage(test.source,test.input).accepted;if(actual!==test.want)errors.push(`${test.name}: expected ${test.want}, got ${actual}`)}
+
 const baseGame={identity:{title:'The Witcher 3: Wild Hunt'}};
 const versionCases=[
  {name:'accept original review score',input:{title:'The Witcher 3: Wild Hunt review',url:'https://www.pcgamer.com/the-witcher-3-review/',game:baseGame},want:true},
@@ -37,17 +40,26 @@ const versionCases=[
 for(const test of versionCases){const actual=classifyCanonicalVersion(test.input).score_eligible;if(actual!==test.want)errors.push(`${test.name}: expected ${test.want}, got ${actual}`)}
 if(!gamespot||!nintendo)errors.push('version test publishers must be registered');
 
-const calculator=readText('scripts/calculate-ratings-from-research.mjs');
-const qc=readText('scripts/quality-control-loop-v4.mjs');
-const promote=readText('scripts/promote-review-source-audit.mjs');
-const enrich=readText('scripts/enrich-review-explicit-scores.mjs');
+const scoreCases=[
+ {name:'accept JSON-LD Review.reviewRating',source:gamespot,html:'<script type="application/ld+json">{"@type":"Review","reviewRating":{"@type":"Rating","ratingValue":"9","bestRating":"10"}}</script>',want:9},
+ {name:'reject JSON-LD AggregateRating',source:gamespot,html:'<script type="application/ld+json">{"@type":"VideoGame","aggregateRating":{"@type":"AggregateRating","ratingValue":"9.6","bestRating":"10"}}</script>',want:null},
+ {name:'reject generic rating widget',source:stopgame,html:'<div class="rating">4.7</div>',want:null},
+ {name:'reject generic Russian rating text',source:playground,html:'<div>Рейтинг: 9.6</div>',want:null},
+ {name:'accept explicit editorial label',source:gamespot,html:'<section>Overall Score: 8/10</section>',want:8}
+];
+for(const test of scoreCases){const hit=extractExplicitEditorialScore(test.html,test.source),actual=hit?.score??null;if(actual!==test.want)errors.push(`${test.name}: expected ${test.want}, got ${actual}`);if(hit&&hit.scope!=='editorial_review')errors.push(`${test.name}: accepted score must carry editorial_review scope`)}
+
+const calculator=readText('scripts/calculate-ratings-from-research.mjs'),qc=readText('scripts/quality-control-loop-v4.mjs'),promote=readText('scripts/promote-review-source-audit.mjs'),enrich=readText('scripts/enrich-review-explicit-scores.mjs');
 if(!calculator.includes('use_all_eligible_sources:true'))errors.push('canonical score calculator must use every eligible explicit publisher score');
+if(!calculator.includes('isTrustedEditorialScore'))errors.push('canonical score calculator must require trusted editorial score evidence');
 if(/sources\.length\s*>=\s*maximum/.test(calculator)||/if\(sources\.length>=maximum\)break/.test(calculator))errors.push('canonical score calculator must not cap the publisher vote count');
 if(!qc.includes("[slug,'--all']"))errors.push('review QC must request a complete registered-source web audit');
 if(!qc.includes('promote-review-source-audit.mjs'))errors.push('review QC must promote the full audit before scoring');
 if(!promote.includes("matrix.policy?.audit_all!==true"))errors.push('audit promotion must reject partial source scans');
+if(!promote.includes('isTrustedEditorialScore'))errors.push('audit promotion must not preserve bare legacy score numbers');
 if(!enrich.includes('preserved_existing_score'))errors.push('score enrichment must preserve verified explicit scores across transient failures');
+if(!enrich.includes('buildEditorialScoreEvidence'))errors.push('score enrichment must write explicit editorial provenance');
 
 const editorial=editorialSources(registry,{historical:true});
 if(errors.length){console.error(`Review source registry validation failed (${errors.length})`);for(const error of errors)console.error(`- ${error}`);process.exit(1)}
-console.log(JSON.stringify({status:'green',registry:synthesis.source_registry,total_sources:registry.sources.length,editorial_sources:editorial.length,modern_ru_sources:ru.length,review_page_contract_cases:pageCases.length,version_contract_cases:versionCases.length,score_all_eligible_sources:true,full_registry_scan_required:true,unknown_publisher_policy:registry.policies?.unknown_publisher_policy},null,2));
+console.log(JSON.stringify({status:'green',registry:synthesis.source_registry,total_sources:registry.sources.length,editorial_sources:editorial.length,modern_ru_sources:ru.length,review_page_contract_cases:pageCases.length,version_contract_cases:versionCases.length,score_evidence_contract_cases:scoreCases.length,score_all_eligible_sources:true,trusted_editorial_score_required:true,full_registry_scan_required:true,unknown_publisher_policy:registry.policies?.unknown_publisher_policy},null,2));
