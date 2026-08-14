@@ -1,0 +1,104 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/it-takes-two.json#review_score",
+  "game_slug": "it-takes-two",
+  "checked_at": "2026-08-14T22:51:55.231Z",
+  "status": "red-needs-revision",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "It Takes Two Review - IGN",
+      "url": "https://www.ign.com/articles/it-takes-two-review",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T22:51:54.579Z",
+        "url": "https://www.ign.com/articles/it-takes-two-review",
+        "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "It Takes Two Review: It Takes Two Review – The Joys And",
+      "url": "https://gameinformer.com/review/it-takes-two/it-takes-two-review-the-joys-and-heartbreak-of-love",
+      "original_score": {
+        "score": 9.25,
+        "scale": 10,
+        "grade": null,
+        "display": "9.25/10"
+      },
+      "normalized_10": 9.25,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T22:51:54.579Z",
+        "url": "https://gameinformer.com/review/it-takes-two/it-takes-two-review-the-joys-and-heartbreak-of-love",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/reviews/22344923/it-takes-two-review-ps5-ps4-xbox-one-series-x-pc",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/it-takes-two-review/1900-6417655",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "url": "https://www.nintendolife.com/reviews/nintendo-switch/it-takes-two",
+      "reason": "variant_or_port:switch_port"
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/677097-it-takes-two-review-ps5-ps4-xbox-series-x-pc",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 2,
+    "values": [
+      9,
+      9.25
+    ],
+    "mean_10": 9.125,
+    "score_10": 9.1
+  }
+}

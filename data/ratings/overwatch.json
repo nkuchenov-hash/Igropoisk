@@ -1,0 +1,56 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/overwatch.json#review_score",
+  "game_slug": "overwatch",
+  "checked_at": "2026-08-14T22:48:23.293Z",
+  "status": "red-needs-revision",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [],
+  "excluded_sources": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/articles/overwatch-update-makes-for-friendlier-post-matches/1100-6460040",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/70416-overwatch-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "videogamer",
+      "publication": "VideoGamer",
+      "url": "http://www.videogamer.com/reviews/overwatch_review.html",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/technology/2016/may/27/overwatch-review-blizzard",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 0,
+    "values": [],
+    "mean_10": null,
+    "score_10": null
+  }
+}

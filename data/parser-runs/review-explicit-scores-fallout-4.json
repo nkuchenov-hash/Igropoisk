@@ -1,0 +1,66 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "fallout-4",
+  "checked_at": "2026-08-14T22:47:03.920Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 4,
+  "scored": 1,
+  "context_only_versions": 1,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 9.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2015/11/09/fallout-4-review",
+      "final_url": "https://www.ign.com/articles/2015/11/09/fallout-4-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2015/11/9/9648824/fallout-4-review-xbox-one-PS4-PC",
+      "final_url": "https://www.polygon.com/2015/11/9/9648824/fallout-4-review-xbox-one-PS4-PC/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "http://www.gamespot.com/reviews/fallout-4-review/1900-6416306",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/gaming/2015/11/fallout-4-review-check-your-next-gen-expectations-at-the-vault-door",
+      "final_url": "https://arstechnica.com/gaming/2015/11/fallout-4-review-check-your-next-gen-expectations-at-the-vault-door/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": false
+    }
+  ]
+}

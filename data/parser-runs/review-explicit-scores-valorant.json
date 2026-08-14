@@ -1,0 +1,55 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "valorant",
+  "checked_at": "2026-08-14T22:55:35.699Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 3,
+  "scored": 1,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 9,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/articles/valorant-2-09-patch-notes-viper-nerfed-and-breeze-update/1100-6491327",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/games/2020/jun/20/valorant-review-riot-games-league-of-legends-shooter-strategy",
+      "final_url": "https://www.theguardian.com/games/2020/jun/20/valorant-review-riot-games-league-of-legends-shooter-strategy",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/valorant",
+      "final_url": "https://www.pushsquare.com/reviews/ps5/valorant",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}

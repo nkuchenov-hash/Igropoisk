@@ -1,0 +1,75 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "divinity-original-sin-ii",
+  "checked_at": "2026-08-14T22:49:27.980Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 4,
+  "scored": 1,
+  "context_only_versions": 1,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 9.6,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": false
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2017/09/21/divinity-original-sin-2-review",
+      "final_url": "https://www.ign.com/articles/2017/09/21/divinity-original-sin-2-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2017/9/15/16316126/divinity-original-sin-2-review",
+      "final_url": "https://www.polygon.com/2017/9/15/16316126/divinity-original-sin-2-review/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/divinity-original-sin-2-review/1900-6416769",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "url": "https://www.nintendolife.com/reviews/nintendo-switch-2/divinity-original-sin-2-nintendo-switch-2-edition",
+      "final_url": "https://www.nintendolife.com/reviews/nintendo-switch-2/divinity-original-sin-2-nintendo-switch-2-edition",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": false
+    }
+  ]
+}

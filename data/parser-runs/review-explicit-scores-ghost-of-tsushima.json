@@ -1,0 +1,108 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "ghost-of-tsushima",
+  "checked_at": "2026-08-14T22:51:50.910Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 7,
+  "scored": 2,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 9,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 9.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/ghost-of-tsushima-review",
+      "final_url": "https://www.ign.com/articles/ghost-of-tsushima-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/ghost-of-tsushima/ghost-of-tsushima-review-a-most-honorable-epic",
+      "final_url": "https://gameinformer.com/review/ghost-of-tsushima/ghost-of-tsushima-review-a-most-honorable-epic",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/ghost-of-tsushima-review-chaos-in-the-windy-city/1900-6417501",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/reviews/2020/7/14/21322970/ghost-of-tsushima-review-ps4-kurosawa-mode",
+      "final_url": "https://www.polygon.com/reviews/2020/7/14/21322970/ghost-of-tsushima-review-ps4-kurosawa-mode/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/gaming/2020/07/ghost-of-tsushima-review-an-open-world-haiku-of-honor-stealth-and-revenge",
+      "final_url": "https://arstechnica.com/gaming/2020/07/ghost-of-tsushima-review-an-open-world-haiku-of-honor-stealth-and-revenge/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/stories/review-ghost-of-tsushima-595478.phtml",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/652081-ghost-of-tsushima-review-ps4-2020",
+      "final_url": "https://www.gamerevolution.com/review/652081-ghost-of-tsushima-review-ps4-2020",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

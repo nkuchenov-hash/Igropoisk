@@ -1,0 +1,81 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/tom-clancy-s-ghost-recon-wildlands.json#review_score",
+  "game_slug": "tom-clancy-s-ghost-recon-wildlands",
+  "checked_at": "2026-08-14T22:57:52.509Z",
+  "status": "red-needs-revision",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Ghost Recon Wildlands Review: Embracing Excess",
+      "url": "https://gameinformer.com/games/ghost_recon_wildlands/b/playstation4/archive/2017/03/13/game-informer-ghost-recon-wildlands-review.aspx",
+      "original_score": {
+        "score": 8.25,
+        "scale": 10,
+        "grade": null,
+        "display": "8.25/10"
+      },
+      "normalized_10": 8.25,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T22:57:52.177Z",
+        "url": "https://gameinformer.com/games/ghost_recon_wildlands/b/playstation4/archive/2017/03/13/game-informer-ghost-recon-wildlands-review.aspx",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "http://www.gamespot.com/articles/ghost-recon-wildlands-review-in-progress/1100-6448439",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2017/3/15/14936894/ghost-recon-wildlands-review-tom-clancy-clancys-ubisoft-ps4-playstation-4-xbox-one-pc-windows-steam",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/gaming/2017/03/ghost-recon-wildlands-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/technology/2017/mar/13/tom-clancy-ghost-recon-wildlands-review-ubisoft-open-world-game",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 1,
+    "values": [
+      8.25
+    ],
+    "mean_10": 8.25,
+    "score_10": 8.3
+  }
+}
