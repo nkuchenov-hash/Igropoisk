@@ -34,6 +34,7 @@ jobs:
           article.score=score;
           article.publication_status='published';
           article.quality_status='green';
+          fs.mkdirSync('data/article-drafts',{recursive:true});
           fs.writeFileSync(`data/articles/${slug}.json`,JSON.stringify(article,null,2)+'\n');
           fs.writeFileSync(`data/article-drafts/${slug}.json`,JSON.stringify(article,null,2)+'\n');
           NODE
