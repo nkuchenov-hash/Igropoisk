@@ -12,6 +12,12 @@ const decodeXml=value=>String(value||'')
   .replace(/&#39;|&apos;/gi,"'");
 const escapeAttr=value=>String(value||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
 const escapeText=value=>String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const publisherReviewScopes=[
+  {match:/site:(?:www\.)?gamespot\.com/i,scope:'site:gamespot.com/reviews'},
+  {match:/site:(?:www\.)?gamerevolution\.com/i,scope:'site:gamerevolution.com/review'},
+  {match:/site:(?:www\.)?gry-online\.pl/i,scope:'site:gry-online.pl/recenzje'},
+  {match:/site:(?:www\.)?worthplaying\.com/i,scope:'site:worthplaying.com/article'}
+];
 
 export function bingRssToSearchHtml(xml){
   const anchors=[];
@@ -28,10 +34,11 @@ export function bingRssToSearchHtml(xml){
 export function bingRssSearchUrls(searchUrl){
   let original;
   try{original=new URL(String(searchUrl||''))}catch{return[]}
-  const query=original.searchParams.get('q')||'';
-  const queries=[query];
-  if(/(?:^|\s)site:(?:www\.)?gamespot\.com(?:\s|$)/i.test(query)){
-    queries.push(query.replace(/site:(?:www\.)?gamespot\.com/i,'site:gamespot.com/reviews'));
+  const query=original.searchParams.get('q')||'',queries=[query];
+  for(const {match,scope} of publisherReviewScopes){
+    if(!match.test(query))continue;
+    queries.push(query.replace(match,scope));
+    break;
   }
   return [...new Set(queries)].map(q=>{
     const url=new URL(original);
@@ -46,11 +53,19 @@ export function validateBingRssAdapter(){
   const html=bingRssToSearchHtml(xml);
   if(!html.includes('https://www.gamespot.com/reviews/rainbow-six-siege-review-2015/1900-6416324/'))throw new Error('Bing RSS adapter lost direct result URL.');
   if(!html.includes('Rainbow Six Siege Review'))throw new Error('Bing RSS adapter lost result title.');
-  const urls=bingRssSearchUrls('https://www.bing.com/search?q=site%3Agamespot.com+%22Tom+Clancy%27s+Rainbow+Six+Siege%22+review+2015');
-  if(urls.length!==2)throw new Error('GameSpot must receive generic and direct-review-path RSS queries.');
-  if(!decodeURIComponent(urls[1].toString()).includes('site:gamespot.com/reviews'))throw new Error('GameSpot direct review path scope contract failed.');
+  const cases=[
+    ['gamespot.com','gamespot.com/reviews'],
+    ['gamerevolution.com','gamerevolution.com/review'],
+    ['gry-online.pl','gry-online.pl/recenzje'],
+    ['worthplaying.com','worthplaying.com/article']
+  ];
+  for(const [domain,scope] of cases){
+    const urls=bingRssSearchUrls(`https://www.bing.com/search?q=${encodeURIComponent(`site:${domain} "Rainbow Six Siege" review 2015`)}`);
+    if(urls.length!==2)throw new Error(`${domain} must receive generic and review-path RSS queries.`);
+    if(!decodeURIComponent(urls[1].toString()).includes(`site:${scope}`))throw new Error(`${domain} review-path scope contract failed.`);
+  }
   const ign=bingRssSearchUrls('https://www.bing.com/search?q=site%3Aign.com+Rainbow+Six+Siege+review');
-  if(ign.length!==1)throw new Error('Path-scoped search must stay publisher-specific.');
+  if(ign.length!==1)throw new Error('Unconfigured path-scoped search must stay publisher-specific.');
   return true;
 }
 
