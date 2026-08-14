@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 
-const root=process.cwd(),mode=process.argv[2],slug=process.argv[3],gameId=process.argv[4]||process.env.GAME_REGISTRY_ID||'';
+const root=process.cwd(),mode=process.argv[2],slug=process.argv[3],gameId=process.argv[4]||process.env.GAME_REGISTRY_ID||'',deterministicOnly=process.env.REVIEW_DETERMINISTIC_ONLY==='1';
 if(!['page','review'].includes(mode)||!slug) throw new Error('Usage: quality-control-loop <page|review> <slug> [game_id]');
 const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
 const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n')};
@@ -31,15 +31,11 @@ for(let attempt=1;attempt<=attempts;attempt++){
   }
 
   if(attempt===1&&fs.existsSync(path.join(root,'scripts/discover-review-sources-web.mjs'))){
-    // Always inspect every applicable registered publication. The gate may be satisfied early,
-    // but discovery is not allowed to stop early because the score must use every explicit vote.
     run('web-discovery-full-registry','scripts/discover-review-sources-web.mjs',[slug,'--all']);
     if(fullRegistryMatrix()&&fs.existsSync(path.join(root,'scripts/promote-review-source-audit.mjs')))run('promote-full-registry-audit','scripts/promote-review-source-audit.mjs',[slug]);
     if(fs.existsSync(path.join(root,'scripts/enrich-review-explicit-scores.mjs')))run('explicit-score-enrichment','scripts/enrich-review-explicit-scores.mjs',[slug]);
   }
 
-  // Legacy/OpenAI research is only a fallback when a complete registered-source matrix does not exist.
-  // It must never overwrite a full-registry scan with an arbitrary first-N subset.
   if(!fullRegistryMatrix()) run(`research-${attempt}`,'scripts/prepare-review-research.mjs',[slug]);
   run(`score-${attempt}`,'scripts/calculate-ratings-from-research.mjs',[slug]);
   const canonicalReview=reviews(),corpusGreen=canonicalReview.publication_gate?.status==='green',scoreGreen=canonicalReview.review_score?.status==='green';
@@ -47,6 +43,11 @@ for(let attempt=1;attempt<=attempts;attempt++){
 
   const existing=read(`data/articles/${slug}.json`,read(`data/article-drafts/${slug}.json`));
   if(existing?.sections?.length&&fs.existsSync(path.join(root,'scripts/rebind-existing-review.mjs'))){const rebound=run(`rebind-${attempt}`,'scripts/rebind-existing-review.mjs',[slug]);if(rebound.status===0&&run(`render-rebound-${attempt}`,'scripts/render-review-pages.mjs',[slug]).status===0){status='green';comments=[];break}}
+
+  if(deterministicOnly){
+    comments=[existing?.sections?.length?'Existing article could not be deterministically rebound; queued for prose/media repair.':'No reusable existing article; queued for prose/media repair.'];
+    break;
+  }
 
   let ok=true;const mediaDiscovery=run(`media-discovery-${attempt}`,'scripts/discover-review-media.mjs',[slug]);if(mediaDiscovery.status!==0){ok=false;comments=[(mediaDiscovery.stderr||mediaDiscovery.stdout||'media discovery needs revision').slice(-5000)]}
   if(ok){const synthesis=tryOpenAiThenLocal(`synthesis-${attempt}`,'scripts/synthesize-review-adaptive-v2.mjs','scripts/synthesize-review-local.mjs');if(!synthesis||synthesis.status!==0){ok=false;comments=[(synthesis?.stderr||synthesis?.stdout||'No available review synthesis engine').slice(-5000)]}}
@@ -56,6 +57,6 @@ for(let attempt=1;attempt<=attempts;attempt++){
   const output=reviewOutput(),identity=identityProblems(canonicalTitle);if(ok&&output?.passed===true&&!identity.length&&publishArticle()){status='green';comments=[];break}comments=[...(output?.errors||[]),...identity,...comments];
 }
 
-const report={schema_version:7,type:mode,game_slug:slug,game_id:gameId||null,canonical_title:canonicalTitle,checked_at:new Date().toISOString(),status,green:status==='green',comments,revision_history:history,policy:{keep_queued_until_green:true,review_score_source:'data/reviews/{slug}.json#review_score',research_primary:'complete-registered-source-direct-publisher-scan',research_fallback:'registered-publisher-research-only-if-full-scan-missing',score_enrichment:'direct-publisher-structured-markup-preserve-verified',score_aggregation:'all-eligible-explicit-publisher-scores',article_reuse:'surgical-rebind-before-regeneration',synthesis_fallback:'local-ollama',visual_audit_fallback:'local-ollama-multimodal',language_audit_fallback:'local-ollama',web_discovery_attempts_per_qc:1}};
-write(`data/quality-control/${mode}-${slug}-control.json`,report);write(`data/parser-runs/quality-control-${mode}-${slug}.json`,{parser:'quality-control-loop-v4',game_slug:slug,status:report.green?'green':'needs_revision',checked_at:report.checked_at,comments});
-console.log(JSON.stringify({mode,slug,status,comments:comments.slice(0,8)},null,2));
+const report={schema_version:8,type:mode,game_slug:slug,game_id:gameId||null,canonical_title:canonicalTitle,checked_at:new Date().toISOString(),status,green:status==='green',comments,revision_history:history,policy:{keep_queued_until_green:true,deterministic_only:deterministicOnly,review_score_source:'data/reviews/{slug}.json#review_score',research_primary:'complete-registered-source-direct-publisher-scan',research_fallback:'registered-publisher-research-only-if-full-scan-missing',score_enrichment:'direct-publisher-structured-markup-preserve-verified',score_aggregation:'all-eligible-explicit-publisher-scores',article_reuse:'surgical-rebind-before-regeneration',synthesis_fallback:'local-ollama-only-after-deterministic-recovery',visual_audit_fallback:'local-ollama-multimodal',language_audit_fallback:'local-ollama',web_discovery_attempts_per_qc:1}};
+write(`data/quality-control/${mode}-${slug}-control.json`,report);write(`data/parser-runs/quality-control-${mode}-${slug}.json`,{parser:'quality-control-loop-v4',game_slug:slug,status:report.green?'green':'needs_revision',checked_at:report.checked_at,comments,deterministic_only:deterministicOnly});
+console.log(JSON.stringify({mode,slug,status,deterministic_only:deterministicOnly,comments:comments.slice(0,8)},null,2));
