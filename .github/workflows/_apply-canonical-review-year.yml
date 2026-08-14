@@ -1,0 +1,28 @@
+name: Apply canonical review year
+on:
+  push:
+    branches: [fix/review-publisher-sitemap-discovery]
+    paths: [scripts/_apply-canonical-review-year.mjs]
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/review-publisher-sitemap-discovery
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          node scripts/_apply-canonical-review-year.mjs
+          node --check scripts/discover-review-sources-web-v8.mjs
+          node scripts/test-review-publisher-sitemap.mjs
+          git diff --check
+      - run: |
+          git config user.name "igropoisk-tools[bot]"
+          git config user.email "igropoisk-tools[bot]@users.noreply.github.com"
+          git add scripts/discover-review-sources-web-v8.mjs
+          git commit -m "Use canonical release year for review discovery"
+          git push origin HEAD:fix/review-publisher-sitemap-discovery
