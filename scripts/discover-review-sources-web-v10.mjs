@@ -25,16 +25,20 @@ export function bingRssToSearchHtml(xml){
   return anchors.join('\n');
 }
 
-export function publisherNativeSearchHtml(searchUrl,{slug=process.argv[2]||''}={}){
-  if(!slug)return'';
-  let query='';
-  try{query=new URL(String(searchUrl||'')).searchParams.get('q')||''}catch{return''}
-  const candidates=[];
+export function bingRssSearchUrls(searchUrl){
+  let original;
+  try{original=new URL(String(searchUrl||''))}catch{return[]}
+  const query=original.searchParams.get('q')||'';
+  const queries=[query];
   if(/(?:^|\s)site:(?:www\.)?gamespot\.com(?:\s|$)/i.test(query)){
-    const url=`https://www.gamespot.com/games/${encodeURIComponent(slug)}/reviews/`;
-    candidates.push(`<a href="${escapeAttr(url)}">${escapeText(`${slug} reviews`)}</a>`);
+    queries.push(query.replace(/site:(?:www\.)?gamespot\.com/i,'site:gamespot.com/reviews'));
   }
-  return candidates.join('\n');
+  return [...new Set(queries)].map(q=>{
+    const url=new URL(original);
+    url.searchParams.set('q',q);
+    url.searchParams.set('format','rss');
+    return url;
+  });
 }
 
 export function validateBingRssAdapter(){
@@ -42,9 +46,11 @@ export function validateBingRssAdapter(){
   const html=bingRssToSearchHtml(xml);
   if(!html.includes('https://www.gamespot.com/reviews/rainbow-six-siege-review-2015/1900-6416324/'))throw new Error('Bing RSS adapter lost direct result URL.');
   if(!html.includes('Rainbow Six Siege Review'))throw new Error('Bing RSS adapter lost result title.');
-  const hub=publisherNativeSearchHtml('https://www.bing.com/search?q=site%3Agamespot.com+Rainbow+Six+Siege+review',{slug:'tom-clancys-rainbow-six-siege'});
-  if(!hub.includes('https://www.gamespot.com/games/tom-clancys-rainbow-six-siege/reviews/'))throw new Error('GameSpot native review-hub candidate contract failed.');
-  if(publisherNativeSearchHtml('https://www.bing.com/search?q=site%3Aign.com+Rainbow+Six+Siege+review',{slug:'tom-clancys-rainbow-six-siege'}))throw new Error('Native hub candidates must stay publisher-scoped.');
+  const urls=bingRssSearchUrls('https://www.bing.com/search?q=site%3Agamespot.com+%22Tom+Clancy%27s+Rainbow+Six+Siege%22+review+2015');
+  if(urls.length!==2)throw new Error('GameSpot must receive generic and direct-review-path RSS queries.');
+  if(!decodeURIComponent(urls[1].toString()).includes('site:gamespot.com/reviews'))throw new Error('GameSpot direct review path scope contract failed.');
+  const ign=bingRssSearchUrls('https://www.bing.com/search?q=site%3Aign.com+Rainbow+Six+Siege+review');
+  if(ign.length!==1)throw new Error('Path-scoped search must stay publisher-specific.');
   return true;
 }
 
@@ -53,24 +59,16 @@ validateBingRssAdapter();
 globalThis.fetch=async(input,init)=>{
   const original=String(typeof input==='string'||input instanceof URL?input:input?.url||'');
   if(!/^https:\/\/www\.bing\.com\/search\?/i.test(original))return networkFetch(input,init);
-  const nativeHtml=publisherNativeSearchHtml(original);
+  const html=[];
   try{
-    const rssUrl=new URL(original);
-    rssUrl.searchParams.set('format','rss');
-    const response=await networkFetch(rssUrl,init);
-    if(response.ok){
-      const xml=await response.text();
-      const html=[nativeHtml,bingRssToSearchHtml(xml)].filter(Boolean).join('\n');
-      if(html){
-        const headers=new Headers(response.headers);
-        headers.set('content-type','text/html; charset=utf-8');
-        headers.delete('content-length');
-        headers.delete('content-encoding');
-        return new Response(html,{status:response.status,statusText:response.statusText,headers});
-      }
+    for(const rssUrl of bingRssSearchUrls(original)){
+      const response=await networkFetch(rssUrl,init);
+      if(!response.ok)continue;
+      const converted=bingRssToSearchHtml(await response.text());
+      if(converted)html.push(converted);
     }
+    if(html.length)return new Response(html.join('\n'),{status:200,headers:{'content-type':'text/html; charset=utf-8'}});
   }catch{}
-  if(nativeHtml)return new Response(nativeHtml,{status:200,headers:{'content-type':'text/html; charset=utf-8'}});
   return networkFetch(input,init);
 };
 
