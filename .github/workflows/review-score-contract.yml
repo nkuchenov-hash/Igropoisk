@@ -8,6 +8,8 @@ on:
       - 'config/parsers/review-synthesis.json'
       - 'scripts/lib/review-source-registry.mjs'
       - 'scripts/lib/review-score-extractor.mjs'
+      - 'scripts/lib/review-publisher-sitemap.mjs'
+      - 'scripts/test-review-publisher-sitemap.mjs'
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/discover-review-sources-web*.mjs'
       - 'scripts/promote-review-source-audit.mjs'
@@ -55,6 +57,8 @@ jobs:
         run: |
           node --check scripts/lib/review-source-registry.mjs
           node --check scripts/lib/review-score-extractor.mjs
+          node --check scripts/lib/review-publisher-sitemap.mjs
+          node --check scripts/test-review-publisher-sitemap.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/discover-review-sources-web.mjs
           node --check scripts/discover-review-sources-web-v8.mjs
@@ -75,6 +79,8 @@ jobs:
           node --check scripts/validate-review-source-registry.mjs
           node --check scripts/test-review-source-score-adapters.mjs
           node --check game/_shared/game-page-review-publication-control.js
+      - name: Validate publisher sitemap discovery
+        run: node scripts/test-review-publisher-sitemap.mjs
       - name: Validate unified source registry
         run: node scripts/validate-review-source-registry.mjs
       - name: Validate source-specific score adapters
