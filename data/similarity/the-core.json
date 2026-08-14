@@ -1,61 +1,63 @@
 {
-  "schema_version": 2,
+  "schema_version": 4,
   "game_slug": "the-core",
-  "generated_at": "2026-08-13T19:36:39.834Z",
-  "algorithm": "weighted-structured-semantic-v2",
+  "game_id": "",
+  "generated_at": "2026-08-14T17:42:41.202Z",
+  "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
+  "source_dna": {
+    "status": "auto",
+    "revision": 1,
+    "quality": {
+      "populated_axes": 4,
+      "total_axes": 16,
+      "core_axes": 1,
+      "total_core_axes": 7,
+      "populated": [
+        "genres",
+        "core_loop",
+        "setting",
+        "multiplayer"
+      ],
+      "populated_core": [
+        "core_loop"
+      ],
+      "ready_for_similarity": false,
+      "needs_enrichment": true
+    },
+    "ref": "../game-dna/the-core.json"
+  },
   "profile": {
     "genres": [
       "action",
       "adventure",
       "indie",
-      "early",
-      "access"
+      "early_access"
     ],
-    "subgenres": [
-      "single",
-      "player",
-      "multi",
-      "co",
-      "op",
-      "online",
-      "steam",
-      "achievements",
-      "full",
-      "controller",
-      "support",
-      "cloud",
-      "family",
-      "sharing"
+    "subgenres": [],
+    "core_loop": [
+      "exploration",
+      "combat"
     ],
-    "gameplay_type": [],
-    "combat": [],
-    "perspective": [],
+    "combat_style": [],
+    "traversal": [],
     "world_structure": [],
-    "party_mode": [],
-    "narrative": [],
+    "mission_structure": [],
     "progression": [],
-    "setting": [],
-    "tone": [],
-    "multiplayer": [],
-    "mechanics": [
-      "single",
-      "player",
-      "multi",
-      "co",
-      "op",
-      "online",
-      "steam",
-      "achievements",
-      "full",
-      "controller",
-      "support",
-      "cloud",
-      "family",
-      "sharing"
+    "perspective": [],
+    "player_agency": [],
+    "pacing": [],
+    "narrative": [],
+    "setting": [
+      "fantasy"
     ],
-    "semantic_tokens": [],
+    "tone": [],
+    "multiplayer": [
+      "singleplayer",
+      "coop"
+    ],
+    "mechanics": [],
     "franchise": ""
   },
   "recommendations": []

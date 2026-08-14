@@ -1,10 +1,10 @@
 {
-  "schema_version": 6,
+  "schema_version": 8,
   "type": "review",
   "game_slug": "leafy-corner",
   "game_id": "game_778f98d05eb9aace0748",
   "canonical_title": "Leafy Corner",
-  "checked_at": "2026-08-14T08:12:18.268Z",
+  "checked_at": "2026-08-14T17:58:08.916Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
@@ -13,11 +13,19 @@
   ],
   "revision_history": [
     {
-      "label": "web-discovery",
+      "label": "web-discovery-full-registry",
       "script": "scripts/discover-review-sources-web.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"leafy-corner\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"regional_complete\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stdout": "{\n  \"slug\": \"leafy-corner\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "promote-full-registry-audit",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"leafy-corner\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -25,33 +33,28 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"leafy-corner\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"updates\": []\n}\n",
+      "stdout": "{\n  \"slug\": \"leafy-corner\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n",
       "stderr": ""
-    },
-    {
-      "label": "research-1",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "revision-required",
-      "exit_code": 1,
-      "stdout": "",
-      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:31\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:31:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:42:12\n\nNode.js v22.23.1\n"
     },
     {
       "label": "score-1",
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"leafy-corner\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"score_10\": null,\n  \"compatibility_adapter\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"leafy-corner\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
       "stderr": ""
     }
   ],
   "policy": {
     "keep_queued_until_green": true,
+    "deterministic_only": false,
     "review_score_source": "data/reviews/{slug}.json#review_score",
-    "research_fallback": "direct-publisher-web-bounded",
-    "score_enrichment": "direct-publisher-structured-markup",
-    "article_reuse": "rebind-existing-before-regeneration",
-    "synthesis_fallback": "local-ollama",
+    "research_primary": "complete-registered-source-direct-publisher-scan",
+    "research_fallback": "registered-publisher-research-only-if-full-scan-missing",
+    "score_enrichment": "direct-publisher-structured-markup-preserve-verified",
+    "score_aggregation": "all-eligible-explicit-publisher-scores",
+    "article_reuse": "surgical-rebind-before-regeneration",
+    "synthesis_fallback": "local-ollama-only-after-deterministic-recovery",
     "visual_audit_fallback": "local-ollama-multimodal",
     "language_audit_fallback": "local-ollama",
     "web_discovery_attempts_per_qc": 1
