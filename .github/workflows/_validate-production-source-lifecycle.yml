@@ -1,20 +1,17 @@
 name: Validate production source lifecycle
-
 on:
   push:
     branches: [validation/production-gate-source-lifecycle]
     paths: [.github/workflows/_validate-production-source-lifecycle.yml]
-
 permissions:
   contents: read
-
 jobs:
   production-gate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 20c3ff4a8378f4545f81795f3e6712b5f66570b6
+          ref: ad3e1d84cbb6714a65870cb4a815a8fcaf9bfe7d
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
