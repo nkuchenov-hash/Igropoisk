@@ -14,6 +14,7 @@ on:
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/rebind-existing-review.mjs'
       - 'scripts/recover-canonical-review-backlog.mjs'
+      - 'scripts/publish-review-recovery-overlay.mjs'
       - 'scripts/synthesize-review-local.mjs'
       - 'scripts/enrich-review-media-local.mjs'
       - 'scripts/audit-review-language-local.mjs'
@@ -60,6 +61,7 @@ jobs:
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/rebind-existing-review.mjs
           node --check scripts/recover-canonical-review-backlog.mjs
+          node --check scripts/publish-review-recovery-overlay.mjs
           node --check scripts/quality-control-loop-v4.mjs
           node --check scripts/build-top-250-canonical-review.mjs
           node --check scripts/validate-top-250.mjs
@@ -71,27 +73,11 @@ jobs:
       - name: Checkpoint deterministic canonical review state
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          git add -A -- data article
-          if git diff --cached --quiet; then
-            echo 'No deterministic recovery changes to checkpoint.'
-            exit 0
-          fi
-          git diff --check
-          branch="automation/recover-canonical-reviews-checkpoint-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          git config user.name "igropoisk-content[bot]"
-          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
-          git checkout -b "$branch"
-          git commit -m "Checkpoint deterministic canonical review recovery"
-          git push origin "$branch"
-          pr_url="$(gh pr create --base staging --head "$branch" --title "Checkpoint canonical review recovery ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" --body "Persists deterministic registered-publisher discovery, review schema migration, explicit-score extraction and surgical source/score rebind before any downstream Top-250 or model-assisted step. This prevents a later validation or model failure from discarding completed source research.")"
-          gh pr merge "$pr_url" --merge --delete-branch
+        run: node scripts/publish-review-recovery-overlay.mjs
 
       - name: Rebuild canonical state after deterministic migration
         run: |
           node scripts/materialize-review-publication-feed.mjs
-          node scripts/validate-top-250.mjs
           node scripts/audit-review-publication.mjs
 
       - name: Detect canonical reviews that still need a model
@@ -182,23 +168,10 @@ jobs:
       - name: Publish recovered canonical state
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          git add -A -- data article
-          if git diff --cached --quiet; then
-            echo 'No recovery changes.'
-            exit 0
-          fi
-          node scripts/validate-top-250.mjs
-          git diff --check
-          branch="automation/recover-canonical-reviews-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          git config user.name "igropoisk-content[bot]"
-          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
-          git checkout -b "$branch"
-          git commit -m "Recover canonical review backlog"
-          git push origin "$branch"
-          pr_url="$(gh pr create --base staging --head "$branch" --title "Recover canonical reviews ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" --body "Migrates the full released-game review backlog through registered direct-publisher discovery, explicit-score extraction and arithmetic canonical scoring. Existing prose is rebound first; local model work is reserved for language audit or genuinely missing/invalid prose and media.")"
-          gh pr merge "$pr_url" --merge --delete-branch
+        run: node scripts/publish-review-recovery-overlay.mjs --final
 
-      - name: Require the released-game review backlog to be green
-        run: node scripts/audit-review-publication.mjs --strict
+      - name: Require final canonical state to be green
+        run: |
+          node scripts/materialize-review-publication-feed.mjs
+          node scripts/validate-top-250.mjs
+          node scripts/audit-review-publication.mjs --strict
