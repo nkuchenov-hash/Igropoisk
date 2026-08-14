@@ -1,0 +1,22 @@
+name: Inspect score markup
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-score-markup.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect GameRevolution review score markup
+        run: |
+          node - <<'NODE'
+          const url='https://www.gamerevolution.com/review/381919-god-war-review-olympian-feat';
+          const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskScoreDiagnostic/1.0)'}});console.log('HTTP',r.status);const h=await r.text();console.log('bytes',h.length);
+          for(const rx of [/review[^<>]{0,80}score/ig,/score[^<>]{0,80}10/ig,/>\s*10\s*</g,/rating[^>]{0,120}/ig]){console.log('\nRX',rx);let n=0;for(const m of h.matchAll(rx)){const i=m.index||0;console.log(h.slice(Math.max(0,i-500),Math.min(h.length,i+800)).replace(/\s+/g,' '));if(++n>=8)break;}}
+          for(const m of h.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)){if(/rating|review/i.test(m[1]))console.log('\nJSONLD',m[1].slice(0,5000).replace(/\s+/g,' '));}
+          NODE
