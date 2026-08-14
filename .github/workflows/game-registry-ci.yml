@@ -6,15 +6,22 @@ on:
     paths:
       - 'scripts/lib/game-registry*.mjs'
       - 'scripts/lib/system-game-registry-adapter.mjs'
+      - 'scripts/lib/verified-game-import.mjs'
       - 'scripts/migrate-game-registry.mjs'
       - 'scripts/canonicalize-system-game-identity.mjs'
       - 'scripts/validate-system-game-registry-integration.mjs'
       - 'scripts/validate-new-game-lifecycle.mjs'
+      - 'scripts/plan-game-imports.mjs'
+      - 'scripts/plan-news-game-pages.mjs'
+      - 'scripts/test-verified-game-import.mjs'
+      - 'scripts/ensure-local-editorial-runtime.mjs'
       - 'scripts/build-game-page-from-registry.mjs'
       - 'scripts/validate-game-registry-pages.mjs'
       - 'scripts/orchestrate-content.mjs'
       - 'scripts/run-content-pipeline.mjs'
+      - 'scripts/run-content-pipeline-core.mjs'
       - 'scripts/run-game-catalog-enrichment.mjs'
+      - 'scripts/run-game-catalog-enrichment-core.mjs'
       - 'tests/game-registry*.test.mjs'
       - 'tests/system-game-registry-integration.test.mjs'
       - 'data/catalog-visible.json'
@@ -43,6 +50,10 @@ jobs:
       - name: Verify system integration code
         run: |
           node --check scripts/lib/system-game-registry-adapter.mjs
+          node --check scripts/lib/verified-game-import.mjs
+          node --check scripts/plan-game-imports.mjs
+          node --check scripts/plan-news-game-pages.mjs
+          node --check scripts/ensure-local-editorial-runtime.mjs
           node --check scripts/canonicalize-system-game-identity.mjs
           node --check scripts/validate-system-game-registry-integration.mjs
           node --check scripts/validate-new-game-lifecycle.mjs
@@ -50,6 +61,8 @@ jobs:
           node --check assets/site-shell.js
       - name: Verify complete new-game lifecycle contract
         run: node scripts/validate-new-game-lifecycle.mjs
+      - name: Verify deliberate game import rules
+        run: node scripts/test-verified-game-import.mjs
       - name: Existing safe publisher tests
         run: |
           python3 scripts/test_safe_game_page_builder.py
