@@ -1,0 +1,31 @@
+name: Tally review corpus gaps
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-corpus-gaps.yml]
+permissions:
+  contents: read
+jobs:
+  tally:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: diag/review-readiness-20260814
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Count source-check outcomes for corpus-red released games
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');const read=(p,f=null)=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return f}};
+          const counts=new Map(),games=[];
+          for(const item of read('data/catalog-visible.json',[])){
+            const slug=item.slug;if(!slug)continue;const d=read(`data/drafts/${slug}.json`,{}),rel=d.release||{},st=String(rel.status||'').toLowerCase();if(/upcoming|expected|announced|coming|tba|pre[-_ ]?release|ожида/i.test(st))continue;
+            const r=read(`data/reviews/${slug}.json`);if(!r||r.publication_gate?.status==='green')continue;
+            const run=read(`data/parser-runs/review-web-discovery-${slug}.json`,{}),checks=run.source_checks||[];games.push({slug,accepted:Number(r?.publication_gate?.accepted||r?.reviews?.length||0),checked:checks.length});
+            for(const c of checks){const key=`${c.source_id}|${c.status}`;counts.set(key,(counts.get(key)||0)+1)}
+          }
+          console.log('CORPUS_RED_GAMES '+JSON.stringify(games));
+          console.log('SOURCE_CHECK_COUNTS');for(const [key,n] of [...counts].sort((a,b)=>b[1]-a[1])){const [source_id,status]=key.split('|');console.log(JSON.stringify({source_id,status,count:n}))}
+          NODE
