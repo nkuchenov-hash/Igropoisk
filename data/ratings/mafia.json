@@ -1,33 +1,116 @@
 {
-  "schema_version": 2,
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/mafia.json#review_score",
   "game_slug": "mafia",
-  "generated_at": "2026-08-03T13:20:00Z",
+  "checked_at": "2026-08-14T16:35:56.821Z",
+  "status": "red-needs-revision",
   "method": {
-    "name": "Медиана проверенных оценок оригинальной PC-версии",
-    "description": "Каждая оценка переводится в шкалу 0–100. Учитывается не более одной оценки от одного издания. Оценки консольных портов, агрегаторов и пользовательские оценки не входят в итог оригинальной PC-версии.",
-    "minimum_independent_publications": 3
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
   },
   "sources": [
-    {"publication":"GameSpot","score":9.3,"scale":10,"normalized":93,"url":"https://www.gamespot.com/reviews/mafia-review/1900-2879254/","status":"verified"},
-    {"publication":"IGN","score":9.2,"scale":10,"normalized":92,"url":"https://www.ign.com/articles/2002/08/29/mafia-review","status":"verified"},
-    {"publication":"GameSpy","score":91,"scale":100,"normalized":91,"url":"https://web.archive.org/web/*/http://archive.gamespy.com/reviews/september02/mafia/index2.shtml","status":"archived"},
-    {"publication":"Game Informer","score":93,"scale":100,"normalized":93,"url":"https://web.archive.org/web/*/http://www.gameinformer.com/Games/Review/200211/R03.0807.1226.41802.htm","status":"archived"},
-    {"publication":"PC Gamer","score":91,"scale":100,"normalized":91,"url":"https://www.metacritic.com/game/mafia/critic-reviews/?platform=pc","status":"magazine-score-audited"},
-    {"publication":"Gamer's Temple","score":9.2,"scale":10,"normalized":92,"url":"https://www.gamerstemple.com/game-reviews/pc/73/mafia-review","status":"verified"},
-    {"publication":"Four Fat Chicks","score":100,"scale":100,"normalized":100,"url":"https://web.archive.org/web/*/https://fourfatchicks.com/Reviews/Mafia/Mafia.shtml","status":"archived"},
-    {"publication":"PC Gameworld","score":93,"scale":100,"normalized":93,"url":"https://web.archive.org/web/*/https://www.pcgameworld.com/review.php/id/82/","status":"archived"},
-    {"publication":"GameZone","score":93,"scale":100,"normalized":93,"url":"https://web.archive.org/web/*/http://www.gamezone.com/reviews/mafia_pc_review_pc_review","status":"archived"},
-    {"publication":"PGNx Media","score":91,"scale":100,"normalized":91,"url":"https://web.archive.org/web/*/https://pgnx.net/reviews.php?id=4949&page=full","status":"archived"},
-    {"publication":"GamerWeb PC","score":91,"scale":100,"normalized":91,"url":"https://web.archive.org/web/*/http://pc.gamerweb.com/reviews/pc/mafia.asp","status":"archived"},
-    {"publication":"Absolute Games","score":90,"scale":100,"normalized":90,"url":"https://ag.ru/reviews/995903","status":"retrospective-context"},
-    {"publication":"PlayGround.ru","score":9,"scale":10,"normalized":90,"url":"https://www.playground.ru/mafia_the_city_of_lost_heaven/mafia_the_city_of_lost_heaven-402127","status":"verified"},
-    {"publication":"Игромания","score":9.5,"scale":10,"normalized":95,"url":"https://www.metacritic.com/game/mafia/critic-reviews/?platform=pc","status":"magazine-score-audited"}
+    {
+      "source_id": "source-2",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "Mafia PC Review - IGN",
+      "url": "https://www.ign.com/articles/2002/08/29/mafia-review",
+      "original_score": {
+        "score": 9.2,
+        "scale": 10,
+        "grade": null,
+        "display": "9.2/10"
+      },
+      "normalized_10": 9.2,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:35:55.557Z",
+        "url": "https://www.ign.com/articles/2002/08/29/mafia-review",
+        "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "playground",
+      "publication": "PlayGround.ru",
+      "title": "Mafia: The City of Lost Heaven",
+      "url": "https://www.playground.ru/mafia_the_city_of_lost_heaven/opinion/mafia_the_city_of_lost_heaven-402127",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:35:56.788Z",
+        "url": "https://www.playground.ru/mafia_the_city_of_lost_heaven/opinion/mafia_the_city_of_lost_heaven-402127",
+        "configured_source_id": "playground",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/mafia-review/1900-2879254",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/uncategorized/2002/09/1355-2",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/32759-mafia-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "gry-online",
+      "publication": "GRYOnline",
+      "url": "https://www.gry-online.pl/recenzje/mafia-the-city-of-lost-heaven-recenzja-gry/zc7c2",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "absolute-games-archive",
+      "publication": "Absolute Games",
+      "url": "https://ag.ru/reviews/995903",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "worthplaying",
+      "publication": "WorthPlaying",
+      "url": "https://worthplaying.com/article/2004/3/30/reviews/16139-xbox-review-mafia",
+      "reason": "canonical_version"
+    }
   ],
   "calculation": {
-    "normalized_values": [90,90,91,91,91,91,92,92,93,93,93,93,95,100],
-    "method": "median",
-    "median_100": 92,
-    "score_10": 9.2,
-    "independent_scores": 14
+    "source_count": 2,
+    "values": [
+      9.2,
+      9
+    ],
+    "mean_10": 9.1,
+    "score_10": 9.1
   }
 }
