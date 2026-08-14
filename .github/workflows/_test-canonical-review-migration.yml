@@ -8,7 +8,7 @@ permissions:
 jobs:
   canary:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,18 +21,37 @@ jobs:
           node --check scripts/recover-canonical-review-backlog.mjs
           node --check scripts/quality-control-loop-v4.mjs
           node --check scripts/rebind-existing-review.mjs
-      - name: Migrate Witcher 3 without AI
+          node scripts/validate-review-source-registry.mjs
+      - name: Migrate Witcher 3 corpus and score without AI
         run: node scripts/recover-canonical-review-backlog.mjs --only the-witcher-3-wild-hunt --concurrency 1 --timeout-ms 900000
         env:
           OPENAI_API_KEY: ''
-      - name: Show migrated state and rebind diagnostics
-        if: always()
+      - name: Start lightweight local text editor
         run: |
+          set -euo pipefail
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve >/tmp/ollama.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 1
+          done
+          ollama pull qwen3:1.7b
+      - name: Rebind existing Witcher prose with lightweight language audit
+        env:
+          LOCAL_EDITORIAL_MODEL: qwen3:1.7b
+          OPENAI_API_KEY: ''
+        run: node scripts/recover-canonical-review-backlog.mjs --rebind --only the-witcher-3-wild-hunt --concurrency 1 --timeout-ms 600000
+      - name: Require canonical published Witcher review
+        run: |
+          node scripts/materialize-review-publication-feed.mjs
           node - <<'NODE'
           const fs=require('fs');
-          const r=JSON.parse(fs.readFileSync('data/reviews/the-witcher-3-wild-hunt.json','utf8'));
-          const c=JSON.parse(fs.readFileSync('data/quality-control/review-the-witcher-3-wild-hunt-control.json','utf8'));
-          const rebind=(c.revision_history||[]).filter(x=>String(x.label||'').startsWith('rebind-'));
-          console.log(JSON.stringify({schema:r.schema_version,publication_gate:r.publication_gate,regional:r.regional_discovery,review_score:r.review_score,control:{green:c.green,comments:c.comments,rebind}},null,2));
-          if(!r.publication_gate?.status||!r.review_score?.status) process.exit(2);
+          const slug='the-witcher-3-wild-hunt';
+          const r=JSON.parse(fs.readFileSync(`data/reviews/${slug}.json`,'utf8'));
+          const a=JSON.parse(fs.readFileSync(`data/articles/${slug}.json`,'utf8'));
+          const l=JSON.parse(fs.readFileSync(`data/parser-runs/review-language-${slug}.json`,'utf8'));
+          const score=Number(r.review_score?.calculation?.score_10);
+          const rendered=fs.existsSync(`article/${slug}/index.html`);
+          console.log(JSON.stringify({schema:r.schema_version,corpus:r.publication_gate?.status,regional:r.regional_discovery?.complete,score_status:r.review_score?.status,score,article_score:a.score,article_status:a.publication_status,language_passed:l.passed,language_model:l.model,rendered},null,2));
+          if(r.publication_gate?.status!=='green'||r.review_score?.status!=='green'||r.regional_discovery?.complete!==true||!Number.isFinite(score)||Number(a.score)!==score||a.publication_status!=='published'||l.passed!==true||!rendered)process.exit(2);
           NODE
