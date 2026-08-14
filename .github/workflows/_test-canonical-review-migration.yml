@@ -5,6 +5,9 @@ on:
     paths: [.github/workflows/_test-canonical-review-migration.yml]
 permissions:
   contents: read
+concurrency:
+  group: canonical-review-migration-canary
+  cancel-in-progress: true
 jobs:
   canary:
     runs-on: ubuntu-latest
@@ -21,6 +24,7 @@ jobs:
           node --check scripts/recover-canonical-review-backlog.mjs
           node --check scripts/quality-control-loop-v4.mjs
           node --check scripts/rebind-existing-review.mjs
+          node --check scripts/audit-review-language-local.mjs
           node scripts/validate-review-source-registry.mjs
       - name: Migrate Witcher 3 corpus and score without AI
         run: node scripts/recover-canonical-review-backlog.mjs --only the-witcher-3-wild-hunt --concurrency 1 --timeout-ms 900000
@@ -40,7 +44,7 @@ jobs:
         env:
           LOCAL_EDITORIAL_MODEL: qwen3:1.7b
           OPENAI_API_KEY: ''
-        run: node scripts/recover-canonical-review-backlog.mjs --rebind --only the-witcher-3-wild-hunt --concurrency 1 --timeout-ms 600000
+        run: node scripts/recover-canonical-review-backlog.mjs --rebind --only the-witcher-3-wild-hunt --concurrency 1 --timeout-ms 480000
       - name: Require canonical published Witcher review
         run: |
           node scripts/materialize-review-publication-feed.mjs
@@ -52,6 +56,6 @@ jobs:
           const l=JSON.parse(fs.readFileSync(`data/parser-runs/review-language-${slug}.json`,'utf8'));
           const score=Number(r.review_score?.calculation?.score_10);
           const rendered=fs.existsSync(`article/${slug}/index.html`);
-          console.log(JSON.stringify({schema:r.schema_version,corpus:r.publication_gate?.status,regional:r.regional_discovery?.complete,score_status:r.review_score?.status,score,article_score:a.score,article_status:a.publication_status,language_passed:l.passed,language_model:l.model,rendered},null,2));
+          console.log(JSON.stringify({schema:r.schema_version,corpus:r.publication_gate?.status,regional:r.regional_discovery?.complete,score_status:r.review_score?.status,score,article_score:a.score,article_status:a.publication_status,language_passed:l.passed,language_model:l.model,language_schema:l.schema_version,rendered},null,2));
           if(r.publication_gate?.status!=='green'||r.review_score?.status!=='green'||r.regional_discovery?.complete!==true||!Number.isFinite(score)||Number(a.score)!==score||a.publication_status!=='published'||l.passed!==true||!rendered)process.exit(2);
           NODE
