@@ -19,12 +19,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate migration tooling
+      - name: Validate migration tooling and local transport
         run: |
           node --check scripts/recover-canonical-review-backlog.mjs
           node --check scripts/quality-control-loop-v4.mjs
           node --check scripts/rebind-existing-review.mjs
           node --check scripts/audit-review-language-local.mjs
+          node --check scripts/lib/local-editorial-model.mjs
           node scripts/validate-review-source-registry.mjs
       - name: Migrate Witcher 3 corpus and score without AI
         run: node scripts/recover-canonical-review-backlog.mjs --only the-witcher-3-wild-hunt --concurrency 1 --timeout-ms 900000
@@ -44,7 +45,7 @@ jobs:
         env:
           LOCAL_EDITORIAL_MODEL: qwen3:1.7b
           OPENAI_API_KEY: ''
-        run: node scripts/recover-canonical-review-backlog.mjs --rebind --only the-witcher-3-wild-hunt --concurrency 1 --timeout-ms 480000
+        run: node scripts/recover-canonical-review-backlog.mjs --rebind --only the-witcher-3-wild-hunt --concurrency 1 --timeout-ms 600000
       - name: Require canonical published Witcher review
         run: |
           node scripts/materialize-review-publication-feed.mjs
