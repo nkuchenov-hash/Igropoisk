@@ -1,0 +1,35 @@
+name: Measure score adapter impact
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-score-adapter-impact.yml]
+permissions:
+  contents: read
+jobs:
+  impact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/review-score-source-adapters
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Re-extract direct scores and recalculate corpus-green backlog
+        run: |
+          node - <<'NODE' > /tmp/slugs.txt
+          const fs=require('fs');const read=(p,f=null)=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return f}};
+          for(const item of read('data/catalog-visible.json',[])){const slug=item.slug,r=read(`data/reviews/${slug}.json`);if(r?.publication_gate?.status==='green'&&r?.review_score?.status!=='green')console.log(slug)}
+          NODE
+          before=$(wc -l < /tmp/slugs.txt); echo "before=$before"
+          while IFS= read -r slug; do
+            [ -n "$slug" ] || continue
+            node scripts/enrich-review-explicit-scores.mjs "$slug" || true
+            node scripts/calculate-ratings-from-research.mjs "$slug" || true
+          done < /tmp/slugs.txt
+          node - <<'NODE'
+          const fs=require('fs');const read=(p,f=null)=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return f}};let green=0,red=0;const rows=[];
+          for(const item of read('data/catalog-visible.json',[])){const slug=item.slug,r=read(`data/reviews/${slug}.json`);if(r?.publication_gate?.status!=='green')continue;if(r?.review_score?.status==='green'){green++;}else{red++;rows.push({slug,accepted:r.publication_gate?.accepted||r.reviews?.length||0,scored:r.review_score?.sources?.length||0});}}
+          console.log('RESULT '+JSON.stringify({corpus_green_score_green:green,corpus_green_score_red:red,remaining:rows}));
+          NODE
