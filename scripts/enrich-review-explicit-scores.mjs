@@ -2,38 +2,66 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {loadReviewSourceRegistry,registeredEditorialSource,classifyReviewPage,classifyCanonicalVersion} from './lib/review-source-registry.mjs';
+import {extractExplicitEditorialScore,isTrustedEditorialScore,buildEditorialScoreEvidence} from './lib/review-score-extractor.mjs';
 
-const root=process.cwd(),slug=process.argv[2];
-if(!slug)throw new Error('Usage: enrich-review-explicit-scores <slug>');
-const read=(r,f=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,r),'utf8'))}catch{return f}};
-const write=(r,v)=>{const t=path.join(root,r);fs.mkdirSync(path.dirname(t),{recursive:true});fs.writeFileSync(t,`${JSON.stringify(v,null,2)}\n`)};
-const reviewPath=`data/reviews/${slug}.json`,researchPath=`data/research/${slug}-source-matrix.json`,review=read(reviewPath),research=read(researchPath),game=read(`data/drafts/${slug}.json`),cfg=read('config/parsers/review-synthesis.json'),registry=loadReviewSourceRegistry(cfg.source_registry);
-if(!review||!research||!game)throw new Error(`Missing canonical review research/game draft for ${slug}`);
-const timeout=Number(process.env.REVIEW_SCORE_FETCH_TIMEOUT_MS||8000);
-const cleanNumber=v=>{const n=Number(String(v??'').replace(',','.').match(/[0-9]+(?:\.[0-9]+)?/)?.[0]);return Number.isFinite(n)?n:null};
-const valid=(score,scale)=>Number.isFinite(score)&&Number.isFinite(scale)&&scale>0&&score>=0&&score<=scale&&scale<=100;
-function fromPair(score,scale,method){score=cleanNumber(score);scale=cleanNumber(scale);return valid(score,scale)?{score,scale,method}:null}
-function inferredScale(score,source){const configured=Number(source?.review?.score?.default_scale);if(Number.isFinite(configured)&&configured>0)return configured;return Number(score)>10?100:10}
-function schemaTypes(node){const raw=node?.['@type'];return (Array.isArray(raw)?raw:[raw]).filter(Boolean).map(x=>String(x).toLowerCase())}
-function ratingFromJsonLd(rootNode,source){let hit=null;const walk=(node,insideReview=false)=>{if(hit||node==null)return;if(Array.isArray(node)){for(const item of node)walk(item,insideReview);return}if(typeof node!=='object')return;const types=schemaTypes(node),reviewContext=insideReview||types.some(t=>t==='review'||t.endsWith('review'));if(reviewContext&&node.reviewRating&&typeof node.reviewRating==='object'){const r=node.reviewRating,candidate=fromPair(r.ratingValue,r.bestRating||inferredScale(r.ratingValue,source),'jsonld.reviewRating');if(candidate){hit=candidate;return}}if(reviewContext&&types.some(t=>t==='rating')&&node.ratingValue!=null){const candidate=fromPair(node.ratingValue,node.bestRating||inferredScale(node.ratingValue,source),'jsonld.rating');if(candidate){hit=candidate;return}}for(const[key,value]of Object.entries(node)){if(key==='aggregateRating')continue;walk(value,reviewContext||key==='review'||key==='reviewRating')}};walk(rootNode,false);return hit}
-function parseJsonLd(html,source){for(const m of String(html).matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)){const raw=m[1].trim();if(!raw)continue;for(const candidate of[raw,raw.replace(/&quot;/g,'"').replace(/&amp;/g,'&')]){try{const parsed=JSON.parse(candidate),rating=ratingFromJsonLd(parsed,source);if(rating)return rating}catch{}}}return null}
-function attrValue(tag,name){const m=String(tag).match(new RegExp(`${name}\\s*=\\s*["']([^"']+)["']`,'i'));return m?.[1]||''}
-function parseMicrodata(html,source){const raw=String(html);for(const m of raw.matchAll(/<[^>]+itemprop=["']reviewRating["'][^>]*>([\s\S]{0,1600}?)<\/[^>]+>/gi)){const block=m[0],ratingTag=(block.match(/<[^>]+itemprop=["']ratingValue["'][^>]*>/i)||[])[0]||'',bestTag=(block.match(/<[^>]+itemprop=["']bestRating["'][^>]*>/i)||[])[0]||'',score=attrValue(ratingTag,'content')||attrValue(ratingTag,'value')||(block.match(/itemprop=["']ratingValue["'][^>]*>\s*([0-9.]+)/i)||[])[1],scale=attrValue(bestTag,'content')||attrValue(bestTag,'value')||(block.match(/itemprop=["']bestRating["'][^>]*>\s*([0-9.]+)/i)||[])[1]||inferredScale(score,source),candidate=fromPair(score,scale,'microdata.reviewRating');if(candidate)return candidate}const metaScore=(raw.match(/<meta[^>]+(?:itemprop|property)=["']ratingValue["'][^>]+content=["']([0-9.]+)["']/i)||[])[1],metaBest=(raw.match(/<meta[^>]+(?:itemprop|property)=["']bestRating["'][^>]+content=["']([0-9.]+)["']/i)||[])[1];return fromPair(metaScore,metaBest||inferredScale(metaScore,source),'microdata.meta')}
+const root=process.cwd();
+const slug=process.argv[2];
+if(!slug)throw new Error('Usage: node scripts/enrich-review-explicit-scores.mjs <slug>');
+const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
+const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n')};
 const visible=html=>String(html||'').replace(/<script\b[\s\S]*?<\/script>/gi,' ').replace(/<style\b[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/&nbsp;|&#160;/gi,' ').replace(/&amp;/gi,'&').replace(/\s+/g,' ').trim();
-const escapeRx=value=>String(value||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-function parseSemanticMarkup(html,source){
- const raw=String(html),text=visible(raw);const ratioPatterns=[
-  /<(?:span|div|strong|b|p)[^>]+(?:class|id)=["'][^"']*(?:review[-_ ]?score|review[-_ ]?rating|rating[-_ ]?value|score[-_ ]?value|verdict[-_ ]?score)[^"']*["'][^>]*>[\s\S]{0,160}?([0-9]+(?:[.,][0-9]+)?)\s*(?:\/|out of)\s*(5|10|100)\b/i,
-  /(?:final score|overall score|review score|our score|our rating|the verdict|verdict|оценка|рейтинг)\s*[:–—-]?\s*([0-9]+(?:[.,][0-9]+)?)\s*(?:\/|out of)\s*(5|10|100)\b/i
- ];for(const pattern of ratioPatterns){const m=(pattern.test(raw)?raw:text).match(pattern);if(m){const candidate=fromPair(m[1],m[2],'semantic-review-ratio');if(candidate)return candidate}}
- const percent=raw.match(/<(?:span|div|strong|b|p)[^>]+(?:class|id)=["'][^"']*(?:review[-_ ]?score|review[-_ ]?rating|rating[-_ ]?value|score[-_ ]?value|verdict[-_ ]?score)[^"']*["'][^>]*>\s*([0-9]+(?:[.,][0-9]+)?)\s*%/i);if(percent){const candidate=fromPair(percent[1],100,'semantic-review-percent');if(candidate)return candidate}
- const standalone=text.match(/(?:the verdict|overall score|final score|review score|our score|our rating|оценка|рейтинг)\s*[:–—-]?\s*([0-9]+(?:[.,][0-9]+)?)(?!\s*(?:votes?|голос|users?))/i);if(standalone){const score=cleanNumber(standalone[1]),candidate=fromPair(score,inferredScale(score,source),'semantic-labelled-score');if(candidate)return candidate}
- const publication=escapeRx(source?.name);if(publication){for(const pattern of[new RegExp(`(?:^|\\s)([0-9]+(?:[.,][0-9]+)?)\\s*(?:\\/\\s*(5|10|100))?\\s*${publication}(?:\\s|$)`,'i'),new RegExp(`${publication}\\s*[:–—-]?\\s*([0-9]+(?:[.,][0-9]+)?)(?:\\s*\\/\\s*(5|10|100))?`,'i')]){const m=text.match(pattern);if(m){const score=cleanNumber(m[1]),candidate=fromPair(score,m[2]||inferredScale(score,source),'semantic-publisher-labelled-score');if(candidate)return candidate}}}
- return null
+
+const reviewPath=`data/reviews/${slug}.json`,researchPath=`data/research/${slug}-source-matrix.json`;
+const review=read(reviewPath),research=read(researchPath),game=read(`data/drafts/${slug}.json`),cfg=read('config/parsers/review-synthesis.json');
+if(!review||!research||!game||!cfg)throw new Error(`Missing canonical review research/game draft for ${slug}`);
+const registry=loadReviewSourceRegistry(cfg.source_registry),timeout=Number(process.env.REVIEW_SCORE_FETCH_TIMEOUT_MS||10000);
+
+async function fetchRating(item){
+  const source=registeredEditorialSource(registry,item),url=item.resolved_url||item.url;
+  if(!source||!/^https?:\/\//i.test(String(url||'')))return{rating:null,reason:'invalid_source_or_url'};
+  try{
+    const response=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(timeout),headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskScoreAudit/5.0)','accept-language':'en,ru;q=.8'}});
+    if(!response.ok)return{rating:null,reason:`http_${response.status}`,blocked:[401,403,408,425,429,451,500,502,503,504].includes(response.status)};
+    const html=await response.text(),finalUrl=response.url||url,title=visible((html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)/i)||[])[1]||(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)||[])[1]||item.title||'');
+    const pageClass=classifyReviewPage(source,{url:finalUrl,title,bodyText:visible(html).slice(0,5000)});
+    if(!pageClass.accepted)return{rating:null,reason:pageClass.reason,finalUrl,title,pageClass};
+    const version=classifyCanonicalVersion({title,url:finalUrl,versionContext:item.version_context||'',game});
+    const rating=extractExplicitEditorialScore(html,source);
+    return{rating,reason:rating?'explicit_editorial_score_found':'no_explicit_editorial_score',finalUrl,title,version,pageClass};
+  }catch(error){return{rating:null,reason:error.message,blocked:true}}
 }
-function explicitRating(html,source){return parseJsonLd(html,source)||parseMicrodata(html,source)||parseSemanticMarkup(html,source)}
-async function fetchRating(item){const source=registeredEditorialSource(registry,item),url=item.resolved_url||item.url;if(!source||!/^https?:\/\//i.test(String(url||'')))return{rating:null,reason:'invalid_source_or_url'};try{const response=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(timeout),headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskScoreAudit/3.0)','accept-language':'en,ru;q=.8'}});if(!response.ok)return{rating:null,reason:`http_${response.status}`};const html=await response.text(),finalUrl=response.url||url,title=visible((html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)/i)||[])[1]||(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)||[])[1]||item.title||''),pageClass=classifyReviewPage(source,{url:finalUrl,title,bodyText:visible(html).slice(0,4000)});if(!pageClass.accepted)return{rating:null,reason:pageClass.reason,finalUrl,title};const version=classifyCanonicalVersion({title,url:finalUrl,versionContext:item.version_context||'',game}),rating=explicitRating(html,source);return{rating,reason:rating?'explicit_score_found':'no_explicit_score',finalUrl,title,version,pageClass}}catch(error){return{rating:null,reason:error.message}}}
-const rawAccepted=research.accepted||[],unregistered=[];
-const accepted=rawAccepted.filter(item=>{const source=registeredEditorialSource(registry,item);if(!source){unregistered.push({publication:item.publication||item.source||'',url:item.resolved_url||item.url||''});return false}item.configured_source_id=source.id;item.publication=source.name;return true});
-const updates=[],checks=[];for(let i=0;i<accepted.length;i+=4){const batch=accepted.slice(i,i+4),results=await Promise.all(batch.map(fetchRating));results.forEach((result,index)=>{const item=batch[index];if(result.version){item.canonical_score_eligible=result.version.score_eligible;item.version_validation=result.version;if(!result.version.score_eligible)item.source_kind='port_review'}checks.push({configured_source_id:item.configured_source_id,publication:item.publication,url:item.resolved_url||item.url,final_url:result.finalUrl||'',status:result.reason,canonical_score_eligible:item.canonical_score_eligible!==false});if(!result.rating)return;item.score=result.rating.score;item.scale=result.rating.scale;item.grade='';item.score_eligible=item.canonical_score_eligible!==false;item.score_evidence={method:result.rating.method,checked_at:new Date().toISOString(),url:result.finalUrl||item.resolved_url||item.url,configured_source_id:item.configured_source_id};updates.push({configured_source_id:item.configured_source_id,publication:item.publication,score:item.score,scale:item.scale,method:result.rating.method,canonical_score_eligible:item.score_eligible})})}
-const bySource=new Map(accepted.map(item=>[String(item.configured_source_id||item.publication),item]));review.reviews=(review.reviews||[]).map(item=>{const source=registeredEditorialSource(registry,item),updated=source?bySource.get(source.id):null;return updated?{...item,configured_source_id:updated.configured_source_id,publication:updated.publication,score:updated.score,scale:updated.scale,grade:updated.grade||'',score_eligible:updated.score_eligible,canonical_score_eligible:updated.canonical_score_eligible,version_validation:updated.version_validation,score_evidence:updated.score_evidence}:item});research.source_registry=cfg.source_registry;research.accepted=accepted;research.coverage={...(research.coverage||{}),scored:accepted.filter(x=>x.score_eligible).length,context_only_versions:accepted.filter(x=>x.canonical_score_eligible===false).length};review.source_registry=cfg.source_registry;review.updated_at=new Date().toISOString();write(researchPath,research);write(reviewPath,review);write(`data/parser-runs/review-explicit-scores-${slug}.json`,{parser:'review-explicit-score-enrichment-registry-v3',game_slug:slug,checked_at:new Date().toISOString(),source_registry:cfg.source_registry,accepted:accepted.length,unregistered_rejected:unregistered,scored:accepted.filter(x=>x.score_eligible).length,context_only_versions:accepted.filter(x=>x.canonical_score_eligible===false).length,updates,checks});console.log(JSON.stringify({slug,accepted:accepted.length,unregistered_rejected:unregistered.length,scored:accepted.filter(x=>x.score_eligible).length,context_only_versions:accepted.filter(x=>x.canonical_score_eligible===false).length,updates},null,2));
+
+const accepted=(research.accepted||[]).filter(item=>registeredEditorialSource(registry,item));
+const updates=[],checks=[];
+for(let i=0;i<accepted.length;i+=4){
+  const batch=accepted.slice(i,i+4),results=await Promise.all(batch.map(fetchRating));
+  for(let j=0;j<batch.length;j++){
+    const item=batch[j],result=results[j],source=registeredEditorialSource(registry,item);
+    if(!source)continue;
+    item.configured_source_id=source.id;item.publication=source.name;
+    if(result.version){item.canonical_score_eligible=result.version.score_eligible;item.version_validation=result.version;if(!result.version.score_eligible)item.source_kind='port_review'}
+    const previousTrusted=isTrustedEditorialScore(item)?{score:Number(item.score),scale:Number(item.scale),grade:item.grade||'',evidence:item.score_evidence}:null;
+    if(result.rating){
+      item.score=result.rating.score;item.scale=result.rating.scale;item.grade='';item.score_eligible=item.canonical_score_eligible!==false;
+      item.score_evidence=buildEditorialScoreEvidence(result.rating,{url:result.finalUrl||item.resolved_url||item.url,configuredSourceId:item.configured_source_id});
+      updates.push({configured_source_id:item.configured_source_id,publication:item.publication,score:item.score,scale:item.scale,method:result.rating.method,scope:'editorial_review',canonical_score_eligible:item.score_eligible});
+    }else if(previousTrusted){
+      item.score=previousTrusted.score;item.scale=previousTrusted.scale;item.grade=previousTrusted.grade;item.score_evidence=previousTrusted.evidence;item.score_eligible=item.canonical_score_eligible!==false;
+    }else{
+      item.score=null;item.scale=null;item.grade='';item.score_eligible=false;delete item.score_evidence;
+    }
+    checks.push({configured_source_id:item.configured_source_id,publication:item.publication,url:item.resolved_url||item.url,final_url:result.finalUrl||'',status:result.reason,blocked:Boolean(result.blocked),preserved_existing_score:Boolean(!result.rating&&previousTrusted),trusted_editorial_score:isTrustedEditorialScore(item),canonical_score_eligible:item.canonical_score_eligible!==false});
+  }
+}
+
+const bySource=new Map(accepted.map(item=>[item.configured_source_id,item]));
+review.reviews=(review.reviews||[]).map(item=>{
+  const source=registeredEditorialSource(registry,item),updated=source?bySource.get(source.id):null;
+  if(!updated)return item;
+  return {...item,...updated};
+});
+research.source_registry=cfg.source_registry;research.accepted=accepted;research.coverage={...(research.coverage||{}),scored:accepted.filter(x=>x.score_eligible&&isTrustedEditorialScore(x)).length,context_only_versions:accepted.filter(x=>x.canonical_score_eligible===false).length};
+review.source_registry=cfg.source_registry;review.updated_at=new Date().toISOString();
+write(researchPath,research);write(reviewPath,review);
+write(`data/parser-runs/review-explicit-scores-${slug}.json`,{parser:'review-explicit-editorial-score-enrichment-v5',game_slug:slug,checked_at:review.updated_at,source_registry:cfg.source_registry,accepted:accepted.length,scored:accepted.filter(x=>x.score_eligible&&isTrustedEditorialScore(x)).length,context_only_versions:accepted.filter(x=>x.canonical_score_eligible===false).length,updates,checks});
+console.log(JSON.stringify({slug,accepted:accepted.length,scored:accepted.filter(x=>x.score_eligible&&isTrustedEditorialScore(x)).length,context_only_versions:accepted.filter(x=>x.canonical_score_eligible===false).length,updates:updates.length,preserved:checks.filter(x=>x.preserved_existing_score).length},null,2));

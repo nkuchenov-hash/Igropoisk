@@ -1,6 +1,11 @@
 {
-  "schemaVersion": "game-registry-config/v1",
+  "schemaVersion": "game-registry-config/v2",
   "transitionMode": true,
+  "sourceRegistries": {
+    "publications": "config/parsers/review-source-registry.json",
+    "official": "config/parsers/official-source-registry.json",
+    "required": true
+  },
   "storage": {
     "github": [
       "code",
@@ -34,9 +39,7 @@
   ],
   "publication": {
     "mode": "non_destructive_upsert",
-    "protectedPaths": [
-      "game/_shared/**"
-    ],
+    "protectedPaths": ["game/_shared/**"],
     "emptyRunIsNoop": true,
     "partialRunPreservesUnrelatedGames": true,
     "requiresValidationGate": true,

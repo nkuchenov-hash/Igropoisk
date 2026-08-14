@@ -4,10 +4,17 @@ on:
   push:
     paths:
       - 'config/game-page-quality-v2.json'
-      - 'config/parsers/review-sources-ru.json'
+      - 'config/parsers/review-source-registry.json'
+      - 'config/parsers/review-synthesis.json'
+      - 'scripts/lib/review-source-registry.mjs'
+      - 'scripts/lib/review-score-extractor.mjs'
       - 'scripts/prepare-review-research.mjs'
+      - 'scripts/discover-review-sources-web*.mjs'
+      - 'scripts/promote-review-source-audit.mjs'
+      - 'scripts/enrich-review-explicit-scores.mjs'
       - 'scripts/calculate-review-score.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
+      - 'scripts/rebind-existing-review.mjs'
       - 'scripts/synthesize-review-adaptive-v2.mjs'
       - 'scripts/audit-review-language.mjs'
       - 'scripts/quality-control-loop*.mjs'
@@ -16,14 +23,17 @@ on:
       - 'scripts/audit-review-publication*.mjs'
       - 'scripts/build-top-250*.mjs'
       - 'scripts/validate-review-score-contract.mjs'
+      - 'scripts/validate-review-source-registry.mjs'
       - 'game/_shared/game-page-review-publication-control.js'
       - '.github/workflows/review-score-contract.yml'
   pull_request:
     branches: [staging]
     paths:
       - 'config/game-page-quality-v2.json'
-      - 'config/parsers/review-sources-ru.json'
+      - 'config/parsers/review-source-registry.json'
+      - 'config/parsers/review-synthesis.json'
       - 'scripts/**review*.mjs'
+      - 'scripts/promote-review-source-audit.mjs'
       - 'scripts/quality-control-loop*.mjs'
       - 'scripts/build-game-page-basic*.mjs'
       - 'scripts/orchestrate-content*.mjs'
@@ -42,17 +52,28 @@ jobs:
           node-version: '22'
       - name: Check canonical review pipeline syntax
         run: |
+          node --check scripts/lib/review-source-registry.mjs
+          node --check scripts/lib/review-score-extractor.mjs
           node --check scripts/prepare-review-research.mjs
+          node --check scripts/discover-review-sources-web.mjs
+          node --check scripts/discover-review-sources-web-v8.mjs
+          node --check scripts/promote-review-source-audit.mjs
+          node --check scripts/enrich-review-explicit-scores.mjs
           node --check scripts/calculate-review-score.mjs
           node --check scripts/calculate-ratings-from-research.mjs
+          node --check scripts/rebind-existing-review.mjs
           node --check scripts/synthesize-review-adaptive-v2.mjs
           node --check scripts/audit-review-language.mjs
           node --check scripts/quality-control-loop-v3.mjs
+          node --check scripts/quality-control-loop-v4.mjs
           node --check scripts/build-game-page-basic-v5.mjs
           node --check scripts/orchestrate-content-v6.mjs
           node --check scripts/audit-review-publication-v7.mjs
           node --check scripts/build-top-250-canonical-review.mjs
           node --check scripts/validate-review-score-contract.mjs
+          node --check scripts/validate-review-source-registry.mjs
           node --check game/_shared/game-page-review-publication-control.js
+      - name: Validate unified source registry
+        run: node scripts/validate-review-source-registry.mjs
       - name: Validate single source of truth
         run: node scripts/validate-review-score-contract.mjs

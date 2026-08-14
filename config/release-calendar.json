@@ -1,9 +1,8 @@
 {
-  "schema_version": 6,
+  "schema_version": 7,
   "minimum_significance_score": 25,
   "minimum_personalized_region_score": 170,
   "personalized_client_minimum_score": 90,
-  "max_public_releases_per_day": 12,
   "max_personalized_releases_per_day": 6,
   "max_personalized_pool": 80,
   "signal_weights": {
@@ -17,6 +16,28 @@
     "steam_popular_new": 8,
     "steam_popular_upcoming_discovery": 3,
     "steam_popular_new_discovery": 3
+  },
+  "expected_score": {
+    "consensus_points_per_source": 8,
+    "consensus_cap": 48,
+    "popular_multiplier": 0.55,
+    "popular_cap": 14,
+    "momentum_divisor": 75,
+    "momentum_cap": 10,
+    "discussion_points": 1.5,
+    "discussion_cap": 6,
+    "franchise_points_per_source": 1.5,
+    "franchise_cap": 8,
+    "game_page_points": 4,
+    "published_page_points": 3,
+    "home_quality_points": 2,
+    "steam_signal_points": 4,
+    "audience_divisor": 50,
+    "audience_cap": 6,
+    "marquee_minimum": 70,
+    "high_minimum": 50,
+    "notable_minimum": 35,
+    "watch_minimum": 20
   },
   "global_notability": {
     "media_intersection_publish_minimum": 5,

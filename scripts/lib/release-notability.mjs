@@ -1,9 +1,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { buildMediaIntersection } from './release-media-panel.mjs';
+import { loadPublicationSourceRegistry, releaseMediaPanelConfig } from './publication-source-registry.mjs';
 
 let defaultMediaSourceConfig = {sources:[]};
-try { defaultMediaSourceConfig = JSON.parse(fs.readFileSync(path.join(process.cwd(),'config/release-media-sources.json'),'utf8')); } catch {}
+try {
+  const policy=JSON.parse(fs.readFileSync(path.join(process.cwd(),'config/release-media-sources.json'),'utf8'));
+  if(policy.source_registry){
+    const registry=loadPublicationSourceRegistry(policy.source_registry);
+    defaultMediaSourceConfig=releaseMediaPanelConfig(registry,policy);
+  }else defaultMediaSourceConfig=policy;
+} catch {}
 
 const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
 const uniq = values => [...new Set((values || []).filter(Boolean))];
@@ -82,7 +89,7 @@ function measuredIntersection(candidate, news, popular, mediaSourceConfig = defa
     ...news.items.flatMap(newsMediaNames),
     ...(popular?.item?.news_publishers || []),
   ];
-  const measured = buildMediaIntersection({publisherNames, config: mediaSourceConfig});
+  const measured = buildMediaIntersection({publisherNames, config:mediaSourceConfig});
   return candidate?.media_intersection?.model === 'fixed-editorial-media-panel-v1'
     ? buildMediaIntersection({publisherNames:[...publisherNames, ...(candidate.media_intersection.publishers || [])], evidence:candidate.media_intersection.evidence || [], config:mediaSourceConfig, generatedAt:candidate.media_intersection.generated_at})
     : measured;
@@ -169,7 +176,7 @@ export function measureGlobalNotability(candidate, {newsEvents = [], popularRank
       intense_cross_site: intenseCrossSite,
       steam_signals: steamSignals,
     },
-    rule: 'The primary signal is the uncapped intersection of the fixed editorial media panel: each independent publisher family counts once, including RU/CIS outlets. Stores and official sources are excluded. Steam/store rank never qualifies a release by itself. Niche/franchise and strong regional paths remain.'
+    rule: 'The primary signal is the uncapped intersection of the Publication Registry editorial panel: each independent publisher family counts once, including RU/CIS outlets. Stores and official sources are excluded. Steam/store rank never qualifies a release by itself. Niche/franchise and strong regional paths remain.'
   };
 }
 
