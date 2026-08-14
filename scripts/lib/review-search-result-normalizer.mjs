@@ -28,3 +28,14 @@ export function normalizeBingSearchHtml(html) {
     return `<a${before}href="${escapeAttribute(destination)}"${after}>${label}</a>`;
   });
 }
+
+export function validateReviewSearchNormalizer() {
+  const target = 'https://www.gamespot.com/reviews/rainbow-six-siege-review-2015/1900-6416324/';
+  const encoded = `a1${Buffer.from(target).toString('base64url')}`;
+  const wrapped = `https://www.bing.com/ck/a?!&&p=contract&u=${encoded}&ntb=1`;
+  if (unwrapBingResultUrl(wrapped) !== target) throw new Error('Bing result redirect decoder contract failed.');
+  if (unwrapBingResultUrl(target) !== target) throw new Error('Direct review URL must remain unchanged.');
+  const normalized = normalizeBingSearchHtml(`<li class="b_algo"><h2><a href="${wrapped}"><span>Rainbow Six Siege Review</span></a></h2></li>`);
+  if (!normalized.includes(`href="${target}"`) || !normalized.includes('>Rainbow Six Siege Review</a>')) throw new Error('Nested Bing result anchor normalization contract failed.');
+  return true;
+}
