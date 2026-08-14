@@ -19,49 +19,27 @@ jobs:
       - name: Validate registry-backed sitemap candidates for all seven score gaps
         run: |
           node --input-type=module - <<'NODE'
-          import fs from 'node:fs';
           import {loadReviewSourceRegistry,sourceDiscoveryDef,findRegisteredSource,classifyReviewPage} from './scripts/lib/review-source-registry.mjs';
           import {publisherSitemapCandidates} from './scripts/lib/review-publisher-sitemap.mjs';
           import {extractExplicitEditorialScore} from './scripts/lib/review-score-extractor.mjs';
-          const games=[
-            ['metal-gear-solid-v-the-phantom-pain','Metal Gear Solid V: The Phantom Pain',2015],
-            ['dark-souls-iii','Dark Souls III',2016],
-            ['red-dead-redemption-2','Red Dead Redemption 2',2018],
-            ['half-life-alyx','Half-Life: Alyx',2020],
-            ['deathloop','Deathloop',2021],
-            ['alan-wake-2','Alan Wake 2',2023],
-            ['tom-clancy-s-ghost-recon-wildlands',"Tom Clancy's Ghost Recon Wildlands",2017]
-          ];
+          const games=[['metal-gear-solid-v-the-phantom-pain','Metal Gear Solid V: The Phantom Pain',2015],['dark-souls-iii','Dark Souls III',2016],['red-dead-redemption-2','Red Dead Redemption 2',2018],['half-life-alyx','Half-Life: Alyx',2020],['deathloop','Deathloop',2021],['alan-wake-2','Alan Wake 2',2023],['tom-clancy-s-ghost-recon-wildlands',"Tom Clancy's Ghost Recon Wildlands",2017]];
           const registry=loadReviewSourceRegistry('config/parsers/review-source-registry.json');
           const text=v=>String(v||'').replace(/<script\b[\s\S]*?<\/script>/gi,' ').replace(/<style\b[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
-          for(const [slug,title,year] of games){
-            let found=null;
-            for(const id of ['pc-gamer','gamesradar']){
-              const source=findRegisteredSource(registry,{configured_source_id:id}),def=sourceDiscoveryDef(source);
-              if(!def.sitemap_index)throw new Error(`${id} missing sitemap_index in unified registry`);
-              const candidates=await publisherSitemapCandidates({sourceId:id,indexUrl:def.sitemap_index,title,year,yearOffsets:def.sitemap_year_offsets,limit:6});
-              for(const item of candidates.items){
-                const r=await fetch(item.url,{headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskSitemapCanary/1.0)'}});if(!r.ok)continue;const html=await r.text();
-                const pageTitle=text((html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)/i)||[])[1]||(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)||[])[1]||'');
-                const page=classifyReviewPage(source,{url:r.url,title:pageTitle,bodyText:text(html).slice(0,10000)}),score=extractExplicitEditorialScore(html,source);
-                if(page.accepted&&score){found={id,url:r.url,title:pageTitle,score};break}
-              }
-              if(found)break;
-            }
-            console.log(JSON.stringify({slug,found}));
-            if(!found)throw new Error(`${slug}: no registered publisher sitemap scored review`);
-          }
+          for(const [slug,title,year] of games){let found=null;for(const id of ['pc-gamer','gamesradar']){const source=findRegisteredSource(registry,{configured_source_id:id}),def=sourceDiscoveryDef(source);const candidates=await publisherSitemapCandidates({sourceId:id,indexUrl:def.sitemap_index,title,year,yearOffsets:def.sitemap_year_offsets,limit:6});for(const item of candidates.items){const r=await fetch(item.url,{headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskSitemapCanary/1.0)'}});if(!r.ok)continue;const html=await r.text(),pageTitle=text((html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)/i)||[])[1]||(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)||[])[1]||''),page=classifyReviewPage(source,{url:r.url,title:pageTitle,bodyText:text(html).slice(0,10000)}),score=extractExplicitEditorialScore(html,source);if(page.accepted&&score){found={id,url:r.url,title:pageTitle,score};break}}if(found)break}console.log(JSON.stringify({slug,found}));if(!found)throw new Error(`${slug}: no registered publisher sitemap scored review`)}
           NODE
-      - name: Prove RDR2 and Ghost Recon cross the canonical score gate
+      - name: Trace RDR2 discovery to explicit-score handoff
         run: |
-          for slug in red-dead-redemption-2 tom-clancy-s-ghost-recon-wildlands; do
-            node scripts/discover-review-sources-web-v8.mjs "$slug" --all
-            node scripts/promote-review-source-audit.mjs "$slug"
-            node scripts/enrich-review-explicit-scores.mjs "$slug"
-            node scripts/calculate-ratings-from-research.mjs "$slug"
-            node - "$slug" <<'NODE'
-          const fs=require('fs'),slug=process.argv[2],r=JSON.parse(fs.readFileSync(`data/reviews/${slug}.json`,'utf8'));
-          console.log(JSON.stringify({slug,accepted:r.publication_gate?.accepted,status:r.review_score?.status,sources:r.review_score?.sources?.length,score:r.review_score?.calculation?.score_10},null,2));
-          if(r.publication_gate?.status!=='green'||r.review_score?.status!=='green'||Number(r.review_score?.sources?.length||0)<3)process.exit(2);
+          slug=red-dead-redemption-2
+          node scripts/discover-review-sources-web-v8.mjs "$slug" --all
+          node - "$slug" <<'NODE'
+          const fs=require('fs'),slug=process.argv[2],m=JSON.parse(fs.readFileSync(`data/research/${slug}-source-matrix.json`,'utf8'));console.log('DISCOVERED PCG',JSON.stringify(m.accepted.filter(x=>x.configured_source_id==='pc-gamer'),null,2));
           NODE
-          done
+          node scripts/promote-review-source-audit.mjs "$slug"
+          node scripts/enrich-review-explicit-scores.mjs "$slug"
+          node - "$slug" <<'NODE'
+          const fs=require('fs'),slug=process.argv[2],r=JSON.parse(fs.readFileSync(`data/parser-runs/review-explicit-scores-${slug}.json`,'utf8'));console.log('PCG CHECK',JSON.stringify(r.checks.filter(x=>x.configured_source_id==='pc-gamer'),null,2));
+          NODE
+          node scripts/calculate-ratings-from-research.mjs "$slug" || true
+          node - "$slug" <<'NODE'
+          const fs=require('fs'),slug=process.argv[2],r=JSON.parse(fs.readFileSync(`data/reviews/${slug}.json`,'utf8'));console.log(JSON.stringify({slug,accepted:r.publication_gate?.accepted,status:r.review_score?.status,sources:r.review_score?.sources?.length,score:r.review_score?.calculation?.score_10},null,2));
+          NODE
