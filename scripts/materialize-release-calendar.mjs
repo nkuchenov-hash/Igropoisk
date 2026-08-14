@@ -10,6 +10,7 @@ import { ensureVisibleReleaseCovers, validateVisibleReleaseCovers } from './lib/
 import { loadPublicationSourceRegistry, publicationRegistryStats } from './lib/publication-source-registry.mjs';
 import { loadOfficialSourceRegistry, attachOfficialSourceChecks, summarizeOfficialSourceCoverage, validateOfficialSourceRegistryWiring } from './lib/official-source-registry.mjs';
 import { mergePublicationRecords } from './lib/release-publication-discovery.mjs';
+import { applyReleaseScores } from './lib/release-scores.mjs';
 
 const ROOT = process.cwd();
 const paths = {
@@ -72,6 +73,7 @@ const newsEvents=[...items(newsDoc),...items(rankedNewsDoc)];
 const popularRanking=Array.isArray(popularDoc?.ranking)?popularDoc.ranking:[];
 let candidates=attachAudienceAffinity(linkage.candidates,newsEvents,policy);
 candidates=applyGlobalNotabilityGate(candidates,{newsEvents,popularRanking,policy});
+candidates=applyReleaseScores(candidates,policy);
 
 const personalizedPreview=buildPersonalizedReleases(candidates,policy);
 const visibleIds=new Set([
@@ -84,7 +86,9 @@ candidates=coverResolution.candidates;
 let publicCalendar=buildPublicCalendar(candidates,generatedAt);
 publicCalendar=attachCanonicalGameIdsToPublicCalendar(publicCalendar,candidates);
 const candidateById=new Map(candidates.map(candidate=>[candidate.id,candidate]));
-publicCalendar.releases=(publicCalendar.releases||[]).map(release=>{const candidate=candidateById.get(release.id);return {...release,global_notability:candidate?.global_notability||null,media_intersection:candidate?.media_intersection||null,audience_affinity:candidate?.audience_affinity||null,regional_notability:candidate?.regional_notability||null,official_source_checks:candidate?.official_source_checks||null}});
+publicCalendar.releases=(publicCalendar.releases||[]).map(release=>{const candidate=candidateById.get(release.id);return {...release,global_notability:candidate?.global_notability||null,media_intersection:candidate?.media_intersection||null,audience_affinity:candidate?.audience_affinity||null,regional_notability:candidate?.regional_notability||null,official_source_checks:candidate?.official_source_checks||null,release_confidence:candidate?.release_confidence||null,expected_score:candidate?.expected_score||null}});
+const chronologicalKey=release=>{const events=release.events||[];return events.map(event=>event.date||event.date_start||'9999-12-31').sort()[0]||'9999-12-31'};
+publicCalendar.releases.sort((a,b)=>chronologicalKey(a).localeCompare(chronologicalKey(b))||Number(b.expected_score?.score||0)-Number(a.expected_score?.score||0)||String(a.title||'').localeCompare(String(b.title||''),'ru'));
 publicCalendar.personalized_releases=buildPersonalizedReleases(candidates,policy);
 publicCalendar.personalization={
   model:'fixed-media-intersection-or-niche-or-strong-user-region-v1',
@@ -143,6 +147,7 @@ const report={
     console_authority:officialRegistry.policies?.date_authority_order||[],
   },
   official_source_coverage:officialCoverage,
+  scoring:{release_confidence_model:'release-confidence-v1',expected_score_model:'expected-score-v1',expected_tiers:Object.fromEntries(['marquee','high','notable','watch','candidate'].map(tier=>[tier,candidates.filter(item=>item.expected_score?.tier===tier).length]))},
   statistics:publicCalendar.statistics,
   media_intersection:{max:Math.max(0,...intersections),average:intersections.length?Number((intersections.reduce((sum,value)=>sum+value,0)/intersections.length).toFixed(2)):0,with_any:candidates.filter(item=>Number(item.media_intersection?.overall_count||0)>0).length,with_cis:candidates.filter(item=>Number(item.media_intersection?.region_counts?.cis||0)>0).length},
   game_registry_linkage:{canonical_games_considered:registryMigration.report.canonicalGames,...linkage.statistics},
