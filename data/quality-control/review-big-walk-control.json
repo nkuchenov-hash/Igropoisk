@@ -1,10 +1,10 @@
 {
-  "schema_version": 7,
+  "schema_version": 8,
   "type": "review",
   "game_slug": "big-walk",
   "game_id": "game_72bf0963b99d4c9b1ab4",
   "canonical_title": "Big Walk",
-  "checked_at": "2026-08-14T15:15:16.017Z",
+  "checked_at": "2026-08-14T16:15:55.336Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
@@ -47,13 +47,14 @@
   ],
   "policy": {
     "keep_queued_until_green": true,
+    "deterministic_only": false,
     "review_score_source": "data/reviews/{slug}.json#review_score",
     "research_primary": "complete-registered-source-direct-publisher-scan",
     "research_fallback": "registered-publisher-research-only-if-full-scan-missing",
     "score_enrichment": "direct-publisher-structured-markup-preserve-verified",
     "score_aggregation": "all-eligible-explicit-publisher-scores",
     "article_reuse": "surgical-rebind-before-regeneration",
-    "synthesis_fallback": "local-ollama",
+    "synthesis_fallback": "local-ollama-only-after-deterministic-recovery",
     "visual_audit_fallback": "local-ollama-multimodal",
     "language_audit_fallback": "local-ollama",
     "web_discovery_attempts_per_qc": 1
