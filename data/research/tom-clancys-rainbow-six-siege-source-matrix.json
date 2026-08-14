@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "tom-clancys-rainbow-six-siege",
-  "generated_at": "2026-08-14T23:01:32.926Z",
+  "generated_at": "2026-08-14T23:34:43.900Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -51,7 +51,7 @@
       "domain": "stopgame.ru",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T23:01:32.926Z",
+        "checked_at": "2026-08-14T23:34:43.900Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -62,9 +62,71 @@
       "scale": null,
       "grade": "",
       "score_eligible": false
+    },
+    {
+      "url": "https://www.playground.ru/rainbow_six_siege/opinion/rainbow_six_siege_obzor-550949",
+      "title": "Rainbow Six Siege - ,,ОБЗОР\"",
+      "configured_source_id": "playground",
+      "publication": "PlayGround.ru",
+      "language": "ru",
+      "id": "source-2",
+      "resolved_url": "https://www.playground.ru/rainbow_six_siege/opinion/rainbow_six_siege_obzor-550949",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Tom Clancy's Rainbow Six Siege.",
+      "evidence_points": [
+        "Делать обзор на игру который вышел 3 года назад, как то поздно. И к тому же это не обзор, а просто чувак играет игру в первый раз.",
+        "Получайте бонусы за активность на сайте и выигрывайте пополнение Steam-аккаунта или другие ценные призы .",
+        "Подписывайтесь на любимые игры, интересных авторов и формируйте собственную ленту постов.",
+        "Письмо с проверочным кодом было отправлено на ваш e-mail: . Введите код в поле ниже.",
+        "Не получили письмо? Не забудьте заглянуть в папку со спамом и проверить правильно ли указан адрес электронной почты.",
+        "Регистрируясь на нашем сайте вы соглашаетесь с правилами и политикой конфиденциальности ."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "playground.ru",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-14T23:34:43.900Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "publisher_rule"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
     }
   ],
-  "rejected": [],
+  "rejected": [
+    {
+      "publication": "PlayGround.ru",
+      "url": "https://pix.playground.ru/rainbow_six_siege/3826268",
+      "title": "Галерея / ZH8OezDHXqNnzL6iAy80ivnRmWdu9pIJFmaJdwHUYruoZwOlOTJygX_3_EqDab6FOs4xWdZQ0iCTv16c6Fo6HAsn.jpg / PlayGround.ru",
+      "reasons": [
+        "publisher_url_not_allowed"
+      ]
+    },
+    {
+      "publication": "PlayGround.ru",
+      "url": "https://www.playground.ru/video/iframe/66108",
+      "title": "Tom Clancy&#039;s Rainbow Six Siege - лучший тактический шутер! (Обзор) - PlayGround.ru",
+      "reasons": [
+        "publisher_url_not_allowed"
+      ]
+    }
+  ],
   "source_checks": [
     {
       "source_id": "igromania",
@@ -91,8 +153,8 @@
       "source_id": "playground",
       "name": "PlayGround.ru",
       "region": "ru",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "found",
+      "notes": "verified direct review"
     },
     {
       "source_id": "vgtimes",
@@ -350,8 +412,8 @@
       {
         "source_id": "playground",
         "name": "PlayGround.ru",
-        "status": "not_found",
-        "notes": "search completed; no verified direct review"
+        "status": "found",
+        "notes": "verified direct review"
       },
       {
         "source_id": "vgtimes",
@@ -390,13 +452,13 @@
   "coverage": {
     "registered_editorial": 37,
     "checked": 37,
-    "accepted": 1,
+    "accepted": 2,
     "scored": 0,
     "context_only_versions": 0,
     "blocked_verified": 0,
-    "contemporary": 1,
+    "contemporary": 2,
     "green": false,
     "passed": false,
-    "needs_more": 4
+    "needs_more": 3
   }
 }
