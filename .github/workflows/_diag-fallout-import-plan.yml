@@ -1,0 +1,29 @@
+name: Validate Fallout import plan
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-fallout-import-plan.yml]
+permissions:
+  contents: read
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/fallout-series-import
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate verified import contract and plan Fallout batch
+        run: |
+          node scripts/test-verified-game-import.mjs
+          node scripts/plan-game-imports.mjs
+          node - <<'NODE'
+          const fs=require('fs');const p=JSON.parse(fs.readFileSync('tmp/game-import-plan.json','utf8'));
+          console.log(JSON.stringify({requested:p.requested,resolved:p.resolved?.length,issues:p.issues,page_tasks:p.page_tasks,items:p.items},null,2));
+          if(p.requested!==9||p.resolved?.length!==9||(p.issues||[]).length)process.exit(2);
+          const fallout4=(p.resolved||[]).find(x=>x.import_id==='fallout-4-2015');
+          console.log('FALLOUT4 '+JSON.stringify(fallout4));
+          if(!fallout4?.game_id)process.exit(2);
+          NODE
