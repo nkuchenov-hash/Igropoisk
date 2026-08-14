@@ -11,7 +11,7 @@ export function unwrapBingResultUrl(value) {
     if (!encoded) return original;
     try { encoded = decodeURIComponent(encoded); } catch {}
     if (encoded.startsWith('a1')) encoded = encoded.slice(2);
-    encoded = encoded.replace(/-/g, '+').replace(/_/g, '/');
+    encoded = encoded.replace(/ /g, '+').replace(/-/g, '+').replace(/_/g, '/');
     encoded += '='.repeat((4 - (encoded.length % 4)) % 4);
     const decoded = Buffer.from(encoded, 'base64').toString('utf8').trim();
     return /^https?:\/\//i.test(decoded) ? decoded : original;
