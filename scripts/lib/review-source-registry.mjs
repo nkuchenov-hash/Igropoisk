@@ -67,8 +67,6 @@ export function configuredSourceId(registry,raw={}){return findRegisteredSource(
 const genericBadPath=/(?:^|\/)(?:game|games|file|files|download|downloads|news|guide|guides|wiki|video|videos|screenshots?|gallery|forum|forums|cheats?|trainer|mods?)(?:\/|$)/i;
 const genericReviewPath=/(?:review|reviews|opinion|recenzi|retsenzi|obzor|reviewed)/i;
 const genericReviewText=/(?:\breview\b|\bverdict\b|\brecension\b|\brecenzj|\bобзор\b|\bрецензи)/i;
-// Collection/index pages may contain dozens of reviews and audience ratings. They are discovery hubs,
-// not one professional review and therefore cannot supply a canonical score directly.
 const genericReviewHubPath=/(?:^|\/)(?:reviews?|review-index|opinions?|opinion\/reviews?)\/?$/i;
 
 export function classifyReviewPage(source,{url='',title='',bodyText=''}={}){
@@ -79,10 +77,11 @@ export function classifyReviewPage(source,{url='',title='',bodyText=''}={}){
   if(allow.length&&!explicitAllow)return{accepted:false,reason:'publisher_url_not_allowed'};
   if(!explicitAllow&&genericReviewHubPath.test(pathname))return{accepted:false,reason:'review_hub_not_article'};
   const titleSignals=compile(rules.title_allow),explicitTitle=titleSignals.length&&titleSignals.some(rx=>rx.test(title));
+  const requiredBody=compile(rules.body_allow);
+  if(requiredBody.length&&!requiredBody.some(rx=>rx.test(bodyText)))return{accepted:false,reason:'publisher_editorial_marker_missing'};
+  const forbiddenBody=compile(rules.body_deny);
+  if(forbiddenBody.some(rx=>rx.test(bodyText)))return{accepted:false,reason:'publisher_body_deny'};
   const pathSignal=genericReviewPath.test(pathname),titleSignal=genericReviewText.test(title);
-  // A generic game/file/news/etc. path is never enough on its own. It must itself contain a review marker.
-  // This rejects game cards such as /game/... even when their SEO title says “reviews and ratings”, while
-  // preserving legacy review URLs such as Game Informer's /games/.../the-witcher-3-...-review-....
   if(!explicitAllow&&genericBadPath.test(pathname)&&!pathSignal)return{accepted:false,reason:'non_review_path'};
   if(!explicitAllow&&!explicitTitle&&!pathSignal&&!titleSignal)return{accepted:false,reason:'no_review_signal'};
   return{accepted:true,reason:explicitAllow||explicitTitle?'publisher_rule':pathSignal?'review_path':'review_title'};
