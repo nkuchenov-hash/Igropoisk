@@ -61,11 +61,12 @@ const rawBaseWithOfficialChecks={
 const publicationRecords=Array.isArray(publicationDiscovery?.releases)?publicationDiscovery.releases:[];
 const discoveryMerged=mergePublicationRecords(rawBaseWithOfficialChecks.releases,publicationRecords);
 const discoveryMergedWithOfficialChecks=attachOfficialSourceChecks(discoveryMerged,officialRegistry,generatedAt);
-const officialCoverage=summarizeOfficialSourceCoverage(discoveryMergedWithOfficialChecks,officialRegistry);
 const steamEditorial=await enrichRawReleasesFromSteamEditorial(discoveryMergedWithOfficialChecks,policy,generatedAt);
 const rawById=new Map(steamEditorial.releases.map(item=>[item.id,item]));
 let rawCandidates=buildCandidates({rawReleases:steamEditorial.releases,editorial,officialClaims:Array.isArray(claimsDoc?.claims)?claimsDoc.claims:[],policy});
-rawCandidates=rawCandidates.map(candidate=>{const source=rawById.get(candidate.id)||{};return {...candidate,editorial_quality:source.editorial_quality||{},anticipation:source.anticipation||null,media_intersection:source.media_intersection||null,official_source_checks:source.official_source_checks||null}});
+rawCandidates=rawCandidates.map(candidate=>{const source=rawById.get(candidate.id)||{};return {...candidate,editorial_quality:source.editorial_quality||{},anticipation:source.anticipation||null,media_intersection:source.media_intersection||null}});
+rawCandidates=attachOfficialSourceChecks(rawCandidates,officialRegistry,generatedAt);
+const officialCoverage=summarizeOfficialSourceCoverage(rawCandidates,officialRegistry);
 const deduplicatedCandidates=deduplicateCandidates(rawCandidates);
 const registryMigration=migrateRepository(ROOT,{dryRun:true,now:generatedAt,baseCommit:process.env.GITHUB_SHA||null,publicBaseUrl:'/game'});
 const linkage=linkReleaseCandidatesToRegistry(deduplicatedCandidates,registryMigration.registry);
@@ -102,7 +103,7 @@ const errors=[
   ...validateGlobalNotability({candidates,publicCalendar}),
   ...validatePersonalizedReleases({candidates,publicCalendar,policy}),
   ...validateVisibleReleaseCovers(publicCalendar),
-  ...validateOfficialSourceRegistryWiring({registry:officialRegistry,records:discoveryMergedWithOfficialChecks}),
+  ...validateOfficialSourceRegistryWiring({registry:officialRegistry,records:rawCandidates}),
 ];
 if(publicationStats.release_coverage_sources<1)errors.push('Publication Registry has no release coverage sources');
 if(publicationStats.calendar_discovery_sources<1)errors.push('Publication Registry has no calendar discovery sources');
