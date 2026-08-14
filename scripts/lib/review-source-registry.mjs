@@ -70,13 +70,13 @@ const genericReviewText=/(?:\breview\b|\bverdict\b|\brecension\b|\brecenzj|\bÐ¾Ð
 
 export function classifyReviewPage(source,{url='',title='',bodyText=''}={}){
   if(!source?.review)return{accepted:false,reason:'source_not_editorial'};
-  const pathname=pathText(url),combined=normalizedText(`${title} ${bodyText}`),rules=source.review.page_rules||{};
+  const pathname=pathText(url),rules=source.review.page_rules||{};
   const deny=compile(rules.url_deny);if(deny.some(rx=>rx.test(pathname)))return{accepted:false,reason:'publisher_url_deny'};
   const allow=compile(rules.url_allow),explicitAllow=allow.length&&allow.some(rx=>rx.test(pathname));
   if(allow.length&&!explicitAllow)return{accepted:false,reason:'publisher_url_not_allowed'};
-  if(!explicitAllow&&genericBadPath.test(pathname))return{accepted:false,reason:'non_review_path'};
   const titleSignals=compile(rules.title_allow),explicitTitle=titleSignals.length&&titleSignals.some(rx=>rx.test(title));
-  const genericSignal=genericReviewPath.test(pathname)||genericReviewText.test(`${title} ${bodyText.slice(0,1800)}`);
+  const genericSignal=genericReviewPath.test(pathname)||genericReviewText.test(title);
+  if(!explicitAllow&&!explicitTitle&&!genericSignal&&genericBadPath.test(pathname))return{accepted:false,reason:'non_review_path'};
   if(!explicitAllow&&!explicitTitle&&!genericSignal)return{accepted:false,reason:'no_review_signal'};
   return{accepted:true,reason:explicitAllow||explicitTitle?'publisher_rule':'generic_review_signal'};
 }
