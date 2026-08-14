@@ -1,0 +1,25 @@
+name: Verify GameRevolution scores
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-gamerevolution-scores.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: diag/review-readiness-20260814
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch every accepted GameRevolution score gap
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');const read=(p,f=null)=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return f}};const targets=[];
+          for(const item of read('data/catalog-visible.json',[])){const slug=item.slug,r=read(`data/reviews/${slug}.json`);if(!r||r.publication_gate?.status!=='green'||r.review_score?.status==='green')continue;const src=(r.reviews||[]).find(x=>x.configured_source_id==='game-revolution'&&x.canonical_score_eligible!==false);if(src)targets.push({slug,url:src.resolved_url||src.url});}
+          let ok=0;for(const t of targets){try{const r=await fetch(t.url,{headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskScoreDiagnostic/1.0)'}});const h=await r.text(),m=h.match(/<div\s+class=["'][^"']*xe-review-reports__rating[^"']*["'][^>]*>\s*<p[^>]*>\s*([0-9]+(?:\.[0-9]+)?)\s*<\/p>/i);console.log(JSON.stringify({...t,http:r.status,score:m?Number(m[1]):null}));if(r.ok&&m)ok++;}catch(e){console.log(JSON.stringify({...t,error:e.message}))}}
+          console.log(JSON.stringify({targets:targets.length,matched:ok}));if(ok!==targets.length)process.exit(2);
+          NODE
