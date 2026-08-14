@@ -6,6 +6,8 @@ on:
       - 'config/game-page-quality-v2.json'
       - 'config/parsers/review-source-registry.json'
       - 'config/parsers/review-synthesis.json'
+      - 'scripts/lib/review-source-registry.mjs'
+      - 'scripts/lib/review-score-extractor.mjs'
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/discover-review-sources-web.mjs'
       - 'scripts/promote-review-source-audit.mjs'
@@ -50,6 +52,8 @@ jobs:
           node-version: '22'
       - name: Check canonical review pipeline syntax
         run: |
+          node --check scripts/lib/review-source-registry.mjs
+          node --check scripts/lib/review-score-extractor.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/discover-review-sources-web.mjs
           node --check scripts/promote-review-source-audit.mjs
