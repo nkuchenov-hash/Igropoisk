@@ -85,3 +85,5 @@ writeJSON('tmp/news-game-page-plan.json', {
   page_tasks: newsTasks.map(item => ({ game_id: item.game_id, slug: item.slug, type: item.type, priority: item.priority }))
 });
 console.log(JSON.stringify({ requested: requests.length, canonical_resolved: requestedById.size, required_games: requiredGames.length, created: discovery.created, issues: discovery.issues.length, page_tasks: newsTasks.length, total_page_tasks: plan.pages.length }, null, 2));
+
+await import('./plan-game-imports.mjs');
