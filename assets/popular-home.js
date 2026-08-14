@@ -5,25 +5,12 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&
 const setState=(target,title,text)=>{target.innerHTML=`<div class="popular-state"><strong>${esc(title)}</strong><span>${esc(text)}</span></div>`};
 const reducedMotion=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 const MAXIMUM_COUNT=20;
-const HOME_FEEDS_MANIFEST='https://storage.yandexcloud.net/igropoisk-content/home-feeds/manifests/current.json';
-const localRuntime=()=>['localhost','127.0.0.1','::1'].includes(location.hostname)||location.protocol==='file:';
-const fetchJson=async url=>{const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw new Error(`${url} HTTP ${response.status}`);return response.json()};
-let manifestPromise=null;
-async function loadRuntimeFeed(relative){
-  if(!localRuntime()){
-    try{
-      manifestPromise??=fetchJson(`${HOME_FEEDS_MANIFEST}?v=${Date.now()}`);
-      const manifest=await manifestPromise;
-      const descriptor=manifest?.files?.[relative];
-      if(descriptor?.url)return await fetchJson(descriptor.url);
-      throw new Error(`Home feed is absent from runtime manifest: ${relative}`);
-    }catch(error){
-      console.warn('Игропоиск: live home-feed storage unavailable, using repository fallback',relative,error);
-    }
-  }
-  return fetchJson(`${relative}${relative.includes('?')?'&':'?'}v=${Date.now()}`);
-}
-window.IgropoiskHomeFeeds=window.IgropoiskHomeFeeds||{load:loadRuntimeFeed,manifestUrl:HOME_FEEDS_MANIFEST};
+const loadFeed=async path=>{
+  if(window.IgropoiskHomeFeeds?.load)return window.IgropoiskHomeFeeds.load(path);
+  const response=await fetch(`${path}?v=${Date.now()}`,{cache:'no-store'});
+  if(!response.ok)throw new Error(`${path} HTTP ${response.status}`);
+  return response.json();
+};
 
 function ensureControls(target){
   const heading=target.closest('.section')?.querySelector('.section-head');
@@ -183,7 +170,7 @@ async function load(){
   try{
     const stamp=Date.now();
     const [data,catalogResponse]=await Promise.all([
-      loadRuntimeFeed('data/popular/current.json'),
+      loadFeed('data/popular/current.json'),
       fetch(`data/catalog-visible.json?v=${stamp}`,{cache:'no-store'})
     ]);
     const ranking=Array.isArray(data.ranking)?data.ranking:[];
