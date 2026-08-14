@@ -20,6 +20,7 @@ on:
       - "scripts/materialize-release-calendar.mjs"
       - "scripts/validate-release-calendar.mjs"
       - "scripts/validate-release-source-registries.mjs"
+      - "scripts/test-release-source-registries.mjs"
       - "scripts/test-release-calendar-policy.mjs"
       - "scripts/parse-releases.mjs"
       - "config/release-calendar.json"
@@ -50,6 +51,7 @@ on:
       - "scripts/enrich-release-media-panel.mjs"
       - "scripts/repair-release-slugs.mjs"
       - "scripts/validate-release-source-registries.mjs"
+      - "scripts/test-release-source-registries.mjs"
       - "config/release-calendar.json"
       - "config/release-media-sources.json"
       - "config/release-official-claims.json"
@@ -95,6 +97,8 @@ jobs:
           node-version: "22"
       - name: Validate source registry wiring
         run: node scripts/validate-release-source-registries.mjs
+      - name: Source registry regression tests
+        run: node scripts/test-release-source-registries.mjs
       - name: Policy regression tests
         run: node scripts/test-release-calendar-policy.mjs
       - name: Refresh raw discovery for scheduled/manual validation
