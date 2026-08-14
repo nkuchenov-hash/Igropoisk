@@ -1,0 +1,30 @@
+name: Inspect Future search payload
+on:
+  push:
+    branches: [diag/review-readiness-20260814]
+    paths: [.github/workflows/_diag-future-search-payload.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect embedded search result URLs
+        run: |
+          node - <<'NODE'
+          const tests=[
+            ['pcgamer','Metal Gear Solid 5','metal-gear-solid-5-review'],
+            ['pcgamer','Dark Souls 3','dark-souls-3-review'],
+            ['pcgamer','Red Dead Redemption 2','red-dead-redemption-2-review'],
+            ['pcgamer','Half-Life Alyx','half-life-alyx-review'],
+            ['pcgamer','Deathloop','deathloop-review'],
+            ['pcgamer','Alan Wake 2','alan-wake-2-review'],
+            ['pcgamer','Ghost Recon Wildlands','ghost-recon-wildlands-review'],
+            ['gamesradar','Red Dead Redemption 2','red-dead-redemption-2-review'],
+            ['gamesradar','Alan Wake 2','alan-wake-2-review']
+          ];
+          for(const [site,title,needle] of tests){const domain=site==='pcgamer'?'www.pcgamer.com':'www.gamesradar.com';const r=await fetch(`https://${domain}/search/?searchTerm=${encodeURIComponent(title)}`,{headers:{'user-agent':'Mozilla/5.0'}});const h=await r.text(),lower=h.toLowerCase(),i=lower.indexOf(needle);const all=[...h.matchAll(new RegExp(`https?:[^"'<>\\s]{0,240}${needle.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}[^"'<>\\s]{0,120}`,'ig'))].map(m=>m[0].replace(/\\u002F/g,'/').replace(/\\\//g,'/'));console.log(JSON.stringify({site,title,http:r.status,needle_found:i>=0,index:i,urls:[...new Set(all)].slice(0,10),snippet:i>=0?h.slice(Math.max(0,i-500),i+800).replace(/\s+/g,' '):''}));}
+          NODE
