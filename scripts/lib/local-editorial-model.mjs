@@ -1,13 +1,32 @@
 import fs from 'node:fs';
+import http from 'node:http';
+import https from 'node:https';
 
 export const LOCAL_EDITORIAL_MODEL = process.env.LOCAL_EDITORIAL_MODEL || 'qwen3-vl:4b';
 export const OLLAMA_HOST = String(process.env.OLLAMA_HOST || 'http://127.0.0.1:11434').replace(/\/$/, '');
 
+function ollamaJson(pathname,{method='GET',body=null,timeoutMs=900000}={}){
+  const url=new URL(`${OLLAMA_HOST}${pathname}`),client=url.protocol==='https:'?https:http,payload=body===null?null:JSON.stringify(body);
+  return new Promise((resolve,reject)=>{
+    const request=client.request(url,{method,headers:{accept:'application/json',...(payload?{'content-type':'application/json','content-length':Buffer.byteLength(payload)}:{})}},response=>{
+      const chunks=[];
+      response.on('data',chunk=>chunks.push(chunk));
+      response.on('end',()=>{
+        const text=Buffer.concat(chunks).toString('utf8');
+        if((response.statusCode||0)<200||(response.statusCode||0)>=300){reject(new Error(`Local editorial model HTTP ${response.statusCode}: ${text.slice(0,4000)}`));return}
+        try{resolve(text?JSON.parse(text):{})}catch(error){reject(new Error(`Local editorial model returned invalid transport JSON: ${error.message}`))}
+      });
+    });
+    request.setTimeout(timeoutMs,()=>request.destroy(new Error(`Local editorial model request timed out after ${timeoutMs}ms`)));
+    request.on('error',reject);
+    if(payload)request.write(payload);
+    request.end();
+  });
+}
+
 export async function localModelReady({timeoutMs=2500}={}) {
   try {
-    const response = await fetch(`${OLLAMA_HOST}/api/tags`, {signal: AbortSignal.timeout(timeoutMs)});
-    if (!response.ok) return false;
-    const payload = await response.json();
+    const payload=await ollamaJson('/api/tags',{timeoutMs});
     return (payload.models || []).some(item => String(item.name || item.model || '').startsWith(LOCAL_EDITORIAL_MODEL));
   } catch {
     return false;
@@ -32,11 +51,10 @@ export async function chatJson({system='', prompt, schema='json', images=[], tem
   if (!prompt) throw new Error('Local editorial prompt is required');
   const ready = await localModelReady();
   if (!ready) throw new Error(`Local editorial model is not ready: ${LOCAL_EDITORIAL_MODEL}`);
-  const response = await fetch(`${OLLAMA_HOST}/api/chat`, {
-    method: 'POST',
-    signal: AbortSignal.timeout(timeoutMs),
-    headers: {'content-type': 'application/json'},
-    body: JSON.stringify({
+  const payload=await ollamaJson('/api/chat',{
+    method:'POST',
+    timeoutMs,
+    body:{
       model: LOCAL_EDITORIAL_MODEL,
       stream: false,
       think: false,
@@ -46,10 +64,8 @@ export async function chatJson({system='', prompt, schema='json', images=[], tem
         {role: 'user', content: prompt, ...(images.length ? {images} : {})}
       ],
       options: {temperature, num_ctx: numCtx, num_predict: numPredict}
-    })
+    }
   });
-  if (!response.ok) throw new Error(`Local editorial model HTTP ${response.status}: ${await response.text()}`);
-  const payload = await response.json();
   const raw = payload?.message?.content;
   if (!raw) throw new Error('Local editorial model returned no content');
   try {
