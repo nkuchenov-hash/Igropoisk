@@ -20,7 +20,7 @@ const event=(id,title,platforms=['PC'],sourceIds=[`steam:${id}`],date='2026-10-1
 const raw=[event(1,'Important Game'),event(2,'Important Game Demo'),event(3,'Important Game Playtest'),event(4,'Important Game Deluxe Edition'),event(5,'Console Leak',['PlayStation 5'])];
 const editorial={decisions:{'steam:1':{decision:'rejected',rejection_reason:'editorial ban',publication_forbidden:true,locked_fields:['decision']}}};
 const claims=[{slug:'console-leak',platforms:['PlayStation 5'],date:'2026-10-12',source:{id:'ps-store:5',family:'platform_store',title:'PlayStation Store',url:'https://store.playstation.com/example',platforms:['PlayStation 5']},confidence:0.98}];
-const basePolicy={minimum_significance_score:1};
+const basePolicy={minimum_significance_score:1,signal_weights:{current_popular:18}};
 const candidates=buildCandidates({rawReleases:raw,editorial,officialClaims:claims,policy:basePolicy});
 const byId=new Map(candidates.map(candidate=>[candidate.id,candidate]));
 assert.equal(byId.get('steam:1').moderation.status,'rejected');
