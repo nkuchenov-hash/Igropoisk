@@ -1,9 +1,9 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/baldurs-gate-3.json#review_score",
   "game_slug": "baldurs-gate-3",
-  "checked_at": "2026-08-14T08:40:46.731Z",
+  "checked_at": "2026-08-14T10:13:48.994Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее оценок независимых профессиональных изданий",
@@ -15,11 +15,13 @@
     "rounding_decimals": 1,
     "one_vote_per_publication": true,
     "aggregators_forbidden": true,
-    "invented_scores_forbidden": true
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
   },
   "sources": [
     {
-      "source_id": "source-2",
+      "source_id": "source-1",
+      "configured_source_id": "playground",
       "publication": "PlayGround.ru",
       "title": "Обзор Baldur&#039;s Gate 3 - лучшая RPG современности",
       "url": "https://www.playground.ru/baldurs_gate_3/opinion/obzor_baldurs_gate_3_luchshaya_rpg_sovremennosti-1644244",
@@ -29,7 +31,21 @@
         "grade": null,
         "display": "9.5/10"
       },
-      "normalized_10": 9.5
+      "normalized_10": 9.5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "checked_at": "2026-08-14T10:13:48.460Z",
+        "url": "https://www.playground.ru/baldurs_gate_3/opinion/obzor_baldurs_gate_3_luchshaya_rpg_sovremennosti-1644244",
+        "configured_source_id": "playground"
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/baldur_s_gate_iii/review/33275",
+      "reason": "canonical_version"
     }
   ],
   "calculation": {

@@ -1,58 +1,22 @@
 {
-  "schema_version": 7,
+  "schema_version": 10,
   "game_slug": "baldurs-gate-3",
-  "generated_at": "2026-08-14T08:40:23.484Z",
+  "generated_at": "2026-08-14T10:12:38.030Z",
+  "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
     "target_sources": 20,
-    "desired_sources_per_pass": 10,
     "maximum_sources": 20,
     "historical": false,
-    "min_contemporary": 5,
     "regional_discovery_required": true,
-    "discovery_provider": "direct-publisher-web-v3-bounded"
+    "discovery_provider": "registered-direct-publisher-web-v6",
+    "audit_all": false,
+    "canonical_score_requires_exact_version": true,
+    "prior_verified_sources_survive_bot_block": true
   },
   "accepted": [
     {
       "id": "source-1",
-      "configured_source_id": "stopgame",
-      "publication": "StopGame",
-      "title": "Baldur’s Gate III игра | StopGame.ru",
-      "url": "https://stopgame.ru/game/baldur_s_gate_iii",
-      "resolved_url": "https://stopgame.ru/game/baldur_s_gate_iii",
-      "source_kind": "review",
-      "platform": "",
-      "version_context": "",
-      "published_at": "",
-      "author": "",
-      "language": "ru",
-      "score": null,
-      "scale": null,
-      "grade": "",
-      "score_eligible": false,
-      "identity_evidence": "Direct professional publisher page verified for Baldur’s Gate 3.",
-      "evidence_points": [
-        "Соберите отряд и вернитесь в Забытые Королевства. Вас ждет история о дружбе и предательстве, выживании и самопожертвовании, о сладком зове абсолютной власти. — Steam",
-        "Игра года, в которой я провела уже 250 часов и проведу столько же ближайшие несколько недель)",
-        "Игра мне понравилась, думаю оценка за себя говорит. Однако всё хорошее, что только можно уже сказали (а повторять я не вижу смысла), поэтому хотелось бы остановиться на странных, почти что детских косяках, которые умудряются раздражать на протяжении всей игры. Поехали. UPD: игра пройдена и общее моё мнение ухудшилось, изначально стояло 4/5. Эмоции отошли взглянул трезво, теперь мне понятно как они допустили все эти детские косяки, которые я описал ниже. Ведь они накосячили не только здесь.&nbsp;",
-        "Инвентарь . Сортировка вроде есть, но это не избавляет тебя от долгого вглядывания в десятки маленьких ячеек в поисках заветной колбы. Почему нельзя было сделать разделы? Решительно непонятно. При том, что разделы есть в меню торговли.",
-        "Пати. По возвращению в лагерь ты не можешь открыть инвентарь тех, кто в данный момент не в группе. Так и выписка/вписка в отряд делается только через диалог. Раз на 7-8 это уже начинает подбешивать, представьте, что будет с вами после 30-40 часов игры. Почему-то игры прошлого умели в отдельное меню для формирования группы.",
-        "Сбор лута. Я не знаю кому нравится щелкать КАЖДЫЙ предмет, у нас тут вроде не поинт-н-клик. Забава этого в том, что Лариан уже избавилась от этого в своей прошлой игре: я играл в ДОС2 на геймпаде, и там была \"зона\" сбора лута. Но, видимо, решили вернуться к корням:)&nbsp;",
-        "Щит. Это не минус, но факт того, что отображение щита за спиной — забытая технология древности, доставляет.",
-        "Сотки именных НПС. Смысл в том, что чаще всего они просто говорят одну фразу и всё. В первом и втором акте это не критично, но в третьем начинается просто какой-то кошмар, ибо их очень много и среди них скрываются нпс-квестодатели. Выделили ли бы как-то цветом персонажей с которыми можно поговорить. Например, в PoE были просто графоманские персонажи, которые показывали какое-то воспоминание, так вот они и были обозначены иначе. А так бывает, идешь: видишь интересную ситуацию, а к ней прилагаются только комментарии.&nbsp;"
-      ],
-      "praise": [],
-      "criticism": [],
-      "mechanics": [],
-      "domain": "stopgame.ru",
-      "validation": {
-        "status": "accepted",
-        "checked_at": "2026-08-14T08:40:23.484Z",
-        "method": "direct-publisher-http-v3"
-      }
-    },
-    {
-      "id": "source-2",
       "configured_source_id": "playground",
       "publication": "PlayGround.ru",
       "title": "Обзор Baldur&#039;s Gate 3 - лучшая RPG современности",
@@ -68,6 +32,11 @@
       "scale": 10,
       "grade": "",
       "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
       "identity_evidence": "Direct professional publisher page verified for Baldur’s Gate 3.",
       "evidence_points": [
         "Спустя почти три года, Larian Studios наконец-то выпустили Baldur&#039;s Gate 3 — самый масштабный проект компании. Уже добрую неделю мы ежедневно проводим в игре под десяток часов, и оторваться от неё совершенно не получается. По нашему мнению, разработчики сделали невозможное — продумали каждую деталь в мелочах. Так ли всё радужно? Определённо так!",
@@ -85,17 +54,325 @@
       "domain": "playground.ru",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T08:40:23.484Z",
-        "method": "direct-publisher-http-v3"
+        "checked_at": "2026-08-14T10:12:38.030Z",
+        "method": "registered-direct-publisher-http-v6",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
       },
       "score_evidence": {
         "method": "jsonld.reviewRating",
-        "checked_at": "2026-08-14T08:40:46.135Z",
-        "url": "https://www.playground.ru/baldurs_gate_3/opinion/obzor_baldurs_gate_3_luchshaya_rpg_sovremennosti-1644244"
+        "checked_at": "2026-08-14T10:13:48.460Z",
+        "url": "https://www.playground.ru/baldurs_gate_3/opinion/obzor_baldurs_gate_3_luchshaya_rpg_sovremennosti-1644244",
+        "configured_source_id": "playground"
+      }
+    },
+    {
+      "id": "source-2",
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "title": "Отзыв об игре Baldur’s Gate III от пользователя herys | StopGame.ru",
+      "url": "https://stopgame.ru/game/baldur_s_gate_iii/review/33275",
+      "resolved_url": "https://stopgame.ru/game/baldur_s_gate_iii/review/33275",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "ru",
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Baldur’s Gate 3.",
+      "evidence_points": [
+        "Не знаю, кому вообще нужен обзор на Baldur’s Gate 3 в 2К26, но я прошёл игру совсем недавно и понял: если не напишу хоть что-то об ЭТОМ произведении, меня можно будет смело отправлять на пир к Баалу.",
+        "Почему 4.5, а не 5? Потому что в моей жизни были игры, которые цепляли меня сильнее — пусть они и уступали в масштабе, полировке и профессионализме исполнения. Baldur’s Gate 3 почти безупречна как работа — по глубине, вниманию к деталям, вариативности, постановке. Но для личной «пятёрки» мне не хватило того самого необъяснимого удара прямо в сердце.",
+        "И всё же — это грандиозное произведение. Огромный труд, уважение к игроку, смелость в дизайне и невероятный уровень проработки. Искренне хочется поблагодарить создателей — я рад, что в наше время существуют такие творцы. Игры могут быть развлечением, а могут быть событием. И Baldur’s Gate 3 — именно событие."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "stopgame.ru",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-14T10:12:38.030Z",
+        "method": "registered-direct-publisher-http-v6",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
       }
     }
   ],
   "rejected": [],
+  "source_checks": [
+    {
+      "source_id": "igromania",
+      "name": "Игромания",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "stopgame",
+      "name": "StopGame",
+      "region": "ru",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "kanobu",
+      "name": "Канобу",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "playground",
+      "name": "PlayGround.ru",
+      "region": "ru",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "vgtimes",
+      "name": "VGTimes",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ixbt-games",
+      "name": "iXBT.games",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamemag",
+      "name": "GameMAG.ru",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "vk-play",
+      "name": "VK Play Media",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "shazoo",
+      "name": "Shazoo",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pc-gamer",
+      "name": "PC Gamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamespot",
+      "name": "GameSpot",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ign",
+      "name": "IGN",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "eurogamer",
+      "name": "Eurogamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-informer",
+      "name": "Game Informer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamesradar",
+      "name": "GamesRadar+",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "polygon",
+      "name": "Polygon",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rock-paper-shotgun",
+      "name": "Rock Paper Shotgun",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-revolution",
+      "name": "GameRevolution",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ars-technica",
+      "name": "Ars Technica",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezone",
+      "name": "GameZone",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamepressure",
+      "name": "Gamepressure",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gry-online",
+      "name": "GRYOnline",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "worthplaying",
+      "name": "WorthPlaying",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rpgfan",
+      "name": "RPGFan",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rpgamer",
+      "name": "RPGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "destructoid",
+      "name": "Destructoid",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "shacknews",
+      "name": "Shacknews",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pcworld",
+      "name": "PCWorld",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "guardian-games",
+      "name": "The Guardian",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "push-square",
+      "name": "Push Square",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "nintendo-life",
+      "name": "Nintendo Life",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "digital-trends",
+      "name": "Digital Trends",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "wired",
+      "name": "WIRED",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "egm",
+      "name": "EGM",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamebanshee",
+      "name": "GameBanshee",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "den-of-geek",
+      "name": "Den of Geek",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "videogamer",
+      "name": "VideoGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    }
+  ],
   "regional_discovery": {
     "region": "ru",
     "checks": [
@@ -158,8 +435,12 @@
     "found_but_not_accepted": []
   },
   "coverage": {
+    "registered_editorial": 37,
+    "checked": 37,
     "accepted": 2,
     "scored": 1,
+    "context_only_versions": 0,
+    "blocked_verified": 0,
     "contemporary": 2,
     "green": false,
     "passed": false,

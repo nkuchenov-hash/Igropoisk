@@ -1,13 +1,14 @@
 {
-  "schema_version": 6,
+  "schema_version": 9,
   "game_slug": "duskfade",
   "game_id": "game_dc5231876c0dd6cc435d",
-  "updated_at": "2026-08-14T08:40:23.427Z",
+  "updated_at": "2026-08-14T10:12:37.949Z",
+  "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
     "maximum": 20,
-    "accepted": 1,
+    "accepted": 0,
     "status": "red-needs-revision"
   },
   "regional_discovery": {
@@ -71,40 +72,25 @@
     "complete": true,
     "found_but_not_accepted": []
   },
-  "reviews": [
+  "reviews": [],
+  "rejected": [
     {
-      "id": "source-1",
-      "configured_source_id": "ign",
       "publication": "IGN",
-      "title": "Duskfade - Official Launch Trailer - IGN",
       "url": "https://www.ign.com/videos/duskfade-official-launch-trailer",
-      "resolved_url": "https://www.ign.com/videos/duskfade-official-launch-trailer",
-      "source_kind": "review",
-      "platform": "",
-      "version_context": "",
-      "published_at": "",
-      "author": "",
-      "language": "",
-      "score": null,
-      "scale": null,
-      "grade": "",
-      "score_eligible": false,
-      "identity_evidence": "Direct professional publisher page verified for Duskfade.",
-      "evidence_points": [
-        "Here&#x27;s a look at the Launch Trailer for Duskfade, a 3D action-adventure platformer developed by Weird Beluga. Players will embark on a vibrant adventure as Zirian and Cuckoo to save their sister from the elusive Clock Tower. Explore diverse locations, master platforming abilities, and save the world in the process. Duskfade is available now for PlayStation 5 (PS5), Xbox Series X|S, Nintendo Switch 2, and PC (Steam)."
-      ],
-      "praise": [],
-      "criticism": [],
-      "mechanics": [],
-      "domain": "ign.com",
-      "validation": {
-        "status": "accepted",
-        "checked_at": "2026-08-14T08:40:17.144Z",
-        "method": "direct-publisher-http-v3"
-      }
+      "title": "Duskfade - Official Launch Trailer - IGN",
+      "reasons": [
+        "non_review_path"
+      ]
+    },
+    {
+      "publication": "IGN",
+      "url": "https://www.ign.com/videos/duskfade-official-launch-trailer",
+      "title": "Duskfade - Official Launch Trailer - IGN",
+      "reasons": [
+        "non_review_path"
+      ]
     }
   ],
-  "rejected": [],
   "review_score": {
     "status": "red-needs-revision",
     "owner": "review",
@@ -118,9 +104,11 @@
       "rounding_decimals": 1,
       "one_vote_per_publication": true,
       "aggregators_forbidden": true,
-      "invented_scores_forbidden": true
+      "invented_scores_forbidden": true,
+      "exact_canonical_version_required": true
     },
     "sources": [],
+    "excluded_sources": [],
     "calculation": {
       "source_count": 0,
       "values": [],

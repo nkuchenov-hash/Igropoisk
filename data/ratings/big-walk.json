@@ -1,9 +1,9 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/big-walk.json#review_score",
   "game_slug": "big-walk",
-  "checked_at": "2026-08-14T08:41:46.551Z",
+  "checked_at": "2026-08-14T10:14:54.868Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее оценок независимых профессиональных изданий",
@@ -15,11 +15,13 @@
     "rounding_decimals": 1,
     "one_vote_per_publication": true,
     "aggregators_forbidden": true,
-    "invented_scores_forbidden": true
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
   },
   "sources": [
     {
       "source_id": "source-1",
+      "configured_source_id": "ign",
       "publication": "IGN",
       "title": "Big Walk Is Unlike Any Other Co-op Game Around, Pushing You to Solve Clever Puzzles With Your Friends by Truly Working Together",
       "url": "https://www.ign.com/articles/big-walk-review",
@@ -29,7 +31,21 @@
         "grade": null,
         "display": "9/10"
       },
-      "normalized_10": 9
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "checked_at": "2026-08-14T10:14:54.228Z",
+        "url": "https://www.ign.com/articles/big-walk-review",
+        "configured_source_id": "ign"
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/games/2026/aug/04/big-walk-review-larking-around-with-mates-elevated-to-an-artform",
+      "reason": "canonical_version"
     }
   ],
   "calculation": {

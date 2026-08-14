@@ -1,15 +1,38 @@
 {
-  "parser": "review-explicit-score-enrichment",
+  "parser": "review-explicit-score-enrichment-registry-v3",
   "game_slug": "baldurs-gate-3",
-  "checked_at": "2026-08-14T08:40:46.135Z",
+  "checked_at": "2026-08-14T10:13:48.460Z",
+  "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 2,
+  "unregistered_rejected": [],
   "scored": 1,
+  "context_only_versions": 0,
   "updates": [
     {
+      "configured_source_id": "playground",
       "publication": "PlayGround.ru",
       "score": 9.5,
       "scale": 10,
-      "method": "jsonld.reviewRating"
+      "method": "jsonld.reviewRating",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "playground",
+      "publication": "PlayGround.ru",
+      "url": "https://www.playground.ru/baldurs_gate_3/opinion/obzor_baldurs_gate_3_luchshaya_rpg_sovremennosti-1644244",
+      "final_url": "https://www.playground.ru/baldurs_gate_3/opinion/obzor_baldurs_gate_3_luchshaya_rpg_sovremennosti-1644244",
+      "status": "explicit_score_found",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/baldur_s_gate_iii/review/33275",
+      "final_url": "https://stopgame.ru/game/baldur_s_gate_iii/review/33275",
+      "status": "no_explicit_score",
+      "canonical_score_eligible": true
     }
   ]
 }

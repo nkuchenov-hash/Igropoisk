@@ -1,8 +1,9 @@
 {
-  "schema_version": 6,
+  "schema_version": 9,
   "game_slug": "big-walk",
   "game_id": "game_72bf0963b99d4c9b1ab4",
-  "updated_at": "2026-08-14T08:41:46.551Z",
+  "updated_at": "2026-08-14T10:14:54.868Z",
+  "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
@@ -84,11 +85,16 @@
       "version_context": "",
       "published_at": "",
       "author": "",
-      "language": "",
+      "language": "en",
       "score": 9,
       "scale": 10,
       "grade": "",
       "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
       "identity_evidence": "Direct publisher page verified for Big Walk.",
       "evidence_points": [
         "Each of these puzzles rewards us with another red bean we have to take care of as we bring it back to a bean tower for deposit. Once you&#x27;ve found enough beans for a given tower, you get a special key to unlock something new and helpful: stuff you otherwise couldn&#x27;t figure out how to operate, like a stalled train or an island-spanning chair lift. And in this progression, Big Walk further embeds the ethos that these discoveries are yours to make.",
@@ -100,13 +106,18 @@
       "domain": "ign.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T08:40:46.785Z",
-        "method": "direct-publisher-http-v3"
+        "checked_at": "2026-08-14T10:13:49.071Z",
+        "method": "registered-direct-publisher-http-v6",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
       },
       "score_evidence": {
         "method": "jsonld.reviewRating",
-        "checked_at": "2026-08-14T08:41:45.986Z",
-        "url": "https://www.ign.com/articles/big-walk-review"
+        "checked_at": "2026-08-14T10:14:54.228Z",
+        "url": "https://www.ign.com/articles/big-walk-review",
+        "configured_source_id": "ign"
       }
     },
     {
@@ -121,11 +132,16 @@
       "version_context": "",
       "published_at": "",
       "author": "",
-      "language": "",
+      "language": "en",
       "score": null,
       "scale": null,
       "grade": "",
       "score_eligible": false,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
       "identity_evidence": "Direct publisher page verified for Big Walk.",
       "evidence_points": [
         "Switch 2, PlayStation 5, PC; House House The creators of Untitled Goose Game return with an online, open-world adventure that delivers slapstick silliness and bucolic majesty in nearly equal measure",
@@ -142,8 +158,12 @@
       "domain": "theguardian.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-14T08:40:46.785Z",
-        "method": "direct-publisher-http-v3"
+        "checked_at": "2026-08-14T10:13:49.071Z",
+        "method": "registered-direct-publisher-http-v6",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
       }
     }
   ],
@@ -153,7 +173,8 @@
       "url": "https://www.gamespot.com/reviews/big-walk-is-one-of-the-best-co-op-games-ever",
       "reasons": [
         "HTTP 403"
-      ]
+      ],
+      "prior_verified": false
     }
   ],
   "review_score": {
@@ -169,11 +190,13 @@
       "rounding_decimals": 1,
       "one_vote_per_publication": true,
       "aggregators_forbidden": true,
-      "invented_scores_forbidden": true
+      "invented_scores_forbidden": true,
+      "exact_canonical_version_required": true
     },
     "sources": [
       {
         "source_id": "source-1",
+        "configured_source_id": "ign",
         "publication": "IGN",
         "title": "Big Walk Is Unlike Any Other Co-op Game Around, Pushing You to Solve Clever Puzzles With Your Friends by Truly Working Together",
         "url": "https://www.ign.com/articles/big-walk-review",
@@ -183,7 +206,21 @@
           "grade": null,
           "display": "9/10"
         },
-        "normalized_10": 9
+        "normalized_10": 9,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "checked_at": "2026-08-14T10:14:54.228Z",
+          "url": "https://www.ign.com/articles/big-walk-review",
+          "configured_source_id": "ign"
+        }
+      }
+    ],
+    "excluded_sources": [
+      {
+        "configured_source_id": "guardian-games",
+        "publication": "The Guardian",
+        "url": "https://www.theguardian.com/games/2026/aug/04/big-walk-review-larking-around-with-mates-elevated-to-an-artform",
+        "reason": "canonical_version"
       }
     ],
     "calculation": {
