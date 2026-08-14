@@ -9,7 +9,7 @@ on:
       - 'scripts/lib/review-source-registry.mjs'
       - 'scripts/lib/review-score-extractor.mjs'
       - 'scripts/prepare-review-research.mjs'
-      - 'scripts/discover-review-sources-web.mjs'
+      - 'scripts/discover-review-sources-web*.mjs'
       - 'scripts/promote-review-source-audit.mjs'
       - 'scripts/enrich-review-explicit-scores.mjs'
       - 'scripts/calculate-review-score.mjs'
@@ -56,6 +56,7 @@ jobs:
           node --check scripts/lib/review-score-extractor.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/discover-review-sources-web.mjs
+          node --check scripts/discover-review-sources-web-v8.mjs
           node --check scripts/promote-review-source-audit.mjs
           node --check scripts/enrich-review-explicit-scores.mjs
           node --check scripts/calculate-review-score.mjs
