@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-import { normalizeBingSearchHtml } from './lib/review-search-result-normalizer.mjs';
+import { normalizeBingSearchHtml, validateReviewSearchNormalizer } from './lib/review-search-result-normalizer.mjs';
 
+validateReviewSearchNormalizer();
 const nativeFetch = globalThis.fetch;
 if (typeof nativeFetch !== 'function') throw new Error('Global fetch is required for review discovery.');
 
