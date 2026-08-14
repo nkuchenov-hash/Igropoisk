@@ -1,13 +1,13 @@
 {
-  "parser": "review-registered-direct-publisher-web-v6",
+  "parser": "review-registered-direct-publisher-web-v8",
   "status": "needs_revision",
   "game_slug": "big-walk",
-  "checked_at": "2026-08-14T12:01:31.556Z",
+  "checked_at": "2026-08-14T12:50:52.623Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 2,
+  "accepted": 3,
   "scored": 1,
   "context_only_versions": 0,
-  "blocked_verified": 0,
+  "blocked_verified": 1,
   "registered_editorial": 37,
   "source_checks": [
     {
@@ -84,8 +84,8 @@
       "source_id": "gamespot",
       "name": "GameSpot",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "found",
+      "notes": "verified direct review"
     },
     {
       "source_id": "ign",
@@ -271,5 +271,7 @@
     }
   ],
   "regional_complete": true,
-  "audit_all": false
+  "audit_all": true,
+  "search_title_variants": true,
+  "review_hub_following": true
 }

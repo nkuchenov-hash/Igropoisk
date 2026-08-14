@@ -1,15 +1,17 @@
 {
-  "schema_version": 9,
+  "schema_version": 11,
   "game_slug": "duskfade",
   "game_id": "game_dc5231876c0dd6cc435d",
-  "updated_at": "2026-08-14T12:00:23.285Z",
+  "updated_at": "2026-08-14T13:03:36.648Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "maximum": 20,
     "accepted": 0,
-    "status": "red-needs-revision"
+    "status": "red-needs-revision",
+    "full_registry_scan": true,
+    "checked_registered_sources": 37,
+    "applicable_registered_sources": 37
   },
   "regional_discovery": {
     "region": "ru",
@@ -78,11 +80,13 @@
     "status": "red-needs-revision",
     "owner": "review",
     "method": {
-      "name": "Среднее оценок независимых профессиональных изданий",
+      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
       "formula": "sum(normalized_10) / source_count",
       "minimum_sources": 3,
       "target_sources": 10,
-      "maximum_sources": 20,
+      "maximum_sources": null,
+      "use_all_eligible_sources": true,
+      "required_evidence_scope": "editorial_review",
       "output_scale": 10,
       "rounding_decimals": 1,
       "one_vote_per_publication": true,

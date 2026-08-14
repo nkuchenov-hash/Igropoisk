@@ -1,52 +1,53 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "validator": "game-media-quality",
   "game_slug": "no-more-room-in-hell-2",
-  "checked_at": "2026-08-13T14:06:24.831Z",
-  "status": "red-needs-revision",
-  "hero": "https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044",
+  "checked_at": "2026-08-14T12:49:37.830Z",
+  "status": "green",
+  "era": "modern",
+  "hero": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/library_hero_2x.jpg",
   "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900_2x.jpg",
   "screenshots": 9,
   "accepted_screenshots": 9,
-  "comments": [
-    "Hero не подтверждён как официальный арт: https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044",
-    "hero: слишком маленький файл 17158 B, минимум 80000 B: https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044"
-  ],
+  "comments": [],
   "checks": [
     {
       "role": "hero",
-      "item": "https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044",
-      "rules": {
-        "minimum_width_modern": 1200,
-        "minimum_height_modern": 675,
-        "minimum_width_historical": 960,
-        "minimum_height_historical": 540,
-        "minimum_bytes": 80000
-      },
-      "errors": [
-        "hero: слишком маленький файл 17158 B, минимум 80000 B: https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044"
-      ],
+      "item": "https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786638024",
+      "url": "https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786638024",
       "probe": {
         "ok": true,
         "width": 1438,
         "height": 808,
-        "bytes": 17158,
+        "bytes": 13202,
         "mime": "image/webp",
-        "resolved_url": "https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786490044"
+        "resolved_url": "https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786638024"
       },
-      "accepted": false
+      "accepted": false,
+      "errors": [
+        "unverified_source",
+        "too_few_bytes:13202:80000"
+      ]
+    },
+    {
+      "role": "hero",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/library_hero_2x.jpg",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/library_hero_2x.jpg",
+      "probe": {
+        "ok": true,
+        "width": 3840,
+        "height": 1240,
+        "bytes": 2298569,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/library_hero_2x.jpg"
+      },
+      "accepted": true,
+      "errors": []
     },
     {
       "role": "cover",
       "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900_2x.jpg",
-      "rules": {
-        "minimum_width_modern": 600,
-        "minimum_height_modern": 850,
-        "minimum_width_historical": 400,
-        "minimum_height_historical": 560,
-        "minimum_bytes": 45000
-      },
-      "errors": [],
+      "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900_2x.jpg",
       "probe": {
         "ok": true,
         "width": 600,
@@ -55,20 +56,13 @@
         "mime": "image/jpeg",
         "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900_2x.jpg"
       },
-      "accepted": true
+      "accepted": true,
+      "errors": []
     },
     {
       "role": "screenshot",
       "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/507527f68a4478b6470a4552ffe393d6a9074161/ss_507527f68a4478b6470a4552ffe393d6a9074161.1920x1080.jpg?t=1786490044",
-      "rules": {
-        "minimum_width_modern": 1280,
-        "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
-      },
-      "errors": [],
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/507527f68a4478b6470a4552ffe393d6a9074161/ss_507527f68a4478b6470a4552ffe393d6a9074161.1920x1080.jpg?t=1786490044",
       "probe": {
         "ok": true,
         "width": 1920,
@@ -77,20 +71,13 @@
         "mime": "image/jpeg",
         "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/507527f68a4478b6470a4552ffe393d6a9074161/ss_507527f68a4478b6470a4552ffe393d6a9074161.1920x1080.jpg?t=1786490044"
       },
-      "accepted": true
+      "accepted": true,
+      "errors": []
     },
     {
       "role": "screenshot",
       "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/48026bfe6c8542ed9e763260bfad748fc4b29e43/ss_48026bfe6c8542ed9e763260bfad748fc4b29e43.1920x1080.jpg?t=1786490044",
-      "rules": {
-        "minimum_width_modern": 1280,
-        "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
-      },
-      "errors": [],
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/48026bfe6c8542ed9e763260bfad748fc4b29e43/ss_48026bfe6c8542ed9e763260bfad748fc4b29e43.1920x1080.jpg?t=1786490044",
       "probe": {
         "ok": true,
         "width": 1920,
@@ -99,20 +86,13 @@
         "mime": "image/jpeg",
         "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/48026bfe6c8542ed9e763260bfad748fc4b29e43/ss_48026bfe6c8542ed9e763260bfad748fc4b29e43.1920x1080.jpg?t=1786490044"
       },
-      "accepted": true
+      "accepted": true,
+      "errors": []
     },
     {
       "role": "screenshot",
       "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/f26ddc86e210cdb3ef40b2cfc8b3ebb1585742d8/ss_f26ddc86e210cdb3ef40b2cfc8b3ebb1585742d8.1920x1080.jpg?t=1786490044",
-      "rules": {
-        "minimum_width_modern": 1280,
-        "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
-      },
-      "errors": [],
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/f26ddc86e210cdb3ef40b2cfc8b3ebb1585742d8/ss_f26ddc86e210cdb3ef40b2cfc8b3ebb1585742d8.1920x1080.jpg?t=1786490044",
       "probe": {
         "ok": true,
         "width": 1920,
@@ -121,20 +101,13 @@
         "mime": "image/jpeg",
         "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/f26ddc86e210cdb3ef40b2cfc8b3ebb1585742d8/ss_f26ddc86e210cdb3ef40b2cfc8b3ebb1585742d8.1920x1080.jpg?t=1786490044"
       },
-      "accepted": true
+      "accepted": true,
+      "errors": []
     },
     {
       "role": "screenshot",
       "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/a1f9364b49af927510ebc01845a3741ececd2e3c/ss_a1f9364b49af927510ebc01845a3741ececd2e3c.1920x1080.jpg?t=1786490044",
-      "rules": {
-        "minimum_width_modern": 1280,
-        "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
-      },
-      "errors": [],
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/a1f9364b49af927510ebc01845a3741ececd2e3c/ss_a1f9364b49af927510ebc01845a3741ececd2e3c.1920x1080.jpg?t=1786490044",
       "probe": {
         "ok": true,
         "width": 1920,
@@ -143,20 +116,13 @@
         "mime": "image/jpeg",
         "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/a1f9364b49af927510ebc01845a3741ececd2e3c/ss_a1f9364b49af927510ebc01845a3741ececd2e3c.1920x1080.jpg?t=1786490044"
       },
-      "accepted": true
+      "accepted": true,
+      "errors": []
     },
     {
       "role": "screenshot",
       "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/b27c2e738e2104ccc1df2e2a03828d3e9a6225bc/ss_b27c2e738e2104ccc1df2e2a03828d3e9a6225bc.1920x1080.jpg?t=1786490044",
-      "rules": {
-        "minimum_width_modern": 1280,
-        "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
-      },
-      "errors": [],
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/b27c2e738e2104ccc1df2e2a03828d3e9a6225bc/ss_b27c2e738e2104ccc1df2e2a03828d3e9a6225bc.1920x1080.jpg?t=1786490044",
       "probe": {
         "ok": true,
         "width": 1920,
@@ -165,20 +131,13 @@
         "mime": "image/jpeg",
         "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/b27c2e738e2104ccc1df2e2a03828d3e9a6225bc/ss_b27c2e738e2104ccc1df2e2a03828d3e9a6225bc.1920x1080.jpg?t=1786490044"
       },
-      "accepted": true
+      "accepted": true,
+      "errors": []
     },
     {
       "role": "screenshot",
       "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/ss_99a5012153882b913271fc833b6306d2467a2b88.1920x1080.jpg?t=1786490044",
-      "rules": {
-        "minimum_width_modern": 1280,
-        "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
-      },
-      "errors": [],
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/ss_99a5012153882b913271fc833b6306d2467a2b88.1920x1080.jpg?t=1786490044",
       "probe": {
         "ok": true,
         "width": 1920,
@@ -187,20 +146,13 @@
         "mime": "image/jpeg",
         "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/ss_99a5012153882b913271fc833b6306d2467a2b88.1920x1080.jpg?t=1786490044"
       },
-      "accepted": true
+      "accepted": true,
+      "errors": []
     },
     {
       "role": "screenshot",
       "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/ss_4cfb60ae21609e2413c9d697c299c5345c0fa418.1920x1080.jpg?t=1786490044",
-      "rules": {
-        "minimum_width_modern": 1280,
-        "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
-      },
-      "errors": [],
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/ss_4cfb60ae21609e2413c9d697c299c5345c0fa418.1920x1080.jpg?t=1786490044",
       "probe": {
         "ok": true,
         "width": 1920,
@@ -209,20 +161,13 @@
         "mime": "image/jpeg",
         "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/ss_4cfb60ae21609e2413c9d697c299c5345c0fa418.1920x1080.jpg?t=1786490044"
       },
-      "accepted": true
+      "accepted": true,
+      "errors": []
     },
     {
       "role": "screenshot",
       "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/5e12af9b16c4269674e396ce8871da00e0807ffb/ss_5e12af9b16c4269674e396ce8871da00e0807ffb.1920x1080.jpg?t=1786490044",
-      "rules": {
-        "minimum_width_modern": 1280,
-        "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
-      },
-      "errors": [],
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/5e12af9b16c4269674e396ce8871da00e0807ffb/ss_5e12af9b16c4269674e396ce8871da00e0807ffb.1920x1080.jpg?t=1786490044",
       "probe": {
         "ok": true,
         "width": 1920,
@@ -231,20 +176,13 @@
         "mime": "image/jpeg",
         "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/5e12af9b16c4269674e396ce8871da00e0807ffb/ss_5e12af9b16c4269674e396ce8871da00e0807ffb.1920x1080.jpg?t=1786490044"
       },
-      "accepted": true
+      "accepted": true,
+      "errors": []
     },
     {
       "role": "screenshot",
       "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/dade362199a6170bd5f86eee3dbd7dd79bd11f5e/ss_dade362199a6170bd5f86eee3dbd7dd79bd11f5e.1920x1080.jpg?t=1786490044",
-      "rules": {
-        "minimum_width_modern": 1280,
-        "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
-      },
-      "errors": [],
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/dade362199a6170bd5f86eee3dbd7dd79bd11f5e/ss_dade362199a6170bd5f86eee3dbd7dd79bd11f5e.1920x1080.jpg?t=1786490044",
       "probe": {
         "ok": true,
         "width": 1920,
@@ -253,7 +191,8 @@
         "mime": "image/jpeg",
         "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292000/dade362199a6170bd5f86eee3dbd7dd79bd11f5e/ss_dade362199a6170bd5f86eee3dbd7dd79bd11f5e.1920x1080.jpg?t=1786490044"
       },
-      "accepted": true
+      "accepted": true,
+      "errors": []
     }
   ]
 }

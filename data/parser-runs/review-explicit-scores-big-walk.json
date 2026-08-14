@@ -1,10 +1,9 @@
 {
-  "parser": "review-explicit-score-enrichment-registry-v3",
+  "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "big-walk",
-  "checked_at": "2026-08-14T12:02:36.743Z",
+  "checked_at": "2026-08-14T12:52:01.890Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 2,
-  "unregistered_rejected": [],
+  "accepted": 3,
   "scored": 1,
   "context_only_versions": 0,
   "updates": [
@@ -14,6 +13,7 @@
       "score": 9,
       "scale": 10,
       "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
       "canonical_score_eligible": true
     }
   ],
@@ -23,7 +23,10 @@
       "publication": "IGN",
       "url": "https://www.ign.com/articles/big-walk-review",
       "final_url": "https://www.ign.com/articles/big-walk-review",
-      "status": "explicit_score_found",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     },
     {
@@ -31,7 +34,21 @@
       "publication": "The Guardian",
       "url": "https://www.theguardian.com/games/2026/aug/04/big-walk-review-larking-around-with-mates-elevated-to-an-artform",
       "final_url": "https://www.theguardian.com/games/2026/aug/04/big-walk-review-larking-around-with-mates-elevated-to-an-artform",
-      "status": "no_explicit_score",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/big-walk-is-one-of-the-best-co-op-games-ever",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
       "canonical_score_eligible": true
     }
   ]
