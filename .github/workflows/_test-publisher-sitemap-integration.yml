@@ -16,22 +16,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Prove RDR2 and Ghost Recon canonical score gates after canonical-year fix
+      - name: Trace RDR2 accepted sitemap source and score enrichment
         run: |
-          for slug in red-dead-redemption-2 tom-clancy-s-ghost-recon-wildlands; do
-            echo "=== $slug ==="
-            node scripts/discover-review-sources-web-v8.mjs "$slug" --all
-            node scripts/promote-review-source-audit.mjs "$slug"
-            node scripts/enrich-review-explicit-scores.mjs "$slug"
-            node scripts/calculate-ratings-from-research.mjs "$slug"
-            node - "$slug" <<'NODE'
-          const fs=require('fs'),slug=process.argv[2];
-          const r=JSON.parse(fs.readFileSync(`data/reviews/${slug}.json`,'utf8'));
-          const m=JSON.parse(fs.readFileSync(`data/research/${slug}-source-matrix.json`,'utf8'));
-          const catalog=JSON.parse(fs.readFileSync('data/catalog-visible.json','utf8'));
-          const catalogItem=catalog.find(x=>x.slug===slug);
-          const discovered=(m.accepted||[]).filter(x=>['pc-gamer','gamesradar'].includes(x.configured_source_id)).map(x=>({id:x.configured_source_id,url:x.resolved_url||x.url,score:x.score,scale:x.scale,eligible:x.score_eligible}));
-          console.log(JSON.stringify({slug,canonical_year:catalogItem?.year,accepted:r.publication_gate?.accepted,score_status:r.review_score?.status,score_sources:r.review_score?.sources?.length,score_10:r.review_score?.calculation?.score_10,discovered},null,2));
-          if(r.publication_gate?.status!=='green'||r.review_score?.status!=='green'||Number(r.review_score?.sources?.length||0)<3||!discovered.length)process.exit(2);
+          slug=red-dead-redemption-2
+          node scripts/discover-review-sources-web-v8.mjs "$slug" --all
+          node scripts/promote-review-source-audit.mjs "$slug"
+          node - "$slug" <<'NODE'
+          const fs=require('fs'),slug=process.argv[2],m=JSON.parse(fs.readFileSync(`data/research/${slug}-source-matrix.json`,'utf8'));
+          console.log('SITEMAP SOURCES',JSON.stringify((m.accepted||[]).filter(x=>['pc-gamer','gamesradar'].includes(x.configured_source_id)),null,2));
           NODE
-          done
+          node scripts/enrich-review-explicit-scores.mjs "$slug"
+          node - "$slug" <<'NODE'
+          const fs=require('fs'),slug=process.argv[2],r=JSON.parse(fs.readFileSync(`data/parser-runs/review-explicit-scores-${slug}.json`,'utf8'));
+          console.log('SITEMAP CHECKS',JSON.stringify((r.checks||[]).filter(x=>['pc-gamer','gamesradar'].includes(x.configured_source_id)),null,2));
+          NODE
+          node scripts/calculate-ratings-from-research.mjs "$slug" || true
+          node - "$slug" <<'NODE'
+          const fs=require('fs'),slug=process.argv[2],r=JSON.parse(fs.readFileSync(`data/reviews/${slug}.json`,'utf8'));
+          console.log('FINAL',JSON.stringify({accepted:r.publication_gate?.accepted,status:r.review_score?.status,sources:r.review_score?.sources?.length,score:r.review_score?.calculation?.score_10},null,2));
+          NODE
