@@ -1,10 +1,29 @@
 (()=>{
 'use strict';
 
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
 const setState=(target,title,text)=>{target.innerHTML=`<div class="popular-state"><strong>${esc(title)}</strong><span>${esc(text)}</span></div>`};
 const reducedMotion=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 const MAXIMUM_COUNT=20;
+const HOME_FEEDS_MANIFEST='https://storage.yandexcloud.net/igropoisk-content/home-feeds/manifests/current.json';
+const localRuntime=()=>['localhost','127.0.0.1','::1'].includes(location.hostname)||location.protocol==='file:';
+const fetchJson=async url=>{const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw new Error(`${url} HTTP ${response.status}`);return response.json()};
+let manifestPromise=null;
+async function loadRuntimeFeed(relative){
+  if(!localRuntime()){
+    try{
+      manifestPromise??=fetchJson(`${HOME_FEEDS_MANIFEST}?v=${Date.now()}`);
+      const manifest=await manifestPromise;
+      const descriptor=manifest?.files?.[relative];
+      if(descriptor?.url)return await fetchJson(descriptor.url);
+      throw new Error(`Home feed is absent from runtime manifest: ${relative}`);
+    }catch(error){
+      console.warn('Игропоиск: live home-feed storage unavailable, using repository fallback',relative,error);
+    }
+  }
+  return fetchJson(`${relative}${relative.includes('?')?'&':'?'}v=${Date.now()}`);
+}
+window.IgropoiskHomeFeeds=window.IgropoiskHomeFeeds||{load:loadRuntimeFeed,manifestUrl:HOME_FEEDS_MANIFEST};
 
 function ensureControls(target){
   const heading=target.closest('.section')?.querySelector('.section-head');
@@ -162,17 +181,14 @@ async function load(){
   setState(target,'Обновляем рейтинг','Загружаем актуальный топ игр.');
   try{
     const stamp=Date.now();
-    const [popularResponse,catalogResponse]=await Promise.all([
-      fetch(`data/popular/current.json?v=${stamp}`,{cache:'no-store'}),
+    const [data,catalogResponse]=await Promise.all([
+      loadRuntimeFeed('data/popular/current.json'),
       fetch(`data/catalog-visible.json?v=${stamp}`,{cache:'no-store'})
     ]);
-    if(!popularResponse.ok)throw new Error(`Popularity HTTP ${popularResponse.status}`);
-    const data=await popularResponse.json();
     const ranking=Array.isArray(data.ranking)?data.ranking:[];
     if(!ranking.length)throw new Error('Popularity ranking is empty');
     const catalog=catalogResponse.ok?await catalogResponse.json():[];
     const existing=new Set((catalog||[]).map(item=>item.slug));
-    // Page availability is a publication condition, not a reason to waste a top-20 slot.
     const publishedRanking=ranking.filter(item=>existing.has(item.slug)).slice(0,MAXIMUM_COUNT);
     if(!publishedRanking.length)throw new Error('Popular ranking has no published game pages');
     const missing=ranking.filter(item=>!existing.has(item.slug)).slice(0,MAXIMUM_COUNT).map(item=>item.slug);
