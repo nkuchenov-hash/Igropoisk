@@ -12,6 +12,8 @@ on:
       - "scripts/lib/release-notability.mjs"
       - "scripts/lib/publication-source-registry.mjs"
       - "scripts/lib/official-source-registry.mjs"
+      - "scripts/lib/release-publication-discovery.mjs"
+      - "scripts/discover-release-publications.mjs"
       - "scripts/enrich-release-anticipation.mjs"
       - "scripts/enrich-release-media-panel.mjs"
       - "scripts/repair-release-slugs.mjs"
@@ -30,6 +32,7 @@ on:
       - "config/game-registry.json"
       - "data/releases/current.json"
       - "data/release-candidates/editorial.json"
+      - "data/release-candidates/publication-discovery.json"
       - ".github/workflows/release-calendar-pipeline.yml"
   pull_request:
     branches: [staging]
@@ -41,6 +44,8 @@ on:
       - "scripts/lib/release-notability.mjs"
       - "scripts/lib/publication-source-registry.mjs"
       - "scripts/lib/official-source-registry.mjs"
+      - "scripts/lib/release-publication-discovery.mjs"
+      - "scripts/discover-release-publications.mjs"
       - "scripts/enrich-release-anticipation.mjs"
       - "scripts/enrich-release-media-panel.mjs"
       - "scripts/repair-release-slugs.mjs"
@@ -62,7 +67,7 @@ on:
   workflow_dispatch:
     inputs:
       refresh_discovery:
-        description: "Refresh Steam/RAWG candidates before materialization"
+        description: "Refresh Steam/RAWG and Publication Registry candidates before materialization"
         required: false
         default: true
         type: boolean
@@ -97,6 +102,9 @@ jobs:
         env:
           RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
         run: node scripts/parse-releases.mjs
+      - name: Refresh Publication Registry calendar discovery
+        if: ${{ (github.event_name == 'schedule') || (github.event_name == 'workflow_dispatch' && inputs.refresh_discovery) }}
+        run: node scripts/discover-release-publications.mjs
       - name: Repair release slugs generated from non-Latin titles
         run: node scripts/repair-release-slugs.mjs
       - name: Measure current broad, niche and franchise attention
@@ -116,9 +124,11 @@ jobs:
           const n = report.notability || {};
           const o = report.official_source_coverage || {};
           const p = report.sources?.publication_registry || {};
+          const d = report.sources?.publication_calendar_discovery || {};
           console.log('## Release calendar materialization');
           console.log(`- Raw candidates: **${s.raw_candidates || 0}**`);
           console.log(`- Publication Registry sources: **${p.total_sources || 0}**; calendar discovery: **${p.calendar_discovery_sources || 0}**`);
+          console.log(`- Publication calendar snapshot: **${d.statistics?.unique_games || 0} games / ${d.statistics?.claims || 0} claims**; status: **${d.status || 'missing'}**`);
           console.log(`- Official source checks: **${o.completed_checks || 0}/${o.applicable_checks || 0}** (${o.coverage_percent ?? 0}%)`);
           console.log(`- Pending official checks: **${o.pending_checks || 0}**; unresolved first-party URLs: **${(o.unresolved_first_party_urls || []).length}**`);
           console.log(`- Broad-global releases: **${n.broad_global || 0}**`);
@@ -138,7 +148,9 @@ jobs:
           name: editorial-release-calendar-${{ github.run_id }}
           path: |
             data/release-candidates/current.json
+            data/release-candidates/publication-discovery.json
             data/releases/public.json
             data/releases/materialization-report.json
             data/parser-runs/release-anticipation.json
+            data/parser-runs/release-publication-discovery.json
           retention-days: 14
