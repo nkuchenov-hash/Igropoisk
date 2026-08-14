@@ -1,9 +1,19 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "horizon_days": 540,
   "steam_discovery_limit": 100,
+  "publication_discovery_horizon_days": 180,
+  "publication_discovery_timeout_ms": 18000,
   "download_images": true,
   "seed_steam_appids": [],
+  "publication_source_registry": "config/parsers/review-source-registry.json",
+  "official_source_registry": "config/parsers/official-source-registry.json",
+  "source_registry_enforcement": {
+    "publication_registry_required": true,
+    "official_registry_required": true,
+    "official_check_plan_required": true,
+    "missing_applicable_official_check": "report_and_review"
+  },
   "source_priorities": {
     "official_site": 100,
     "official_store": 90,

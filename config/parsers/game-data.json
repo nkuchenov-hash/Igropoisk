@@ -1,16 +1,18 @@
 {
-  "schema_version":2,
+  "schema_version":3,
   "id":"game-data",
   "title":"Парсер данных игры",
   "status":"active",
   "schedule":"При добавлении игры и затем раз в неделю",
   "purpose":"Собрать проверяемую карточку игры и большой медианабор: идентичность, даты, разработчиков, жанры, платформы, требования, обложку, hero, видео и десятки качественных скриншотов.",
+  "publication_source_registry":"config/parsers/review-source-registry.json",
+  "official_source_registry":"config/parsers/official-source-registry.json",
   "method":{
     "formula":"Поле публикуется из источника с максимальным trust. Медианабор считается готовым только после сбора не менее 30 кандидатов из минимум трёх независимых источников и прохождения технического и визуального аудита.",
     "normalization":"Изображения сохраняются как исходные URL с источником, разрешением, версией игры и хешем. Синтетические, дорисованные и неверно масштабированные скриншоты запрещены.",
     "steps":[
       "Разрешить точную идентичность игры по app id, официальному URL, году и названию; отдельно зафиксировать исключённые ремейки и продолжения.",
-      "Получить структурированные данные магазина и официальных платформ.",
+      "Получить структурированные данные магазина и официальных платформ через Official Source Registry.",
       "Собрать hero, обложку, видео и не менее 30 кандидатов-скриншотов из минимум трёх независимых медиагалерей.",
       "Проверить HTTP-ответ, MIME-type, фактическое разрешение, соотношение сторон и отсутствие миниатюр.",
       "Удалить точные и визуально близкие дубли по URL, hash и сходству сцены.",
@@ -32,16 +34,16 @@
     ]
   },
   "sources":[
-    {"id":"steam-store","enabled":true,"family":"store","name":"Steam Store API","type":"api-template","url":"https://store.steampowered.com/api/appdetails?appids={steam_appid}&l=english","weight":1,"trust":0.98},
-    {"id":"steam-cdn","enabled":true,"family":"media","name":"Steam CDN","type":"media-template","url":"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/{steam_appid}/","weight":1,"trust":0.98},
-    {"id":"official-site","enabled":true,"family":"official","name":"Официальный сайт или press kit","type":"page","url":"{official_url}","weight":1,"trust":1},
+    {"id":"steam-store","official_source_id":"steam","enabled":true,"family":"store","name":"Steam Store API","type":"api-template","url":"https://store.steampowered.com/api/appdetails?appids={steam_appid}&l=english","weight":1,"trust":0.98},
+    {"id":"steam-cdn","official_source_id":"steam","enabled":true,"family":"media","name":"Steam CDN","type":"media-template","url":"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/{steam_appid}/","weight":1,"trust":0.98},
+    {"id":"official-site","official_source_ids":["developer-official","publisher-official"],"enabled":true,"family":"official","name":"Официальный сайт или press kit","type":"page","url":"{official_url}","weight":1,"trust":1},
     {"id":"mobygames","enabled":true,"family":"media-archive","name":"MobyGames Screenshots","type":"page-search","url":"https://www.mobygames.com/game/{mobygames_id}/screenshots/","weight":0.85,"trust":0.88},
-    {"id":"gamespot-media","enabled":true,"family":"media-archive","name":"GameSpot Images","type":"page-search","url":"https://www.gamespot.com/games/{slug}/images/","weight":0.85,"trust":0.86},
-    {"id":"ign-media","enabled":true,"family":"media-archive","name":"IGN Images","type":"page-search","url":"https://www.ign.com/games/{slug}/images","weight":0.82,"trust":0.85},
-    {"id":"gog","enabled":true,"family":"store","name":"GOG","type":"page-search","url":"https://www.gog.com/","weight":0.7,"trust":0.9},
-    {"id":"playstation-store","enabled":true,"family":"platform","name":"PlayStation Store","type":"page-search","url":"https://store.playstation.com/","weight":0.8,"trust":0.96},
-    {"id":"xbox-store","enabled":true,"family":"platform","name":"Xbox Store","type":"page-search","url":"https://www.xbox.com/games/store/","weight":0.8,"trust":0.96},
-    {"id":"nintendo-store","enabled":true,"family":"platform","name":"Nintendo Store","type":"page-search","url":"https://www.nintendo.com/store/products/","weight":0.8,"trust":0.96}
+    {"id":"gamespot-media","publication_source_id":"gamespot","enabled":true,"family":"media-archive","name":"GameSpot Images","type":"page-search","url":"https://www.gamespot.com/games/{slug}/images/","weight":0.85,"trust":0.86},
+    {"id":"ign-media","publication_source_id":"ign","enabled":true,"family":"media-archive","name":"IGN Images","type":"page-search","url":"https://www.ign.com/games/{slug}/images","weight":0.82,"trust":0.85},
+    {"id":"gog","official_source_id":"gog","enabled":true,"family":"store","name":"GOG","type":"page-search","url":"https://www.gog.com/","weight":0.7,"trust":0.9},
+    {"id":"playstation-store","official_source_id":"playstation-store","enabled":true,"family":"platform","name":"PlayStation Store","type":"page-search","url":"https://store.playstation.com/","weight":0.8,"trust":0.96},
+    {"id":"xbox-store","official_source_id":"xbox-store","enabled":true,"family":"platform","name":"Xbox Store","type":"page-search","url":"https://www.xbox.com/games/store/","weight":0.8,"trust":0.96},
+    {"id":"nintendo-store","official_source_id":"nintendo-store","enabled":true,"family":"platform","name":"Nintendo Store","type":"page-search","url":"https://www.nintendo.com/store/products/","weight":0.8,"trust":0.96}
   ],
   "outputs":["data/drafts/{slug}.json","data/media/{slug}.json","data/parser-runs/game-data.json"],
   "examples":[{"label":"Пример страницы игры","url":"../../../game/the-witcher-3-wild-hunt/"},{"label":"Пример draft","url":"../../../data/drafts/the-witcher-3-wild-hunt.json"}]

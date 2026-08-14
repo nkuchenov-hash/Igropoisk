@@ -1,6 +1,8 @@
 {
-  "schema_version": 1,
-  "model": "fixed-editorial-media-panel-v1",
+  "schema_version": 2,
+  "model": "publication-registry-media-panel-v2",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "required_release_role": "coverage",
   "coverage_window_days": 180,
   "research_candidate_limit": 120,
   "rules": {
@@ -8,41 +10,7 @@
     "no_intersection_count_cap": true,
     "store_and_official_sources_do_not_count": true,
     "regional_sources_also_count_toward_global_intersection": true,
-    "coverage_requires_substantive_editorial_material": true
-  },
-  "sources": [
-    {"id":"ign","name":"IGN","publisher_family":"ign","region":"global","languages":["en"],"roles":["coverage"],"aliases":["IGN","IGN Africa","IGN Brasil","IGN Brazil","IGN France","IGN Benelux","IGN Nordic","IGN India"],"domains":["ign.com"]},
-    {"id":"gamespot","name":"GameSpot","publisher_family":"gamespot","region":"global","languages":["en"],"roles":["coverage","calendar_discovery"],"aliases":["GameSpot"],"domains":["gamespot.com"],"calendar_urls":["https://www.gamespot.com/articles/2026-upcoming-games-release-schedule/1100-6534941/"]},
-    {"id":"eurogamer","name":"Eurogamer","publisher_family":"eurogamer","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Eurogamer","Eurogamer.net"],"domains":["eurogamer.net"]},
-    {"id":"pc-gamer","name":"PC Gamer","publisher_family":"pc-gamer","region":"global","languages":["en"],"roles":["coverage","calendar_discovery"],"aliases":["PC Gamer"],"domains":["pcgamer.com"],"calendar_urls":["https://www.pcgamer.com/games/new-pc-games-2026/"]},
-    {"id":"vgc","name":"Video Games Chronicle","publisher_family":"vgc","region":"global","languages":["en"],"roles":["coverage","calendar_discovery"],"aliases":["Video Games Chronicle","VGC"],"domains":["videogameschronicle.com"],"calendar_urls":["https://www.videogameschronicle.com/guide/upcoming-game-release-dates-schedule/"]},
-    {"id":"gamesradar","name":"GamesRadar+","publisher_family":"gamesradar","region":"global","languages":["en"],"roles":["coverage"],"aliases":["GamesRadar+","GamesRadar"],"domains":["gamesradar.com"]},
-    {"id":"game-informer","name":"Game Informer","publisher_family":"game-informer","region":"global","languages":["en"],"roles":["coverage","calendar_discovery"],"aliases":["Game Informer"],"domains":["gameinformer.com"],"calendar_urls":["https://gameinformer.com/2026"]},
-    {"id":"polygon","name":"Polygon","publisher_family":"polygon","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Polygon","Polygon.com"],"domains":["polygon.com"]},
-    {"id":"rock-paper-shotgun","name":"Rock Paper Shotgun","publisher_family":"rock-paper-shotgun","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Rock Paper Shotgun"],"domains":["rockpapershotgun.com"]},
-    {"id":"gematsu","name":"Gematsu","publisher_family":"gematsu","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Gematsu"],"domains":["gematsu.com"]},
-    {"id":"vg247","name":"VG247","publisher_family":"vg247","region":"global","languages":["en"],"roles":["coverage"],"aliases":["VG247"],"domains":["vg247.com"]},
-    {"id":"kotaku","name":"Kotaku","publisher_family":"kotaku","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Kotaku"],"domains":["kotaku.com"]},
-    {"id":"destructoid","name":"Destructoid","publisher_family":"destructoid","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Destructoid"],"domains":["destructoid.com"]},
-    {"id":"thegamer","name":"TheGamer","publisher_family":"thegamer","region":"global","languages":["en"],"roles":["coverage"],"aliases":["TheGamer","The Gamer"],"domains":["thegamer.com"]},
-    {"id":"gamesbeat","name":"GamesBeat","publisher_family":"gamesbeat","region":"global","languages":["en"],"roles":["coverage"],"aliases":["GamesBeat","VentureBeat GamesBeat"],"domains":["gamesbeat.com","venturebeat.com"]},
-    {"id":"digital-trends-gaming","name":"Digital Trends Gaming","publisher_family":"digital-trends","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Digital Trends"],"domains":["digitaltrends.com"]},
-    {"id":"windows-central-gaming","name":"Windows Central Gaming","publisher_family":"windows-central","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Windows Central"],"domains":["windowscentral.com"]},
-    {"id":"pcgamesn","name":"PCGamesN","publisher_family":"pcgamesn","region":"global","languages":["en"],"roles":["coverage"],"aliases":["PCGamesN","PCGamesN.com"],"domains":["pcgamesn.com"]},
-    {"id":"shacknews","name":"Shacknews","publisher_family":"shacknews","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Shacknews"],"domains":["shacknews.com"]},
-    {"id":"gamingbolt","name":"GamingBolt","publisher_family":"gamingbolt","region":"global","languages":["en"],"roles":["coverage"],"aliases":["GamingBolt"],"domains":["gamingbolt.com"]},
-    {"id":"wccftech","name":"Wccftech Gaming","publisher_family":"wccftech","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Wccftech","Wccftech Gaming"],"domains":["wccftech.com"]},
-    {"id":"nintendo-life","name":"Nintendo Life","publisher_family":"nintendo-life","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Nintendo Life"],"domains":["nintendolife.com"]},
-    {"id":"push-square","name":"Push Square","publisher_family":"push-square","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Push Square"],"domains":["pushsquare.com"]},
-    {"id":"pure-xbox","name":"Pure Xbox","publisher_family":"pure-xbox","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Pure Xbox"],"domains":["purexbox.com"]},
-    {"id":"rpg-site","name":"RPG Site","publisher_family":"rpg-site","region":"global","languages":["en"],"roles":["coverage"],"aliases":["RPG Site"],"domains":["rpgsite.net"]},
-    {"id":"siliconera","name":"Siliconera","publisher_family":"siliconera","region":"global","languages":["en"],"roles":["coverage"],"aliases":["Siliconera"],"domains":["siliconera.com"]},
-    {"id":"igromania","name":"Игромания","publisher_family":"igromania","region":"cis","languages":["ru"],"roles":["coverage","calendar_discovery"],"aliases":["Игромания","Igromania"],"domains":["igromania.ru"],"calendar_urls":["https://www.igromania.ru/games/all/all/2026/"]},
-    {"id":"stopgame","name":"StopGame","publisher_family":"stopgame","region":"cis","languages":["ru"],"roles":["coverage"],"aliases":["StopGame","StopGame.ru"],"domains":["stopgame.ru"]},
-    {"id":"vgtimes","name":"VGTimes","publisher_family":"vgtimes","region":"cis","languages":["ru"],"roles":["coverage","calendar_discovery"],"aliases":["VGTimes","VGTimes.ru"],"domains":["vgtimes.ru"],"calendar_urls":["https://vgtimes.ru/games/release-dates/all/sort-date/2026/"]},
-    {"id":"kanobu","name":"Канобу","publisher_family":"kanobu","region":"cis","languages":["ru"],"roles":["coverage"],"aliases":["Канобу","Kanobu"],"domains":["kanobu.ru"]},
-    {"id":"playground","name":"PlayGround.ru","publisher_family":"playground","region":"cis","languages":["ru"],"roles":["coverage"],"aliases":["PlayGround.ru","PlayGround"],"domains":["playground.ru"]},
-    {"id":"gameguru","name":"GameGuru","publisher_family":"gameguru","region":"cis","languages":["ru"],"roles":["coverage","calendar_discovery"],"aliases":["GameGuru","GameGuru.ru"],"domains":["gameguru.ru"],"calendar_urls":["https://gameguru.ru/calendar/9/2026/","https://gameguru.ru/calendar/10/2026/","https://gameguru.ru/calendar/11/2026/","https://gameguru.ru/calendar/12/2026/"]},
-    {"id":"vk-play-media","name":"VK Play Media","publisher_family":"vk-play-media","region":"cis","languages":["ru"],"roles":["coverage"],"aliases":["VK Play","VK Play Media"],"domains":["vkplay.ru"]}
-  ]
+    "coverage_requires_substantive_editorial_material": true,
+    "inline_source_records_forbidden": true
+  }
 }

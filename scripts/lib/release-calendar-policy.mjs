@@ -1,8 +1,7 @@
 const SUPPORTED_PLATFORMS = new Set([
   'PC', 'PlayStation 5', 'PlayStation 4', 'Xbox Series X|S', 'Xbox One', 'Nintendo Switch 2', 'Nintendo Switch',
 ]);
-const AUXILIARY_FAMILIES = new Set(['rawg', 'igdb', 'auxiliary']);
-const OFFICIAL_CONSOLE_FAMILIES = new Set(['platform_store', 'publisher', 'developer', 'official_announcement', 'official_site']);
+const OFFICIAL_CONSOLE_FAMILIES = new Set(['platform_store', 'publisher', 'developer', 'first_party_official', 'official_announcement', 'official_site']);
 const EDITION_RE = /\b(deluxe|ultimate|gold|complete|collector'?s?|goty|game of the year|premium)\b/i;
 const EXPANSION_RE = /\b(expansion|expansion pass|major expansion|add-on|addon)\b/i;
 
@@ -164,30 +163,6 @@ function eventIsPublic(event) {
   return platforms.length > 0 && platforms.every(platform => (event.platform_confirmations?.[platform] || []).length > 0);
 }
 
-function enforceDailyCap(candidates, cap) {
-  const groups = new Map();
-  for (const candidate of candidates) {
-    if (candidate.moderation.status !== 'published') continue;
-    for (const event of candidate.events || []) {
-      if (event.precision !== 'exact' || !event.date || !eventIsPublic(event)) continue;
-      if (!groups.has(event.date)) groups.set(event.date, new Set());
-      groups.get(event.date).add(candidate.id);
-    }
-  }
-  for (const [, ids] of groups) {
-    if (ids.size <= cap) continue;
-    const ranked = [...ids].map(id => candidates.find(candidate => candidate.id === id)).filter(Boolean).sort((a, b) => {
-      const manual = Number(b.moderation.manual_decision === 'published') - Number(a.moderation.manual_decision === 'published');
-      return manual || b.significance.score - a.significance.score || a.title.localeCompare(b.title);
-    });
-    for (const candidate of ranked.slice(cap)) {
-      if (candidate.moderation.manual_decision === 'published') continue;
-      candidate.moderation.status = 'review';
-      candidate.moderation.automatic_reasons = uniq([...(candidate.moderation.automatic_reasons || []), 'daily_cap']);
-    }
-  }
-}
-
 export function buildCandidates({ rawReleases = [], editorial = {}, officialClaims = [], policy = {} }) {
   const claimsBySlug = new Map();
   for (const claim of officialClaims || []) {
@@ -196,7 +171,7 @@ export function buildCandidates({ rawReleases = [], editorial = {}, officialClai
     claimsBySlug.get(slug).push(claim);
   }
   const baseNames = new Set(rawReleases.map(item => normalizedTitle(item.title).replace(EDITION_RE, '').replace(/\bedition\b/g, '').replace(/\s+/g, ' ').trim()));
-  const candidates = rawReleases.map(raw => {
+  return rawReleases.map(raw => {
     const releaseType = normalizeReleaseType(raw);
     const excluded = classifyExcluded(raw.title, releaseType);
     let editionDuplicate = null;
@@ -206,7 +181,7 @@ export function buildCandidates({ rawReleases = [], editorial = {}, officialClai
     }
     const sources = clone(raw.sources || []);
     const claims = claimsBySlug.get(raw.slug || slugify(raw.title)) || [];
-    let events = (raw.events || []).map(event => makeEvent(event, sources, claims));
+    const events = (raw.events || []).map(event => makeEvent(event, sources, claims));
     const claimed = applyClaims(raw, sources, events, claims);
     const significance = signalsFor(raw, policy);
     const automaticReasons = [];
@@ -248,8 +223,6 @@ export function buildCandidates({ rawReleases = [], editorial = {}, officialClai
     candidate = applyDecision(candidate, editorial?.decisions?.[candidate.id] || editorial?.decisions?.[candidate.slug]);
     return candidate;
   });
-  enforceDailyCap(candidates, Number(policy.max_public_releases_per_day || 12));
-  return candidates;
 }
 
 function publicRelease(candidate) {
@@ -272,7 +245,7 @@ export function buildPublicCalendar(candidates, generatedAt = new Date().toISOSt
   for (const release of releases) for (const event of release.events || []) if (event.precision === 'exact' && event.date) counts.set(event.date, (counts.get(event.date) || 0) + 1);
   const denseDays = [...counts.entries()].sort((a,b) => b[1]-a[1] || a[0].localeCompare(b[0])).slice(0,10).map(([date,count]) => ({date,count}));
   return {
-    schema_version: 2,
+    schema_version: 3,
     generated_at: generatedAt,
     releases,
     statistics: {
@@ -282,14 +255,14 @@ export function buildPublicCalendar(candidates, generatedAt = new Date().toISOSt
       rejected: (candidates || []).filter(item => item.moderation?.status === 'rejected').length,
       max_exact_releases_in_one_day: denseDays[0]?.count || 0,
       dense_days: denseDays,
+      public_quantity_cap: null,
     },
   };
 }
 
-export function validateCalendar({ candidates = [], publicCalendar = {}, policy = {} }) {
+export function validateCalendar({ candidates = [], publicCalendar = {} }) {
   const errors = [];
   const byId = new Map(candidates.map(candidate => [candidate.id, candidate]));
-  const dateCounts = new Map();
   for (const release of publicCalendar.releases || []) {
     const candidate = byId.get(release.id);
     if (!candidate) { errors.push(`Public release ${release.id} has no candidate`); continue; }
@@ -300,7 +273,6 @@ export function validateCalendar({ candidates = [], publicCalendar = {}, policy 
     for (const event of release.events || []) {
       if (event.precision === 'exact') {
         if (!event.date || event.date_start !== event.date || event.date_end !== event.date) errors.push(`Exact event mismatch: ${release.id}/${event.id}`);
-        if (event.date) dateCounts.set(event.date, (dateCounts.get(event.date) || 0) + 1);
       } else if (event.date && event.precision !== 'tbd') errors.push(`Approximate event exposes exact date: ${release.id}/${event.id}`);
       for (const platform of event.platforms || []) {
         if (!SUPPORTED_PLATFORMS.has(platform)) errors.push(`Unsupported platform ${platform}: ${release.id}`);
@@ -314,7 +286,5 @@ export function validateCalendar({ candidates = [], publicCalendar = {}, policy 
       }
     }
   }
-  const cap = Number(policy.max_public_releases_per_day || 12);
-  for (const [date, count] of dateCounts) if (count > cap) errors.push(`Daily cap exceeded ${date}: ${count} > ${cap}`);
   return uniq(errors);
 }
