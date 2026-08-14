@@ -1,0 +1,43 @@
+name: Test review recovery scalability
+on:
+  push:
+    branches: [fix/canonical-review-scalability]
+    paths: [.github/workflows/_test-review-scalability.yml]
+permissions:
+  contents: read
+concurrency:
+  group: review-scalability-canary
+  cancel-in-progress: true
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/canonical-review-scalability
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate scripts
+        run: |
+          node --check scripts/rebind-existing-review.mjs
+          node --check scripts/recover-canonical-review-backlog.mjs
+          node scripts/validate-review-source-registry.mjs
+      - name: Migrate and publish legacy Witcher review without Ollama
+        env:
+          OPENAI_API_KEY: ''
+        run: node scripts/recover-canonical-review-backlog.mjs --only the-witcher-3-wild-hunt --concurrency 1 --timeout-ms 300000 --strict
+      - name: Require canonical published state and deferred legacy language status
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const slug='the-witcher-3-wild-hunt';
+          const review=JSON.parse(fs.readFileSync(`data/reviews/${slug}.json`,'utf8'));
+          const article=JSON.parse(fs.readFileSync(`data/articles/${slug}.json`,'utf8'));
+          const rebind=JSON.parse(fs.readFileSync(`data/parser-runs/review-rebind-${slug}.json`,'utf8'));
+          const score=Number(review.review_score?.calculation?.score_10);
+          const rendered=fs.existsSync(`article/${slug}/index.html`);
+          console.log(JSON.stringify({corpus:review.publication_gate?.status,regional:review.regional_discovery?.complete,score_status:review.review_score?.status,score,article_score:article.score,article_status:article.publication_status,language_status:article.editorial_language_status,language_disposition:rebind.language_disposition,rendered},null,2));
+          if(review.publication_gate?.status!=='green'||review.review_score?.status!=='green'||review.regional_discovery?.complete!==true||!Number.isFinite(score)||Number(article.score)!==score||article.publication_status!=='published'||article.editorial_language_status!=='legacy_audit_pending'||rebind.language_disposition!=='legacy-published-audit-deferred'||!rendered)process.exit(2);
+          NODE
