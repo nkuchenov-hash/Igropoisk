@@ -1,0 +1,77 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "dark-souls-iii",
+  "checked_at": "2026-08-14T16:27:14.658Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 5,
+  "scored": 1,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 9.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2016/04/04/dark-souls-3-review",
+      "final_url": "https://www.ign.com/articles/2016/04/04/dark-souls-3-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2016/4/4/11265022/dark-souls-3-review-from-software-ps4-playstation-4-xbox-one-pc-windows",
+      "final_url": "https://www.polygon.com/2016/4/4/11265022/dark-souls-3-review-from-software-ps4-playstation-4-xbox-one-pc-windows/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "http://www.gamespot.com/reviews/dark-souls-3-review/1900-6416397",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/gaming/2016/04/dark-souls-3-review-marching-towards-masochism",
+      "final_url": "https://arstechnica.com/gaming/2016/04/dark-souls-3-review-marching-towards-masochism/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/70185-dark-souls-iii-review",
+      "final_url": "https://www.gamerevolution.com/review/70185-dark-souls-iii-review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

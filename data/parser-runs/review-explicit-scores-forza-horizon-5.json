@@ -1,0 +1,108 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "forza-horizon-5",
+  "checked_at": "2026-08-14T16:33:18.130Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 7,
+  "scored": 2,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 10,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 9.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/forza-horizon-5-review",
+      "final_url": "https://www.ign.com/articles/forza-horizon-5-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/forza-horizon-5/forza-horizon-5-review-firing-on-all-cylinders",
+      "final_url": "https://gameinformer.com/review/forza-horizon-5/forza-horizon-5-review-firing-on-all-cylinders",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/forza-horizon-5-review-its-about-four-wheeled-family/1900-6417778",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/reviews/22762645/forza-horizon-5-review-xbox-game-pass-series-x-pc",
+      "final_url": "https://www.polygon.com/reviews/22762645/forza-horizon-5-review-xbox-game-pass-series-x-pc/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/gaming/2021/11/forza-horizon-5-game-review-a-gorgeous-drive-to-familiar-heights",
+      "final_url": "https://arstechnica.com/gaming/2021/11/forza-horizon-5-game-review-a-gorgeous-drive-to-familiar-heights/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/696334-forza-horizon-5-review-pc-xbox-series-x-s-worth-it",
+      "final_url": "https://www.gamerevolution.com/review/696334-forza-horizon-5-review-pc-xbox-series-x-s-worth-it",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/reviews/forza-horizon-5-review-xbox-series-s-version",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

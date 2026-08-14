@@ -1,0 +1,150 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "doom",
+  "checked_at": "2026-08-14T16:27:22.516Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 10,
+  "scored": 3,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 8.75,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 9,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 7.1,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/doom-review/1900-6416432",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/games/doom/b/playstation4/archive/2016/05/17/doom-review.aspx",
+      "final_url": "https://gameinformer.com/games/doom/b/playstation4/archive/2016/05/17/doom-review.aspx",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps4/doom",
+      "final_url": "https://www.pushsquare.com/reviews/ps4/doom",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/technology/2016/may/18/doom-review-ludicrous-compelling-shooter-reboot-basics-original",
+      "final_url": "https://www.theguardian.com/technology/2016/may/18/doom-review-ludicrous-compelling-shooter-reboot-basics-original",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/gaming/2016/05/doom-2016-single-player-review-back-to-basics",
+      "final_url": "https://arstechnica.com/gaming/2016/05/doom-2016-single-player-review-back-to-basics/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/70386-doom-2016-review",
+      "final_url": "https://www.gamerevolution.com/review/70386-doom-2016-review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "wired",
+      "publication": "WIRED",
+      "url": "https://www.wired.com/2016/05/doom-review",
+      "final_url": "https://www.wired.com/2016/05/doom-review/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "videogamer",
+      "publication": "VideoGamer",
+      "url": "https://www.videogamer.com/reviews/doom-2016-review",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2016/5/18/11706108/doom-review-pc-xbox-one-ps4",
+      "final_url": "https://www.polygon.com/2016/5/18/11706108/doom-review-pc-xbox-one-ps4/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2016/05/16/doom-review-2",
+      "final_url": "https://www.ign.com/articles/2016/05/16/doom-review-2",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}

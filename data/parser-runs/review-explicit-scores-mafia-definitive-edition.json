@@ -1,0 +1,128 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "mafia-definitive-edition",
+  "checked_at": "2026-08-14T16:36:31.749Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 8,
+  "scored": 2,
+  "context_only_versions": 2,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 5.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 7,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": false
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/mafia-definitive-edition-review",
+      "final_url": "https://www.ign.com/articles/mafia-definitive-edition-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/mafia-definitive-edition/mafia-definitive-edition-review-loyal-to-a-fault",
+      "final_url": "https://gameinformer.com/review/mafia-definitive-edition/mafia-definitive-edition-review-loyal-to-a-fault",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/reviews/2020/9/24/21453082/mafia-definitive-edition-remake-2k-games-open-world",
+      "final_url": "https://www.polygon.com/reviews/2020/9/24/21453082/mafia-definitive-edition-remake-2k-games-open-world/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": false
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/mafia-definitive-edition-review-an-offer-you-could-probably-refuse/1900-6417570",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/stories/review-mafia-definitive-edition-603604.phtml",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/660782-mafia-definitive-edition-review-ps4-xbox-one-pc",
+      "final_url": "https://www.gamerevolution.com/review/660782-mafia-definitive-edition-review-ps4-xbox-one-pc",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/games/2020/sep/30/mafia-definitive-edition-review-modernised-much-loved-mob-story",
+      "final_url": "https://www.theguardian.com/games/2020/sep/30/mafia-definitive-edition-review-modernised-much-loved-mob-story",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps4/mafia-definitive-edition",
+      "final_url": "https://www.pushsquare.com/reviews/ps4/mafia-definitive-edition",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": false
+    }
+  ]
+}

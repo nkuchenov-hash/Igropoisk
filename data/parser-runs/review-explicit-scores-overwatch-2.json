@@ -1,0 +1,117 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "overwatch-2",
+  "checked_at": "2026-08-14T16:38:42.407Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 7,
+  "scored": 3,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 9,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "score": 7,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/overwatch-2-review",
+      "final_url": "https://www.ign.com/articles/overwatch-2-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/overwatch-2/a-heroic-return",
+      "final_url": "https://gameinformer.com/review/overwatch-2/a-heroic-return",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/reviews/23385539/overwatch-2-review-battle-pass-free-to-play-blizzard-entertainment",
+      "final_url": "https://www.polygon.com/reviews/23385539/overwatch-2-review-battle-pass-free-to-play-blizzard-entertainment/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/overwatch-2-review-same-as-it-ever-was/1900-6417972",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "url": "https://www.nintendolife.com/reviews/switch-eshop/overwatch-2",
+      "final_url": "https://www.nintendolife.com/reviews/switch-eshop/overwatch-2",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/850545-overwatch-2-review-worth-playing-pc-ps5-xbox-switch",
+      "final_url": "https://www.gamerevolution.com/review/850545-overwatch-2-review-worth-playing-pc-ps5-xbox-switch",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/games/2022/oct/06/overwatch-2-review-pc-ps45-xbox-one-xbox-series-xs-activision-blizzard",
+      "final_url": "https://www.theguardian.com/games/2022/oct/06/overwatch-2-review-pc-ps45-xbox-one-xbox-series-xs-activision-blizzard",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

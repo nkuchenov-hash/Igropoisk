@@ -1,0 +1,121 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/stardew-valley.json#review_score",
+  "game_slug": "stardew-valley",
+  "checked_at": "2026-08-14T16:28:07.333Z",
+  "status": "green",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "Stardew Valley Review 2018 - IGN",
+      "url": "https://www.ign.com/articles/2018/08/07/stardew-valley-review-2018",
+      "original_score": {
+        "score": 9.5,
+        "scale": 10,
+        "grade": null,
+        "display": "9.5/10"
+      },
+      "normalized_10": 9.5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:28:06.926Z",
+        "url": "https://www.ign.com/articles/2018/08/07/stardew-valley-review-2018",
+        "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Stardew Valley Review: Your New Home Away From Home",
+      "url": "https://gameinformer.com/games/stardew_valley/b/pc/archive/2016/03/24/stardew-valley-review.aspx",
+      "original_score": {
+        "score": 8.75,
+        "scale": 10,
+        "grade": null,
+        "display": "8.75/10"
+      },
+      "normalized_10": 8.75,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:28:06.926Z",
+        "url": "https://gameinformer.com/games/stardew_valley/b/pc/archive/2016/03/24/stardew-valley-review.aspx",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "title": "Review: Stardew Valley (Switch eShop)",
+      "url": "https://www.nintendolife.com/reviews/switch-eshop/stardew_valley",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:28:07.290Z",
+        "url": "https://www.nintendolife.com/reviews/switch-eshop/stardew_valley",
+        "configured_source_id": "nintendo-life",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2016/3/29/11320382/stardew-valley-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/stardew-valley-review/1900-6416598",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/70037-stardew-valley-review",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 3,
+    "values": [
+      9.5,
+      8.75,
+      9
+    ],
+    "mean_10": 9.0833,
+    "score_10": 9.1
+  }
+}

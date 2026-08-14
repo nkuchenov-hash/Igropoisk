@@ -1,0 +1,117 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "the-legend-of-zelda-breath-of-the-wild",
+  "checked_at": "2026-08-14T16:28:28.042Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 7,
+  "scored": 3,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 10,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 10,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "score": 10,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2017/03/02/the-legend-of-zelda-breath-of-the-wild-review",
+      "final_url": "https://www.ign.com/articles/2017/03/02/the-legend-of-zelda-breath-of-the-wild-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/games/the_legend_of_zelda_breath_of_the_wild/b/switch/archive/2017/03/02/game-informer-the-legend-of-zelda-breath-of-the-wild-switch-review.aspx",
+      "final_url": "https://gameinformer.com/games/the_legend_of_zelda_breath_of_the_wild/b/switch/archive/2017/03/02/game-informer-the-legend-of-zelda-breath-of-the-wild-switch-review.aspx",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2017/3/2/14753500/the-legend-of-zelda-breath-of-the-wild-review-nintendo-switch-wii-u",
+      "final_url": "https://www.polygon.com/2017/3/2/14753500/the-legend-of-zelda-breath-of-the-wild-review-nintendo-switch-wii-u/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "http://www.gamespot.com/reviews/the-legend-of-zelda-breath-of-the-wild-review/1900-6416626",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "url": "https://www.nintendolife.com/reviews/nintendo-switch/the_legend_of_zelda_breath_of_the_wild",
+      "final_url": "https://www.nintendolife.com/reviews/nintendo-switch/the_legend_of_zelda_breath_of_the_wild",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/71759-the-legend-of-zelda-breath-of-the-wild-review",
+      "final_url": "https://www.gamerevolution.com/review/71759-the-legend-of-zelda-breath-of-the-wild-review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/technology/2017/mar/02/the-legend-of-zelda-breath-of-the-wild-review-link-nintendo-switch",
+      "final_url": "https://www.theguardian.com/technology/2017/mar/02/the-legend-of-zelda-breath-of-the-wild-review-link-nintendo-switch",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

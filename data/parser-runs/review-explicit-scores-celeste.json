@@ -1,0 +1,126 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "celeste",
+  "checked_at": "2026-08-14T16:30:29.614Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 7,
+  "scored": 4,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 10,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 9,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "score": 10,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2018/01/25/celeste-review",
+      "final_url": "https://www.ign.com/articles/2018/01/25/celeste-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/games/celeste/b/xboxone/archive/2018/02/06/celeste-game-informer-review.aspx",
+      "final_url": "https://gameinformer.com/games/celeste/b/xboxone/archive/2018/02/06/celeste-game-informer-review.aspx",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/celeste-review-more-than-just-a-great-platformer/1900-6416843",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2018/1/25/16930312/celeste-review-pc-switch-ps4-xbox-one",
+      "final_url": "https://www.polygon.com/2018/1/25/16930312/celeste-review-pc-switch-ps4-xbox-one/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/gaming/2018/01/celeste-review-with-amazing-twists-this-2d-game-reaches-such-great-heights",
+      "final_url": "https://arstechnica.com/gaming/2018/01/celeste-review-with-amazing-twists-this-2d-game-reaches-such-great-heights/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "url": "https://www.nintendolife.com/reviews/switch-eshop/celeste",
+      "final_url": "https://www.nintendolife.com/reviews/switch-eshop/celeste",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps4/celeste",
+      "final_url": "https://www.pushsquare.com/reviews/ps4/celeste",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "sekiro-shadows-die-twice",
+  "checked_at": "2026-08-14T16:30:48.397Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 5,
+  "scored": 2,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 9.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 9,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2019/03/21/sekiro-shadows-die-twice-review",
+      "final_url": "https://www.ign.com/articles/2019/03/21/sekiro-shadows-die-twice-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/sekiro-shadows-die-twice/exaltation-amidst-expiration",
+      "final_url": "https://gameinformer.com/review/sekiro-shadows-die-twice/exaltation-amidst-expiration",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/reviews/2019/3/21/18274733/sekiro-review-ps4-xbox-one-pc",
+      "final_url": "https://www.polygon.com/reviews/2019/3/21/18274733/sekiro-review-ps4-xbox-one-pc/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/sekiro-shadows-die-twice-review-steel-yourself/1900-6417107",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/516423-sekiro-review",
+      "final_url": "https://www.gamerevolution.com/review/516423-sekiro-review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

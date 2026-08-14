@@ -1,0 +1,86 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "civilization-vi",
+  "checked_at": "2026-08-14T16:28:01.200Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 5,
+  "scored": 2,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 9.4,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 9.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2016/10/26/sid-meiers-civilization-vi-review",
+      "final_url": "https://www.ign.com/articles/2016/10/26/sid-meiers-civilization-vi-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/games/sid_meiers_civilization_vi/b/pc/archive/2016/10/25/civilization-vi-game-informer-review.aspx",
+      "final_url": "https://gameinformer.com/games/sid_meiers_civilization_vi/b/pc/archive/2016/10/25/civilization-vi-game-informer-review.aspx",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "http://www.gamespot.com/reviews/civilization-6-review/1900-6416562",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2016/10/25/13398612/sid-meiers-civilization-6-review-PC-mac-windows",
+      "final_url": "https://www.polygon.com/2016/10/25/13398612/sid-meiers-civilization-6-review-PC-mac-windows/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/71136-sid-meiers-civilization-vi-review",
+      "final_url": "https://www.gamerevolution.com/review/71136-sid-meiers-civilization-vi-review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

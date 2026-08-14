@@ -1,0 +1,156 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/hades.json#review_score",
+  "game_slug": "hades",
+  "checked_at": "2026-08-14T16:32:16.324Z",
+  "status": "green",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-3",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Hades Review: Hades Review – The Highs And Lows Of Repetition",
+      "url": "https://gameinformer.com/review/hades/hades-review-the-highs-and-lows-of-repetition",
+      "original_score": {
+        "score": 8.5,
+        "scale": 10,
+        "grade": null,
+        "display": "8.5/10"
+      },
+      "normalized_10": 8.5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:32:15.427Z",
+        "url": "https://gameinformer.com/review/hades/hades-review-the-highs-and-lows-of-repetition",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: Hades (PS5) - Who Knew Escaping Hell Would Be So Heavenly?",
+      "url": "https://www.pushsquare.com/reviews/ps5/hades",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:32:16.197Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/hades",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "title": "Review: Hades (Switch) - A Heavenly Trip Into Hell That",
+      "url": "https://www.nintendolife.com/reviews/switch-eshop/hades",
+      "original_score": {
+        "score": 10,
+        "scale": 10,
+        "grade": null,
+        "display": "10/10"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:32:16.197Z",
+        "url": "https://www.nintendolife.com/reviews/switch-eshop/hades",
+        "configured_source_id": "nintendo-life",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-7",
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "title": "Hades Review | RPGFan",
+      "url": "https://www.rpgfan.com/review/hades",
+      "original_score": {
+        "score": 90,
+        "scale": 100,
+        "grade": null,
+        "display": "90/100"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "semantic-editorial-label",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:32:16.197Z",
+        "url": "https://www.rpgfan.com/review/hades/",
+        "configured_source_id": "rpgfan",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/hades-review-the-long-hard-road-out-of-hell/1900-6417568",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/reviews/review-hades",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/games/2020/oct/01/hades-review-a-sexy-scintillating-sojourn-in-the-greek-underworld",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "wired",
+      "publication": "WIRED",
+      "url": "https://www.wired.com/story/hades-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/660952-hades-review-pc-ps4-xbox-one-nintendo-switch",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 4,
+    "values": [
+      8.5,
+      9,
+      10,
+      9
+    ],
+    "mean_10": 9.125,
+    "score_10": 9.1
+  }
+}

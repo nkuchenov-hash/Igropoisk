@@ -1,0 +1,117 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "marvels-spider-man-2",
+  "checked_at": "2026-08-14T16:35:19.618Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 7,
+  "scored": 3,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 57,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 9.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/marvels-spider-man-2-review",
+      "final_url": "https://www.ign.com/articles/marvels-spider-man-2-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/games/action/marvels-spider-man-2-review",
+      "final_url": "https://www.pcgamer.com/games/action/marvels-spider-man-2-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/marvels-spider-man-2/sticking-the-landing",
+      "final_url": "https://gameinformer.com/review/marvels-spider-man-2/sticking-the-landing",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/marvels-spider-man-2-review-web-warriors/1900-6418134",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/reviews/23910756/spider-man-2-review-insomniac-release-date-ps5",
+      "final_url": "https://www.polygon.com/reviews/23910756/spider-man-2-review-insomniac-release-date-ps5/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/gaming/2023/10/spider-man-2-review-best-in-class-comic-action-melodrama",
+      "final_url": "https://arstechnica.com/gaming/2023/10/spider-man-2-review-best-in-class-comic-action-melodrama/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/reviews/review-marvels-spider-man-2",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

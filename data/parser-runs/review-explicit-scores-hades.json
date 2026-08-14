@@ -1,0 +1,148 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "hades",
+  "checked_at": "2026-08-14T16:32:16.287Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 9,
+  "scored": 4,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 8.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 9,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "score": 10,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "score": 90,
+      "scale": 100,
+      "method": "semantic-editorial-label",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/hades-review-the-long-hard-road-out-of-hell/1900-6417568",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/reviews/review-hades",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/hades/hades-review-the-highs-and-lows-of-repetition",
+      "final_url": "https://gameinformer.com/review/hades/hades-review-the-highs-and-lows-of-repetition",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/games/2020/oct/01/hades-review-a-sexy-scintillating-sojourn-in-the-greek-underworld",
+      "final_url": "https://www.theguardian.com/games/2020/oct/01/hades-review-a-sexy-scintillating-sojourn-in-the-greek-underworld",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/hades",
+      "final_url": "https://www.pushsquare.com/reviews/ps5/hades",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "url": "https://www.nintendolife.com/reviews/switch-eshop/hades",
+      "final_url": "https://www.nintendolife.com/reviews/switch-eshop/hades",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/hades",
+      "final_url": "https://www.rpgfan.com/review/hades/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "wired",
+      "publication": "WIRED",
+      "url": "https://www.wired.com/story/hades-review",
+      "final_url": "https://www.wired.com/story/hades-review/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/660952-hades-review-pc-ps4-xbox-one-nintendo-switch",
+      "final_url": "https://www.gamerevolution.com/review/660952-hades-review-pc-ps4-xbox-one-nintendo-switch",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

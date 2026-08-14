@@ -1,15 +1,106 @@
 {
-  "schema_version": 3,
+  "schema_version": 11,
   "game_id": "game_c0774d83a817ad00ec72",
   "game_slug": "3-japan-stigmatized-property",
-  "updated_at": "2026-08-12T10:25:00Z",
+  "updated_at": "2026-08-14T16:41:02.295Z",
   "publication_gate": {
-    "required_professional_sources": 20,
-    "accepted_professional_sources": 0,
-    "independent_publications": 0,
-    "passes": false,
-    "limited_coverage": true,
-    "reason": "Профессиональный пострелизный корпус пока недостаточен. Официальный Steam не считается независимой критической рецензией."
+    "minimum": 5,
+    "target": 20,
+    "accepted": 0,
+    "status": "red-needs-revision",
+    "full_registry_scan": true,
+    "checked_registered_sources": 37,
+    "applicable_registered_sources": 37
   },
-  "reviews": []
+  "reviews": [],
+  "source_registry": "config/parsers/review-source-registry.json",
+  "regional_discovery": {
+    "region": "ru",
+    "checks": [
+      {
+        "source_id": "igromania",
+        "name": "Игромания",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "stopgame",
+        "name": "StopGame",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "kanobu",
+        "name": "Канобу",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "playground",
+        "name": "PlayGround.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vgtimes",
+        "name": "VGTimes",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "ixbt-games",
+        "name": "iXBT.games",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "gamemag",
+        "name": "GameMAG.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vk-play",
+        "name": "VK Play Media",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "shazoo",
+        "name": "Shazoo",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      }
+    ],
+    "complete": true,
+    "found_but_not_accepted": []
+  },
+  "rejected": [],
+  "review_score": {
+    "status": "red-needs-revision",
+    "owner": "review",
+    "method": {
+      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+      "formula": "sum(normalized_10) / source_count",
+      "minimum_sources": 3,
+      "target_sources": 10,
+      "maximum_sources": null,
+      "use_all_eligible_sources": true,
+      "required_evidence_scope": "editorial_review",
+      "output_scale": 10,
+      "rounding_decimals": 1,
+      "one_vote_per_publication": true,
+      "aggregators_forbidden": true,
+      "invented_scores_forbidden": true,
+      "exact_canonical_version_required": true
+    },
+    "sources": [],
+    "excluded_sources": [],
+    "calculation": {
+      "source_count": 0,
+      "values": [],
+      "mean_10": null,
+      "score_10": null
+    }
+  }
 }

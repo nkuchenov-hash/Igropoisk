@@ -1,0 +1,106 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "stardew-valley",
+  "checked_at": "2026-08-14T16:28:07.290Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 6,
+  "scored": 3,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 9.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 8.75,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "score": 9,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2018/08/07/stardew-valley-review-2018",
+      "final_url": "https://www.ign.com/articles/2018/08/07/stardew-valley-review-2018",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/games/stardew_valley/b/pc/archive/2016/03/24/stardew-valley-review.aspx",
+      "final_url": "https://gameinformer.com/games/stardew_valley/b/pc/archive/2016/03/24/stardew-valley-review.aspx",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2016/3/29/11320382/stardew-valley-review",
+      "final_url": "https://www.polygon.com/2016/3/29/11320382/stardew-valley-review/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/stardew-valley-review/1900-6416598",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "url": "https://www.nintendolife.com/reviews/switch-eshop/stardew_valley",
+      "final_url": "https://www.nintendolife.com/reviews/switch-eshop/stardew_valley",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/70037-stardew-valley-review",
+      "final_url": "https://www.gamerevolution.com/review/70037-stardew-valley-review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

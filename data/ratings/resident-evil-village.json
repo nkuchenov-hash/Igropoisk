@@ -1,0 +1,127 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/resident-evil-village.json#review_score",
+  "game_slug": "resident-evil-village",
+  "checked_at": "2026-08-14T16:33:20.414Z",
+  "status": "green",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "Resident Evil Village Review - IGN",
+      "url": "https://www.ign.com/articles/resident-evil-village-review",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:33:19.840Z",
+        "url": "https://www.ign.com/articles/resident-evil-village-review",
+        "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Resident Evil Village Review: Painting The Ghost Town Red",
+      "url": "https://gameinformer.com/review/resident-evil-village/resident-evil-village-review-painting-the-ghost-town-red",
+      "original_score": {
+        "score": 9.25,
+        "scale": 10,
+        "grade": null,
+        "display": "9.25/10"
+      },
+      "normalized_10": 9.25,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:33:19.840Z",
+        "url": "https://gameinformer.com/review/resident-evil-village/resident-evil-village-review-painting-the-ghost-town-red",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "title": "Review: Resident Evil Village Cloud (Switch) - A Solid Streaming Version For Switch Owners",
+      "url": "https://www.nintendolife.com/reviews/switch-eshop/resident-evil-village-cloud",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:33:20.375Z",
+        "url": "https://www.nintendolife.com/reviews/switch-eshop/resident-evil-village-cloud",
+        "configured_source_id": "nintendo-life",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/resident-evil-village-review-shapeshifter/1900-6417672",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/reviews/22420808/resident-evil-village-review-ps5-pc-xbox-series-x-one-ps4",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/gaming/2021/05/resident-evil-village-review-apparently-good-horror-takes-more-than-a-village",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/stories/review-resident-evil-village-627405.phtml",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 3,
+    "values": [
+      8,
+      9.25,
+      7
+    ],
+    "mean_10": 8.0833,
+    "score_10": 8.1
+  }
+}

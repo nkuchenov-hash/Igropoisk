@@ -1,0 +1,44 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "fortnite",
+  "checked_at": "2026-08-14T16:36:56.015Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 2,
+  "scored": 1,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "digital-trends",
+      "publication": "Digital Trends",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/articles/lego-fortnite-expeditions-is-the-co-op-action-adventure-mode-youve-been-waiting-for/1100-6532482",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "digital-trends",
+      "publication": "Digital Trends",
+      "url": "https://www.digitaltrends.com/gaming/fortnite-battle-royale-review",
+      "final_url": "https://www.digitaltrends.com/gaming/fortnite-battle-royale-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}

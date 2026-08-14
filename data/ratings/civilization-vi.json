@@ -1,0 +1,98 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/civilization-vi.json#review_score",
+  "game_slug": "civilization-vi",
+  "checked_at": "2026-08-14T16:28:01.234Z",
+  "status": "red-needs-revision",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "Sid Meier&#x27;s Civilization VI Review - IGN",
+      "url": "https://www.ign.com/articles/2016/10/26/sid-meiers-civilization-vi-review",
+      "original_score": {
+        "score": 9.4,
+        "scale": 10,
+        "grade": null,
+        "display": "9.4/10"
+      },
+      "normalized_10": 9.4,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:28:01.108Z",
+        "url": "https://www.ign.com/articles/2016/10/26/sid-meiers-civilization-vi-review",
+        "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Civilization VI Review: So Many Countries, So Many",
+      "url": "https://gameinformer.com/games/sid_meiers_civilization_vi/b/pc/archive/2016/10/25/civilization-vi-game-informer-review.aspx",
+      "original_score": {
+        "score": 9.5,
+        "scale": 10,
+        "grade": null,
+        "display": "9.5/10"
+      },
+      "normalized_10": 9.5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:28:01.108Z",
+        "url": "https://gameinformer.com/games/sid_meiers_civilization_vi/b/pc/archive/2016/10/25/civilization-vi-game-informer-review.aspx",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "http://www.gamespot.com/reviews/civilization-6-review/1900-6416562",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2016/10/25/13398612/sid-meiers-civilization-6-review-PC-mac-windows",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/71136-sid-meiers-civilization-vi-review",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 2,
+    "values": [
+      9.4,
+      9.5
+    ],
+    "mean_10": 9.45,
+    "score_10": 9.4
+  }
+}

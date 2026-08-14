@@ -1,0 +1,86 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "god-of-war",
+  "checked_at": "2026-08-14T16:29:37.587Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 5,
+  "scored": 2,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 10,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 9.75,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2018/04/12/god-of-war-review",
+      "final_url": "https://www.ign.com/articles/2018/04/12/god-of-war-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/games/god_of_war/b/playstation4/archive/2018/04/12/god-of-war-ps4-review-game-informer.aspx",
+      "final_url": "https://gameinformer.com/games/god_of_war/b/playstation4/archive/2018/04/12/god-of-war-ps4-review-game-informer.aspx",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2018/4/12/17226486/god-of-war-review-ps4-2018",
+      "final_url": "https://www.polygon.com/2018/4/12/17226486/god-of-war-review-ps4-2018/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/god-of-war-review-divine-bloodshed/1900-6416893",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/381919-god-war-review-olympian-feat",
+      "final_url": "https://www.gamerevolution.com/review/381919-god-war-review-olympian-feat",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

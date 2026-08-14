@@ -1,36 +1,107 @@
 {
-  "schema_version": 2,
+  "schema_version": 11,
   "game_slug": "resident-evil-7-biohazard",
-  "updated_at": "2026-08-13T22:15:38.240Z",
+  "updated_at": "2026-08-14T16:28:31.906Z",
   "publication_gate": {
-    "target_required": 20,
-    "required": 2,
-    "accepted": 2,
-    "limited_coverage": true,
-    "passed": true
+    "minimum": 5,
+    "target": 20,
+    "accepted": 0,
+    "status": "red-needs-revision",
+    "full_registry_scan": true,
+    "checked_registered_sources": 37,
+    "applicable_registered_sources": 37
   },
-  "reviews": [
-    {
-      "id": "source-1",
-      "publication": "IGN",
-      "title": "Walkthrough - Resident Evil 7 Biohazard Guide - IGN",
-      "url": "https://www.ign.com/wikis/resident-evil-7/Walkthrough",
-      "evidence": [
-        "IGN's Resident Evil VII complete strategy guide and walkthrough will lead you through every step of Resident Evil VII from the title screen to the final credits, including every..."
-      ],
-      "access_mode": "search_excerpt"
-    },
-    {
-      "id": "source-2",
-      "publication": "Steam",
-      "title": "Resident Evil 7 Biohazard — primary source",
-      "url": "https://store.steampowered.com/app/418370/",
-      "evidence": [
-        "Resident Evil 7 Biohazard on Steam Sign in Store Home Discovery Queue Wishlist Points Shop News Charts Community Home Discussions Workshop Market Broadcasts About Support Change language Get the Steam Mobile App View desktop website © Valve Corporation. All rights reserved. All trademarks are property of their respective owners in the US and other countries. Privacy Policy &nbsp;| &nbsp; Legal &nbsp;| &nbsp; Accessibility &nbsp;| &nbsp; Steam Subscriber Agreement &nbsp;| &nbsp; Refunds &nbsp;| &nbsp; Cookies STORE Home Discovery Queue Wishlist Points Shop News Charts COMMUNITY Home Discussions Workshop Market Broadcasts About SUPPORT Install Steam sign in &nbsp;|&nbsp; language 简体中文 (Simplified Chinese) 繁體中文 (Traditional Chinese) 日本語 (Japanese) 한국어 (Korean) ไทย (Thai) Bahasa Indonesia (Indonesian) Bahasa Melayu (Malay) BETA Български (Bulgarian) Čeština (Czech) Dansk (Danish) Deutsch (German) Español - España (Spanish - Spain) Español - Latinoamérica (Spanish - Latin America) Ελληνικά (Greek) Français (French) Italiano (Italian) Magyar (Hungarian) Nederlands (Dutch) Norsk (Norwegian) Polski (Polish) Português (Portuguese - Portugal) Português - Brasil (Portuguese - Brazil) Română ("
-      ],
-      "access_mode": "primary"
-    }
-  ],
+  "reviews": [],
   "game_id": "game_2042db6850f1d11ce37e",
-  "igropoisk_article": null
+  "igropoisk_article": null,
+  "source_registry": "config/parsers/review-source-registry.json",
+  "regional_discovery": {
+    "region": "ru",
+    "checks": [
+      {
+        "source_id": "igromania",
+        "name": "Игромания",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "stopgame",
+        "name": "StopGame",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "kanobu",
+        "name": "Канобу",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "playground",
+        "name": "PlayGround.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vgtimes",
+        "name": "VGTimes",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "ixbt-games",
+        "name": "iXBT.games",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "gamemag",
+        "name": "GameMAG.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vk-play",
+        "name": "VK Play Media",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "shazoo",
+        "name": "Shazoo",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      }
+    ],
+    "complete": true,
+    "found_but_not_accepted": []
+  },
+  "rejected": [],
+  "review_score": {
+    "status": "red-needs-revision",
+    "owner": "review",
+    "method": {
+      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+      "formula": "sum(normalized_10) / source_count",
+      "minimum_sources": 3,
+      "target_sources": 10,
+      "maximum_sources": null,
+      "use_all_eligible_sources": true,
+      "required_evidence_scope": "editorial_review",
+      "output_scale": 10,
+      "rounding_decimals": 1,
+      "one_vote_per_publication": true,
+      "aggregators_forbidden": true,
+      "invented_scores_forbidden": true,
+      "exact_canonical_version_required": true
+    },
+    "sources": [],
+    "excluded_sources": [],
+    "calculation": {
+      "source_count": 0,
+      "values": [],
+      "mean_10": null,
+      "score_10": null
+    }
+  }
 }

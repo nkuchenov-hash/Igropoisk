@@ -1,0 +1,145 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/doom.json#review_score",
+  "game_slug": "doom",
+  "checked_at": "2026-08-14T16:27:22.552Z",
+  "status": "green",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-2",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Doom Review: A Bloody Welcome Rebirth",
+      "url": "https://gameinformer.com/games/doom/b/playstation4/archive/2016/05/17/doom-review.aspx",
+      "original_score": {
+        "score": 8.75,
+        "scale": 10,
+        "grade": null,
+        "display": "8.75/10"
+      },
+      "normalized_10": 8.75,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:27:21.716Z",
+        "url": "https://gameinformer.com/games/doom/b/playstation4/archive/2016/05/17/doom-review.aspx",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: DOOM (PS4)",
+      "url": "https://www.pushsquare.com/reviews/ps4/doom",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:27:21.716Z",
+        "url": "https://www.pushsquare.com/reviews/ps4/doom",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-10",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "Doom Review - IGN",
+      "url": "https://www.ign.com/articles/2016/05/16/doom-review-2",
+      "original_score": {
+        "score": 7.1,
+        "scale": 10,
+        "grade": null,
+        "display": "7.1/10"
+      },
+      "normalized_10": 7.1,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T16:27:22.516Z",
+        "url": "https://www.ign.com/articles/2016/05/16/doom-review-2",
+        "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/doom-review/1900-6416432",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/technology/2016/may/18/doom-review-ludicrous-compelling-shooter-reboot-basics-original",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/gaming/2016/05/doom-2016-single-player-review-back-to-basics",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/70386-doom-2016-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "wired",
+      "publication": "WIRED",
+      "url": "https://www.wired.com/2016/05/doom-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "videogamer",
+      "publication": "VideoGamer",
+      "url": "https://www.videogamer.com/reviews/doom-2016-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2016/5/18/11706108/doom-review-pc-xbox-one-ps4",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 3,
+    "values": [
+      8.75,
+      9,
+      7.1
+    ],
+    "mean_10": 8.2833,
+    "score_10": 8.3
+  }
+}

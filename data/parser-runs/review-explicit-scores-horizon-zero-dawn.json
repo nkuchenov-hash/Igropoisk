@@ -1,0 +1,66 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "horizon-zero-dawn",
+  "checked_at": "2026-08-14T16:28:27.112Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 4,
+  "scored": 1,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 9.3,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2017/02/20/horizon-zero-dawn-review",
+      "final_url": "https://www.ign.com/articles/2017/02/20/horizon-zero-dawn-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2017/2/20/14576092/horizon-zero-dawn-review-ps4-playstation-4-sony-guerrilla-games",
+      "final_url": "https://www.polygon.com/2017/2/20/14576092/horizon-zero-dawn-review-ps4-playstation-4-sony-guerrilla-games/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "http://www.gamespot.com/reviews/horizon-zero-dawn-review/1900-6416620",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/technology/2017/feb/20/horizon-zero-dawn-review-a-stunning-but-barely-evolved-rpg-contradiction",
+      "final_url": "https://www.theguardian.com/technology/2017/feb/20/horizon-zero-dawn-review-a-stunning-but-barely-evolved-rpg-contradiction",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

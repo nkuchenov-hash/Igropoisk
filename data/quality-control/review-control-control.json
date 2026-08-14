@@ -1,0 +1,75 @@
+{
+  "schema_version": 8,
+  "type": "review",
+  "game_slug": "control",
+  "game_id": null,
+  "canonical_title": "Control",
+  "checked_at": "2026-08-14T16:30:55.466Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
+  "revision_history": [
+    {
+      "label": "web-discovery-full-registry",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"control\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 9,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 3,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "promote-full-registry-audit",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"control\",\n  \"status\": \"green\",\n  \"accepted\": 9,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "explicit-score-enrichment",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"control\",\n  \"accepted\": 9,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"updates\": 3,\n  \"preserved\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "score-1",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"control\",\n  \"status\": \"green\",\n  \"scored_sources\": 3,\n  \"excluded_sources\": 6,\n  \"score_10\": 7.9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rebind-1",
+      "script": "scripts/rebind-existing-review.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "control: passed — 1727 words, 8 visually approved unique screenshots\n{\n  \"slug\": \"control\",\n  \"status\": \"green\",\n  \"score\": 7.9,\n  \"full_corpus_sources\": 9,\n  \"article_sources\": 9,\n  \"words\": 1727,\n  \"sections\": 8,\n  \"prose_regenerated\": false,\n  \"language_disposition\": \"legacy-published-audit-deferred\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "render-rebound-1",
+      "script": "scripts/render-review-pages.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "Rendered control: 1727 words, 8 unique images\n",
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "keep_queued_until_green": true,
+    "deterministic_only": true,
+    "review_score_source": "data/reviews/{slug}.json#review_score",
+    "research_primary": "complete-registered-source-direct-publisher-scan",
+    "research_fallback": "registered-publisher-research-only-if-full-scan-missing",
+    "score_enrichment": "direct-publisher-structured-markup-preserve-verified",
+    "score_aggregation": "all-eligible-explicit-publisher-scores",
+    "article_reuse": "surgical-rebind-before-regeneration",
+    "synthesis_fallback": "local-ollama-only-after-deterministic-recovery",
+    "visual_audit_fallback": "local-ollama-multimodal",
+    "language_audit_fallback": "local-ollama",
+    "web_discovery_attempts_per_qc": 1
+  }
+}

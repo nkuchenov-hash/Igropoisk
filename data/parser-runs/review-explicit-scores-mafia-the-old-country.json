@@ -1,0 +1,137 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "mafia-the-old-country",
+  "checked_at": "2026-08-14T16:36:45.944Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 8,
+  "scored": 4,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 45,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 6,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 6,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/mafia-the-old-country-review",
+      "final_url": "https://www.ign.com/articles/mafia-the-old-country-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/games/action/mafia-the-old-country-review",
+      "final_url": "https://www.pcgamer.com/games/action/mafia-the-old-country-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/mafia-the-old-country/an-offer-you-can-probably-refuse",
+      "final_url": "https://gameinformer.com/review/mafia-the-old-country/an-offer-you-can-probably-refuse",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/mafia-the-old-country-review-look-but-dont-touch/1900-6418393",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/reviews/mafia-the-old-country-review",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/games/2025/aug/15/mafia-the-old-country-review",
+      "final_url": "https://www.theguardian.com/games/2025/aug/15/mafia-the-old-country-review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/mafia-the-old-country",
+      "final_url": "https://www.pushsquare.com/reviews/ps5/mafia-the-old-country",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gry-online",
+      "publication": "GRYOnline",
+      "url": "https://www.gry-online.pl/recenzje/recenzja-mafia-the-old-country-wiecej-takich-opowiesci-mniej-otwa/z3475c",
+      "final_url": "https://www.gry-online.pl/recenzje/recenzja-mafia-the-old-country-wiecej-takich-opowiesci-mniej-otwa/z3475c",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

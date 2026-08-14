@@ -1,0 +1,108 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "the-last-of-us-part-ii",
+  "checked_at": "2026-08-14T16:32:05.733Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 7,
+  "scored": 2,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 10,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 10,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/the-last-of-us-part-2-review",
+      "final_url": "https://www.ign.com/articles/the-last-of-us-part-2-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/the-last-of-us-part-ii/the-last-of-us-part-ii-review-a-perfect-circle",
+      "final_url": "https://gameinformer.com/review/the-last-of-us-part-ii/the-last-of-us-part-ii-review-a-perfect-circle",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/reviews/2020/6/12/21288535/the-last-of-us-part-2-review-ps4-naughty-dog-ellie-joel-violence",
+      "final_url": "https://www.polygon.com/reviews/2020/6/12/21288535/the-last-of-us-part-2-review-ps4-naughty-dog-ellie-joel-violence/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/the-last-of-us-part-ii-review-spoilerfree/1900-6417483",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/gaming/2020/06/the-last-of-us-part-2-isnt-a-fully-satisfying-return-to-the-apocalypse",
+      "final_url": "https://arstechnica.com/gaming/2020/06/the-last-of-us-part-2-isnt-a-fully-satisfying-return-to-the-apocalypse/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/stories/review-the-last-of-us-part-ii-592974.phtml",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/648897-the-last-of-us-2-review-ps4",
+      "final_url": "https://www.gamerevolution.com/review/648897-the-last-of-us-2-review-ps4",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}
