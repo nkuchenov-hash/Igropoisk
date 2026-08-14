@@ -4,20 +4,17 @@
   "game_slug": "metal-gear-solid-v-the-phantom-pain",
   "game_id": null,
   "canonical_title": "Metal Gear Solid V: The Phantom Pain",
-  "checked_at": "2026-08-14T23:35:10.651Z",
-  "status": "red-needs-revision",
-  "green": false,
-  "comments": [
-    "Корпус: 5/5",
-    "Оценённые издания: 2/3"
-  ],
+  "checked_at": "2026-08-14T23:48:22.272Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
   "revision_history": [
     {
       "label": "web-discovery-full-registry",
       "script": "scripts/discover-review-sources-web.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"metal-gear-solid-v-the-phantom-pain\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 5,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 1,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n",
+      "stdout": "{\n  \"slug\": \"metal-gear-solid-v-the-phantom-pain\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 11,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 2,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n",
       "stderr": ""
     },
     {
@@ -25,7 +22,7 @@
       "script": "scripts/promote-review-source-audit.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"metal-gear-solid-v-the-phantom-pain\",\n  \"status\": \"green\",\n  \"accepted\": 5,\n  \"trusted_scores_preserved\": 2,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"metal-gear-solid-v-the-phantom-pain\",\n  \"status\": \"green\",\n  \"accepted\": 11,\n  \"trusted_scores_preserved\": 2,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -33,15 +30,31 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"metal-gear-solid-v-the-phantom-pain\",\n  \"accepted\": 5,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"updates\": 2,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"metal-gear-solid-v-the-phantom-pain\",\n  \"accepted\": 11,\n  \"scored\": 4,\n  \"context_only_versions\": 0,\n  \"updates\": 4,\n  \"preserved\": 0\n}\n",
       "stderr": ""
     },
     {
       "label": "score-1",
       "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"metal-gear-solid-v-the-phantom-pain\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 2,\n  \"excluded_sources\": 3,\n  \"score_10\": 9.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"metal-gear-solid-v-the-phantom-pain\",\n  \"status\": \"green\",\n  \"scored_sources\": 4,\n  \"excluded_sources\": 7,\n  \"score_10\": 9.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rebind-1",
+      "script": "scripts/rebind-existing-review.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "metal-gear-solid-v-the-phantom-pain: passed — 3099 words, 31 visually approved unique screenshots\n{\n  \"slug\": \"metal-gear-solid-v-the-phantom-pain\",\n  \"status\": \"green\",\n  \"score\": 9.6,\n  \"full_corpus_sources\": 11,\n  \"article_sources\": 9,\n  \"words\": 3099,\n  \"sections\": 8,\n  \"prose_regenerated\": false,\n  \"language_disposition\": \"legacy-published-audit-deferred\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "render-rebound-1",
+      "script": "scripts/render-review-pages.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "Rendered metal-gear-solid-v-the-phantom-pain: 3099 words, 31 unique images\n",
       "stderr": ""
     }
   ],

@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/resident-evil-7-biohazard.json#review_score",
   "game_slug": "resident-evil-7-biohazard",
-  "checked_at": "2026-08-14T23:36:19.924Z",
+  "checked_at": "2026-08-14T23:48:37.212Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,12 +20,60 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Resident Evil 7: Biohazard review",
+      "url": "https://www.pcgamer.com/resident-evil-7-biohazard-review",
+      "original_score": {
+        "score": 90,
+        "scale": 100,
+        "grade": null,
+        "display": "90/100"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:48:37.174Z",
+        "url": "https://www.pcgamer.com/resident-evil-7-biohazard-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Resident Evil 7 Biohazard review:",
+      "url": "https://www.gamesradar.com/resident-evil-7-biohazard-review",
+      "original_score": {
+        "score": 4.5,
+        "scale": 5,
+        "grade": null,
+        "display": "4.5/5"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:48:37.174Z",
+        "url": "https://www.gamesradar.com/resident-evil-7-biohazard-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 2,
+    "values": [
+      9,
+      9
+    ],
+    "mean_10": 9,
+    "score_10": 9
   }
 }

@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/tom-clancys-rainbow-six-siege.json#review_score",
   "game_slug": "tom-clancys-rainbow-six-siege",
-  "checked_at": "2026-08-14T23:36:04.314Z",
+  "checked_at": "2026-08-14T23:48:19.927Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,7 +20,52 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-3",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Rainbow Six Siege review",
+      "url": "https://www.pcgamer.com/rainbow-six-siege-review",
+      "original_score": {
+        "score": 90,
+        "scale": 100,
+        "grade": null,
+        "display": "90/100"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:48:19.889Z",
+        "url": "https://www.pcgamer.com/rainbow-six-siege-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Rainbow Six: Siege review",
+      "url": "https://www.gamesradar.com/rainbow-six-siege-review",
+      "original_score": {
+        "score": 3.5,
+        "scale": 5,
+        "grade": null,
+        "display": "3.5/5"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:48:19.889Z",
+        "url": "https://www.gamesradar.com/rainbow-six-siege-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [
     {
       "configured_source_id": "stopgame",
@@ -36,9 +81,12 @@
     }
   ],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 2,
+    "values": [
+      9,
+      7
+    ],
+    "mean_10": 8,
+    "score_10": 8
   }
 }

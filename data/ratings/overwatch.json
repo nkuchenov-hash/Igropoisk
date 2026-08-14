@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/overwatch.json#review_score",
   "game_slug": "overwatch",
-  "checked_at": "2026-08-14T23:36:07.310Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:48:22.256Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,9 +37,53 @@
       "score_evidence": {
         "method": "registry:game-revolution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:36:07.281Z",
+        "checked_at": "2026-08-14T23:48:22.076Z",
         "url": "https://www.gamerevolution.com/review/70416-overwatch-review",
         "configured_source_id": "game-revolution",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Overwatch review",
+      "url": "https://www.pcgamer.com/overwatch-review",
+      "original_score": {
+        "score": 88,
+        "scale": 100,
+        "grade": null,
+        "display": "88/100"
+      },
+      "normalized_10": 8.8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:48:22.213Z",
+        "url": "https://www.pcgamer.com/overwatch-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-7",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Overwatch review",
+      "url": "https://www.gamesradar.com/overwatch-review",
+      "original_score": {
+        "score": 4.5,
+        "scale": 5,
+        "grade": null,
+        "display": "4.5/5"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:48:22.213Z",
+        "url": "https://www.gamesradar.com/overwatch-review/",
+        "configured_source_id": "gamesradar",
         "direct_publisher": true
       }
     }
@@ -62,14 +106,22 @@
       "publication": "The Guardian",
       "url": "https://www.theguardian.com/technology/2016/may/27/overwatch-review-blizzard",
       "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "http://www.destructoid.com/overwatch-on-consoles-is-smooth-but-most-will-prefer-pc-350398.phtml",
+      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 1,
+    "source_count": 3,
     "values": [
+      9,
+      8.8,
       9
     ],
-    "mean_10": 9,
-    "score_10": 9
+    "mean_10": 8.9333,
+    "score_10": 8.9
   }
 }

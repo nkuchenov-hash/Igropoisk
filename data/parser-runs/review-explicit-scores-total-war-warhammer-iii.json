@@ -1,11 +1,33 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "total-war-warhammer-iii",
-  "checked_at": "2026-08-14T23:44:33.248Z",
+  "checked_at": "2026-08-14T23:56:51.057Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 0,
-  "scored": 0,
+  "accepted": 1,
+  "scored": 1,
   "context_only_versions": 0,
-  "updates": [],
-  "checks": []
+  "updates": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 90,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/total-war-warhammer-3-review",
+      "final_url": "https://www.pcgamer.com/total-war-warhammer-3-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
 }

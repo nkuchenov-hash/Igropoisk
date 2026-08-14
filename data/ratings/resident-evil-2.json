@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/resident-evil-2.json#review_score",
   "game_slug": "resident-evil-2",
-  "checked_at": "2026-08-14T23:37:29.176Z",
+  "checked_at": "2026-08-14T23:49:34.013Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,12 +20,44 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
-  "excluded_sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Resident Evil 2 review",
+      "url": "https://www.pcgamer.com/resident-evil-2-review",
+      "original_score": {
+        "score": 89,
+        "scale": 100,
+        "grade": null,
+        "display": "89/100"
+      },
+      "normalized_10": 8.9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:49:33.976Z",
+        "url": "https://www.pcgamer.com/resident-evil-2-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/resident-evil-2-remake-review",
+      "reason": "variant_or_port:remake"
+    }
+  ],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      8.9
+    ],
+    "mean_10": 8.9,
+    "score_10": 8.9
   }
 }

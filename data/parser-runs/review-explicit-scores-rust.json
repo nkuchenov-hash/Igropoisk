@@ -1,11 +1,33 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "rust",
-  "checked_at": "2026-08-14T23:42:01.311Z",
+  "checked_at": "2026-08-14T23:54:07.316Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 0,
-  "scored": 0,
+  "accepted": 1,
+  "scored": 1,
   "context_only_versions": 0,
-  "updates": [],
-  "checks": []
+  "updates": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 80,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/rust-review",
+      "final_url": "https://www.pcgamer.com/rust-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
 }

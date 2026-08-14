@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/palworld.json#review_score",
   "game_slug": "palworld",
-  "checked_at": "2026-08-14T23:41:03.693Z",
+  "checked_at": "2026-08-14T23:53:19.608Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -21,7 +21,20 @@
     "exact_canonical_version_required": true
   },
   "sources": [],
-  "excluded_sources": [],
+  "excluded_sources": [
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/palworld-is-the-latest-mega-hit-survival-game-selling-one-million-copies-in-its-first-8-hours-with-very-positive-reviews-on-steam",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/palworld-has-just-one-game-to-beat-to-become-the-most-played-release-on-steam-ever",
+      "reason": "canonical_version"
+    }
+  ],
   "calculation": {
     "source_count": 0,
     "values": [],

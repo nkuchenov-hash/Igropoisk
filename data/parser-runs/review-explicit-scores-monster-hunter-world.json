@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "monster-hunter-world",
-  "checked_at": "2026-08-14T23:37:19.052Z",
+  "checked_at": "2026-08-14T23:49:28.632Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 4,
-  "scored": 2,
+  "accepted": 8,
+  "scored": 5,
   "context_only_versions": 0,
   "updates": [
     {
@@ -22,6 +22,33 @@
       "score": 9,
       "scale": 10,
       "method": "registry:game-revolution",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "score": 5,
+      "scale": 5,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 86,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "score": 5,
+      "scale": 5,
+      "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": true
     }
@@ -69,6 +96,50 @@
       "blocked": false,
       "preserved_existing_score": false,
       "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "url": "https://www.eurogamer.net/monster-hunter-world-review",
+      "final_url": "https://www.eurogamer.net/monster-hunter-world-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/monster-hunter-world-review",
+      "final_url": "https://www.pcgamer.com/monster-hunter-world-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/monster-hunter-world-review",
+      "final_url": "https://www.gamesradar.com/monster-hunter-world-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/review-monster-hunter-world-482217.phtml",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
       "canonical_score_eligible": true
     }
   ]

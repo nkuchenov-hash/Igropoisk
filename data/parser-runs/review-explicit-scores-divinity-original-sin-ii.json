@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "divinity-original-sin-ii",
-  "checked_at": "2026-08-14T23:37:14.724Z",
+  "checked_at": "2026-08-14T23:49:05.961Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 4,
-  "scored": 1,
+  "accepted": 8,
+  "scored": 3,
   "context_only_versions": 1,
   "updates": [
     {
@@ -24,6 +24,24 @@
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": false
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 92,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "score": 5,
+      "scale": 5,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
     }
   ],
   "checks": [
@@ -70,6 +88,50 @@
       "preserved_existing_score": false,
       "trusted_editorial_score": true,
       "canonical_score_eligible": false
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/divinity-original-sin-2-review",
+      "final_url": "https://www.pcgamer.com/divinity-original-sin-2-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "url": "https://www.eurogamer.net/divinity-original-sin-2-review",
+      "final_url": "https://www.eurogamer.net/divinity-original-sin-2-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "rock-paper-shotgun",
+      "publication": "Rock Paper Shotgun",
+      "url": "https://www.rockpapershotgun.com/divinity-original-sin-2-review",
+      "final_url": "https://www.rockpapershotgun.com/divinity-original-sin-2-review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/review-divinity-original-sin-2-465751.phtml",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
     }
   ]
 }

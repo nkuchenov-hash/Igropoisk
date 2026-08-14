@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "marvel-rivals",
-  "generated_at": "2026-08-14T23:38:27.043Z",
+  "generated_at": "2026-08-14T23:50:06.066Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -39,7 +39,32 @@
       },
       "validation": {
         "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-14T23:38:27.043Z",
+        "checked_at": "2026-08-14T23:50:06.066Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.destructoid.com/all-hero-counters-in-marvel-rivals",
+      "publication": "Destructoid",
+      "title": "Marvel Rivals — Destructoid review reference",
+      "id": "source-2",
+      "configured_source_id": "destructoid",
+      "resolved_url": "https://www.destructoid.com/all-hero-counters-in-marvel-rivals",
+      "source_kind": "review",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-14T23:50:06.066Z",
         "method": "registered-direct-publisher-preserved-v8",
         "reason": "HTTP 403"
       },
@@ -86,6 +111,14 @@
       "publication": "IGN",
       "url": "https://www.ign.com/articles/marvel-rivals-the-comic-book-origins-of-the-games-unlockable-skins",
       "title": "Marvel Rivals: The Comic Book Origins of the Game&#x27;s Unlockable Skins - IGN",
+      "reasons": [
+        "no_review_signal"
+      ]
+    },
+    {
+      "publication": "Rock Paper Shotgun",
+      "url": "https://www.rockpapershotgun.com/marvel-rivals-season-2-begins-now-with-emma-frost-new-team-ups-and-a-pc-performance-boosting-mode",
+      "title": "Marvel Rivals Season 2 begins now with Emma Frost, new team-ups and a PC performance boosting mode",
       "reasons": [
         "no_review_signal"
       ]
@@ -279,8 +312,8 @@
       "source_id": "destructoid",
       "name": "Destructoid",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "found",
+      "notes": "verified direct review"
     },
     {
       "source_id": "shacknews",
@@ -424,13 +457,13 @@
   "coverage": {
     "registered_editorial": 37,
     "checked": 37,
-    "accepted": 1,
+    "accepted": 2,
     "scored": 0,
     "context_only_versions": 0,
-    "blocked_verified": 1,
-    "contemporary": 1,
+    "blocked_verified": 2,
+    "contemporary": 2,
     "green": false,
     "passed": false,
-    "needs_more": 4
+    "needs_more": 3
   }
 }

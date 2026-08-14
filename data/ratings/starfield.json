@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/starfield.json#review_score",
   "game_slug": "starfield",
-  "checked_at": "2026-08-14T23:44:29.060Z",
+  "checked_at": "2026-08-14T23:56:26.408Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,12 +20,60 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Starfield review",
+      "url": "https://www.pcgamer.com/starfield-review",
+      "original_score": {
+        "score": 75,
+        "scale": 100,
+        "grade": null,
+        "display": "75/100"
+      },
+      "normalized_10": 7.5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:56:26.371Z",
+        "url": "https://www.pcgamer.com/starfield-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Starfield review: \"The best thing Bethesda",
+      "url": "https://www.gamesradar.com/starfield-review",
+      "original_score": {
+        "score": 5,
+        "scale": 5,
+        "grade": null,
+        "display": "5/5"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:56:26.371Z",
+        "url": "https://www.gamesradar.com/starfield-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 2,
+    "values": [
+      7.5,
+      10
+    ],
+    "mean_10": 8.75,
+    "score_10": 8.8
   }
 }

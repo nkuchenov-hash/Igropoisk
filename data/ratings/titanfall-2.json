@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/titanfall-2.json#review_score",
   "game_slug": "titanfall-2",
-  "checked_at": "2026-08-14T23:36:05.274Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:48:00.430Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,9 +37,75 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:36:05.234Z",
+        "checked_at": "2026-08-14T23:48:00.058Z",
         "url": "https://www.ign.com/articles/2016/10/28/titanfall-2-review",
         "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "title": "Titanfall 2 review",
+      "url": "https://www.eurogamer.net/titanfall-2-review",
+      "original_score": {
+        "score": 5,
+        "scale": 5,
+        "grade": null,
+        "display": "5/5"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:48:00.058Z",
+        "url": "https://www.eurogamer.net/titanfall-2-review",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Titanfall 2 review",
+      "url": "https://www.pcgamer.com/titanfall-2-review",
+      "original_score": {
+        "score": 91,
+        "scale": 100,
+        "grade": null,
+        "display": "91/100"
+      },
+      "normalized_10": 9.1,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:48:00.389Z",
+        "url": "https://www.pcgamer.com/titanfall-2-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Titanfall 2 review:",
+      "url": "https://www.gamesradar.com/titanfall-2-review",
+      "original_score": {
+        "score": 4.5,
+        "scale": 5,
+        "grade": null,
+        "display": "4.5/5"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:48:00.389Z",
+        "url": "https://www.gamesradar.com/titanfall-2-review/",
+        "configured_source_id": "gamesradar",
         "direct_publisher": true
       }
     }
@@ -56,14 +122,29 @@
       "publication": "Polygon",
       "url": "https://www.polygon.com/2016/10/24/13377822/titanfall-2-review-xbox-one-PC-ps4-playstation-4",
       "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "rock-paper-shotgun",
+      "publication": "Rock Paper Shotgun",
+      "url": "https://www.rockpapershotgun.com/titanfall-2-pc-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/review-titanfall-2-396814.phtml",
+      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 1,
+    "source_count": 4,
     "values": [
+      9,
+      10,
+      9.1,
       9
     ],
-    "mean_10": 9,
-    "score_10": 9
+    "mean_10": 9.275,
+    "score_10": 9.3
   }
 }

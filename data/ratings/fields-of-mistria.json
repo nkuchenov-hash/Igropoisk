@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/fields-of-mistria.json#review_score",
   "game_slug": "fields-of-mistria",
-  "checked_at": "2026-08-14T23:39:51.707Z",
+  "checked_at": "2026-08-14T23:51:53.596Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,7 +20,30 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-2",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Fields of Mistria review",
+      "url": "https://www.pcgamer.com/games/life-sim/fields-of-mistria-review",
+      "original_score": {
+        "score": 89,
+        "scale": 100,
+        "grade": null,
+        "display": "89/100"
+      },
+      "normalized_10": 8.9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:51:53.557Z",
+        "url": "https://www.pcgamer.com/games/life-sim/fields-of-mistria-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [
     {
       "configured_source_id": "polygon",
@@ -30,9 +53,11 @@
     }
   ],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      8.9
+    ],
+    "mean_10": 8.9,
+    "score_10": 8.9
   }
 }

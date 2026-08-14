@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/horizon-zero-dawn.json#review_score",
   "game_slug": "horizon-zero-dawn",
-  "checked_at": "2026-08-14T23:36:22.703Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:48:16.462Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,9 +37,53 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:36:22.673Z",
+        "checked_at": "2026-08-14T23:48:16.275Z",
         "url": "https://www.ign.com/articles/2017/02/20/horizon-zero-dawn-review",
         "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "title": "Horizon Zero Dawn review",
+      "url": "https://www.eurogamer.net/horizon-zero-dawn-review",
+      "original_score": {
+        "score": 3,
+        "scale": 5,
+        "grade": null,
+        "display": "3/5"
+      },
+      "normalized_10": 6,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:48:16.422Z",
+        "url": "https://www.eurogamer.net/horizon-zero-dawn-review",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Horizon Zero Dawn review:",
+      "url": "https://www.gamesradar.com/horizon-zero-dawn-review",
+      "original_score": {
+        "score": 4.5,
+        "scale": 5,
+        "grade": null,
+        "display": "4.5/5"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:48:16.422Z",
+        "url": "https://www.gamesradar.com/horizon-zero-dawn-review/",
+        "configured_source_id": "gamesradar",
         "direct_publisher": true
       }
     }
@@ -62,14 +106,22 @@
       "publication": "The Guardian",
       "url": "https://www.theguardian.com/technology/2017/feb/20/horizon-zero-dawn-review-a-stunning-but-barely-evolved-rpg-contradiction",
       "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/review-horizon-zero-dawn-416881.phtml",
+      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 1,
+    "source_count": 3,
     "values": [
-      9.3
+      9.3,
+      6,
+      9
     ],
-    "mean_10": 9.3,
-    "score_10": 9.3
+    "mean_10": 8.1,
+    "score_10": 8.1
   }
 }

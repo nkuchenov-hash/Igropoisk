@@ -4,28 +4,25 @@
   "game_slug": "helldivers-2",
   "game_id": null,
   "canonical_title": "Helldivers 2",
-  "checked_at": "2026-08-14T23:38:40.214Z",
-  "status": "red-needs-revision",
-  "green": false,
-  "comments": [
-    "Корпус: 4/5",
-    "Оценённые издания: 3/3"
-  ],
+  "checked_at": "2026-08-14T23:50:40.230Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
   "revision_history": [
     {
       "label": "web-discovery-full-registry",
       "script": "scripts/discover-review-sources-web.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"helldivers-2\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 4,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 1,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"helldivers-2\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 8,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 1,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n",
       "stderr": ""
     },
     {
       "label": "promote-full-registry-audit",
       "script": "scripts/promote-review-source-audit.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"helldivers-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 4,\n  \"trusted_scores_preserved\": 3,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"helldivers-2\",\n  \"status\": \"green\",\n  \"accepted\": 8,\n  \"trusted_scores_preserved\": 3,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -33,7 +30,7 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"helldivers-2\",\n  \"accepted\": 4,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"updates\": 3,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"helldivers-2\",\n  \"accepted\": 8,\n  \"scored\": 6,\n  \"context_only_versions\": 0,\n  \"updates\": 6,\n  \"preserved\": 0\n}\n",
       "stderr": ""
     },
     {
@@ -41,7 +38,23 @@
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"helldivers-2\",\n  \"status\": \"green\",\n  \"scored_sources\": 3,\n  \"excluded_sources\": 1,\n  \"score_10\": 9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stdout": "{\n  \"slug\": \"helldivers-2\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 2,\n  \"score_10\": 8.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rebind-1",
+      "script": "scripts/rebind-existing-review.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "helldivers-2: passed — 3191 words, 32 visually approved unique screenshots\n{\n  \"slug\": \"helldivers-2\",\n  \"status\": \"green\",\n  \"score\": 8.6,\n  \"full_corpus_sources\": 8,\n  \"article_sources\": 8,\n  \"words\": 3191,\n  \"sections\": 8,\n  \"prose_regenerated\": false,\n  \"language_disposition\": \"legacy-published-audit-deferred\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "render-rebound-1",
+      "script": "scripts/render-review-pages.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "Rendered helldivers-2: 3191 words, 32 unique images\n",
       "stderr": ""
     }
   ],

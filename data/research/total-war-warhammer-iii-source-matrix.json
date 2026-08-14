@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "total-war-warhammer-iii",
-  "generated_at": "2026-08-14T23:43:24.196Z",
+  "generated_at": "2026-08-14T23:55:39.850Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -16,7 +16,72 @@
     "search_title_variants": true,
     "review_hub_following": true
   },
-  "accepted": [],
+  "accepted": [
+    {
+      "url": "https://www.pcgamer.com/total-war-warhammer-3-review",
+      "title": "Total War: Warhammer 3 review",
+      "sitemap_rank": 108,
+      "sitemap_match": {
+        "matched": 4,
+        "coverage": 1,
+        "extras": 0
+      },
+      "discovery_method": "publisher_sitemap",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "language": "en",
+      "id": "source-1",
+      "resolved_url": "https://www.pcgamer.com/total-war-warhammer-3-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Total War: WARHAMMER III.",
+      "evidence_points": [
+        "Join the club for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
+        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
+        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
+        "PC Gamer's got your back Our experienced team dedicates many hours to every review, to really get to the heart of what matters most to you. Find out more about how we evaluate games and hardware.",
+        "What is it? Big fantasy armies racing to reach an imprisoned god. Expect to pay $60/&pound;50 Release date February 17 Developer: Creative Assembly Publisher: Sega Reviewed on: GTX 1080 Ti, Intel i7-8086K, 16GB RAM Multiplayer? Yes Link: Official site",
+        "It would have been very hard to predict the trajectory Total War has taken. It's grown from feudal Japanese battles and a simple board game-style campaign to this, Warhammer 3 , where armies can hop between realities, where daemons and ogres clash, and where troops are led by flying monstrosities&mdash;including one that's as customisable as an RPG protagonist.&nbsp;",
+        "Creative Assembly has crammed plenty of surprises and oddities into this final act, clearly saving up its strangest experiments for the cataclysmic confrontation between mortals and Chaos. It goes in some strange directions, but always goes big, fully committing to Warhammer's wonderfully over-the-top brand of fantasy.&nbsp;",
+        "The impetus for the conflict is a bearnapping. Ursun, Kislev's hairiest deity, has been imprisoned by the daemon Be'lakor. To make matters worse for the furball, he's also been shot with a cursed bullet by a corrupted Kislev prince. His roars of anguish open up rifts between realities, letting armies cross over to the Realm of Chaos, where they can fight to reach Ursun&mdash;some to free him, some to request a boon and others to steal his power.",
+        "It's a setup that leads to a very different style of Total War campaign, where conquering the map is still encouraged but isn't quite as important as reaching Ursun's prison. Every 30 or so turns, rifts open up all over the map, spewing out daemonic armies and inviting mortals to enter Total War's weirdest locations, culminating in massive survival battles against a daemon prince. The reward? The prince's soul. Collect four and you can unlock the way to the big bear.&nbsp;",
+        "Each section of the Realm of Chaos reflects the personality of its patron god. Nurgle's realm is a pestilent, toxic nightmare where armies suffer constant attrition. Slaanesh's ream is a purple-tinged series of rings connected by portals, and every time you walk through one the dark deity will try to seduce you with incredible gifts&mdash;but only if you leave without your prize. Tzeentch's realm is a maze of floating islands connected by magic, where the route to the final battle is randomised. Khorne's realm is the most straightforward: a hellscape where you simply beat up a lot of daemons and rogue armies until you've earned enough bloody glory.&nbsp;"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pcgamer.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-14T23:55:39.850Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 90,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:56:51.057Z",
+        "url": "https://www.pcgamer.com/total-war-warhammer-3-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    }
+  ],
   "rejected": [],
   "source_checks": [
     {
@@ -86,8 +151,8 @@
       "source_id": "pc-gamer",
       "name": "PC Gamer",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "found",
+      "notes": "verified direct review"
     },
     {
       "source_id": "gamespot",
@@ -343,13 +408,13 @@
   "coverage": {
     "registered_editorial": 37,
     "checked": 37,
-    "accepted": 0,
-    "scored": 0,
+    "accepted": 1,
+    "scored": 1,
     "context_only_versions": 0,
     "blocked_verified": 0,
-    "contemporary": 0,
+    "contemporary": 1,
     "green": false,
     "passed": false,
-    "needs_more": 5
+    "needs_more": 4
   }
 }

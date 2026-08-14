@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "horizon-zero-dawn",
-  "checked_at": "2026-08-14T23:36:22.673Z",
+  "checked_at": "2026-08-14T23:48:16.423Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 4,
-  "scored": 1,
+  "accepted": 7,
+  "scored": 3,
   "context_only_versions": 0,
   "updates": [
     {
@@ -12,6 +12,24 @@
       "publication": "IGN",
       "score": 9.3,
       "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "score": 3,
+      "scale": 5,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "score": 4.5,
+      "scale": 5,
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": true
@@ -58,6 +76,39 @@
       "final_url": "https://www.theguardian.com/technology/2017/feb/20/horizon-zero-dawn-review-a-stunning-but-barely-evolved-rpg-contradiction",
       "status": "no_explicit_editorial_score",
       "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "url": "https://www.eurogamer.net/horizon-zero-dawn-review",
+      "final_url": "https://www.eurogamer.net/horizon-zero-dawn-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/horizon-zero-dawn-review",
+      "final_url": "https://www.gamesradar.com/horizon-zero-dawn-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/review-horizon-zero-dawn-416881.phtml",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
       "preserved_existing_score": false,
       "trusted_editorial_score": false,
       "canonical_score_eligible": true
