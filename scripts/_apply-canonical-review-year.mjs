@@ -10,3 +10,4 @@ if(!source.includes(next)){
   source=source.replace(old,next);
 }
 fs.writeFileSync(file,source);
+// one-shot patch trigger; remove this helper after the production file is committed.
