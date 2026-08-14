@@ -1,4 +1,4 @@
-name: Recover canonical review seed
+name: Recover canonical review backlog
 
 on:
   push:
@@ -8,10 +8,12 @@ on:
       - 'scripts/lib/review-source-registry.mjs'
       - 'scripts/lib/review-score-extractor.mjs'
       - 'scripts/discover-review-sources-web.mjs'
+      - 'scripts/discover-review-sources-web-v8.mjs'
       - 'scripts/promote-review-source-audit.mjs'
       - 'scripts/enrich-review-explicit-scores.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/rebind-existing-review.mjs'
+      - 'scripts/recover-canonical-review-backlog.mjs'
       - 'scripts/synthesize-review-local.mjs'
       - 'scripts/enrich-review-media-local.mjs'
       - 'scripts/audit-review-language-local.mjs'
@@ -20,6 +22,8 @@ on:
       - 'scripts/quality-control-loop.mjs'
       - 'scripts/validate-top-250.mjs'
       - '.github/workflows/recover-canonical-reviews.yml'
+  schedule:
+    - cron: '23 */12 * * *'
   workflow_dispatch:
 
 permissions:
@@ -33,9 +37,8 @@ concurrency:
 jobs:
   recover:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 240
     env:
-      LOCAL_EDITORIAL_MODEL: qwen3-vl:4b
       OPENAI_API_KEY: ''
     steps:
       - uses: actions/checkout@v4
@@ -45,23 +48,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Restore local editorial model cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.ollama/models
-          key: ollama-qwen3-vl-4b-v1
-      - name: Start local editorial model
-        run: |
-          set -euo pipefail
-          curl -fsSL https://ollama.com/install.sh | sh
-          nohup ollama serve >/tmp/ollama.log 2>&1 &
-          for attempt in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
-            sleep 1
-          done
-          ollama list | grep -q '^qwen3-vl:4b' || ollama pull qwen3-vl:4b
-          ollama list
-      - name: Validate recovery scripts
+
+      - name: Validate recovery scripts and source registry
         run: |
           node --check scripts/lib/review-source-registry.mjs
           node --check scripts/lib/review-score-extractor.mjs
@@ -70,44 +58,111 @@ jobs:
           node --check scripts/enrich-review-explicit-scores.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/rebind-existing-review.mjs
-          node --check scripts/synthesize-review-local.mjs
-          node --check scripts/enrich-review-media-local.mjs
-          node --check scripts/audit-review-language-local.mjs
+          node --check scripts/recover-canonical-review-backlog.mjs
           node --check scripts/quality-control-loop-v4.mjs
           node --check scripts/validate-top-250.mjs
           node scripts/validate-review-source-registry.mjs
-      - name: Revalidate strongest existing professional corpora
-        run: |
-          set -uo pipefail
-          slugs=(
-            elden-ring
-            the-witcher-3-wild-hunt
-            red-dead-redemption-2
-            god-of-war
-            hades
-            cyberpunk-2077
-          )
-          for slug in "${slugs[@]}"; do
-            echo "=== $slug ==="
-            node scripts/quality-control-loop.mjs review "$slug" || true
-          done
-      - name: Rebuild canonical publication feed and Top-250
+
+      - name: Upgrade every released legacy review deterministically
+        run: node scripts/recover-canonical-review-backlog.mjs --concurrency 6 --timeout-ms 720000
+
+      - name: Rebuild canonical state after deterministic migration
         run: |
           node scripts/materialize-review-publication-feed.mjs
           node scripts/validate-top-250.mjs
           node scripts/audit-review-publication.mjs
-          node - <<'NODE'
-          const fs=require('fs');
-          const top=JSON.parse(fs.readFileSync('data/top-250/current.json','utf8'));
-          console.log(`Recovered canonical Top-250 entries: ${top.count}`);
-          if(Number(top.count)<5) process.exit(2);
+
+      - name: Detect canonical reviews that still need a model
+        id: model_backlog
+        run: |
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs'),path=require('path');
+          const read=(p,f=null)=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return f}};
+          const catalog=read('data/catalog-visible.json',[]);
+          let model=0,rebind=0;
+          for(const item of catalog){
+            const slug=item.slug;if(!slug)continue;
+            const review=read(`data/reviews/${slug}.json`),article=read(`data/articles/${slug}.json`,read(`data/article-drafts/${slug}.json`));
+            if(review?.publication_gate?.status!=='green'||review?.review_score?.status!=='green'||review?.regional_discovery?.complete!==true)continue;
+            const score=Number(review?.review_score?.calculation?.score_10),rendered=fs.existsSync(path.join('article',slug,'index.html'));
+            if(article?.publication_status==='published'&&Number(article?.score)===score&&rendered)continue;
+            model++;
+            if(article?.sections?.length)rebind++;
+          }
+          console.log(`count=${model}`);
+          console.log(`rebind=${rebind}`);
           NODE
+
+      - name: Restore local text model cache
+        if: steps.model_backlog.outputs.count != '0'
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama/models
+          key: ollama-review-recovery-v2
+
+      - name: Start local editorial model service
+        if: steps.model_backlog.outputs.count != '0'
+        run: |
+          set -euo pipefail
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve >/tmp/ollama.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+
+      - name: Pull lightweight text editor
+        if: steps.model_backlog.outputs.rebind != '0'
+        run: ollama list | grep -q '^qwen3:1.7b' || ollama pull qwen3:1.7b
+
+      - name: Audit and rebind existing prose with lightweight text model
+        if: steps.model_backlog.outputs.rebind != '0'
+        env:
+          LOCAL_EDITORIAL_MODEL: qwen3:1.7b
+        run: node scripts/recover-canonical-review-backlog.mjs --rebind --concurrency 2 --timeout-ms 420000
+
+      - name: Detect reviews that still require full prose or media repair
+        id: full_backlog
+        if: steps.model_backlog.outputs.count != '0'
+        run: |
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs'),path=require('path');
+          const read=(p,f=null)=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return f}};
+          let count=0;
+          for(const item of read('data/catalog-visible.json',[])){
+            const slug=item.slug;if(!slug)continue;
+            const review=read(`data/reviews/${slug}.json`),article=read(`data/articles/${slug}.json`);
+            if(review?.publication_gate?.status!=='green'||review?.review_score?.status!=='green'||review?.regional_discovery?.complete!==true)continue;
+            const score=Number(review?.review_score?.calculation?.score_10),rendered=fs.existsSync(path.join('article',slug,'index.html'));
+            if(article?.publication_status==='published'&&Number(article?.score)===score&&rendered)continue;
+            count++;
+          }
+          console.log(`count=${count}`);
+          NODE
+
+      - name: Pull multimodal repair model only for remaining hard cases
+        if: steps.full_backlog.outputs.count != '0'
+        run: ollama list | grep -q '^qwen3-vl:4b' || ollama pull qwen3-vl:4b
+
+      - name: Repair only the remaining hard review cases
+        if: steps.full_backlog.outputs.count != '0'
+        env:
+          LOCAL_EDITORIAL_MODEL: qwen3-vl:4b
+        run: node scripts/recover-canonical-review-backlog.mjs --local --concurrency 1 --timeout-ms 1200000
+
+      - name: Rebuild final canonical publication feed and Top-250
+        run: |
+          node scripts/materialize-review-publication-feed.mjs
+          node scripts/validate-top-250.mjs
+          node scripts/audit-review-publication.mjs
+
       - name: Publish recovered canonical state
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          git add -A -- data/reviews data/research data/parser-runs data/quality-control data/articles data/article-drafts data/article-media data/media-candidates data/top-250 article
+          git add -A -- data/reviews data/research data/ratings data/parser-runs data/quality-control data/articles data/article-drafts data/article-media data/media-candidates data/top-250 article
           if git diff --cached --quiet; then
             echo 'No recovery changes.'
             exit 0
@@ -118,7 +173,10 @@ jobs:
           git config user.name "igropoisk-content[bot]"
           git config user.email "igropoisk-content[bot]@users.noreply.github.com"
           git checkout -b "$branch"
-          git commit -m "Recover canonical professional review seed"
+          git commit -m "Recover canonical review backlog"
           git push origin "$branch"
-          pr_url="$(gh pr create --base staging --head "$branch" --title "Recover canonical reviews ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" --body "Revalidates every applicable registered professional publisher, preserves only scores with explicit editorial-review provenance across transient bot blocks, calculates the canonical score from every eligible publisher vote, and rebuilds Top-250 only from green published reviews.")"
+          pr_url="$(gh pr create --base staging --head "$branch" --title "Recover canonical reviews ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" --body "Migrates the full released-game review backlog through registered direct-publisher discovery, explicit-score extraction and arithmetic canonical scoring. Existing prose is rebound first; local model work is reserved for language audit or genuinely missing/invalid prose and media.")"
           gh pr merge "$pr_url" --merge --delete-branch
+
+      - name: Require the released-game review backlog to be green
+        run: node scripts/audit-review-publication.mjs --strict
