@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/tom-clancy-s-ghost-recon-wildlands.json#review_score",
   "game_slug": "tom-clancy-s-ghost-recon-wildlands",
-  "checked_at": "2026-08-14T23:42:12.531Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:54:04.367Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,9 +37,97 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:42:12.266Z",
+        "checked_at": "2026-08-14T23:54:03.881Z",
         "url": "https://gameinformer.com/games/ghost_recon_wildlands/b/playstation4/archive/2017/03/13/game-informer-ghost-recon-wildlands-review.aspx",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "Ghost Recon: Wildlands Review - IGN",
+      "url": "https://www.ign.com/articles/2017/03/09/ghost-recon-wildlands-review",
+      "original_score": {
+        "score": 7.9,
+        "scale": 10,
+        "grade": null,
+        "display": "7.9/10"
+      },
+      "normalized_10": 7.9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:54:04.114Z",
+        "url": "https://www.ign.com/articles/2017/03/09/ghost-recon-wildlands-review",
+        "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-7",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Ghost Recon Wildlands review",
+      "url": "https://www.pcgamer.com/ghost-recon-wildlands-review",
+      "original_score": {
+        "score": 67,
+        "scale": 100,
+        "grade": null,
+        "display": "67/100"
+      },
+      "normalized_10": 6.7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:54:04.114Z",
+        "url": "https://www.pcgamer.com/ghost-recon-wildlands-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-8",
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "title": "Tom Clancy's Ghost Recon: Wildlands review",
+      "url": "https://www.eurogamer.net/tom-clancys-ghost-recon-wildlands-review",
+      "original_score": {
+        "score": 3,
+        "scale": 5,
+        "grade": null,
+        "display": "3/5"
+      },
+      "normalized_10": 6,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:54:04.114Z",
+        "url": "https://www.eurogamer.net/tom-clancys-ghost-recon-wildlands-review",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-9",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Ghost Recon: Wildlands review:",
+      "url": "https://www.gamesradar.com/ghost-recon-wildlands-review",
+      "original_score": {
+        "score": 4.5,
+        "scale": 5,
+        "grade": null,
+        "display": "4.5/5"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:54:04.328Z",
+        "url": "https://www.gamesradar.com/ghost-recon-wildlands-review/",
+        "configured_source_id": "gamesradar",
         "direct_publisher": true
       }
     }
@@ -68,14 +156,30 @@
       "publication": "The Guardian",
       "url": "https://www.theguardian.com/technology/2017/mar/13/tom-clancy-ghost-recon-wildlands-review-ubisoft-open-world-game",
       "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "rock-paper-shotgun",
+      "publication": "Rock Paper Shotgun",
+      "url": "https://www.rockpapershotgun.com/ghost-recon-wildlands-review-pc",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/review-ghost-recon-wildlands-425478.phtml",
+      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 1,
+    "source_count": 5,
     "values": [
-      8.25
+      8.25,
+      7.9,
+      6.7,
+      6,
+      9
     ],
-    "mean_10": 8.25,
-    "score_10": 8.3
+    "mean_10": 7.57,
+    "score_10": 7.6
   }
 }

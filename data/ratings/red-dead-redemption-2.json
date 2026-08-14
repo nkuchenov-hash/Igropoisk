@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/red-dead-redemption-2.json#review_score",
   "game_slug": "red-dead-redemption-2",
-  "checked_at": "2026-08-14T23:37:29.453Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:49:30.921Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:37:28.791Z",
+        "checked_at": "2026-08-14T23:49:30.505Z",
         "url": "https://www.ign.com/articles/2018/10/25/red-dead-redemption-2-review",
         "configured_source_id": "ign",
         "direct_publisher": true
@@ -59,9 +59,75 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:37:28.791Z",
+        "checked_at": "2026-08-14T23:49:30.505Z",
         "url": "https://gameinformer.com/review/red-dead-redemption-ii/an-open-world-western-for-the-ages-0",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "title": "Red Dead Redemption 2 review - a peerless open world, and a story in the shadow of its predecessor",
+      "url": "https://www.eurogamer.net/red-dead-redemption-2-review-9",
+      "original_score": {
+        "score": 4,
+        "scale": 5,
+        "grade": null,
+        "display": "4/5"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:49:30.835Z",
+        "url": "https://www.eurogamer.net/red-dead-redemption-2-review-9",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-7",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Red Dead Redemption 2 review",
+      "url": "https://www.pcgamer.com/red-dead-redemption-2-review",
+      "original_score": {
+        "score": 88,
+        "scale": 100,
+        "grade": null,
+        "display": "88/100"
+      },
+      "normalized_10": 8.8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:49:30.835Z",
+        "url": "https://www.pcgamer.com/red-dead-redemption-2-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-8",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Red Dead Redemption 2 review: &ldquo;When the credits roll, you&rsquo;ll have created enough incredible memories to fill ten lesser games&rdquo;",
+      "url": "https://www.gamesradar.com/red-dead-redemption-2-review",
+      "original_score": {
+        "score": 5,
+        "scale": 5,
+        "grade": null,
+        "display": "5/5"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:49:30.835Z",
+        "url": "https://www.gamesradar.com/red-dead-redemption-2-review/",
+        "configured_source_id": "gamesradar",
         "direct_publisher": true
       }
     }
@@ -84,15 +150,30 @@
       "publication": "Ars Technica",
       "url": "https://arstechnica.com/gaming/2018/10/red-dead-redemption-ii-review-getting-muddy-in-the-wide-open-frontier",
       "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "rock-paper-shotgun",
+      "publication": "Rock Paper Shotgun",
+      "url": "https://www.rockpapershotgun.com/red-dead-redemption-2-pc-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/review-red-dead-redemption-2-526689.phtml",
+      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 5,
     "values": [
       10,
+      10,
+      8,
+      8.8,
       10
     ],
-    "mean_10": 10,
-    "score_10": 10
+    "mean_10": 9.36,
+    "score_10": 9.4
   }
 }

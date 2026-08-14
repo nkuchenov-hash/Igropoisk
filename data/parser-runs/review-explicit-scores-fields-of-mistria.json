@@ -1,12 +1,22 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "fields-of-mistria",
-  "checked_at": "2026-08-14T23:39:51.676Z",
+  "checked_at": "2026-08-14T23:51:53.557Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 1,
-  "scored": 0,
+  "accepted": 2,
+  "scored": 1,
   "context_only_versions": 0,
-  "updates": [],
+  "updates": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 89,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
   "checks": [
     {
       "configured_source_id": "polygon",
@@ -17,6 +27,17 @@
       "blocked": false,
       "preserved_existing_score": false,
       "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/games/life-sim/fields-of-mistria-review",
+      "final_url": "https://www.pcgamer.com/games/life-sim/fields-of-mistria-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     }
   ]

@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "halo-campaign-evolved",
-  "checked_at": "2026-08-14T23:42:14.846Z",
+  "checked_at": "2026-08-14T23:54:30.529Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 4,
-  "scored": 0,
+  "accepted": 5,
+  "scored": 1,
   "context_only_versions": 3,
   "updates": [
     {
@@ -33,6 +33,15 @@
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": false
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "score": 4,
+      "scale": 5,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
     }
   ],
   "checks": [
@@ -79,6 +88,17 @@
       "preserved_existing_score": false,
       "trusted_editorial_score": true,
       "canonical_score_eligible": false
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "url": "https://www.eurogamer.net/halo-campaign-evolved-review",
+      "final_url": "https://www.eurogamer.net/halo-campaign-evolved-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
     }
   ]
 }

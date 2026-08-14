@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/divinity-original-sin-ii.json#review_score",
   "game_slug": "divinity-original-sin-ii",
-  "checked_at": "2026-08-14T23:37:14.754Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-14T23:49:05.999Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,9 +37,53 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:37:14.724Z",
+        "checked_at": "2026-08-14T23:49:05.564Z",
         "url": "https://www.ign.com/articles/2017/09/21/divinity-original-sin-2-review",
         "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Divinity: Original Sin 2 review",
+      "url": "https://www.pcgamer.com/divinity-original-sin-2-review",
+      "original_score": {
+        "score": 92,
+        "scale": 100,
+        "grade": null,
+        "display": "92/100"
+      },
+      "normalized_10": 9.2,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:49:05.961Z",
+        "url": "https://www.pcgamer.com/divinity-original-sin-2-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "title": "Divinity: Original Sin 2 review",
+      "url": "https://www.eurogamer.net/divinity-original-sin-2-review",
+      "original_score": {
+        "score": 5,
+        "scale": 5,
+        "grade": null,
+        "display": "5/5"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:49:05.961Z",
+        "url": "https://www.eurogamer.net/divinity-original-sin-2-review",
+        "configured_source_id": "eurogamer",
         "direct_publisher": true
       }
     }
@@ -62,12 +106,26 @@
       "publication": "Nintendo Life",
       "url": "https://www.nintendolife.com/reviews/nintendo-switch-2/divinity-original-sin-2-nintendo-switch-2-edition",
       "reason": "variant_or_port:switch_port"
+    },
+    {
+      "configured_source_id": "rock-paper-shotgun",
+      "publication": "Rock Paper Shotgun",
+      "url": "https://www.rockpapershotgun.com/divinity-original-sin-2-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/review-divinity-original-sin-2-465751.phtml",
+      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 1,
+    "source_count": 3,
     "values": [
-      9.6
+      9.6,
+      9.2,
+      10
     ],
     "mean_10": 9.6,
     "score_10": 9.6

@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/undertale.json#review_score",
   "game_slug": "undertale",
-  "checked_at": "2026-08-14T23:34:51.237Z",
+  "checked_at": "2026-08-14T23:47:00.980Z",
   "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:34:51.205Z",
+        "checked_at": "2026-08-14T23:47:00.822Z",
         "url": "https://www.ign.com/articles/2018/09/18/undertale-review",
         "configured_source_id": "ign",
         "direct_publisher": true
@@ -59,7 +59,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:34:51.205Z",
+        "checked_at": "2026-08-14T23:47:00.822Z",
         "url": "https://www.nintendolife.com/reviews/switch-eshop/undertale",
         "configured_source_id": "nintendo-life",
         "direct_publisher": true
@@ -81,9 +81,53 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:34:51.205Z",
+        "checked_at": "2026-08-14T23:47:00.822Z",
         "url": "https://www.pushsquare.com/reviews/ps4/undertale",
         "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "title": "Undertale review",
+      "url": "https://www.eurogamer.net/undertale-review",
+      "original_score": {
+        "score": 4,
+        "scale": 5,
+        "grade": null,
+        "display": "4/5"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:47:00.936Z",
+        "url": "https://www.eurogamer.net/undertale-review",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Undertale review",
+      "url": "https://www.pcgamer.com/undertale-review",
+      "original_score": {
+        "score": 91,
+        "scale": 100,
+        "grade": null,
+        "display": "91/100"
+      },
+      "normalized_10": 9.1,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:47:00.937Z",
+        "url": "https://www.pcgamer.com/undertale-review/",
+        "configured_source_id": "pc-gamer",
         "direct_publisher": true
       }
     }
@@ -94,16 +138,30 @@
       "publication": "GameSpot",
       "url": "https://www.gamespot.com/reviews/undertale-review/1900-6416315",
       "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "rock-paper-shotgun",
+      "publication": "Rock Paper Shotgun",
+      "url": "https://www.rockpapershotgun.com/undertale-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/review-undertale-ps4--454842.phtml",
+      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 3,
+    "source_count": 5,
     "values": [
       10,
       9,
-      9
+      9,
+      8,
+      9.1
     ],
-    "mean_10": 9.3333,
-    "score_10": 9.3
+    "mean_10": 9.02,
+    "score_10": 9
   }
 }

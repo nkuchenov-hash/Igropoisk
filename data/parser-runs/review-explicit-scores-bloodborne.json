@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "bloodborne",
-  "checked_at": "2026-08-14T23:35:10.563Z",
+  "checked_at": "2026-08-14T23:47:03.834Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 4,
-  "scored": 2,
+  "accepted": 7,
+  "scored": 3,
   "context_only_versions": 0,
   "updates": [
     {
@@ -22,6 +22,15 @@
       "score": 8,
       "scale": 10,
       "method": "registry:game-revolution",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "score": 5,
+      "scale": 5,
+      "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": true
     }
@@ -69,6 +78,39 @@
       "blocked": false,
       "preserved_existing_score": false,
       "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "url": "https://www.eurogamer.net/bloodborne-review",
+      "final_url": "https://www.eurogamer.net/bloodborne-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/bloodborne-review",
+      "final_url": "https://www.gamesradar.com/bloodborne-review/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "http://www.destructoid.com/review-bloodborne-288934.phtml",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
       "canonical_score_eligible": true
     }
   ]

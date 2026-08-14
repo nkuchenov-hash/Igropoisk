@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "metal-gear-solid-v-the-phantom-pain",
-  "checked_at": "2026-08-14T23:35:10.614Z",
+  "checked_at": "2026-08-14T23:48:22.084Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 5,
-  "scored": 2,
+  "accepted": 11,
+  "scored": 4,
   "context_only_versions": 0,
   "updates": [
     {
@@ -22,6 +22,24 @@
       "score": 9,
       "scale": 10,
       "method": "registry:game-revolution",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "score": 5,
+      "scale": 5,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 93,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": true
     }
@@ -80,6 +98,72 @@
       "blocked": false,
       "preserved_existing_score": false,
       "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "url": "https://www.eurogamer.net/metal-gear-solid-5-the-phantom-pain-review",
+      "final_url": "https://www.eurogamer.net/metal-gear-solid-5-the-phantom-pain-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/metal-gear-solid-5-phantom-pain-review",
+      "final_url": "https://www.gamesradar.com/metal-gear-solid-5-phantom-pain-review/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "rock-paper-shotgun",
+      "publication": "Rock Paper Shotgun",
+      "url": "https://www.rockpapershotgun.com/metal-gear-solid-v-the-phantom-pain-review",
+      "final_url": "https://www.rockpapershotgun.com/metal-gear-solid-v-the-phantom-pain-review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "http://www.destructoid.com/review-metal-gear-solid-v-the-phantom-pain-305699.phtml",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/show/57317/metal_gear_solid_v_the_phantom_pain_review",
+      "final_url": "https://stopgame.ru/show/57317/metal_gear_solid_v_the_phantom_pain_review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/metal-gear-solid-5-review",
+      "final_url": "https://www.pcgamer.com/metal-gear-solid-5-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     }
   ]

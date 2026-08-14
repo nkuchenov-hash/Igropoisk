@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/total-war-warhammer-iii.json#review_score",
   "game_slug": "total-war-warhammer-iii",
-  "checked_at": "2026-08-14T23:44:33.275Z",
+  "checked_at": "2026-08-14T23:56:51.096Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,12 +20,37 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Total War: Warhammer 3 review",
+      "url": "https://www.pcgamer.com/total-war-warhammer-3-review",
+      "original_score": {
+        "score": 90,
+        "scale": 100,
+        "grade": null,
+        "display": "90/100"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:56:51.057Z",
+        "url": "https://www.pcgamer.com/total-war-warhammer-3-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      9
+    ],
+    "mean_10": 9,
+    "score_10": 9
   }
 }

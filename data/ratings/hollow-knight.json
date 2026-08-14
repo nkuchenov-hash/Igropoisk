@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/hollow-knight.json#review_score",
   "game_slug": "hollow-knight",
-  "checked_at": "2026-08-14T23:37:13.474Z",
+  "checked_at": "2026-08-14T23:49:26.530Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,12 +20,37 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Hollow Knight review",
+      "url": "https://www.pcgamer.com/hollow-knight-review",
+      "original_score": {
+        "score": 92,
+        "scale": 100,
+        "grade": null,
+        "display": "92/100"
+      },
+      "normalized_10": 9.2,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:49:26.491Z",
+        "url": "https://www.pcgamer.com/hollow-knight-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      9.2
+    ],
+    "mean_10": 9.2,
+    "score_10": 9.2
   }
 }

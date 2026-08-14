@@ -4,28 +4,27 @@
   "game_slug": "horizon-zero-dawn",
   "game_id": null,
   "canonical_title": "Horizon Zero Dawn",
-  "checked_at": "2026-08-14T23:36:22.707Z",
+  "checked_at": "2026-08-14T23:48:16.510Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
-    "Корпус: 4/5",
-    "Оценённые издания: 1/3"
+    "Existing article could not be deterministically rebound; queued for prose/media repair."
   ],
   "revision_history": [
     {
       "label": "web-discovery-full-registry",
       "script": "scripts/discover-review-sources-web.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"horizon-zero-dawn\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 4,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 1,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"horizon-zero-dawn\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 7,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 2,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n",
       "stderr": ""
     },
     {
       "label": "promote-full-registry-audit",
       "script": "scripts/promote-review-source-audit.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"horizon-zero-dawn\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 4,\n  \"trusted_scores_preserved\": 1,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"horizon-zero-dawn\",\n  \"status\": \"green\",\n  \"accepted\": 7,\n  \"trusted_scores_preserved\": 1,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -33,16 +32,24 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"horizon-zero-dawn\",\n  \"accepted\": 4,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"horizon-zero-dawn\",\n  \"accepted\": 7,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"updates\": 3,\n  \"preserved\": 0\n}\n",
       "stderr": ""
     },
     {
       "label": "score-1",
       "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"horizon-zero-dawn\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 3,\n  \"score_10\": 9.3,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"horizon-zero-dawn\",\n  \"status\": \"green\",\n  \"scored_sources\": 3,\n  \"excluded_sources\": 4,\n  \"score_10\": 8.1,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
       "stderr": ""
+    },
+    {
+      "label": "rebind-1",
+      "script": "scripts/rebind-existing-review.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n"
     }
   ],
   "policy": {

@@ -1,11 +1,53 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "resident-evil-2",
-  "checked_at": "2026-08-14T23:37:29.141Z",
+  "checked_at": "2026-08-14T23:49:33.976Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 0,
-  "scored": 0,
-  "context_only_versions": 0,
-  "updates": [],
-  "checks": []
+  "accepted": 2,
+  "scored": 1,
+  "context_only_versions": 1,
+  "updates": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 89,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "score": 4,
+      "scale": 5,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": false
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/resident-evil-2-review",
+      "final_url": "https://www.pcgamer.com/resident-evil-2-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/resident-evil-2-remake-review",
+      "final_url": "https://www.gamesradar.com/resident-evil-2-remake-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": false
+    }
+  ]
 }
