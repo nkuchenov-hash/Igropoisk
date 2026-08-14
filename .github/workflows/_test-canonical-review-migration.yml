@@ -25,13 +25,14 @@ jobs:
         run: node scripts/recover-canonical-review-backlog.mjs --only the-witcher-3-wild-hunt --concurrency 1 --timeout-ms 900000
         env:
           OPENAI_API_KEY: ''
-      - name: Show migrated state
+      - name: Show migrated state and rebind diagnostics
         if: always()
         run: |
           node - <<'NODE'
           const fs=require('fs');
           const r=JSON.parse(fs.readFileSync('data/reviews/the-witcher-3-wild-hunt.json','utf8'));
           const c=JSON.parse(fs.readFileSync('data/quality-control/review-the-witcher-3-wild-hunt-control.json','utf8'));
-          console.log(JSON.stringify({schema:r.schema_version,publication_gate:r.publication_gate,regional:r.regional_discovery,review_score:r.review_score,control:{green:c.green,comments:c.comments}},null,2));
+          const rebind=(c.revision_history||[]).filter(x=>String(x.label||'').startsWith('rebind-'));
+          console.log(JSON.stringify({schema:r.schema_version,publication_gate:r.publication_gate,regional:r.regional_discovery,review_score:r.review_score,control:{green:c.green,comments:c.comments,rebind}},null,2));
           if(!r.publication_gate?.status||!r.review_score?.status) process.exit(2);
           NODE
