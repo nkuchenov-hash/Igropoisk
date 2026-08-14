@@ -1,0 +1,97 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "nier-automata",
+  "checked_at": "2026-08-14T22:49:26.756Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 6,
+  "scored": 2,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 8.9,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 7.75,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2017/03/06/nier-automata-review",
+      "final_url": "https://www.ign.com/articles/2017/03/06/nier-automata-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/games/nier_automata/b/playstation4/archive/2017/03/06/nier-automata-game-informer-review.aspx",
+      "final_url": "https://gameinformer.com/games/nier_automata/b/playstation4/archive/2017/03/06/nier-automata-game-informer-review.aspx",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "http://www.gamespot.com/reviews/nier-automata-review/1900-6416628",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2017/3/6/14735646/nier-automata-review-ps4-playstation-4-windows-pc-square-enix-yoko-taro-platinum-games",
+      "final_url": "https://www.polygon.com/2017/3/6/14735646/nier-automata-review-ps4-playstation-4-windows-pc-square-enix-yoko-taro-platinum-games/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/gaming/2017/03/nier-automata-review",
+      "final_url": "https://arstechnica.com/gaming/2017/03/nier-automata-review/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/71818-nier-automata-review",
+      "final_url": "https://www.gamerevolution.com/review/71818-nier-automata-review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}
