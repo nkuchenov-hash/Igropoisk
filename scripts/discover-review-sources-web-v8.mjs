@@ -19,7 +19,7 @@ const decode=value=>String(value||'').replace(/&amp;/g,'&').replace(/&quot;/g,'"
 const host=value=>{try{return new URL(value).hostname.replace(/^www\./,'').toLowerCase()}catch{return''}};
 const canon=value=>{try{const url=new URL(decode(value));url.hash='';for(const key of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','ftag'])url.searchParams.delete(key);return url.origin+url.pathname.replace(/\/$/,'')+url.search}catch{return String(value||'')}};
 const text=value=>decode(String(value||'').replace(/<script\b[\s\S]*?<\/script>/gi,' ').replace(/<style\b[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim());
-const direct=value=>{try{const url=new URL(value);return url.pathname.split('/').filter(Boolean).length>1||url.searchParams.has('p')}catch{return false}};
+const direct=value=>{try{const url=new URL(value);return url.pathname.split('/').filter(Boolean).length>0||url.searchParams.has('p')}catch{return false}};
 const badDomains=(corpus.forbidden_domains||[]).map(String),forbidden=(corpus.forbidden_title_or_url_terms||[]).map(value=>String(value).toLowerCase());
 const allTitleTokens=String(title).toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').split(' ').filter(token=>token.length>2||/^\d+$/.test(token));
 const stopTokens=new Set(['the','and','for','with','wild','hunt','game','edition']);
@@ -46,15 +46,15 @@ async function search(def){
   return{def,reachable:Boolean(sitemap.reachable)||responses.some(response=>response.ok),items:items.slice(0,16)};
 }
 
-const accepted=[],rejected=[],seenUrls=new Set(),checks=[];
+const accepted=[],rejected=[],acceptedUrls=new Set(),checks=[];
 const acceptedFor=sourceId=>accepted.find(item=>item.configured_source_id===sourceId)||null;
 function sanitizeScore(item){if(!isTrustedEditorialScore(item)){item.score=null;item.scale=null;item.grade='';item.score_eligible=false;delete item.score_evidence}return item}
-function store(candidate){const current=acceptedFor(candidate.configured_source_id);if(current){if(current.canonical_score_eligible===false&&candidate.canonical_score_eligible!==false){const index=accepted.indexOf(current);candidate.id=current.id;accepted[index]=candidate;return true}return false}accepted.push(candidate);return true}
+function store(candidate){const candidateUrl=canon(candidate.resolved_url||candidate.url),current=acceptedFor(candidate.configured_source_id);if(current){if(current.canonical_score_eligible===false&&candidate.canonical_score_eligible!==false){const index=accepted.indexOf(current);candidate.id=current.id;accepted[index]=candidate;if(candidateUrl)acceptedUrls.add(candidateUrl);return true}return false}accepted.push(candidate);if(candidateUrl)acceptedUrls.add(candidateUrl);return true}
 async function inspect(raw,{allowBlockedSeed=false,depth=0}={}){
   const source=registeredEditorialSource(registry,raw);if(!source)return false;
-  let url=canon(raw.resolved_url||raw.url);if(!url.startsWith('http')||!direct(url)||seenUrls.has(url))return false;
+  let url=canon(raw.resolved_url||raw.url);if(!url.startsWith('http')||!direct(url)||acceptedUrls.has(url))return false;
   const hay=`${raw.title||''} ${url}`.toLowerCase();if(forbidden.some(term=>hay.includes(term))||badDomains.some(domain=>host(url)===domain||host(url).endsWith('.'+domain)))return false;
-  seenUrls.add(url);const response=await get(url);
+  const response=await get(url);
   if(!response.ok){if(allowBlockedSeed&&[401,403,408,425,429,451,500,502,503,504,0].includes(response.status)){const version=classifyCanonicalVersion({title:raw.title||'',url,versionContext:raw.version_context||'',game}),candidate=sanitizeScore({...raw,id:'',configured_source_id:source.id,publication:source.name,resolved_url:url,url,source_kind:version.score_eligible?(raw.source_kind||'review'):'port_review',language:raw.language||source.language||'',canonical_score_eligible:version.score_eligible,version_validation:version,validation:{status:'accepted-blocked-revalidation',checked_at:now,method:'registered-direct-publisher-preserved-v8',reason:`HTTP ${response.status||response.error}`}});return store(candidate)}rejected.push({publication:source.name,url,reasons:[`HTTP ${response.status||response.error}`]});return false}
   url=canon(response.url);const pageTitle=text((response.body.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)/i)||[])[1]||(response.body.match(/<title[^>]*>([\s\S]*?)<\/title>/i)||[])[1]||raw.title||''),bodyText=text(response.body),identityHay=`${pageTitle} ${url} ${bodyText.slice(0,6000)}`;if(!identityMatch(identityHay))return false;
   const pageClass=classifyReviewPage(source,{url,title:pageTitle,bodyText});
