@@ -1,11 +1,11 @@
 {
   "schema_version": 10,
-  "started_at": "2026-08-14T12:49:20.680Z",
-  "finished_at": "2026-08-14T13:05:55.036Z",
+  "started_at": "2026-08-14T14:06:33.417Z",
+  "finished_at": "2026-08-14T14:22:56.238Z",
   "summary": {
-    "completed": 43,
-    "needs_revision": 19,
-    "total": 62,
+    "completed": 46,
+    "needs_revision": 20,
+    "total": 66,
     "editorial_ai_enabled": true,
     "openai_available": true,
     "review_ai_available": true,
@@ -21,8 +21,8 @@
       "command": "node scripts/parse-game-data.mjs hell-let-loose-vietnam 3079210 Hell Let Loose: Vietnam",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 1915,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"hell-let-loose-vietnam\",\n  \"checked_at\": \"2026-08-14T12:49:20.721Z\",\n  \"duration_ms\": 1812,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3079210&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Hell Let Loose: Vietnam\",\n    \"steam_appid\": 3079210,\n    \"developers\": [\n      \"Expression Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Massively Multiplayer\",\n      \"Simulation\",\n      \"Strategy\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 7,\n    \"videos\": 3,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3079210/11f2f56dd8945194aed2ee44376b54b1bee6c122/page_bg_raw.jpg?t=1786637345\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/3079210/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/hell-let-loose-vietnam.json\"\n}\n",
+      "duration_ms": 1036,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"hell-let-loose-vietnam\",\n  \"checked_at\": \"2026-08-14T14:06:33.452Z\",\n  \"duration_ms\": 943,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3079210&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Hell Let Loose: Vietnam\",\n    \"steam_appid\": 3079210,\n    \"developers\": [\n      \"Expression Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Massively Multiplayer\",\n      \"Simulation\",\n      \"Strategy\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 7,\n    \"videos\": 3,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3079210/11f2f56dd8945194aed2ee44376b54b1bee6c122/page_bg_raw.jpg?t=1786637345\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/3079210/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/hell-let-loose-vietnam.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -30,7 +30,7 @@
       "command": "node scripts/build-game-page-basic.mjs game_91b8109a5d837b4f0bbc",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 105,
+      "duration_ms": 101,
       "stdout": "{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": true,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"build_review\"\n}\n",
       "stderr": ""
     },
@@ -39,7 +39,7 @@
       "command": "node scripts/quality-control-loop.mjs page hell-let-loose-vietnam game_91b8109a5d837b4f0bbc",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 12849,
+      "duration_ms": 9536,
       "stdout": "{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 7\n}\n\n{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 7\n}\n\n{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 7\n}\n\n{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 7\n}\n\n{\n  \"mode\": \"page\",\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Нет проверенной основной обложки.\"\n  ]\n}\n",
       "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\n"
     },
@@ -51,12 +51,47 @@
       ]
     },
     {
+      "label": "parse:ea-sportstm-madden-nfl-27",
+      "command": "node scripts/parse-game-data.mjs ea-sportstm-madden-nfl-27 3940610 EA SPORTS™ Madden NFL 27",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 1340,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"ea-sportstm-madden-nfl-27\",\n  \"checked_at\": \"2026-08-14T14:06:44.128Z\",\n  \"duration_ms\": 1248,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3940610&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"EA SPORTS™ Madden NFL 27\",\n    \"steam_appid\": 3940610,\n    \"developers\": [\n      \"Tiburon\"\n    ],\n    \"genres\": [\n      \"Simulation\",\n      \"Sports\",\n      \"Strategy\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 3,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3940610/d4c601c3ab2242729c068d2b1702d7a5b5b70439/page_bg_raw.jpg?t=1786709615\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/3940610/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/ea-sportstm-madden-nfl-27.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "page:ea-sportstm-madden-nfl-27",
+      "command": "node scripts/build-game-page-basic.mjs game_23c060240d4fbaf00ead",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 90,
+      "stdout": "{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"needs_revision\",\n  \"missing\": [\n    \"screenshots:5/6\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "page-qc:ea-sportstm-madden-nfl-27",
+      "command": "node scripts/quality-control-loop.mjs page ea-sportstm-madden-nfl-27 game_23c060240d4fbaf00ead",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 9475,
+      "stdout": "{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 0,\n  \"similarity_files_written\": 0,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 5\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 0,\n  \"similarity_files_written\": 0,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 5\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 0,\n  \"similarity_files_written\": 0,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 5\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 0,\n  \"similarity_files_written\": 0,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 5\n}\n\n{\n  \"mode\": \"page\",\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Нет проверенной основной обложки.\",\n    \"Недостаточно проверенных скриншотов: 5/6.\"\n  ]\n}\n",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "label": "page-qc-state:ea-sportstm-madden-nfl-27",
+      "status": "needs_revision",
+      "comments": [
+        "Нет проверенной основной обложки.",
+        "Недостаточно проверенных скриншотов: 5/6."
+      ]
+    },
+    {
       "label": "parse:no-more-room-in-hell-2",
       "command": "node scripts/parse-game-data.mjs no-more-room-in-hell-2 292000 No More Room in Hell 2",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 529,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"no-more-room-in-hell-2\",\n  \"checked_at\": \"2026-08-14T12:49:35.589Z\",\n  \"duration_ms\": 429,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=292000&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"No More Room in Hell 2\",\n    \"steam_appid\": 292000,\n    \"developers\": [\n      \"Torn Banner Studios\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 9,\n    \"videos\": 6,\n    \"hero\": \"https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786638024\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/no-more-room-in-hell-2.json\"\n}\n",
+      "duration_ms": 414,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"no-more-room-in-hell-2\",\n  \"checked_at\": \"2026-08-14T14:06:55.038Z\",\n  \"duration_ms\": 318,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=292000&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"No More Room in Hell 2\",\n    \"steam_appid\": 292000,\n    \"developers\": [\n      \"Torn Banner Studios\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 9,\n    \"videos\": 6,\n    \"hero\": \"https://store.akamai.steamstatic.com/images/storepagebackground/app/292000?t=1786638024\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/no-more-room-in-hell-2.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -64,8 +99,8 @@
       "command": "node scripts/build-game-page-basic.mjs game_f5db7308be84c62ed593",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 104,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": true,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"build_review\"\n}\n",
+      "duration_ms": 99,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": true,\n  \"review_ready\": false,\n  \"media_green\": true,\n  \"next\": \"build_review\"\n}\n",
       "stderr": ""
     },
     {
@@ -73,7 +108,7 @@
       "command": "node scripts/quality-control-loop.mjs page no-more-room-in-hell-2 game_f5db7308be84c62ed593",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 1653,
+      "duration_ms": 4204,
       "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": true,\n  \"accepted_screenshots\": 9\n}\n\n{\n  \"mode\": \"page\",\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"comments\": []\n}\n",
       "stderr": ""
     },
@@ -82,8 +117,8 @@
       "command": "node scripts/canonicalize-editorial-game-id.mjs no-more-room-in-hell-2",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 4542,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"game_id\": \"game_f5db7308be84c62ed593\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 3,\n  \"artifacts_changed\": 2\n}\n",
+      "duration_ms": 4674,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"game_id\": \"game_f5db7308be84c62ed593\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 6,\n  \"artifacts_changed\": 5\n}\n",
       "stderr": ""
     },
     {
@@ -91,7 +126,7 @@
       "command": "node scripts/build-game-dna.mjs no-more-room-in-hell-2",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 62,
+      "duration_ms": 58,
       "stdout": "{\n  \"catalog_games\": 92,\n  \"targeted\": 0,\n  \"created\": 0,\n  \"updated\": 0,\n  \"unchanged\": 0,\n  \"indexed\": 92\n}\n",
       "stderr": ""
     },
@@ -109,7 +144,7 @@
       "command": "node scripts/build-game-page-basic.mjs game_f5db7308be84c62ed593 --finalize-public",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 102,
+      "duration_ms": 98,
       "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": true,\n  \"review_ready\": false,\n  \"media_green\": true,\n  \"next\": \"build_review\"\n}\n",
       "stderr": ""
     },
@@ -121,103 +156,34 @@
       ]
     },
     {
-      "label": "parse:ea-sportstm-madden-nfl-27",
-      "command": "node scripts/parse-game-data.mjs ea-sportstm-madden-nfl-27 3940610 EA SPORTS™ Madden NFL 27",
+      "label": "parse:wardogs",
+      "command": "node scripts/parse-game-data.mjs wardogs 1867240 WARDOGS",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 1781,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"ea-sportstm-madden-nfl-27\",\n  \"checked_at\": \"2026-08-14T12:49:42.623Z\",\n  \"duration_ms\": 1683,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3940610&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"EA SPORTS™ Madden NFL 27\",\n    \"steam_appid\": 3940610,\n    \"developers\": [\n      \"Tiburon\"\n    ],\n    \"genres\": [\n      \"Simulation\",\n      \"Sports\",\n      \"Strategy\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 3,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3940610/d4c601c3ab2242729c068d2b1702d7a5b5b70439/page_bg_raw.jpg?t=1786709615\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/3940610/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/ea-sportstm-madden-nfl-27.json\"\n}\n",
+      "duration_ms": 760,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"wardogs\",\n  \"checked_at\": \"2026-08-14T14:07:04.627Z\",\n  \"duration_ms\": 668,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1867240&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"WARDOGS\",\n    \"steam_appid\": 1867240,\n    \"developers\": [\n      \"BULKHEAD\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\",\n      \"Massively Multiplayer\",\n      \"Simulation\",\n      \"Early Access\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 14,\n    \"videos\": 3,\n    \"hero\": \"https://store.akamai.steamstatic.com/images/storepagebackground/app/1867240?t=1786467028\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/1867240/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/wardogs.json\"\n}\n",
       "stderr": ""
     },
     {
-      "label": "page:ea-sportstm-madden-nfl-27",
-      "command": "node scripts/build-game-page-basic.mjs game_23c060240d4fbaf00ead",
+      "label": "page:wardogs",
+      "command": "node scripts/build-game-page-basic.mjs game_002e37b098eb99b64d97",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 96,
-      "stdout": "{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"needs_revision\",\n  \"missing\": [\n    \"screenshots:5/6\"\n  ]\n}\n",
+      "duration_ms": 97,
+      "stdout": "{\n  \"slug\": \"wardogs\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": false,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"media_quality\"\n}\n",
       "stderr": ""
     },
     {
-      "label": "page-qc:ea-sportstm-madden-nfl-27",
-      "command": "node scripts/quality-control-loop.mjs page ea-sportstm-madden-nfl-27 game_23c060240d4fbaf00ead",
+      "label": "page-qc:wardogs",
+      "command": "node scripts/quality-control-loop.mjs page wardogs game_002e37b098eb99b64d97",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 13231,
-      "stdout": "{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 0,\n  \"similarity_files_written\": 0,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 5\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 0,\n  \"similarity_files_written\": 0,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 5\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 0,\n  \"similarity_files_written\": 0,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 5\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 0,\n  \"similarity_files_written\": 0,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 5\n}\n\n{\n  \"mode\": \"page\",\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Нет проверенной основной обложки.\",\n    \"Недостаточно проверенных скриншотов: 5/6.\"\n  ]\n}\n",
+      "duration_ms": 10376,
+      "stdout": "{\n  \"slug\": \"wardogs\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 93,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"wardogs\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": false,\n  \"cover\": false,\n  \"accepted_screenshots\": 14\n}\n\n{\n  \"slug\": \"wardogs\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 93,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"wardogs\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": false,\n  \"cover\": false,\n  \"accepted_screenshots\": 14\n}\n\n{\n  \"slug\": \"wardogs\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 93,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"wardogs\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": false,\n  \"cover\": false,\n  \"accepted_screenshots\": 14\n}\n\n{\n  \"slug\": \"wardogs\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 93,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"wardogs\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": false,\n  \"cover\": false,\n  \"accepted_screenshots\": 14\n}\n\n{\n  \"mode\": \"page\",\n  \"slug\": \"wardogs\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Нет проверенного отдельного hero-арта.\",\n    \"Нет проверенной основной обложки.\"\n  ]\n}\n",
       "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\n"
     },
     {
-      "label": "page-qc-state:ea-sportstm-madden-nfl-27",
-      "status": "needs_revision",
-      "comments": [
-        "Нет проверенной основной обложки.",
-        "Недостаточно проверенных скриншотов: 5/6."
-      ]
-    },
-    {
-      "label": "parse:duskfade",
-      "command": "node scripts/parse-game-data.mjs duskfade 2542020 Duskfade",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 1562,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"duskfade\",\n  \"checked_at\": \"2026-08-14T12:49:57.734Z\",\n  \"duration_ms\": 1463,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2542020&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Duskfade\",\n    \"steam_appid\": 2542020,\n    \"developers\": [\n      \"Weird Beluga\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 12,\n    \"videos\": 5,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2542020/4c327d7436667e9ffb1103700ce97bdd75952323/page_bg_raw.jpg?t=1786631734\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/2542020/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/duskfade.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "page:duskfade",
-      "command": "node scripts/build-game-page-basic.mjs game_dc5231876c0dd6cc435d",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 103,
-      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": true,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"build_review\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "page-qc:duskfade",
-      "command": "node scripts/quality-control-loop.mjs page duskfade game_dc5231876c0dd6cc435d",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 18457,
-      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 12\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 12\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 12\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 12\n}\n\n{\n  \"mode\": \"page\",\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Нет проверенной основной обложки.\"\n  ]\n}\n",
-      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\n"
-    },
-    {
-      "label": "page-qc-state:duskfade",
-      "status": "needs_revision",
-      "comments": [
-        "Нет проверенной основной обложки."
-      ]
-    },
-    {
-      "label": "parse:machine-party",
-      "command": "node scripts/parse-game-data.mjs machine-party 4108000 Machine Party",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 1199,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"machine-party\",\n  \"checked_at\": \"2026-08-14T12:50:17.858Z\",\n  \"duration_ms\": 1098,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4108000&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Machine Party\",\n    \"steam_appid\": 4108000,\n    \"developers\": [\n      \"Mike Klubnika\",\n      \"GDeavid\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"linux\"\n    ],\n    \"screenshots\": 11,\n    \"videos\": 2,\n    \"hero\": \"https://store.akamai.steamstatic.com/images/storepagebackground/app/4108000?t=1786561627\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/4108000/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/machine-party.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "page:machine-party",
-      "command": "node scripts/build-game-page-basic.mjs game_6756815f56ba6605d4e4",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 103,
-      "stdout": "{\n  \"slug\": \"machine-party\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": true,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"build_review\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "page-qc:machine-party",
-      "command": "node scripts/quality-control-loop.mjs page machine-party game_6756815f56ba6605d4e4",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 21526,
-      "stdout": "{\n  \"slug\": \"machine-party\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"machine-party\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": false,\n  \"cover\": false,\n  \"accepted_screenshots\": 11\n}\n\n{\n  \"slug\": \"machine-party\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"machine-party\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": false,\n  \"cover\": false,\n  \"accepted_screenshots\": 11\n}\n\n{\n  \"slug\": \"machine-party\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"machine-party\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": false,\n  \"cover\": false,\n  \"accepted_screenshots\": 11\n}\n\n{\n  \"slug\": \"machine-party\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"machine-party\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": false,\n  \"cover\": false,\n  \"accepted_screenshots\": 11\n}\n\n{\n  \"mode\": \"page\",\n  \"slug\": \"machine-party\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Нет проверенного отдельного hero-арта.\",\n    \"Нет проверенной основной обложки.\"\n  ]\n}\n",
-      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\n"
-    },
-    {
-      "label": "page-qc-state:machine-party",
+      "label": "page-qc-state:wardogs",
       "status": "needs_revision",
       "comments": [
         "Нет проверенного отдельного hero-арта.",
@@ -226,11 +192,11 @@
     },
     {
       "label": "parse:kingdom-hearts-hd-1-5-2-5-remix",
-      "command": "node scripts/parse-game-data.mjs kingdom-hearts-hd-1-5-2-5-remix auto KINGDOM HEARTS -HD 1.5+2.5 ReMIX-",
+      "command": "node scripts/parse-game-data.mjs kingdom-hearts-hd-1-5-2-5-remix 2552430 KINGDOM HEARTS -HD 1.5+2.5 ReMIX-",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 515,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"checked_at\": \"2026-08-14T12:50:40.685Z\",\n  \"duration_ms\": 416,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2552430&l=english&cc=us\",\n  \"steam_resolution\": {\n    \"appid\": 2552430,\n    \"name\": \"KINGDOM HEARTS -HD 1.5+2.5 ReMIX-\",\n    \"search_url\": \"https://store.steampowered.com/api/storesearch/?term=KINGDOM%20HEARTS%20-HD%201.5%2B2.5%20ReMIX-&l=english&cc=us\",\n    \"confidence\": 1\n  },\n  \"summary\": {\n    \"title\": \"KINGDOM HEARTS -HD 1.5+2.5 ReMIX-\",\n    \"steam_appid\": 2552430,\n    \"developers\": [\n      \"Square Enix\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 6,\n    \"videos\": 1,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2552430/page_bg_raw.jpg?t=1779418330\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/2552430/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/kingdom-hearts-hd-1-5-2-5-remix.json\"\n}\n",
+      "duration_ms": 320,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"checked_at\": \"2026-08-14T14:07:15.862Z\",\n  \"duration_ms\": 225,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2552430&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"KINGDOM HEARTS -HD 1.5+2.5 ReMIX-\",\n    \"steam_appid\": 2552430,\n    \"developers\": [\n      \"Square Enix\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 6,\n    \"videos\": 1,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2552430/page_bg_raw.jpg?t=1779418330\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/2552430/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/kingdom-hearts-hd-1-5-2-5-remix.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -238,8 +204,8 @@
       "command": "node scripts/build-game-page-basic.mjs game_46c5b61f8575f753f5ee",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 104,
-      "stdout": "{\n  \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": true,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"build_review\"\n}\n",
+      "duration_ms": 100,
+      "stdout": "{\n  \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": true,\n  \"review_ready\": false,\n  \"media_green\": true,\n  \"next\": \"build_review\"\n}\n",
       "stderr": ""
     },
     {
@@ -247,7 +213,7 @@
       "command": "node scripts/quality-control-loop.mjs page kingdom-hearts-hd-1-5-2-5-remix game_46c5b61f8575f753f5ee",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 971,
+      "duration_ms": 941,
       "stdout": "{\n  \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"status\": \"green\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": true,\n  \"accepted_screenshots\": 6\n}\n\n{\n  \"mode\": \"page\",\n  \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"status\": \"green\",\n  \"comments\": []\n}\n",
       "stderr": ""
     },
@@ -256,8 +222,8 @@
       "command": "node scripts/canonicalize-editorial-game-id.mjs kingdom-hearts-hd-1-5-2-5-remix",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 4722,
-      "stdout": "{\n  \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"game_id\": \"game_46c5b61f8575f753f5ee\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 3,\n  \"artifacts_changed\": 2\n}\n",
+      "duration_ms": 4687,
+      "stdout": "{\n  \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"game_id\": \"game_46c5b61f8575f753f5ee\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 6,\n  \"artifacts_changed\": 5\n}\n",
       "stderr": ""
     },
     {
@@ -265,7 +231,7 @@
       "command": "node scripts/build-game-dna.mjs kingdom-hearts-hd-1-5-2-5-remix",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 61,
+      "duration_ms": 57,
       "stdout": "{\n  \"catalog_games\": 92,\n  \"targeted\": 0,\n  \"created\": 0,\n  \"updated\": 0,\n  \"unchanged\": 0,\n  \"indexed\": 92\n}\n",
       "stderr": ""
     },
@@ -274,7 +240,7 @@
       "command": "node scripts/validate-game-dna.mjs",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 43,
+      "duration_ms": 42,
       "stdout": "Game DNA validation passed for 92 entities.\n",
       "stderr": ""
     },
@@ -283,7 +249,7 @@
       "command": "node scripts/build-game-page-basic.mjs game_46c5b61f8575f753f5ee --finalize-public",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 104,
+      "duration_ms": 96,
       "stdout": "{\n  \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": true,\n  \"review_ready\": false,\n  \"media_green\": true,\n  \"next\": \"build_review\"\n}\n",
       "stderr": ""
     },
@@ -295,11 +261,79 @@
       ]
     },
     {
+      "label": "parse:defender-of-the-crown-the-legend-returns",
+      "command": "node scripts/parse-game-data.mjs defender-of-the-crown-the-legend-returns 4208140 Defender of the Crown: The Legend Returns",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 1042,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"checked_at\": \"2026-08-14T14:07:22.106Z\",\n  \"duration_ms\": 950,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4208140&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Defender of the Crown: The Legend Returns\",\n    \"steam_appid\": 4208140,\n    \"developers\": [\n      \"Black Tower Basement\"\n    ],\n    \"genres\": [\n      \"RPG\",\n      \"Strategy\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 9,\n    \"videos\": 3,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4208140/a7d6b4fa1a62512504dd3ec211d03872e9475bc5/page_bg_raw.jpg?t=1786625969\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/4208140/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/defender-of-the-crown-the-legend-returns.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "page:defender-of-the-crown-the-legend-returns",
+      "command": "node scripts/build-game-page-basic.mjs game_df88548a3500d52d5ac7",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 99,
+      "stdout": "{\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": true,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"build_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "page-qc:defender-of-the-crown-the-legend-returns",
+      "command": "node scripts/quality-control-loop.mjs page defender-of-the-crown-the-legend-returns game_df88548a3500d52d5ac7",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 9846,
+      "stdout": "{\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 9\n}\n\n{\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 9\n}\n\n{\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 9\n}\n\n{\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 9\n}\n\n{\n  \"mode\": \"page\",\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Нет проверенной основной обложки.\"\n  ]\n}\n",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "label": "page-qc-state:defender-of-the-crown-the-legend-returns",
+      "status": "needs_revision",
+      "comments": [
+        "Нет проверенной основной обложки."
+      ]
+    },
+    {
+      "label": "parse:duskfade",
+      "command": "node scripts/parse-game-data.mjs duskfade 2542020 Duskfade",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 1031,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"duskfade\",\n  \"checked_at\": \"2026-08-14T14:07:33.096Z\",\n  \"duration_ms\": 937,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2542020&l=english&cc=us\",\n  \"steam_resolution\": null,\n  \"summary\": {\n    \"title\": \"Duskfade\",\n    \"steam_appid\": 2542020,\n    \"developers\": [\n      \"Weird Beluga\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 12,\n    \"videos\": 5,\n    \"hero\": \"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2542020/4c327d7436667e9ffb1103700ce97bdd75952323/page_bg_raw.jpg?t=1786631734\",\n    \"cover\": \"https://cdn.cloudflare.steamstatic.com/steam/apps/2542020/library_600x900_2x.jpg\"\n  },\n  \"output\": \"data/parser-output/duskfade.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "page:duskfade",
+      "command": "node scripts/build-game-page-basic.mjs game_dc5231876c0dd6cc435d",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 99,
+      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"released\": true,\n  \"review_ready\": false,\n  \"media_green\": false,\n  \"next\": \"build_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "page-qc:duskfade",
+      "command": "node scripts/quality-control-loop.mjs page duskfade game_dc5231876c0dd6cc435d",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 12162,
+      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 12\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 12\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 12\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"franchise\": null,\n  \"franchise_games\": 0,\n  \"queued\": 0\n}\n\n{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 1,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"era\": \"modern\",\n  \"hero\": true,\n  \"cover\": false,\n  \"accepted_screenshots\": 12\n}\n\n{\n  \"mode\": \"page\",\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Нет проверенной основной обложки.\"\n  ]\n}\n",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:19:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:23:14\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "label": "page-qc-state:duskfade",
+      "status": "needs_revision",
+      "comments": [
+        "Нет проверенной основной обложки."
+      ]
+    },
+    {
       "label": "dna-all-after-page-preparation",
       "command": "node scripts/build-game-dna.mjs",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 152,
+      "duration_ms": 146,
       "stdout": "{\n  \"catalog_games\": 92,\n  \"targeted\": 92,\n  \"created\": 0,\n  \"updated\": 0,\n  \"unchanged\": 92,\n  \"indexed\": 92\n}\n",
       "stderr": ""
     },
@@ -308,7 +342,7 @@
       "command": "node scripts/validate-game-dna.mjs",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 42,
+      "duration_ms": 41,
       "stdout": "Game DNA validation passed for 92 entities.\n",
       "stderr": ""
     },
@@ -317,7 +351,7 @@
       "command": "node scripts/build-similarity-index.mjs",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 118,
+      "duration_ms": 120,
       "stdout": "{\n  \"catalog_games\": 92,\n  \"dna_profiles\": 92,\n  \"similarity_files_written\": 92,\n  \"profiles_needing_enrichment\": 83,\n  \"games_without_recommendations\": 88,\n  \"algorithm\": \"game-dna-weighted-v1\",\n  \"year_proximity_used\": false\n}\n",
       "stderr": ""
     },
@@ -326,8 +360,8 @@
       "command": "node scripts/orchestrate-content.mjs --finalize",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 5074,
-      "stdout": "{\n  \"schema_version\": 6,\n  \"generated_at\": \"2026-08-14T12:50:47.520Z\",\n  \"mode\": \"finalize\",\n  \"canonical_registry\": \"data/game-registry/registry.transition.json\",\n  \"summary\": {\n    \"source_records\": 1529,\n    \"games\": 698,\n    \"published_pages\": 92,\n    \"published_reviews\": 0,\n    \"released_games_requiring_review\": 698,\n    \"ready_for_page\": 17,\n    \"awaiting_sources\": 589,\n    \"queued\": 715,\n    \"runnable_pages\": 6,\n    \"required_popular_pages\": 4,\n    \"runnable_reviews\": 1,\n    \"blocked_identity\": 1,\n    \"popular_ranked_games\": 20,\n    \"popular_registered\": 0,\n    \"popular_unresolved\": 0,\n    \"public_release_games\": 302,\n    \"releases_registered\": 0,\n    \"releases_unresolved\": 1\n  },\n  \"next\": {\n    \"pages\": [\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_91b8109a5d837b4f0bbc\",\n        \"slug\": \"hell-let-loose-vietnam\",\n        \"title\": \"Hell Let Loose: Vietnam\",\n        \"steam_appid\": 3079210,\n        \"popular_rank\": 11,\n        \"release_candidate\": true,\n        \"priority\": 242,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"build_page\",\n        \"game_id\": \"game_23c060240d4fbaf00ead\",\n        \"slug\": \"ea-sportstm-madden-nfl-27\",\n        \"title\": \"EA SPORTS™ Madden NFL 27\",\n        \"steam_appid\": 3940610,\n        \"popular_rank\": 15,\n        \"release_candidate\": true,\n        \"priority\": 235,\n        \"reason\": \"canonical publication gate passed\"\n      },\n      {\n        \"type\": \"build_page\",\n        \"game_id\": \"game_f5db7308be84c62ed593\",\n        \"slug\": \"no-more-room-in-hell-2\",\n        \"title\": \"No More Room in Hell 2\",\n        \"steam_appid\": 292000,\n        \"popular_rank\": 18,\n        \"release_candidate\": true,\n        \"priority\": 235,\n        \"reason\": \"canonical publication gate passed\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_46c5b61f8575f753f5ee\",\n        \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n        \"title\": \"KINGDOM HEARTS -HD 1.5+2.5 ReMIX-\",\n        \"steam_appid\": 2552430,\n        \"popular_rank\": 16,\n        \"release_candidate\": false,\n        \"priority\": 105,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"build_page\",\n        \"game_id\": \"game_dc5231876c0dd6cc435d\",\n        \"slug\": \"duskfade\",\n        \"title\": \"Duskfade\",\n        \"steam_appid\": 2542020,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 187,\n        \"reason\": \"canonical publication gate passed\"\n      },\n      {\n        \"type\": \"build_page\",\n        \"game_id\": \"game_6756815f56ba6605d4e4\",\n        \"slug\": \"machine-party\",\n        \"title\": \"Machine Party\",\n        \"steam_appid\": 4108000,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 187,\n        \"reason\": \"canonical publication gate passed\"\n      }\n    ],\n    \"reviews\": [\n      {\n        \"type\": \"build_review\",\n        \"game_id\": \"game_72bf0963b99d4c9b1ab4\",\n        \"slug\": \"big-walk\",\n        \"title\": \"big-walk\",\n        \"popular_rank\": 3,\n        \"release_candidate\": true,\n        \"priority\": 381,\n        \"reason\": \"review_quality:red-needs-revision\"\n      }\n    ]\n  }\n}\n",
+      "duration_ms": 4925,
+      "stdout": "{\n  \"schema_version\": 6,\n  \"generated_at\": \"2026-08-14T14:07:46.698Z\",\n  \"mode\": \"finalize\",\n  \"canonical_registry\": \"data/game-registry/registry.transition.json\",\n  \"summary\": {\n    \"source_records\": 1533,\n    \"games\": 700,\n    \"published_pages\": 92,\n    \"published_reviews\": 0,\n    \"released_games_requiring_review\": 700,\n    \"ready_for_page\": 17,\n    \"awaiting_sources\": 591,\n    \"queued\": 717,\n    \"runnable_pages\": 7,\n    \"required_popular_pages\": 5,\n    \"runnable_reviews\": 1,\n    \"blocked_identity\": 1,\n    \"popular_ranked_games\": 20,\n    \"popular_registered\": 0,\n    \"popular_unresolved\": 0,\n    \"public_release_games\": 305,\n    \"releases_registered\": 0,\n    \"releases_unresolved\": 1\n  },\n  \"next\": {\n    \"pages\": [\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_91b8109a5d837b4f0bbc\",\n        \"slug\": \"hell-let-loose-vietnam\",\n        \"title\": \"Hell Let Loose: Vietnam\",\n        \"steam_appid\": 3079210,\n        \"popular_rank\": 11,\n        \"release_candidate\": true,\n        \"priority\": 242,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"build_page\",\n        \"game_id\": \"game_23c060240d4fbaf00ead\",\n        \"slug\": \"ea-sportstm-madden-nfl-27\",\n        \"title\": \"EA SPORTS™ Madden NFL 27\",\n        \"steam_appid\": 3940610,\n        \"popular_rank\": 15,\n        \"release_candidate\": true,\n        \"priority\": 237,\n        \"reason\": \"canonical publication gate passed\"\n      },\n      {\n        \"type\": \"build_page\",\n        \"game_id\": \"game_f5db7308be84c62ed593\",\n        \"slug\": \"no-more-room-in-hell-2\",\n        \"title\": \"No More Room in Hell 2\",\n        \"steam_appid\": 292000,\n        \"popular_rank\": 19,\n        \"release_candidate\": true,\n        \"priority\": 232,\n        \"reason\": \"canonical publication gate passed\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_002e37b098eb99b64d97\",\n        \"slug\": \"wardogs\",\n        \"title\": \"WARDOGS\",\n        \"steam_appid\": 1867240,\n        \"popular_rank\": 18,\n        \"release_candidate\": true,\n        \"priority\": 205,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_46c5b61f8575f753f5ee\",\n        \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n        \"title\": \"KINGDOM HEARTS -HD 1.5+2.5 ReMIX-\",\n        \"steam_appid\": 2552430,\n        \"popular_rank\": 14,\n        \"release_candidate\": false,\n        \"priority\": 117,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"build_page\",\n        \"game_id\": \"game_df88548a3500d52d5ac7\",\n        \"slug\": \"defender-of-the-crown-the-legend-returns\",\n        \"title\": \"Defender of the Crown: The Legend Returns\",\n        \"steam_appid\": 4208140,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 187,\n        \"reason\": \"canonical publication gate passed\"\n      },\n      {\n        \"type\": \"build_page\",\n        \"game_id\": \"game_dc5231876c0dd6cc435d\",\n        \"slug\": \"duskfade\",\n        \"title\": \"Duskfade\",\n        \"steam_appid\": 2542020,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 187,\n        \"reason\": \"canonical publication gate passed\"\n      }\n    ],\n    \"reviews\": [\n      {\n        \"type\": \"build_review\",\n        \"game_id\": \"game_72bf0963b99d4c9b1ab4\",\n        \"slug\": \"big-walk\",\n        \"title\": \"big-walk\",\n        \"popular_rank\": 3,\n        \"release_candidate\": true,\n        \"priority\": 381,\n        \"reason\": \"review_quality:red-needs-revision\"\n      }\n    ]\n  }\n}\n",
       "stderr": ""
     },
     {
@@ -335,7 +369,7 @@
       "command": "node scripts/quality-control-loop.mjs review big-walk game_72bf0963b99d4c9b1ab4",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 69376,
+      "duration_ms": 69920,
       "stdout": "{\n  \"slug\": \"big-walk\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 3,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 1,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"big-walk\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 3,\n  \"trusted_scores_preserved\": 1,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"big-walk\",\n  \"accepted\": 3,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"big-walk\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 2,\n  \"score_10\": 9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"big-walk\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 3/5\",\n    \"Оценённые издания: 1/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -352,7 +386,7 @@
       "command": "node scripts/quality-control-loop.mjs review baldurs-gate-3 game_86b06ca351d4e4d36e13",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 72251,
+      "duration_ms": 74066,
       "stdout": "{\n  \"slug\": \"baldurs-gate-3\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 2,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"baldurs-gate-3\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 2,\n  \"trusted_scores_preserved\": 1,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"baldurs-gate-3\",\n  \"accepted\": 2,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"baldurs-gate-3\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 1,\n  \"score_10\": 9.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"baldurs-gate-3\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 2/5\",\n    \"Оценённые издания: 1/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -369,7 +403,7 @@
       "command": "node scripts/quality-control-loop.mjs review agefield-high-rock-the-school game_acf87e355c1d3ef3e58a",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 69162,
+      "duration_ms": 69147,
       "stdout": "{\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"agefield-high-rock-the-school\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -386,7 +420,7 @@
       "command": "node scripts/quality-control-loop.mjs review grand-theft-auto-v game_3ba6d718699536fbeefc",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 69162,
+      "duration_ms": 69148,
       "stdout": "{\n  \"slug\": \"grand-theft-auto-v\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"grand-theft-auto-v\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"grand-theft-auto-v\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"grand-theft-auto-v\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"grand-theft-auto-v\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -403,7 +437,7 @@
       "command": "node scripts/quality-control-loop.mjs review crimson-desert game_cf8dab821d4493289fa3",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 69166,
+      "duration_ms": 69153,
       "stdout": "{\n  \"slug\": \"crimson-desert\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"crimson-desert\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"crimson-desert\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"crimson-desert\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"crimson-desert\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -420,7 +454,7 @@
       "command": "node scripts/quality-control-loop.mjs review death-of-the-reprobate game_1b6c415929d3887ac5df",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 69164,
+      "duration_ms": 69142,
       "stdout": "{\n  \"slug\": \"death-of-the-reprobate\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"death-of-the-reprobate\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"death-of-the-reprobate\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"death-of-the-reprobate\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"death-of-the-reprobate\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -437,7 +471,7 @@
       "command": "node scripts/quality-control-loop.mjs review kusan-city-of-wolves game_673d6b80b8df77b0b712",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 69157,
+      "duration_ms": 69162,
       "stdout": "{\n  \"slug\": \"kusan-city-of-wolves\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"kusan-city-of-wolves\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"kusan-city-of-wolves\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"kusan-city-of-wolves\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"kusan-city-of-wolves\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -454,7 +488,7 @@
       "command": "node scripts/quality-control-loop.mjs review hell-let-loose-vietnam game_91b8109a5d837b4f0bbc",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 69165,
+      "duration_ms": 69159,
       "stdout": "{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"hell-let-loose-vietnam\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -467,28 +501,11 @@
       ]
     },
     {
-      "label": "review-qc:no-more-room-in-hell-2",
-      "command": "node scripts/quality-control-loop.mjs review no-more-room-in-hell-2 game_f5db7308be84c62ed593",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 69163,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-qc-state:no-more-room-in-hell-2",
-      "status": "needs_revision",
-      "comments": [
-        "Корпус: 0/5",
-        "Оценённые издания: 0/3"
-      ]
-    },
-    {
       "label": "review-qc:ea-sportstm-madden-nfl-27",
       "command": "node scripts/quality-control-loop.mjs review ea-sportstm-madden-nfl-27 game_23c060240d4fbaf00ead",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 69163,
+      "duration_ms": 69155,
       "stdout": "{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"ea-sportstm-madden-nfl-27\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -501,33 +518,16 @@
       ]
     },
     {
-      "label": "review-qc:duskfade",
-      "command": "node scripts/quality-control-loop.mjs review duskfade game_dc5231876c0dd6cc435d",
+      "label": "review-qc:no-more-room-in-hell-2",
+      "command": "node scripts/quality-control-loop.mjs review no-more-room-in-hell-2 game_f5db7308be84c62ed593",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 69168,
-      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
+      "duration_ms": 69149,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
     {
-      "label": "review-qc-state:duskfade",
-      "status": "needs_revision",
-      "comments": [
-        "Корпус: 0/5",
-        "Оценённые издания: 0/3"
-      ]
-    },
-    {
-      "label": "review-qc:machine-party",
-      "command": "node scripts/quality-control-loop.mjs review machine-party game_6756815f56ba6605d4e4",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 69215,
-      "stdout": "{\n  \"slug\": \"machine-party\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"machine-party\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"machine-party\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"machine-party\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"machine-party\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-qc-state:machine-party",
+      "label": "review-qc-state:no-more-room-in-hell-2",
       "status": "needs_revision",
       "comments": [
         "Корпус: 0/5",
@@ -539,12 +539,46 @@
       "command": "node scripts/quality-control-loop.mjs review kingdom-hearts-hd-1-5-2-5-remix game_46c5b61f8575f753f5ee",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 69162,
+      "duration_ms": 69145,
       "stdout": "{\n  \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"kingdom-hearts-hd-1-5-2-5-remix\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr": ""
     },
     {
       "label": "review-qc-state:kingdom-hearts-hd-1-5-2-5-remix",
+      "status": "needs_revision",
+      "comments": [
+        "Корпус: 0/5",
+        "Оценённые издания: 0/3"
+      ]
+    },
+    {
+      "label": "review-qc:defender-of-the-crown-the-legend-returns",
+      "command": "node scripts/quality-control-loop.mjs review defender-of-the-crown-the-legend-returns game_df88548a3500d52d5ac7",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 69151,
+      "stdout": "{\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"defender-of-the-crown-the-legend-returns\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-qc-state:defender-of-the-crown-the-legend-returns",
+      "status": "needs_revision",
+      "comments": [
+        "Корпус: 0/5",
+        "Оценённые издания: 0/3"
+      ]
+    },
+    {
+      "label": "review-qc:duskfade",
+      "command": "node scripts/quality-control-loop.mjs review duskfade game_dc5231876c0dd6cc435d",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 69148,
+      "stdout": "{\n  \"slug\": \"duskfade\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"duskfade\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-qc-state:duskfade",
       "status": "needs_revision",
       "comments": [
         "Корпус: 0/5",
