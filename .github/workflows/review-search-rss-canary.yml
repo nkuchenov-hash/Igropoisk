@@ -22,6 +22,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Classify current deterministic backlog
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const report=JSON.parse(fs.readFileSync('data/parser-runs/review-backlog-deterministic.json','utf8'));
+          const pending=(report.results||[]).filter(row=>!row.green);
+          const corpusRed=pending.filter(row=>row.corpus_status!=='green');
+          const scoreRed=pending.filter(row=>row.corpus_status==='green'&&row.score_status!=='green');
+          const proseOnly=pending.filter(row=>row.corpus_status==='green'&&row.score_status==='green');
+          const compact=rows=>rows.map(row=>({slug:row.slug,corpus:row.corpus_status,score:row.score_status,comments:row.comments}));
+          console.log(JSON.stringify({selected:report.selected,green:report.green,pending:report.pending,corpus_red:compact(corpusRed),score_red:compact(scoreRed),prose_only:compact(proseOnly)},null,2));
+          NODE
       - name: Verify transport contracts
         run: |
           node --check scripts/discover-review-sources-web-v10.mjs
