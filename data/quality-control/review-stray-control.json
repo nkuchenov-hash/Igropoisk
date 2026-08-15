@@ -1,0 +1,62 @@
+{
+  "schema_version": 8,
+  "type": "review",
+  "game_slug": "stray",
+  "game_id": "game_6f2299b2ef2c947a378f",
+  "canonical_title": "Stray",
+  "checked_at": "2026-08-14T23:33:39.698Z",
+  "status": "red-needs-revision",
+  "green": false,
+  "comments": [
+    "Корпус: 7/5",
+    "Оценённые издания: 2/3"
+  ],
+  "revision_history": [
+    {
+      "label": "web-discovery-full-registry",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"stray\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 7,\n  \"scored\": 2,\n  \"context_only_versions\": 1,\n  \"blocked_verified\": 1,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "promote-full-registry-audit",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"stray\",\n  \"status\": \"green\",\n  \"accepted\": 7,\n  \"trusted_scores_preserved\": 3,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "explicit-score-enrichment",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"stray\",\n  \"accepted\": 7,\n  \"scored\": 2,\n  \"context_only_versions\": 1,\n  \"updates\": 3,\n  \"preserved\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "score-1",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"stray\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 2,\n  \"excluded_sources\": 5,\n  \"score_10\": 8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "keep_queued_until_green": true,
+    "deterministic_only": false,
+    "review_score_source": "data/reviews/{slug}.json#review_score",
+    "research_primary": "complete-registered-source-direct-publisher-scan",
+    "research_fallback": "registered-publisher-research-only-if-full-scan-missing",
+    "score_enrichment": "direct-publisher-structured-markup-preserve-verified",
+    "score_aggregation": "all-eligible-explicit-publisher-scores",
+    "article_reuse": "surgical-rebind-before-regeneration",
+    "synthesis_fallback": "local-ollama-only-after-deterministic-recovery",
+    "visual_audit_fallback": "local-ollama-multimodal",
+    "language_audit_fallback": "local-ollama",
+    "web_discovery_attempts_per_qc": 1
+  }
+}

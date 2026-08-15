@@ -2,9 +2,9 @@
   "schema_version": 8,
   "type": "review",
   "game_slug": "marvel-to-kon-fighting-souls",
-  "game_id": null,
+  "game_id": "game_2f6cb0ba8d380ecee329",
   "canonical_title": "MARVEL Tōkon: Fighting Souls",
-  "checked_at": "2026-08-14T16:37:29.733Z",
+  "checked_at": "2026-08-14T23:44:46.964Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
@@ -17,7 +17,7 @@
       "script": "scripts/discover-review-sources-web.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"marvel-to-kon-fighting-souls\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stdout": "{\n  \"slug\": \"marvel-to-kon-fighting-souls\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
       "stderr": ""
     },
     {
@@ -25,7 +25,7 @@
       "script": "scripts/promote-review-source-audit.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"marvel-to-kon-fighting-souls\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"marvel-to-kon-fighting-souls\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 1,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -47,7 +47,7 @@
   ],
   "policy": {
     "keep_queued_until_green": true,
-    "deterministic_only": true,
+    "deterministic_only": false,
     "review_score_source": "data/reviews/{slug}.json#review_score",
     "research_primary": "complete-registered-source-direct-publisher-scan",
     "research_fallback": "registered-publisher-research-only-if-full-scan-missing",

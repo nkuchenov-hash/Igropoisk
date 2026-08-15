@@ -1,0 +1,44 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "honkai-star-rail",
+  "checked_at": "2026-08-14T23:52:05.594Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 2,
+  "scored": 1,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/honkai-star-rail",
+      "final_url": "https://www.pushsquare.com/reviews/ps5/honkai-star-rail",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespy-archive",
+      "publication": "GameSpy",
+      "url": "https://web.archive.org/web/20230607061352/https://www.polygon.com/23653933/hoyoverse-honkai-star-rail-release-date-mihoyo-genshin-impact-developer",
+      "final_url": "https://web.archive.org/web/20230607061352/https://www.polygon.com/23653933/hoyoverse-honkai-star-rail-release-date-mihoyo-genshin-impact-developer",
+      "status": "no_review_signal",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

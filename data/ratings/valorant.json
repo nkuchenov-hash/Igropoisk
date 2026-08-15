@@ -1,0 +1,69 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/valorant.json#review_score",
+  "game_slug": "valorant",
+  "checked_at": "2026-08-14T23:49:31.809Z",
+  "status": "red-needs-revision",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-3",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: Valorant (PS5) - A Fantastic, One of a Kind Competitive Shooter",
+      "url": "https://www.pushsquare.com/reviews/ps5/valorant",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:49:31.775Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/valorant",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/articles/valorant-2-09-patch-notes-viper-nerfed-and-breeze-update/1100-6491327",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/games/2020/jun/20/valorant-review-riot-games-league-of-legends-shooter-strategy",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 1,
+    "values": [
+      9
+    ],
+    "mean_10": 9,
+    "score_10": 9
+  }
+}

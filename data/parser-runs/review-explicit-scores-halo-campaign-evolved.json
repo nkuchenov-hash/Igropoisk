@@ -1,0 +1,84 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "halo-campaign-evolved",
+  "checked_at": "2026-08-15T00:02:38.480Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 4,
+  "scored": 0,
+  "context_only_versions": 3,
+  "updates": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 70,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": false
+    },
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 7,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": false
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 9,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": false
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/games/halo/halo-campaign-evolved-review",
+      "final_url": "https://www.pcgamer.com/games/halo/halo-campaign-evolved-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": false
+    },
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/halo-campaign-evolved-review",
+      "final_url": "https://www.ign.com/articles/halo-campaign-evolved-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": false
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/it-feels-wrong-for-halo-to-feel-better-than-ever-on-ps5",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/halo-campaign-evolved",
+      "final_url": "https://www.pushsquare.com/reviews/ps5/halo-campaign-evolved",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": false
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "mafia",
+  "checked_at": "2026-08-14T23:38:42.309Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 8,
+  "scored": 2,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 9.2,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "playground",
+      "publication": "PlayGround.ru",
+      "score": 9,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/mafia-review/1900-2879254",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2002/08/29/mafia-review",
+      "final_url": "https://www.ign.com/articles/2002/08/29/mafia-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/uncategorized/2002/09/1355-2",
+      "final_url": "https://arstechnica.com/uncategorized/2002/09/1355-2/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/32759-mafia-review",
+      "final_url": "https://www.gamerevolution.com/review/32759-mafia-review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gry-online",
+      "publication": "GRYOnline",
+      "url": "https://www.gry-online.pl/recenzje/mafia-the-city-of-lost-heaven-recenzja-gry/zc7c2",
+      "final_url": "https://www.gry-online.pl/recenzje/mafia-the-city-of-lost-heaven-recenzja-gry/zc7c2",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "playground",
+      "publication": "PlayGround.ru",
+      "url": "https://www.playground.ru/mafia_the_city_of_lost_heaven/opinion/mafia_the_city_of_lost_heaven-402127",
+      "final_url": "https://www.playground.ru/mafia_the_city_of_lost_heaven/opinion/mafia_the_city_of_lost_heaven-402127",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "absolute-games-archive",
+      "publication": "Absolute Games",
+      "url": "https://ag.ru/reviews/995903",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "worthplaying",
+      "publication": "WorthPlaying",
+      "url": "https://worthplaying.com/article/2004/3/30/reviews/16139-xbox-review-mafia",
+      "final_url": "https://worthplaying.com/article/2004/3/30/reviews/16139-xbox-review-mafia/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}
