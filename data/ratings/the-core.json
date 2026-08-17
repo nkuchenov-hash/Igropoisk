@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/the-core.json#review_score",
   "game_slug": "the-core",
-  "checked_at": "2026-08-14T22:38:00.281Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T20:44:57.801Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -20,12 +20,83 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Intel",
+      "url": "https://www.pcgamer.com/hardware/processors/intel-core-ultra-5-250k-plus-review",
+      "original_score": {
+        "score": 87,
+        "scale": 100,
+        "grade": null,
+        "display": "87/100"
+      },
+      "normalized_10": 8.7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:44:57.757Z",
+        "url": "https://www.pcgamer.com/hardware/processors/intel-core-ultra-5-250k-plus-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Warhammer: The Old World Core Set is crunchy, complex, and the best introduction to the game you could hope for",
+      "url": "https://www.gamesradar.com/tabletop-gaming/warhammer-the-old-world-core-set-review",
+      "original_score": {
+        "score": 4.5,
+        "scale": 5,
+        "grade": null,
+        "display": "4.5/5"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:44:57.757Z",
+        "url": "https://www.gamesradar.com/tabletop-gaming/warhammer-the-old-world-core-set-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Yooka-Replaylee Review – Banjo&#039;s tribute act gets their encore | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2025/10/24/yooka-replaylee-review-banjos-tribute-act-gets-their-encore",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:44:57.757Z",
+        "url": "https://www.thesixthaxis.com/2025/10/24/yooka-replaylee-review-banjos-tribute-act-gets-their-encore/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 3,
+    "values": [
+      8.7,
+      9,
+      9
+    ],
+    "mean_10": 8.9,
+    "score_10": 8.9
   }
 }

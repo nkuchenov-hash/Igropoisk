@@ -1,0 +1,219 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "kingdom-come-deliverance",
+  "checked_at": "2026-08-17T20:38:36.093Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 13,
+  "scored": 7,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 5.75,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "score": 9,
+      "scale": 10,
+      "method": "registry:game-revolution",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 7,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 84,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "score": 3,
+      "scale": 5,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "score": 9.8,
+      "scale": 10,
+      "method": "registry:hooked-gamers",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2018/02/17/kingdom-come-deliverance-review",
+      "final_url": "https://www.ign.com/articles/2018/02/17/kingdom-come-deliverance-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/games/kingdom_come_deliverance/b/xboxone/archive/2018/02/28/kingdom-come-deliverance-review-game-informer.aspx",
+      "final_url": "https://gameinformer.com/games/kingdom_come_deliverance/b/xboxone/archive/2018/02/28/kingdom-come-deliverance-review-game-informer.aspx",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/368221-kingdom-come-deliverance-review-hardcore-henry",
+      "final_url": "https://www.gamerevolution.com/review/368221-kingdom-come-deliverance-review-hardcore-henry",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/games/2018/feb/15/kingdom-come-deliverance-review-medieval-rpg",
+      "final_url": "https://www.theguardian.com/games/2018/feb/15/kingdom-come-deliverance-review-medieval-rpg",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps4/kingdom_come_deliverance",
+      "final_url": "https://www.pushsquare.com/reviews/ps4/kingdom_come_deliverance",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/kingdom-come-deliverance-review",
+      "final_url": "https://www.pcgamer.com/kingdom-come-deliverance-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "url": "https://www.eurogamer.net/kingdom-come-deliverance-review",
+      "final_url": "https://www.eurogamer.net/kingdom-come-deliverance-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/kingdom-come-deliverance-review-the-past-comes-at-/1900-6416861",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "rock-paper-shotgun",
+      "publication": "Rock Paper Shotgun",
+      "url": "https://www.rockpapershotgun.com/kingdom-come-deliverance-review",
+      "final_url": "https://www.rockpapershotgun.com/kingdom-come-deliverance-review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2018/02/13/kingdom-come-deliverance-review",
+      "final_url": "https://www.thesixthaxis.com/2018/02/13/kingdom-come-deliverance-review/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/review-kingdom-come-deliverance-490605.phtml",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/kingdom-come-deliverance-review-round-up-this-ambitious-open-world-rpg-shines-despite-some-rough-edges",
+      "final_url": "https://www.gamesradar.com/kingdom-come-deliverance-review-round-up-this-ambitious-open-world-rpg-shines-despite-some-rough-edges/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/kingdom_come_deliverance/review/article-1906.html",
+      "final_url": "https://www.hookedgamers.com/pc/kingdom_come_deliverance/review/article-1906.html",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}

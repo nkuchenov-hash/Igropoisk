@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "fallout-new-vegas",
-  "checked_at": "2026-08-17T20:23:17.429Z",
+  "checked_at": "2026-08-17T20:46:48.587Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 2,
-  "scored": 1,
+  "accepted": 4,
+  "scored": 3,
   "context_only_versions": 0,
   "updates": [
     {
@@ -13,6 +13,24 @@
       "score": 9.5,
       "scale": 10,
       "method": "registry:hooked-gamers",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 84,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "score": 4.5,
+      "scale": 5,
+      "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": true
     }
@@ -34,6 +52,28 @@
       "publication": "Hooked Gamers",
       "url": "https://www.hookedgamers.com/x360/fallout_new_vegas/review/article-618.html",
       "final_url": "https://www.hookedgamers.com/x360/fallout_new_vegas/review/article-618.html",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/fallout-new-vegas-review",
+      "final_url": "https://www.pcgamer.com/fallout-new-vegas-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/fallout-new-vegas-review",
+      "final_url": "https://www.gamesradar.com/fallout-new-vegas-review/",
       "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,

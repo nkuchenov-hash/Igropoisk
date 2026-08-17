@@ -2,14 +2,16 @@
   "schema_version": 11,
   "game_slug": "fallout-76",
   "game_id": "game_5dfec3fa7b67f426ed78",
-  "updated_at": "2026-08-17T20:22:56.033Z",
+  "updated_at": "2026-08-17T20:48:00.982Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "maximum": 20,
-    "accepted": 4,
-    "status": "red-needs-revision"
+    "accepted": 6,
+    "status": "green",
+    "full_registry_scan": true,
+    "checked_registered_sources": 41,
+    "applicable_registered_sources": 41
   },
   "regional_discovery": {
     "region": "ru",
@@ -114,8 +116,8 @@
       "domain": "gameinformer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T20:22:54.531Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:46:33.206Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
@@ -124,7 +126,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:22:56.005Z",
+        "checked_at": "2026-08-17T20:48:00.809Z",
         "url": "https://gameinformer.com/review/fallout-76/over-encumbered",
         "configured_source_id": "game-informer",
         "direct_publisher": true
@@ -171,8 +173,8 @@
       "domain": "pushsquare.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T20:22:54.531Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:46:33.206Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
@@ -181,7 +183,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:22:56.005Z",
+        "checked_at": "2026-08-17T20:48:00.809Z",
         "url": "https://www.pushsquare.com/reviews/ps4/fallout-76",
         "configured_source_id": "push-square",
         "direct_publisher": true
@@ -219,8 +221,8 @@
       "domain": "hookedgamers.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T20:22:54.531Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:46:33.206Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "publisher_rule"
@@ -229,7 +231,7 @@
       "score_evidence": {
         "method": "registry:hooked-gamers",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:22:56.005Z",
+        "checked_at": "2026-08-17T20:48:00.809Z",
         "url": "https://www.hookedgamers.com/pc/fallout_76/review/article-1998.html",
         "configured_source_id": "hooked-gamers",
         "direct_publisher": true
@@ -274,20 +276,145 @@
       "mechanics": [],
       "domain": "thesixthaxis.com",
       "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T20:46:33.206Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 504"
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:48:00.809Z",
+        "url": "https://www.thesixthaxis.com/2020/05/01/fallout-76-wastelanders-reviews/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.pcgamer.com/fallout-76-review",
+      "title": "Fallout 76 review",
+      "sitemap_rank": 44,
+      "sitemap_match": {
+        "matched": 1,
+        "coverage": 1,
+        "extras": 1
+      },
+      "discovery_method": "publisher_sitemap",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "language": "en",
+      "id": "source-5",
+      "resolved_url": "https://www.pcgamer.com/fallout-76-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Fallout 76.",
+      "evidence_points": [
+        "Join the club for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
+        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
+        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
+        "A beautifully crafted but ultimately repetitive world, and a disappointment when it comes to options on PC.",
+        "PC Gamer's got your back Our experienced team dedicates many hours to every review, to really get to the heart of what matters most to you. Find out more about how we evaluate games and hardware.",
+        "What is it? An open world multiplayer RPG. Expect to pay $60 Developer / Publisher Bethesda Reviewed on &nbsp;Intel Core i5-6600K @ 3.50 GHz, 8 GB RAM, Nvidia GeForce GTX 980 Multiplayer Yes Link Official site",
+        "Valley Galleria is a rotting shopping mall in Fallout 76, and one of the most eerie and unsettling places I've ever visited in a game. It's dark and spooky, with cheery music still faintly echoing through the grimy, decaying halls. It's my first time here and this place scares the crap out of me. I immediately drop into a crouch and ready my rifle, terrified of what unknown horrors I might find inside. I have a quest to complete here but now I'm too nervous to crabwalk more than a few feet at a time.",
+        "Cut to a few minutes later, and I'm jogging briskly through the Galleria, following my quest markers, my fear completely gone. The atmosphere of horror lifted when I discovered the mall was filled with Scorched, Fallout 76's less-interesting version of raiders, the same enemy type I've been killing since I first stepped out of the vault 50 hours ago. Now, I just slash them down with my spiked sword when they get in my way, and follow the yellow icons on my radar.",
+        "Fallout 76 is a lot like Valley Galleria. It's a fantastic and evocative setting for a game, but the novelty of its sights disperse quickly and you're back to following quest markers and absentmindedly killing the same crowd of monsters, again and again.",
+        "25 years after the nukes fell during the Great War, Vault 76 opens and you step out into post-apocalyptic West Virginia to find out what happened to your vault's Overseer, who set out before you. You're not alone: the other two-dozen players on the server represent the only living humans in what's left of Appalachia. The rest of the population are dead, or robots, or have been monsterified, meaning your quests and the story exclusively come from notes, diaries, a few extremely talkative bots, and holotapes. I'm not a fan of most of the voice acting in Fallout 76, in particular one raider robot who will dominate your headphones for a large portion of your mid-level questing&mdash;the most irritating robot in a videogame since Claptrap. But the smaller stories, written in terminal entries and typically inconsequential to the main quest, are often well worth nosing around for.&nbsp;"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pcgamer.com",
+      "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T20:22:54.531Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:46:33.206Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
       },
+      "score": 60,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:22:56.005Z",
-        "url": "https://www.thesixthaxis.com/2020/05/01/fallout-76-wastelanders-reviews/",
-        "configured_source_id": "the-sixth-axis",
+        "checked_at": "2026-08-17T20:48:00.934Z",
+        "url": "https://www.pcgamer.com/fallout-76-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.gamesradar.com/fallout-76-review",
+      "title": "Fallout 76 review:",
+      "sitemap_rank": 44,
+      "sitemap_match": {
+        "matched": 1,
+        "coverage": 1,
+        "extras": 1
+      },
+      "discovery_method": "publisher_sitemap",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "language": "en",
+      "id": "source-6",
+      "resolved_url": "https://www.gamesradar.com/fallout-76-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Fallout 76.",
+      "evidence_points": [
+        "Join the GamesRadar community for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
+        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
+        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
+        "Fallout 76 has glimmers of the trademark series&rsquo; sci-fi splendour, but they&rsquo;re few and far between.",
+        "Why you can trust GamesRadar+ Our experts review games, movies and tech over countless hours, so you can choose the best for you. Find out more about our reviews policy.",
+        "Fallout games have always been about survival. Everything outside the Vaults is rusty, broken, or just plain mutated - but hey, that&rsquo;s the new normal. You get used to the dirt, you get used to the ruins, and you gradually become a hardened survivor who makes the Wasteland their home, finding pockets of warmth and humanity - and, importantly, humans - that keep you going. But unfortunately Fallout 76 is just as worn as the world it depicts, without any of the warmth. Although there are glimmers of the old Fallout twinkle, like tongue-in-cheek quests about the old-world bureaucracy and genuinely moving backstories about the impact of automation on the working class, Fallout 76 lacks the heart and dynamism of previous installations in Bethesda&rsquo;s series. And I cannot put into words how sad it makes me to write that.&nbsp;",
+        "\"Fallout 76 lacks the heart and dynamism of previous installations in Bethesda&rsquo;s series.\"",
+        "\"There&rsquo;s a cycle of helping each other out that should tempt even the most MMO-averse gamer.\"",
+        "\"Fallout 76 lacks the life that made the post-apocalypse a beacon of hope in previous games.\"",
+        "Remember: as it&rsquo;s an MMO, there&rsquo;s the real possibility that just like Elder Scrolls Online the Fallout 76 of today is going to be very different to the Fallout 76 of next year, so while it&rsquo;s not worth jumping into Appalachia right now, spend some time in your own personal Vault and emerge again when the radioactive dust has settled. I&rsquo;ll be updating this review in a month to see how things have changed, and then again next year as Fallout 76 hopefully continues to grow and adapt, just like the Dwellers of Vault 76 running through its world will.&nbsp;"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "gamesradar.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:46:33.206Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 2.5,
+      "scale": 5,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:48:00.935Z",
+        "url": "https://www.gamesradar.com/fallout-76-review/",
+        "configured_source_id": "gamesradar",
         "direct_publisher": true
       }
     }
@@ -329,7 +456,7 @@
         "score_evidence": {
           "method": "jsonld.reviewRating",
           "scope": "editorial_review",
-          "checked_at": "2026-08-17T20:22:56.005Z",
+          "checked_at": "2026-08-17T20:48:00.809Z",
           "url": "https://gameinformer.com/review/fallout-76/over-encumbered",
           "configured_source_id": "game-informer",
           "direct_publisher": true
@@ -351,7 +478,7 @@
         "score_evidence": {
           "method": "jsonld.reviewRating",
           "scope": "editorial_review",
-          "checked_at": "2026-08-17T20:22:56.005Z",
+          "checked_at": "2026-08-17T20:48:00.809Z",
           "url": "https://www.pushsquare.com/reviews/ps4/fallout-76",
           "configured_source_id": "push-square",
           "direct_publisher": true
@@ -373,7 +500,7 @@
         "score_evidence": {
           "method": "registry:hooked-gamers",
           "scope": "editorial_review",
-          "checked_at": "2026-08-17T20:22:56.005Z",
+          "checked_at": "2026-08-17T20:48:00.809Z",
           "url": "https://www.hookedgamers.com/pc/fallout_76/review/article-1998.html",
           "configured_source_id": "hooked-gamers",
           "direct_publisher": true
@@ -395,23 +522,69 @@
         "score_evidence": {
           "method": "jsonld.reviewRating",
           "scope": "editorial_review",
-          "checked_at": "2026-08-17T20:22:56.005Z",
+          "checked_at": "2026-08-17T20:48:00.809Z",
           "url": "https://www.thesixthaxis.com/2020/05/01/fallout-76-wastelanders-reviews/",
           "configured_source_id": "the-sixth-axis",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-5",
+        "configured_source_id": "pc-gamer",
+        "publication": "PC Gamer",
+        "title": "Fallout 76 review",
+        "url": "https://www.pcgamer.com/fallout-76-review",
+        "original_score": {
+          "score": 60,
+          "scale": 100,
+          "grade": null,
+          "display": "60/100"
+        },
+        "normalized_10": 6,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:48:00.934Z",
+          "url": "https://www.pcgamer.com/fallout-76-review/",
+          "configured_source_id": "pc-gamer",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-6",
+        "configured_source_id": "gamesradar",
+        "publication": "GamesRadar+",
+        "title": "Fallout 76 review:",
+        "url": "https://www.gamesradar.com/fallout-76-review",
+        "original_score": {
+          "score": 2.5,
+          "scale": 5,
+          "grade": null,
+          "display": "2.5/5"
+        },
+        "normalized_10": 5,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:48:00.935Z",
+          "url": "https://www.gamesradar.com/fallout-76-review/",
+          "configured_source_id": "gamesradar",
           "direct_publisher": true
         }
       }
     ],
     "excluded_sources": [],
     "calculation": {
-      "source_count": 4,
+      "source_count": 6,
       "values": [
         6,
         3,
         7.6,
+        5,
+        6,
         5
       ],
-      "mean_10": 5.4,
+      "mean_10": 5.4333,
       "score_10": 5.4
     }
   }

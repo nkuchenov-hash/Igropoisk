@@ -2,14 +2,16 @@
   "schema_version": 11,
   "game_slug": "kingdom-come-deliverance",
   "game_id": "game_4c3313118855bd7c8fad",
-  "updated_at": "2026-08-17T13:48:12.804Z",
+  "updated_at": "2026-08-17T20:38:36.133Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "maximum": 20,
-    "accepted": 5,
-    "status": "green"
+    "accepted": 13,
+    "status": "green",
+    "full_registry_scan": true,
+    "checked_registered_sources": 41,
+    "applicable_registered_sources": 41
   },
   "regional_discovery": {
     "region": "ru",
@@ -112,12 +114,20 @@
       "domain": "ign.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T13:48:09.403Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.905Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:34.391Z",
+        "url": "https://www.ign.com/articles/2018/02/17/kingdom-come-deliverance-review",
+        "configured_source_id": "ign",
+        "direct_publisher": true
       }
     },
     {
@@ -159,12 +169,20 @@
       "domain": "gameinformer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T13:48:09.403Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.905Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:34.391Z",
+        "url": "https://gameinformer.com/games/kingdom_come_deliverance/b/xboxone/archive/2018/02/28/kingdom-come-deliverance-review-game-informer.aspx",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
       }
     },
     {
@@ -180,10 +198,10 @@
       "published_at": "",
       "author": "",
       "language": "en",
-      "score": 0,
-      "scale": 0,
+      "score": 9,
+      "scale": 10,
       "grade": "",
-      "score_eligible": false,
+      "score_eligible": true,
       "canonical_score_eligible": true,
       "version_validation": {
         "score_eligible": true,
@@ -206,12 +224,20 @@
       "domain": "gamerevolution.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T13:48:09.403Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.905Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
+      },
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:34.391Z",
+        "url": "https://www.gamerevolution.com/review/368221-kingdom-come-deliverance-review-hardcore-henry",
+        "configured_source_id": "game-revolution",
+        "direct_publisher": true
       }
     },
     {
@@ -227,8 +253,8 @@
       "published_at": "2018-02-15T14:00:17.000Z",
       "author": "https://www.theguardian.com/profile/rick-lane",
       "language": "en",
-      "score": 0,
-      "scale": 0,
+      "score": null,
+      "scale": null,
       "grade": "",
       "score_eligible": false,
       "canonical_score_eligible": true,
@@ -253,8 +279,8 @@
       "domain": "theguardian.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T13:48:09.403Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.905Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
@@ -300,28 +326,392 @@
       "domain": "pushsquare.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T13:48:09.403Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.905Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:34.978Z",
+        "url": "https://www.pushsquare.com/reviews/ps4/kingdom_come_deliverance",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.pcgamer.com/kingdom-come-deliverance-review",
+      "publication": "PC Gamer",
+      "title": "Kingdom Come: Deliverance review",
+      "id": "source-6",
+      "configured_source_id": "pc-gamer",
+      "resolved_url": "https://www.pcgamer.com/kingdom-come-deliverance-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Kingdom Come: Deliverance.",
+      "evidence_points": [
+        "Join the club for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
+        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
+        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
+        "Bugs and performance issues aside, Kingdom Come is a seriously satisfying role-playing experience set in a rich, reactive world.",
+        "PC Gamer's got your back Our experienced team dedicates many hours to every review, to really get to the heart of what matters most to you. Find out more about how we evaluate games and hardware.",
+        "What is it? An open-world RPG set in medieval Europe. Expect to pay $60/&pound;40 Developer Warhorse Studios Publisher Deep Silver Reviewed on GTX 1080, Intel i5-6600K, 16GB RAM Multiplayer None Link Official site",
+        "The early hours of Kingdom Come are surprisingly peaceful. You help your father, the town blacksmith, at the forge. Run errands for your mother. Cause trouble with your mates. Flirt with your girlfriend. But just as you&rsquo;re getting comfortable with protagonist Henry&rsquo;s simple life, a mysterious army attacks the village, burns it down, and kills everyone he loves. This is the brutal flashpoint for the game&rsquo;s epic tale of war, political turmoil, and vengeance, and I was genuinely devastated, and angry, when it happened.",
+        "It helps that Henry is such a likeable hero. There isn&rsquo;t much to him, but I think that&rsquo;s the point. He&rsquo;s so normal, so unassuming, that his presence provides a firm, relatable foundation for the story. As he reluctantly leaves his old life behind, becoming a page for a lord who takes a shine to him and finding himself on the frontline of a bloody war, he&rsquo;s just as overwhelmed by everything as you are. But his spirit and determination keep his head mostly above the water, and he&rsquo;s an effective guide through the complicated culture and politics of this harsh, unsympathetic medieval world.",
+        "Kingdom Come is an RPG without the dungeons or dragons. There are no goblins, enchanted swords, or mages. You&rsquo;ll never cast a spell, slay a vampire, or fulfil an ancient prophecy. And there&rsquo;s something refreshing about how it trades these familiar fantasy tropes for something more understated and realistic. It&rsquo;s by no means a perfectly accurate recreation of what life was actually like in the Middle Ages&mdash;Henry would probably die of dysentery or something in the first act if it was&mdash;but it does a good enough impression of one.",
+        "The simulation that governs everything is impressively deep. If you get caught stealing, you&rsquo;ll end up serving some time in jail. If you unsheathe your sword during a fist fight, your opponent will back down and maybe even apologise. Nobles will be more willing to speak to you if you&rsquo;ve had a bath. If your reputation in a town is especially high, people on the street will shout your name and sing your praises. If you drink too much, you&rsquo;ll wake up with a hangover. Take off your clunky plate armour and you&rsquo;ll make less noise while sneaking. Eat rotten food and you&rsquo;ll contract food poisoning."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pcgamer.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.905Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 84,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:34.978Z",
+        "url": "https://www.pcgamer.com/kingdom-come-deliverance-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.eurogamer.net/kingdom-come-deliverance-review",
+      "publication": "Eurogamer",
+      "title": "Kingdom Come: Deliverance review - history is a double-edged sword",
+      "id": "source-7",
+      "configured_source_id": "eurogamer",
+      "resolved_url": "https://www.eurogamer.net/kingdom-come-deliverance-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Kingdom Come: Deliverance.",
+      "evidence_points": [
+        "Kingdom Come: Deliverance and the history it explores are inseparable. There hasn't been a medieval world this real and substantial since The Witcher 3 . The sense of time and place it conjures is astonishing. You feel your feet squelching in muddy, rutted paths, and smell the manure on the fields around you. But what you see isn't a fantasy world reinforced by a culture's past: it is a culture's past - its bones are made out of it. Kingdom Come is the most believable adventure into medieval history I've ever experienced.",
+        "That's the hook: realism. This is the dungeons-and-no-dragons role-playing game sprung from Kickstarter into a full-sized multiplatform release. The RPG offering a first-person medieval simulation like an Elder Scrolls game, with a world living around you, but without the fantasy, magic and monsters. Instead, it's developer Warhorse's own Czech history brought to life from the year of 1403, and the detail with which it has been recreated is staggering.",
+        "Kingdom Come hasn't tried to condense a whole world into a game, but instead focused in on a 16 square kilometre area of rural Bohemia, and the dozen or so small villages and towns found there at the time. Nothing feels made up. Everything is placed with the certainty of historical reality behind it; shops are where they are because it made sense at the time - bakers here, weaponsmiths and blacksmiths there. Inns emerge naturally as the town's beating heart - the first port of call for a traveller who can buy lodgings for a week at a time, as I suppose you once would. Everywhere there are windows like this into the past.",
+        "Between the settlements is the tranquility of the countryside, birds trilling and flowers gently swaying. In the forests there's the hushed atmosphere a leafed roof brings, as deers scarper and hares and rabbits startle. And at night, wolves howl. This is a living world, made of rain and sunshine and even bone-shaking thunderstorms.",
+        "The meticulous eye for detail spreads into the game's systems, the standout being the most realistic recreation of sword fighting I've seen in a game. Swords and fighters are physical objects clad in all sorts of physical armour objects which react in unique ways. One cannot simply slice a plated opponent like a ham.",
+        "Combat revolves around attacking and defending areas governed by a kind of directional wheel. Stamina stops you going all out, and if you're hit while breathless you take lasting damage. You also see your viewpoint spin when someone lands a meaty blow, mimicking the disorientation you feel for real when someone smacks you.",
+        "When it works, it's a martial dance of careful timing and study as you watch an opponent to see where their guard leaves them vulnerable. You can feint, string together combos and respond with counters. There's genuine depth and skill to it. But when it doesn't work, it's infuriating. Trying to perform combos using a mouse, which slides too easily between attack areas, can feel like an impossibility (it does work better with a thumbstick), and trying to manage multiple opponents with a sluggish lock-on ends in death more often than not.",
+        "Underneath Kingdom Come's many systems are skill lines - you improve your skills by using them, as in an Elder Scrolls game - and there are perks to unlock in most of them. There are the obvious combat skill lines with their combos and damage boosts and defense bonuses, and stealth lines with backstabs and lockpicking. And there are more quirky skills like drinking and reading too. There are skills galore. And everything is collated in a wonderful set of ornate menus. The maps! Oh, you should see the maps.",
+        "There's a clothing and armour system with more layers than an onion. My hero has a plate chest piece over a chainmail shirt over a linen shirt, a scaled cap over a mail hat over a padded hat, banded trousers over mail trousers, then boots, gloves and arm vambraces. Each piece complements another by, say, padding blows from blunt weapons. It's depth under depth and historical explanations everywhere you look. It's armour based on an understanding of combat rather than an appreciation of aesthetics.",
+        "Kingdom Come is shaped and spurred to life by a surprisingly entertaining story about a boy called Henry, who finds himself unexpectedly thrust into a lord's service and into climbing the ranks of feudal society. There's a sense of B-movie-ism compared with a blockbuster like The Witcher 3. The quality across the board isn't as uniformly high: the characters don't look great, the animations aren't that smooth, and the voice acting varies wildly. But Kingdom Come isn't bad. The directed cinematics can often deliver surprising naturalism, and I really warmed to actor Tom McKay's affable portrayal of Henry after a while. There are some memorable moments - some touching, others very funny. There's a playfulness and irreverence underneath all the history."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "eurogamer.net",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.905Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 3,
+      "scale": 5,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:34.978Z",
+        "url": "https://www.eurogamer.net/kingdom-come-deliverance-review",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.gamespot.com/reviews/kingdom-come-deliverance-review-the-past-comes-at-/1900-6416861",
+      "publication": "GameSpot",
+      "title": "Kingdom Come: Deliverance — GameSpot review",
+      "id": "source-8",
+      "configured_source_id": "gamespot",
+      "resolved_url": "https://www.gamespot.com/reviews/kingdom-come-deliverance-review-the-past-comes-at-/1900-6416861",
+      "source_kind": "review",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T20:37:40.905Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.rockpapershotgun.com/kingdom-come-deliverance-review",
+      "publication": "Rock Paper Shotgun",
+      "title": "Kingdom Come: Deliverance review",
+      "id": "source-9",
+      "configured_source_id": "rock-paper-shotgun",
+      "resolved_url": "https://www.rockpapershotgun.com/kingdom-come-deliverance-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Kingdom Come: Deliverance.",
+      "evidence_points": [
+        "&ldquo;Elder Scrolls without the magic,&rdquo; is the elevator pitch for Warhorse's historical RPG Kingdom Come: Deliverance , but magic is a relative term - it all depends on what you're used to. The game's stringent recreation of alchemy may seem downright paranormal, for example, if you're used to the streamlined, fire-and-forget approach of a game like Skyrim .",
+        "Given how many dungeons, dragons and mages RPGs tend to contain, Kingdom Come's strictly historical approach often seems more fantastical and mysterious than its peers. That mostly helped me to make my way through this open world RPG with a spring in my step, even when bugs and crashes threatened to spoil the experience, and the story fell flat and the sidequests became repetitive.",
+        "Midway through the story of Henry of Skalitz, blacksmith turned countrywide errand boy, you're asked to tend to wounded refugees at a monastery while dealing with a local plague outbreak. In many such games, this would boil down to visiting the nearest meadow, clearing out the local rat/unicorn infestation and harvesting a few generic herbs - and you will, in fairness, be asked to fetch bandages and rustle up some deermeat for the sickhouse cookpot. But there's also that alchemy system, whereby you must not only gather materials but follow written instructions at your worktable: bringing the cauldron to a simmer or boil using the bellows, grinding up ingredients and adding them at the right time using an hourglass.",
+        "It's quite the adventure, and all of that assumes your character can actually read those instructions, a skill that must be obtained at some expense and honed with practice. It also assumes that you correctly match each patient's account of their symptoms to the remedies in the monastery's archives. Neglect to speak to all the plague victims before taking to your worktable and you might have to make a wild guess about the cure. And just to pile on the pressure, one of the people you're trying to heal is a mercenary your liege-lord has ordered you to interrogate. Better do your homework, then.",
+        "Set in 14th and early 15th century Bohemia, Warhorse's debut RPG shines brightest when the quest design really digs into the peculiarities of its era, not quite cutting you adrift, but certainly not holding your hand. Broadly, the game blends the freeform progression and swirling, reactive NPC citizenry of an Elder Scrolls with the grot and skulduggery of a medieval conspiracy thriller. As the game begins, poor young Henry's village is burned to ashes by a marauding tyrant, sparking a quest for vengeance that soon enmeshes you in a wider conspiracy.",
+        "Henry's stats, meanwhile, are increased by performing the associated action, and there are perks to unlock in each of the game's skill trees, from combos and special moves to traits that let you carry more stuff, obtain valuable pelts from animal carcasses and minimise the wasting effects of time in jail. Or the effects of booze and hangovers .",
+        "Deliverance's narrative is good at taking you places and changing its tune to fit the circumstances, but the tale itself dissatisfies. Largely that's because it's more about machinations than people, offering up a parade of soap opera sketches - ornery lords, roguish priests, preening bureaucrats - who further the plot but rarely tickle your curiosity. Henry himself is about as exciting as a bowl of porridge, though I enjoyed watching other characters respond to his rapid ascent of the hierarchy: there's a hint of Geralt of Rivia, even, to how the character is at once courted and resented, a useful pariah in a world of rigid caste relations. But the script never crackles like that of The Witcher 3, and though they usually have ulterior motives, the merchants, peers and yokels you'll meet harbour few genuine surprises.",
+        "It's not a story that has much time for women. Since you play the pre-designated character, Henry, it's down to the supporting cast to provide different perspectives. Unfortunately, female characters typically fall into the categories of maidenly love interest, prostitute or surrogate mother, in keeping with the portrait of a &ldquo;purely patriarchal&rdquo; society described by Kingdom Come's historical database. I don't know enough about 15th century Bohemia to address this, but I'm not sure the defence of historical accuracy extends to blokier character buffs like &ldquo;Alpha Male&rdquo;, which confers a +2 charisma boost when you visit the brothel.",
+        "Tedious macho elements aside, there are other questions about the depiction of the people of early 15th century Bohemia. During development director Daniel Vavra claimed that there were \"no black people\" present in the area of Bohemia covered at the time of Kingdom Come's events and though the game doesn't present the region as a bastion of monoethnicity, the issue of race deserves further examination. I'd especially like to read a critique of its portrayal of the Cumans, a Turkic nomadic people represented by other characters as vicious killers, who often feature among the ranks of your enemies.",
+        "Vavra has defended the research that went into the game's racial diversity and apologised for some of his comments , and it's important to note that the development has been a collaborative effort of more than 100 people rather than the work of one man. If Kingdom Come existed in a vacuum, the treatment of the Cumans might seem like a meaningful depiction of the othering of outsiders, which might in itself help us to understand characters and the setting. In reality, it's reasonable to dig deeper into the game's claims to accuracy in this and other regards now that the whole picture can be seen, and that's something we'll be doing."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "rockpapershotgun.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.905Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.thesixthaxis.com/2018/02/13/kingdom-come-deliverance-review",
+      "publication": "TheSixthAxis",
+      "title": "Kingdom Come: Deliverance Review | TheSixthAxis",
+      "id": "source-10",
+      "configured_source_id": "the-sixth-axis",
+      "resolved_url": "https://www.thesixthaxis.com/2018/02/13/kingdom-come-deliverance-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Kingdom Come: Deliverance.",
+      "evidence_points": [
+        "Kingdom Come: Deliverance is an incredibly ambitious game. It’s an open world adventure set in medieval Europe that has no fantasy elements, realistic combat mechanics, and little in the way of modern conveniences. Instead of starting out with some character defining power, the player is a mere peasant with nothing special about them. As an open world adventure, it’s like little else out there and I had huge hopes that this long-delayed Kickstarter game would deliver on its lofty promises.",
+        "With a war looming over the throne after the death of Emperor Charles IV of the Holy Roman Empire, the player takes on the role of Henry, the son of a blacksmith in the humble town of Skalitz, whose parents are killed during a raid by invaders. The story takes inspiration from historical events and is generally well told, tense, and full of intrigue. The fully voiced English cast has really decent writing backing them up, but are let down by some lacklustre sound mixing. It’s obvious that Henry’s voice was recorded in a different room to other cast members.",
+        "I’m not going to beat around the bush here: Kingdom Come: Deliverance’s biggest issue is performance. It’s practically unplayable at times because of regular slowdown, no matter which settings I had the game at. When things get frantic; mostly when there’s a battle going on, the performance tanks horribly even on the lowest settings &#8211; my PC runs a Core i5-6400 with a GTX 1070, more than capable of the recommended specs – to the point of freezing with alarming frequency. It got in the way of attempting to enjoy the gameplay more than it was worth bearing with.",
+        "But performance drops are just the tip of the iceberg. Long loading times are rampant throughout the game. Pop in is also frequent and while this can be mitigated by reducing the graphical settings, this barely helped in my time with the game. On top of this, character models popping in would occasionally change people&#8217;s appearance entirely. As for the character models themselves, they march straight into the uncanny valley. It’s understandable given the ridiculously large open world, but it’s still off-putting.",
+        "I can actually see where they were going with the combat as the more realistic approach is part of what drew me to Kingdom Come: Deliverance. When fighting one on one, the game performs relatively well and I was able to competently block attacks. Using the mouse to direct where attacks are coming from, along with feints and blocks is cumbersome at first, but this I eventually got used to and for most one-on-one encounters I was able to defeat opponents with relative skill.",
+        "However, when there’s more than one assailant, especially if there’s a big battle going on, the frame rate tanks to levels where it’s incredibly difficult to react. Often I would be doing rather well, only for some unseen foe to take tons of health off. I’m no stranger to unforgiving combat – I play and enjoy the Dark Souls franchise, after all – but the difference here is that I’m not enjoying combat in Kingdom Come: Deliverance because of the major performance hits.",
+        "Henry does also have the ability to fight using a bow and arrow, but really this felt even more of a farce. Ranged combat has no reticule so relies on guesswork by design, which is certainly more realistic but made all the more difficult by the swaying aim. This is by design, as you need to improve your archery skills, but discouraged me from using them unless in extreme circumstances, and even then it had as much impact as a spit ball through a straw.",
+        "Where Kingdom Come: Deliverance does excel is in its world building. Set in Bohemia in the Holy Roman Empire, there’s an eastern European vibe to this medieval landscape that translates well from market towns full of beggars, to country roads littered with bandits. Admittedly the characters in the English language dub are a blend of British and American accents that sound very odd together, but when the game allowed for it, I did get sucked into the world.",
+        "In a way, there’s a lot to compare to similar open world games such as Skyrim, only this game opts for a realistic and historical take on the genre that’s honestly refreshing. What’s also quite refreshing is how NPCs who give Henry quests won’t always wait too long for him. If someone says to meet them in the evening in the tavern, you may fail the mission if you don’t or have to find a different way to complete the quest. This non-linear approach is par for the course with many of its contemporaries, but the living world aspect is a remarkable achievement.",
+        "Even Henry’s growth as a character, while not wholly original, fits the game like a glove. Henry starts out as a smelly, ignorant serf, who can’t read, can’t wield a sword, and has little experience as a blacksmith. Through obtaining coin, he can pay someone to teach him the basics of reading, which look as if the words aren’t spelt correctly. As he levels up his reading ability, the words become clearer, simulating to our more literate age how not being able to read would be."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "thesixthaxis.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.905Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.destructoid.com/review-kingdom-come-deliverance-490605.phtml",
+      "publication": "Destructoid",
+      "title": "Kingdom Come: Deliverance — Destructoid review",
+      "id": "source-11",
+      "configured_source_id": "destructoid",
+      "resolved_url": "https://www.destructoid.com/review-kingdom-come-deliverance-490605.phtml",
+      "source_kind": "review",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T20:37:40.905Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.gamesradar.com/kingdom-come-deliverance-review-round-up-this-ambitious-open-world-rpg-shines-despite-some-rough-edges",
+      "title": "Kingdom Come: Deliverance review round-up: This ambitious open-world RPG shines despite some rough edges",
+      "sitemap_rank": 32,
+      "sitemap_match": {
+        "matched": 3,
+        "coverage": 1,
+        "extras": 12
+      },
+      "discovery_method": "publisher_sitemap",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "language": "en",
+      "id": "source-12",
+      "resolved_url": "https://www.gamesradar.com/kingdom-come-deliverance-review-round-up-this-ambitious-open-world-rpg-shines-despite-some-rough-edges",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Kingdom Come: Deliverance.",
+      "evidence_points": [
+        "Join the GamesRadar community for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
+        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
+        "Your weekly update on everything you could ever want to know about the games you already love, games we know you're going to love in the near future, and tales from the communities that surround them.",
+        "Our special GTA 6 newsletter, with breaking news, insider info, and rumor analysis from the award-winning GTA 6 O'clock experts.",
+        "From the creators of Edge: A weekly videogame industry newsletter with analysis from expert writers, guidance from professionals, and insight into what's on the horizon.",
+        "Hardware nerds unite, sign up to our free tech newsletter for a weekly digest of the hottest new tech, the latest gadgets on the test bench, and much more.",
+        "Sign up to our new Switch 2 newsletter, where we bring you the latest talking points on Nintendo's new console each week, bring you up to date on the news, and recommend what games to play.",
+        "Subscribe for a weekly digest of the movie and TV news that matters, direct to your inbox. From first-look trailers, interviews, reviews and explainers, we've got you covered.",
+        "Get sneak previews, exclusive competitions and details of special events each month!",
+        "Get full access to premium articles, exclusive features and a growing list of member rewards."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "gamesradar.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.905Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.hookedgamers.com/pc/kingdom_come_deliverance/review/article-1906.html",
+      "title": "Kingdom Come: Deliverance PC review - \"RPG becomes RRPG\" | Hooked Gamers",
+      "discovery_method": "external_search",
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "language": "en",
+      "id": "source-13",
+      "resolved_url": "https://www.hookedgamers.com/pc/kingdom_come_deliverance/review/article-1906.html",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Kingdom Come: Deliverance.",
+      "evidence_points": [],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "hookedgamers.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.905Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "publisher_rule"
+        }
+      },
+      "score": 9.8,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "registry:hooked-gamers",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:36.093Z",
+        "url": "https://www.hookedgamers.com/pc/kingdom_come_deliverance/review/article-1906.html",
+        "configured_source_id": "hooked-gamers",
+        "direct_publisher": true
       }
     }
   ],
-  "rejected": [
-    {
-      "publication": "GameSpot",
-      "url": "https://www.gamespot.com/reviews/kingdom-come-deliverance-review-the-past-comes-at-/1900-6416861",
-      "title": "Kingdom Come: Deliverance — GameSpot review",
-      "reasons": [
-        "unavailable URL: 403"
-      ]
-    }
-  ],
+  "rejected": [],
   "source_proposals": [],
   "review_score": {
-    "status": "red-needs-revision",
+    "status": "green",
     "owner": "review",
     "method": {
       "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -338,26 +728,163 @@
       "invented_scores_forbidden": true,
       "exact_canonical_version_required": true
     },
-    "sources": [],
-    "excluded_sources": [
+    "sources": [
       {
+        "source_id": "source-1",
         "configured_source_id": "ign",
         "publication": "IGN",
+        "title": "Kingdom Come: Deliverance Review - IGN",
         "url": "https://www.ign.com/articles/2018/02/17/kingdom-come-deliverance-review",
-        "reason": "missing_trusted_editorial_score_evidence"
+        "original_score": {
+          "score": 8,
+          "scale": 10,
+          "grade": null,
+          "display": "8/10"
+        },
+        "normalized_10": 8,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:34.391Z",
+          "url": "https://www.ign.com/articles/2018/02/17/kingdom-come-deliverance-review",
+          "configured_source_id": "ign",
+          "direct_publisher": true
+        }
       },
       {
+        "source_id": "source-2",
         "configured_source_id": "game-informer",
         "publication": "Game Informer",
+        "title": "Kingdom Come: Deliverance Review: A Noble Quest In Need Of Divine",
         "url": "https://gameinformer.com/games/kingdom_come_deliverance/b/xboxone/archive/2018/02/28/kingdom-come-deliverance-review-game-informer.aspx",
-        "reason": "missing_trusted_editorial_score_evidence"
+        "original_score": {
+          "score": 5.75,
+          "scale": 10,
+          "grade": null,
+          "display": "5.75/10"
+        },
+        "normalized_10": 5.75,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:34.391Z",
+          "url": "https://gameinformer.com/games/kingdom_come_deliverance/b/xboxone/archive/2018/02/28/kingdom-come-deliverance-review-game-informer.aspx",
+          "configured_source_id": "game-informer",
+          "direct_publisher": true
+        }
       },
       {
+        "source_id": "source-3",
         "configured_source_id": "game-revolution",
         "publication": "GameRevolution",
+        "title": "Kingdom Come: Deliverance Review - Hardcore Henry",
         "url": "https://www.gamerevolution.com/review/368221-kingdom-come-deliverance-review-hardcore-henry",
-        "reason": "canonical_version"
+        "original_score": {
+          "score": 9,
+          "scale": 10,
+          "grade": null,
+          "display": "9/10"
+        },
+        "normalized_10": 9,
+        "score_evidence": {
+          "method": "registry:game-revolution",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:34.391Z",
+          "url": "https://www.gamerevolution.com/review/368221-kingdom-come-deliverance-review-hardcore-henry",
+          "configured_source_id": "game-revolution",
+          "direct_publisher": true
+        }
       },
+      {
+        "source_id": "source-5",
+        "configured_source_id": "push-square",
+        "publication": "Push Square",
+        "title": "Review: Kingdom Come: Deliverance (PS4)",
+        "url": "https://www.pushsquare.com/reviews/ps4/kingdom_come_deliverance",
+        "original_score": {
+          "score": 7,
+          "scale": 10,
+          "grade": null,
+          "display": "7/10"
+        },
+        "normalized_10": 7,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:34.978Z",
+          "url": "https://www.pushsquare.com/reviews/ps4/kingdom_come_deliverance",
+          "configured_source_id": "push-square",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-6",
+        "configured_source_id": "pc-gamer",
+        "publication": "PC Gamer",
+        "title": "Kingdom Come: Deliverance review",
+        "url": "https://www.pcgamer.com/kingdom-come-deliverance-review",
+        "original_score": {
+          "score": 84,
+          "scale": 100,
+          "grade": null,
+          "display": "84/100"
+        },
+        "normalized_10": 8.4,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:34.978Z",
+          "url": "https://www.pcgamer.com/kingdom-come-deliverance-review/",
+          "configured_source_id": "pc-gamer",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-7",
+        "configured_source_id": "eurogamer",
+        "publication": "Eurogamer",
+        "title": "Kingdom Come: Deliverance review - history is a double-edged sword",
+        "url": "https://www.eurogamer.net/kingdom-come-deliverance-review",
+        "original_score": {
+          "score": 3,
+          "scale": 5,
+          "grade": null,
+          "display": "3/5"
+        },
+        "normalized_10": 6,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:34.978Z",
+          "url": "https://www.eurogamer.net/kingdom-come-deliverance-review",
+          "configured_source_id": "eurogamer",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-13",
+        "configured_source_id": "hooked-gamers",
+        "publication": "Hooked Gamers",
+        "title": "Kingdom Come: Deliverance PC review - \"RPG becomes RRPG\" | Hooked Gamers",
+        "url": "https://www.hookedgamers.com/pc/kingdom_come_deliverance/review/article-1906.html",
+        "original_score": {
+          "score": 9.8,
+          "scale": 10,
+          "grade": null,
+          "display": "9.8/10"
+        },
+        "normalized_10": 9.8,
+        "score_evidence": {
+          "method": "registry:hooked-gamers",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:36.093Z",
+          "url": "https://www.hookedgamers.com/pc/kingdom_come_deliverance/review/article-1906.html",
+          "configured_source_id": "hooked-gamers",
+          "direct_publisher": true
+        }
+      }
+    ],
+    "excluded_sources": [
       {
         "configured_source_id": "guardian-games",
         "publication": "The Guardian",
@@ -365,17 +892,49 @@
         "reason": "canonical_version"
       },
       {
-        "configured_source_id": "push-square",
-        "publication": "Push Square",
-        "url": "https://www.pushsquare.com/reviews/ps4/kingdom_come_deliverance",
-        "reason": "missing_trusted_editorial_score_evidence"
+        "configured_source_id": "gamespot",
+        "publication": "GameSpot",
+        "url": "https://www.gamespot.com/reviews/kingdom-come-deliverance-review-the-past-comes-at-/1900-6416861",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "rock-paper-shotgun",
+        "publication": "Rock Paper Shotgun",
+        "url": "https://www.rockpapershotgun.com/kingdom-come-deliverance-review",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "the-sixth-axis",
+        "publication": "TheSixthAxis",
+        "url": "https://www.thesixthaxis.com/2018/02/13/kingdom-come-deliverance-review",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "destructoid",
+        "publication": "Destructoid",
+        "url": "https://www.destructoid.com/review-kingdom-come-deliverance-490605.phtml",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "gamesradar",
+        "publication": "GamesRadar+",
+        "url": "https://www.gamesradar.com/kingdom-come-deliverance-review-round-up-this-ambitious-open-world-rpg-shines-despite-some-rough-edges",
+        "reason": "canonical_version"
       }
     ],
     "calculation": {
-      "source_count": 0,
-      "values": [],
-      "mean_10": null,
-      "score_10": null
+      "source_count": 7,
+      "values": [
+        8,
+        5.75,
+        9,
+        7,
+        8.4,
+        6,
+        9.8
+      ],
+      "mean_10": 7.7071,
+      "score_10": 7.7
     }
   }
 }

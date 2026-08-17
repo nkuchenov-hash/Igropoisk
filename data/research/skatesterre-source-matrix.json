@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "skatesterre",
-  "generated_at": "2026-08-14T22:32:14.562Z",
+  "generated_at": "2026-08-17T20:42:48.312Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -16,7 +16,47 @@
     "search_title_variants": true,
     "review_hub_following": true
   },
-  "accepted": [],
+  "accepted": [
+    {
+      "url": "https://www.gamespew.com/2026/08/skatesterre-review",
+      "title": "Skatesterre review – A Tony Hawk’s wannabe that falls short",
+      "discovery_method": "external_search",
+      "configured_source_id": "game-spew",
+      "publication": "GameSpew",
+      "language": "en",
+      "id": "source-1",
+      "resolved_url": "https://www.gamespew.com/2026/08/skatesterre-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Skatesterre.",
+      "evidence_points": [],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "gamespew.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:42:48.312Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    }
+  ],
   "rejected": [],
   "source_checks": [
     {
@@ -277,6 +317,34 @@
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-sixth-axis",
+      "name": "TheSixthAxis",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pc-invasion",
+      "name": "PC Invasion",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-spew",
+      "name": "GameSpew",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "hooked-gamers",
+      "name": "Hooked Gamers",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_discovery": {
@@ -341,15 +409,15 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 37,
-    "checked": 37,
-    "accepted": 0,
+    "registered_editorial": 41,
+    "checked": 41,
+    "accepted": 1,
     "scored": 0,
     "context_only_versions": 0,
     "blocked_verified": 0,
-    "contemporary": 0,
+    "contemporary": 1,
     "green": false,
     "passed": false,
-    "needs_more": 5
+    "needs_more": 4
   }
 }

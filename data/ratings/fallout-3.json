@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/fallout-3.json#review_score",
   "game_slug": "fallout-3",
-  "checked_at": "2026-08-17T20:21:27.553Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T20:46:40.805Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:21:27.523Z",
+        "checked_at": "2026-08-17T20:46:40.768Z",
         "url": "https://gameinformer.com/games/fallout_3/b/ps3/archive/2009/09/22/review.aspx",
         "configured_source_id": "game-informer",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "registry:hooked-gamers",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:21:27.523Z",
+        "checked_at": "2026-08-17T20:46:40.768Z",
         "url": "https://www.hookedgamers.com/pc/fallout_3/review/article-301.html",
         "configured_source_id": "hooked-gamers",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Fallout 3 review",
+      "url": "https://www.gamesradar.com/fallout-3-review",
+      "original_score": {
+        "score": 4.5,
+        "scale": 5,
+        "grade": null,
+        "display": "4.5/5"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:46:40.768Z",
+        "url": "https://www.gamesradar.com/fallout-3-review/",
+        "configured_source_id": "gamesradar",
         "direct_publisher": true
       }
     }
@@ -75,12 +97,13 @@
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       9.5,
-      10
+      10,
+      9
     ],
-    "mean_10": 9.75,
-    "score_10": 9.8
+    "mean_10": 9.5,
+    "score_10": 9.5
   }
 }

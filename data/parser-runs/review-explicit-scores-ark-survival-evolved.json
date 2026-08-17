@@ -1,0 +1,44 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "ark-survival-evolved",
+  "checked_at": "2026-08-17T20:44:04.318Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 2,
+  "scored": 1,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 72,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/ark-survival-evolved-review",
+      "final_url": "https://www.pcgamer.com/ark-survival-evolved-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2018/12/18/ark-survival-evolved-switch-review",
+      "final_url": "https://www.thesixthaxis.com/2018/12/18/ark-survival-evolved-switch-review/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    }
+  ]
+}

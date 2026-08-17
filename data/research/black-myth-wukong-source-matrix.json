@@ -1,17 +1,20 @@
 {
-  "schema_version": 9,
+  "schema_version": 11,
   "game_slug": "black-myth-wukong",
-  "generated_at": "2026-08-17T14:18:10.351Z",
+  "generated_at": "2026-08-17T20:37:40.993Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
     "target_sources": 20,
     "maximum_sources": 20,
     "historical": false,
-    "min_contemporary": 5,
     "regional_discovery_required": true,
-    "unknown_publisher_policy": "reject_until_registered",
-    "canonical_score_requires_exact_version": true
+    "discovery_provider": "registered-direct-publisher-web-v8",
+    "audit_all": true,
+    "canonical_score_requires_exact_version": true,
+    "score_extraction_separate": true,
+    "search_title_variants": true,
+    "review_hub_following": true
   },
   "accepted": [
     {
@@ -53,12 +56,20 @@
       "domain": "ign.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T14:18:10.351Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:35.847Z",
+        "url": "https://www.ign.com/articles/black-myth-wukong-review-pc",
+        "configured_source_id": "ign",
+        "direct_publisher": true
       }
     },
     {
@@ -100,12 +111,20 @@
       "domain": "pcgamer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T14:18:10.351Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:35.848Z",
+        "url": "https://www.pcgamer.com/games/rpg/black-myth-wukong-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
       }
     },
     {
@@ -147,12 +166,20 @@
       "domain": "gamesradar.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T14:18:10.351Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:35.848Z",
+        "url": "https://www.gamesradar.com/games/action-rpg/black-myth-wukong-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
       }
     },
     {
@@ -168,8 +195,8 @@
       "published_at": "2024-08-27T13:47:17.000Z",
       "author": "Patricia Hernandez",
       "language": "en",
-      "score": 0,
-      "scale": 0,
+      "score": null,
+      "scale": null,
       "grade": "",
       "score_eligible": false,
       "canonical_score_eligible": true,
@@ -194,8 +221,8 @@
       "domain": "theguardian.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T14:18:10.351Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
@@ -241,26 +268,501 @@
       "domain": "pushsquare.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T14:18:10.351Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:36.343Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/black-myth-wukong",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.eurogamer.net/black-myth-wukong-review",
+      "publication": "Eurogamer",
+      "title": "Black Myth: Wukong review - a disjointed and uneven action spectacle",
+      "id": "source-6",
+      "configured_source_id": "eurogamer",
+      "resolved_url": "https://www.eurogamer.net/black-myth-wukong-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Black Myth: Wukong.",
+      "evidence_points": [
+        "Black Myth: Wukong is nothing if not ambitious. As many of its early trailers and tech demos implied, this was a game punching above its weight. It wasn't just a lavish retelling of the epic Chinese novel Journey to the West, a work that games have rarely engaged with outside of Asia (Ninja Theory's Enslaved: Odyssey to the West notwithstanding), but it also seemed to be demonstrating a level of technical mastery and visual pizzazz we hadn't quite seen before . It immediately put developer Game Science on the map, even if it wasn't always for the most savoury of reasons.",
+        "But now, after spending upwards of 40 hours retracing the steps of its titular simian hero as the silent but deadly Destined One, Black Myth emerges as a game that frustrates more than it delights. Its plentiful supply of grand, sweeping boss battles set the heart alight at regular intervals, its mythological menagerie bristling with the same kind of malicious energy and intent as their FromSoft equivalents. They are the tentpoles that hold this game aloft, their sharp claws, vicious fangs and powerful hoofs often tearing up the screen in exquisite and sumptuous detail. Indeed, they're the kind of bosses that will probably go down as some of the most dramatic of this generation, with its glistening dragons that rage across icy lakes and rippling pools, muscular tigers that sup in temples of blood, and giant bears, wolves, rats and spiders that command the elements to devastating effect.",
+        "But outside of those pulse-racing encounters, Black Myth is an altogether more mind-numbing experience, its thrilling highs undone by baggy world design, an uneven difficulty curve and disjointed storytelling. Ostensibly, this is a quest about reviving the legendary Sun Wukong, who scattered himself to the wind in the form of six relics after being defeated in battle centuries earlier. As the Destined One, you'll travel through forests, sand, ice, ash and more to bring them back to your mountain home, winding your way through its alternately narrow and wide linear environments until you reach the big bad in possession of it.",
+        "Maybe it's harsh to hold these fundamentally linear spaces to the same standards as larger open worlds. But whichever way you slice it, there's no denying that Black Myth lacks that compositional eye for design that would help frame its luscious environments in a friendlier and more curious light. You rarely move forward in Black Myth because you feel motivated by the story, or because you got sidetracked by something interesting in your immediate eyeline. Rather, it's really all you can do to find some sense of purpose in this world, and it raises the question: how can a game based on a work called 'Journey to the West' feel so utterly directionless?",
+        "That said, there are also plenty of occasions where that David and Goliath dynamic really works in Black Myth's favour, amping up the drama as you tussle with these enormous, fantastical creatures, and deftly weave through showers of lightning, icy squalls and large, open jaws. Even its more down to earth, monkey-sized foes still put on a good show, too, filling the screen with all manner of visual effects to test your nerve and timing. Occasionally, it can all get a bit messy, obscuring the action and your place within it (and often to your detriment). But the camera does a decent job of keeping pace with you most of the time, and it frames the action in a way that feels tense, desperate and exciting.",
+        "It's just a shame how quickly those feelings dissipate when you do run into one of these spikes, and it reveals just how much wasted potential there is in its underlying combat system. At its most basic level, the Destined One has far more in common with the likes of Kratos and Bayonetta than FromSoft's Tarnished or Chosen Undead here, relying more on the rapid display of brute force button mashing and pitch-perfect dodging to bring down his enemies than the tentative prodding over the parapet of a shield. But despite the multiple and many-pronged skill trees at your disposal, which can all be respecced for free whenever you get to a shrine, a lot of its upgrades fall into the same trap Cyberpunk 2077 did before its 2.0 update, mostly offering meagre stat boosts rather than fundamentally changing your available skill set.",
+        "Mistakes are costly in Black Myth, and casting a spell at the wrong time can be surprisingly devastating, as they not only have painfully long cooldowns, but their use is also curtailed by your limited mana pool, which can rarely be replenished outside of resting at a shrine. It's a shame, as the spells are easily Black Myth: Wukong at its most fun. The highlight without doubt is the Destined One's signature Immobilise spell, which freezes enemies in place for a limited time so you can really start to pile on the pain. Likewise, his Transformation spells, though few in number, allow him to fight in the guise of other demons for a time, each with their own unique light, heavy and special attacks to play with and, crucially, their own separate health bar - which can be a lifeline in certain boss fights.",
+        "It all speaks to Black Myth's clear desire to dazzle and entertain, and there are times when it really delivers on that power fantasy, making you forget the long hours spent grinding and gnashing your teeth as you try and figure out where to go, or whether this boss you're bashing your head against is even relevant to the main story. But Wukong's glitz and glamour can only paste over its cracks for so long, as behind all that razmataz is a hollowness it never quite shakes. Its unpleasant (and badly lip-synced) supporting cast also do little to make it feel more inviting as you go along, and by the end you'll wonder whether this journey was even worth making in the first place. Yes, there are some spectacular boss fights to have along the way, but those after something more would be better off looking in a different direction.",
+        "Get access to commenting, personalised reading recommendations, newsletters, and more!",
+        "Feature&nbsp;| How Black Myth: Wukong has changed the game for Chinese developers"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "eurogamer.net",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 3,
+      "scale": 5,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:36.343Z",
+        "url": "https://www.eurogamer.net/black-myth-wukong-review",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.gamespot.com/reviews/black-myth-wukong-review-monkey-business/1900-6418269",
+      "publication": "GameSpot",
+      "title": "Black Myth: Wukong — GameSpot review",
+      "id": "source-7",
+      "configured_source_id": "gamespot",
+      "resolved_url": "https://www.gamespot.com/reviews/black-myth-wukong-review-monkey-business/1900-6418269",
+      "source_kind": "review",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.rockpapershotgun.com/black-myth-wukong-review",
+      "publication": "Rock Paper Shotgun",
+      "title": "Black Myth: Wukong review: a refreshing adventure after Elden Ring's knotty DLC",
+      "id": "source-8",
+      "configured_source_id": "rock-paper-shotgun",
+      "resolved_url": "https://www.rockpapershotgun.com/black-myth-wukong-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Black Myth: Wukong.",
+      "evidence_points": [
+        "Black Myth: Wukong is an action RPG that leans a bit into the Souls camp and a bit into the adventure camp. And either way, it's a spectacular journey that works for mostly everyone: those after challenging fights against Chinese mythological creatures, and those after the same thing, but with a little less challenge than your typical Soulslikes . What separates Black Myth from the crowd, though, is its slick presentation and a sense of generosity. You're to witness the most lavish, cinematic worlds and its creatures. And you're to enjoy battering everything with your staff as a highly athletic monkey with copious spells at his furry follicles and fingertips. It's been a while since I've played anything quite as impressive as this.",
+        "The game's based on one of the great classical Chinese novels Journey To The West, which I've not read. But, from the start of the game I gather that Wukong rebelled against Heaven and he got kicked into the nether. Many years pass and you, a person sitting behind a screen, take control of the Destined One: a monkey who's essentially Wukong reincarnate. What is your mission? To thwack the shite out of various Yaoguai (mythical creatures) and remind them that you're back in the game, baby. Back to reclaim&hellip; something.",
+        "Forgive my ignorance, as I find Black Myth's Soulsy story delivery quite difficult to follow. Those familiar with the source material or those with particularly discerning ear holes may find it a lot easier, but I struggle with rats the size of skyscrapers and headless monks speaking in riddles. Thing is, though, I don't mind it one bit? With Souls it can frustrate, because their universes exist purely in-game and if I don't understand something, I know the only answers lie in a 40-minute, interpretative YouTube video. With Black Myth, I'm just lapping up the spectacle, the drama, the boiling spittle ejected from the mouth of a blazing deity as it roars at me. Ignorance here only really means bliss, as no matter where you sit on the understanding scale, you'll be adding Journey To The West to your cart immediately.",
+        "Before cosying up with the novel, though, comes the twiddling of your thumbs on a rotund piece of plastic (or the patter of your fingers, depending on whether you use the equally good mouse and keyboard). Black Myth is of the Souls school of action RPGs, for the most part: you dodge bruising enemy attacks, you wait for your stamina to recover, you drink from a Gourd to replenish health (an Estus), you rest at Shrines (Bonfires), you Get The Idea. Except it's a generous Soulslike, to the point where it straddles - rather beautifully - the line between hard and \"let's crack on with the journey, shall we?\", making it a Souls-venture hybrid that pushes you and pushes you onwards.",
+        "Onwards through a series of slightly disjointed chapters (might make more sense in the novel), each whisking you off to realms of swaying groves and golden sands and curved roof tiles dusted with snow. Sure, some chapters have their tougher, more irritating sections, but the general rhythm of exploration is spot on. And that's down to each realm's linear structure, opting for more compact zones stitched together by Shrines, as opposed to, say, Elden Ring 's vast open world.",
+        "This doesn't mean that Black Myth's world is one big funnel, oh no. As I said in my preview, I think its use of space is remarkably authentic, with alternate pathways that don't feel like they've been laid down by a level designer's mouse. Okay yes, there are obvious arenas and routes; this is a video game, after all. But I do think they are all designed thoughtfully, as if everything in Game Science's power has been poured into making this a mythical universe that's not been created just for you and your power chase.",
+        "So no, the world doesn't interlock and intertwine quite like a Souls game. But this doesn't mean you aren't challenged by careful enemy placement and hidden pathways and well-paced 'breathers' between boss battles. There are times, though, when things are laid out in such a way that you think you're able to jump over to a ledge or up a log and you'll bonk an invisible wall. Eh, it's a restriction that's quickly shrugged off given just how beautiful Black Myth is.",
+        "Like seriously, I am unsure whether I've ever been wowed quite like I have with Black Myth. I can't recall the amount of times I've stopped dead in my tracks and panned the camera over frescoes on rock, or idols carved into wooden panels, or the intricacy of the Chinese mythological architecture. The little details, like snow trails left by your body and your staff and the way sakura blooms out of a Shrine you've visited for the first time? Stop it.",
+        "Still, you are an angry monkey and there's only so much gawping at glistening turtle incense burners you can do before it's time to slaughter. And slaughter is channelled through your hips and your staff, where lithe movements and stick-twirls make for fights that aren't only stylish, but punchy too. There's no blocking, besides spinning your staff to deflect arrows, so fights are a dance of dodges and well-timed strikes at the most basic level. Defeat an enemy and they'll drop Will (Souls), except you don't lose these on death! Instead, Will sticks with you no matter what, and not only does it act as a currency to purchase materials and craft things (more on this in a sec), it's a means of levelling up. Ding up and you'll earn Sparks, which you can pop into many a skill tree.",
+        "And this is where more of Black Myth's generosity lies. You can invest in three different staff stances: Smash, Pillar, and Thrust, each switchable on the fly and each with their own unlockable movesets. They're all useful in certain situations, where Smash is great for one-on-one duels and general fights, Pillar lets you hop onto your staff to avoid sweeps and, later, even lets you sip from your Gourd atop it like you've gone for a quick old fashioned at the rooftop bar while the rabble nip at your impossibly long stool leg. Thrust is unlocked a little later, and acts almost like a spear, letting you jab from a distance, retreat, then close the gap. I love switching between them all, honestly. Alterations let you transform into even more powerful creatures for an extended time, too, like literally one of the first bosses you face."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "rockpapershotgun.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.thesixthaxis.com/2024/08/16/black-myth-wukong-review",
+      "publication": "TheSixthAxis",
+      "title": "Black Myth: Wukong Review | TheSixthAxis",
+      "id": "source-9",
+      "configured_source_id": "the-sixth-axis",
+      "resolved_url": "https://www.thesixthaxis.com/2024/08/16/black-myth-wukong-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Black Myth: Wukong.",
+      "evidence_points": [
+        "Black: Myth: Wukong is a game that&#8217;s been in the minds of many since its announcement. From its staggeringly beautiful first reveal to the swirl of controversy and controversy-driven popularity surrounding its development, the latest adaptation of Journey to the West can&#8217;t stay out of the limelight.",
+        "As a huge fan of the Monkey King and a lot of the ways his story has been told in media, from Dragon Ball, Tower of God, and Enslaved: Odyssey to the West, I&#8217;ve been looking forward to Black Myth: Wukong since I first saw it. That anticipation for this game was dampened significantly by the reports on deeply seated sexist attitude within the studio , but they&#8217;re not going to be taken into account for this review. However, they definitely bear mentioning.",
+        "Black: Myth Wukong makes a strong, albeit slow, first impression. Scenery flies by as you fly through the sky to get into a fight I&#8217;m not allowed to talk about according to the embargo rules and then, you pick up with the actual story, and off you go. You charge through the trees learning more about how to play the game why you take out different monstrous enemies as you go, and quickly come across your first boss to slay. However, things go poorly no matter how well you do, and this is where you meet a dude who has roots growing out of his face, and is your Navi equivalent for the game. He&#8217;ll appear and guide you throughout, and help you find your next checkpoint, which are little shrines, along with explaining some mechanics, warning you about bosses, and teaching you the odd trick or two.",
+        "Combat is a blend of unleashing physical and magical attacks, with some dodging thrown in for good measure. It&#8217;s pretty fluid, and some of the spells are incredibly cool, along with basically all of the animations being like sugar for your eyes. The enemy designs are also exceptional, with fights in just the opening few hours including fox demons, a big old frog, and a werewolf-looking boss that definitely climbed out of Bloodborne.",
+        "However, and this is kind of a big deal for me, the action never felt anywhere near as good as it looked. No combination of new abilities, bosses, or anything else, managed to change that through the run of the game. I just don&#8217;t think the feel of Black Myth: Wukong is anywhere near the looks of the game, and for me, that&#8217;s a big issue. I&#8217;d always rather play a game that looked worse than it played, and not the other way around.",
+        "I&#8217;m also not 100% sure where the Soulslike comparisons came from for this game. I&#8217;ve played nearly every Soulslike that&#8217;s come out (including a bunch of games that I&#8217;d frankly rather never think about again), and while this game does have things like a checkpoint that can respawn enemies, that&#8217;s about as far as it goes. This is just an action game where sometimes the bosses are hard.",
+        "They certainly get tougher as you go on, but there&#8217;s none of the fear that Soulslikes instills, nor is there any pattern recognition that&#8217;s really needed to succeed. Your hero dodges very well, which meant that I took down a lot of bosses on my first or second try, with the second try often being because I&#8217;d messed about too much in the boss run and used up all of my resources. Again, they all look incredible, but that&#8217;s about it.",
+        "I found the story enjoyable overall though, which is good news if that&#8217;s your main worry. It&#8217;s hard not to find a story of magic and monkeys enjoyable though, even if all of the dialogue hams things up. That&#8217;s a compliment, just so we&#8217;re all clear, but I do also appreciate the it might mean it misses for some people.",
+        "We do not license content or design to any other site. No element of this site can be used without written permission. All content should be considered opinion. Article posters are the individual owner of the article content. We are not affiliated with any third party.",
+        "Use of this website is subject to acceptance of our legal terms of service . Staff / Contact Us | Review Policy | Privacy Policy | Cookies Policy – Manage Consent"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "thesixthaxis.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 6,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:36.863Z",
+        "url": "https://www.thesixthaxis.com/2024/08/16/black-myth-wukong-review/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
       }
     }
   ],
-  "rejected": [
+  "rejected": [],
+  "source_checks": [
     {
-      "publication": "GameSpot",
-      "url": "https://www.gamespot.com/reviews/black-myth-wukong-review-monkey-business/1900-6418269",
-      "title": "Black Myth: Wukong — GameSpot review",
-      "reasons": [
-        "unavailable URL: 403"
-      ]
+      "source_id": "igromania",
+      "name": "Игромания",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "stopgame",
+      "name": "StopGame",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "kanobu",
+      "name": "Канобу",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "playground",
+      "name": "PlayGround.ru",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "vgtimes",
+      "name": "VGTimes",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ixbt-games",
+      "name": "iXBT.games",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamemag",
+      "name": "GameMAG.ru",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "vk-play",
+      "name": "VK Play Media",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "shazoo",
+      "name": "Shazoo",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pc-gamer",
+      "name": "PC Gamer",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "gamespot",
+      "name": "GameSpot",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "ign",
+      "name": "IGN",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "eurogamer",
+      "name": "Eurogamer",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "game-informer",
+      "name": "Game Informer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamesradar",
+      "name": "GamesRadar+",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "polygon",
+      "name": "Polygon",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rock-paper-shotgun",
+      "name": "Rock Paper Shotgun",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "game-revolution",
+      "name": "GameRevolution",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ars-technica",
+      "name": "Ars Technica",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezone",
+      "name": "GameZone",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamepressure",
+      "name": "Gamepressure",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gry-online",
+      "name": "GRYOnline",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "worthplaying",
+      "name": "WorthPlaying",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rpgfan",
+      "name": "RPGFan",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rpgamer",
+      "name": "RPGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "destructoid",
+      "name": "Destructoid",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "shacknews",
+      "name": "Shacknews",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pcworld",
+      "name": "PCWorld",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "guardian-games",
+      "name": "The Guardian",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "push-square",
+      "name": "Push Square",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "nintendo-life",
+      "name": "Nintendo Life",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "digital-trends",
+      "name": "Digital Trends",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "wired",
+      "name": "WIRED",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "egm",
+      "name": "EGM",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamebanshee",
+      "name": "GameBanshee",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "den-of-geek",
+      "name": "Den of Geek",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "videogamer",
+      "name": "VideoGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-sixth-axis",
+      "name": "TheSixthAxis",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "pc-invasion",
+      "name": "PC Invasion",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-spew",
+      "name": "GameSpew",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "hooked-gamers",
+      "name": "Hooked Gamers",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
-  "source_proposals": [],
   "regional_discovery": {
     "region": "ru",
     "checks": [
@@ -323,10 +825,13 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "accepted": 5,
-    "scored": 4,
+    "registered_editorial": 41,
+    "checked": 41,
+    "accepted": 9,
+    "scored": 6,
     "context_only_versions": 0,
-    "contemporary": 5,
+    "blocked_verified": 1,
+    "contemporary": 9,
     "green": true,
     "passed": true,
     "needs_more": 0

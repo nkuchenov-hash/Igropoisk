@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/avatar-legends-the-fighting-game.json#review_score",
   "game_slug": "avatar-legends-the-fighting-game",
-  "checked_at": "2026-08-14T22:26:28.719Z",
+  "checked_at": "2026-08-17T20:45:14.233Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,12 +20,60 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: Avatar Legends: The Fighting Game (PS5) - Solid Foundation Bending to Greatness",
+      "url": "https://www.pushsquare.com/reviews/ps5/avatar-legends-the-fighting-game",
+      "original_score": {
+        "score": 6,
+        "scale": 10,
+        "grade": null,
+        "display": "6/10"
+      },
+      "normalized_10": 6,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:45:14.198Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/avatar-legends-the-fighting-game",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Avatar Legends: The Fighting Game Review | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/07/28/avatar-legends-the-fighting-game-review",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:45:14.198Z",
+        "url": "https://www.thesixthaxis.com/2026/07/28/avatar-legends-the-fighting-game-review/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 2,
+    "values": [
+      6,
+      7
+    ],
+    "mean_10": 6.5,
+    "score_10": 6.5
   }
 }

@@ -1,0 +1,219 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "mafia-the-old-country",
+  "checked_at": "2026-08-17T20:38:59.450Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 13,
+  "scored": 7,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 45,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 6,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 6,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gry-online",
+      "publication": "GRYOnline",
+      "score": 7.2,
+      "scale": 10,
+      "method": "registry:gry-online",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "score": 3,
+      "scale": 5,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "score": 9.2,
+      "scale": 10,
+      "method": "registry:hooked-gamers",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/mafia-the-old-country-review",
+      "final_url": "https://www.ign.com/articles/mafia-the-old-country-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/games/action/mafia-the-old-country-review",
+      "final_url": "https://www.pcgamer.com/games/action/mafia-the-old-country-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/mafia-the-old-country/an-offer-you-can-probably-refuse",
+      "final_url": "https://gameinformer.com/review/mafia-the-old-country/an-offer-you-can-probably-refuse",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/games/2025/aug/15/mafia-the-old-country-review",
+      "final_url": "https://www.theguardian.com/games/2025/aug/15/mafia-the-old-country-review",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/mafia-the-old-country",
+      "final_url": "https://www.pushsquare.com/reviews/ps5/mafia-the-old-country",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gry-online",
+      "publication": "GRYOnline",
+      "url": "https://www.gry-online.pl/recenzje/recenzja-mafia-the-old-country-wiecej-takich-opowiesci-mniej-otwa/z3475c",
+      "final_url": "https://www.gry-online.pl/recenzje/recenzja-mafia-the-old-country-wiecej-takich-opowiesci-mniej-otwa/z3475c",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "url": "https://www.eurogamer.net/mafia-the-old-country-review",
+      "final_url": "https://www.eurogamer.net/mafia-the-old-country-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/mafia-the-old-country-review-look-but-dont-touch/1900-6418393",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/mafia-the-old-country-review",
+      "final_url": "https://www.polygon.com/mafia-the-old-country-review/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/reviews/mafia-the-old-country-review",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/mafia_the_old_country/review/39397",
+      "final_url": "https://stopgame.ru/game/mafia_the_old_country/review/39397",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/games/action/mafia-the-old-country-debuts-to-the-second-best-reviews-in-the-series-but-has-been-beaten-in-steam-player-count-by-a-version-of-every-past-entry-so-far",
+      "final_url": "https://www.gamesradar.com/games/action/mafia-the-old-country-debuts-to-the-second-best-reviews-in-the-series-but-has-been-beaten-in-steam-player-count-by-a-version-of-every-past-entry-so-far/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/mafia_the_old_country/review/article-2657.html",
+      "final_url": "https://www.hookedgamers.com/pc/mafia_the_old_country/review/article-2657.html",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}

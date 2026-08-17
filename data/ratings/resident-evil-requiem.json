@@ -1,0 +1,132 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/resident-evil-requiem.json#review_score",
+  "game_slug": "resident-evil-requiem",
+  "checked_at": "2026-08-17T20:48:01.740Z",
+  "status": "green",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Resident Evil Requiem review",
+      "url": "https://www.pcgamer.com/games/resident-evil/resident-evil-requiem-review",
+      "original_score": {
+        "score": 92,
+        "scale": 100,
+        "grade": null,
+        "display": "92/100"
+      },
+      "normalized_10": 9.2,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:48:00.769Z",
+        "url": "https://www.pcgamer.com/games/resident-evil/resident-evil-requiem-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Resident Evil Requiem Review: A Sublime Sepulchre",
+      "url": "https://gameinformer.com/review/resident-evil-requiem/a-sublime-sepulchre",
+      "original_score": {
+        "score": 9.75,
+        "scale": 10,
+        "grade": null,
+        "display": "9.75/10"
+      },
+      "normalized_10": 9.75,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:48:00.769Z",
+        "url": "https://gameinformer.com/review/resident-evil-requiem/a-sublime-sepulchre",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Resident Evil Requiem has brought me pure terror, chaotic zombie slaying, and, yes, some weeping",
+      "url": "https://www.gamesradar.com/games/resident-evil/resident-evil-requiem-review",
+      "original_score": {
+        "score": 4.5,
+        "scale": 5,
+        "grade": null,
+        "display": "4.5/5"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:48:00.769Z",
+        "url": "https://www.gamesradar.com/games/resident-evil/resident-evil-requiem-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: Resident Evil Requiem (PS5) - Two-in-One Horror Not Quite an All-Timer",
+      "url": "https://www.pushsquare.com/reviews/ps5/resident-evil-requiem",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:48:00.769Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/resident-evil-requiem",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/03/01/metacritic-remove-a-resident-evil-requiem-review-from-site-that-is-now-written-by-ai",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 4,
+    "values": [
+      9.2,
+      9.75,
+      9,
+      8
+    ],
+    "mean_10": 8.9875,
+    "score_10": 9
+  }
+}

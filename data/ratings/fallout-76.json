@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/fallout-76.json#review_score",
   "game_slug": "fallout-76",
-  "checked_at": "2026-08-17T20:22:56.033Z",
+  "checked_at": "2026-08-17T20:48:00.982Z",
   "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:22:56.005Z",
+        "checked_at": "2026-08-17T20:48:00.809Z",
         "url": "https://gameinformer.com/review/fallout-76/over-encumbered",
         "configured_source_id": "game-informer",
         "direct_publisher": true
@@ -59,7 +59,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:22:56.005Z",
+        "checked_at": "2026-08-17T20:48:00.809Z",
         "url": "https://www.pushsquare.com/reviews/ps4/fallout-76",
         "configured_source_id": "push-square",
         "direct_publisher": true
@@ -81,7 +81,7 @@
       "score_evidence": {
         "method": "registry:hooked-gamers",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:22:56.005Z",
+        "checked_at": "2026-08-17T20:48:00.809Z",
         "url": "https://www.hookedgamers.com/pc/fallout_76/review/article-1998.html",
         "configured_source_id": "hooked-gamers",
         "direct_publisher": true
@@ -103,23 +103,69 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:22:56.005Z",
+        "checked_at": "2026-08-17T20:48:00.809Z",
         "url": "https://www.thesixthaxis.com/2020/05/01/fallout-76-wastelanders-reviews/",
         "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Fallout 76 review",
+      "url": "https://www.pcgamer.com/fallout-76-review",
+      "original_score": {
+        "score": 60,
+        "scale": 100,
+        "grade": null,
+        "display": "60/100"
+      },
+      "normalized_10": 6,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:48:00.934Z",
+        "url": "https://www.pcgamer.com/fallout-76-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Fallout 76 review:",
+      "url": "https://www.gamesradar.com/fallout-76-review",
+      "original_score": {
+        "score": 2.5,
+        "scale": 5,
+        "grade": null,
+        "display": "2.5/5"
+      },
+      "normalized_10": 5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:48:00.935Z",
+        "url": "https://www.gamesradar.com/fallout-76-review/",
+        "configured_source_id": "gamesradar",
         "direct_publisher": true
       }
     }
   ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 4,
+    "source_count": 6,
     "values": [
       6,
       3,
       7.6,
+      5,
+      6,
       5
     ],
-    "mean_10": 5.4,
+    "mean_10": 5.4333,
     "score_10": 5.4
   }
 }

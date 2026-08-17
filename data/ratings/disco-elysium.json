@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/disco-elysium.json#review_score",
   "game_slug": "disco-elysium",
-  "checked_at": "2026-08-17T13:48:16.995Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T20:38:18.554Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -20,20 +20,185 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
-  "excluded_sources": [
+  "sources": [
     {
+      "source_id": "source-1",
       "configured_source_id": "ign",
       "publication": "IGN",
+      "title": "Disco Elysium Review - IGN",
       "url": "https://www.ign.com/articles/2019/10/16/disco-elysium-review",
-      "reason": "missing_trusted_editorial_score_evidence"
+      "original_score": {
+        "score": 9.6,
+        "scale": 10,
+        "grade": null,
+        "display": "9.6/10"
+      },
+      "normalized_10": 9.6,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:16.593Z",
+        "url": "https://www.ign.com/articles/2019/10/16/disco-elysium-review",
+        "configured_source_id": "ign",
+        "direct_publisher": true
+      }
     },
     {
+      "source_id": "source-2",
       "configured_source_id": "game-informer",
       "publication": "Game Informer",
+      "title": "Disco Elysium Review: Disco Elysium Review – Living On The Edge",
       "url": "https://gameinformer.com/review/disco-elysium/disco-elysium-review-living-on-the-edge-and-loving-it",
-      "reason": "missing_trusted_editorial_score_evidence"
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:16.593Z",
+        "url": "https://gameinformer.com/review/disco-elysium/disco-elysium-review-living-on-the-edge-and-loving-it",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
     },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "Disco Elysium Review | Disco never dies",
+      "url": "https://www.gamerevolution.com/review/620067-disco-elysium-review",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:16.593Z",
+        "url": "https://www.gamerevolution.com/review/620067-disco-elysium-review",
+        "configured_source_id": "game-revolution",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "title": "Disco Elysium Review | RPGFan",
+      "url": "https://www.rpgfan.com/review/disco-elysium",
+      "original_score": {
+        "score": 95,
+        "scale": 100,
+        "grade": null,
+        "display": "95/100"
+      },
+      "normalized_10": 9.5,
+      "score_evidence": {
+        "method": "semantic-editorial-label",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:17.562Z",
+        "url": "https://www.rpgfan.com/review/disco-elysium/",
+        "configured_source_id": "rpgfan",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Disco Elysium review",
+      "url": "https://www.pcgamer.com/disco-elysium-review",
+      "original_score": {
+        "score": 92,
+        "scale": 100,
+        "grade": null,
+        "display": "92/100"
+      },
+      "normalized_10": 9.2,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:17.562Z",
+        "url": "https://www.pcgamer.com/disco-elysium-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-7",
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "title": "Disco Elysium review - large-scale whodunit with a distinct lack of focus",
+      "url": "https://www.eurogamer.net/disco-elysium-review-large-scale-whodunit-with-a-lack-of-focus",
+      "original_score": {
+        "score": 3,
+        "scale": 5,
+        "grade": null,
+        "display": "3/5"
+      },
+      "normalized_10": 6,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:17.562Z",
+        "url": "https://www.eurogamer.net/disco-elysium-review-large-scale-whodunit-with-a-lack-of-focus",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-11",
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "title": "Disco Elysium PC review - \"I am the Law!\" | Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/disco_elysium/review/article-2113.html",
+      "original_score": {
+        "score": 10,
+        "scale": 10,
+        "grade": null,
+        "display": "10/10"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "registry:hooked-gamers",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:18.515Z",
+        "url": "https://www.hookedgamers.com/pc/disco_elysium/review/article-2113.html",
+        "configured_source_id": "hooked-gamers",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-12",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Disco Elysium: The Final Cut Review | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2021/04/14/disco-elysium-the-final-cut-review-ps5-ps4-stadia-pc",
+      "original_score": {
+        "score": 10,
+        "scale": 10,
+        "grade": null,
+        "display": "10/10"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:18.515Z",
+        "url": "https://www.thesixthaxis.com/2021/04/14/disco-elysium-the-final-cut-review-ps5-ps4-stadia-pc/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
     {
       "configured_source_id": "polygon",
       "publication": "Polygon",
@@ -41,22 +206,37 @@
       "reason": "canonical_version"
     },
     {
-      "configured_source_id": "game-revolution",
-      "publication": "GameRevolution",
-      "url": "https://www.gamerevolution.com/review/620067-disco-elysium-review",
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/disco-elysium-review-pure-dynamite/1900-6417354",
       "reason": "canonical_version"
     },
     {
-      "configured_source_id": "rpgfan",
-      "publication": "RPGFan",
-      "url": "https://www.rpgfan.com/review/disco-elysium",
-      "reason": "missing_trusted_editorial_score_evidence"
+      "configured_source_id": "rock-paper-shotgun",
+      "publication": "Rock Paper Shotgun",
+      "url": "https://www.rockpapershotgun.com/disco-elysium-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/review-disco-elysium-571464.phtml",
+      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 8,
+    "values": [
+      9.6,
+      9,
+      9,
+      9.5,
+      9.2,
+      6,
+      10,
+      10
+    ],
+    "mean_10": 9.0375,
+    "score_10": 9
   }
 }

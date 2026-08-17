@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/beast-of-reincarnation.json#review_score",
   "game_slug": "beast-of-reincarnation",
-  "checked_at": "2026-08-14T22:28:47.021Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T20:45:00.295Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -20,12 +20,129 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Beast of Reincarnation review",
+      "url": "https://www.pcgamer.com/games/action/beast-of-reincarnation-review",
+      "original_score": {
+        "score": 73,
+        "scale": 100,
+        "grade": null,
+        "display": "73/100"
+      },
+      "normalized_10": 7.3,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:44:59.305Z",
+        "url": "https://www.pcgamer.com/games/action/beast-of-reincarnation-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Beast of Reincarnation Review: Boring World, Beguiling Combat",
+      "url": "https://gameinformer.com/review/beast-of-reincarnation/boring-world-beguiling-combat",
+      "original_score": {
+        "score": 6,
+        "scale": 10,
+        "grade": null,
+        "display": "6/10"
+      },
+      "normalized_10": 6,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:44:59.305Z",
+        "url": "https://gameinformer.com/review/beast-of-reincarnation/boring-world-beguiling-combat",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "The Pokemon dev has surprised me with this sci-fi action RPG that wonderfully combines dog combos with intense swordplay",
+      "url": "https://www.gamesradar.com/games/action-rpg/beast-of-reincarnation-review",
+      "original_score": {
+        "score": 4.5,
+        "scale": 5,
+        "grade": null,
+        "display": "4.5/5"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:44:59.305Z",
+        "url": "https://www.gamesradar.com/games/action-rpg/beast-of-reincarnation-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: Beast of Reincarnation (PS5) - Pokémon Dev",
+      "url": "https://www.pushsquare.com/reviews/ps5/beast-of-reincarnation",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:44:59.305Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/beast-of-reincarnation",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Beast of Reincarnation Review | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/08/04/beast-of-reincarnation-review",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:45:00.254Z",
+        "url": "https://www.thesixthaxis.com/2026/08/04/beast-of-reincarnation-review/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 5,
+    "values": [
+      7.3,
+      6,
+      9,
+      7,
+      7
+    ],
+    "mean_10": 7.26,
+    "score_10": 7.3
   }
 }
