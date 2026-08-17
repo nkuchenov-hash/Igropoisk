@@ -37,7 +37,7 @@ jobs:
       - name: Verify transport contracts
         run: |
           node --check scripts/discover-review-sources-web-v10.mjs
-          node -e "import('./scripts/discover-review-sources-web-v10.mjs').catch(error=>{ if(!/Missing game draft|Usage:/.test(String(error))) throw error })" || true
+          node -e "import('./scripts/discover-review-sources-web-v10.mjs').catch(error=>{ if(!/Missing game draft|Usage:/.test(String(error))) throw error })"
       - name: Run deterministic Rainbow Six Siege review recovery canary
         env:
           OPENAI_API_KEY: ''
