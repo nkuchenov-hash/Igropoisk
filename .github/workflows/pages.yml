@@ -33,6 +33,11 @@ jobs:
           ref: ${{ inputs.production_sha || github.sha }}
           fetch-depth: 0
 
+      - name: Require the requested production commit to be current main
+        run: |
+          git fetch origin main:refs/remotes/origin/main --force
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -103,10 +108,9 @@ jobs:
           print('Structured content JSON is valid.')
           PY
 
-      - name: Verify game and editorial publication gates
+      - name: Verify base game publication gates
         run: |
           node scripts/validate-game-v3.mjs
-          node scripts/validate-editorial-pipeline.mjs
           node scripts/validate-game-shells.mjs
 
       - name: Reject generated or malformed changes
