@@ -16,7 +16,10 @@
         "score": {
           "policy": "explicit_only",
           "extractor_profile": "generic-explicit",
-          "default_scale": 10
+          "default_scale": 10,
+          "patterns": [
+            {"pattern": "Summary.{0,2000}?\\b([0-9]+(?:[.,][0-9]+)?)\\b\\s+Image\\s+Written by", "scale": 10}
+          ]
         }
       }
     },
@@ -51,7 +54,10 @@
         "score": {
           "policy": "explicit_only",
           "extractor_profile": "generic-explicit",
-          "default_scale": 10
+          "default_scale": 10,
+          "patterns": [
+            {"pattern": "GameSpew(?:'|’)s Score\\s*[:–—-]?\\s*([0-9]+(?:[.,][0-9]+)?)", "scale": 10}
+          ]
         }
       }
     },
@@ -72,7 +78,10 @@
         "score": {
           "policy": "explicit_only",
           "extractor_profile": "generic-explicit",
-          "default_scale": 10
+          "default_scale": 10,
+          "patterns": [
+            {"pattern": "([0-9]+(?:[.,][0-9]+)?)\\s+fun score\\b", "scale": 10}
+          ]
         }
       }
     }
