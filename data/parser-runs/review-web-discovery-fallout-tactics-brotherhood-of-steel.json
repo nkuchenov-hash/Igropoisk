@@ -1,14 +1,14 @@
 {
-  "parser": "review-professional-historical-index-v15",
+  "parser": "review-professional-critic-index-v15.2",
   "status": "needs_revision",
   "game_slug": "fallout-tactics-brotherhood-of-steel",
-  "checked_at": "2026-08-17T23:06:11.968Z",
+  "checked_at": "2026-08-17T23:35:52.319Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 3,
   "scored": 3,
   "context_only_versions": 0,
   "blocked_verified": 0,
-  "registered_editorial": 49,
+  "registered_editorial": 53,
   "source_checks": [
     {
       "source_id": "igromania",
@@ -312,6 +312,34 @@
       "notes": "search completed; no verified direct review"
     },
     {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
       "source_id": "gamepro-archive",
       "name": "GamePro",
       "region": "global",
@@ -359,12 +387,31 @@
   "search_title_variants": true,
   "review_hub_following": true,
   "professional_only": true,
-  "historical_critic_index": {
+  "legacy_stack": {
+    "primary": {
+      "script": "scripts/discover-review-sources-web-v14.mjs",
+      "status": 2,
+      "signal": null,
+      "error": "",
+      "timed_out": false
+    },
+    "fallback": null
+  },
+  "critic_index": {
     "provider": "metacritic",
-    "url": "https://www.metacritic.com/game/fallout-tactics-brotherhood-of-steel/critic-reviews/?platform=pc",
+    "url": "https://www.metacritic.com/game/fallout-tactics-brotherhood-of-steel/critic-reviews/",
+    "platform": "primary",
     "reachable": true,
     "status": 200,
     "rows": 3,
+    "attempts": [
+      {
+        "url": "https://www.metacritic.com/game/fallout-tactics-brotherhood-of-steel/critic-reviews/",
+        "platform": "primary",
+        "status": 200,
+        "rows": 3
+      }
+    ],
     "added_sources": 3,
     "added_scores": 0,
     "metascore_as_vote": false,

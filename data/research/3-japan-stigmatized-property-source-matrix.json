@@ -1,7 +1,7 @@
 {
-  "schema_version": 11,
+  "schema_version": 13,
   "game_slug": "3-japan-stigmatized-property",
-  "generated_at": "2026-08-17T22:52:55.478Z",
+  "generated_at": "2026-08-17T23:32:20.738Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -14,15 +14,69 @@
     "canonical_score_requires_exact_version": true,
     "score_extraction_separate": true,
     "search_title_variants": true,
-    "review_hub_following": true
+    "review_hub_following": true,
+    "critic_index": "metacritic",
+    "critic_index_scope": "released_fallback",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true
   },
   "accepted": [],
   "rejected": [
     {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/3-japan-stigmatized-property-review",
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/chillas_art_stigmatized_property/compilations",
+      "title": "[Chilla&#039;s Art] Stigmatized Property | 事故物件 - подборки с игрой | StopGame.ru",
       "reasons": [
-        "HTTP 403"
+        "non_review_path"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/chillas_art_stigmatized_property/gallery",
+      "title": "[Chilla&#039;s Art] Stigmatized Property | 事故物件 - скриншоты игры | StopGame.ru",
+      "reasons": [
+        "non_review_path"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/chillas_art_stigmatized_property/reviews",
+      "title": "[Chilla&#039;s Art] Stigmatized Property | 事故物件 - пользовательские отзывы об игре | StopGame.ru",
+      "reasons": [
+        "review_hub_not_article"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/chillas_art_stigmatized_property/reviews?section=negative",
+      "title": "[Chilla&#039;s Art] Stigmatized Property | 事故物件 - пользовательские отзывы об игре | StopGame.ru",
+      "reasons": [
+        "review_hub_not_article"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/chillas_art_stigmatized_property/review/25867",
+      "title": "Отзыв об игре [Chilla&#039;s Art] Stigmatized Property | 事故物件 от пользователя Needless | StopGame.ru",
+      "reasons": [
+        "user_generated_review"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/chillas_art_stigmatized_property/reviews",
+      "title": "[Chilla&#039;s Art] Stigmatized Property | 事故物件 - пользовательские отзывы об игре | StopGame.ru",
+      "reasons": [
+        "review_hub_not_article"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/chillas_art_stigmatized_property/prices",
+      "title": "[Chilla&#039;s Art] Stigmatized Property | 事故物件 - цены | StopGame.ru",
+      "reasons": [
+        "non_review_path"
       ]
     },
     {
@@ -35,6 +89,13 @@
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/3-japan-stigmatized-property-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/3-japan-stigmatized-property-review",
       "reasons": [
         "HTTP 404"
       ]
@@ -327,6 +388,34 @@
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_discovery": {
@@ -391,8 +480,8 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 41,
-    "checked": 41,
+    "registered_editorial": 45,
+    "checked": 45,
     "accepted": 0,
     "scored": 0,
     "context_only_versions": 0,
@@ -400,6 +489,11 @@
     "contemporary": 0,
     "green": false,
     "passed": false,
-    "needs_more": 5
+    "needs_more": 5,
+    "critic_index_rows": 0,
+    "critic_index_added": 0,
+    "critic_index_scores_added": 0,
+    "critic_index_platform": "primary",
+    "removed_user_generated": 0
   }
 }

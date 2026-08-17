@@ -4,12 +4,12 @@
   "game_slug": "wild-blue-skies",
   "game_id": null,
   "canonical_title": "Wild Blue Skies",
-  "checked_at": "2026-08-17T22:55:28.694Z",
+  "checked_at": "2026-08-17T23:33:47.755Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
-    "Корпус: 2/5",
-    "Оценённые издания: 2/3"
+    "Корпус: 4/5",
+    "Оценённые издания: 4/3"
   ],
   "revision_history": [
     {
@@ -17,7 +17,7 @@
       "script": "scripts/discover-review-sources-web.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"wild-blue-skies\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 2,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stdout": "{\n  \"slug\": \"wild-blue-skies\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 2,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"wild-blue-skies\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 4,\n  \"scored\": 4,\n  \"critic_index_platform\": \"pc\",\n  \"critic_index_rows\": 3,\n  \"indexed_sources_added\": 2,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n",
       "stderr": ""
     },
     {
@@ -25,7 +25,7 @@
       "script": "scripts/promote-review-source-audit.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"wild-blue-skies\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 2,\n  \"trusted_scores_preserved\": 2,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"wild-blue-skies\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 4,\n  \"trusted_scores_preserved\": 4,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -33,15 +33,15 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"wild-blue-skies\",\n  \"accepted\": 2,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"updates\": 2,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"wild-blue-skies\",\n  \"accepted\": 4,\n  \"scored\": 4,\n  \"context_only_versions\": 0,\n  \"updates\": 2,\n  \"preserved\": 2\n}\n",
       "stderr": ""
     },
     {
       "label": "score-1",
       "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"wild-blue-skies\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 2,\n  \"excluded_sources\": 0,\n  \"score_10\": 6.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"wild-blue-skies\",\n  \"status\": \"green\",\n  \"scored_sources\": 4,\n  \"excluded_sources\": 0,\n  \"score_10\": 5.8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
       "stderr": ""
     }
   ],

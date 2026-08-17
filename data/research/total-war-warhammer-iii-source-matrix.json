@@ -1,7 +1,7 @@
 {
-  "schema_version": 11,
+  "schema_version": 13,
   "game_slug": "total-war-warhammer-iii",
-  "generated_at": "2026-08-17T22:54:19.395Z",
+  "generated_at": "2026-08-17T23:33:50.635Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -14,7 +14,12 @@
     "canonical_score_requires_exact_version": true,
     "score_extraction_separate": true,
     "search_title_variants": true,
-    "review_hub_following": true
+    "review_hub_following": true,
+    "critic_index": "metacritic",
+    "critic_index_scope": "released_fallback",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true
   },
   "accepted": [
     {
@@ -61,7 +66,7 @@
       "domain": "pcgamer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:54:19.395Z",
+        "checked_at": "2026-08-17T23:32:24.765Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -75,7 +80,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:55:37.604Z",
+        "checked_at": "2026-08-17T23:33:52.453Z",
         "url": "https://www.pcgamer.com/total-war-warhammer-3-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -119,7 +124,7 @@
       "domain": "thesixthaxis.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:54:19.395Z",
+        "checked_at": "2026-08-17T23:32:24.765Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -133,7 +138,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:55:37.604Z",
+        "checked_at": "2026-08-17T23:33:52.453Z",
         "url": "https://www.thesixthaxis.com/2022/02/14/total-war-warhammer-3-review/",
         "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
@@ -177,7 +182,7 @@
       "domain": "gamemag.ru",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:54:19.395Z",
+        "checked_at": "2026-08-17T23:32:24.765Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -188,6 +193,168 @@
       "scale": null,
       "grade": "",
       "score_eligible": false
+    },
+    {
+      "id": "source-4",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "Total War: WARHAMMER III — IGN review",
+      "url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 95,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Total War: WARHAMMER III attributed by Metacritic to IGN.",
+      "evidence_points": [
+        "Italia Total War: Warhammer III is sheer fun. Not a particularly deep game, nor a very innovative one, but a game capable of doing what it's meant to do: to provide an enjoyable framework for spectacular, breathtaking fantasy battles."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:33:50.635Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:33:50.635Z",
+        "url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+        "configured_source_id": "ign",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "IGN",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-5",
+      "configured_source_id": "pc-invasion",
+      "publication": "PC Invasion",
+      "title": "Total War: WARHAMMER III — PC Invasion review",
+      "url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 95,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Total War: WARHAMMER III attributed by Metacritic to PC Invasion.",
+      "evidence_points": [
+        "While it does have some notable flaws, namely a somewhat messier campaign progression, Total War: Warhammer III still manages to impress. With multiple factions and legendary lords to choose from, along with a plethora of improvements to existing mechanics, you're bound to have one hell of a good time."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:33:50.635Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:33:50.635Z",
+        "url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+        "configured_source_id": "pc-invasion",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "PC Invasion",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-6",
+      "configured_source_id": "the-games-machine",
+      "publication": "The Games Machine",
+      "title": "Total War: WARHAMMER III — The Games Machine review",
+      "url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "it",
+      "score": 95,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Total War: WARHAMMER III attributed by Metacritic to The Games Machine.",
+      "evidence_points": [
+        "Warhammer 3 is hands down the best Total War ever made. Despite some issues, some of them concerning diplomacy, the many new features and factions largely offset the problems of the game."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:33:50.635Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:33:50.635Z",
+        "url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+        "configured_source_id": "the-games-machine",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "The Games Machine",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
     }
   ],
   "rejected": [
@@ -500,6 +667,34 @@
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_discovery": {
@@ -564,15 +759,20 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 41,
-    "checked": 41,
-    "accepted": 3,
-    "scored": 2,
+    "registered_editorial": 45,
+    "checked": 45,
+    "accepted": 6,
+    "scored": 5,
     "context_only_versions": 0,
     "blocked_verified": 0,
-    "contemporary": 3,
-    "green": false,
-    "passed": false,
-    "needs_more": 2
+    "contemporary": 6,
+    "green": true,
+    "passed": true,
+    "needs_more": 0,
+    "critic_index_rows": 3,
+    "critic_index_added": 3,
+    "critic_index_scores_added": 0,
+    "critic_index_platform": "primary",
+    "removed_user_generated": 0
   }
 }

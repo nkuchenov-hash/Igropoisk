@@ -1,7 +1,7 @@
 {
-  "schema_version": 11,
+  "schema_version": 13,
   "game_slug": "provoron",
-  "generated_at": "2026-08-17T22:56:55.108Z",
+  "generated_at": "2026-08-17T23:36:37.502Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -14,7 +14,12 @@
     "canonical_score_requires_exact_version": true,
     "score_extraction_separate": true,
     "search_title_variants": true,
-    "review_hub_following": true
+    "review_hub_following": true,
+    "critic_index": "metacritic",
+    "critic_index_scope": "released_fallback",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true
   },
   "accepted": [],
   "rejected": [
@@ -164,8 +169,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "unavailable",
+      "notes": "search transport unavailable"
     },
     {
       "source_id": "ars-technica",
@@ -327,6 +332,34 @@
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_discovery": {
@@ -391,8 +424,8 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 41,
-    "checked": 41,
+    "registered_editorial": 45,
+    "checked": 45,
     "accepted": 0,
     "scored": 0,
     "context_only_versions": 0,
@@ -400,6 +433,11 @@
     "contemporary": 0,
     "green": false,
     "passed": false,
-    "needs_more": 5
+    "needs_more": 5,
+    "critic_index_rows": 0,
+    "critic_index_added": 0,
+    "critic_index_scores_added": 0,
+    "critic_index_platform": "primary",
+    "removed_user_generated": 0
   }
 }

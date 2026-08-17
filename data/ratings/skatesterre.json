@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/skatesterre.json#review_score",
   "game_slug": "skatesterre",
-  "checked_at": "2026-08-17T22:55:42.691Z",
+  "checked_at": "2026-08-17T23:34:22.979Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -42,15 +42,45 @@
         "configured_source_id": "game-spew",
         "direct_publisher": true
       }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "shacknews",
+      "publication": "Shacknews",
+      "title": "Skatesterre — Shacknews review",
+      "url": "https://www.metacritic.com/game/skatesterre/critic-reviews/?platform=pc",
+      "original_score": {
+        "score": 40,
+        "scale": 100,
+        "grade": null,
+        "display": "40/100"
+      },
+      "normalized_10": 4,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:34:11.382Z",
+        "url": "https://www.metacritic.com/game/skatesterre/critic-reviews/?platform=pc",
+        "configured_source_id": "shacknews",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "pc",
+        "attributed_publication": "Shacknews",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
     }
   ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 1,
+    "source_count": 2,
     "values": [
-      5
+      5,
+      4
     ],
-    "mean_10": 5,
-    "score_10": 5
+    "mean_10": 4.5,
+    "score_10": 4.5
   }
 }

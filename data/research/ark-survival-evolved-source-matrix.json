@@ -1,7 +1,7 @@
 {
-  "schema_version": 11,
+  "schema_version": 13,
   "game_slug": "ark-survival-evolved",
-  "generated_at": "2026-08-17T22:54:26.166Z",
+  "generated_at": "2026-08-17T23:33:54.259Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -14,7 +14,12 @@
     "canonical_score_requires_exact_version": true,
     "score_extraction_separate": true,
     "search_title_variants": true,
-    "review_hub_following": true
+    "review_hub_following": true,
+    "critic_index": "metacritic",
+    "critic_index_scope": "released_fallback",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true
   },
   "accepted": [
     {
@@ -61,7 +66,7 @@
       "domain": "pcgamer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:54:26.166Z",
+        "checked_at": "2026-08-17T23:32:29.652Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -75,7 +80,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:55:41.806Z",
+        "checked_at": "2026-08-17T23:33:55.542Z",
         "url": "https://www.pcgamer.com/ark-survival-evolved-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -119,7 +124,7 @@
       "domain": "thesixthaxis.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:54:26.166Z",
+        "checked_at": "2026-08-17T23:32:29.652Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -130,16 +135,117 @@
       "scale": null,
       "grade": "",
       "score_eligible": false
+    },
+    {
+      "id": "source-3",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "ARK: Survival Evolved — IGN review",
+      "url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 77,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for ARK: Survival Evolved attributed by Metacritic to IGN.",
+      "evidence_points": [
+        "When I’m having a good time in ARK, I’m having a really good time. The problem is that those moments are usually one part to every nine parts menial grinding and crafting - especially at the later tech tiers. Having to repeat so much work after failing an attempt at a boss feels far too punishing, and some really dumb dinosaurs can take a lot of the challenge and sense of danger out of the many primal locations. Even with all of those quirks, however, I’m still hungry to play more after the 60 hours I’ve spent so far."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:33:54.259Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:33:54.259Z",
+        "url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
+        "configured_source_id": "ign",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "IGN",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-4",
+      "configured_source_id": "gamestar",
+      "publication": "GameStar",
+      "title": "ARK: Survival Evolved — GameStar review",
+      "url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "de",
+      "score": 70,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for ARK: Survival Evolved attributed by Metacritic to GameStar.",
+      "evidence_points": [
+        "In its best moments, Ark is the dream game of every Dino fan. But bugs and the grind-based game-mechanics often spoil the fun."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:33:54.259Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:33:54.259Z",
+        "url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
+        "configured_source_id": "gamestar",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "GameStar",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
     }
   ],
   "rejected": [
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/ark-survival-evolved-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    },
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/ark-survival-evolved",
@@ -152,6 +258,13 @@
       "url": "https://www.rpgfan.com/review/ark-survival-evolved-2",
       "reasons": [
         "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/ark-survival-evolved-review",
+      "reasons": [
+        "HTTP 503"
       ]
     }
   ],
@@ -442,6 +555,34 @@
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_discovery": {
@@ -506,15 +647,20 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 41,
-    "checked": 41,
-    "accepted": 2,
-    "scored": 1,
+    "registered_editorial": 45,
+    "checked": 45,
+    "accepted": 4,
+    "scored": 3,
     "context_only_versions": 0,
     "blocked_verified": 0,
-    "contemporary": 2,
+    "contemporary": 4,
     "green": false,
     "passed": false,
-    "needs_more": 3
+    "needs_more": 1,
+    "critic_index_rows": 3,
+    "critic_index_added": 2,
+    "critic_index_scores_added": 0,
+    "critic_index_platform": "primary",
+    "removed_user_generated": 0
   }
 }

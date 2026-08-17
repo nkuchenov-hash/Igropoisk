@@ -1,7 +1,7 @@
 {
-  "schema_version": 11,
+  "schema_version": 13,
   "game_slug": "fields-of-mistria",
-  "generated_at": "2026-08-17T22:50:48.926Z",
+  "generated_at": "2026-08-17T23:29:26.798Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -14,7 +14,12 @@
     "canonical_score_requires_exact_version": true,
     "score_extraction_separate": true,
     "search_title_variants": true,
-    "review_hub_following": true
+    "review_hub_following": true,
+    "critic_index": "metacritic",
+    "critic_index_scope": "released_fallback",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true
   },
   "accepted": [
     {
@@ -49,7 +54,7 @@
       "domain": "polygon.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:50:48.926Z",
+        "checked_at": "2026-08-17T23:28:25.947Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -105,7 +110,7 @@
       "domain": "pcgamer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:50:48.926Z",
+        "checked_at": "2026-08-17T23:28:25.947Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -119,10 +124,64 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:51:49.094Z",
+        "checked_at": "2026-08-17T23:29:27.843Z",
         "url": "https://www.pcgamer.com/games/life-sim/fields-of-mistria-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
+      }
+    },
+    {
+      "id": "source-3",
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "title": "Fields of Mistria — Eurogamer review",
+      "url": "https://www.metacritic.com/game/fields-of-mistria/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/fields-of-mistria/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 80,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Fields of Mistria attributed by Metacritic to Eurogamer.",
+      "evidence_points": [
+        "NPC Studio delivers a community-bonding experience and the chance to live out your Sailor Senshi dreams, all from the comfort of the farmstead."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:29:26.798Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/fields-of-mistria/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:26.798Z",
+        "url": "https://www.metacritic.com/game/fields-of-mistria/critic-reviews/",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "Eurogamer",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
       }
     }
   ],
@@ -136,6 +195,13 @@
       ]
     },
     {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/fields-of-mistria-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/fields-of-mistria",
       "reasons": [
@@ -145,13 +211,6 @@
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/fields-of-mistria-2",
-      "reasons": [
-        "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/fields-of-mistria-review",
       "reasons": [
         "HTTP 404"
       ]
@@ -281,8 +340,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "unavailable",
-      "notes": "search transport unavailable"
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     },
     {
       "source_id": "ars-technica",
@@ -444,6 +503,34 @@
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_discovery": {
@@ -508,15 +595,20 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 41,
-    "checked": 41,
-    "accepted": 2,
-    "scored": 1,
+    "registered_editorial": 45,
+    "checked": 45,
+    "accepted": 3,
+    "scored": 2,
     "context_only_versions": 0,
     "blocked_verified": 0,
-    "contemporary": 2,
+    "contemporary": 3,
     "green": false,
     "passed": false,
-    "needs_more": 3
+    "needs_more": 2,
+    "critic_index_rows": 2,
+    "critic_index_added": 1,
+    "critic_index_scores_added": 0,
+    "critic_index_platform": "primary",
+    "removed_user_generated": 0
   }
 }

@@ -1,14 +1,14 @@
 {
-  "parser": "review-registered-direct-publisher-web-v8",
+  "parser": "review-professional-critic-index-v15.2",
   "status": "needs_revision",
   "game_slug": "leafy-corner",
-  "checked_at": "2026-08-17T22:55:41.941Z",
+  "checked_at": "2026-08-17T23:35:19.643Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 0,
   "scored": 0,
   "context_only_versions": 0,
   "blocked_verified": 0,
-  "registered_editorial": 41,
+  "registered_editorial": 45,
   "source_checks": [
     {
       "source_id": "igromania",
@@ -296,10 +296,76 @@
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_complete": true,
   "audit_all": true,
   "search_title_variants": true,
-  "review_hub_following": true
+  "review_hub_following": true,
+  "professional_only": true,
+  "legacy_stack": {
+    "primary": {
+      "script": "scripts/discover-review-sources-web-v14.mjs",
+      "status": 2,
+      "signal": null,
+      "error": "",
+      "timed_out": false
+    },
+    "fallback": null
+  },
+  "critic_index": {
+    "provider": "metacritic",
+    "url": "https://www.metacritic.com/game/leafy-corner/critic-reviews/",
+    "platform": "primary",
+    "reachable": true,
+    "status": 200,
+    "rows": 0,
+    "attempts": [
+      {
+        "url": "https://www.metacritic.com/game/leafy-corner/critic-reviews/",
+        "platform": "primary",
+        "status": 200,
+        "rows": 0
+      },
+      {
+        "url": "https://www.metacritic.com/game/leafy-corner/critic-reviews/?platform=pc",
+        "platform": "pc",
+        "status": 200,
+        "rows": 0
+      }
+    ],
+    "added_sources": 0,
+    "added_scores": 0,
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false
+  },
+  "removed_user_generated": 0
 }

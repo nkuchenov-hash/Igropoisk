@@ -1,15 +1,15 @@
 {
   "schema_version": 11,
   "game_slug": "restory-chill-electronics-repairs",
-  "updated_at": "2026-08-17T22:51:49.467Z",
+  "updated_at": "2026-08-17T23:29:29.569Z",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "accepted": 1,
+    "accepted": 2,
     "status": "red-needs-revision",
     "full_registry_scan": true,
-    "checked_registered_sources": 41,
-    "applicable_registered_sources": 41
+    "checked_registered_sources": 45,
+    "applicable_registered_sources": 45
   },
   "reviews": [
     {
@@ -50,7 +50,7 @@
       "domain": "stopgame.ru",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:50:48.961Z",
+        "checked_at": "2026-08-17T23:28:26.002Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -61,6 +61,60 @@
       "scale": null,
       "grade": "",
       "score_eligible": false
+    },
+    {
+      "id": "source-2",
+      "configured_source_id": "game-spew",
+      "publication": "GameSpew",
+      "title": "ReStory: Chill Electronics Repairs — GameSpew review",
+      "url": "https://www.metacritic.com/game/restory-chill-electronics-repairs/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/restory-chill-electronics-repairs/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 90,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for ReStory: Chill Electronics Repairs attributed by Metacritic to GameSpew.",
+      "evidence_points": [
+        "Gorgeously presented and utterly moreish, ReStory has you running your own electronics repair shop that sees you disassembling iconic tech from the early 2000s. There's a careful balance between realism and entertainment here, and developer Mandragora has absolutely nailed it."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:29:27.894Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/restory-chill-electronics-repairs/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:27.894Z",
+        "url": "https://www.metacritic.com/game/restory-chill-electronics-repairs/critic-reviews/",
+        "configured_source_id": "game-spew",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "GameSpew",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
     }
   ],
   "game_id": "game_2551500d2614a75f4e75",
@@ -176,7 +230,37 @@
       "invented_scores_forbidden": true,
       "exact_canonical_version_required": true
     },
-    "sources": [],
+    "sources": [
+      {
+        "source_id": "source-2",
+        "configured_source_id": "game-spew",
+        "publication": "GameSpew",
+        "title": "ReStory: Chill Electronics Repairs — GameSpew review",
+        "url": "https://www.metacritic.com/game/restory-chill-electronics-repairs/critic-reviews/",
+        "original_score": {
+          "score": 90,
+          "scale": 100,
+          "grade": null,
+          "display": "90/100"
+        },
+        "normalized_10": 9,
+        "score_evidence": {
+          "method": "critic-index-attribution",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T23:29:27.894Z",
+          "url": "https://www.metacritic.com/game/restory-chill-electronics-repairs/critic-reviews/",
+          "configured_source_id": "game-spew",
+          "direct_publisher": false,
+          "historical": false,
+          "index_source": "metacritic",
+          "index_platform": "primary",
+          "attributed_publication": "GameSpew",
+          "aggregate_score_used": false,
+          "user_score_used": false,
+          "original_review_url": ""
+        }
+      }
+    ],
     "excluded_sources": [
       {
         "configured_source_id": "stopgame",
@@ -186,10 +270,12 @@
       }
     ],
     "calculation": {
-      "source_count": 0,
-      "values": [],
-      "mean_10": null,
-      "score_10": null
+      "source_count": 1,
+      "values": [
+        9
+      ],
+      "mean_10": 9,
+      "score_10": 9
     }
   }
 }

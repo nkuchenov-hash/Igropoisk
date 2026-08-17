@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/restory-chill-electronics-repairs.json#review_score",
   "game_slug": "restory-chill-electronics-repairs",
-  "checked_at": "2026-08-17T22:51:49.467Z",
+  "checked_at": "2026-08-17T23:29:29.569Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,7 +20,37 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-2",
+      "configured_source_id": "game-spew",
+      "publication": "GameSpew",
+      "title": "ReStory: Chill Electronics Repairs — GameSpew review",
+      "url": "https://www.metacritic.com/game/restory-chill-electronics-repairs/critic-reviews/",
+      "original_score": {
+        "score": 90,
+        "scale": 100,
+        "grade": null,
+        "display": "90/100"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:27.894Z",
+        "url": "https://www.metacritic.com/game/restory-chill-electronics-repairs/critic-reviews/",
+        "configured_source_id": "game-spew",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "GameSpew",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    }
+  ],
   "excluded_sources": [
     {
       "configured_source_id": "stopgame",
@@ -30,9 +60,11 @@
     }
   ],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      9
+    ],
+    "mean_10": 9,
+    "score_10": 9
   }
 }

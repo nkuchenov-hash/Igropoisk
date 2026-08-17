@@ -1,7 +1,7 @@
 {
-  "schema_version": 11,
+  "schema_version": 13,
   "game_slug": "skatesterre",
-  "generated_at": "2026-08-17T22:54:27.693Z",
+  "generated_at": "2026-08-17T23:34:11.382Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -14,7 +14,12 @@
     "canonical_score_requires_exact_version": true,
     "score_extraction_separate": true,
     "search_title_variants": true,
-    "review_hub_following": true
+    "review_hub_following": true,
+    "critic_index": "metacritic",
+    "critic_index_scope": "released_fallback",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true
   },
   "accepted": [
     {
@@ -43,13 +48,10 @@
       "mechanics": [],
       "domain": "gamespew.com",
       "validation": {
-        "status": "accepted",
-        "checked_at": "2026-08-17T22:54:27.693Z",
-        "method": "registered-direct-publisher-http-v8",
-        "review_page": {
-          "accepted": true,
-          "reason": "review_path"
-        }
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T23:32:38.929Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 504"
       },
       "score": 5,
       "scale": 10,
@@ -63,9 +65,71 @@
         "configured_source_id": "game-spew",
         "direct_publisher": true
       }
+    },
+    {
+      "id": "source-2",
+      "configured_source_id": "shacknews",
+      "publication": "Shacknews",
+      "title": "Skatesterre — Shacknews review",
+      "url": "https://www.metacritic.com/game/skatesterre/critic-reviews/?platform=pc",
+      "resolved_url": "https://www.metacritic.com/game/skatesterre/critic-reviews/?platform=pc",
+      "source_kind": "review",
+      "platform": "pc",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 40,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Skatesterre attributed by Metacritic to Shacknews.",
+      "evidence_points": [
+        "If you’re a longtime fan of the Tony Hawk’s Pro Skater series and desperately want a new game, and don’t care for what Activision is doing with it, you could certainly choose to play Skatesterre. You won’t have a good time, but it’s an option in front of you. The mechanics, controls, physics, and energy just aren’t there. And it isn’t really trying to do something different and whiffing; it’s the same blueprint, but stuff just doesn’t function properly. And there’s no personality to it besides “skateboarding game,” criminally underutilizing the athlete likeness in use. I walked in kind of intrigued to see what was on offer, and walked away shrugging. Them’s the breaks."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:34:11.382Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/skatesterre/critic-reviews/?platform=pc",
+        "index_platform": "pc",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:34:11.382Z",
+        "url": "https://www.metacritic.com/game/skatesterre/critic-reviews/?platform=pc",
+        "configured_source_id": "shacknews",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "pc",
+        "attributed_publication": "Shacknews",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
     }
   ],
   "rejected": [
+    {
+      "publication": "IGN",
+      "url": "https://in.ign.com/skatesterre",
+      "title": "Skatesterre",
+      "reasons": [
+        "no_review_signal"
+      ]
+    },
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/skatesterre",
@@ -212,8 +276,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "unavailable",
+      "notes": "search transport unavailable"
     },
     {
       "source_id": "ars-technica",
@@ -375,6 +439,34 @@
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_discovery": {
@@ -439,15 +531,20 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 41,
-    "checked": 41,
-    "accepted": 1,
-    "scored": 1,
+    "registered_editorial": 45,
+    "checked": 45,
+    "accepted": 2,
+    "scored": 2,
     "context_only_versions": 0,
-    "blocked_verified": 0,
-    "contemporary": 1,
+    "blocked_verified": 1,
+    "contemporary": 2,
     "green": false,
     "passed": false,
-    "needs_more": 4
+    "needs_more": 3,
+    "critic_index_rows": 1,
+    "critic_index_added": 1,
+    "critic_index_scores_added": 0,
+    "critic_index_platform": "pc",
+    "removed_user_generated": 0
   }
 }
