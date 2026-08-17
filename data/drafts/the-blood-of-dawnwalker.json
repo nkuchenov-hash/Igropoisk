@@ -1,28 +1,41 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "publication": {
-    "status": "needs_revision",
+    "status": "published",
     "gate_passed": true,
-    "public_ready": false,
+    "page_available": true,
+    "public_ready": true,
+    "editorial_ready": false,
     "review_ready": false,
-    "media_green": false,
-    "mode": "structured_sources",
-    "updated_at": "2026-08-13T10:40:42.344Z",
+    "review_required": false,
+    "media_green": true,
+    "mode": "game_creator_structured_sources",
+    "creator_source": "news",
+    "updated_at": "2026-08-17T19:05:00.307Z",
     "gate": {
       "canonical_game_id": "game_1b4dfb013c07955155a8",
       "title": true,
       "media": true,
       "source_count": 1,
-      "minimum_screenshots": 6,
-      "accepted_screenshots": 12,
       "missing": [],
       "passed": true
     }
+  },
+  "modules": {
+    "page": "ready",
+    "media": "ready",
+    "media_enrichment": "queued",
+    "review": "pending",
+    "series": "not_known",
+    "game_dna": "pending",
+    "similarity": "ready",
+    "guides": "missing"
   },
   "game_id": "game_1b4dfb013c07955155a8",
   "identity": {
     "slug": "the-blood-of-dawnwalker",
     "title": "The Blood of Dawnwalker",
+    "series": null,
     "steam_appid": 3751260,
     "aliases": [
       "the-blood-of-dawnwalker",
@@ -33,7 +46,7 @@
   "release": {
     "date_text": "Sep 2, 2026",
     "date": "Sep 2, 2026",
-    "status": "released"
+    "status": "upcoming"
   },
   "companies": {
     "developers": [
@@ -45,6 +58,9 @@
   },
   "classification": {
     "genres": [
+      "Экшены",
+      "Приключенческие игры",
+      "Ролевые игры",
       "Action",
       "Adventure",
       "RPG"
@@ -53,25 +69,32 @@
       "windows"
     ],
     "categories": [
+      "Для одного игрока",
+      "Достижения Steam",
+      "Полная поддержка контроллеров",
+      "Рекомендуется геймпад",
+      "Steam Cloud",
+      "Семейный доступ",
       "Single-player",
       "Steam Achievements",
       "Full controller support",
       "Gamepad Recommended",
-      "Steam Cloud",
       "Family Sharing"
     ]
   },
   "editorial": {
-    "short_description": "The Blood of Dawnwalker is an open-world dark fantasy action RPG set in 14th-century Europe. You play as Coen, human by day and vampire by night, fighting to save your family in a story shaped by your actions and the secrets you uncover.",
+    "short_description": "The Blood of Dawnwalker — это ролевой экшен с открытым миром в мрачном фэнтезийном сеттинге Европы XIV века. Вы играете за Коэна: днем он человек, а ночью становится вампиром. Спасите свою семью — развитие сюжета зависит от ваших решений и того, какие тайны вы откроете.",
     "integrated_description": "The Blood of Dawnwalker is an open-world dark fantasy action RPG set in 14th-century Europe. You play as Coen, human by day and vampire by night, fighting to save your family in a story shaped by your actions and the secrets you uncover.",
     "campaign": "",
     "features": [
-      "Single-player",
-      "Steam Achievements",
-      "Full controller support",
-      "Gamepad Recommended",
+      "Для одного игрока",
+      "Достижения Steam",
+      "Полная поддержка контроллеров",
+      "Рекомендуется геймпад",
       "Steam Cloud",
-      "Family Sharing"
+      "Семейный доступ",
+      "Single-player",
+      "Steam Achievements"
     ]
   },
   "media": {
@@ -91,26 +114,7 @@
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751260/6e5bc8a098290a8cbd2156bbd0209bc4592624d4/ss_6e5bc8a098290a8cbd2156bbd0209bc4592624d4.1920x1080.jpg?t=1785244344",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751260/593eddd88a461156d2d7debae80e7620924d8eba/ss_593eddd88a461156d2d7debae80e7620924d8eba.1920x1080.jpg?t=1785244344"
     ],
-    "videos": [
-      {
-        "title": "The Blood of the Dawnwalker - Summer Game Fest Trailer",
-        "url": "",
-        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257351749/91e3723bad9bf86b8d48aa931dfe111dbb2cc3eb/movie_600x337.jpg?t=1780702882",
-        "source_url": "https://store.steampowered.com/app/3751260/"
-      },
-      {
-        "title": "The Blood of the Dawnwalker - Story Trailer Unrated",
-        "url": "",
-        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257328783/d8a627ec00b555add3d2cf2170e3c51bfa65869a/movie_600x337.jpg?t=1778144023",
-        "source_url": "https://store.steampowered.com/app/3751260/"
-      },
-      {
-        "title": "The Blood of the Dawnwalker - Cinematic Trailer",
-        "url": "",
-        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257155490/f5a3724c9828808a3c4b0952c16fd86f5863d670/movie_600x337.jpg?t=1773928497",
-        "source_url": "https://store.steampowered.com/app/3751260/"
-      }
-    ],
+    "videos": [],
     "artwork": [
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751260/368eb8bf6d11fe397375aa2fd1dce57d8c596a8b/page_bg_raw.jpg?t=1785244344"
     ]
@@ -148,7 +152,7 @@
       "checked_at": "2026-08-13T10:40:41.391Z"
     }
   ],
-  "updated_at": "2026-08-13T10:40:42.344Z",
+  "updated_at": "2026-08-17T19:05:00.307Z",
   "relations": {
     "franchise": {
       "name": "",
