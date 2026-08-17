@@ -2,16 +2,14 @@
   "schema_version": 11,
   "game_slug": "fallout-2",
   "game_id": "game_2278b9106a76e8359871",
-  "updated_at": "2026-08-17T21:59:45.968Z",
+  "updated_at": "2026-08-17T22:07:25.682Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "accepted": 1,
-    "status": "red-needs-revision",
-    "full_registry_scan": true,
-    "checked_registered_sources": 43,
-    "applicable_registered_sources": 43
+    "maximum": 20,
+    "accepted": 2,
+    "status": "red-needs-revision"
   },
   "regional_discovery": {
     "region": "ru",
@@ -25,8 +23,8 @@
       {
         "source_id": "stopgame",
         "name": "StopGame",
-        "status": "not_found",
-        "notes": "search completed; no verified direct review"
+        "status": "found",
+        "notes": "verified direct review"
       },
       {
         "source_id": "kanobu",
@@ -82,19 +80,22 @@
   },
   "reviews": [
     {
-      "url": "https://www.rpgfan.com/review/fallout-2",
-      "title": "Fallout 2 Review | RPGFan",
-      "discovery_method": "external_search",
+      "id": "source-1",
       "configured_source_id": "rpgfan",
       "publication": "RPGFan",
-      "language": "en",
-      "id": "source-1",
+      "title": "Fallout 2 Review | RPGFan",
+      "url": "https://www.rpgfan.com/review/fallout-2",
       "resolved_url": "https://www.rpgfan.com/review/fallout-2",
       "source_kind": "review",
       "platform": "",
       "version_context": "",
       "published_at": "",
       "author": "",
+      "language": "en",
+      "score": 84,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
       "canonical_score_eligible": true,
       "version_validation": {
         "score_eligible": true,
@@ -119,44 +120,64 @@
       "domain": "rpgfan.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T21:58:18.982Z",
-        "method": "registered-direct-publisher-http-v8",
+        "checked_at": "2026-08-17T22:07:23.061Z",
+        "reasons": [],
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
       },
-      "score": 84,
-      "scale": 100,
-      "grade": "",
-      "score_eligible": true,
       "score_evidence": {
         "method": "semantic-editorial-label",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T21:59:45.928Z",
+        "checked_at": "2026-08-17T22:07:25.648Z",
         "url": "https://www.rpgfan.com/review/fallout-2/",
         "configured_source_id": "rpgfan",
         "direct_publisher": true
       }
-    }
-  ],
-  "rejected": [
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/fallout-2-review",
-      "reasons": [
-        "HTTP 503"
-      ]
     },
     {
-      "publication": "TheSixthAxis",
-      "url": "https://www.thesixthaxis.com/2026/03/05/fallout-4-anniversary-edition-switch-2-review-good-game-good-port",
-      "title": "Fallout 4: Anniversary Edition Switch 2 Review - Good game, good port | TheSixthAxis",
-      "reasons": [
-        "numbered_title_identity_mismatch:fallout 2"
-      ]
+      "id": "source-2",
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "title": "Отзыв об игре Fallout 2 от пользователя Мария Есенина | StopGame.ru",
+      "url": "https://stopgame.ru/game/fallout_2/review/27826",
+      "resolved_url": "https://stopgame.ru/game/fallout_2/review/27826",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "ru",
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Fallout 2.",
+      "evidence_points": [
+        "И да, на самом деле раскрывая Fallout 2, можно легко прийти к выводу, что Тодд Говард, которого все обвиняют в несерьёзности - кроме города детей, сам не придумал почти ничего нового! В Fallout 2 есть говорящие когти смерти, умные кротокрысы, привидение (!), злое-злое правительство с ЭКСПЕРИМЕНТАМИ, бу! Всё это в сумме - второсортный скам, но люди полюбили согласившись на это. Это тот же момент, когда люди смотрят так называемые B-movie со своей долей шарма. Fallout 2 - это B-movie, (само)пародия, и трешачок и это работает."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "stopgame.ru",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T22:07:23.061Z",
+        "reasons": [],
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      }
     }
   ],
+  "rejected": [],
   "source_proposals": [],
   "review_score": {
     "status": "red-needs-revision",
@@ -193,14 +214,21 @@
         "score_evidence": {
           "method": "semantic-editorial-label",
           "scope": "editorial_review",
-          "checked_at": "2026-08-17T21:59:45.928Z",
+          "checked_at": "2026-08-17T22:07:25.648Z",
           "url": "https://www.rpgfan.com/review/fallout-2/",
           "configured_source_id": "rpgfan",
           "direct_publisher": true
         }
       }
     ],
-    "excluded_sources": [],
+    "excluded_sources": [
+      {
+        "configured_source_id": "stopgame",
+        "publication": "StopGame",
+        "url": "https://stopgame.ru/game/fallout_2/review/27826",
+        "reason": "canonical_version"
+      }
+    ],
     "calculation": {
       "source_count": 1,
       "values": [

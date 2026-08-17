@@ -2,16 +2,14 @@
   "schema_version": 11,
   "game_slug": "fallout",
   "game_id": "game_6c7f3f81263d9a409505",
-  "updated_at": "2026-08-17T21:59:37.386Z",
+  "updated_at": "2026-08-17T22:09:09.516Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
+    "maximum": 20,
     "accepted": 2,
-    "status": "red-needs-revision",
-    "full_registry_scan": true,
-    "checked_registered_sources": 43,
-    "applicable_registered_sources": 43
+    "status": "red-needs-revision"
   },
   "regional_discovery": {
     "region": "ru",
@@ -122,8 +120,8 @@
       "domain": "thesixthaxis.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T21:58:11.112Z",
-        "method": "registered-direct-publisher-http-v8",
+        "checked_at": "2026-08-17T22:09:07.014Z",
+        "reasons": [],
         "review_page": {
           "accepted": true,
           "reason": "review_path"
@@ -131,19 +129,22 @@
       }
     },
     {
-      "url": "https://www.rpgfan.com/review/fallout",
-      "title": "Fallout Review | RPGFan",
-      "discovery_method": "external_search",
+      "id": "source-2",
       "configured_source_id": "rpgfan",
       "publication": "RPGFan",
-      "language": "en",
-      "id": "source-2",
+      "title": "Fallout Review | RPGFan",
+      "url": "https://www.rpgfan.com/review/fallout",
       "resolved_url": "https://www.rpgfan.com/review/fallout",
       "source_kind": "review",
       "platform": "",
       "version_context": "",
       "published_at": "",
       "author": "",
+      "language": "en",
+      "score": 88,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
       "canonical_score_eligible": true,
       "version_validation": {
         "score_eligible": true,
@@ -168,36 +169,24 @@
       "domain": "rpgfan.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T21:58:11.112Z",
-        "method": "registered-direct-publisher-http-v8",
+        "checked_at": "2026-08-17T22:09:07.014Z",
+        "reasons": [],
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
       },
-      "score": 88,
-      "scale": 100,
-      "grade": "",
-      "score_eligible": true,
       "score_evidence": {
         "method": "semantic-editorial-label",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T21:59:37.350Z",
+        "checked_at": "2026-08-17T22:09:09.481Z",
         "url": "https://www.rpgfan.com/review/fallout/",
         "configured_source_id": "rpgfan",
         "direct_publisher": true
       }
     }
   ],
-  "rejected": [
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/fallout-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    }
-  ],
+  "rejected": [],
   "source_proposals": [],
   "review_score": {
     "status": "red-needs-revision",
@@ -234,7 +223,7 @@
         "score_evidence": {
           "method": "semantic-editorial-label",
           "scope": "editorial_review",
-          "checked_at": "2026-08-17T21:59:37.350Z",
+          "checked_at": "2026-08-17T22:09:09.481Z",
           "url": "https://www.rpgfan.com/review/fallout/",
           "configured_source_id": "rpgfan",
           "direct_publisher": true

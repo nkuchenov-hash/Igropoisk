@@ -1,17 +1,15 @@
 {
   "schema_version": 11,
   "game_slug": "luna-abyss",
-  "game_id": null,
-  "updated_at": "2026-08-17T22:02:03.563Z",
+  "game_id": "game_9ccc26e386bcdb714fa7",
+  "updated_at": "2026-08-17T22:09:37.862Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
+    "maximum": 20,
     "accepted": 2,
-    "status": "red-needs-revision",
-    "full_registry_scan": true,
-    "checked_registered_sources": 41,
-    "applicable_registered_sources": 41
+    "status": "red-needs-revision"
   },
   "regional_discovery": {
     "region": "ru",
@@ -76,19 +74,22 @@
   },
   "reviews": [
     {
-      "url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
-      "title": "Review: Luna Abyss (PS5) - Don",
-      "discovery_method": "external_search",
+      "id": "source-1",
       "configured_source_id": "push-square",
       "publication": "Push Square",
-      "language": "en",
-      "id": "source-1",
+      "title": "Review: Luna Abyss (PS5) - Don",
+      "url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
       "resolved_url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
       "source_kind": "review",
       "platform": "",
       "version_context": "",
       "published_at": "",
       "author": "",
+      "language": "en",
+      "score": 8,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
       "canonical_score_eligible": true,
       "version_validation": {
         "score_eligible": true,
@@ -113,40 +114,39 @@
       "domain": "pushsquare.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:00:45.090Z",
-        "method": "registered-direct-publisher-http-v8",
+        "checked_at": "2026-08-17T22:09:36.264Z",
+        "reasons": [],
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
       },
-      "score": 8,
-      "scale": 10,
-      "grade": "",
-      "score_eligible": true,
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:02:03.527Z",
+        "checked_at": "2026-08-17T22:09:37.827Z",
         "url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
         "configured_source_id": "push-square",
         "direct_publisher": true
       }
     },
     {
-      "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review",
-      "title": "Luna Abyss Review | TheSixthAxis",
-      "discovery_method": "external_search",
+      "id": "source-2",
       "configured_source_id": "the-sixth-axis",
       "publication": "TheSixthAxis",
-      "language": "en",
-      "id": "source-2",
+      "title": "Luna Abyss Review | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review",
       "resolved_url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review",
       "source_kind": "review",
       "platform": "",
       "version_context": "",
       "published_at": "",
       "author": "",
+      "language": "en",
+      "score": 7,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
       "canonical_score_eligible": true,
       "version_validation": {
         "score_eligible": true,
@@ -170,64 +170,25 @@
       "domain": "thesixthaxis.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:00:45.090Z",
-        "method": "registered-direct-publisher-http-v8",
+        "checked_at": "2026-08-17T22:09:36.264Z",
+        "reasons": [],
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
       },
-      "score": 7,
-      "scale": 10,
-      "grade": "",
-      "score_eligible": true,
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:02:03.528Z",
+        "checked_at": "2026-08-17T22:09:37.828Z",
         "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review/",
         "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
       }
     }
   ],
-  "rejected": [
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/luna-abyss-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    },
-    {
-      "publication": "RPGFan",
-      "url": "https://www.rpgfan.com/review/luna-abyss",
-      "reasons": [
-        "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGFan",
-      "url": "https://www.rpgfan.com/review/luna-abyss-2",
-      "reasons": [
-        "HTTP 404"
-      ]
-    },
-    {
-      "publication": "Push Square",
-      "url": "https://www.pushsquare.com/reviews/ps5/search",
-      "reasons": [
-        "HTTP 404"
-      ]
-    },
-    {
-      "publication": "Push Square",
-      "url": "https://www.pushsquare.com/reviews/ps5/share",
-      "reasons": [
-        "HTTP 404"
-      ]
-    }
-  ],
+  "rejected": [],
+  "source_proposals": [],
   "review_score": {
     "status": "red-needs-revision",
     "owner": "review",
@@ -263,7 +224,7 @@
         "score_evidence": {
           "method": "jsonld.reviewRating",
           "scope": "editorial_review",
-          "checked_at": "2026-08-17T22:02:03.527Z",
+          "checked_at": "2026-08-17T22:09:37.827Z",
           "url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
           "configured_source_id": "push-square",
           "direct_publisher": true
@@ -285,7 +246,7 @@
         "score_evidence": {
           "method": "jsonld.reviewRating",
           "scope": "editorial_review",
-          "checked_at": "2026-08-17T22:02:03.528Z",
+          "checked_at": "2026-08-17T22:09:37.828Z",
           "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review/",
           "configured_source_id": "the-sixth-axis",
           "direct_publisher": true

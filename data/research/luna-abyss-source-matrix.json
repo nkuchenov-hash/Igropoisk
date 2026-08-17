@@ -1,36 +1,36 @@
 {
-  "schema_version": 11,
+  "schema_version": 9,
   "game_slug": "luna-abyss",
-  "generated_at": "2026-08-17T22:00:45.090Z",
+  "generated_at": "2026-08-17T22:09:36.264Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
     "target_sources": 20,
     "maximum_sources": 20,
     "historical": false,
+    "min_contemporary": 5,
     "regional_discovery_required": true,
-    "discovery_provider": "registered-direct-publisher-web-v8",
-    "audit_all": true,
-    "canonical_score_requires_exact_version": true,
-    "score_extraction_separate": true,
-    "search_title_variants": true,
-    "review_hub_following": true
+    "unknown_publisher_policy": "reject_until_registered",
+    "canonical_score_requires_exact_version": true
   },
   "accepted": [
     {
-      "url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
-      "title": "Review: Luna Abyss (PS5) - Don",
-      "discovery_method": "external_search",
+      "id": "source-1",
       "configured_source_id": "push-square",
       "publication": "Push Square",
-      "language": "en",
-      "id": "source-1",
+      "title": "Review: Luna Abyss (PS5) - Don",
+      "url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
       "resolved_url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
       "source_kind": "review",
       "platform": "",
       "version_context": "",
       "published_at": "",
       "author": "",
+      "language": "en",
+      "score": 8,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
       "canonical_score_eligible": true,
       "version_validation": {
         "score_eligible": true,
@@ -55,40 +55,39 @@
       "domain": "pushsquare.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:00:45.090Z",
-        "method": "registered-direct-publisher-http-v8",
+        "checked_at": "2026-08-17T22:09:36.264Z",
+        "reasons": [],
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
       },
-      "score": 8,
-      "scale": 10,
-      "grade": "",
-      "score_eligible": true,
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:02:03.527Z",
+        "checked_at": "2026-08-17T22:09:37.827Z",
         "url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
         "configured_source_id": "push-square",
         "direct_publisher": true
       }
     },
     {
-      "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review",
-      "title": "Luna Abyss Review | TheSixthAxis",
-      "discovery_method": "external_search",
+      "id": "source-2",
       "configured_source_id": "the-sixth-axis",
       "publication": "TheSixthAxis",
-      "language": "en",
-      "id": "source-2",
+      "title": "Luna Abyss Review | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review",
       "resolved_url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review",
       "source_kind": "review",
       "platform": "",
       "version_context": "",
       "published_at": "",
       "author": "",
+      "language": "en",
+      "score": 7,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
       "canonical_score_eligible": true,
       "version_validation": {
         "score_eligible": true,
@@ -112,353 +111,25 @@
       "domain": "thesixthaxis.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:00:45.090Z",
-        "method": "registered-direct-publisher-http-v8",
+        "checked_at": "2026-08-17T22:09:36.264Z",
+        "reasons": [],
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
       },
-      "score": 7,
-      "scale": 10,
-      "grade": "",
-      "score_eligible": true,
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:02:03.528Z",
+        "checked_at": "2026-08-17T22:09:37.828Z",
         "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review/",
         "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
       }
     }
   ],
-  "rejected": [
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/luna-abyss-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    },
-    {
-      "publication": "RPGFan",
-      "url": "https://www.rpgfan.com/review/luna-abyss",
-      "reasons": [
-        "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGFan",
-      "url": "https://www.rpgfan.com/review/luna-abyss-2",
-      "reasons": [
-        "HTTP 404"
-      ]
-    },
-    {
-      "publication": "Push Square",
-      "url": "https://www.pushsquare.com/reviews/ps5/search",
-      "reasons": [
-        "HTTP 404"
-      ]
-    },
-    {
-      "publication": "Push Square",
-      "url": "https://www.pushsquare.com/reviews/ps5/share",
-      "reasons": [
-        "HTTP 404"
-      ]
-    }
-  ],
-  "source_checks": [
-    {
-      "source_id": "igromania",
-      "name": "Игромания",
-      "region": "ru",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "stopgame",
-      "name": "StopGame",
-      "region": "ru",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "kanobu",
-      "name": "Канобу",
-      "region": "ru",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "playground",
-      "name": "PlayGround.ru",
-      "region": "ru",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "vgtimes",
-      "name": "VGTimes",
-      "region": "ru",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "ixbt-games",
-      "name": "iXBT.games",
-      "region": "ru",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "gamemag",
-      "name": "GameMAG.ru",
-      "region": "ru",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "vk-play",
-      "name": "VK Play Media",
-      "region": "ru",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "shazoo",
-      "name": "Shazoo",
-      "region": "ru",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "pc-gamer",
-      "name": "PC Gamer",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "gamespot",
-      "name": "GameSpot",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "ign",
-      "name": "IGN",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "eurogamer",
-      "name": "Eurogamer",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "game-informer",
-      "name": "Game Informer",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "gamesradar",
-      "name": "GamesRadar+",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "polygon",
-      "name": "Polygon",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "rock-paper-shotgun",
-      "name": "Rock Paper Shotgun",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "game-revolution",
-      "name": "GameRevolution",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "ars-technica",
-      "name": "Ars Technica",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "gamezone",
-      "name": "GameZone",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "gamepressure",
-      "name": "Gamepressure",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "gry-online",
-      "name": "GRYOnline",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "worthplaying",
-      "name": "WorthPlaying",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "rpgfan",
-      "name": "RPGFan",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "rpgamer",
-      "name": "RPGamer",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "destructoid",
-      "name": "Destructoid",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "shacknews",
-      "name": "Shacknews",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "pcworld",
-      "name": "PCWorld",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "guardian-games",
-      "name": "The Guardian",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "push-square",
-      "name": "Push Square",
-      "region": "global",
-      "status": "found",
-      "notes": "verified direct review"
-    },
-    {
-      "source_id": "nintendo-life",
-      "name": "Nintendo Life",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "digital-trends",
-      "name": "Digital Trends",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "wired",
-      "name": "WIRED",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "egm",
-      "name": "EGM",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "gamebanshee",
-      "name": "GameBanshee",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "den-of-geek",
-      "name": "Den of Geek",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "videogamer",
-      "name": "VideoGamer",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "the-sixth-axis",
-      "name": "TheSixthAxis",
-      "region": "global",
-      "status": "found",
-      "notes": "verified direct review"
-    },
-    {
-      "source_id": "pc-invasion",
-      "name": "PC Invasion",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "game-spew",
-      "name": "GameSpew",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    },
-    {
-      "source_id": "hooked-gamers",
-      "name": "Hooked Gamers",
-      "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
-    }
-  ],
+  "rejected": [],
+  "source_proposals": [],
   "regional_discovery": {
     "region": "ru",
     "checks": [
@@ -521,12 +192,9 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 41,
-    "checked": 41,
     "accepted": 2,
     "scored": 2,
     "context_only_versions": 0,
-    "blocked_verified": 0,
     "contemporary": 2,
     "green": false,
     "passed": false,
