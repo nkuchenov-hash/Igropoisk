@@ -5,6 +5,9 @@ const creator = fs.readFileSync('scripts/ensure-game-page.mjs', 'utf8');
 const news = fs.readFileSync('scripts/run-news-game-page-fast.mjs', 'utf8');
 const verifiedImport = fs.readFileSync('scripts/run-verified-game-import-fast.mjs', 'utf8');
 const newsMaterializer = fs.readFileSync('scripts/materialize-news-game-pages-fast.mjs', 'utf8');
+const newsWorkflow = fs.readFileSync('.github/workflows/news-game-page-fast.yml', 'utf8');
+const verifiedWorkflow = fs.readFileSync('.github/workflows/verified-game-import-fast.yml', 'utf8');
+const pagesWorkflow = fs.readFileSync('.github/workflows/pages.yml', 'utf8');
 const fail = message => { throw new Error(message); };
 
 if (!creator.includes("mode: 'game_creator_structured_sources'")) fail('Universal Game Creator mode is missing');
@@ -21,4 +24,13 @@ if (!verifiedImport.includes("['scripts/ensure-game-page.mjs', gameId]")) fail('
 if (!verifiedImport.includes("GAME_CREATOR_SOURCE: 'verified_import'")) fail('Verified import source context must be passed to the Game Creator');
 if (!newsMaterializer.includes("import('./materialize-game-creator-pages.mjs')")) fail('News production materialization must use the shared Game Creator materializer');
 
-console.log('Game Creator boundary contract passed: News and verified imports share one creator; page existence is independent from review/media/DNA/similarity modules.');
+if (!pagesWorkflow.includes('repository_dispatch:') || !pagesWorkflow.includes('types: [production-pages]')) {
+  fail('Pages must expose the exact-main production-pages dispatch entrypoint');
+}
+for (const [name, workflow] of [['News', newsWorkflow], ['Verified import', verifiedWorkflow]]) {
+  if (!workflow.includes('event_type:"production-pages"')) fail(`${name} must request a main-context production-pages deploy`);
+  if (!workflow.includes('client_payload:{production_sha:$sha')) fail(`${name} must dispatch the exact production SHA`);
+  if (workflow.includes('uses: ./.github/workflows/pages.yml')) fail(`${name} must not deploy the main-only Pages environment from staging context`);
+}
+
+console.log('Game Creator boundary contract passed: News and verified imports share one creator and one exact-main deployment bridge; page existence is independent from review/media/DNA/similarity modules.');
