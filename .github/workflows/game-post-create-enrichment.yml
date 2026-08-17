@@ -105,10 +105,31 @@ jobs:
           done
           curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
 
-      - name: Ensure local text and vision fallbacks
+      - name: Ensure required text model and optional vision model
         run: |
-          ollama list | grep -q '^qwen3:1.7b' || ollama pull qwen3:1.7b
-          ollama list | grep -q '^qwen3-vl:4b' || ollama pull qwen3-vl:4b
+          set -euo pipefail
+          pull_required() {
+            model="$1"
+            for attempt in 1 2 3 4 5; do
+              ollama list | grep -Fq "$model" && return 0
+              ollama pull "$model" && return 0
+              sleep $((attempt * 5))
+            done
+            echo "::error::Required text model $model is unavailable after retries."
+            return 1
+          }
+          pull_optional() {
+            model="$1"
+            for attempt in 1 2 3; do
+              ollama list | grep -Fq "$model" && return 0
+              ollama pull "$model" && return 0
+              sleep $((attempt * 5))
+            done
+            echo "::warning::Optional vision model $model is unavailable; quick text review will continue and full visual upgrade remains pending."
+            return 0
+          }
+          pull_required "$LOCAL_TEXT_MODEL"
+          pull_optional "$LOCAL_VISION_MODEL"
 
       - name: Build quick reviews and bounded full-review upgrades
         env:

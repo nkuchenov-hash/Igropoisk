@@ -51,7 +51,6 @@ function ratingFromJsonLd(rootNode,source){
       hit=fromPair(node.ratingValue,node.bestRating||inferredScale(node.ratingValue,source),'jsonld.reviewRating');
       if(hit)return;
     }
-    // AggregateRating is deliberately ignored: it is normally an audience/site aggregate, not the publication's review vote.
     for(const [key,value] of Object.entries(node)){
       if(key==='aggregateRating')continue;
       walk(value,reviewContext||key==='review'||key==='reviewRating');
@@ -148,17 +147,17 @@ export function isTrustedEditorialScore(item){
   if(!valid(score,scale))return false;
   if(evidence.scope!=='editorial_review')return false;
   const method=String(evidence.method||'');
-  const historicalIndex=method==='historical-critic-index-attribution'
-    && evidence.historical===true
+  const criticIndex=(method==='historical-critic-index-attribution'||method==='critic-index-attribution')
     && evidence.index_source==='metacritic'
     && Boolean(evidence.attributed_publication)
-    && evidence.aggregate_score_used!==true;
+    && evidence.aggregate_score_used!==true
+    && evidence.user_score_used!==true;
   return method.startsWith('registry:')
     ||method==='jsonld.reviewRating'
     ||method==='microdata.reviewRating'
     ||method==='data-review-attribute'
     ||method==='semantic-editorial-label'
-    ||historicalIndex;
+    ||criticIndex;
 }
 
 export function buildEditorialScoreEvidence(rating,{url='',configuredSourceId='',checkedAt=new Date().toISOString()}={}){
