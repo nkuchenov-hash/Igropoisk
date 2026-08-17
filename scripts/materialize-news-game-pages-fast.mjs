@@ -36,14 +36,6 @@ for (const slug of slugs) {
   if (!/^[a-z0-9][a-z0-9-]*$/.test(slug)) throw new Error(`Unsafe game slug: ${slug}`);
   if (!copy(`game/${slug}/index.html`)) throw new Error(`Required page missing: game/${slug}/index.html`);
   if (!copy(`data/drafts/${slug}.json`)) throw new Error(`Required draft missing: data/drafts/${slug}.json`);
-  for (const relative of [
-    `data/reviews/${slug}.json`,
-    `data/articles/${slug}.json`,
-    `article/${slug}/index.html`,
-    `data/guides/${slug}.json`,
-    `data/similarity/${slug}.json`,
-    `data/game-dna/${slug}.json`
-  ]) copy(relative);
 }
 
 const sourceCatalog = read(path.join(sourceRoot, 'data/catalog-visible.json'), []);
@@ -78,23 +70,9 @@ for (const name of files) {
 }
 for (const slug of slugs) if (!located.has(slug)) throw new Error(`Materialized game-content missing ${slug}`);
 
-const sourceDnaIndex = read(path.join(sourceRoot, 'data/game-dna/index.json'), { entries: [] });
-const sourceDnaBySlug = new Map((sourceDnaIndex?.entries || []).map(item => [String(item?.slug || ''), item]));
-const dnaSlugs = slugs.filter(slug => fs.existsSync(path.join(sourceRoot, 'data/game-dna', `${slug}.json`)) && sourceDnaBySlug.has(slug));
-if (dnaSlugs.length) {
-  const targetDnaPath = path.join(targetRoot, 'data/game-dna/index.json');
-  const targetDna = read(targetDnaPath, { schema_version: sourceDnaIndex.schema_version || 1, entries: [] });
-  const mergedDna = new Map((targetDna.entries || []).map(item => [String(item?.slug || ''), item]));
-  for (const slug of dnaSlugs) mergedDna.set(slug, sourceDnaBySlug.get(slug));
-  targetDna.entries = [...mergedDna.values()].sort((a, b) => String(a.title || a.slug).localeCompare(String(b.title || b.slug), 'ru'));
-  targetDna.count = targetDna.entries.length;
-  targetDna.generated_at = new Date().toISOString();
-  write(targetDnaPath, targetDna);
-}
-
 write(path.join(sourceRoot, 'tmp/news-game-page-fast-production.json'), {
   schema_version: 1,
   generated_at: new Date().toISOString(),
   games: slugs.map(slug => ({ slug, game_content: located.get(slug) }))
 });
-console.log(`[news/game-page-fast] materialized ${slugs.length} ready game pages into production worktree.`);
+console.log(`[news/game-page-fast] materialized ${slugs.length} base game pages into production worktree; enrichment remains in the regular lifecycle.`);
