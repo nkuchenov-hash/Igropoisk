@@ -4,12 +4,12 @@
   "game_slug": "starfield",
   "game_id": null,
   "canonical_title": "Starfield",
-  "checked_at": "2026-08-14T23:56:26.415Z",
+  "checked_at": "2026-08-17T09:43:20.371Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
-    "Корпус: 2/5",
-    "Оценённые издания: 2/3"
+    "Корпус: 3/5",
+    "Оценённые издания: 3/3"
   ],
   "revision_history": [
     {
@@ -17,7 +17,7 @@
       "script": "scripts/discover-review-sources-web.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"starfield\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 2,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stdout": "{\n  \"slug\": \"starfield\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 3,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
       "stderr": ""
     },
     {
@@ -25,7 +25,7 @@
       "script": "scripts/promote-review-source-audit.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"starfield\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 2,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"starfield\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 3,\n  \"trusted_scores_preserved\": 2,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -33,15 +33,15 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"starfield\",\n  \"accepted\": 2,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"updates\": 2,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"starfield\",\n  \"accepted\": 3,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"updates\": 3,\n  \"preserved\": 0\n}\n",
       "stderr": ""
     },
     {
       "label": "score-1",
       "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"starfield\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 2,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"starfield\",\n  \"status\": \"green\",\n  \"scored_sources\": 3,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.7,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
       "stderr": ""
     }
   ],

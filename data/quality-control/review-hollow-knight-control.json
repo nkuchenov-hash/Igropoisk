@@ -4,12 +4,12 @@
   "game_slug": "hollow-knight",
   "game_id": null,
   "canonical_title": "Hollow Knight",
-  "checked_at": "2026-08-14T23:49:26.537Z",
+  "checked_at": "2026-08-17T09:37:15.275Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
-    "Корпус: 1/5",
-    "Оценённые издания: 1/3"
+    "Корпус: 2/5",
+    "Оценённые издания: 2/3"
   ],
   "revision_history": [
     {
@@ -17,7 +17,7 @@
       "script": "scripts/discover-review-sources-web.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"hollow-knight\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stdout": "{\n  \"slug\": \"hollow-knight\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 2,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
       "stderr": ""
     },
     {
@@ -25,7 +25,7 @@
       "script": "scripts/promote-review-source-audit.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"hollow-knight\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"hollow-knight\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 2,\n  \"trusted_scores_preserved\": 1,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -33,7 +33,7 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"hollow-knight\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"hollow-knight\",\n  \"accepted\": 2,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"updates\": 2,\n  \"preserved\": 0\n}\n",
       "stderr": ""
     },
     {
@@ -41,7 +41,7 @@
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"hollow-knight\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 0,\n  \"score_10\": 9.2,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stdout": "{\n  \"slug\": \"hollow-knight\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 2,\n  \"excluded_sources\": 0,\n  \"score_10\": 9.2,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
       "stderr": ""
     }
   ],

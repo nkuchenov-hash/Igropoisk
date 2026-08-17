@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/wild-blue-skies.json#review_score",
   "game_slug": "wild-blue-skies",
-  "checked_at": "2026-08-14T23:56:24.102Z",
+  "checked_at": "2026-08-17T09:43:18.061Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,12 +20,37 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Wild Blue Skies Review: Bland Homage",
+      "url": "https://gameinformer.com/review/wild-blue-skies/bland-homage",
+      "original_score": {
+        "score": 5,
+        "scale": 10,
+        "grade": null,
+        "display": "5/10"
+      },
+      "normalized_10": 5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T09:43:17.980Z",
+        "url": "https://gameinformer.com/review/wild-blue-skies/bland-homage",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      5
+    ],
+    "mean_10": 5,
+    "score_10": 5
   }
 }

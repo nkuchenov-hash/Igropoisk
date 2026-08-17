@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/marvel-rivals.json#review_score",
   "game_slug": "marvel-rivals",
-  "checked_at": "2026-08-14T23:51:17.845Z",
+  "checked_at": "2026-08-17T09:38:20.808Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,7 +20,30 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-3",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Marvel Rivals Review: A Super Shooter",
+      "url": "https://gameinformer.com/review/marvel-rivals/a-super-shooter",
+      "original_score": {
+        "score": 8.5,
+        "scale": 10,
+        "grade": null,
+        "display": "8.5/10"
+      },
+      "normalized_10": 8.5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T09:38:20.713Z",
+        "url": "https://gameinformer.com/review/marvel-rivals/a-super-shooter",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [
     {
       "configured_source_id": "gamespot",
@@ -36,9 +59,11 @@
     }
   ],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      8.5
+    ],
+    "mean_10": 8.5,
+    "score_10": 8.5
   }
 }
