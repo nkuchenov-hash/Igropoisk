@@ -4,7 +4,8 @@ import fs from 'node:fs';
 
 const runId=process.env.GITHUB_RUN_ID||String(Date.now());
 const runAttempt=process.env.GITHUB_RUN_ATTEMPT||'1';
-const branch=`automation/post-create-enrichment-${runId}-${runAttempt}`;
+const publishPhase=String(process.env.POST_CREATE_PUBLISH_PHASE||'final').toLowerCase().replace(/[^a-z0-9-]+/g,'-')||'final';
+const branch=`automation/post-create-enrichment-${publishPhase}-${runId}-${runAttempt}`;
 const missing='__missing__';
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const roots=[
@@ -49,14 +50,14 @@ function refreshStaging(){
 const base=git(['rev-parse','HEAD'],{quiet:true});
 stageAllowed();
 if(succeeds('git',['diff','--cached','--quiet'])){
-  console.log(JSON.stringify({status:'no_changes',base},null,2));
+  console.log(JSON.stringify({phase:publishPhase,status:'no_changes',base},null,2));
   process.exit(0);
 }
 git(['diff','--cached','--check']);
 const files=git(['diff','--cached','--name-only','--',...roots],{quiet:true}).split('\n').map(x=>x.trim()).filter(Boolean);
 git(['config','user.name','igropoisk-content[bot]']);
 git(['config','user.email','igropoisk-content[bot]@users.noreply.github.com']);
-git(['commit','-m','Enrich newly created canonical games']);
+git(['commit','-m',`Enrich newly created canonical games (${publishPhase})`]);
 const resultCommit=git(['rev-parse','HEAD'],{quiet:true});
 let prUrl='';
 let lastMergeError='';
@@ -64,7 +65,7 @@ let lastMergeError='';
 for(let publishAttempt=1;publishAttempt<=5;publishAttempt++){
   git(['fetch','origin','staging']);
   const fresh=git(['rev-parse','origin/staging'],{quiet:true});
-  git(['checkout','-B','post-create-overlay-work',fresh]);
+  git(['checkout','-B',`post-create-overlay-work-${publishPhase}`,fresh]);
   let applied=0,already=0,skipped=0;
   const skippedFiles=[];
 
@@ -80,21 +81,21 @@ for(let publishAttempt=1;publishAttempt<=5;publishAttempt++){
   stageAllowed();
   if(succeeds('git',['diff','--cached','--quiet'])){
     const staging=refreshStaging();
-    console.log(JSON.stringify({status:'fresh_state_won',base,result_commit:resultCommit,staging,applied,already,skipped,skipped_files:skippedFiles},null,2));
+    console.log(JSON.stringify({phase:publishPhase,status:'fresh_state_won',base,result_commit:resultCommit,staging,applied,already,skipped,skipped_files:skippedFiles},null,2));
     process.exit(0);
   }
 
   git(['diff','--cached','--check']);
-  git(['commit','-m','Publish post-create enrichment on fresh staging']);
+  git(['commit','-m',`Publish post-create ${publishPhase} enrichment on fresh staging`]);
   git(['push','--force','origin',`HEAD:refs/heads/${branch}`]);
 
   if(!prUrl){
     const existing=command('gh',['pr','list','--base','staging','--head',branch,'--state','open','--json','url','--jq','.[0].url // empty']);
     prUrl=String(existing.stdout||'').trim();
     if(!prUrl){
-      const body=`Conflict-safe post-create publication. Enrichment output is overlaid on the latest staging tip only for files unchanged since this run began; newer parallel lifecycle updates win and skipped modules remain queued for the next pass. Source result commit: ${resultCommit}.`;
-      const created=command('gh',['pr','create','--base','staging','--head',branch,'--title',`Post-create game enrichment ${runId}.${runAttempt}`,'--body',body]);
-      if(created.status!==0)throw new Error(`Unable to create post-create enrichment PR: ${created.stderr||created.stdout}`);
+      const body=`Conflict-safe post-create ${publishPhase} publication. Enrichment output is overlaid on the latest staging tip only for files unchanged since this phase began; newer parallel lifecycle updates win and skipped modules remain queued for the next pass. Source result commit: ${resultCommit}.`;
+      const created=command('gh',['pr','create','--base','staging','--head',branch,'--title',`Post-create ${publishPhase} enrichment ${runId}.${runAttempt}`,'--body',body]);
+      if(created.status!==0)throw new Error(`Unable to create post-create ${publishPhase} enrichment PR: ${created.stderr||created.stdout}`);
       prUrl=String(created.stdout||'').trim();
     }
   }
@@ -102,13 +103,13 @@ for(let publishAttempt=1;publishAttempt<=5;publishAttempt++){
   const merged=command('gh',['pr','merge',prUrl,'--merge','--delete-branch']);
   if(merged.status===0){
     const staging=refreshStaging();
-    console.log(JSON.stringify({status:'merged',base,result_commit:resultCommit,staging,publish_attempt:publishAttempt,applied,already,skipped,skipped_files:skippedFiles},null,2));
+    console.log(JSON.stringify({phase:publishPhase,status:'merged',base,result_commit:resultCommit,staging,publish_attempt:publishAttempt,applied,already,skipped,skipped_files:skippedFiles},null,2));
     process.exit(0);
   }
 
   lastMergeError=String(merged.stderr||merged.stdout||'').trim();
-  console.error(`Post-create merge attempt ${publishAttempt} failed; rebuilding on newest staging. ${lastMergeError}`);
+  console.error(`Post-create ${publishPhase} merge attempt ${publishAttempt} failed; rebuilding on newest staging. ${lastMergeError}`);
   if(publishAttempt<5)await sleep(2500);
 }
 
-throw new Error(`Unable to publish post-create enrichment after conflict-safe retries: ${lastMergeError}`);
+throw new Error(`Unable to publish post-create ${publishPhase} enrichment after conflict-safe retries: ${lastMergeError}`);

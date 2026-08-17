@@ -11,6 +11,10 @@ const requestDir=path.join(root,'data/game-enrichment-requests');
 const requestedSlugs=new Set(process.argv.slice(2).map(value=>String(value||'').trim().toLowerCase()).filter(Boolean));
 const maxAttempts=Math.max(1,Number(process.env.POST_CREATE_MAX_ATTEMPTS||3));
 const reviewBatch=Math.max(1,Number(process.env.POST_CREATE_REVIEW_BATCH||3));
+const phase=String(process.env.POST_CREATE_PHASE||'all').trim().toLowerCase();
+if(!['all','bootstrap','review'].includes(phase))throw new Error(`Unsupported POST_CREATE_PHASE: ${phase}`);
+const doBootstrap=phase!=='review';
+const doReview=phase!=='bootstrap';
 const results=[];
 function run(label,script,args=[]){
   const result=spawnSync('node',[script,...args],{cwd:root,encoding:'utf8',stdio:'pipe',env:process.env,maxBuffer:32*1024*1024});
@@ -36,48 +40,60 @@ const requestFiles=fs.readdirSync(requestDir).filter(name=>name.endsWith('.json'
 const requests=requestFiles.map(file=>({file,request:read(`data/game-enrichment-requests/${file}`,{})})).filter(({request})=>request?.slug&&(!requestedSlugs.size||requestedSlugs.has(String(request.slug).toLowerCase()))).filter(({request})=>!['complete','deferred_to_catalog_lifecycle'].includes(String(request.state||'')));
 if(!requests.length){console.log('[post-create] no pending enrichment requests');process.exit(0)}
 
-// Series is deterministic when canonical identity already knows it; never spend AI on this case.
-run('known-series','scripts/materialize-known-series.mjs',requests.map(({request})=>request.slug));
-
-// Bootstrap evidence and rating for every released requested game before the slower prose build.
-for(const {request} of requests){
-  const slug=String(request.slug).toLowerCase();if(!exists(`data/drafts/${slug}.json`))continue;
-  const current=read(`data/reviews/${slug}.json`,{});
-  if(request.released!==false&&!scoreGreen(current)){
-    if(exists('scripts/discover-review-sources-web.mjs'))run(`review-discovery:${slug}`,'scripts/discover-review-sources-web.mjs',[slug,'--all']);
-    if(exists('scripts/promote-review-source-audit.mjs'))run(`review-audit:${slug}`,'scripts/promote-review-source-audit.mjs',[slug]);
-    run(`review-research:${slug}`,'scripts/prepare-review-research.mjs',[slug]);
-    if(exists('scripts/enrich-review-explicit-scores.mjs'))run(`review-scores:${slug}`,'scripts/enrich-review-explicit-scores.mjs',[slug]);
-    run(`rating:${slug}`,'scripts/calculate-ratings-from-research.mjs',[slug]);
+if(doBootstrap){
+  // Fast deterministic/source-backed modules publish before any prose synthesis.
+  run('known-series','scripts/materialize-known-series.mjs',requests.map(({request})=>request.slug));
+  for(const {request} of requests){
+    const slug=String(request.slug).toLowerCase();if(!exists(`data/drafts/${slug}.json`))continue;
+    const current=read(`data/reviews/${slug}.json`,{});
+    if(request.released!==false&&!scoreGreen(current)){
+      if(exists('scripts/discover-review-sources-web.mjs'))run(`review-discovery:${slug}`,'scripts/discover-review-sources-web.mjs',[slug,'--all']);
+      if(exists('scripts/promote-review-source-audit.mjs'))run(`review-audit:${slug}`,'scripts/promote-review-source-audit.mjs',[slug]);
+      run(`review-research:${slug}`,'scripts/prepare-review-research.mjs',[slug]);
+      if(exists('scripts/enrich-review-explicit-scores.mjs'))run(`review-scores:${slug}`,'scripts/enrich-review-explicit-scores.mjs',[slug]);
+      run(`rating:${slug}`,'scripts/calculate-ratings-from-research.mjs',[slug]);
+    }
+    run(`media:${slug}`,'scripts/enrich-game-media-from-sources.mjs',[slug]);
   }
-  run(`media:${slug}`,'scripts/enrich-game-media-from-sources.mjs',[slug]);
 }
 
-// Build full published reviews in a bounded batch. Unfinished requests re-trigger this workflow via request-state updates.
-const reviewCandidates=requests.filter(({request})=>request.released!==false&&!reviewReady(request.slug)&&Number(request.review_attempts||0)<maxAttempts).sort((a,b)=>Number(a.request.review_attempts||0)-Number(b.request.review_attempts||0)||String(a.request.requested_at||'').localeCompare(String(b.request.requested_at||''))).slice(0,reviewBatch);
+let reviewCandidates=[];
 const attempted=new Set();
-for(const {request} of reviewCandidates){
-  const slug=String(request.slug).toLowerCase();if(!exists(`data/drafts/${slug}.json`))continue;
-  attempted.add(slug);run(`review:${slug}`,'scripts/quality-control-loop.mjs',['review',slug,String(request.game_id||'')]);
-  run(`media-after-review:${slug}`,'scripts/enrich-game-media-from-sources.mjs',[slug]);
+if(doReview){
+  // Full editorial prose is an independent bounded module after bootstrap state has already been published.
+  reviewCandidates=requests.filter(({request})=>request.released!==false&&!reviewReady(request.slug)&&Number(request.review_attempts||0)<maxAttempts).sort((a,b)=>Number(a.request.review_attempts||0)-Number(b.request.review_attempts||0)||String(a.request.requested_at||'').localeCompare(String(b.request.requested_at||''))).slice(0,reviewBatch);
+  for(const {request} of reviewCandidates){
+    const slug=String(request.slug).toLowerCase();if(!exists(`data/drafts/${slug}.json`))continue;
+    attempted.add(slug);run(`review:${slug}`,'scripts/quality-control-loop.mjs',['review',slug,String(request.game_id||'')]);
+    run(`media-after-review:${slug}`,'scripts/enrich-game-media-from-sources.mjs',[slug]);
+  }
 }
+
 run('catalog-materialization','scripts/materialize-catalog-game-data.mjs');
 if(exists('scripts/materialize-review-publication-feed.mjs'))run('review-feed','scripts/materialize-review-publication-feed.mjs');
 
 let complete=0,deferred=0,pending=0;
-for(const {file,request} of requests){
-  const slug=String(request.slug).toLowerCase();
-  const next={...request,last_run_at:new Date().toISOString(),run_attempts:Number(request.run_attempts||0)+1};
-  if(attempted.has(slug))next.review_attempts=Number(request.review_attempts||0)+1;
-  const series=seriesState(slug,next),media=mediaState(slug),review=read(`data/reviews/${slug}.json`,{}),ratingReady=scoreGreen(review),articleReady=reviewReady(slug);
-  next.modules={...(next.modules||{}),series:series.ready?'ready':'needs_revision',rating:ratingReady?'ready':'needs_revision',review:articleReady?'ready':'needs_revision',media:media.ready?'ready':'needs_revision'};
-  next.observed={series_games:series.count,screenshots:media.screenshots,artwork:media.artwork,canonical_score:ratingReady?Number(review.review_score.calculation.score_10):null};
-  const reviewExhausted=next.released!==false&&!articleReady&&Number(next.review_attempts||0)>=maxAttempts;
-  const repeated=Number(next.run_attempts||0)>=maxAttempts;
-  if(articleReady&&series.ready&&media.ready){next.state='complete';complete++}
-  else if(reviewExhausted||repeated){next.state='deferred_to_catalog_lifecycle';next.deferred_reason='Immediate enrichment exhausted bounded retries; normal recurring catalog lifecycle keeps red modules queued.';deferred++}
-  else{next.state='needs_revision';pending++}
-  write(`data/game-enrichment-requests/${file}`,next);
+if(doReview){
+  for(const {file,request} of requests){
+    const slug=String(request.slug).toLowerCase();
+    const next={...request,last_run_at:new Date().toISOString(),run_attempts:Number(request.run_attempts||0)+1};
+    if(attempted.has(slug))next.review_attempts=Number(request.review_attempts||0)+1;
+    const series=seriesState(slug,next),media=mediaState(slug),review=read(`data/reviews/${slug}.json`,{}),ratingReady=scoreGreen(review),articleReady=reviewReady(slug);
+    next.modules={...(next.modules||{}),series:series.ready?'ready':'needs_revision',rating:ratingReady?'ready':'needs_revision',review:articleReady?'ready':'needs_revision',media:media.ready?'ready':'needs_revision'};
+    next.observed={series_games:series.count,screenshots:media.screenshots,artwork:media.artwork,canonical_score:ratingReady?Number(review.review_score.calculation.score_10):null};
+    const reviewExhausted=next.released!==false&&!articleReady&&Number(next.review_attempts||0)>=maxAttempts;
+    const repeated=Number(next.run_attempts||0)>=maxAttempts;
+    if(articleReady&&series.ready&&media.ready){next.state='complete';complete++}
+    else if(reviewExhausted||repeated){next.state='deferred_to_catalog_lifecycle';next.deferred_reason='Immediate review enrichment exhausted bounded retries; normal recurring catalog lifecycle keeps red modules queued.';deferred++}
+    else{next.state='needs_revision';pending++}
+    write(`data/game-enrichment-requests/${file}`,next);
+  }
+}else{
+  // Bootstrap deliberately leaves request files untouched so its checkpoint does not self-trigger/cancel the same workflow.
+  for(const {request} of requests){
+    const slug=String(request.slug).toLowerCase(),series=seriesState(slug,request),media=mediaState(slug),review=read(`data/reviews/${slug}.json`,{});
+    if(reviewReady(slug)&&series.ready&&media.ready)complete++;else pending++;
+  }
 }
-write('data/parser-runs/game-post-create-enrichment.json',{parser:'game-post-create-enrichment',status:pending?'needs_revision':'green',checked_at:new Date().toISOString(),requested:requests.length,complete,deferred,pending,review_batch:reviewCandidates.map(({request})=>request.slug),results});
-console.log(JSON.stringify({requested:requests.length,complete,deferred,pending,review_batch:reviewCandidates.map(({request})=>request.slug)},null,2));
+write('data/parser-runs/game-post-create-enrichment.json',{parser:'game-post-create-enrichment',phase,status:pending?'needs_revision':'green',checked_at:new Date().toISOString(),requested:requests.length,complete,deferred,pending,review_batch:reviewCandidates.map(({request})=>request.slug),results});
+console.log(JSON.stringify({phase,requested:requests.length,complete,deferred,pending,review_batch:reviewCandidates.map(({request})=>request.slug)},null,2));
