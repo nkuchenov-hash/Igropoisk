@@ -9,6 +9,8 @@ on:
       - 'scripts/ensure-game-page.mjs'
       - 'scripts/materialize-known-series.mjs'
       - 'scripts/enrich-game-media-from-sources.mjs'
+      - 'scripts/build-review-bootstrap-local.mjs'
+      - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/run-game-post-create-enrichment.mjs'
       - 'scripts/publish-game-post-create-overlay.mjs'
       - 'scripts/test-game-creator-post-create.mjs'
@@ -53,6 +55,8 @@ jobs:
           node --check scripts/ensure-game-page.mjs
           node --check scripts/materialize-known-series.mjs
           node --check scripts/enrich-game-media-from-sources.mjs
+          node --check scripts/build-review-bootstrap-local.mjs
+          node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/run-game-post-create-enrichment.mjs
           node --check scripts/publish-game-post-create-overlay.mjs
           node --check scripts/test-game-creator-post-create.mjs
@@ -94,7 +98,7 @@ jobs:
           ollama list | grep -q '^qwen3:1.7b' || ollama pull qwen3:1.7b
           ollama list | grep -q '^qwen3-vl:4b' || ollama pull qwen3-vl:4b
 
-      - name: Build bounded review module batch
+      - name: Build quick reviews and bounded full-review upgrades
         env:
           POST_CREATE_PHASE: review
         run: node scripts/run-game-post-create-enrichment.mjs
