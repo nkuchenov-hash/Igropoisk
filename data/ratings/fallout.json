@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/fallout.json#review_score",
   "game_slug": "fallout",
-  "checked_at": "2026-08-17T22:59:46.515Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T23:06:53.915Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,10 +37,178 @@
       "score_evidence": {
         "method": "semantic-editorial-label",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:59:46.471Z",
+        "checked_at": "2026-08-17T23:06:53.794Z",
         "url": "https://www.rpgfan.com/review/fallout/",
         "configured_source_id": "rpgfan",
         "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Fallout — PC Gamer review",
+      "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "original_score": {
+        "score": 90,
+        "scale": 100,
+        "grade": null,
+        "display": "90/100"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "attributed_publication": "PC Gamer",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "title": "Fallout — GameSpot review",
+      "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "original_score": {
+        "score": 87,
+        "scale": 100,
+        "grade": null,
+        "display": "87/100"
+      },
+      "normalized_10": 8.7,
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "configured_source_id": "gamespot",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "attributed_publication": "GameSpot",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "Fallout — GameRevolution review",
+      "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "original_score": {
+        "score": 91,
+        "scale": 100,
+        "grade": null,
+        "display": "91/100"
+      },
+      "normalized_10": 9.1,
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "configured_source_id": "game-revolution",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "attributed_publication": "GameRevolution",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "quandary-archive",
+      "publication": "Quandary",
+      "title": "Fallout — Quandary review",
+      "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "original_score": {
+        "score": 100,
+        "scale": 100,
+        "grade": null,
+        "display": "100/100"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "configured_source_id": "quandary-archive",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "attributed_publication": "Quandary",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "source_id": "source-7",
+      "configured_source_id": "electric-playground-archive",
+      "publication": "Electric Playground",
+      "title": "Fallout — Electric Playground review",
+      "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "original_score": {
+        "score": 90,
+        "scale": 100,
+        "grade": null,
+        "display": "90/100"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "configured_source_id": "electric-playground-archive",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "attributed_publication": "Electric Playground",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "source_id": "source-8",
+      "configured_source_id": "all-game-guide-archive",
+      "publication": "All Game Guide",
+      "title": "Fallout — All Game Guide review",
+      "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "original_score": {
+        "score": 90,
+        "scale": 100,
+        "grade": null,
+        "display": "90/100"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "configured_source_id": "all-game-guide-archive",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "attributed_publication": "All Game Guide",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
       }
     }
   ],
@@ -53,11 +221,17 @@
     }
   ],
   "calculation": {
-    "source_count": 1,
+    "source_count": 7,
     "values": [
-      8.8
+      8.8,
+      9,
+      8.7,
+      9.1,
+      10,
+      9,
+      9
     ],
-    "mean_10": 8.8,
-    "score_10": 8.8
+    "mean_10": 9.0857,
+    "score_10": 9.1
   }
 }

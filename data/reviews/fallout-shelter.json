@@ -1,15 +1,19 @@
 {
-  "schema_version": 11,
+  "schema_version": 12,
   "game_slug": "fallout-shelter",
   "game_id": "game_cdd4b40d1bcc712b6661",
-  "updated_at": "2026-08-17T22:58:36.289Z",
+  "updated_at": "2026-08-17T23:06:03.407Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "maximum": 20,
     "accepted": 1,
-    "status": "red-needs-revision"
+    "status": "red-needs-revision",
+    "full_registry_scan": true,
+    "checked_registered_sources": 41,
+    "applicable_registered_sources": 41,
+    "maximum": 20,
+    "post_create_verified_corpus_preserved": true
   },
   "regional_discovery": {
     "region": "ru",
@@ -114,8 +118,8 @@
       "domain": "gamerevolution.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:58:35.856Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T23:04:52.084Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
@@ -124,14 +128,36 @@
       "score_evidence": {
         "method": "registry:game-revolution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:58:36.224Z",
+        "checked_at": "2026-08-17T23:06:03.338Z",
         "url": "https://www.gamerevolution.com/review/68407-fallout-shelter-review",
         "configured_source_id": "game-revolution",
         "direct_publisher": true
       }
     }
   ],
-  "rejected": [],
+  "rejected": [
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/fallout-shelter-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/fallout-shelter",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/fallout-shelter-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    }
+  ],
   "source_proposals": [],
   "review_score": {
     "status": "red-needs-revision",
@@ -168,7 +194,7 @@
         "score_evidence": {
           "method": "registry:game-revolution",
           "scope": "editorial_review",
-          "checked_at": "2026-08-17T22:58:36.224Z",
+          "checked_at": "2026-08-17T23:06:03.338Z",
           "url": "https://www.gamerevolution.com/review/68407-fallout-shelter-review",
           "configured_source_id": "game-revolution",
           "direct_publisher": true

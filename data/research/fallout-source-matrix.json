@@ -1,17 +1,25 @@
 {
-  "schema_version": 9,
+  "schema_version": 12,
   "game_slug": "fallout",
-  "generated_at": "2026-08-17T22:59:42.867Z",
+  "generated_at": "2026-08-17T23:06:53.053Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
     "target_sources": 20,
     "maximum_sources": 20,
     "historical": true,
-    "min_contemporary": 4,
     "regional_discovery_required": true,
-    "unknown_publisher_policy": "reject_until_registered",
-    "canonical_score_requires_exact_version": true
+    "discovery_provider": "registered-direct-publisher-web-v8",
+    "audit_all": true,
+    "canonical_score_requires_exact_version": true,
+    "score_extraction_separate": true,
+    "search_title_variants": true,
+    "review_hub_following": true,
+    "historical_critic_index": "metacritic",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true,
+    "post_create_verified_corpus_preserved": true
   },
   "accepted": [
     {
@@ -55,8 +63,8 @@
       "domain": "thesixthaxis.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:59:42.867Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T23:05:21.305Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
@@ -104,8 +112,8 @@
       "domain": "rpgfan.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:59:42.867Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T23:05:21.305Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
@@ -114,15 +122,679 @@
       "score_evidence": {
         "method": "semantic-editorial-label",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:59:46.471Z",
+        "checked_at": "2026-08-17T23:06:53.794Z",
         "url": "https://www.rpgfan.com/review/fallout/",
         "configured_source_id": "rpgfan",
         "direct_publisher": true
       }
+    },
+    {
+      "id": "source-3",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Fallout — PC Gamer review",
+      "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "resolved_url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "source_kind": "review",
+      "platform": "PC",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 90,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Historical critic review for Fallout attributed by Metacritic to PC Gamer.",
+      "evidence_points": [
+        "This sequel to an all-time classic is one of the standout RPGs for the 1990s. [Jan 1998, p.221]"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-historical-index",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "method": "metacritic-critic-attribution-v15",
+        "index_url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "attributed_publication": "PC Gamer",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-4",
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "title": "Fallout — GameSpot review",
+      "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "resolved_url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "source_kind": "review",
+      "platform": "PC",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 87,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Historical critic review for Fallout attributed by Metacritic to GameSpot.",
+      "evidence_points": [
+        "Fallout's detailed graphics, compelling plot, and intuitive gameplay should deservedly broaden its appeal beyond the hard-core role-playing game audience. Put simply, Fallout may be the best role-playing game to be released in years."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-historical-index",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "method": "metacritic-critic-attribution-v15",
+        "index_url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "configured_source_id": "gamespot",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "attributed_publication": "GameSpot",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-5",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "Fallout — GameRevolution review",
+      "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "resolved_url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "source_kind": "review",
+      "platform": "PC",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 91,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Historical critic review for Fallout attributed by Metacritic to GameRevolution.",
+      "evidence_points": [
+        "The story is so well developed in this game you'll wonder why you've been playing mindless shooting games like \"Quake.\" When you start the game you'll be treated to with one of the most chilling, well-written introductions a game has ever been blessed with."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-historical-index",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "method": "metacritic-critic-attribution-v15",
+        "index_url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "configured_source_id": "game-revolution",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "attributed_publication": "GameRevolution",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-6",
+      "configured_source_id": "quandary-archive",
+      "publication": "Quandary",
+      "title": "Fallout — Quandary review",
+      "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "resolved_url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "source_kind": "review",
+      "platform": "PC",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 100,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Historical critic review for Fallout attributed by Metacritic to Quandary.",
+      "evidence_points": [
+        "Perhaps the strongest aspect of Fallout is that it is ideal for RPG newbies yet at the same time provides a depth of role-playing that veterans can really get stuck into. It also has the best replay value of any game I've experienced to date."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-historical-index",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "method": "metacritic-critic-attribution-v15",
+        "index_url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "configured_source_id": "quandary-archive",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "attributed_publication": "Quandary",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-7",
+      "configured_source_id": "electric-playground-archive",
+      "publication": "Electric Playground",
+      "title": "Fallout — Electric Playground review",
+      "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "resolved_url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "source_kind": "review",
+      "platform": "PC",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 90,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Historical critic review for Fallout attributed by Metacritic to Electric Playground.",
+      "evidence_points": [
+        "This top-down RPG is without a doubt the best"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-historical-index",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "method": "metacritic-critic-attribution-v15",
+        "index_url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "configured_source_id": "electric-playground-archive",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "attributed_publication": "Electric Playground",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-8",
+      "configured_source_id": "all-game-guide-archive",
+      "publication": "All Game Guide",
+      "title": "Fallout — All Game Guide review",
+      "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "resolved_url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+      "source_kind": "review",
+      "platform": "PC",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 90,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Historical critic review for Fallout attributed by Metacritic to All Game Guide.",
+      "evidence_points": [
+        "The game play is smooth, using action points for movement and combat and the inventory system is easily managed. Fallout has one of the best character development systems of any computerized role-playing game and the graphics and story make for an excellent gaming experience."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-historical-index",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "method": "metacritic-critic-attribution-v15",
+        "index_url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:06:49.160Z",
+        "url": "https://www.metacritic.com/game/fallout/critic-reviews/?platform=pc",
+        "configured_source_id": "all-game-guide-archive",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "attributed_publication": "All Game Guide",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
     }
   ],
-  "rejected": [],
-  "source_proposals": [],
+  "rejected": [
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/fallout-review",
+      "reasons": [
+        "HTTP 404"
+      ]
+    }
+  ],
+  "source_checks": [
+    {
+      "source_id": "igromania",
+      "name": "Игромания",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "stopgame",
+      "name": "StopGame",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "kanobu",
+      "name": "Канобу",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "playground",
+      "name": "PlayGround.ru",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "vgtimes",
+      "name": "VGTimes",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ixbt-games",
+      "name": "iXBT.games",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamemag",
+      "name": "GameMAG.ru",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "vk-play",
+      "name": "VK Play Media",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "shazoo",
+      "name": "Shazoo",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "absolute-games-archive",
+      "name": "Absolute Games",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pc-gamer",
+      "name": "PC Gamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamespot",
+      "name": "GameSpot",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ign",
+      "name": "IGN",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "eurogamer",
+      "name": "Eurogamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-informer",
+      "name": "Game Informer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamesradar",
+      "name": "GamesRadar+",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "polygon",
+      "name": "Polygon",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rock-paper-shotgun",
+      "name": "Rock Paper Shotgun",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-revolution",
+      "name": "GameRevolution",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ars-technica",
+      "name": "Ars Technica",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamespy-archive",
+      "name": "GameSpy",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezone",
+      "name": "GameZone",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamepressure",
+      "name": "Gamepressure",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gry-online",
+      "name": "GRYOnline",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "worthplaying",
+      "name": "WorthPlaying",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rpgfan",
+      "name": "RPGFan",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "rpgamer",
+      "name": "RPGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "destructoid",
+      "name": "Destructoid",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "shacknews",
+      "name": "Shacknews",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pcworld",
+      "name": "PCWorld",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "guardian-games",
+      "name": "The Guardian",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "push-square",
+      "name": "Push Square",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "nintendo-life",
+      "name": "Nintendo Life",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "digital-trends",
+      "name": "Digital Trends",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "wired",
+      "name": "WIRED",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "egm",
+      "name": "EGM",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamebanshee",
+      "name": "GameBanshee",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "den-of-geek",
+      "name": "Den of Geek",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "videogamer",
+      "name": "VideoGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-sixth-axis",
+      "name": "TheSixthAxis",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "pc-invasion",
+      "name": "PC Invasion",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-spew",
+      "name": "GameSpew",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "hooked-gamers",
+      "name": "Hooked Gamers",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamepro-archive",
+      "name": "GamePro",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-over-online-archive",
+      "name": "Game Over Online",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "quandary-archive",
+      "name": "Quandary",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "electric-playground-archive",
+      "name": "Electric Playground",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "all-game-guide-archive",
+      "name": "All Game Guide",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezilla-archive",
+      "name": "Gamezilla!",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    }
+  ],
   "regional_discovery": {
     "region": "ru",
     "checks": [
@@ -191,12 +863,21 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "accepted": 2,
-    "scored": 1,
+    "registered_editorial": 49,
+    "checked": 49,
+    "accepted": 8,
+    "scored": 7,
     "context_only_versions": 0,
-    "contemporary": 2,
-    "green": false,
-    "passed": false,
-    "needs_more": 3
+    "blocked_verified": 0,
+    "contemporary": 8,
+    "green": true,
+    "passed": true,
+    "needs_more": 0,
+    "historical_index_rows": 6,
+    "historical_index_added": 6,
+    "historical_index_scores_added": 0,
+    "removed_user_generated": 0,
+    "historical_index_preserved": 6,
+    "trusted_scores_preserved": 7
   }
 }

@@ -1,15 +1,19 @@
 {
-  "schema_version": 11,
+  "schema_version": 12,
   "game_slug": "fallout-brotherhood-of-steel",
   "game_id": "game_7b5c4d2231e5c05c96d8",
-  "updated_at": "2026-08-17T22:57:44.542Z",
+  "updated_at": "2026-08-17T23:05:04.352Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "maximum": 20,
     "accepted": 1,
-    "status": "red-needs-revision"
+    "status": "red-needs-revision",
+    "full_registry_scan": true,
+    "checked_registered_sources": 49,
+    "applicable_registered_sources": 49,
+    "maximum": 20,
+    "post_create_verified_corpus_preserved": true
   },
   "regional_discovery": {
     "region": "ru",
@@ -120,8 +124,8 @@
       "domain": "rpgfan.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:57:43.264Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T23:04:33.867Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
@@ -130,14 +134,22 @@
       "score_evidence": {
         "method": "semantic-editorial-label",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:57:44.504Z",
+        "checked_at": "2026-08-17T23:05:04.311Z",
         "url": "https://www.rpgfan.com/review/fallout-brotherhood-of-steel/",
         "configured_source_id": "rpgfan",
         "direct_publisher": true
       }
     }
   ],
-  "rejected": [],
+  "rejected": [
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/fallout-brotherhood-of-steel-review",
+      "reasons": [
+        "HTTP 404"
+      ]
+    }
+  ],
   "source_proposals": [],
   "review_score": {
     "status": "red-needs-revision",
@@ -174,7 +186,7 @@
         "score_evidence": {
           "method": "semantic-editorial-label",
           "scope": "editorial_review",
-          "checked_at": "2026-08-17T22:57:44.504Z",
+          "checked_at": "2026-08-17T23:05:04.311Z",
           "url": "https://www.rpgfan.com/review/fallout-brotherhood-of-steel/",
           "configured_source_id": "rpgfan",
           "direct_publisher": true

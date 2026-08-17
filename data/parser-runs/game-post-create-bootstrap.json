@@ -2,7 +2,7 @@
   "parser": "game-post-create-enrichment",
   "phase": "bootstrap",
   "status": "needs_revision",
-  "checked_at": "2026-08-17T23:01:28.392Z",
+  "checked_at": "2026-08-17T23:08:22.138Z",
   "requested": 13,
   "complete": 0,
   "deferred": 0,
@@ -35,11 +35,59 @@
       "stderr": ""
     },
     {
+      "label": "review-discovery:fallout-2",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "needs_revision",
+      "exit_code": 13,
+      "stdout": "",
+      "stderr": "Warning: Detected unsettled top-level await at file:///home/runner/work/Igropoisk/Igropoisk/scripts/discover-review-sources-web-v15.mjs:24\nawait import('./discover-review-sources-web-v14.mjs');\n^\n\n\n\n"
+    },
+    {
+      "label": "review-audit:fallout-2",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/promote-review-source-audit.mjs:16\nif(matrix.policy?.audit_all!==true)throw new Error('Only a complete --all source audit may be promoted into the canonical corpus');\n                                         ^\n\nError: Only a complete --all source audit may be promoted into the canonical corpus\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/promote-review-source-audit.mjs:16:42\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "review-research:fallout-2",
+      "script": "scripts/prepare-post-create-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"historical_index_preserved\": 0,\n  \"trusted_scores_preserved\": 1,\n  \"regional_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-scores:fallout-2",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rating:fallout-2",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.4,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
       "label": "media:fallout-76",
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
       "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"historical\": false,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 19,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 24,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 48,\n  \"total_artwork\": 8\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-2",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"historical\": true,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 14,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 15,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 48,\n  \"total_artwork\": 10\n}\n",
       "stderr": ""
     },
     {
@@ -68,10 +116,10 @@
     },
     {
       "label": "review-research:fallout-brotherhood-of-steel",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"rejected\": 0,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n",
+      "script": "scripts/prepare-post-create-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"historical_index_preserved\": 0,\n  \"trusted_scores_preserved\": 1,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -91,59 +139,11 @@
       "stderr": ""
     },
     {
-      "label": "review-discovery:fallout-2",
-      "script": "scripts/discover-review-sources-web.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"registered_editorial\": 49,\n  \"checked\": 49,\n  \"accepted\": 2,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"fallout-2\",\n  \"numbered_identity_key\": \"fallout 2\",\n  \"removed_wrong_version_sources\": 1,\n  \"accepted_after_filter\": 1\n}\n{\n  \"slug\": \"fallout-2\",\n  \"historical\": true,\n  \"professional_only\": true,\n  \"accepted\": 10,\n  \"scored\": 10,\n  \"metacritic_rows\": 9,\n  \"indexed_sources_added\": 9,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"green\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-audit:fallout-2",
-      "script": "scripts/promote-review-source-audit.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"green\",\n  \"accepted\": 10,\n  \"trusted_scores_preserved\": 10,\n  \"checked\": 49,\n  \"applicable\": 49,\n  \"regional_complete\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-research:fallout-2",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"rejected\": 0,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n",
-      "stderr": ""
-    },
-    {
       "label": "media:fallout-brotherhood-of-steel",
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
       "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"historical\": true,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 13,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 0,\n  \"total_artwork\": 2\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-scores:fallout-2",
-      "script": "scripts/enrich-review-explicit-scores.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "rating:fallout-2",
-      "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.4,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "media:fallout-2",
-      "script": "scripts/enrich-game-media-from-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"historical\": true,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 14,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 21,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 44,\n  \"total_artwork\": 10\n}\n",
       "stderr": ""
     },
     {
@@ -164,10 +164,10 @@
     },
     {
       "label": "review-research:fallout-shelter",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"rejected\": 0,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n",
+      "script": "scripts/prepare-post-create-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"historical_index_preserved\": 0,\n  \"trusted_scores_preserved\": 1,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -184,14 +184,6 @@
       "status": "needs_revision",
       "exit_code": 2,
       "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 0,\n  \"score_10\": 7,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "media:fallout-shelter",
-      "script": "scripts/enrich-game-media-from-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"historical\": false,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 14,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 8,\n  \"total_artwork\": 3\n}\n",
       "stderr": ""
     },
     {
@@ -212,10 +204,10 @@
     },
     {
       "label": "review-research:fallout-tactics-brotherhood-of-steel",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"rejected\": 0,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n",
+      "script": "scripts/prepare-post-create-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 3,\n  \"scored\": 3,\n  \"historical_index_preserved\": 3,\n  \"trusted_scores_preserved\": 3,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -223,15 +215,39 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"accepted\": 3,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 3\n}\n",
       "stderr": ""
     },
     {
       "label": "rating:fallout-tactics-brotherhood-of-steel",
       "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 3,\n  \"excluded_sources\": 0,\n  \"score_10\": 9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-shelter",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"historical\": false,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 14,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 8,\n  \"total_artwork\": 3\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-tactics-brotherhood-of-steel",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"historical\": true,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 14,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 5,\n  \"total_artwork\": 3\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:the-blood-of-dawnwalker",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"the-blood-of-dawnwalker\",\n  \"historical\": false,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 13,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 14,\n  \"added_artwork\": 3,\n  \"total_screenshots\": 48,\n  \"total_artwork\": 6\n}\n",
       "stderr": ""
     },
     {
@@ -252,10 +268,10 @@
     },
     {
       "label": "review-research:fallout",
-      "script": "scripts/prepare-review-research.mjs",
+      "script": "scripts/prepare-post-create-review-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 2,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"rejected\": 0,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n",
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"green\",\n  \"accepted\": 8,\n  \"scored\": 7,\n  \"historical_index_preserved\": 6,\n  \"trusted_scores_preserved\": 7,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -263,23 +279,15 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"accepted\": 2,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"accepted\": 8,\n  \"scored\": 7,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 6\n}\n",
       "stderr": ""
     },
     {
       "label": "rating:fallout",
       "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 1,\n  \"score_10\": 8.8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "media:fallout-tactics-brotherhood-of-steel",
-      "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"historical\": true,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 13,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 5,\n  \"total_artwork\": 3\n}\n",
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"green\",\n  \"scored_sources\": 7,\n  \"excluded_sources\": 1,\n  \"score_10\": 9.1,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
       "stderr": ""
     },
     {
@@ -287,15 +295,15 @@
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"historical\": true,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 15,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 26,\n  \"total_artwork\": 3\n}\n",
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"historical\": true,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 16,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 26,\n  \"total_artwork\": 3\n}\n",
       "stderr": ""
     },
     {
-      "label": "media:the-blood-of-dawnwalker",
+      "label": "media:tomb-raider-legacy-of-atlantis",
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"the-blood-of-dawnwalker\",\n  \"historical\": false,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 13,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 11,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 48,\n  \"total_artwork\": 3\n}\n",
+      "stdout": "{\n  \"slug\": \"tomb-raider-legacy-of-atlantis\",\n  \"historical\": false,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 13,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 9,\n  \"total_artwork\": 3\n}\n",
       "stderr": ""
     },
     {
@@ -316,10 +324,10 @@
     },
     {
       "label": "review-research:luna-abyss",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"luna-abyss\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 2,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"rejected\": 0,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n",
+      "script": "scripts/prepare-post-create-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"luna-abyss\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 2,\n  \"scored\": 2,\n  \"historical_index_preserved\": 0,\n  \"trusted_scores_preserved\": 2,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -339,19 +347,11 @@
       "stderr": ""
     },
     {
-      "label": "media:tomb-raider-legacy-of-atlantis",
-      "script": "scripts/enrich-game-media-from-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"tomb-raider-legacy-of-atlantis\",\n  \"historical\": false,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 13,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 8,\n  \"total_artwork\": 3\n}\n",
-      "stderr": ""
-    },
-    {
       "label": "media:luna-abyss",
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"luna-abyss\",\n  \"historical\": false,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 15,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 30,\n  \"total_artwork\": 3\n}\n",
+      "stdout": "{\n  \"slug\": \"luna-abyss\",\n  \"historical\": false,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 15,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 6,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 36,\n  \"total_artwork\": 3\n}\n",
       "stderr": ""
     },
     {
@@ -372,10 +372,10 @@
     },
     {
       "label": "review-research:tides-of-annihilation",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"tides-of-annihilation\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"rejected\": 0,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n",
+      "script": "scripts/prepare-post-create-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"tides-of-annihilation\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"historical_index_preserved\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -399,7 +399,7 @@
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"tides-of-annihilation\",\n  \"historical\": false,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 13,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 12,\n  \"total_artwork\": 3\n}\n",
+      "stdout": "{\n  \"slug\": \"tides-of-annihilation\",\n  \"historical\": false,\n  \"page_concurrency\": 6,\n  \"probe_concurrency\": 10,\n  \"pages_checked\": 13,\n  \"registered_media_surfaces\": 12,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 12,\n  \"total_artwork\": 3\n}\n",
       "stderr": ""
     }
   ]
