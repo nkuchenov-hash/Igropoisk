@@ -1,35 +1,41 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "publication": {
-    "status": "needs_revision",
-    "gate_passed": false,
-    "public_ready": false,
+    "status": "published",
+    "gate_passed": true,
+    "page_available": true,
+    "public_ready": true,
+    "editorial_ready": false,
     "review_ready": false,
+    "review_required": false,
     "media_green": false,
-    "mode": "structured_sources",
-    "updated_at": "2026-08-13T19:36:21.454Z",
+    "mode": "game_creator_structured_sources",
+    "creator_source": "news",
+    "updated_at": "2026-08-17T16:52:56.364Z",
     "gate": {
       "canonical_game_id": "game_52651675bf5dda52d41b",
       "title": true,
       "media": false,
-      "source_count": 0,
-      "minimum_screenshots": 6,
-      "accepted_screenshots": 0,
-      "missing": [
-        "identity.source",
-        "companies.developers",
-        "classification.genres",
-        "classification.platforms",
-        "media.hero_or_cover",
-        "screenshots:0/6"
-      ],
-      "passed": false
+      "source_count": 1,
+      "missing": [],
+      "passed": true
     }
+  },
+  "modules": {
+    "page": "ready",
+    "media": "pending",
+    "media_enrichment": "queued",
+    "review": "pending",
+    "series": "not_known",
+    "game_dna": "pending",
+    "similarity": "pending",
+    "guides": "missing"
   },
   "game_id": "game_52651675bf5dda52d41b",
   "identity": {
     "slug": "the",
     "title": "the",
+    "series": null,
     "steam_appid": null,
     "aliases": [
       "the"
@@ -80,8 +86,15 @@
     "developer": "",
     "publisher": ""
   },
-  "sources": [],
-  "updated_at": "2026-08-13T19:36:21.454Z",
+  "sources": [
+    {
+      "name": "Проверенный источник (news)",
+      "url": "https://www.polygon.com/pokemon-center-etb-new-release-prismatic-destined-rivals-30th-in-stock/",
+      "type": "database",
+      "checked_at": "2026-08-17T16:52:56.364Z"
+    }
+  ],
+  "updated_at": "2026-08-17T16:52:56.364Z",
   "relations": {
     "franchise": {
       "name": "",
