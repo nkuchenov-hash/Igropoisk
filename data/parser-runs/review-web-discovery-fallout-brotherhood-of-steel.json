@@ -1,8 +1,8 @@
 {
-  "parser": "review-professional-historical-index-v15",
+  "parser": "review-professional-historical-index-v15.1",
   "status": "needs_revision",
   "game_slug": "fallout-brotherhood-of-steel",
-  "checked_at": "2026-08-17T23:05:03.263Z",
+  "checked_at": "2026-08-17T23:14:35.862Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 1,
   "scored": 1,
@@ -359,6 +359,16 @@
   "search_title_variants": true,
   "review_hub_following": true,
   "professional_only": true,
+  "legacy_stack": {
+    "primary": {
+      "script": "scripts/discover-review-sources-web-v14.mjs",
+      "status": 2,
+      "signal": null,
+      "error": "",
+      "timed_out": false
+    },
+    "fallback": null
+  },
   "historical_critic_index": {
     "provider": "metacritic",
     "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/?platform=pc",

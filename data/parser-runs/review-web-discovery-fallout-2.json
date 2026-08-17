@@ -1,8 +1,8 @@
 {
-  "parser": "review-professional-historical-index-v15",
+  "parser": "review-professional-historical-index-v15.1",
   "status": "green",
   "game_slug": "fallout-2",
-  "checked_at": "2026-08-17T22:58:00.389Z",
+  "checked_at": "2026-08-17T23:14:35.382Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 10,
   "scored": 10,
@@ -287,8 +287,8 @@
       "source_id": "the-sixth-axis",
       "name": "TheSixthAxis",
       "region": "global",
-      "status": "found",
-      "notes": "verified direct review"
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     },
     {
       "source_id": "pc-invasion",
@@ -359,6 +359,22 @@
   "search_title_variants": true,
   "review_hub_following": true,
   "professional_only": true,
+  "legacy_stack": {
+    "primary": {
+      "script": "scripts/discover-review-sources-web-v14.mjs",
+      "status": 13,
+      "signal": null,
+      "error": "",
+      "timed_out": false
+    },
+    "fallback": {
+      "script": "scripts/discover-review-sources-web-v8.mjs",
+      "status": 2,
+      "signal": null,
+      "error": "",
+      "timed_out": false
+    }
+  },
   "historical_critic_index": {
     "provider": "metacritic",
     "url": "https://www.metacritic.com/game/fallout-2/critic-reviews/?platform=pc",
