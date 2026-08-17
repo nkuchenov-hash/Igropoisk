@@ -70,6 +70,9 @@ function publisherNativeRequest(searchUrl,{slug=process.argv[2]||''}={}){
   if(!slug)return null;
   let query='';
   try{query=new URL(String(searchUrl||'')).searchParams.get('q')||''}catch{return null}
+  if(/(?:^|\s)site:(?:www\.)?gamespot\.com(?:\s|$)/i.test(query)){
+    return{url:`https://www.gamespot.com/games/${slug}/reviews/`,pathPattern:/\/reviews\//i};
+  }
   if(/(?:^|\s)site:(?:www\.)?gamerevolution\.com(?:\s|$)/i.test(query)){
     const terms=slug.replace(/[-_]+/g,' ').replace(/\s+/g,' ').trim();
     return{url:`https://www.gamerevolution.com/?s=${encodeURIComponent(terms)}`,pathPattern:/\/review\//i};
@@ -97,6 +100,12 @@ export function validateBingRssAdapter(){
   }
   const ign=bingRssSearchUrls('https://www.bing.com/search?q=site%3Aign.com+Rainbow+Six+Siege+review');
   if(ign.length!==1)throw new Error('Unconfigured path-scoped search must stay publisher-specific.');
+  const gamespotNative=publisherNativeRequest('https://www.bing.com/search?q=site%3Agamespot.com+Rainbow+Six+Siege+review',{slug:'tom-clancys-rainbow-six-siege'});
+  if(gamespotNative?.url!=='https://www.gamespot.com/games/tom-clancys-rainbow-six-siege/reviews/')throw new Error('GameSpot game-review hub contract failed.');
+  const gamespotHtml='<a href="/reviews/rainbow-six-siege-review-2015/1900-6416324/">Rainbow Six Siege Review (2015)</a><a href="/articles/rainbow-six-siege-guide/1100-1/">Guide</a>';
+  const convertedGameSpot=publisherLinksToSearchHtml(gamespotHtml,gamespotNative.url,gamespotNative);
+  if(!convertedGameSpot.includes('https://www.gamespot.com/reviews/rainbow-six-siege-review-2015/1900-6416324/'))throw new Error('GameSpot review-hub extraction failed.');
+  if(convertedGameSpot.includes('/articles/'))throw new Error('GameSpot review-hub extraction leaked non-review links.');
   const native=publisherNativeRequest('https://www.bing.com/search?q=site%3Agamerevolution.com+Rainbow+Six+Siege+review',{slug:'tom-clancys-rainbow-six-siege'});
   if(!native?.url.includes('gamerevolution.com/?s=tom%20clancys%20rainbow%20six%20siege'))throw new Error('GameRevolution publisher-search request contract failed.');
   const nativeHtml='<a href="/review/69596-tom-clancys-rainbow-six-siege-review"><span>Tom Clancy’s Rainbow Six: Siege Review</span></a><a href="/guides/1-other">Guide</a>';
