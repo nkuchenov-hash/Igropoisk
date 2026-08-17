@@ -12,7 +12,9 @@ const historicalDiscoveryV14=read('scripts/discover-review-sources-web-v14.mjs')
 const criticDiscoveryV15=read('scripts/discover-review-sources-web-v15.mjs');
 const postCreateResearch=read('scripts/prepare-post-create-review-research.mjs');
 const reviewRegistry=read('scripts/lib/review-source-registry.mjs');
+const reviewRegistryBase=read('config/parsers/review-source-registry.json');
 const reviewRegistryExtra=read('config/parsers/review-source-registry.extra.json');
+const reviewRegistryConfig=`${reviewRegistryBase}\n${reviewRegistryExtra}`;
 const scoreExtractor=read('scripts/lib/review-score-extractor.mjs');
 const quickReview=read('scripts/build-review-bootstrap-local.mjs');
 const reviewFeed=read('scripts/materialize-review-publication-feed.mjs');
@@ -53,7 +55,7 @@ for(const marker of ["spawnSync('node'","scripts/discover-review-sources-web-v14
 for(const marker of ['isTrustedEditorialScore','historical_index_preserved','post_create_verified_corpus_preserved','metascore_as_vote:false','user_scores_as_votes:false'])if(!postCreateResearch.includes(marker))fail(`Post-create verified corpus preservation missing: ${marker}`);
 if(!reviewRegistry.includes('user_generated_review')||!reviewRegistry.includes('от\\s+пользователя'))fail('User-generated review pages are not excluded from editorial corpus');
 if(!scoreExtractor.includes("method==='historical-critic-index-attribution'")||!scoreExtractor.includes("method==='critic-index-attribution'")||!scoreExtractor.includes("evidence.index_source==='metacritic'")||!scoreExtractor.includes('evidence.aggregate_score_used!==true')||!scoreExtractor.includes('evidence.user_score_used!==true'))fail('Attributed critic-score evidence contract missing');
-for(const marker of ['"gamestar"','"the-games-machine"','"cd-action"','"gamesbeat"','"gamezebo"'])if(!reviewRegistryExtra.includes(marker))fail(`Released-game professional source missing: ${marker}`);
+for(const marker of ['"gamestar"','"the-games-machine"','"cd-action"','"gamesbeat"','"gamezebo"'])if(!reviewRegistryConfig.includes(marker))fail(`Released-game professional source missing: ${marker}`);
 if(!quickReview.includes("review_stage:'bootstrap'")||!quickReview.includes('minimum_independent_professional_sources:3'))fail('Quick review is not a separately identified, 3-source professional bootstrap');
 if(!quickReview.includes("review?.review_score?.status!=='green'"))fail('Quick review can publish before canonical rating is green');
 if(!reviewFeed.includes('bootstrapDesired')||!reviewFeed.includes("feed.igropoisk_article.review_stage==='full'"))fail('Full review feed materializer can erase a valid bootstrap review or cannot upgrade it');
