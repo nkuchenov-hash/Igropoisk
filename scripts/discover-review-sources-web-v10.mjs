@@ -56,15 +56,24 @@ const relaxPublisherQuery=query=>String(query||'')
   .replace(/\b(?:score|verdict)\b/gi,' ')
   .replace(/\s+/g,' ')
   .trim();
+const dropPublisherYear=query=>String(query||'')
+  .replace(/\s+(?:19|20)\d{2}\b/g,' ')
+  .replace(/\s+/g,' ')
+  .trim();
+const variantsFor=(query,{relaxed=false}={})=>{
+  const yearless=dropPublisherYear(query),variants=[query,yearless];
+  if(relaxed)variants.push(relaxPublisherQuery(query),relaxPublisherQuery(yearless));
+  return variants;
+};
 
 export function bingRssSearchUrls(searchUrl){
   let original;
   try{original=new URL(String(searchUrl||''))}catch{return[]}
-  const query=original.searchParams.get('q')||'',queries=[query];
+  const query=original.searchParams.get('q')||'',queries=[...variantsFor(query)];
   for(const {match,scope} of publisherReviewScopes){
     if(!match.test(query))continue;
     const scoped=query.replace(match,scope);
-    queries.push(scoped,relaxPublisherQuery(query),relaxPublisherQuery(scoped));
+    queries.push(...variantsFor(query,{relaxed:true}),...variantsFor(scoped,{relaxed:true}));
     break;
   }
   return [...new Set(queries.filter(Boolean))].map(q=>{
@@ -115,13 +124,17 @@ export function validateBingRssAdapter(){
   ];
   for(const [domain,scope] of cases){
     const urls=bingRssSearchUrls(`https://www.bing.com/search?q=${encodeURIComponent(`site:${domain} "Rainbow Six Siege" review score verdict 2015`)}`);
-    if(urls.length!==4)throw new Error(`${domain} must receive generic, review-path and relaxed RSS queries.`);
+    if(urls.length!==8)throw new Error(`${domain} must receive year-bound, yearless, review-path and relaxed RSS queries.`);
     const queries=urls.map(url=>url.searchParams.get('q')||'');
     if(!queries.some(query=>query.includes(`site:${scope}`)))throw new Error(`${domain} review-path scope contract failed.`);
     if(!queries.some(query=>query.includes('review 2015')&&!/\b(?:score|verdict)\b/i.test(query)))throw new Error(`${domain} relaxed review query contract failed.`);
+    if(!queries.some(query=>query.includes('review')&&!/\b(?:19|20)\d{2}\b/.test(query)))throw new Error(`${domain} yearless review query contract failed.`);
   }
+  const pcgamerYear=bingRssSearchUrls(`https://www.bing.com/search?q=${encodeURIComponent('site:pcgamer.com "Mount & Blade II: Bannerlord" review verdict 2020')}`);
+  if(pcgamerYear.length!==2)throw new Error('Unscoped publishers must receive both release-year and yearless queries.');
+  if(!pcgamerYear.some(url=>!/\b2020\b/.test(url.searchParams.get('q')||'')))throw new Error('Unscoped publisher yearless query contract failed.');
   const ign=bingRssSearchUrls('https://www.bing.com/search?q=site%3Aign.com+Rainbow+Six+Siege+review');
-  if(ign.length!==1)throw new Error('Unconfigured path-scoped search must stay publisher-specific.');
+  if(ign.length!==1)throw new Error('Yearless unconfigured search must remain deduplicated.');
   const gamespotNative=publisherNativeRequests('https://www.bing.com/search?q=site%3Agamespot.com+Rainbow+Six+Siege+review',{slug:'tom-clancys-rainbow-six-siege'})[0];
   if(gamespotNative?.url!=='https://www.gamespot.com/games/tom-clancys-rainbow-six-siege/reviews/')throw new Error('GameSpot game-review hub contract failed.');
   const gamespotHtml='<a href="/reviews/rainbow-six-siege-review-2015/1900-6416324/">Rainbow Six Siege Review (2015)</a><a href="/articles/rainbow-six-siege-guide/1100-1/">Guide</a>';
