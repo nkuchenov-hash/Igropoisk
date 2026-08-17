@@ -1,8 +1,21 @@
 #!/usr/bin/env node
 
-const networkFetch=globalThis.fetch;
-if(typeof networkFetch!=='function')throw new Error('Global fetch is required for review discovery.');
+const rawNetworkFetch=globalThis.fetch;
+if(typeof rawNetworkFetch!=='function')throw new Error('Global fetch is required for review discovery.');
 const slug=String(process.argv[2]||'').trim();
+const DEFAULT_DISCOVERY_TIMEOUT_MS=Math.max(2000,Number(process.env.REVIEW_DISCOVERY_TIMEOUT_MS||8000));
+
+function boundedInit(init={}){
+  if(init?.signal)return init;
+  return {...init,signal:AbortSignal.timeout(DEFAULT_DISCOVERY_TIMEOUT_MS)};
+}
+async function networkFetch(input,init){
+  try{return await rawNetworkFetch(input,boundedInit(init))}
+  catch(error){
+    if(error?.name==='AbortError'||error?.name==='TimeoutError')return new Response('',{status:504,statusText:'Review discovery source timeout'});
+    throw error;
+  }
+}
 
 export function sixthAxisTagSlug(value){
   return String(value||'')
@@ -15,6 +28,7 @@ export function sixthAxisTagSlug(value){
 
 export function validatePublisherTagFallback(){
   if(sixthAxisTagSlug('mount-and-blade-ii-bannerlord')!=='mount-blade-2-bannerlord')throw new Error('TheSixthAxis tag slug normalization failed.');
+  if(DEFAULT_DISCOVERY_TIMEOUT_MS<2000)throw new Error('Review discovery timeout must stay bounded and non-trivial.');
   return true;
 }
 validatePublisherTagFallback();
@@ -29,7 +43,7 @@ globalThis.fetch=async(input,init)=>{
   const tagUrl=`https://www.thesixthaxis.com/tag/${sixthAxisTagSlug(slug)}/`;
   const [search,tag]=await Promise.allSettled([
     networkFetch(input,init),
-    networkFetch(tagUrl,{...init,redirect:'follow',signal:AbortSignal.timeout(7000),headers:{...(init?.headers||{}),'user-agent':'Mozilla/5.0 (compatible; IgropoiskReviewDiscovery/12.0)','accept-language':'en,ru;q=.8'}})
+    networkFetch(tagUrl,{...init,redirect:'follow',headers:{...(init?.headers||{}),'user-agent':'Mozilla/5.0 (compatible; IgropoiskReviewDiscovery/12.1)','accept-language':'en,ru;q=.8'}})
   ]);
   const parts=[];
   for(const result of [tag,search]){
@@ -43,5 +57,5 @@ globalThis.fetch=async(input,init)=>{
 try{
   await import('./discover-review-sources-web-v11.mjs');
 }finally{
-  globalThis.fetch=networkFetch;
+  globalThis.fetch=rawNetworkFetch;
 }
