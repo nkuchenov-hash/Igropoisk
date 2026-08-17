@@ -33,7 +33,8 @@ if(!/paths=\([^\n]*data\/game-enrichment-requests/.test(newsWorkflow))fail('News
 if(!enrichmentWorkflow.includes("OPENAI_API_KEY: ''"))fail('Immediate enrichment still depends on paid OpenAI quota');
 if(!enrichmentWorkflow.includes('qwen3:1.7b')||!enrichmentWorkflow.includes('qwen3-vl:4b'))fail('Immediate enrichment lacks local text/vision fallbacks');
 if(!enrichmentWorkflow.includes('scripts/publish-game-post-create-overlay.mjs'))fail('Immediate enrichment does not use conflict-safe publication');
+if(!enrichmentWorkflow.includes('cancel-in-progress: true'))fail('Fresh Game Creator enrichment cannot cancel a stale run');
 if(!publisher.includes("freshObj!==baseObj"))fail('Conflict-safe publisher does not preserve newer parallel staging updates');
 if(!publisher.includes('for(let publishAttempt=1;publishAttempt<=5;publishAttempt++)'))fail('Conflict-safe publisher does not retry moving staging');
 
-console.log('Game Creator post-create contract passed: series, rating/review and verified-source media enrichment are automatic, persisted by every fast creator wrapper, locally model-capable, conflict-safe, and remain non-blocking for base page existence.');
+console.log('Game Creator post-create contract passed: series, rating/review and verified-source media enrichment are automatic, persisted by every fast creator wrapper, locally model-capable, conflict-safe, stale-run cancelling, and remain non-blocking for base page existence.');
