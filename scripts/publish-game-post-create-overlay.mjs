@@ -10,7 +10,7 @@ const missing='__missing__';
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const roots=[
   'data/game-enrichment-requests','data/game-registry','data/franchises','data/research','data/reviews','data/ratings',
-  'data/articles','data/article-drafts','data/article-media','data/media-candidates','data/parser-runs','data/quality-control',
+  'data/review-bootstrap','data/articles','data/article-drafts','data/article-media','data/media-candidates','data/parser-runs','data/quality-control',
   'data/drafts','data/catalog-visible.json','article'
 ];
 function git(argv,{quiet=false}={}){return execFileSync('git',argv,{encoding:'utf8',stdio:quiet?['ignore','pipe','pipe']:['ignore','pipe','inherit']}).trim()}

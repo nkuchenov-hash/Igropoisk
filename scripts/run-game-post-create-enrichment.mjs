@@ -45,11 +45,7 @@ async function mapLimit(items,limit,worker){
   let cursor=0;
   const count=Math.min(limit,items.length);
   await Promise.all(Array.from({length:count},async()=>{
-    while(true){
-      const index=cursor++;
-      if(index>=items.length)return;
-      await worker(items[index],index);
-    }
+    while(true){const index=cursor++;if(index>=items.length)return;await worker(items[index],index)}
   }));
 }
 const scoreGreen=review=>review?.review_score?.status==='green'&&Number.isFinite(Number(review?.review_score?.calculation?.score_10));
@@ -57,15 +53,12 @@ const reviewReady=slug=>{
   const review=read(`data/reviews/${slug}.json`,{}),article=read(`data/articles/${slug}.json`,{}),score=Number(review?.review_score?.calculation?.score_10);
   return review?.publication_gate?.status==='green'&&scoreGreen(review)&&String(article?.publication_status||'').toLowerCase()==='published'&&Number(article?.score)===score&&exists(`article/${slug}/index.html`);
 };
-const mediaState=slug=>{
-  const draft=read(`data/drafts/${slug}.json`,{}),screens=(draft?.media?.screenshots||[]).length,art=(draft?.media?.artwork||[]).length;
-  return{ready:screens>=12&&art>=3,screenshots:screens,artwork:art};
+const quickReviewReady=slug=>{
+  const review=read(`data/reviews/${slug}.json`,{}),article=read(`data/review-bootstrap/${slug}.json`,{}),score=Number(review?.review_score?.calculation?.score_10);
+  return scoreGreen(review)&&String(article?.publication_status||'').toLowerCase()==='published'&&Number(article?.score)===score&&exists(`article/${slug}/index.html`);
 };
-const seriesState=(slug,request)=>{
-  if(!request.series)return{ready:true,count:0};
-  const franchise=read(`data/franchises/${slug}.json`,{}),count=(franchise.games||[]).length;
-  return{ready:Boolean(franchise.name&&count>=2),count};
-};
+const mediaState=slug=>{const draft=read(`data/drafts/${slug}.json`,{}),screens=(draft?.media?.screenshots||[]).length,art=(draft?.media?.artwork||[]).length;return{ready:screens>=12&&art>=3,screenshots:screens,artwork:art}};
+const seriesState=(slug,request)=>{if(!request.series)return{ready:true,count:0};const franchise=read(`data/franchises/${slug}.json`,{}),count=(franchise.games||[]).length;return{ready:Boolean(franchise.name&&count>=2),count}};
 if(!fs.existsSync(requestDir)){console.log('[post-create] no enrichment request directory');process.exit(0)}
 const requestFiles=fs.readdirSync(requestDir).filter(name=>name.endsWith('.json')).sort();
 const requests=requestFiles.map(file=>({file,request:read(`data/game-enrichment-requests/${file}`,{})})).filter(({request})=>request?.slug&&(!requestedSlugs.size||requestedSlugs.has(String(request.slug).toLowerCase()))).filter(({request})=>!['complete','deferred_to_catalog_lifecycle'].includes(String(request.state||'')));
@@ -94,16 +87,18 @@ if(doBootstrap){
 let reviewCandidates=[];
 const attempted=new Set();
 if(doReview){
-  // Full editorial prose is an independent bounded module after bootstrap state has already been published.
+  // Every released game with a green canonical rating gets a publishable compact review first.
+  // The heavy 20-source editorial article is only an upgrade and may never erase/block this bootstrap review.
   reviewCandidates=requests.filter(({request})=>request.released!==false&&!reviewReady(request.slug)&&Number(request.review_attempts||0)<maxAttempts).sort((a,b)=>Number(a.request.review_attempts||0)-Number(b.request.review_attempts||0)||String(a.request.requested_at||'').localeCompare(String(b.request.requested_at||''))).slice(0,reviewBatch);
   for(const {request} of reviewCandidates){
     const slug=String(request.slug).toLowerCase();if(!exists(`data/drafts/${slug}.json`))continue;
-    attempted.add(slug);run(`review:${slug}`,'scripts/quality-control-loop.mjs',['review',slug,String(request.game_id||'')]);
+    attempted.add(slug);
+    if(scoreGreen(read(`data/reviews/${slug}.json`,{}))&&!quickReviewReady(slug)&&exists('scripts/build-review-bootstrap-local.mjs'))run(`review-bootstrap:${slug}`,'scripts/build-review-bootstrap-local.mjs',[slug]);
+    run(`review-upgrade:${slug}`,'scripts/quality-control-loop.mjs',['review',slug,String(request.game_id||'')]);
     run(`media-after-review:${slug}`,'scripts/enrich-game-media-from-sources.mjs',[slug]);
   }
 
   // Catalog-wide materialization belongs to the slower review/finalization phase only.
-  // Running it during bootstrap rewrites unrelated games and breaks module isolation.
   run('catalog-materialization','scripts/materialize-catalog-game-data.mjs');
   if(exists('scripts/materialize-review-publication-feed.mjs'))run('review-feed','scripts/materialize-review-publication-feed.mjs');
 }
@@ -114,22 +109,19 @@ if(doReview){
     const slug=String(request.slug).toLowerCase();
     const next={...request,last_run_at:new Date().toISOString(),run_attempts:Number(request.run_attempts||0)+1};
     if(attempted.has(slug))next.review_attempts=Number(request.review_attempts||0)+1;
-    const series=seriesState(slug,next),media=mediaState(slug),review=read(`data/reviews/${slug}.json`,{}),ratingReady=scoreGreen(review),articleReady=reviewReady(slug);
-    next.modules={...(next.modules||{}),series:series.ready?'ready':'needs_revision',rating:ratingReady?'ready':'needs_revision',review:articleReady?'ready':'needs_revision',media:media.ready?'ready':'needs_revision'};
-    next.observed={series_games:series.count,screenshots:media.screenshots,artwork:media.artwork,canonical_score:ratingReady?Number(review.review_score.calculation.score_10):null};
-    const reviewExhausted=next.released!==false&&!articleReady&&Number(next.review_attempts||0)>=maxAttempts;
+    const series=seriesState(slug,next),media=mediaState(slug),review=read(`data/reviews/${slug}.json`,{}),ratingReady=scoreGreen(review),fullReady=reviewReady(slug),quickReady=quickReviewReady(slug);
+    next.modules={...(next.modules||{}),series:series.ready?'ready':'needs_revision',rating:ratingReady?'ready':'needs_revision',review:fullReady?'ready':quickReady?'bootstrap_ready':'needs_revision',media:media.ready?'ready':'needs_revision'};
+    next.observed={series_games:series.count,screenshots:media.screenshots,artwork:media.artwork,canonical_score:ratingReady?Number(review.review_score.calculation.score_10):null,review_stage:fullReady?'full':quickReady?'bootstrap':null};
+    const reviewExhausted=next.released!==false&&!fullReady&&Number(next.review_attempts||0)>=maxAttempts;
     const repeated=Number(next.run_attempts||0)>=maxAttempts;
-    if(articleReady&&series.ready&&media.ready){next.state='complete';complete++}
-    else if(reviewExhausted||repeated){next.state='deferred_to_catalog_lifecycle';next.deferred_reason='Immediate review enrichment exhausted bounded retries; normal recurring catalog lifecycle keeps red modules queued.';deferred++}
+    if(fullReady&&series.ready&&media.ready){next.state='complete';complete++}
+    else if(reviewExhausted||repeated){next.state='deferred_to_catalog_lifecycle';next.deferred_reason=quickReady?'Bootstrap review is published; full editorial upgrade continues in the recurring catalog lifecycle.':'Immediate review enrichment exhausted bounded retries; normal recurring catalog lifecycle keeps red modules queued.';deferred++}
     else{next.state='needs_revision';pending++}
     write(`data/game-enrichment-requests/${file}`,next);
   }
 }else{
   // Bootstrap deliberately leaves request files untouched so its checkpoint does not self-trigger/cancel the same workflow.
-  for(const {request} of requests){
-    const slug=String(request.slug).toLowerCase(),series=seriesState(slug,request),media=mediaState(slug);
-    if(reviewReady(slug)&&series.ready&&media.ready)complete++;else pending++;
-  }
+  for(const {request} of requests){const slug=String(request.slug).toLowerCase(),series=seriesState(slug,request),media=mediaState(slug);if(reviewReady(slug)&&series.ready&&media.ready)complete++;else pending++}
 }
 const reportName=phase==='bootstrap'?'game-post-create-bootstrap.json':'game-post-create-enrichment.json';
 write(`data/parser-runs/${reportName}`,{parser:'game-post-create-enrichment',phase,status:pending?'needs_revision':'green',checked_at:new Date().toISOString(),requested:requests.length,complete,deferred,pending,bootstrap_concurrency:doBootstrap?bootstrapConcurrency:0,review_batch:reviewCandidates.map(({request})=>request.slug),results});
