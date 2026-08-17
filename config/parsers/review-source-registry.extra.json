@@ -1,6 +1,6 @@
 {
-  "schema_version": 2,
-  "description": "Additive professional review sources used by the canonical review discovery pipeline. Direct publishers are preferred; historical-only publishers may also be recovered through an attributed critic index. Aggregator scores and user scores never count as publication votes.",
+  "schema_version": 3,
+  "description": "Additive professional review sources used by the canonical review discovery pipeline. Direct publishers are preferred; attributed Metacritic critic rows may recover individual publication votes. Aggregate Metascore and user scores never count as publication votes.",
   "sources": [
     {
       "id": "the-sixth-axis",
@@ -11,17 +11,7 @@
       "regions": ["global"],
       "trust": 0.84,
       "weight": 0.84,
-      "review": {
-        "discovery_url": "https://www.thesixthaxis.com/category/reviews/",
-        "score": {
-          "policy": "explicit_only",
-          "extractor_profile": "generic-explicit",
-          "default_scale": 10,
-          "patterns": [
-            {"pattern": "Summary.{0,2000}?\\b([0-9]+(?:[.,][0-9]+)?)\\b\\s+Image\\s+Written by", "scale": 10}
-          ]
-        }
-      }
+      "review": {"discovery_url": "https://www.thesixthaxis.com/category/reviews/", "score": {"policy": "explicit_only", "extractor_profile": "generic-explicit", "default_scale": 10, "patterns": [{"pattern": "Summary.{0,2000}?\\b([0-9]+(?:[.,][0-9]+)?)\\b\\s+Image\\s+Written by", "scale": 10}]}}
     },
     {
       "id": "pc-invasion",
@@ -31,14 +21,7 @@
       "regions": ["global"],
       "trust": 0.84,
       "weight": 0.84,
-      "review": {
-        "discovery_url": "https://www.pcinvasion.com/reviews/",
-        "score": {
-          "policy": "explicit_only",
-          "extractor_profile": "generic-explicit",
-          "default_scale": 10
-        }
-      }
+      "review": {"discovery_url": "https://www.pcinvasion.com/reviews/", "score": {"policy": "explicit_only", "extractor_profile": "generic-explicit", "default_scale": 10}}
     },
     {
       "id": "game-spew",
@@ -49,17 +32,7 @@
       "regions": ["global"],
       "trust": 0.82,
       "weight": 0.82,
-      "review": {
-        "discovery_url": "https://www.gamespew.com/category/reviews/",
-        "score": {
-          "policy": "explicit_only",
-          "extractor_profile": "generic-explicit",
-          "default_scale": 10,
-          "patterns": [
-            {"pattern": "GameSpew(?:'|’)s Score\\s*[:–—-]?\\s*([0-9]+(?:[.,][0-9]+)?)", "scale": 10}
-          ]
-        }
-      }
+      "review": {"discovery_url": "https://www.gamespew.com/category/reviews/", "score": {"policy": "explicit_only", "extractor_profile": "generic-explicit", "default_scale": 10, "patterns": [{"pattern": "GameSpew(?:'|’)s Score\\s*[:–—-]?\\s*([0-9]+(?:[.,][0-9]+)?)", "scale": 10}]}}
     },
     {
       "id": "hooked-gamers",
@@ -69,21 +42,59 @@
       "regions": ["global"],
       "trust": 0.81,
       "weight": 0.81,
-      "review": {
-        "discovery_url": "https://www.hookedgamers.com/reviews/",
-        "page_rules": {
-          "url_allow": ["/review/", "review/article-"],
-          "url_deny": ["/preview/", "/features/"]
-        },
-        "score": {
-          "policy": "explicit_only",
-          "extractor_profile": "generic-explicit",
-          "default_scale": 10,
-          "patterns": [
-            {"pattern": "([0-9]+(?:[.,][0-9]+)?)\\s+fun score\\b", "scale": 10}
-          ]
-        }
-      }
+      "review": {"discovery_url": "https://www.hookedgamers.com/reviews/", "page_rules": {"url_allow": ["/review/", "review/article-"], "url_deny": ["/preview/", "/features/"]}, "score": {"policy": "explicit_only", "extractor_profile": "generic-explicit", "default_scale": 10, "patterns": [{"pattern": "([0-9]+(?:[.,][0-9]+)?)\\s+fun score\\b", "scale": 10}]}}
+    },
+    {
+      "id": "gamestar",
+      "name": "GameStar",
+      "domains": ["gamestar.de"],
+      "language": "de",
+      "regions": ["global"],
+      "trust": 0.84,
+      "weight": 0.84,
+      "review": {"discovery_url": "https://www.gamestar.de/tests/", "score": {"policy": "explicit_only", "extractor_profile": "generic-explicit", "default_scale": 100}}
+    },
+    {
+      "id": "the-games-machine",
+      "name": "The Games Machine",
+      "domains": ["thegamesmachine.it"],
+      "language": "it",
+      "regions": ["global"],
+      "trust": 0.82,
+      "weight": 0.82,
+      "review": {"discovery_url": "https://www.thegamesmachine.it/recensioni/", "score": {"policy": "explicit_only", "extractor_profile": "generic-explicit", "default_scale": 100}}
+    },
+    {
+      "id": "cd-action",
+      "name": "CD-Action",
+      "aliases": ["CD Action"],
+      "domains": ["cdaction.pl"],
+      "language": "pl",
+      "regions": ["global"],
+      "trust": 0.82,
+      "weight": 0.82,
+      "review": {"discovery_url": "https://cdaction.pl/recenzje", "score": {"policy": "explicit_only", "extractor_profile": "generic-explicit", "default_scale": 100}}
+    },
+    {
+      "id": "gamesbeat",
+      "name": "GamesBeat",
+      "aliases": ["Games Beat"],
+      "domains": ["gamesbeat.com"],
+      "language": "en",
+      "regions": ["global"],
+      "trust": 0.84,
+      "weight": 0.84,
+      "review": {"discovery_url": "https://gamesbeat.com/category/games/reviews/", "score": {"policy": "explicit_only", "extractor_profile": "generic-explicit", "default_scale": 100}}
+    },
+    {
+      "id": "gamezebo",
+      "name": "Gamezebo",
+      "domains": ["gamezebo.com"],
+      "language": "en",
+      "regions": ["global"],
+      "trust": 0.8,
+      "weight": 0.8,
+      "review": {"discovery_url": "https://www.gamezebo.com/reviews/", "score": {"policy": "explicit_only", "extractor_profile": "generic-explicit", "default_scale": 5}}
     },
     {
       "id": "gamepro-archive",
