@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/fallout-3.json#review_score",
   "game_slug": "fallout-3",
-  "checked_at": "2026-08-17T20:46:40.805Z",
+  "checked_at": "2026-08-17T22:00:44.997Z",
   "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:46:40.768Z",
+        "checked_at": "2026-08-17T22:00:44.008Z",
         "url": "https://gameinformer.com/games/fallout_3/b/ps3/archive/2009/09/22/review.aspx",
         "configured_source_id": "game-informer",
         "direct_publisher": true
@@ -59,7 +59,7 @@
       "score_evidence": {
         "method": "registry:hooked-gamers",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:46:40.768Z",
+        "checked_at": "2026-08-17T22:00:44.008Z",
         "url": "https://www.hookedgamers.com/pc/fallout_3/review/article-301.html",
         "configured_source_id": "hooked-gamers",
         "direct_publisher": true
@@ -81,9 +81,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:46:40.768Z",
+        "checked_at": "2026-08-17T22:00:44.008Z",
         "url": "https://www.gamesradar.com/fallout-3-review/",
         "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "title": "Fallout 3 Review | RPGFan",
+      "url": "https://www.rpgfan.com/review/fallout-3",
+      "original_score": {
+        "score": 91,
+        "scale": 100,
+        "grade": null,
+        "display": "91/100"
+      },
+      "normalized_10": 9.1,
+      "score_evidence": {
+        "method": "semantic-editorial-label",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T22:00:44.960Z",
+        "url": "https://www.rpgfan.com/review/fallout-3/",
+        "configured_source_id": "rpgfan",
         "direct_publisher": true
       }
     }
@@ -97,13 +119,14 @@
     }
   ],
   "calculation": {
-    "source_count": 3,
+    "source_count": 4,
     "values": [
       9.5,
       10,
-      9
+      9,
+      9.1
     ],
-    "mean_10": 9.5,
-    "score_10": 9.5
+    "mean_10": 9.4,
+    "score_10": 9.4
   }
 }

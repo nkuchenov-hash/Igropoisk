@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "skatesterre",
-  "generated_at": "2026-08-17T20:42:48.312Z",
+  "generated_at": "2026-08-17T21:56:51.960Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -43,21 +43,48 @@
       "mechanics": [],
       "domain": "gamespew.com",
       "validation": {
-        "status": "accepted",
-        "checked_at": "2026-08-17T20:42:48.312Z",
-        "method": "registered-direct-publisher-http-v8",
-        "review_page": {
-          "accepted": true,
-          "reason": "review_path"
-        }
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T21:56:51.960Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
       },
-      "score": null,
-      "scale": null,
+      "score": 5,
+      "scale": 10,
       "grade": "",
-      "score_eligible": false
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T21:58:10.987Z",
+        "url": "https://www.gamespew.com/2026/08/skatesterre-review/",
+        "configured_source_id": "game-spew",
+        "direct_publisher": true
+      }
     }
   ],
-  "rejected": [],
+  "rejected": [
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/skatesterre",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/skatesterre-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/skatesterre-review",
+      "reasons": [
+        "HTTP 503"
+      ]
+    }
+  ],
   "source_checks": [
     {
       "source_id": "igromania",
@@ -412,9 +439,9 @@
     "registered_editorial": 41,
     "checked": 41,
     "accepted": 1,
-    "scored": 0,
+    "scored": 1,
     "context_only_versions": 0,
-    "blocked_verified": 0,
+    "blocked_verified": 1,
     "contemporary": 1,
     "green": false,
     "passed": false,

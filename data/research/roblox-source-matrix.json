@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "roblox",
-  "generated_at": "2026-08-17T20:38:36.646Z",
+  "generated_at": "2026-08-17T21:52:59.484Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -43,7 +43,7 @@
       "domain": "stopgame.ru",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T20:38:36.646Z",
+        "checked_at": "2026-08-17T21:52:59.484Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -56,7 +56,29 @@
       "score_eligible": false
     }
   ],
-  "rejected": [],
+  "rejected": [
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/roblox-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/roblox",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/roblox-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    }
+  ],
   "source_checks": [
     {
       "source_id": "igromania",
@@ -181,8 +203,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "unavailable",
+      "notes": "search transport unavailable"
     },
     {
       "source_id": "ars-technica",

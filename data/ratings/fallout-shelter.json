@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/fallout-shelter.json#review_score",
   "game_slug": "fallout-shelter",
-  "checked_at": "2026-08-17T21:37:45.080Z",
+  "checked_at": "2026-08-17T22:00:55.172Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,12 +20,37 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "Fallout Shelter Review",
+      "url": "https://www.gamerevolution.com/review/68407-fallout-shelter-review",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T22:00:55.093Z",
+        "url": "https://www.gamerevolution.com/review/68407-fallout-shelter-review",
+        "configured_source_id": "game-revolution",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      7
+    ],
+    "mean_10": 7,
+    "score_10": 7
   }
 }

@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/fallout.json#review_score",
   "game_slug": "fallout",
-  "checked_at": "2026-08-17T21:38:08.018Z",
+  "checked_at": "2026-08-17T21:59:37.386Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,7 +20,30 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-2",
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "title": "Fallout Review | RPGFan",
+      "url": "https://www.rpgfan.com/review/fallout",
+      "original_score": {
+        "score": 88,
+        "scale": 100,
+        "grade": null,
+        "display": "88/100"
+      },
+      "normalized_10": 8.8,
+      "score_evidence": {
+        "method": "semantic-editorial-label",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T21:59:37.350Z",
+        "url": "https://www.rpgfan.com/review/fallout/",
+        "configured_source_id": "rpgfan",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [
     {
       "configured_source_id": "the-sixth-axis",
@@ -30,9 +53,11 @@
     }
   ],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      8.8
+    ],
+    "mean_10": 8.8,
+    "score_10": 8.8
   }
 }

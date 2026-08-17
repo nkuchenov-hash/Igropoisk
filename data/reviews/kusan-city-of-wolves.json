@@ -2,7 +2,7 @@
   "schema_version": 11,
   "game_slug": "kusan-city-of-wolves",
   "game_id": "game_673d6b80b8df77b0b712",
-  "updated_at": "2026-08-17T20:42:48.215Z",
+  "updated_at": "2026-08-17T21:56:51.866Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
@@ -113,7 +113,7 @@
       "domain": "pushsquare.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T20:41:31.597Z",
+        "checked_at": "2026-08-17T21:55:34.188Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -127,14 +127,36 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:42:48.175Z",
+        "checked_at": "2026-08-17T21:56:51.790Z",
         "url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
         "configured_source_id": "push-square",
         "direct_publisher": true
       }
     }
   ],
-  "rejected": [],
+  "rejected": [
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/kusan-city-of-wolves",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/kusan-city-of-wolves-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/kusan-city-of-wolves-review",
+      "reasons": [
+        "HTTP 404"
+      ]
+    }
+  ],
   "review_score": {
     "status": "red-needs-revision",
     "owner": "review",
@@ -170,7 +192,7 @@
         "score_evidence": {
           "method": "jsonld.reviewRating",
           "scope": "editorial_review",
-          "checked_at": "2026-08-17T20:42:48.175Z",
+          "checked_at": "2026-08-17T21:56:51.790Z",
           "url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
           "configured_source_id": "push-square",
           "direct_publisher": true
