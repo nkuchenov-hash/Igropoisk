@@ -1,4 +1,4 @@
-import {GameRegistryApi} from './game-registry.mjs';
+import {GameRegistryApi, fieldValue} from './game-registry.mjs';
 
 const strongTypes = new Set(['official_site','official_platform_store','official_press_release','structured_database','professional_publication']);
 const officialTypes = new Set(['official_site','official_platform_store','official_press_release']);
@@ -73,6 +73,13 @@ export function registerVerifiedGameImports(registry = {}, requests = []) {
     const entity = registration.entity || null;
     const decision = registration.decision || '';
     if (!entity || ['ambiguous','needs_review'].includes(decision)) { issues.push({index, title, slug, status:decision || 'unresolved', reason:'import_identity_needs_review'}); continue; }
+    if (request.series && !entity.identity?.series?.value) {
+      entity.identity = entity.identity || {};
+      entity.identity.series = fieldValue(request.series, candidate.source, {confidence: Number(request.confidence || 0.99)});
+      entity.updatedAt = new Date().toISOString();
+      entity.auditLog = Array.isArray(entity.auditLog) ? entity.auditLog : [];
+      entity.auditLog.push({at: entity.updatedAt, action:'verified_series_attached', actor:'verified-game-import', reason:'verified import supplied missing canonical series'});
+    }
     if (decision === 'created') created += 1; else matched += 1;
     resolved.push({
       import_id: request.import_id || slug,

@@ -20,6 +20,11 @@ const decisionPromise=Promise.all([
 });
 let observer=null,scheduled=false,applying=false;
 const set=(node,value)=>{if(node&&node.textContent!==value)node.textContent=value};
+function suppressUnpublishedReviewRows(){
+  const grid=document.querySelector('#reviewGrid');
+  if(grid&&grid.querySelector('.quality-review-row'))grid.innerHTML='';
+  set(document.querySelector('#externalReviewCount'),'');
+}
 function schedule(){if(scheduled||applying)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;enforce().catch(e=>console.warn('Игропоиск: canonical review publication control',e))})}
 async function enforce(){
   if(applying)return;
@@ -34,12 +39,14 @@ async function enforce(){
     const body=node.querySelector('.ig-review-feature__body');
     node.querySelectorAll('.article-source-note').forEach(n=>n.remove());
     if(!isReleased){
+      suppressUnpublishedReviewRows();
       set(score,'—');
       set(meta,'Оценка появится после выхода игры');
       node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());
       return;
     }
     if(!green){
+      suppressUnpublishedReviewRows();
       set(score,'—');
       set(meta,'Канонический обзор проходит обязательную проверку');
       node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());

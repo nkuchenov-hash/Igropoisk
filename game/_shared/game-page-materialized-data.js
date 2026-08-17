@@ -7,6 +7,8 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&
 const arr=value=>Array.isArray(value)?value:[];
 const fetchJSON=async url=>{try{const response=await fetch(url,{cache:'no-store'});return response.ok?await response.json():null}catch{return null}};
 const waitFor=async selector=>{for(let i=0;i<120;i++){const node=document.querySelector(selector);if(node)return node;await new Promise(resolve=>setTimeout(resolve,100))}return null};
+const mediaUrl=item=>typeof item==='string'?item:String(item?.url||item?.src||item?.image||item?.thumbnail||'');
+const canonicalMedia=value=>{try{const url=new URL(value,location.href);url.hash='';return `${url.origin}${url.pathname}${url.search}`}catch{return String(value||'')}};
 function removeRatingControls(){for(const selector of ['#rateGame','#rateInline','#ratingDialog'])document.querySelector(selector)?.remove()}
 async function installRatingRemoval(){for(let i=0;i<80;i++){const marker=document.querySelector('#ratingDialogTitle');if(marker?.textContent?.trim())break;await new Promise(resolve=>setTimeout(resolve,100))}removeRatingControls();const observer=new MutationObserver(removeRatingControls);observer.observe(document.body,{childList:true,subtree:true})}
 const platformLabel=value=>({windows:'Windows',win:'Windows',mac:'macOS',macos:'macOS',linux:'Linux',ps5:'PlayStation 5',ps4:'PlayStation 4',xboxseries:'Xbox Series X|S',xboxone:'Xbox One',switch:'Nintendo Switch'}[String(value||'').toLowerCase()]||String(value||''));
@@ -42,6 +44,31 @@ function renderFranchise(data,title){
   let panel=document.querySelector('#franchisePanel');if(!panel){panel=document.createElement('section');panel.id='franchisePanel';panel.className='ig-panel game-panel franchise-panel';overview.appendChild(panel)}
   panel.innerHTML=`<div class="ig-toolbar franchise-panel__head"><div><h2>Игры серии</h2><span>${esc(data.name)}</span></div></div><div class="franchise-row">${games.map(game=>{const gameSlug=game.slug||String(game.title).toLowerCase().replace(/[^a-z0-9а-яё]+/gi,'-').replace(/^-|-$/g,'');return `<a class="ig-card franchise-game" href="../${encodeURIComponent(gameSlug)}/"><b>${esc(game.title)}</b><span>${esc(game.release_year||game.year||'')}</span></a>`}).join('')}</div>`;
 }
+function renderEnrichedMedia(draft,title){
+  if(!draft?.media)return;
+  const renderGroup=(groupSelector,targetSelector,countSelector,items,label)=>{
+    const group=document.querySelector(groupSelector),target=document.querySelector(targetSelector),count=document.querySelector(countSelector);if(!group||!target)return;
+    const existing=new Set([...target.querySelectorAll('img')].map(image=>canonicalMedia(image.src)));
+    const template=target.querySelector('.ig-media-card');
+    let added=0;
+    for(const [index,item] of arr(items).entries()){
+      const url=mediaUrl(item),key=canonicalMedia(url);if(!url||existing.has(key))continue;
+      const source=typeof item==='object'?String(item.source_url||''):'';
+      const card=template?template.cloneNode(true):document.createElement('article');
+      if(!template){card.className='ig-media-card';card.innerHTML=`<img src="${esc(url)}" alt="${esc(title)}" loading="lazy"><b>${esc(label)} ${index+1}</b><small>${source?'Проверенный источник':esc(title)}</small>`}
+      else{
+        const image=card.querySelector('img');if(image){image.src=url;image.alt=title;image.removeAttribute('data-fallback')}
+        const heading=card.querySelector('b');if(heading)heading.textContent=`${label} ${index+1}`;
+        const note=card.querySelector('small');if(note)note.textContent=source?'Проверенный источник':title;
+      }
+      target.appendChild(card);existing.add(key);added++;
+    }
+    const total=target.querySelectorAll('.ig-media-card').length;if(total){group.hidden=false;if(count)count.textContent=String(total)}
+    return added;
+  };
+  renderGroup('#screenshotGroup','#mediaScreenshots','#screenshotCount',draft.media.screenshots,'Скриншот');
+  renderGroup('#artGroup','#mediaArt','#artCount',draft.media.artwork,'Арт');
+}
 function renderGuides(payload,title,hero){
   const guides=arr(payload?.guides||payload?.items).filter(item=>item?.title&&item?.url);
   if(!guides.length)return;
@@ -65,6 +92,7 @@ async function main(){
   renderRequirements(parser||draft);
   const title=document.querySelector('#gameTitle')?.textContent?.trim()||draft?.identity?.title||parser?.identity?.title||slug;
   renderFranchise(franchiseFile||draft?.relations?.franchise,title);
+  renderEnrichedMedia(draft,title);
   const hero=document.querySelector('.game-hero__preview')?.src||parser?.media?.hero||draft?.media?.hero||'';
   renderGuides(guides,title,hero);
 }

@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root=process.cwd();
+const slug=String(process.argv[2]||'').trim().toLowerCase();
+if(!slug)throw new Error('Usage: enrich-game-media-from-sources <slug>');
+const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
+const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,`${JSON.stringify(value,null,2)}\n`)};
+const mediaUrl=item=>typeof item==='string'?item:String(item?.url||item?.src||item?.image||'');
+const canonical=url=>{try{const parsed=new URL(url);parsed.hash='';return `${parsed.origin}${parsed.pathname}${parsed.search}`}catch{return String(url||'')}};
+const uniqueByUrl=items=>{const seen=new Set();return items.filter(item=>{const key=canonical(mediaUrl(item));if(!key||seen.has(key))return false;seen.add(key);return true})};
+const blockedHost=host=>/(?:yandex\.|bing\.|google\.|duckduckgo\.|facebook\.|twitter\.|x\.com$|doubleclick\.|googlesyndication\.)/i.test(host);
+const blockedAsset=url=>/(?:logo|avatar|author|icon|favicon|sprite|badge|emoji|tracking|pixel|analytics|advert|banner-ad|placeholder|1x1)/i.test(url);
+const htmlDecode=value=>String(value||'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+function png(buf){if(buf.length>=24&&buf.slice(1,4).toString()==='PNG')return{width:buf.readUInt32BE(16),height:buf.readUInt32BE(20)}}
+function jpeg(buf){if(buf.length<4||buf[0]!==0xff||buf[1]!==0xd8)return null;let i=2;while(i+9<buf.length){if(buf[i]!==0xff){i++;continue}const marker=buf[i+1],len=buf.readUInt16BE(i+2);if([0xc0,0xc1,0xc2,0xc3,0xc5,0xc6,0xc7,0xc9,0xca,0xcb,0xcd,0xce,0xcf].includes(marker))return{height:buf.readUInt16BE(i+5),width:buf.readUInt16BE(i+7)};if(len<2)break;i+=2+len}return null}
+function webp(buf){if(buf.length<30||buf.slice(0,4).toString()!=='RIFF'||buf.slice(8,12).toString()!=='WEBP')return null;const type=buf.slice(12,16).toString();if(type==='VP8X')return{width:1+buf.readUIntLE(24,3),height:1+buf.readUIntLE(27,3)};if(type==='VP8 '&&buf.length>=30&&buf[23]===0x9d&&buf[24]===0x01&&buf[25]===0x2a)return{width:buf.readUInt16LE(26)&0x3fff,height:buf.readUInt16LE(28)&0x3fff};return null}
+async function probe(url){
+  try{
+    const parsed=new URL(url);if(!/^https?:$/.test(parsed.protocol)||blockedHost(parsed.hostname)||blockedAsset(parsed.pathname))return null;
+    const response=await fetch(url,{redirect:'follow',headers:{Range:'bytes=0-524287','user-agent':'IgropoiskMediaEnricher/1.0',accept:'image/avif,image/webp,image/png,image/jpeg,*/*'},signal:AbortSignal.timeout(10000)});
+    if(!response.ok)return null;const type=String(response.headers.get('content-type')||'').toLowerCase();if(!type.startsWith('image/'))return null;
+    const bytes=Buffer.from(await response.arrayBuffer());if(bytes.length<18000)return null;const size=png(bytes)||jpeg(bytes)||webp(bytes);if(!size?.width||!size?.height)return null;
+    return{url:response.url||url,width:size.width,height:size.height,bytes:bytes.length,mime:type.split(';')[0]};
+  }catch{return null}
+}
+function extractImages(html,sourceUrl){
+  const raw=[];
+  const patterns=[
+    /<meta[^>]+(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image(?::src)?)["'][^>]+content=["']([^"']+)["']/gi,
+    /<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image(?::src)?)["']/gi,
+    /<img[^>]+(?:data-src|data-original|data-lazy-src|src)=["']([^"']+)["']/gi
+  ];
+  for(const pattern of patterns){let match;while((match=pattern.exec(html)))raw.push(match[1])}
+  const srcsets=[...html.matchAll(/<img[^>]+srcset=["']([^"']+)["']/gi)].flatMap(match=>match[1].split(',').map(part=>part.trim().split(/\s+/)[0]));
+  raw.push(...srcsets);
+  const resolved=[];
+  for(const candidate of raw){
+    const value=htmlDecode(candidate).trim();if(!value||value.startsWith('data:'))continue;
+    try{const url=new URL(value,sourceUrl);if(!/^https?:$/.test(url.protocol)||blockedHost(url.hostname)||blockedAsset(url.pathname))continue;resolved.push(url.href)}catch{}
+  }
+  return[...new Set(resolved)].slice(0,80);
+}
+async function fetchPageImages(sourceUrl){
+  try{
+    const parsed=new URL(sourceUrl);if(!/^https?:$/.test(parsed.protocol)||blockedHost(parsed.hostname))return[];
+    const response=await fetch(sourceUrl,{redirect:'follow',headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskMediaEnricher/1.0)','accept-language':'en-US,en;q=0.8,ru;q=0.7'},signal:AbortSignal.timeout(12000)});
+    if(!response.ok)return[];const type=String(response.headers.get('content-type')||'');if(!/text\/html/i.test(type))return[];
+    const html=await response.text();return extractImages(html,response.url||sourceUrl);
+  }catch{return[]}
+}
+
+const draftPath=`data/drafts/${slug}.json`;
+const draft=read(draftPath);if(!draft)throw new Error(`${slug}: canonical draft is missing`);
+const research=read(`data/research/${slug}-source-matrix.json`,{});
+const sources=[];
+for(const source of draft.sources||[]){const url=typeof source==='string'?source:source?.url;if(url)sources.push(url)}
+for(const url of [draft.links?.official,draft.links?.store])if(url)sources.push(url);
+for(const source of research.accepted||[]){const url=source?.resolved_url||source?.url;if(url)sources.push(url)}
+const sourceUrls=[...new Set(sources)].filter(url=>{try{return!blockedHost(new URL(url).hostname)}catch{return false}}).slice(0,14);
+const existingScreens=uniqueByUrl(draft.media?.screenshots||[]),existingArt=uniqueByUrl(draft.media?.artwork||[]);
+const known=new Set([...existingScreens,...existingArt,draft.media?.hero,draft.media?.cover].map(mediaUrl).map(canonical).filter(Boolean));
+const discoveredScreens=[],discoveredArt=[];let pagesChecked=0,candidatesChecked=0;
+for(const sourceUrl of sourceUrls){
+  if(discoveredScreens.length>=24&&discoveredArt.length>=8)break;
+  const candidates=await fetchPageImages(sourceUrl);pagesChecked++;
+  for(const candidate of candidates.slice(0,24)){
+    if(candidatesChecked>=160)break;candidatesChecked++;
+    if(known.has(canonical(candidate)))continue;
+    const image=await probe(candidate);if(!image)continue;
+    const aspect=image.width/image.height;
+    if(image.width>=900&&image.height>=500&&aspect>=1.15&&aspect<=2.7&&discoveredScreens.length<24){
+      const item={url:image.url,caption:`${draft.identity?.title||slug} — изображение из проверенного источника`,source_url:sourceUrl,width:image.width,height:image.height,mime:image.mime,provider:'verified-source-page'};
+      discoveredScreens.push(item);known.add(canonical(image.url));continue;
+    }
+    if(image.width>=600&&image.height>=600&&aspect>=0.55&&aspect<=1.25&&discoveredArt.length<8){
+      const item={url:image.url,caption:`${draft.identity?.title||slug} — арт из проверенного источника`,source_url:sourceUrl,width:image.width,height:image.height,mime:image.mime,provider:'verified-source-page'};
+      discoveredArt.push(item);known.add(canonical(image.url));
+    }
+  }
+}
+draft.media={...(draft.media||{}),screenshots:uniqueByUrl([...existingScreens,...discoveredScreens]).slice(0,36),artwork:uniqueByUrl([...existingArt,...discoveredArt]).slice(0,16)};
+draft.publication={...(draft.publication||{}),media_enriched_at:new Date().toISOString()};
+write(draftPath,draft);
+write(`data/parser-runs/game-media-source-enrichment-${slug}.json`,{parser:'game-media-source-enrichment',status:'green',game_slug:slug,checked_at:new Date().toISOString(),source_pages:sourceUrls.length,pages_checked:pagesChecked,candidates_checked:candidatesChecked,added_screenshots:discoveredScreens.length,added_artwork:discoveredArt.length,total_screenshots:draft.media.screenshots.length,total_artwork:draft.media.artwork.length,policy:'Search engines may aid human/source discovery, but only original verified source-page image URLs are retained.'});
+console.log(JSON.stringify({slug,pages_checked:pagesChecked,added_screenshots:discoveredScreens.length,added_artwork:discoveredArt.length,total_screenshots:draft.media.screenshots.length,total_artwork:draft.media.artwork.length},null,2));

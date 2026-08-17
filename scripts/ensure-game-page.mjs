@@ -21,6 +21,16 @@ const field = (entity, key, fallback = null) => entity?.fields?.[key]?.value ?? 
 const entityMedia = (entity, kinds) => (entity?.media || []).filter(item => kinds.includes(item.kind) && item.url).map(item => item.url);
 const first = (...values) => values.find(value => value !== undefined && value !== null && value !== '') ?? '';
 const unique = values => [...new Set((values || []).filter(Boolean))];
+const mediaUrl = item => typeof item === 'string' ? item : String(item?.url || item?.src || item?.image || '');
+const uniqueMedia = values => {
+  const seen = new Set();
+  return (values || []).filter(item => {
+    const key = mediaUrl(item);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
 const strip = value => String(value || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
 const creatorSource = String(process.env.GAME_CREATOR_SOURCE || 'generic').trim().toLowerCase() || 'generic';
@@ -58,6 +68,7 @@ if (steamAppId) {
 }
 
 const title = first(parser?.identity?.title, canonicalTitle, slug);
+const series = first(entity.identity?.series?.value, existing?.identity?.series, '');
 const releaseDate = first(parser?.release?.date_text, (entity.releases || []).find(item => item.date?.value)?.date?.value, 'Уточняется');
 const year = Number(String(releaseDate).match(/(?:19|20)\d{2}/)?.[0]) || null;
 const releaseStatus = String(parser?.release?.status || existing?.release?.status || '').toLowerCase();
@@ -72,12 +83,13 @@ const publishers = unique([...(parser?.companies?.publishers || []), ...(field(e
 const genres = unique([...(russianSteam?.genres || []).map(item => item.description), ...(parser?.classification?.genres || []), ...(field(entity, 'genres', []) || [])]);
 const platforms = unique([...(parser?.classification?.platforms || []), ...(field(entity, 'platforms', []) || [])]);
 const categories = unique([...(russianSteam?.categories || []).map(item => item.description), ...(parser?.classification?.categories || [])]);
-const screenshots = unique([...(parser?.media?.screenshots || []), ...entityMedia(entity, ['screenshots', 'screenshot'])]);
-const videos = parser?.media?.videos || [];
-const cover = first(parser?.media?.cover, ...entityMedia(entity, ['cover', 'keyArt']));
-const hero = first(parser?.media?.hero, ...entityMedia(entity, ['hero', 'keyArt', 'cover']), cover);
-const artwork = unique([...(parser?.media?.artwork || []), ...entityMedia(entity, ['keyArt', 'hero'])]);
+const screenshots = uniqueMedia([...(existing?.media?.screenshots || []), ...(parser?.media?.screenshots || []), ...entityMedia(entity, ['screenshots', 'screenshot'])]);
+const videos = uniqueMedia([...(existing?.media?.videos || []), ...(parser?.media?.videos || [])]);
+const cover = first(existing?.media?.cover, parser?.media?.cover, ...entityMedia(entity, ['cover', 'keyArt']));
+const hero = first(existing?.media?.hero, parser?.media?.hero, ...entityMedia(entity, ['hero', 'keyArt', 'cover']), cover);
+const artwork = uniqueMedia([...(existing?.media?.artwork || []), ...(parser?.media?.artwork || []), ...entityMedia(entity, ['keyArt', 'hero'])]);
 const mediaReady = Boolean(hero || cover || screenshots.length || artwork.length);
+const mediaEnrichmentReady = screenshots.length >= 12 && artwork.length >= 3;
 const officialLinks = field(entity, 'officialLinks', {});
 const store = first(parser?.links?.store, steamAppId ? `https://store.steampowered.com/app/${steamAppId}/` : null);
 const official = first(parser?.links?.official, typeof officialLinks === 'string' ? officialLinks : officialLinks?.official);
@@ -118,6 +130,7 @@ const reviewReady = Boolean(article)
 const gameDnaReady = exists(`data/game-dna/${slug}.json`);
 const similarityReady = exists(`data/similarity/${slug}.json`);
 const guidesReady = exists(`data/guides/${slug}.json`);
+const seriesReady = Boolean(series && exists(`data/franchises/${slug}.json`));
 
 const game = {
   schema_version: 5,
@@ -145,7 +158,9 @@ const game = {
   modules: {
     page: 'ready',
     media: mediaReady ? 'ready' : 'pending',
+    media_enrichment: mediaEnrichmentReady ? 'ready' : 'queued',
     review: reviewReady ? 'ready' : 'pending',
+    series: series ? (seriesReady ? 'ready' : 'queued') : 'not_known',
     game_dna: gameDnaReady ? 'ready' : 'pending',
     similarity: similarityReady ? 'ready' : 'pending',
     guides: guidesReady ? 'ready' : 'missing'
@@ -154,6 +169,7 @@ const game = {
   identity: {
     slug,
     title,
+    series: series || null,
     steam_appid: steamAppId,
     aliases: entity.identity?.aliases?.value || [],
     excluded_versions: existing?.identity?.excluded_versions || []
@@ -202,7 +218,7 @@ write(chunkPath, chunkData);
 
 const catalog = read('data/catalog-visible.json', []);
 const catalogIndex = catalog.findIndex(item => item.slug === slug);
-const entry = { title, year, slug, game_id: entity.id, ...(steamAppId ? { steam_appid: steamAppId } : {}) };
+const entry = { title, year, slug, game_id: entity.id, ...(series ? { series } : {}), ...(steamAppId ? { steam_appid: steamAppId } : {}) };
 if (catalogIndex >= 0) catalog[catalogIndex] = { ...catalog[catalogIndex], ...entry };
 else catalog.push(entry);
 write('data/catalog-visible.json', catalog);
@@ -219,6 +235,32 @@ const html = `<!doctype html><html lang="ru" data-theme="dark"><head><meta chars
 const pagePath = path.join(root, 'game', slug, 'index.html');
 fs.mkdirSync(path.dirname(pagePath), { recursive: true });
 fs.writeFileSync(pagePath, `${html}\n`);
+
+const reviewNeeded = released && !reviewReady;
+const mediaNeeded = !mediaEnrichmentReady;
+const seriesNeeded = Boolean(series && !seriesReady);
+if (reviewNeeded || mediaNeeded || seriesNeeded) {
+  const requestPath = `data/game-enrichment-requests/${slug}.json`;
+  const previousRequest = read(requestPath, {});
+  write(requestPath, {
+    schema_version: 1,
+    game_id: entity.id,
+    slug,
+    title,
+    series: series || null,
+    released,
+    created_at: previousRequest.created_at || nowIso,
+    requested_at: nowIso,
+    creator_source: creatorSource,
+    modules: {
+      series: seriesNeeded ? 'queued' : (series ? 'ready' : 'not_known'),
+      review: reviewNeeded ? 'queued' : 'ready',
+      media: mediaNeeded ? 'queued' : 'ready'
+    },
+    reason: 'post_create_enrichment_must_not_block_base_page'
+  });
+}
+
 write(`data/parser-runs/game-creator-${slug}.json`, {
   parser: 'game-creator',
   status: 'green',
@@ -228,6 +270,7 @@ write(`data/parser-runs/game-creator-${slug}.json`, {
   checked_at: nowIso,
   page_available: true,
   modules: game.modules,
+  enrichment_request: (reviewNeeded || mediaNeeded || seriesNeeded) ? `data/game-enrichment-requests/${slug}.json` : null,
   output: [`data/drafts/${slug}.json`, chunkPath, `game/${slug}/index.html`]
 });
-console.log(JSON.stringify({ slug, game_id: entity.id, status: 'green', page_available: true, modules: game.modules }, null, 2));
+console.log(JSON.stringify({ slug, game_id: entity.id, status: 'green', page_available: true, modules: game.modules, enrichment_queued: reviewNeeded || mediaNeeded || seriesNeeded }, null, 2));
