@@ -45,6 +45,10 @@ const productionPrProfiles = [
     materializer: 'node scripts/materialize-news-production-pages.mjs --target'
   },
   {
+    branchPrefix: 'automation/news-game-pages-fast-',
+    materializer: 'node scripts/materialize-news-game-pages-fast.mjs --target'
+  },
+  {
     branchPrefix: 'automation/popular-game-pages-',
     materializer: 'node scripts/materialize-popular-production-pages.mjs --target'
   }
