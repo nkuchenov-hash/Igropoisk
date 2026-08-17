@@ -33,12 +33,25 @@ export function bingRssToSearchHtml(xml){
 
 export function publisherLinksToSearchHtml(html,baseUrl,{pathPattern=/\/review\//i}={}){
   const anchors=[];
-  for(const match of String(html||'').matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)){
+  const add=(rawUrl,rawTitle='')=>{
     let url;
-    try{url=new URL(decodeXml(match[1]),baseUrl)}catch{continue}
-    if(!pathPattern.test(url.pathname))continue;
-    const title=decodeXml(match[2]).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
-    if(!anchors.some(item=>item.url===url.href))anchors.push({url:url.href,title:title||url.href});
+    try{url=new URL(decodeXml(rawUrl),baseUrl)}catch{return}
+    if(!pathPattern.test(url.pathname))return;
+    if(anchors.some(item=>item.url===url.href))return;
+    const title=decodeXml(rawTitle).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+    anchors.push({url:url.href,title:title||url.href});
+  };
+  const source=String(html||'');
+  for(const match of source.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi))add(match[1],match[2]);
+
+  // Modern publisher hubs often place canonical article URLs in hydration JSON rather than
+  // server-rendered anchors. Normalize common slash escaping and recover only URLs whose
+  // pathname still satisfies the publisher-specific direct-review pattern.
+  const normalized=source.replace(/\\u002f/gi,'/').replace(/\\\//g,'/');
+  for(const match of normalized.matchAll(/(?:https?:\/\/[^"'<>\s]+|\/[A-Za-z0-9][^"'<>\s]*)/gi)){
+    const candidate=match[0].replace(/[),.;]+$/,'');
+    add(candidate);
+    if(anchors.length>=64)break;
   }
   return anchors.map(item=>`<a href="${escapeAttr(item.url)}">${escapeText(item.title)}</a>`).join('\n');
 }
@@ -71,11 +84,11 @@ function publisherNativeRequest(searchUrl,{slug=process.argv[2]||''}={}){
   let query='';
   try{query=new URL(String(searchUrl||'')).searchParams.get('q')||''}catch{return null}
   if(/(?:^|\s)site:(?:www\.)?gamespot\.com(?:\s|$)/i.test(query)){
-    return{url:`https://www.gamespot.com/games/${slug}/reviews/`,pathPattern:/\/reviews\//i};
+    return{url:`https://www.gamespot.com/games/${slug}/reviews/`,pathPattern:/^\/reviews\//i};
   }
   if(/(?:^|\s)site:(?:www\.)?gamerevolution\.com(?:\s|$)/i.test(query)){
     const terms=slug.replace(/[-_]+/g,' ').replace(/\s+/g,' ').trim();
-    return{url:`https://www.gamerevolution.com/?s=${encodeURIComponent(terms)}`,pathPattern:/\/review\//i};
+    return{url:`https://www.gamerevolution.com/?s=${encodeURIComponent(terms)}`,pathPattern:/^\/review\//i};
   }
   return null;
 }
@@ -106,6 +119,9 @@ export function validateBingRssAdapter(){
   const convertedGameSpot=publisherLinksToSearchHtml(gamespotHtml,gamespotNative.url,gamespotNative);
   if(!convertedGameSpot.includes('https://www.gamespot.com/reviews/rainbow-six-siege-review-2015/1900-6416324/'))throw new Error('GameSpot review-hub extraction failed.');
   if(convertedGameSpot.includes('/articles/'))throw new Error('GameSpot review-hub extraction leaked non-review links.');
+  const embeddedGameSpot='{"canonicalUrl":"https:\\/\\/www.gamespot.com\\/reviews\\/rainbow-six-siege-review-2015\\/1900-6416324\\/","other":"\\/articles\\/not-a-review\\/"}';
+  const convertedEmbedded=publisherLinksToSearchHtml(embeddedGameSpot,gamespotNative.url,gamespotNative);
+  if(!convertedEmbedded.includes('https://www.gamespot.com/reviews/rainbow-six-siege-review-2015/1900-6416324/'))throw new Error('GameSpot hydration-data extraction failed.');
   const native=publisherNativeRequest('https://www.bing.com/search?q=site%3Agamerevolution.com+Rainbow+Six+Siege+review',{slug:'tom-clancys-rainbow-six-siege'});
   if(!native?.url.includes('gamerevolution.com/?s=tom%20clancys%20rainbow%20six%20siege'))throw new Error('GameRevolution publisher-search request contract failed.');
   const nativeHtml='<a href="/review/69596-tom-clancys-rainbow-six-siege-review"><span>Tom Clancy’s Rainbow Six: Siege Review</span></a><a href="/guides/1-other">Guide</a>';
