@@ -194,4 +194,4 @@ jobs:
         if: needs.create-pages.outputs.failed_count == '0'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run news-pipeline.yml --ref staging -f force=true
+        run: gh workflow run news-pipeline.yml --repo "$GITHUB_REPOSITORY" --ref staging -f force=true
