@@ -13,6 +13,15 @@ export function normalizeNewsGameSafety(value = '') {
     .toLowerCase();
 }
 
+export function newsGameHintCandidateTitle(hint = {}) {
+  const raw = String(hint?.title || hint?.slug || '').trim();
+  if (!raw) return '';
+  // Old poisoned Registry entries may have copied the slug into `title`.
+  // Humanize only for safety analysis; valid untouched hints keep their original identity.
+  if (!/\s/u.test(raw) && raw.includes('-')) return raw.replace(/-+/g, ' ').trim();
+  return raw;
+}
+
 export function stripGenericGameDescriptor(value = '') {
   let result = String(value || '').trim();
   let previous = '';
@@ -47,18 +56,33 @@ export function candidateIsPersonInContext(item = {}, candidateTitle = '') {
   return false;
 }
 
-export function sanitizeNewsGameHint(item = {}, hint = {}) {
-  const rawTitle = String(hint?.title || hint?.slug || '').trim();
-  if (!rawTitle) return null;
-  if (candidateIsPersonInContext(item, rawTitle)) return null;
+export function collectPersonCandidateKeys(items = []) {
+  const keys = new Set();
+  for (const item of items || []) {
+    for (const hint of Array.isArray(item?.games) ? item.games : []) {
+      const candidate = newsGameHintCandidateTitle(hint);
+      if (candidate && candidateIsPersonInContext(item, candidate)) keys.add(normalizeNewsGameSafety(candidate));
+    }
+  }
+  return keys;
+}
 
-  const strippedTitle = stripGenericGameDescriptor(rawTitle);
-  if (!strippedTitle || candidateIsPersonInContext(item, strippedTitle)) return null;
-  if (normalizeNewsGameSafety(strippedTitle) === normalizeNewsGameSafety(rawTitle)) return hint;
+export function sanitizeNewsGameHint(item = {}, hint = {}, { knownPersonCandidates = new Set() } = {}) {
+  const rawTitle = String(hint?.title || hint?.slug || '').trim();
+  const safetyTitle = newsGameHintCandidateTitle(hint);
+  if (!rawTitle || !safetyTitle) return null;
+  const safetyKey = normalizeNewsGameSafety(safetyTitle);
+  if (knownPersonCandidates.has(safetyKey) || candidateIsPersonInContext(item, safetyTitle)) return null;
+
+  const strippedTitle = stripGenericGameDescriptor(safetyTitle);
+  if (!strippedTitle || knownPersonCandidates.has(normalizeNewsGameSafety(strippedTitle)) || candidateIsPersonInContext(item, strippedTitle)) return null;
+
+  const descriptorChanged = normalizeNewsGameSafety(strippedTitle) !== safetyKey;
+  if (!descriptorChanged) return hint;
 
   // A generic article descriptor such as "RPG" is not part of a game identity.
-  // Drop the old canonical identifiers so the verifier cannot accidentally reuse
-  // a poisoned registry entry created from that malformed headline candidate.
+  // Drop old canonical identifiers so a malformed historical Registry record cannot
+  // be reused merely because the hydrated archive still contains its old gameId.
   const sanitized = { ...hint, title: strippedTitle };
   delete sanitized.gameId;
   delete sanitized.game_id;

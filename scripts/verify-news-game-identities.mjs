@@ -3,7 +3,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { loadCanonicalNewsCatalog } from './lib/news-game-registry-adapter.mjs';
-import { sanitizeNewsGameHint } from './lib/news-game-candidate-safety.mjs';
+import { collectPersonCandidateKeys, sanitizeNewsGameHint } from './lib/news-game-candidate-safety.mjs';
 
 const root=process.cwd();
 const eventsPath=path.join(root,'data/news-events.json');
@@ -23,6 +23,7 @@ const sourceUrl=item=>String(item.primaryUrl||item.url||'').trim();
 
 const payload=JSON.parse(await fs.readFile(eventsPath,'utf8'));
 const items=Array.isArray(payload)?payload:(Array.isArray(payload?.items)?payload.items:[]);
+const knownPersonCandidates=collectPersonCandidateKeys(items);
 const catalog=await loadCanonicalNewsCatalog({root});
 const byId=new Map(catalog.games.map(game=>[String(game.gameId||''),game]));
 const bySlug=new Map(catalog.games.map(game=>[String(game.slug||'').toLowerCase(),game]));
@@ -59,7 +60,7 @@ for(const item of items){
   const id=String(item.id||'');
   const reasons=new Set((Array.isArray(item.gameReviewReasons)?item.gameReviewReasons:[]).filter(reason=>!['missing-game-page','unknown-explicit-game','ambiguous-explicit-name','ambiguous-alias','manual-game-not-found','unverified-primary-game','ambiguous-primary-game-verification','verified-no-primary-game'].includes(reason)));
   const rawHints=Array.isArray(item.games)?item.games:[];
-  const hints=rawHints.map(hint=>sanitizeNewsGameHint(item,hint)).filter(hint=>hint&&titleLooksLikeGame(hint.title||hint.slug||''));
+  const hints=rawHints.map(hint=>sanitizeNewsGameHint(item,hint,{knownPersonCandidates})).filter(hint=>hint&&titleLooksLikeGame(hint.title||hint.slug||''));
   unsafeHintsRejected+=Math.max(0,rawHints.length-hints.length);
   const games=[];const seen=new Set();
   for(const hint of hints){
@@ -77,8 +78,8 @@ for(const item of items){
   if(hints.length){ambiguousArticles+=1;reasons.add('ambiguous-primary-game-verification');issues.push({news_id:id,reason:'candidate lacked safe canonical context match or direct database/store evidence',candidates:hints.map(h=>h.title||h.slug)});normalizedItems.push({...item,games:[],gameIds:[],gameReviewReasons:[...reasons]});continue}
   nonGameArticles+=1;reasons.add('verified-no-primary-game');normalizedItems.push({...item,games:[],gameIds:[],gameReviewReasons:[...reasons],gameIdentityVerifiedAt:new Date().toISOString()});
 }
-const report={schema_version:3,generated_at:new Date().toISOString(),provider:'registry-plus-direct-evidence-with-safety-guards',paid_ai_required:false,articles:normalizedItems.length,specific_game_articles:specificGameArticles,non_game_articles:nonGameArticles,ambiguous_articles:ambiguousArticles,canonical_matches:canonicalMatches,verified_new_game_references:verifiedNewGames,unsafe_hints_rejected:unsafeHintsRejected,unique_games:new Set(normalizedItems.flatMap(item=>(item.games||[]).map(game=>game.gameId))).size,issues};
+const report={schema_version:4,generated_at:new Date().toISOString(),provider:'registry-plus-direct-evidence-with-history-safety-guards',paid_ai_required:false,articles:normalizedItems.length,specific_game_articles:specificGameArticles,non_game_articles:nonGameArticles,ambiguous_articles:ambiguousArticles,canonical_matches:canonicalMatches,verified_new_game_references:verifiedNewGames,unsafe_hints_rejected:unsafeHintsRejected,known_person_candidates:knownPersonCandidates.size,unique_games:new Set(normalizedItems.flatMap(item=>(item.games||[]).map(game=>game.gameId))).size,issues};
 await fs.mkdir(path.dirname(reportPath),{recursive:true});
 await fs.writeFile(eventsPath,`${JSON.stringify(Array.isArray(payload)?normalizedItems:{...payload,items:normalizedItems},null,2)}\n`,'utf8');
 await fs.writeFile(reportPath,`${JSON.stringify(report,null,2)}\n`,'utf8');
-console.log(`[news/game-verifier] ${report.articles} articles; game=${specificGameArticles}; non-game=${nonGameArticles}; ambiguous=${ambiguousArticles}; unsafe hints rejected=${unsafeHintsRejected}; unique games=${report.unique_games}; paid AI required=false.`);
+console.log(`[news/game-verifier] ${report.articles} articles; game=${specificGameArticles}; non-game=${nonGameArticles}; ambiguous=${ambiguousArticles}; unsafe hints rejected=${unsafeHintsRejected}; known person candidates=${knownPersonCandidates.size}; unique games=${report.unique_games}; paid AI required=false.`);
