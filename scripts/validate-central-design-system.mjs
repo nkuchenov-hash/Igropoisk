@@ -17,6 +17,7 @@ const visualProperty = /^(?:color|background(?:-color|-image)?|border(?:-color|-
 const literalColor = /(?:#[0-9a-f]{3,8}\b|rgba?\(|hsla?\(|\b(?:white|black|red|green|blue|orange|yellow|purple|pink|gray|grey|transparent)\b)/i;
 const visualStateSelector = /:(?:hover|focus|focus-visible|active|visited|disabled|checked|selected)\b/i;
 const localComponentHint = /(?:^|[-_])(card|button|input|select|textarea|chip|tag|toolbar|empty-state|page-title|modal|dialog|panel)(?:$|[-_])/i;
+const sectionHeadingContainerHint = /(?:^|[-_])(?:section|showcase|widget|rail)[-_](?:head|heading)(?:$|[-_])/i;
 const permittedDiffExemptions = new Set(['scripts/test-central-design-system.mjs']);
 
 export function validateFeatureCssText(file, css, { allowedCustomPropertyPrefix = null } = {}) {
@@ -52,6 +53,41 @@ function matchesCentralClass(value, className) {
 
 function usesCentralClass(classes, centralClasses) {
   return classes.some(value => centralClasses.some(className => matchesCentralClass(value, className)));
+}
+
+function findBalancedBlock(source, openMatch) {
+  const tagName = openMatch[1].toLowerCase();
+  const tagPattern = new RegExp(`<\\/?${tagName}\\b[^>]*>`, 'gi');
+  tagPattern.lastIndex = openMatch.index + openMatch[0].length;
+  let depth = 1;
+  let match;
+  while ((match = tagPattern.exec(source))) {
+    if (/^<\//.test(match[0])) depth -= 1;
+    else if (!/\/>$/.test(match[0])) depth += 1;
+    if (depth === 0) return source.slice(openMatch.index, tagPattern.lastIndex);
+  }
+  return source.slice(openMatch.index, Math.min(source.length, openMatch.index + 3000));
+}
+
+export function validateSectionHeadingActions(file, source) {
+  const errors = [];
+  const containerPattern = /<(div|header)\b[^>]*>/gis;
+  let container;
+  while ((container = containerPattern.exec(source))) {
+    const containerClasses = classTokens(container[0]);
+    if (!containerClasses.some(value => sectionHeadingContainerHint.test(value))) continue;
+    const block = findBalancedBlock(source, container);
+    for (const action of block.matchAll(/<(a|button)\b[^>]*>/gis)) {
+      const classes = classTokens(action[0]);
+      const isLightweightTextLink = classes.includes('ig-button') && classes.includes('ig-text-link');
+      const isBoxedCentralAction = classes.includes('ig-button') || classes.includes('ig-action');
+      const isLegacyPrimary = classes.includes('primary');
+      if ((isBoxedCentralAction || isLegacyPrimary) && !isLightweightTextLink) {
+        errors.push(`Boxed CTA is forbidden inside a section heading in ${file}; use the central lightweight ig-button ig-text-link variant: ${action[0]}`);
+      }
+    }
+  }
+  return errors;
 }
 
 export function validateMarkupText(file, source, roles, registeredComponents = Object.values(roles).flat()) {
@@ -164,7 +200,9 @@ function validateStrictModule(errors, module, governance) {
     const relative = normalize(file);
     if (file.endsWith('.css')) errors.push(...validateFeatureCssText(relative, fs.readFileSync(file, 'utf8'), { allowedCustomPropertyPrefix: `--ig-${module.id}-` }));
     if (/\.(?:js|mjs|html)$/.test(file)) {
-      errors.push(...validateMarkupText(relative, fs.readFileSync(file, 'utf8'), governance.element_roles, registeredComponents));
+      const source = fs.readFileSync(file, 'utf8');
+      errors.push(...validateMarkupText(relative, source, governance.element_roles, registeredComponents));
+      errors.push(...validateSectionHeadingActions(relative, source));
     }
   }
 }
@@ -192,6 +230,8 @@ function validateDiff(errors, base, governance, featureRegistry) {
     }
     if (/\.(?:html|htm|js|mjs)$/.test(file)) {
       errors.push(...validateMarkupText(file, source, governance.element_roles, registeredComponents));
+      const diskPath = path.join(root, file);
+      if (fs.existsSync(diskPath)) errors.push(...validateSectionHeadingActions(file, fs.readFileSync(diskPath, 'utf8')));
     }
   }
 }
