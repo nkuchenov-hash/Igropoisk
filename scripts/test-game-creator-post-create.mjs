@@ -34,7 +34,7 @@ const reviewPhaseEnd=blockEnd(runner,reviewPhaseAt);
 const materializeAt=runner.indexOf("run('catalog-materialization'");
 if(reviewPhaseAt<0||reviewPhaseEnd<0||materializeAt<=reviewPhaseAt||materializeAt>=reviewPhaseEnd)fail('Catalog-wide materialization still runs during fast bootstrap');
 if(!runner.includes("phase==='bootstrap'?'game-post-create-bootstrap.json'"))fail('Bootstrap still overwrites shared enrichment report');
-if(!media.includes("provider:'verified-source-page'")||!media.includes('Search engines may aid human/source discovery'))fail('Verified media provenance/discovery policy missing');
+if(!media.includes("provider:'verified-source-page'")||!media.includes('Search engines may aid source discovery')||!media.includes('removed_stale_screenshots')||!media.includes('media.url_template'))fail('Verified media provenance, registered-gallery, stale-cleanup or discovery policy missing');
 if(!reviewDiscovery.includes('discover-review-sources-web-v14.mjs'))fail('Canonical review discovery does not route through v14 historical adapters');
 for(const marker of ['rpgFanCandidates','rpgamerCandidates','gameRevolutionCandidates'])if(!historicalDiscovery.includes(marker))fail(`Historical review adapter missing: ${marker}`);
 if(!historicalDiscovery.includes('allowQueryPermalink:true'))fail('Legacy GameRevolution permalink support missing');
