@@ -1,0 +1,66 @@
+name: Review search RSS canary
+
+on:
+  pull_request:
+    branches: [staging]
+    paths:
+      - 'scripts/discover-review-sources-web.mjs'
+      - 'scripts/discover-review-sources-web-v9.mjs'
+      - 'scripts/discover-review-sources-web-v10.mjs'
+      - 'scripts/lib/review-search-result-normalizer.mjs'
+      - '.github/workflows/review-search-rss-canary.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  rainbow-six-siege:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Classify current deterministic backlog
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const report=JSON.parse(fs.readFileSync('data/parser-runs/review-backlog-deterministic.json','utf8'));
+          const pending=(report.results||[]).filter(row=>!row.green);
+          const corpusRed=pending.filter(row=>row.corpus_status!=='green');
+          const scoreRed=pending.filter(row=>row.corpus_status==='green'&&row.score_status!=='green');
+          const proseOnly=pending.filter(row=>row.corpus_status==='green'&&row.score_status==='green');
+          const compact=rows=>rows.map(row=>({slug:row.slug,corpus:row.corpus_status,score:row.score_status,comments:row.comments}));
+          console.log(JSON.stringify({selected:report.selected,green:report.green,pending:report.pending,corpus_red:compact(corpusRed),score_red:compact(scoreRed),prose_only:compact(proseOnly)},null,2));
+          NODE
+      - name: Verify transport contracts
+        run: |
+          node --check scripts/discover-review-sources-web-v10.mjs
+          node -e "import('./scripts/discover-review-sources-web-v10.mjs').catch(error=>{ if(!/Missing game draft|Usage:/.test(String(error))) throw error })"
+      - name: Run deterministic Rainbow Six Siege review recovery canary
+        env:
+          OPENAI_API_KEY: ''
+          REVIEW_DETERMINISTIC_ONLY: '1'
+        run: node scripts/quality-control-loop.mjs review tom-clancys-rainbow-six-siege || true
+      - name: Require direct review and score evidence
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const review=JSON.parse(fs.readFileSync('data/reviews/tom-clancys-rainbow-six-siege.json','utf8'));
+          const accepted=Number(review?.publication_gate?.accepted||review?.reviews?.length||0);
+          const scored=Number(review?.review_score?.calculation?.scored_sources||review?.review_score?.calculation?.source_count||0);
+          console.log(JSON.stringify({accepted,scored,corpus:review?.publication_gate?.status,score:review?.review_score?.status},null,2));
+          if(review?.publication_gate?.status!=='green')throw new Error(`Rainbow Six Siege corpus still red: ${accepted} accepted`);
+          if(review?.review_score?.status!=='green')throw new Error(`Rainbow Six Siege score still red: ${scored} scored`);
+          NODE
+      - name: Preserve canary evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rainbow-six-siege-review-rss-canary
+          path: |
+            data/research/tom-clancys-rainbow-six-siege-source-matrix.json
+            data/reviews/tom-clancys-rainbow-six-siege.json
+            data/parser-runs/review-web-discovery-tom-clancys-rainbow-six-siege.json
+          if-no-files-found: error
