@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "counter-strike-2",
-  "generated_at": "2026-08-17T21:54:00.029Z",
+  "generated_at": "2026-08-17T22:34:35.062Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -39,7 +39,7 @@
       },
       "validation": {
         "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-17T21:54:00.029Z",
+        "checked_at": "2026-08-17T22:34:35.062Z",
         "method": "registered-direct-publisher-preserved-v8",
         "reason": "HTTP 403"
       },
@@ -49,12 +49,12 @@
       "score_eligible": false
     },
     {
-      "url": "https://www.polygon.com/2013/3/6/4072666/counter-strike-condition-zero-now-available-linux-steam",
-      "publication": "Polygon",
-      "title": "Counter-Strike 2 — Polygon review reference",
+      "url": "https://web.archive.org/web/20010602234021/http://www.planethalflife.com/counter-strike/csinfo/models",
+      "publication": "GameSpy",
+      "title": "Counter-Strike 2 — GameSpy review reference",
       "id": "source-2",
-      "configured_source_id": "polygon",
-      "resolved_url": "https://www.polygon.com/2013/3/6/4072666/counter-strike-condition-zero-now-available-linux-steam",
+      "configured_source_id": "gamespy-archive",
+      "resolved_url": "https://web.archive.org/web/20010602234021/http://www.planethalflife.com/counter-strike/csinfo/models",
       "source_kind": "review",
       "language": "en",
       "canonical_score_eligible": true,
@@ -64,9 +64,9 @@
       },
       "validation": {
         "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-17T21:54:00.029Z",
+        "checked_at": "2026-08-17T22:34:35.062Z",
         "method": "registered-direct-publisher-preserved-v8",
-        "reason": "HTTP fetch failed"
+        "reason": "HTTP 504"
       },
       "score": null,
       "scale": null,
@@ -76,25 +76,17 @@
   ],
   "rejected": [
     {
-      "publication": "GameSpy",
-      "url": "https://web.archive.org/web/20010602234021/http://www.planethalflife.com/counter-strike/csinfo/models",
-      "title": "The Models",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2013/3/6/4072666/counter-strike-condition-zero-now-available-linux-steam",
+      "title": "Counter-Strike: Condition Zero now available for Linux on Steam",
       "reasons": [
         "no_review_signal"
       ]
     },
     {
-      "publication": "GameSpy",
-      "url": "https://web.archive.org/web/20010602234021/http://www.planethalflife.com/counter-strike/csinfo/models",
-      "title": "The Models",
-      "reasons": [
-        "no_review_signal"
-      ]
-    },
-    {
-      "publication": "GameSpy",
-      "url": "https://web.archive.org/web/20010602234021/http://www.planethalflife.com/counter-strike/csinfo/models",
-      "title": "The Models",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2013/3/6/4072666/counter-strike-condition-zero-now-available-linux-steam",
+      "title": "Counter-Strike: Condition Zero now available for Linux on Steam",
       "reasons": [
         "no_review_signal"
       ]
@@ -103,6 +95,14 @@
       "publication": "Eurogamer",
       "url": "https://www.eurogamer.net/counterstrike",
       "title": "Minh Le of Counter Strike team",
+      "reasons": [
+        "no_review_signal"
+      ]
+    },
+    {
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2013/3/6/4072666/counter-strike-condition-zero-now-available-linux-steam",
+      "title": "Counter-Strike: Condition Zero now available for Linux on Steam",
       "reasons": [
         "no_review_signal"
       ]
@@ -239,8 +239,8 @@
       "source_id": "polygon",
       "name": "Polygon",
       "region": "global",
-      "status": "found",
-      "notes": "verified direct review"
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     },
     {
       "source_id": "rock-paper-shotgun",
