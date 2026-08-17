@@ -14,6 +14,7 @@ const verifiedWorkflow=read('.github/workflows/verified-game-import-fast.yml');
 const newsWorkflow=read('.github/workflows/news-game-page-fast.yml');
 const enrichmentWorkflow=read('.github/workflows/game-post-create-enrichment.yml');
 const fail=message=>{throw new Error(message)};
+function blockEnd(source,start){const open=source.indexOf('{',start);if(open<0)return-1;let depth=0;for(let i=open;i<source.length;i++){if(source[i]==='{')depth++;else if(source[i]==='}'&&--depth===0)return i}return-1}
 if(!creator.includes('series: series || null'))fail('Game Creator does not preserve canonical series');
 if(!creator.includes('data/game-enrichment-requests/${slug}.json'))fail('Game Creator does not emit post-create enrichment request');
 if(!creator.includes("reason: 'post_create_enrichment_must_not_block_base_page'"))fail('Post-create request does not document non-blocking boundary');
@@ -26,7 +27,10 @@ if(runner.indexOf("'scripts/build-review-bootstrap-local.mjs'")>runner.indexOf("
 if(!runner.includes("review:fullReady?'ready':quickReady?'bootstrap_ready'"))fail('Quick review state is not observable independently from full review');
 if(!runner.includes("phase!=='review'")||!runner.includes("phase!=='bootstrap'"))fail('Bootstrap/review phases not separated');
 if(!runner.includes('Bootstrap deliberately leaves request files untouched'))fail('Bootstrap can self-trigger before review phase');
-const materializeAt=runner.indexOf("run('catalog-materialization'");const materializeContext=runner.slice(Math.max(0,materializeAt-1200),materializeAt);if(materializeAt<0||!materializeContext.includes('if(doReview){'))fail('Catalog-wide materialization still runs during fast bootstrap');
+const reviewPhaseAt=runner.indexOf('if(doReview){',runner.indexOf('let reviewCandidates'));
+const reviewPhaseEnd=blockEnd(runner,reviewPhaseAt);
+const materializeAt=runner.indexOf("run('catalog-materialization'");
+if(reviewPhaseAt<0||reviewPhaseEnd<0||materializeAt<=reviewPhaseAt||materializeAt>=reviewPhaseEnd)fail('Catalog-wide materialization still runs during fast bootstrap');
 if(!runner.includes("phase==='bootstrap'?'game-post-create-bootstrap.json'"))fail('Bootstrap still overwrites shared enrichment report');
 if(!media.includes("provider:'verified-source-page'")||!media.includes('Search engines may aid human/source discovery'))fail('Verified media provenance/discovery policy missing');
 if(!quickReview.includes("review_stage:'bootstrap'")||!quickReview.includes('minimum_independent_professional_sources:3'))fail('Quick review is not a separately identified, 3-source professional bootstrap');
