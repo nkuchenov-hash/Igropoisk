@@ -43,10 +43,6 @@ export function publisherLinksToSearchHtml(html,baseUrl,{pathPattern=/\/review\/
   };
   const source=String(html||'');
   for(const match of source.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi))add(match[1],match[2]);
-
-  // Modern publisher hubs often place canonical article URLs in hydration JSON rather than
-  // server-rendered anchors. Normalize common slash escaping and recover only URLs whose
-  // pathname still satisfies the publisher-specific direct-review pattern.
   const normalized=source.replace(/\\u002f/gi,'/').replace(/\\\//g,'/');
   for(const match of normalized.matchAll(/(?:https?:\/\/[^"'<>\s]+|\/[A-Za-z0-9][^"'<>\s]*)/gi)){
     const candidate=match[0].replace(/[),.;]+$/,'');
@@ -79,18 +75,31 @@ export function bingRssSearchUrls(searchUrl){
   });
 }
 
-function publisherNativeRequest(searchUrl,{slug=process.argv[2]||''}={}){
-  if(!slug)return null;
+const creatorPrefixVariant=slug=>{
+  const value=String(slug||'');
+  const stripped=value.replace(/^[a-z0-9]+-[a-z0-9]+s-(?=.+)/i,'');
+  return stripped!==value?stripped:null;
+};
+
+function publisherNativeRequests(searchUrl,{slug=process.argv[2]||''}={}){
+  if(!slug)return[];
   let query='';
-  try{query=new URL(String(searchUrl||'')).searchParams.get('q')||''}catch{return null}
+  try{query=new URL(String(searchUrl||'')).searchParams.get('q')||''}catch{return[]}
   if(/(?:^|\s)site:(?:www\.)?gamespot\.com(?:\s|$)/i.test(query)){
-    return{url:`https://www.gamespot.com/games/${slug}/reviews/`,pathPattern:/^\/reviews\//i};
+    return[{url:`https://www.gamespot.com/games/${slug}/reviews/`,pathPattern:/^\/reviews\//i}];
+  }
+  if(/(?:^|\s)site:(?:www\.)?gameinformer\.com(?:\s|$)/i.test(query)){
+    const variants=[slug,creatorPrefixVariant(slug)].filter(Boolean);
+    return[...new Set(variants)].map(productSlug=>({
+      url:`https://gameinformer.com/product/${productSlug}`,
+      pathPattern:/(?:^\/review\/|\/review(?:[\/_-]|\.|$)|review\.aspx$)/i
+    }));
   }
   if(/(?:^|\s)site:(?:www\.)?gamerevolution\.com(?:\s|$)/i.test(query)){
     const terms=slug.replace(/[-_]+/g,' ').replace(/\s+/g,' ').trim();
-    return{url:`https://www.gamerevolution.com/?s=${encodeURIComponent(terms)}`,pathPattern:/^\/review\//i};
+    return[{url:`https://www.gamerevolution.com/?s=${encodeURIComponent(terms)}`,pathPattern:/^\/review\//i}];
   }
-  return null;
+  return[];
 }
 
 export function validateBingRssAdapter(){
@@ -113,7 +122,7 @@ export function validateBingRssAdapter(){
   }
   const ign=bingRssSearchUrls('https://www.bing.com/search?q=site%3Aign.com+Rainbow+Six+Siege+review');
   if(ign.length!==1)throw new Error('Unconfigured path-scoped search must stay publisher-specific.');
-  const gamespotNative=publisherNativeRequest('https://www.bing.com/search?q=site%3Agamespot.com+Rainbow+Six+Siege+review',{slug:'tom-clancys-rainbow-six-siege'});
+  const gamespotNative=publisherNativeRequests('https://www.bing.com/search?q=site%3Agamespot.com+Rainbow+Six+Siege+review',{slug:'tom-clancys-rainbow-six-siege'})[0];
   if(gamespotNative?.url!=='https://www.gamespot.com/games/tom-clancys-rainbow-six-siege/reviews/')throw new Error('GameSpot game-review hub contract failed.');
   const gamespotHtml='<a href="/reviews/rainbow-six-siege-review-2015/1900-6416324/">Rainbow Six Siege Review (2015)</a><a href="/articles/rainbow-six-siege-guide/1100-1/">Guide</a>';
   const convertedGameSpot=publisherLinksToSearchHtml(gamespotHtml,gamespotNative.url,gamespotNative);
@@ -122,7 +131,13 @@ export function validateBingRssAdapter(){
   const embeddedGameSpot='{"canonicalUrl":"https:\\/\\/www.gamespot.com\\/reviews\\/rainbow-six-siege-review-2015\\/1900-6416324\\/","other":"\\/articles\\/not-a-review\\/"}';
   const convertedEmbedded=publisherLinksToSearchHtml(embeddedGameSpot,gamespotNative.url,gamespotNative);
   if(!convertedEmbedded.includes('https://www.gamespot.com/reviews/rainbow-six-siege-review-2015/1900-6416324/'))throw new Error('GameSpot hydration-data extraction failed.');
-  const native=publisherNativeRequest('https://www.bing.com/search?q=site%3Agamerevolution.com+Rainbow+Six+Siege+review',{slug:'tom-clancys-rainbow-six-siege'});
+  const giNative=publisherNativeRequests('https://www.bing.com/search?q=site%3Agameinformer.com+Rainbow+Six+Siege+review',{slug:'tom-clancys-rainbow-six-siege'});
+  if(!giNative.some(item=>item.url==='https://gameinformer.com/product/rainbow-six-siege'))throw new Error('Game Informer creator-prefix product normalization failed.');
+  const giHtml='<a href="/games/rainbow_six_siege/b/playstation4/archive/2015/12/04/game-informer-rainbow-six-siege-review.aspx">Rainbow Six Siege Review – The Under-Equipped Combatant</a><a href="/2019/02/17/rainbow-six-news">News</a>';
+  const convertedGi=publisherLinksToSearchHtml(giHtml,'https://gameinformer.com/product/rainbow-six-siege',giNative.at(-1));
+  if(!convertedGi.includes('game-informer-rainbow-six-siege-review.aspx'))throw new Error('Game Informer product-hub review extraction failed.');
+  if(convertedGi.includes('rainbow-six-news'))throw new Error('Game Informer product-hub extraction leaked non-review links.');
+  const native=publisherNativeRequests('https://www.bing.com/search?q=site%3Agamerevolution.com+Rainbow+Six+Siege+review',{slug:'tom-clancys-rainbow-six-siege'})[0];
   if(!native?.url.includes('gamerevolution.com/?s=tom%20clancys%20rainbow%20six%20siege'))throw new Error('GameRevolution publisher-search request contract failed.');
   const nativeHtml='<a href="/review/69596-tom-clancys-rainbow-six-siege-review"><span>Tom Clancy’s Rainbow Six: Siege Review</span></a><a href="/guides/1-other">Guide</a>';
   const convertedNative=publisherLinksToSearchHtml(nativeHtml,native.url,native);
@@ -143,8 +158,7 @@ globalThis.fetch=async(input,init)=>{
       if(!response.ok)return'';
       return bingRssToSearchHtml(await response.text());
     });
-    const native=publisherNativeRequest(original);
-    if(native)requests.push((async()=>{
+    for(const native of publisherNativeRequests(original))requests.push((async()=>{
       const response=await networkFetch(native.url,init);
       if(!response.ok)return'';
       return publisherLinksToSearchHtml(await response.text(),response.url||native.url,native);
