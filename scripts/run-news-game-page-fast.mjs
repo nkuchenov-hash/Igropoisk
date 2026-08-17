@@ -27,7 +27,7 @@ const run = (command, args, env = {}) => spawnSync(command, args, {
 const requests = decodeNewsGameRequests(process.env.NEWS_GAME_REQUESTS_B64 || '');
 if (!requests.length) {
   write('tmp/news-game-page-fast.json', {
-    schema_version: 1,
+    schema_version: 2,
     generated_at: new Date().toISOString(),
     requested: 0,
     ready_count: 0,
@@ -42,7 +42,7 @@ if (!requests.length) {
 
 const registryPath = 'data/game-registry/registry.transition.json';
 const registry = read(registryPath);
-if (!registry) throw new Error('Canonical Game Registry is missing before fast news page creation.');
+if (!registry) throw new Error('Canonical Game Registry is missing before news page creation.');
 const discovery = registerNewsGameCandidates(registry, requests);
 write(registryPath, discovery.registry);
 const api = new GameRegistryApi(discovery.registry);
@@ -100,15 +100,18 @@ for (const resolved of requestByGameId.values()) {
     }
   }
 
-  const built = run('node', ['scripts/build-news-game-page-fast.mjs', gameId], {
-    NEWS_SOURCE_URL: resolved.source_url || ''
+  // News only resolves/creates the canonical entity. The base page itself is
+  // produced by the shared Game Creator, which has no review/DNA/similarity gate.
+  const built = run('node', ['scripts/ensure-game-page.mjs', gameId], {
+    GAME_CREATOR_SOURCE: 'news',
+    GAME_SOURCE_URL: resolved.source_url || ''
   });
   if (built.status !== 0 || !exists(page) || !exists(draft)) {
     failed.push({
       game_id: gameId,
       slug,
       title,
-      reason: 'fast page materialization failed',
+      reason: 'base Game Creator materialization failed',
       stderr: (built.stderr || '').slice(-3000),
       stdout: (built.stdout || '').slice(-3000),
       news_ids: resolved.news_ids || []
@@ -129,8 +132,9 @@ const requiredGames = [...requestByGameId.values()].map(item => {
   };
 });
 const report = {
-  schema_version: 1,
+  schema_version: 2,
   generated_at: new Date().toISOString(),
+  creator: 'scripts/ensure-game-page.mjs',
   requested: requests.length,
   canonical_resolved: requestByGameId.size,
   created_in_registry: discovery.created,
@@ -143,7 +147,7 @@ const report = {
 };
 write('tmp/news-game-page-fast.json', report);
 write('tmp/news-game-page-plan.json', {
-  schema_version: 4,
+  schema_version: 5,
   generated_at: report.generated_at,
   requested: requests,
   resolved: [...requestByGameId.values()],
