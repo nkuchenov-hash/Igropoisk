@@ -1,0 +1,93 @@
+name: Purge invalid news game artifacts once
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - 'scripts/purge-game-entities.mjs'
+      - '.github/workflows/purge-invalid-news-game-artifacts-once.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: purge-invalid-news-game-artifacts-once
+  cancel-in-progress: false
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate purge utility
+        run: node --check scripts/purge-game-entities.mjs
+
+      - name: Purge the two false entities from staging
+        run: |
+          node scripts/purge-game-entities.mjs \
+            sam-barlow game_4a6624c3d38c9eecae53 \
+            rpg-the-lord-of-the-rings-war game_2cba7e6bc76bb20f4efa
+          cat tmp/game-entity-purge.json
+          git diff --check
+          node scripts/validate-game-v3.mjs
+          python3 scripts/enforce_layout_contract.py --check
+
+      - name: Merge staging cleanup and retire one-time workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/purge-invalid-news-game-artifacts-once.yml
+          git add -A -- data game article scripts/purge-game-entities.mjs .github/workflows/purge-invalid-news-game-artifacts-once.yml 2>/dev/null || true
+          git diff --cached --check
+          if git diff --cached --quiet; then exit 0; fi
+          branch="automation/purge-invalid-news-games-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Purge false news game entities"
+          git push origin "$branch"
+          pr_url="$(gh pr create --base staging --head "$branch" --title "Purge false news game entities ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" --body "Removes the two false entities created during the news Game Creator rollout from page files, drafts, visible catalog, game-content and canonical Game Registry. Keeps the generic surgical purge utility and removes this one-time workflow.")"
+          gh pr merge "$pr_url" --merge --delete-branch
+
+      - name: Purge the same false entities from production
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git fetch origin main:refs/remotes/origin/main --force
+          production="$RUNNER_TEMP/purge-invalid-main"
+          rm -rf "$production"
+          git worktree add "$production" origin/main
+          cd "$production"
+          node "$GITHUB_WORKSPACE/scripts/purge-game-entities.mjs" \
+            sam-barlow game_4a6624c3d38c9eecae53 \
+            rpg-the-lord-of-the-rings-war game_2cba7e6bc76bb20f4efa
+          git diff --check
+          node scripts/validate-game-v3.mjs
+          python3 scripts/enforce_layout_contract.py --check
+          node scripts/validate-production-boundaries.mjs
+          git add -A -- data game article 2>/dev/null || true
+          if git diff --cached --quiet; then exit 0; fi
+          branch="automation/purge-invalid-news-games-main-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Remove false news-created game entities"
+          git push origin "$branch"
+          pr_url="$(gh pr create --base main --head "$branch" --title "Remove false news-created game entities ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" --body "Removes only the two false entities created before the news identity safety guards were introduced. Valid Game Creator pages are untouched.")"
+          gh pr merge "$pr_url" --merge --delete-branch
+          production_sha="$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq '.commit.sha')"
+          jq -n --arg sha "$production_sha" '{event_type:"production-pages",client_payload:{production_sha:$sha,source:"invalid-news-game-cleanup"}}' \
+            | gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input -
