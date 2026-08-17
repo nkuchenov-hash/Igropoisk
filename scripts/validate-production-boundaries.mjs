@@ -55,6 +55,10 @@ const productionPrProfiles = [
   {
     branchPrefix: 'automation/verified-game-pages-',
     materializer: 'node scripts/materialize-game-creator-pages.mjs'
+  },
+  {
+    branchPrefix: 'automation/purge-invalid-news-games-main-',
+    materializer: 'node "$GITHUB_WORKSPACE/scripts/purge-game-entities.mjs"'
   }
 ];
 
