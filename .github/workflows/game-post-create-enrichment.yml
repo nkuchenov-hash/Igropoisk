@@ -131,13 +131,24 @@ jobs:
           pull_required "$LOCAL_TEXT_MODEL"
           pull_optional "$LOCAL_VISION_MODEL"
 
-      - name: Build quick reviews and bounded full-review upgrades
+      - name: Build bounded quick reviews for green-rated games
         env:
-          POST_CREATE_PHASE: review
+          POST_CREATE_PHASE: quick-review
         run: node scripts/run-game-post-create-enrichment.mjs
 
-      - name: Publish review module checkpoint conflict-safely
+      - name: Publish quick-review checkpoint before full upgrades
         env:
           GH_TOKEN: ${{ github.token }}
-          POST_CREATE_PUBLISH_PHASE: review
+          POST_CREATE_PUBLISH_PHASE: quick-review
+        run: node scripts/publish-game-post-create-overlay.mjs
+
+      - name: Run bounded full-review upgrades
+        env:
+          POST_CREATE_PHASE: full-review
+        run: node scripts/run-game-post-create-enrichment.mjs
+
+      - name: Publish full-review checkpoint conflict-safely
+        env:
+          GH_TOKEN: ${{ github.token }}
+          POST_CREATE_PUBLISH_PHASE: full-review
         run: node scripts/publish-game-post-create-overlay.mjs
