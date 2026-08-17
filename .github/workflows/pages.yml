@@ -3,6 +3,16 @@ name: Deploy Igropoisk to GitHub Pages
 on:
   push:
     branches: [main]
+  workflow_call:
+    inputs:
+      production_sha:
+        description: Exact main commit to verify and deploy
+        required: true
+        type: string
+    outputs:
+      page_url:
+        description: Deployed GitHub Pages URL
+        value: ${{ jobs.deploy.outputs.page_url }}
 
 permissions:
   contents: read
@@ -20,6 +30,7 @@ jobs:
       - name: Checkout exact production commit
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.production_sha || github.sha }}
           fetch-depth: 0
 
       - name: Set up Node
@@ -96,6 +107,7 @@ jobs:
         run: |
           node scripts/validate-game-v3.mjs
           node scripts/validate-editorial-pipeline.mjs
+          node scripts/validate-game-shells.mjs
 
       - name: Reject generated or malformed changes
         run: |
@@ -113,6 +125,8 @@ jobs:
     steps:
       - name: Checkout the same verified commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.production_sha || github.sha }}
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -132,6 +146,8 @@ jobs:
     steps:
       - name: Checkout the deployed commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.production_sha || github.sha }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -152,6 +168,8 @@ jobs:
     steps:
       - name: Checkout the deployed commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.production_sha || github.sha }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -172,13 +190,23 @@ jobs:
     steps:
       - name: Checkout the deployed commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.production_sha || github.sha }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
+      - name: Install browser validation dependency
+        run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+
       - name: Verify deployed game pages and protected shared runtime
         env:
           GAME_RUNTIME_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
         run: node scripts/smoke-game-runtime.mjs
+
+      - name: Verify deployed DOOM uses the complete new Game Page
+        env:
+          DOOM_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: node scripts/smoke-doom-game-page-v4.mjs
