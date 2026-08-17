@@ -6,10 +6,12 @@ const creator=read('scripts/ensure-game-page.mjs');
 const verified=read('scripts/lib/verified-game-import.mjs');
 const series=read('scripts/materialize-known-series.mjs');
 const runner=read('scripts/run-game-post-create-enrichment.mjs');
+const publisher=read('scripts/publish-game-post-create-overlay.mjs');
 const media=read('scripts/enrich-game-media-from-sources.mjs');
 const runtime=read('game/_shared/game-page-materialized-data.js');
 const verifiedWorkflow=read('.github/workflows/verified-game-import-fast.yml');
 const newsWorkflow=read('.github/workflows/news-game-page-fast.yml');
+const enrichmentWorkflow=read('.github/workflows/game-post-create-enrichment.yml');
 const fail=message=>{throw new Error(message)};
 
 if(!creator.includes('series: series || null'))fail('Game Creator does not preserve canonical series');
@@ -28,5 +30,10 @@ if(!media.includes('Search engines may aid human/source discovery'))fail('Media 
 if(!runtime.includes('renderEnrichedMedia(draft,title)'))fail('Enriched draft media is not exposed by the game page runtime');
 if(!/paths=\([^\n]*data\/game-enrichment-requests/.test(verifiedWorkflow))fail('Verified-import wrapper discards Game Creator enrichment requests before staging');
 if(!/paths=\([^\n]*data\/game-enrichment-requests/.test(newsWorkflow))fail('News wrapper discards Game Creator enrichment requests before staging');
+if(!enrichmentWorkflow.includes("OPENAI_API_KEY: ''"))fail('Immediate enrichment still depends on paid OpenAI quota');
+if(!enrichmentWorkflow.includes('qwen3:1.7b')||!enrichmentWorkflow.includes('qwen3-vl:4b'))fail('Immediate enrichment lacks local text/vision fallbacks');
+if(!enrichmentWorkflow.includes('scripts/publish-game-post-create-overlay.mjs'))fail('Immediate enrichment does not use conflict-safe publication');
+if(!publisher.includes("freshObj!==baseObj"))fail('Conflict-safe publisher does not preserve newer parallel staging updates');
+if(!publisher.includes('for(let publishAttempt=1;publishAttempt<=5;publishAttempt++)'))fail('Conflict-safe publisher does not retry moving staging');
 
-console.log('Game Creator post-create contract passed: series, rating/review and verified-source media enrichment are automatic, persisted by every fast creator wrapper, and remain non-blocking for base page existence.');
+console.log('Game Creator post-create contract passed: series, rating/review and verified-source media enrichment are automatic, persisted by every fast creator wrapper, locally model-capable, conflict-safe, and remain non-blocking for base page existence.');
