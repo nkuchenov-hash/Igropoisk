@@ -15,6 +15,8 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: fast-verified-game-import-pages
@@ -24,6 +26,11 @@ jobs:
   create-pages:
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    outputs:
+      ready_count: ${{ steps.fast.outputs.ready_count }}
+      failed_count: ${{ steps.fast.outputs.failed_count }}
+      games_b64: ${{ steps.fast.outputs.games_b64 }}
+      production_sha: ${{ steps.production.outputs.production_sha }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -93,7 +100,8 @@ jobs:
             --body "Registers verified imports and materializes only their base pages through the shared Game Creator. Optional content modules remain independent.")"
           gh pr merge "$pr_url" --merge --delete-branch
 
-      - name: Promote every created base page to production and dispatch Pages
+      - name: Promote every created base page to production
+        id: production
         if: steps.fast.outputs.ready_count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -118,50 +126,25 @@ jobs:
             if [ -e "$path" ]; then existing+=("$path"); fi
           done
           if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
-          if ! git diff --cached --quiet; then
-            branch="automation/verified-game-pages-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-            git config user.name "igropoisk-content[bot]"
-            git config user.email "igropoisk-content[bot]@users.noreply.github.com"
-            git checkout -b "$branch"
-            git commit -m "Publish verified-import base game pages"
-            git push origin "$branch"
-            pr_url="$(gh pr create \
-              --base main \
-              --head "$branch" \
-              --title "Publish verified-import game pages ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
-              --body "Publishes only verified base game pages created through the shared Game Creator. Review, media, Game DNA, similarity and guides are independent modules.")"
-            gh pr merge "$pr_url" --merge --delete-branch
+          if git diff --cached --quiet; then
+            echo "production_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
-          production_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
-          jq -n \
-            --arg sha "$production_sha" \
-            --arg source "verified-game-import-fast" \
-            '{event_type:"production-pages",client_payload:{production_sha:$sha,source:$source}}' \
-            | gh api --method POST "repos/${GITHUB_REPOSITORY}/dispatches" --input -
-          echo "Dispatched Pages for production SHA $production_sha"
-
-      - name: Wait until created pages are live
-        if: steps.fast.outputs.ready_count != '0'
-        env:
-          GAMES_B64: ${{ steps.fast.outputs.games_b64 }}
-        run: |
-          set -euo pipefail
-          slugs="$(node -e "const a=JSON.parse(Buffer.from(process.env.GAMES_B64,'base64').toString('utf8'));process.stdout.write(a.map(x=>x.slug).join(' '))")"
-          base="https://nkuchenov-hash.github.io/Igropoisk"
-          ready=false
-          for attempt in $(seq 1 90); do
-            missing=0
-            for slug in $slugs; do
-              code="$(curl -L -sS -o /dev/null -w '%{http_code}' "$base/game/$slug/" || true)"
-              if [ "$code" != "200" ]; then missing=$((missing+1)); fi
-            done
-            if [ "$missing" = "0" ]; then ready=true; break; fi
-            sleep 5
-          done
-          if [ "$ready" != "true" ]; then
-            echo "One or more verified-import Game Creator pages did not become live."
-            exit 1
-          fi
+          branch="automation/verified-game-pages-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Publish verified-import base game pages"
+          git push origin "$branch"
+          pr_url="$(gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "Publish verified-import game pages ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
+            --body "Publishes only verified base game pages created through the shared Game Creator. Review, media, Game DNA, similarity and guides are independent modules.")"
+          gh pr merge "$pr_url" --merge --delete-branch
+          production_sha="$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq '.commit.sha')"
+          test -n "$production_sha"
+          echo "production_sha=$production_sha" >> "$GITHUB_OUTPUT"
 
       - name: Preserve verified-import diagnostics
         if: always()
@@ -173,3 +156,46 @@ jobs:
             tmp/verified-game-import-fast-production.json
           if-no-files-found: warn
           retention-days: 14
+
+  deploy-production:
+    needs: create-pages
+    if: needs.create-pages.outputs.production_sha != ''
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml
+    with:
+      production_sha: ${{ needs.create-pages.outputs.production_sha }}
+
+  verify-live:
+    needs: [create-pages, deploy-production]
+    if: ${{ always() && needs.create-pages.result == 'success' && needs.deploy-production.result == 'success' && needs.create-pages.outputs.ready_count != '0' && needs.create-pages.outputs.production_sha != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Require every created game page to be live
+        env:
+          GAMES_B64: ${{ needs.create-pages.outputs.games_b64 }}
+        run: |
+          set -euo pipefail
+          slugs="$(node -e "const a=JSON.parse(Buffer.from(process.env.GAMES_B64,'base64').toString('utf8'));process.stdout.write(a.map(x=>x.slug).join(' '))")"
+          base="https://nkuchenov-hash.github.io/Igropoisk"
+          ready=false
+          for attempt in $(seq 1 60); do
+            missing=0
+            for slug in $slugs; do
+              code="$(curl -L -sS -o /dev/null -w '%{http_code}' "$base/game/$slug/" || true)"
+              if [ "$code" != "200" ]; then missing=$((missing+1)); fi
+            done
+            if [ "$missing" = "0" ]; then ready=true; break; fi
+            sleep 2
+          done
+          if [ "$ready" != "true" ]; then
+            echo "One or more verified-import Game Creator pages did not become live after the verified production deploy."
+            exit 1
+          fi
