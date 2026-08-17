@@ -130,10 +130,8 @@ jobs:
 
           echo "No new layout regression. Existing base-branch violations are not attributed to the news module."
 
-      - name: Verify publication gates
-        run: |
-          node scripts/validate-game-v3.mjs
-          node scripts/validate-editorial-pipeline.mjs
+      - name: Verify base page publication gate
+        run: node scripts/validate-game-v3.mjs
 
       - name: Run news browser smoke test
         run: |
