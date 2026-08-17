@@ -48,6 +48,9 @@ on:
       - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
       - 'scripts/prepare-news-game-page-requests.mjs'
+      - 'scripts/build-news-game-page-fast.mjs'
+      - 'scripts/run-news-game-page-fast.mjs'
+      - 'scripts/materialize-news-game-pages-fast.mjs'
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
       - 'scripts/test-news-pipeline-health.mjs'
@@ -68,6 +71,7 @@ on:
       - 'scripts/lib/news-game-hashtag.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/publish-news-storage.mjs'
+      - '.github/workflows/news-game-page-fast.yml'
       - '.github/workflows/news-pipeline.yml'
 
 permissions:
@@ -106,6 +110,9 @@ jobs:
           node --check scripts/hydrate-live-news-history.mjs
           node --check scripts/audit-news-game-hashtags.mjs
           node --check scripts/prepare-news-game-page-requests.mjs
+          node --check scripts/build-news-game-page-fast.mjs
+          node --check scripts/run-news-game-page-fast.mjs
+          node --check scripts/materialize-news-game-pages-fast.mjs
           node --check scripts/lib/news-game-context-resolver.mjs
           node --check scripts/lib/news-primary-game-refiner.mjs
           node --check scripts/lib/news-publication-gate.mjs
@@ -169,12 +176,12 @@ jobs:
           process.stdout.write(`count=${result.count}\nrequests_b64=${result.requests_b64}\n`);
           NODE
 
-      - name: Trigger canonical game lifecycle for every verified missing historical page
+      - name: Create every verified missing game page through the fast structured-data path
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
           NEWS_GAME_REQUESTS_B64: ${{ steps.game_pages.outputs.requests_b64 }}
-        run: gh workflow run content-pipeline.yml --ref staging -f news_game_requests_b64="$NEWS_GAME_REQUESTS_B64"
+        run: gh workflow run news-game-page-fast.yml --ref staging -f news_game_requests_b64="$NEWS_GAME_REQUESTS_B64"
 
       - name: Require every canonical hashtag to resolve before publication
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'

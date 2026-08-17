@@ -41,6 +41,10 @@ if (stagingWatcher.includes('Autonomous news pipeline')) {
 
 const productionPrProfiles = [
   {
+    branchPrefix: 'automation/news-game-pages-fast-',
+    materializer: 'node scripts/materialize-news-game-pages-fast.mjs --target'
+  },
+  {
     branchPrefix: 'automation/news-game-pages-',
     materializer: 'node scripts/materialize-news-production-pages.mjs --target'
   },
