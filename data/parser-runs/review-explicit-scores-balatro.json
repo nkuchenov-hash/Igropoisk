@@ -1,0 +1,64 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "balatro",
+  "checked_at": "2026-08-17T20:21:22.933Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 3,
+  "scored": 2,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 9.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 9,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/balatro/a-winning-hand",
+      "final_url": "https://gameinformer.com/review/balatro/a-winning-hand",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/games/adventure/a-balatro-crossover-goty-nods-and-near-perfect-reviews-propelled-one-of-2024s-hidden-gems-to-its-highest-selling-day-months-after-launch",
+      "final_url": "https://www.gamesradar.com/games/adventure/a-balatro-crossover-goty-nods-and-near-perfect-reviews-propelled-one-of-2024s-hidden-gems-to-its-highest-selling-day-months-after-launch/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/balatro",
+      "final_url": "https://www.pushsquare.com/reviews/ps5/balatro",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}

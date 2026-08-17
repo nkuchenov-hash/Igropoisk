@@ -1,0 +1,64 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "fallout-3",
+  "checked_at": "2026-08-17T20:21:27.523Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 3,
+  "scored": 2,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 9.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "score": 10,
+      "scale": 10,
+      "method": "registry:hooked-gamers",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/games/fallout_3/b/ps3/archive/2009/09/22/review.aspx",
+      "final_url": "https://gameinformer.com/games/fallout_3/b/ps3/archive/2009/09/22/review.aspx",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2009/12/01/review-fallout-3-broken-steel-operation-anchorage",
+      "final_url": "https://www.thesixthaxis.com/2009/12/01/review-fallout-3-broken-steel-operation-anchorage/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/fallout_3/review/article-301.html",
+      "final_url": "https://www.hookedgamers.com/pc/fallout_3/review/article-301.html",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}

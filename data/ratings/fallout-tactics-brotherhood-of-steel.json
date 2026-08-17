@@ -1,0 +1,31 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/fallout-tactics-brotherhood-of-steel.json#review_score",
+  "game_slug": "fallout-tactics-brotherhood-of-steel",
+  "checked_at": "2026-08-17T20:24:38.244Z",
+  "status": "red-needs-revision",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [],
+  "excluded_sources": [],
+  "calculation": {
+    "source_count": 0,
+    "values": [],
+    "mean_10": null,
+    "score_10": null
+  }
+}
