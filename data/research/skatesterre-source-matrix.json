@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "skatesterre",
-  "generated_at": "2026-08-17T22:37:33.570Z",
+  "generated_at": "2026-08-17T22:54:27.693Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -43,10 +43,13 @@
       "mechanics": [],
       "domain": "gamespew.com",
       "validation": {
-        "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-17T22:37:33.570Z",
-        "method": "registered-direct-publisher-preserved-v8",
-        "reason": "HTTP 403"
+        "status": "accepted",
+        "checked_at": "2026-08-17T22:54:27.693Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
       },
       "score": 5,
       "scale": 10,
@@ -441,7 +444,7 @@
     "accepted": 1,
     "scored": 1,
     "context_only_versions": 0,
-    "blocked_verified": 1,
+    "blocked_verified": 0,
     "contemporary": 1,
     "green": false,
     "passed": false,
