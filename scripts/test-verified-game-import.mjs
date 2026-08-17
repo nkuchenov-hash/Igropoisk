@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
-import {createRegistry} from './lib/game-registry.mjs';
+import fs from 'node:fs';
+import {createRegistry,GameRegistryApi} from './lib/game-registry.mjs';
 import {registerVerifiedGameImports} from './lib/verified-game-import.mjs';
 
 const official={type:'official_platform_store',name:'Store',url:'https://store.example/game'};
@@ -31,5 +32,22 @@ const parserSeed={identity:{title:'Console Game'},release:{date_text:'2004'},com
 {
   const result=registerVerifiedGameImports(createRegistry(),[{import_id:'weak-game',identity_verified:true,title:'Weak Game',slug:'weak-game',steam_appid:456,releases:[released],verification_sources:[{type:'professional_publication',name:'Only One',url:'https://one.example/review'}]}]);
   assert.equal(result.resolved.length,0);assert.equal(result.issues[0]?.reason,'import_requires_official_or_two_independent_verification_sources');
+}
+
+if(fs.existsSync('data/game-import-requests.json')){
+  const queue=JSON.parse(fs.readFileSync('data/game-import-requests.json','utf8'));
+  const requests=Array.isArray(queue?.imports)?queue.imports:[];
+  const registry=fs.existsSync('data/game-registry/registry.transition.json')?JSON.parse(fs.readFileSync('data/game-registry/registry.transition.json','utf8')):createRegistry();
+  const before=new GameRegistryApi(structuredClone(registry));
+  const preexisting=new Set(requests.filter(request=>before.findBySlug(String(request?.slug||''))).map(request=>String(request?.import_id||request?.slug||'')));
+  const result=registerVerifiedGameImports(registry,requests);
+  assert.equal(result.issues.length,0,`queued verified imports must resolve without issues: ${JSON.stringify(result.issues)}`);
+  assert.equal(result.resolved.length,requests.length,'every queued verified import must resolve');
+  assert.equal(new Set(result.resolved.map(item=>item.game_id)).size,requests.length,'queued verified imports must resolve to distinct canonical games');
+  for(const importId of preexisting){
+    const resolved=result.resolved.find(item=>item.import_id===importId);
+    assert.ok(resolved,`pre-existing queued import ${importId} must resolve`);
+    assert.notEqual(resolved.decision,'created',`pre-existing queued import ${importId} must reuse its canonical Registry entity`);
+  }
 }
 console.log('Verified game import contract passed.');
