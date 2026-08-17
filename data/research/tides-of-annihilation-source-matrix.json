@@ -1,16 +1,21 @@
 {
-  "schema_version": 11,
-  "game_slug": "fallout-tactics-brotherhood-of-steel",
-  "game_id": "game_c4f341d43a6730f4a83b",
-  "updated_at": "2026-08-17T22:53:21.947Z",
+  "schema_version": 9,
+  "game_slug": "tides-of-annihilation",
+  "generated_at": "2026-08-17T22:54:56.686Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "publication_gate": {
-    "minimum": 5,
-    "target": 20,
-    "maximum": 20,
-    "accepted": 0,
-    "status": "red-needs-revision"
+  "policy": {
+    "minimum_sources": 5,
+    "target_sources": 20,
+    "maximum_sources": 20,
+    "historical": false,
+    "min_contemporary": 5,
+    "regional_discovery_required": true,
+    "unknown_publisher_policy": "reject_until_registered",
+    "canonical_score_requires_exact_version": true
   },
+  "accepted": [],
+  "rejected": [],
+  "source_proposals": [],
   "regional_discovery": {
     "region": "ru",
     "checks": [
@@ -67,45 +72,18 @@
         "name": "Shazoo",
         "status": "not_found",
         "notes": "search completed; no verified direct review"
-      },
-      {
-        "source_id": "absolute-games-archive",
-        "name": "Absolute Games",
-        "status": "not_found",
-        "notes": "search completed; no verified direct review"
       }
     ],
     "complete": true,
     "found_but_not_accepted": []
   },
-  "reviews": [],
-  "rejected": [],
-  "source_proposals": [],
-  "review_score": {
-    "status": "red-needs-revision",
-    "owner": "review",
-    "method": {
-      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
-      "formula": "sum(normalized_10) / source_count",
-      "minimum_sources": 3,
-      "target_sources": 10,
-      "maximum_sources": null,
-      "use_all_eligible_sources": true,
-      "required_evidence_scope": "editorial_review",
-      "output_scale": 10,
-      "rounding_decimals": 1,
-      "one_vote_per_publication": true,
-      "aggregators_forbidden": true,
-      "invented_scores_forbidden": true,
-      "exact_canonical_version_required": true
-    },
-    "sources": [],
-    "excluded_sources": [],
-    "calculation": {
-      "source_count": 0,
-      "values": [],
-      "mean_10": null,
-      "score_10": null
-    }
+  "coverage": {
+    "accepted": 0,
+    "scored": 0,
+    "context_only_versions": 0,
+    "contemporary": 0,
+    "green": false,
+    "passed": false,
+    "needs_more": 5
   }
 }
