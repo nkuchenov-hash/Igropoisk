@@ -2,9 +2,9 @@
   "parser": "game-post-create-enrichment",
   "phase": "bootstrap",
   "status": "needs_revision",
-  "checked_at": "2026-08-17T20:25:00.951Z",
-  "requested": 11,
-  "complete": 1,
+  "checked_at": "2026-08-17T21:38:21.109Z",
+  "requested": 10,
+  "complete": 0,
   "deferred": 0,
   "pending": 10,
   "bootstrap_concurrency": 3,
@@ -15,127 +15,7 @@
       "script": "scripts/materialize-known-series.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"requested\": [\n    \"balatro\",\n    \"fallout-2\",\n    \"fallout-3\",\n    \"fallout-4\",\n    \"fallout-76\",\n    \"fallout-brotherhood-of-steel\",\n    \"fallout-new-vegas\",\n    \"fallout-shelter\",\n    \"fallout-tactics-brotherhood-of-steel\",\n    \"fallout\",\n    \"the-blood-of-dawnwalker\"\n  ],\n  \"series_groups\": 1,\n  \"files_written\": 9,\n  \"registry_backfilled\": false\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-discovery:balatro",
-      "script": "scripts/discover-review-sources-web.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"balatro\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 4,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-audit:balatro",
-      "script": "scripts/promote-review-source-audit.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"balatro\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 4,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-research:balatro",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"balatro\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 3,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"rejected\": 0,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-scores:balatro",
-      "script": "scripts/enrich-review-explicit-scores.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"balatro\",\n  \"accepted\": 3,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"updates\": 2,\n  \"preserved\": 0\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "rating:balatro",
-      "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"balatro\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 2,\n  \"excluded_sources\": 1,\n  \"score_10\": 9.3,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-discovery:fallout-2",
-      "script": "scripts/discover-review-sources-web.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"registered_editorial\": 43,\n  \"checked\": 43,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-audit:fallout-2",
-      "script": "scripts/promote-review-source-audit.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 43,\n  \"applicable\": 43,\n  \"regional_complete\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-research:fallout-2",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"rejected\": 0,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-discovery:fallout-3",
-      "script": "scripts/discover-review-sources-web.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"registered_editorial\": 43,\n  \"checked\": 43,\n  \"accepted\": 4,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-audit:fallout-3",
-      "script": "scripts/promote-review-source-audit.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 4,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 43,\n  \"applicable\": 43,\n  \"regional_complete\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-scores:fallout-2",
-      "script": "scripts/enrich-review-explicit-scores.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "rating:fallout-2",
-      "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 0,\n  \"score_10\": 8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-research:fallout-3",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 3,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"rejected\": 0,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-scores:fallout-3",
-      "script": "scripts/enrich-review-explicit-scores.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"accepted\": 3,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"updates\": 2,\n  \"preserved\": 0\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "rating:fallout-3",
-      "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 2,\n  \"excluded_sources\": 1,\n  \"score_10\": 9.8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stdout": "{\n  \"requested\": [\n    \"balatro\",\n    \"fallout-2\",\n    \"fallout-3\",\n    \"fallout-76\",\n    \"fallout-brotherhood-of-steel\",\n    \"fallout-new-vegas\",\n    \"fallout-shelter\",\n    \"fallout-tactics-brotherhood-of-steel\",\n    \"fallout\",\n    \"the-blood-of-dawnwalker\"\n  ],\n  \"series_groups\": 1,\n  \"files_written\": 9,\n  \"registry_backfilled\": false\n}\n",
       "stderr": ""
     },
     {
@@ -143,7 +23,7 @@
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"balatro\",\n  \"pages_checked\": 5,\n  \"added_screenshots\": 17,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 29,\n  \"total_artwork\": 1\n}\n",
+      "stdout": "{\n  \"slug\": \"balatro\",\n  \"pages_checked\": 6,\n  \"added_screenshots\": 5,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 34,\n  \"total_artwork\": 1\n}\n",
       "stderr": ""
     },
     {
@@ -151,63 +31,15 @@
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"pages_checked\": 5,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 23,\n  \"total_artwork\": 1\n}\n",
+      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"pages_checked\": 6,\n  \"added_screenshots\": 3,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 26,\n  \"total_artwork\": 1\n}\n",
       "stderr": ""
     },
     {
-      "label": "media:fallout-2",
+      "label": "media:fallout-76",
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"pages_checked\": 3,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 7,\n  \"total_artwork\": 1\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "media:fallout-4",
-      "script": "scripts/enrich-game-media-from-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-4\",\n  \"pages_checked\": 13,\n  \"added_screenshots\": 24,\n  \"added_artwork\": 1,\n  \"total_screenshots\": 36,\n  \"total_artwork\": 3\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-discovery:fallout-76",
-      "script": "scripts/discover-review-sources-web.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 6,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-audit:fallout-76",
-      "script": "scripts/promote-review-source-audit.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"status\": \"green\",\n  \"accepted\": 6,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-research:fallout-76",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 4,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"rejected\": 0,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-scores:fallout-76",
-      "script": "scripts/enrich-review-explicit-scores.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"accepted\": 4,\n  \"scored\": 4,\n  \"context_only_versions\": 0,\n  \"updates\": 4,\n  \"preserved\": 0\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "rating:fallout-76",
-      "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"status\": \"green\",\n  \"scored_sources\": 4,\n  \"excluded_sources\": 0,\n  \"score_10\": 5.4,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"pages_checked\": 8,\n  \"added_screenshots\": 11,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 36,\n  \"total_artwork\": 1\n}\n",
       "stderr": ""
     },
     {
@@ -259,59 +91,59 @@
       "stderr": ""
     },
     {
-      "label": "media:fallout-76",
-      "script": "scripts/enrich-game-media-from-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"pages_checked\": 6,\n  \"added_screenshots\": 10,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 27,\n  \"total_artwork\": 1\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-discovery:fallout-new-vegas",
-      "script": "scripts/discover-review-sources-web.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout-new-vegas\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 4,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-audit:fallout-new-vegas",
-      "script": "scripts/promote-review-source-audit.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout-new-vegas\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 4,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-research:fallout-new-vegas",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-new-vegas\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 2,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"rejected\": 0,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "review-scores:fallout-new-vegas",
-      "script": "scripts/enrich-review-explicit-scores.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-new-vegas\",\n  \"accepted\": 2,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "rating:fallout-new-vegas",
-      "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "needs_revision",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout-new-vegas\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 1,\n  \"score_10\": 9.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
-      "stderr": ""
-    },
-    {
       "label": "media:fallout-new-vegas",
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-new-vegas\",\n  \"pages_checked\": 4,\n  \"added_screenshots\": 24,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 36,\n  \"total_artwork\": 1\n}\n",
+      "stdout": "{\n  \"slug\": \"fallout-new-vegas\",\n  \"pages_checked\": 6,\n  \"added_screenshots\": 7,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 36,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-discovery:fallout-2",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"registered_editorial\": 43,\n  \"checked\": 43,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"fallout-2\",\n  \"numbered_identity_key\": \"fallout 2\",\n  \"removed_wrong_version_sources\": 1,\n  \"accepted_after_filter\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-audit:fallout-2",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 43,\n  \"applicable\": 43,\n  \"regional_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-research:fallout-2",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"rejected\": 0,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-scores:fallout-2",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rating:fallout-2",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-2",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"pages_checked\": 2,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 7,\n  \"total_artwork\": 1\n}\n",
       "stderr": ""
     },
     {
@@ -359,7 +191,7 @@
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"pages_checked\": 2,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 6,\n  \"total_artwork\": 1\n}\n",
+      "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"pages_checked\": 2,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 6,\n  \"total_artwork\": 1\n}\n",
       "stderr": ""
     },
     {
@@ -463,7 +295,7 @@
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"pages_checked\": 3,\n  \"added_screenshots\": 3,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 8,\n  \"total_artwork\": 1\n}\n",
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"pages_checked\": 3,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 8,\n  \"total_artwork\": 1\n}\n",
       "stderr": ""
     }
   ]
