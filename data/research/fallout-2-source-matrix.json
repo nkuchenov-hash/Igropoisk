@@ -1,7 +1,7 @@
 {
-  "schema_version": 9,
+  "schema_version": 12,
   "game_slug": "fallout-2",
-  "generated_at": "2026-08-17T22:58:00.597Z",
+  "generated_at": "2026-08-17T23:04:37.715Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -11,7 +11,11 @@
     "min_contemporary": 4,
     "regional_discovery_required": true,
     "unknown_publisher_policy": "reject_until_registered",
-    "canonical_score_requires_exact_version": true
+    "canonical_score_requires_exact_version": true,
+    "post_create_verified_corpus_preserved": true,
+    "professional_only": true,
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false
   },
   "accepted": [
     {
@@ -65,7 +69,7 @@
       "score_evidence": {
         "method": "semantic-editorial-label",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:58:01.862Z",
+        "checked_at": "2026-08-17T23:04:39.969Z",
         "url": "https://www.rpgfan.com/review/fallout-2/",
         "configured_source_id": "rpgfan",
         "direct_publisher": true
@@ -148,6 +152,8 @@
     "contemporary": 1,
     "green": false,
     "passed": false,
-    "needs_more": 4
+    "needs_more": 4,
+    "historical_index_preserved": 0,
+    "trusted_scores_preserved": 1
   }
 }

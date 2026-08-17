@@ -1,17 +1,25 @@
 {
-  "schema_version": 9,
+  "schema_version": 12,
   "game_slug": "fallout-brotherhood-of-steel",
-  "generated_at": "2026-08-17T22:57:43.264Z",
+  "generated_at": "2026-08-17T23:05:03.520Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
     "target_sources": 20,
     "maximum_sources": 20,
     "historical": true,
-    "min_contemporary": 4,
     "regional_discovery_required": true,
-    "unknown_publisher_policy": "reject_until_registered",
-    "canonical_score_requires_exact_version": true
+    "discovery_provider": "registered-direct-publisher-web-v8",
+    "audit_all": true,
+    "canonical_score_requires_exact_version": true,
+    "score_extraction_separate": true,
+    "search_title_variants": true,
+    "review_hub_following": true,
+    "historical_critic_index": "metacritic",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true,
+    "post_create_verified_corpus_preserved": true
   },
   "accepted": [
     {
@@ -55,8 +63,8 @@
       "domain": "rpgfan.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:57:43.264Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T23:04:33.867Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
@@ -65,15 +73,367 @@
       "score_evidence": {
         "method": "semantic-editorial-label",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:57:44.504Z",
+        "checked_at": "2026-08-17T23:05:04.311Z",
         "url": "https://www.rpgfan.com/review/fallout-brotherhood-of-steel/",
         "configured_source_id": "rpgfan",
         "direct_publisher": true
       }
     }
   ],
-  "rejected": [],
-  "source_proposals": [],
+  "rejected": [
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/fallout-brotherhood-of-steel-review",
+      "reasons": [
+        "HTTP 404"
+      ]
+    }
+  ],
+  "source_checks": [
+    {
+      "source_id": "igromania",
+      "name": "Игромания",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "stopgame",
+      "name": "StopGame",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "kanobu",
+      "name": "Канобу",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "playground",
+      "name": "PlayGround.ru",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "vgtimes",
+      "name": "VGTimes",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ixbt-games",
+      "name": "iXBT.games",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamemag",
+      "name": "GameMAG.ru",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "vk-play",
+      "name": "VK Play Media",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "shazoo",
+      "name": "Shazoo",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "absolute-games-archive",
+      "name": "Absolute Games",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pc-gamer",
+      "name": "PC Gamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamespot",
+      "name": "GameSpot",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ign",
+      "name": "IGN",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "eurogamer",
+      "name": "Eurogamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-informer",
+      "name": "Game Informer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamesradar",
+      "name": "GamesRadar+",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "polygon",
+      "name": "Polygon",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rock-paper-shotgun",
+      "name": "Rock Paper Shotgun",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-revolution",
+      "name": "GameRevolution",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ars-technica",
+      "name": "Ars Technica",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamespy-archive",
+      "name": "GameSpy",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezone",
+      "name": "GameZone",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamepressure",
+      "name": "Gamepressure",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gry-online",
+      "name": "GRYOnline",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "worthplaying",
+      "name": "WorthPlaying",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rpgfan",
+      "name": "RPGFan",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "rpgamer",
+      "name": "RPGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "destructoid",
+      "name": "Destructoid",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "shacknews",
+      "name": "Shacknews",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pcworld",
+      "name": "PCWorld",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "guardian-games",
+      "name": "The Guardian",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "push-square",
+      "name": "Push Square",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "nintendo-life",
+      "name": "Nintendo Life",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "digital-trends",
+      "name": "Digital Trends",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "wired",
+      "name": "WIRED",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "egm",
+      "name": "EGM",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamebanshee",
+      "name": "GameBanshee",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "den-of-geek",
+      "name": "Den of Geek",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "videogamer",
+      "name": "VideoGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-sixth-axis",
+      "name": "TheSixthAxis",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pc-invasion",
+      "name": "PC Invasion",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-spew",
+      "name": "GameSpew",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "hooked-gamers",
+      "name": "Hooked Gamers",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamepro-archive",
+      "name": "GamePro",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-over-online-archive",
+      "name": "Game Over Online",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "quandary-archive",
+      "name": "Quandary",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "electric-playground-archive",
+      "name": "Electric Playground",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "all-game-guide-archive",
+      "name": "All Game Guide",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezilla-archive",
+      "name": "Gamezilla!",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    }
+  ],
   "regional_discovery": {
     "region": "ru",
     "checks": [
@@ -142,12 +502,21 @@
     "found_but_not_accepted": []
   },
   "coverage": {
+    "registered_editorial": 49,
+    "checked": 49,
     "accepted": 1,
     "scored": 1,
     "context_only_versions": 0,
+    "blocked_verified": 0,
     "contemporary": 1,
     "green": false,
     "passed": false,
-    "needs_more": 4
+    "needs_more": 4,
+    "historical_index_rows": 0,
+    "historical_index_added": 0,
+    "historical_index_scores_added": 0,
+    "removed_user_generated": 0,
+    "historical_index_preserved": 0,
+    "trusted_scores_preserved": 1
   }
 }
