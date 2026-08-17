@@ -38,6 +38,7 @@ jobs:
           node --check scripts/materialize-news-game-pages-fast.mjs
           node --check scripts/parse-game-data.mjs
           node --check scripts/lib/news-game-registry-discovery.mjs
+          python3 -m py_compile scripts/enforce_layout_contract.py
 
       - name: Parse game data and create ordinary pages immediately
         id: fast
@@ -52,6 +53,7 @@ jobs:
           process.stdout.write(`ready_count=${Number(report.ready_count || 0)}\nfailed_count=${Number(report.failed_count || 0)}\ngames_b64=${Buffer.from(JSON.stringify(games), 'utf8').toString('base64')}\n`);
           NODE
           cat tmp/news-game-page-fast.json
+          python3 scripts/enforce_layout_contract.py --check
 
       - name: Stage only fast page creation output
         id: staged
@@ -101,9 +103,10 @@ jobs:
           node scripts/materialize-news-game-pages-fast.mjs --target "$production"
           cd "$production"
           git diff --check
+          python3 scripts/enforce_layout_contract.py --check
           node scripts/validate-game-v3.mjs
           node scripts/validate-production-boundaries.mjs
-          paths=(game data/catalog-visible.json data/drafts data/game-content data/reviews data/articles data/guides data/similarity data/game-dna article)
+          paths=(game data/catalog-visible.json data/drafts data/game-content)
           existing=()
           for path in "${paths[@]}"; do
             if [ -e "$path" ]; then existing+=("$path"); fi
@@ -120,7 +123,7 @@ jobs:
             --base main \
             --head "$branch" \
             --title "Publish news-required game pages ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
-            --body "Publishes only the game pages needed by verified news links. The page is available as soon as structured game data is parsed; later editorial enrichment stays separate.")"
+            --body "Publishes only the base game pages needed by verified news links. The page is available as soon as structured game data is parsed; review, Game DNA, similarity and guides stay in the regular lifecycle.")"
           gh pr merge "$pr_url" --merge --delete-branch
 
       - name: Wait until created pages are live
