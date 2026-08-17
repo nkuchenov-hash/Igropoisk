@@ -17,6 +17,7 @@ const workflow=read('.github/workflows/content-pipeline.yml');
 const planNews=read('scripts/plan-news-game-pages.mjs');
 const importPlanner=read('scripts/plan-game-imports.mjs');
 const importAdapter=read('scripts/lib/verified-game-import.mjs');
+const parser=read('scripts/parse-game-data.mjs');
 const similarity=read('scripts/build-similarity-index.mjs');
 const dna=read('scripts/build-game-dna.mjs');
 const orchestrator=read('scripts/orchestrate-content-v6.mjs');
@@ -31,6 +32,13 @@ need(importPlanner,'data/parser-output/','non-Steam verified imports must materi
 need(importAdapter,'registerVerifiedGameImports','verified game import adapter is missing');
 need(importAdapter,'full_page_import_requires_released_game','future imports must not accidentally become public pages');
 need(importAdapter,'non_steam_full_page_import_requires_verified_parser_seed','non-Steam full-page imports must require verified structured data');
+need(workflow,"'data/game-import-requests.json'",'verified import queue changes must trigger the lifecycle immediately');
+need(workflow,"'scripts/plan-game-imports.mjs'",'verified import planner changes must trigger the lifecycle immediately');
+need(workflow,"'scripts/lib/verified-game-import.mjs'",'verified import adapter changes must trigger the lifecycle immediately');
+need(workflow,'node scripts/test-verified-game-import.mjs','content lifecycle must run the verified-import contract test');
+need(parser,'verified_canonical_game_registry','verified imports must preserve the canonical Game Registry title against storefront edition titles');
+need(parser,'store_title','storefront edition titles must remain available as metadata after canonicalization');
+need(parser,'canonical_game_registry_original_release','storefront parsing must preserve the canonical original release date');
 
 need(runnerEntry,'ensureLocalEditorialRuntime','normal content execution must bootstrap a local editorial model');
 need(enrichEntry,'ensureLocalEditorialRuntime','catalog review maintenance must bootstrap a local editorial model');
