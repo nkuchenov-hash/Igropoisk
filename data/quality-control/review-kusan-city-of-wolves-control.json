@@ -1,10 +1,10 @@
 {
-  "schema_version": 8,
+  "schema_version": 9,
   "type": "review",
   "game_slug": "kusan-city-of-wolves",
   "game_id": null,
   "canonical_title": "Kusan: City of Wolves",
-  "checked_at": "2026-08-17T10:57:03.277Z",
+  "checked_at": "2026-08-17T13:01:50.236Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
@@ -17,7 +17,7 @@
       "script": "scripts/discover-review-sources-web.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"kusan-city-of-wolves\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stdout": "{\n  \"slug\": \"kusan-city-of-wolves\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
       "stderr": ""
     },
     {
@@ -25,7 +25,7 @@
       "script": "scripts/promote-review-source-audit.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"kusan-city-of-wolves\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"kusan-city-of-wolves\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 1,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -54,9 +54,10 @@
     "score_enrichment": "direct-publisher-structured-markup-preserve-verified",
     "score_aggregation": "all-eligible-explicit-publisher-scores",
     "article_reuse": "surgical-rebind-before-regeneration",
-    "synthesis_fallback": "local-ollama-only-after-deterministic-recovery",
-    "visual_audit_fallback": "local-ollama-multimodal",
-    "language_audit_fallback": "local-ollama",
+    "targeted_hard_repair": "preserve_rebound_prose_and_repair_only_failing_media_or_language",
+    "synthesis_fallback": "github-models-then-local-text",
+    "visual_audit_fallback": "github-models-then-local-multimodal",
+    "language_audit_fallback": "local-lightweight-text",
     "web_discovery_attempts_per_qc": 1
   }
 }

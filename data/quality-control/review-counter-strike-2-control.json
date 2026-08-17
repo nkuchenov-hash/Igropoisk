@@ -1,14 +1,14 @@
 {
-  "schema_version": 8,
+  "schema_version": 9,
   "type": "review",
   "game_slug": "counter-strike-2",
   "game_id": null,
   "canonical_title": "counter-strike-2",
-  "checked_at": "2026-08-17T10:55:24.125Z",
+  "checked_at": "2026-08-17T13:00:23.940Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
-    "Корпус: 2/5",
+    "Корпус: 1/5",
     "Оценённые издания: 0/3"
   ],
   "revision_history": [
@@ -17,7 +17,7 @@
       "script": "scripts/discover-review-sources-web.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"counter-strike-2\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 2,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 2,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stdout": "{\n  \"slug\": \"counter-strike-2\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 1,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
       "stderr": ""
     },
     {
@@ -25,7 +25,7 @@
       "script": "scripts/promote-review-source-audit.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"counter-strike-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 2,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"counter-strike-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -33,7 +33,7 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"counter-strike-2\",\n  \"accepted\": 2,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"counter-strike-2\",\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n",
       "stderr": ""
     },
     {
@@ -41,7 +41,7 @@
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"counter-strike-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 2,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stdout": "{\n  \"slug\": \"counter-strike-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 1,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
       "stderr": ""
     }
   ],
@@ -54,9 +54,10 @@
     "score_enrichment": "direct-publisher-structured-markup-preserve-verified",
     "score_aggregation": "all-eligible-explicit-publisher-scores",
     "article_reuse": "surgical-rebind-before-regeneration",
-    "synthesis_fallback": "local-ollama-only-after-deterministic-recovery",
-    "visual_audit_fallback": "local-ollama-multimodal",
-    "language_audit_fallback": "local-ollama",
+    "targeted_hard_repair": "preserve_rebound_prose_and_repair_only_failing_media_or_language",
+    "synthesis_fallback": "github-models-then-local-text",
+    "visual_audit_fallback": "github-models-then-local-multimodal",
+    "language_audit_fallback": "local-lightweight-text",
     "web_discovery_attempts_per_qc": 1
   }
 }
