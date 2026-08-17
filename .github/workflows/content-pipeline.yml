@@ -13,9 +13,11 @@ on:
   push:
     branches: [staging]
     paths:
+      - 'data/game-import-requests.json'
       - 'scripts/hydrate-live-home-feeds.mjs'
       - 'scripts/orchestrate-content.mjs'
       - 'scripts/plan-news-game-pages.mjs'
+      - 'scripts/plan-game-imports.mjs'
       - 'scripts/materialize-news-production-pages.mjs'
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/run-game-catalog-enrichment.mjs'
@@ -40,7 +42,10 @@ on:
       - 'scripts/audit-review-publication.mjs'
       - 'scripts/validate-automation-publish-diff.mjs'
       - 'scripts/test-news-game-registry-discovery.mjs'
+      - 'scripts/test-verified-game-import.mjs'
+      - 'scripts/validate-new-game-lifecycle.mjs'
       - 'scripts/lib/news-game-registry-discovery.mjs'
+      - 'scripts/lib/verified-game-import.mjs'
       - 'scripts/lib/editorial-game-registry-adapter.mjs'
       - 'scripts/lib/system-game-registry-adapter.mjs'
       - 'config/content-pipeline.json'
@@ -57,7 +62,7 @@ permissions:
 
 concurrency:
   group: content-lifecycle-staging
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   maintain:
@@ -76,6 +81,7 @@ jobs:
           node --check scripts/hydrate-live-home-feeds.mjs
           node --check scripts/orchestrate-content.mjs
           node --check scripts/plan-news-game-pages.mjs
+          node --check scripts/plan-game-imports.mjs
           node --check scripts/materialize-news-production-pages.mjs
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/run-game-catalog-enrichment.mjs
@@ -100,14 +106,19 @@ jobs:
           node --check scripts/validate-automation-publish-diff.mjs
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/audit-review-publication.mjs
+          node --check scripts/validate-new-game-lifecycle.mjs
+          node --check scripts/test-verified-game-import.mjs
           node --check scripts/lib/game-registry.mjs
           node --check scripts/lib/game-registry-migration.mjs
           node --check scripts/lib/game-registry-page-sections.mjs
           node --check scripts/lib/news-game-registry-discovery.mjs
+          node --check scripts/lib/verified-game-import.mjs
           node --check scripts/lib/editorial-game-registry-adapter.mjs
           node --check scripts/lib/system-game-registry-adapter.mjs
           node --check game/_shared/game-page-materialized-data.js
           node scripts/test-news-game-registry-discovery.mjs
+          node scripts/test-verified-game-import.mjs
+          node scripts/validate-new-game-lifecycle.mjs
       - name: Hydrate current Popular and Releases snapshots from Object Storage
         run: node scripts/hydrate-live-home-feeds.mjs
       - name: Repair public catalog canonical identities
@@ -129,7 +140,7 @@ jobs:
           CATALOG_GUIDE_BATCH: '8'
       - name: Build canonical registry and semantic work queue
         run: node scripts/orchestrate-content.mjs --finalize
-      - name: Inject every news-required missing game page into this lifecycle run
+      - name: Inject news-required and deliberate verified-import game pages into this lifecycle run
         env:
           NEWS_GAME_REQUESTS_B64: ${{ inputs.news_game_requests_b64 || '' }}
         run: node scripts/plan-news-game-pages.mjs

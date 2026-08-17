@@ -13,7 +13,14 @@ const precision=value=>/\b(?:19|20)\d{2}[-/.]\d{1,2}[-/.]\d{1,2}\b|\b(?:Jan|Feb|
 if(slug&&!process.exitCode){
   const outputPath=path.join(root,'data/parser-output',`${slug}.json`),registryPath=path.join(root,'data/game-registry/registry.transition.json'),parsed=read(outputPath),registry=read(registryPath);
   if(parsed&&registry){
-    const api=new GameRegistryApi(registry),entity=api.findBySlug(slug);
+    const api=new GameRegistryApi(registry),entity=api.findBySlug(slug),verifiedImport=(entity?.discovery||[]).some(item=>item?.reason==='editor_verified_game_import');
+    const canonicalTitle=String(entity?.identity?.canonicalTitle?.value||'').trim(),storeTitle=String(parsed.identity?.title||'').trim();
+    if(verifiedImport&&canonicalTitle&&storeTitle&&canonicalTitle!==storeTitle){
+      parsed.identity=parsed.identity||{};
+      parsed.identity.store_title=storeTitle;
+      parsed.identity.title=canonicalTitle;
+      parsed.identity.title_basis='verified_canonical_game_registry';
+    }
     const released=(entity?.releases||[]).filter(release=>{
       const status=String(release?.status?.value??release?.status??'').toLowerCase();
       return !/upcoming|expected|announced|coming|tba|pre[-_ ]?release|ожида/i.test(status);
@@ -26,7 +33,7 @@ if(slug&&!process.exitCode){
       parsed.release.canonical_date_text=canonical;
       parsed.release.date_text=canonical;
       parsed.release.release_date_basis='canonical_game_registry_original_release';
-      fs.writeFileSync(outputPath,`${JSON.stringify(parsed,null,2)}\n`);
     }
+    fs.writeFileSync(outputPath,`${JSON.stringify(parsed,null,2)}\n`);
   }
 }
