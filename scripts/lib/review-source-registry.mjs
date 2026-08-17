@@ -86,6 +86,8 @@ const genericBadPath=/(?:^|\/)(?:game|games|file|files|download|downloads|news|g
 const genericReviewPath=/(?:review|reviews|opinion|recenzi|retsenzi|obzor|reviewed)/i;
 const genericReviewText=/(?:\breview\b|\bverdict\b|\brecension\b|\brecenzj|\bобзор\b|\bрецензи)/i;
 const genericReviewHubPath=/(?:^|\/)(?:reviews?|review-index|opinions?|opinion\/reviews?)\/?$/i;
+const genericUserReviewTitle=/(?:отзыв\s+об\s+игре[\s\S]{0,160}?от\s+пользователя|\buser\s+review\s+(?:by|from)\b|\breader\s+review\b|\bcommunity\s+review\b)/i;
+const genericUserReviewBody=/(?:все\s+отзывы\s+к\s+игре[\s\S]{0,500}?написать\s+отзыв|\bsubmit\s+(?:a\s+)?user\s+review\b)/i;
 
 export function classifyReviewPage(source,{url='',title='',bodyText=''}={}){
   if(!source?.review)return{accepted:false,reason:'source_not_editorial'};
@@ -93,6 +95,7 @@ export function classifyReviewPage(source,{url='',title='',bodyText=''}={}){
   const deny=compile(rules.url_deny);if(deny.some(rx=>rx.test(pathname)))return{accepted:false,reason:'publisher_url_deny'};
   const allow=compile(rules.url_allow),explicitAllow=allow.length&&allow.some(rx=>rx.test(pathname));
   if(allow.length&&!explicitAllow)return{accepted:false,reason:'publisher_url_not_allowed'};
+  if(genericUserReviewTitle.test(title)||genericUserReviewBody.test(bodyText))return{accepted:false,reason:'user_generated_review'};
   if(!explicitAllow&&genericReviewHubPath.test(pathname))return{accepted:false,reason:'review_hub_not_article'};
   const titleSignals=compile(rules.title_allow),explicitTitle=titleSignals.length&&titleSignals.some(rx=>rx.test(title));
   const requiredBody=compile(rules.body_allow);

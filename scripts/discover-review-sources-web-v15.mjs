@@ -1,0 +1,111 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import {loadReviewSourceRegistry,editorialSources} from './lib/review-source-registry.mjs';
+import {isTrustedEditorialScore} from './lib/review-score-extractor.mjs';
+
+const root=process.cwd();
+const slug=String(process.argv[2]||'').trim().toLowerCase();
+if(!slug)throw new Error('Usage: node scripts/discover-review-sources-web-v15.mjs <slug> [--all]');
+const auditAll=process.argv.includes('--all');
+const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
+const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,`${JSON.stringify(value,null,2)}\n`)};
+const decode=value=>String(value||'').replace(/&nbsp;|&#160;/gi,' ').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;|&apos;/gi,"'").replace(/&lt;/gi,'<').replace(/&gt;/gi,'>');
+const visible=html=>decode(String(html||'').replace(/<script\b[\s\S]*?<\/script>/gi,' ').replace(/<style\b[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim());
+const normalize=value=>String(value||'').normalize('NFKD').toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
+const escapeRx=value=>String(value||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const sourceNameVariants=source=>[source.name,...(source.aliases||[]),String(source.name||'').replace(/([a-z])([A-Z])/g,'$1 $2')].map(value=>String(value||'').trim()).filter(Boolean);
+const userGenerated=item=>{
+  const title=String(item?.title||''),url=String(item?.resolved_url||item?.url||'');
+  return /(?:отзыв\s+об\s+игре[\s\S]{0,160}?от\s+пользователя|\buser\s+review\s+(?:by|from)\b|\breader\s+review\b|\bcommunity\s+review\b)/i.test(title)
+    ||/^https?:\/\/(?:www\.)?stopgame\.ru\/game\/[^/]+\/review\/\d+/i.test(url);
+};
+
+await import('./discover-review-sources-web-v14.mjs');
+
+const draft=read(`data/drafts/${slug}.json`,{});
+const year=Number(String(draft?.release?.canonical_date_text||draft?.release?.date_text||draft?.release?.date||'').match(/(?:19|20)\d{2}/)?.[0]||0);
+const historical=year>0&&year<2010;
+if(!historical)process.exit();
+
+const registry=loadReviewSourceRegistry('config/parsers/review-source-registry.json');
+const sources=editorialSources(registry,{historical:true});
+const title=String(draft?.identity?.title||slug.replace(/-/g,' ')).trim();
+const checkedAt=new Date().toISOString();
+const indexUrl=`https://www.metacritic.com/game/${slug}/critic-reviews/?platform=pc`;
+
+function extractOriginalUrl(html,publication){
+  const raw=String(html||''),variants=sourceNameVariants(publication);
+  for(const name of variants){
+    const lower=raw.toLowerCase(),needle=name.toLowerCase();let at=0;
+    while((at=lower.indexOf(needle,at))>=0){
+      const start=Math.max(0,at-1800),end=Math.min(raw.length,at+7000),window=raw.slice(start,end);
+      const full=[...window.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>[\s\S]{0,500}?FULL\s+REVIEW[\s\S]{0,100}?<\/a>/gi)];
+      for(const match of full){
+        try{const resolved=new URL(decode(match[1]),indexUrl).href;if(!/metacritic\.com/i.test(new URL(resolved).hostname))return resolved}catch{}
+      }
+      at+=needle.length;
+    }
+  }
+  return'';
+}
+
+function parseMetacriticCritics(html){
+  const text=visible(html),rows=[];
+  for(const source of sources){
+    let hit=null;
+    for(const name of sourceNameVariants(source)){
+      const flexible=escapeRx(name).replace(/\\\s+/g,'\\s+');
+      const rx=new RegExp(`(?:^|\\s)(100|[1-9]?\\d)\\s+${flexible}(?=\\s|$)`,'i');
+      const match=text.match(rx);if(!match)continue;
+      const score=Number(match[1]);if(!Number.isFinite(score)||score<0||score>100)continue;
+      const after=text.slice((match.index||0)+match[0].length,(match.index||0)+match[0].length+900);
+      const quote=after.split(/\b(?:PC|PS[345]|Xbox|Switch|Wii|Mac)\b\s*(?:FULL\s+REVIEW)?/i)[0].trim().slice(0,700);
+      hit={configured_source_id:source.id,publication:source.name,score,scale:100,quote,original_review_url:extractOriginalUrl(html,source)};
+      break;
+    }
+    if(hit)rows.push(hit);
+  }
+  return rows;
+}
+
+async function fetchCriticIndex(){
+  try{
+    const response=await fetch(indexUrl,{redirect:'follow',signal:AbortSignal.timeout(10000),headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskHistoricalCriticIndex/15.0)','accept-language':'en-US,en;q=.9'}});
+    if(!response.ok)return{reachable:false,status:response.status,rows:[]};
+    const html=await response.text();return{reachable:true,status:response.status,rows:parseMetacriticCritics(html)};
+  }catch(error){return{reachable:false,status:0,error:error.message,rows:[]}}
+}
+
+function recompute(matrix,review,indexResult){
+  const oldAccepted=Array.isArray(matrix.accepted)?matrix.accepted:[];
+  const accepted=oldAccepted.filter(item=>!userGenerated(item));
+  const removedUserGenerated=oldAccepted.length-accepted.length;
+  const bySource=new Map(accepted.map(item=>[item.configured_source_id,item]));
+  let indexedAdded=0,indexedScoresAdded=0;
+  for(const row of indexResult.rows){
+    const source=sources.find(item=>item.id===row.configured_source_id);if(!source?.review)continue;
+    const evidence={method:'historical-critic-index-attribution',scope:'editorial_review',checked_at:checkedAt,url:indexUrl,configured_source_id:source.id,direct_publisher:false,historical:true,index_source:'metacritic',attributed_publication:source.name,aggregate_score_used:false,user_score_used:false,original_review_url:row.original_review_url||''};
+    const current=bySource.get(source.id);
+    if(current){
+      if(!isTrustedEditorialScore(current)){
+        current.score=row.score;current.scale=100;current.grade='';current.score_eligible=true;current.score_evidence=evidence;indexedScoresAdded++;
+        if(row.quote&&!current.evidence_points?.length)current.evidence_points=[row.quote];
+      }
+      continue;
+    }
+    const item={id:'',configured_source_id:source.id,publication:source.name,title:`${title} — ${source.name} review`,url:row.original_review_url||indexUrl,resolved_url:row.original_review_url||indexUrl,source_kind:'review',platform:'PC',version_context:'',published_at:'',author:'',language:source.language||'',score:row.score,scale:100,grade:'',score_eligible:true,canonical_score_eligible:true,version_validation:{score_eligible:true,reason:'canonical_version'},identity_evidence:`Historical critic review for ${title} attributed by Metacritic to ${source.name}.`,evidence_points:row.quote?[row.quote]:[],praise:[],criticism:[],mechanics:[],domain:row.original_review_url?(()=>{try{return new URL(row.original_review_url).hostname.replace(/^www\./,'')}catch{return''}})():'metacritic.com',validation:{status:'accepted-historical-index',checked_at:checkedAt,method:'metacritic-critic-attribution-v15',index_url:indexUrl,original_review_url:row.original_review_url||''},score_evidence:evidence};
+    accepted.push(item);bySource.set(source.id,item);indexedAdded++;
+  }
+  accepted.forEach((item,index)=>item.id=`source-${index+1}`);
+  const minimum=Number(matrix?.policy?.minimum_sources||review?.publication_gate?.minimum||5),target=Number(matrix?.policy?.target_sources||review?.publication_gate?.target||20),maximum=Number(matrix?.policy?.maximum_sources||review?.publication_gate?.maximum||20),regionalComplete=matrix?.regional_discovery?.complete!==false,contemporary=accepted.filter(item=>item.source_kind==='review').length,minContemporary=Number(read('config/game-page-quality-v2.json',{})?.review_corpus?.minimum_contemporary_historical||4),green=accepted.length>=minimum&&contemporary>=Math.min(minContemporary,accepted.length)&&regionalComplete,scored=accepted.filter(item=>item.score_eligible&&isTrustedEditorialScore(item)).length,contextOnly=accepted.filter(item=>item.canonical_score_eligible===false).length;
+  matrix.schema_version=Math.max(Number(matrix.schema_version||11),12);matrix.generated_at=checkedAt;matrix.accepted=accepted;matrix.rejected=[...(matrix.rejected||[]),...(removedUserGenerated?[{publication:'StopGame',url:'',reasons:[`removed ${removedUserGenerated} user-generated review record(s) during professional-only v15 cleanup`]}]:[])];matrix.policy={...(matrix.policy||{}),historical_critic_index:'metacritic',metascore_as_vote:false,user_scores_as_votes:false,professional_only:true};matrix.coverage={...(matrix.coverage||{}),accepted:accepted.length,scored,context_only_versions:contextOnly,contemporary,green,passed:green,needs_more:Math.max(0,minimum-accepted.length),historical_index_rows:indexResult.rows.length,historical_index_added:indexedAdded,historical_index_scores_added:indexedScoresAdded,removed_user_generated:removedUserGenerated};
+  review.schema_version=Math.max(Number(review.schema_version||11),12);review.updated_at=checkedAt;review.reviews=accepted;review.rejected=matrix.rejected;review.publication_gate={minimum,target,maximum,accepted:accepted.length,status:green?'green':'red-needs-revision'};review.regional_discovery=matrix.regional_discovery;
+  return{accepted,green,scored,indexedAdded,indexedScoresAdded,removedUserGenerated};
+}
+
+const matrix=read(`data/research/${slug}-source-matrix.json`,{}),review=read(`data/reviews/${slug}.json`,{}),indexResult=await fetchCriticIndex(),result=recompute(matrix,review,indexResult);
+write(`data/research/${slug}-source-matrix.json`,matrix);if(!auditAll)write(`data/reviews/${slug}.json`,review);
+const run=read(`data/parser-runs/review-web-discovery-${slug}.json`,{});write(`data/parser-runs/review-web-discovery-${slug}.json`,{...run,parser:'review-professional-historical-index-v15',status:result.green?'green':'needs_revision',checked_at:checkedAt,accepted:result.accepted.length,scored:result.scored,professional_only:true,historical_critic_index:{provider:'metacritic',url:indexUrl,reachable:indexResult.reachable,status:indexResult.status||0,rows:indexResult.rows.length,added_sources:result.indexedAdded,added_scores:result.indexedScoresAdded,metascore_as_vote:false,user_scores_as_votes:false},removed_user_generated:result.removedUserGenerated});
+console.log(JSON.stringify({slug,historical:true,professional_only:true,accepted:result.accepted.length,scored:result.scored,metacritic_rows:indexResult.rows.length,indexed_sources_added:result.indexedAdded,indexed_scores_added:result.indexedScoresAdded,removed_user_generated:result.removedUserGenerated,status:result.green?'green':'red-needs-revision'},null,2));
+process.exitCode=result.green?0:2;

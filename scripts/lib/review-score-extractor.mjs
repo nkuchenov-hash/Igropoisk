@@ -148,11 +148,17 @@ export function isTrustedEditorialScore(item){
   if(!valid(score,scale))return false;
   if(evidence.scope!=='editorial_review')return false;
   const method=String(evidence.method||'');
+  const historicalIndex=method==='historical-critic-index-attribution'
+    && evidence.historical===true
+    && evidence.index_source==='metacritic'
+    && Boolean(evidence.attributed_publication)
+    && evidence.aggregate_score_used!==true;
   return method.startsWith('registry:')
     ||method==='jsonld.reviewRating'
     ||method==='microdata.reviewRating'
     ||method==='data-review-attribute'
-    ||method==='semantic-editorial-label';
+    ||method==='semantic-editorial-label'
+    ||historicalIndex;
 }
 
 export function buildEditorialScoreEvidence(rating,{url='',configuredSourceId='',checkedAt=new Date().toISOString()}={}){

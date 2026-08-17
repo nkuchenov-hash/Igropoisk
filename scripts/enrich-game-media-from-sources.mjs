@@ -11,7 +11,7 @@ const mediaUrl=item=>typeof item==='string'?item:String(item?.url||item?.src||it
 const canonical=url=>{try{const parsed=new URL(url);parsed.hash='';return `${parsed.origin}${parsed.pathname.replace(/\/$/,'')}${parsed.search}`}catch{return String(url||'')}};
 const uniqueByUrl=items=>{const seen=new Set();return items.filter(item=>{const key=canonical(mediaUrl(item));if(!key||seen.has(key))return false;seen.add(key);return true})};
 const blockedHost=host=>/(?:yandex\.|bing\.|google\.|duckduckgo\.|facebook\.|twitter\.|x\.com$|doubleclick\.|googlesyndication\.)/i.test(host);
-const blockedAsset=url=>/(?:logo|avatar|author|icon|favicon|sprite|badge|emoji|tracking|pixel|analytics|advert|banner-ad|placeholder|1x1)/i.test(url);
+const blockedAsset=url=>/(?:logo|avatar|author|icon|favicon|sprite|badge|emoji|tracking|pixel|analytics|advert|banner-ad|placeholder|1x1|thumbnail|facebook[-_]?thumb|social[-_]?card)/i.test(url);
 const htmlDecode=value=>String(value||'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>');
 async function mapLimit(items,limit,worker){const out=new Array(items.length);let cursor=0;await Promise.all(Array.from({length:Math.min(limit,items.length)},async()=>{while(true){const index=cursor++;if(index>=items.length)return;out[index]=await worker(items[index],index)}}));return out}
 function png(buf){if(buf.length>=24&&buf.slice(1,4).toString()==='PNG')return{width:buf.readUInt32BE(16),height:buf.readUInt32BE(20)}}
@@ -35,7 +35,7 @@ const probeConcurrency=Math.max(1,Math.min(16,Number(process.env.GAME_MEDIA_PROB
 async function probe(url){
   try{
     const parsed=new URL(url);if(!/^https?:$/.test(parsed.protocol)||blockedHost(parsed.hostname)||blockedAsset(parsed.pathname))return null;
-    const response=await fetch(url,{redirect:'follow',headers:{Range:'bytes=0-1048575','user-agent':'IgropoiskMediaEnricher/2.1',accept:'image/avif,image/webp,image/png,image/jpeg,*/*'},signal:AbortSignal.timeout(7000)});
+    const response=await fetch(url,{redirect:'follow',headers:{Range:'bytes=0-1048575','user-agent':'IgropoiskMediaEnricher/2.2',accept:'image/avif,image/webp,image/png,image/jpeg,*/*'},signal:AbortSignal.timeout(7000)});
     if(!response.ok)return null;const type=String(response.headers.get('content-type')||'').toLowerCase();if(!type.startsWith('image/'))return null;
     const bytes=Buffer.from(await response.arrayBuffer());if(bytes.length<minimumBytes)return null;const size=png(bytes)||jpeg(bytes)||webp(bytes);if(!size?.width||!size?.height)return null;
     return{url:response.url||url,width:size.width,height:size.height,bytes:bytes.length,mime:type.split(';')[0]};
@@ -58,12 +58,12 @@ function extractImages(html,sourceUrl){
     const value=htmlDecode(candidate).trim();if(!value||value.startsWith('data:'))continue;
     try{const url=new URL(value,sourceUrl);if(!/^https?:$/.test(url.protocol)||blockedHost(url.hostname)||blockedAsset(url.pathname))continue;resolved.push(url.href)}catch{}
   }
-  return[...new Set(resolved)].slice(0,180);
+  return[...new Set(resolved)].slice(0,220);
 }
 async function fetchPageImages(sourceUrl){
   try{
     const parsed=new URL(sourceUrl);if(!/^https?:$/.test(parsed.protocol)||blockedHost(parsed.hostname))return[];
-    const response=await fetch(sourceUrl,{redirect:'follow',headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskMediaEnricher/2.1)','accept-language':'en-US,en;q=0.8,ru;q=0.7'},signal:AbortSignal.timeout(8000)});
+    const response=await fetch(sourceUrl,{redirect:'follow',headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskMediaEnricher/2.2)','accept-language':'en-US,en;q=0.8,ru;q=0.7'},signal:AbortSignal.timeout(8000)});
     if(!response.ok)return[];const type=String(response.headers.get('content-type')||'');if(!/text\/html/i.test(type))return[];
     const html=await response.text();return extractImages(html,response.url||sourceUrl);
   }catch{return[]}
@@ -78,28 +78,33 @@ for(const source of registry.sources||[]){
   const media=source?.media||{};
   const templates=[media.url_template,...(Array.isArray(media.url_templates)?media.url_templates:[])].filter(Boolean);
   for(const template of templates){const expanded=String(template).replace(/\{slug\}/g,slug).replace(/\{title\}/g,encodeURIComponent(draft.identity?.title||slug));addSource(expanded,`registered-gallery:${source.id||source.name||'source'}`);registryMediaSurfaces++}
-  if(String(source?.id||'').toLowerCase()==='rpgfan')addSource(`https://www.rpgfan.com/game/${slug}/`,'registered-gallery:rpgfan');
+  if(String(source?.id||'').toLowerCase()==='rpgfan'){
+    for(const url of [`https://www.rpgfan.com/game/${slug}/`,`https://www.rpgfan.com/media/${slug}/`,`https://www.rpgfan.com/gallery/${slug}-screenshots/`,`https://www.rpgfan.com/gallery/${slug}-artwork/`,`https://www.rpgfan.com/gallery/${slug}-cover-art/`]){addSource(url,'registered-gallery:rpgfan');registryMediaSurfaces++}
+  }
 }
 for(const source of research.accepted||[]){const url=source?.resolved_url||source?.url;addSource(url,'accepted-review')}
-const sourceUrls=sourceRecords.slice(0,24).map(item=>item.url);
+const sourceUrls=sourceRecords.slice(0,28).map(item=>item.url);
 const allowedSourceKeys=new Set(sourceRecords.map(item=>item.key));
-const trustExisting=item=>{if(typeof item==='string')return true;if(String(item?.provider||'')!=='verified-source-page')return true;const sourceKey=canonical(item?.source_url||'');return Boolean(sourceKey&&allowedSourceKeys.has(sourceKey))};
+const trustExisting=item=>{
+  const url=mediaUrl(item);try{if(blockedAsset(new URL(url).pathname))return false}catch{}
+  if(typeof item==='string')return true;
+  if(String(item?.provider||'')!=='verified-source-page')return true;
+  const sourceKey=canonical(item?.source_url||'');return Boolean(sourceKey&&allowedSourceKeys.has(sourceKey));
+};
 const originalScreens=draft.media?.screenshots||[],originalArt=draft.media?.artwork||[];
 const existingScreens=uniqueByUrl(originalScreens.filter(trustExisting)),existingArt=uniqueByUrl(originalArt.filter(trustExisting));
 const removedStaleScreens=Math.max(0,originalScreens.length-existingScreens.length),removedStaleArt=Math.max(0,originalArt.length-existingArt.length);
 const known=new Set([...existingScreens,...existingArt,draft.media?.hero,draft.media?.cover].map(mediaUrl).map(canonical).filter(Boolean));
 
-// Fetch publisher/store/gallery pages concurrently, then dedupe candidates before any image probe.
 const pageSets=await mapLimit(sourceUrls,pageConcurrency,async sourceUrl=>({sourceUrl,candidates:await fetchPageImages(sourceUrl)}));
-let pagesChecked=pageSets.length;
-const candidateSeen=new Set(),candidateRecords=[];
+const pagesChecked=pageSets.length,candidateSeen=new Set(),candidateRecords=[];
 for(const page of pageSets){
-  for(const candidate of (page?.candidates||[]).slice(0,48)){
+  for(const candidate of (page?.candidates||[]).slice(0,80)){
     const key=canonical(candidate);if(!key||known.has(key)||candidateSeen.has(key))continue;
     candidateSeen.add(key);candidateRecords.push({url:candidate,sourceUrl:page.sourceUrl});
-    if(candidateRecords.length>=160)break;
+    if(candidateRecords.length>=240)break;
   }
-  if(candidateRecords.length>=160)break;
+  if(candidateRecords.length>=240)break;
 }
 const probeResults=await mapLimit(candidateRecords,probeConcurrency,async record=>({record,image:await probe(record.url)}));
 const candidatesChecked=probeResults.length,discoveredScreens=[],discoveredArt=[];
@@ -107,13 +112,13 @@ for(const result of probeResults){
   const image=result?.image;if(!image)continue;
   const sourceUrl=result.record.sourceUrl,key=canonical(image.url);if(known.has(key))continue;
   const aspect=image.width/image.height;
-  if(image.width>=minimumWidth&&image.height>=minimumHeight&&aspect>=1.15&&aspect<=2.7&&discoveredScreens.length<30){const item={url:image.url,caption:`${draft.identity?.title||slug} — изображение из проверенного источника`,source_url:sourceUrl,width:image.width,height:image.height,mime:image.mime,provider:'verified-source-page'};discoveredScreens.push(item);known.add(key);continue}
-  if(image.width>=Math.max(360,Math.min(minimumWidth,600))&&image.height>=Math.max(360,minimumHeight)&&aspect>=0.45&&aspect<=1.25&&discoveredArt.length<12){const item={url:image.url,caption:`${draft.identity?.title||slug} — арт из проверенного источника`,source_url:sourceUrl,width:image.width,height:image.height,mime:image.mime,provider:'verified-source-page'};discoveredArt.push(item);known.add(key)}
+  if(image.width>=minimumWidth&&image.height>=minimumHeight&&aspect>=1.15&&aspect<=2.7&&discoveredScreens.length<36){const item={url:image.url,caption:`${draft.identity?.title||slug} — изображение из проверенного источника`,source_url:sourceUrl,width:image.width,height:image.height,mime:image.mime,provider:'verified-source-page'};discoveredScreens.push(item);known.add(key);continue}
+  if(image.width>=Math.max(360,Math.min(minimumWidth,600))&&image.height>=Math.max(360,minimumHeight)&&aspect>=0.45&&aspect<=1.25&&discoveredArt.length<16){const item={url:image.url,caption:`${draft.identity?.title||slug} — арт из проверенного источника`,source_url:sourceUrl,width:image.width,height:image.height,mime:image.mime,provider:'verified-source-page'};discoveredArt.push(item);known.add(key)}
 }
 
 draft.media={...(draft.media||{}),screenshots:uniqueByUrl([...existingScreens,...discoveredScreens]).slice(0,48),artwork:uniqueByUrl([...existingArt,...discoveredArt]).slice(0,20)};
 draft.publication={...(draft.publication||{}),media_enriched_at:new Date().toISOString()};
 write(draftPath,draft);
 const status=draft.media.screenshots.length>=12||sourceUrls.length?'green':'needs_revision';
-write(`data/parser-runs/game-media-source-enrichment-${slug}.json`,{parser:'game-media-source-enrichment-v2.1',status,game_slug:slug,checked_at:new Date().toISOString(),historical,quality_floor:{minimum_width:minimumWidth,minimum_height:minimumHeight,minimum_bytes:minimumBytes},concurrency:{pages:pageConcurrency,probes:probeConcurrency},source_pages:sourceUrls.length,registered_media_surfaces:registryMediaSurfaces,pages_checked:pagesChecked,candidates_checked:candidatesChecked,removed_stale_screenshots:removedStaleScreens,removed_stale_artwork:removedStaleArt,added_screenshots:discoveredScreens.length,added_artwork:discoveredArt.length,total_screenshots:draft.media.screenshots.length,total_artwork:draft.media.artwork.length,policy:'Search engines may aid source discovery, but only original URLs from current verified publisher/store/gallery pages are retained; stale media from rejected review sources is removed.'});
+write(`data/parser-runs/game-media-source-enrichment-${slug}.json`,{parser:'game-media-source-enrichment-v2.2',status,game_slug:slug,checked_at:new Date().toISOString(),historical,quality_floor:{minimum_width:minimumWidth,minimum_height:minimumHeight,minimum_bytes:minimumBytes},concurrency:{pages:pageConcurrency,probes:probeConcurrency},source_pages:sourceUrls.length,registered_media_surfaces:registryMediaSurfaces,pages_checked:pagesChecked,candidates_checked:candidatesChecked,removed_stale_screenshots:removedStaleScreens,removed_stale_artwork:removedStaleArt,added_screenshots:discoveredScreens.length,added_artwork:discoveredArt.length,total_screenshots:draft.media.screenshots.length,total_artwork:draft.media.artwork.length,policy:'Search engines may aid source discovery, but only original URLs from current verified publisher/store/gallery pages are retained; stale media and social thumbnails are removed.'});
 console.log(JSON.stringify({slug,historical,page_concurrency:pageConcurrency,probe_concurrency:probeConcurrency,pages_checked:pagesChecked,registered_media_surfaces:registryMediaSurfaces,removed_stale_screenshots:removedStaleScreens,removed_stale_artwork:removedStaleArt,added_screenshots:discoveredScreens.length,added_artwork:discoveredArt.length,total_screenshots:draft.media.screenshots.length,total_artwork:draft.media.artwork.length},null,2));
