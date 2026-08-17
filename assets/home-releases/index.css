@@ -3,7 +3,7 @@
 .release-nav-link:hover{color:var(--ig-rating)}
 .home-showcase-heading--split{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px}
 .home-showcase-heading--split .home-showcase-heading__icon{display:none!important}
-.home-showcase-heading--split a{justify-self:end;min-height:46px;display:inline-flex;align-items:center;padding:10px 16px;font-size:17px;font-weight:750}
+.home-showcase-heading--split .ig-text-link{justify-self:end}
 .home-releases__rail-shell{display:grid;grid-template-columns:38px minmax(0,1fr) 38px;gap:8px;align-items:stretch;min-height:0;flex:1}
 .home-releases__rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(188px,27%);gap:10px;min-height:0;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x proximity;scrollbar-width:none}
 .home-releases__rail::-webkit-scrollbar{display:none}
@@ -24,4 +24,4 @@
 .home-release-empty{display:grid;place-items:center;width:min(100%,560px);height:100%;min-height:360px;padding:24px;border:1px dashed var(--ig-line-strong);border-radius:var(--ig-radius-md);color:var(--ig-muted);font-size:var(--ig-font-min);line-height:1.55;text-align:center}
 @media(min-width:1900px){.home-releases__rail{grid-auto-columns:minmax(188px,22%)}}
 @media(max-width:1180px){.home-releases__rail-shell,.home-releases__rail{min-height:420px}.home-releases__rail{grid-auto-columns:minmax(188px,23%)}.home-release-card,.home-release-card__link{min-height:420px}.home-release-card__media{min-height:290px}}
-@media(max-width:760px){.release-nav-link{display:none}.home-showcase-heading--split{grid-template-columns:1fr}.home-showcase-heading--split a{justify-self:start}.home-releases__rail-shell{grid-template-columns:minmax(0,1fr);min-height:410px}.home-releases__rail-shell>.home-rail-button{display:none}.home-releases__rail{grid-auto-columns:minmax(190px,64%);min-height:410px}.home-release-card,.home-release-card__link{min-height:410px}.home-release-card__media{min-height:285px}.home-release-card h3{font-size:18px}}
+@media(max-width:760px){.release-nav-link{display:none}.home-showcase-heading--split{grid-template-columns:1fr}.home-showcase-heading--split .ig-text-link{justify-self:start}.home-releases__rail-shell{grid-template-columns:minmax(0,1fr);min-height:410px}.home-releases__rail-shell>.home-rail-button{display:none}.home-releases__rail{grid-auto-columns:minmax(190px,64%);min-height:410px}.home-release-card,.home-release-card__link{min-height:410px}.home-release-card__media{min-height:285px}.home-release-card h3{font-size:18px}}
