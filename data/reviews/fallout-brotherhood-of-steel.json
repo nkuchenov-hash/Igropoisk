@@ -2,16 +2,16 @@
   "schema_version": 12,
   "game_slug": "fallout-brotherhood-of-steel",
   "game_id": "game_7b5c4d2231e5c05c96d8",
-  "updated_at": "2026-08-17T23:14:38.290Z",
+  "updated_at": "2026-08-17T23:29:36.030Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "accepted": 1,
-    "status": "red-needs-revision",
+    "accepted": 6,
+    "status": "green",
     "full_registry_scan": true,
-    "checked_registered_sources": 49,
-    "applicable_registered_sources": 49,
+    "checked_registered_sources": 53,
+    "applicable_registered_sources": 53,
     "maximum": 20,
     "post_create_verified_corpus_preserved": true
   },
@@ -124,7 +124,7 @@
       "domain": "rpgfan.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T23:14:22.596Z",
+        "checked_at": "2026-08-17T23:28:31.924Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -134,25 +134,303 @@
       "score_evidence": {
         "method": "semantic-editorial-label",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T23:14:38.244Z",
+        "checked_at": "2026-08-17T23:29:35.951Z",
         "url": "https://www.rpgfan.com/review/fallout-brotherhood-of-steel/",
         "configured_source_id": "rpgfan",
         "direct_publisher": true
+      }
+    },
+    {
+      "id": "source-2",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "Fallout: Brotherhood of Steel — IGN review",
+      "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 75,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Fallout: Brotherhood of Steel attributed by Metacritic to IGN.",
+      "evidence_points": [
+        "A fun, if flawed, hack'n'slash game that provides a good 10 hours or so of shooting, explosives, and plenty of mutants to dig into."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:29:34.721Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:34.721Z",
+        "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "configured_source_id": "ign",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "IGN",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-3",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Fallout: Brotherhood of Steel — Game Informer review",
+      "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 80,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Fallout: Brotherhood of Steel attributed by Metacritic to Game Informer.",
+      "evidence_points": [
+        "The game doesn't have any glaring failures, which is always good. And it made me laugh, which isn't necessarily bad. [Feb 2004, p.107]"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:29:34.721Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:34.721Z",
+        "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "configured_source_id": "game-informer",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "Game Informer",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-4",
+      "configured_source_id": "gamespy-archive",
+      "publication": "GameSpy",
+      "title": "Fallout: Brotherhood of Steel — GameSpy review",
+      "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 75,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Fallout: Brotherhood of Steel attributed by Metacritic to GameSpy.",
+      "evidence_points": [
+        "A competent and occasionally compelling hack-and-slash, but fans of the"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:29:34.721Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:34.721Z",
+        "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "configured_source_id": "gamespy-archive",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "GameSpy",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-5",
+      "configured_source_id": "game-over-online-archive",
+      "publication": "Game Over Online",
+      "title": "Fallout: Brotherhood of Steel — Game Over Online review",
+      "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 80,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Fallout: Brotherhood of Steel attributed by Metacritic to Game Over Online.",
+      "evidence_points": [
+        "Brotherhood of Steel can be described like this: \"Dark Alliance\" minus encumbrance minus magic minus feats plus guns plus grenades. It's \"Dark Alliance\" for dummies."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:29:34.721Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:34.721Z",
+        "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "configured_source_id": "game-over-online-archive",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "Game Over Online",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-6",
+      "configured_source_id": "gamezilla-archive",
+      "publication": "Gamezilla!",
+      "title": "Fallout: Brotherhood of Steel — Gamezilla! review",
+      "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 88,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Fallout: Brotherhood of Steel attributed by Metacritic to Gamezilla!.",
+      "evidence_points": [
+        "It's exactly what I find fun in games and the fact it's a Fallout title automatically makes it a winner in my book. But to the rest of the world, load times, freeze up, tough viewable angle and way mature themes might make you want to rent this one before buying."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:29:34.721Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "historical-critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:34.721Z",
+        "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "configured_source_id": "gamezilla-archive",
+        "direct_publisher": false,
+        "historical": true,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "Gamezilla!",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
       }
     }
   ],
   "rejected": [
     {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/fallout_brotherhood_of_steel/compilations",
+      "title": "Fallout: Brotherhood of Steel - подборки с игрой | StopGame.ru",
+      "reasons": [
+        "non_review_path"
+      ]
+    },
+    {
       "publication": "RPGamer",
       "url": "https://rpgamer.com/review/fallout-brotherhood-of-steel-review",
       "reasons": [
-        "HTTP 404"
+        "HTTP 403"
       ]
     }
   ],
   "source_proposals": [],
   "review_score": {
-    "status": "red-needs-revision",
+    "status": "green",
     "owner": "review",
     "method": {
       "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -186,21 +464,171 @@
         "score_evidence": {
           "method": "semantic-editorial-label",
           "scope": "editorial_review",
-          "checked_at": "2026-08-17T23:14:38.244Z",
+          "checked_at": "2026-08-17T23:29:35.951Z",
           "url": "https://www.rpgfan.com/review/fallout-brotherhood-of-steel/",
           "configured_source_id": "rpgfan",
           "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-2",
+        "configured_source_id": "ign",
+        "publication": "IGN",
+        "title": "Fallout: Brotherhood of Steel — IGN review",
+        "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "original_score": {
+          "score": 75,
+          "scale": 100,
+          "grade": null,
+          "display": "75/100"
+        },
+        "normalized_10": 7.5,
+        "score_evidence": {
+          "method": "historical-critic-index-attribution",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T23:29:34.721Z",
+          "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+          "configured_source_id": "ign",
+          "direct_publisher": false,
+          "historical": true,
+          "index_source": "metacritic",
+          "index_platform": "primary",
+          "attributed_publication": "IGN",
+          "aggregate_score_used": false,
+          "user_score_used": false,
+          "original_review_url": ""
+        }
+      },
+      {
+        "source_id": "source-3",
+        "configured_source_id": "game-informer",
+        "publication": "Game Informer",
+        "title": "Fallout: Brotherhood of Steel — Game Informer review",
+        "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "original_score": {
+          "score": 80,
+          "scale": 100,
+          "grade": null,
+          "display": "80/100"
+        },
+        "normalized_10": 8,
+        "score_evidence": {
+          "method": "historical-critic-index-attribution",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T23:29:34.721Z",
+          "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+          "configured_source_id": "game-informer",
+          "direct_publisher": false,
+          "historical": true,
+          "index_source": "metacritic",
+          "index_platform": "primary",
+          "attributed_publication": "Game Informer",
+          "aggregate_score_used": false,
+          "user_score_used": false,
+          "original_review_url": ""
+        }
+      },
+      {
+        "source_id": "source-4",
+        "configured_source_id": "gamespy-archive",
+        "publication": "GameSpy",
+        "title": "Fallout: Brotherhood of Steel — GameSpy review",
+        "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "original_score": {
+          "score": 75,
+          "scale": 100,
+          "grade": null,
+          "display": "75/100"
+        },
+        "normalized_10": 7.5,
+        "score_evidence": {
+          "method": "historical-critic-index-attribution",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T23:29:34.721Z",
+          "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+          "configured_source_id": "gamespy-archive",
+          "direct_publisher": false,
+          "historical": true,
+          "index_source": "metacritic",
+          "index_platform": "primary",
+          "attributed_publication": "GameSpy",
+          "aggregate_score_used": false,
+          "user_score_used": false,
+          "original_review_url": ""
+        }
+      },
+      {
+        "source_id": "source-5",
+        "configured_source_id": "game-over-online-archive",
+        "publication": "Game Over Online",
+        "title": "Fallout: Brotherhood of Steel — Game Over Online review",
+        "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "original_score": {
+          "score": 80,
+          "scale": 100,
+          "grade": null,
+          "display": "80/100"
+        },
+        "normalized_10": 8,
+        "score_evidence": {
+          "method": "historical-critic-index-attribution",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T23:29:34.721Z",
+          "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+          "configured_source_id": "game-over-online-archive",
+          "direct_publisher": false,
+          "historical": true,
+          "index_source": "metacritic",
+          "index_platform": "primary",
+          "attributed_publication": "Game Over Online",
+          "aggregate_score_used": false,
+          "user_score_used": false,
+          "original_review_url": ""
+        }
+      },
+      {
+        "source_id": "source-6",
+        "configured_source_id": "gamezilla-archive",
+        "publication": "Gamezilla!",
+        "title": "Fallout: Brotherhood of Steel — Gamezilla! review",
+        "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "original_score": {
+          "score": 88,
+          "scale": 100,
+          "grade": null,
+          "display": "88/100"
+        },
+        "normalized_10": 8.8,
+        "score_evidence": {
+          "method": "historical-critic-index-attribution",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T23:29:34.721Z",
+          "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+          "configured_source_id": "gamezilla-archive",
+          "direct_publisher": false,
+          "historical": true,
+          "index_source": "metacritic",
+          "index_platform": "primary",
+          "attributed_publication": "Gamezilla!",
+          "aggregate_score_used": false,
+          "user_score_used": false,
+          "original_review_url": ""
         }
       }
     ],
     "excluded_sources": [],
     "calculation": {
-      "source_count": 1,
+      "source_count": 6,
       "values": [
-        6
+        6,
+        7.5,
+        8,
+        7.5,
+        8,
+        8.8
       ],
-      "mean_10": 6,
-      "score_10": 6
+      "mean_10": 7.6333,
+      "score_10": 7.6
     }
   }
 }

@@ -1,14 +1,14 @@
 {
-  "parser": "review-professional-historical-index-v15.1",
-  "status": "needs_revision",
+  "parser": "review-professional-critic-index-v15.2",
+  "status": "green",
   "game_slug": "fallout-brotherhood-of-steel",
-  "checked_at": "2026-08-17T23:14:35.862Z",
+  "checked_at": "2026-08-17T23:29:34.721Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 1,
-  "scored": 1,
+  "accepted": 6,
+  "scored": 6,
   "context_only_versions": 0,
   "blocked_verified": 0,
-  "registered_editorial": 49,
+  "registered_editorial": 53,
   "source_checks": [
     {
       "source_id": "igromania",
@@ -312,6 +312,34 @@
       "notes": "search completed; no verified direct review"
     },
     {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
       "source_id": "gamepro-archive",
       "name": "GamePro",
       "region": "global",
@@ -369,13 +397,22 @@
     },
     "fallback": null
   },
-  "historical_critic_index": {
+  "critic_index": {
     "provider": "metacritic",
-    "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/?platform=pc",
+    "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+    "platform": "primary",
     "reachable": true,
     "status": 200,
-    "rows": 0,
-    "added_sources": 0,
+    "rows": 5,
+    "attempts": [
+      {
+        "url": "https://www.metacritic.com/game/fallout-brotherhood-of-steel/critic-reviews/",
+        "platform": "primary",
+        "status": 200,
+        "rows": 5
+      }
+    ],
+    "added_sources": 5,
     "added_scores": 0,
     "metascore_as_vote": false,
     "user_scores_as_votes": false
