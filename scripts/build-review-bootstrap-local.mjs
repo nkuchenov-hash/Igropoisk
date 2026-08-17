@@ -15,7 +15,7 @@ const score=Number(review?.review_score?.calculation?.score_10);
 if(review?.review_score?.status!=='green'||!Number.isFinite(score)){
   console.log(JSON.stringify({slug,status:'skipped',reason:'canonical_rating_not_green'},null,2));process.exit(0);
 }
-const allSources=(research.accepted||[]).filter(source=>source?.canonical_score_eligible!==false&&source?.url||source?.resolved_url);
+const allSources=(research.accepted||[]).filter(source=>source?.canonical_score_eligible!==false&&(source?.url||source?.resolved_url));
 const publications=new Set(allSources.map(source=>String(source.publication||source.source||source.configured_source_id||'').toLowerCase()).filter(Boolean));
 if(allSources.length<3||publications.size<3){
   console.log(JSON.stringify({slug,status:'skipped',reason:'fewer_than_three_independent_professional_sources',sources:allSources.length,publications:publications.size},null,2));process.exit(0);
