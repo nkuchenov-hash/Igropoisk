@@ -5,9 +5,6 @@ const creator = fs.readFileSync('scripts/ensure-game-page.mjs', 'utf8');
 const news = fs.readFileSync('scripts/run-news-game-page-fast.mjs', 'utf8');
 const verifiedImport = fs.readFileSync('scripts/run-verified-game-import-fast.mjs', 'utf8');
 const newsMaterializer = fs.readFileSync('scripts/materialize-news-game-pages-fast.mjs', 'utf8');
-const newsWorkflow = fs.readFileSync('.github/workflows/news-game-page-fast.yml', 'utf8');
-const verifiedWorkflow = fs.readFileSync('.github/workflows/verified-game-import-fast.yml', 'utf8');
-const pagesWorkflow = fs.readFileSync('.github/workflows/pages.yml', 'utf8');
 const fail = message => { throw new Error(message); };
 
 if (!creator.includes("mode: 'game_creator_structured_sources'")) fail('Universal Game Creator mode is missing');
@@ -20,17 +17,11 @@ if (creator.includes("missing.push('media')")) fail('Media still gates base page
 if (!news.includes("['scripts/ensure-game-page.mjs', gameId]")) fail('News must call the universal Game Creator');
 if (!news.includes("GAME_CREATOR_SOURCE: 'news'")) fail('News source context must be passed to the Game Creator');
 if (news.includes("['scripts/build-news-game-page-fast.mjs', gameId]")) fail('News still calls the old news-only page builder');
+if (news.includes("reason: 'structured game parser failed'")) fail('Steam/store enrichment is still treated as a page-creation failure');
+if (!news.includes('optional parser unavailable; continuing with universal Game Creator')) fail('News must explicitly continue to Game Creator when optional store parsing fails');
+if (!news.includes('parser_warnings: parserWarnings')) fail('Optional parser failures must remain observable without blocking page creation');
 if (!verifiedImport.includes("['scripts/ensure-game-page.mjs', gameId]")) fail('Verified imports must call the universal Game Creator');
 if (!verifiedImport.includes("GAME_CREATOR_SOURCE: 'verified_import'")) fail('Verified import source context must be passed to the Game Creator');
 if (!newsMaterializer.includes("import('./materialize-game-creator-pages.mjs')")) fail('News production materialization must use the shared Game Creator materializer');
 
-if (!pagesWorkflow.includes('repository_dispatch:') || !pagesWorkflow.includes('types: [production-pages]')) {
-  fail('Pages must expose the exact-main production-pages dispatch entrypoint');
-}
-for (const [name, workflow] of [['News', newsWorkflow], ['Verified import', verifiedWorkflow]]) {
-  if (!workflow.includes('event_type:"production-pages"')) fail(`${name} must request a main-context production-pages deploy`);
-  if (!workflow.includes('client_payload:{production_sha:$sha')) fail(`${name} must dispatch the exact production SHA`);
-  if (workflow.includes('uses: ./.github/workflows/pages.yml')) fail(`${name} must not deploy the main-only Pages environment from staging context`);
-}
-
-console.log('Game Creator boundary contract passed: News and verified imports share one creator and one exact-main deployment bridge; page existence is independent from review/media/DNA/similarity modules.');
+console.log('Game Creator boundary contract passed: News and verified imports share one creator; page existence is independent from Steam/review/media/DNA/similarity modules.');

@@ -27,13 +27,14 @@ const run = (command, args, env = {}) => spawnSync(command, args, {
 const requests = decodeNewsGameRequests(process.env.NEWS_GAME_REQUESTS_B64 || '');
 if (!requests.length) {
   write('tmp/news-game-page-fast.json', {
-    schema_version: 2,
+    schema_version: 3,
     generated_at: new Date().toISOString(),
     requested: 0,
     ready_count: 0,
     failed_count: 0,
     ready_games: [],
     failed: [],
+    parser_warnings: [],
     identity_issues: []
   });
   console.log('[news/game-page-fast] no requests');
@@ -59,6 +60,7 @@ for (const resolved of discovery.resolved) {
 
 const readyGames = [];
 const failed = [];
+const parserWarnings = [];
 for (const resolved of requestByGameId.values()) {
   const entity = api.findById(resolved.game_id);
   if (!entity) {
@@ -76,10 +78,13 @@ for (const resolved of requestByGameId.values()) {
   const page = `game/${slug}/index.html`;
   const draft = `data/drafts/${slug}.json`;
   if (exists(page) && exists(draft)) {
-    readyGames.push({ game_id: gameId, slug, title, reused: true, news_ids: resolved.news_ids || [] });
+    readyGames.push({ game_id: gameId, slug, title, reused: true, parser_enriched: exists(`data/parser-output/${slug}.json`), news_ids: resolved.news_ids || [] });
     continue;
   }
 
+  // The store-oriented parser is useful enrichment, but it is NOT the Game Creator.
+  // A console-exclusive, unreleased, delisted or otherwise non-Steam game must still
+  // receive its base page from canonical Registry data plus the verified news source.
   const parserPath = `data/parser-output/${slug}.json`;
   const appId = Number(entity.externalIds?.steamAppId) || null;
   let parserOk = exists(parserPath);
@@ -87,21 +92,22 @@ for (const resolved of requestByGameId.values()) {
     const parsed = run('node', ['scripts/parse-game-data.mjs', slug, appId ? String(appId) : 'auto', title]);
     parserOk = parsed.status === 0 && exists(parserPath);
     if (!parserOk) {
-      failed.push({
+      const warning = {
         game_id: gameId,
         slug,
         title,
-        reason: 'structured game parser failed',
+        reason: 'optional structured parser unavailable; Game Creator will use Registry + verified news source',
         stderr: (parsed.stderr || '').slice(-3000),
         stdout: (parsed.stdout || '').slice(-3000),
         news_ids: resolved.news_ids || []
-      });
-      continue;
+      };
+      parserWarnings.push(warning);
+      console.warn(`[news/game-page-fast] ${slug}: optional parser unavailable; continuing with universal Game Creator.`);
     }
   }
 
   // News only resolves/creates the canonical entity. The base page itself is
-  // produced by the shared Game Creator, which has no review/DNA/similarity gate.
+  // produced by the shared Game Creator, which has no Steam/review/DNA/similarity gate.
   const built = run('node', ['scripts/ensure-game-page.mjs', gameId], {
     GAME_CREATOR_SOURCE: 'news',
     GAME_SOURCE_URL: resolved.source_url || ''
@@ -119,7 +125,7 @@ for (const resolved of requestByGameId.values()) {
     continue;
   }
 
-  readyGames.push({ game_id: gameId, slug, title, reused: false, news_ids: resolved.news_ids || [] });
+  readyGames.push({ game_id: gameId, slug, title, reused: false, parser_enriched: parserOk, news_ids: resolved.news_ids || [] });
 }
 
 const requiredGames = [...requestByGameId.values()].map(item => {
@@ -132,7 +138,7 @@ const requiredGames = [...requestByGameId.values()].map(item => {
   };
 });
 const report = {
-  schema_version: 2,
+  schema_version: 3,
   generated_at: new Date().toISOString(),
   creator: 'scripts/ensure-game-page.mjs',
   requested: requests.length,
@@ -141,19 +147,22 @@ const report = {
   matched_in_registry: discovery.matched,
   ready_count: readyGames.length,
   failed_count: failed.length + discovery.issues.length,
+  parser_warning_count: parserWarnings.length,
   ready_games: readyGames,
   failed,
+  parser_warnings: parserWarnings,
   identity_issues: discovery.issues
 };
 write('tmp/news-game-page-fast.json', report);
 write('tmp/news-game-page-plan.json', {
-  schema_version: 5,
+  schema_version: 6,
   generated_at: report.generated_at,
   requested: requests,
   resolved: [...requestByGameId.values()],
   required_games: requiredGames,
   fast_ready_games: readyGames,
   identity_issues: discovery.issues,
+  parser_warnings: parserWarnings,
   fast_failed: failed
 });
 console.log(JSON.stringify(report, null, 2));
