@@ -35,6 +35,7 @@ if(!runner.includes("'scripts/prepare-post-create-review-research.mjs'"))fail('P
 if(runner.includes("await runAsync(`review-research:${slug}`,'scripts/prepare-review-research.mjs'"))fail('Post-create runner still allows general research to erase verified historical evidence');
 if(!runner.includes("'scripts/build-review-bootstrap-local.mjs'")||!runner.includes("'scripts/quality-control-loop.mjs'"))fail('Quick/full review stages missing');
 if(runner.indexOf("'scripts/build-review-bootstrap-local.mjs'")>runner.indexOf("'scripts/quality-control-loop.mjs'"))fail('Quick review must publish before the heavy full-review upgrade');
+if(!runner.includes('requestScoreGreen')||!runner.includes('Number(requestScoreGreen(b))-Number(requestScoreGreen(a))'))fail('Green-rated games are not prioritized for the bounded quick-review batch');
 if(!runner.includes("review:fullReady?'ready':quickReady?'bootstrap_ready'"))fail('Quick review state is not observable independently from full review');
 if(!runner.includes("phase!=='review'")||!runner.includes("phase!=='bootstrap'"))fail('Bootstrap/review phases not separated');
 if(!runner.includes('Bootstrap deliberately leaves request files untouched'))fail('Bootstrap can self-trigger before review phase');
@@ -72,4 +73,4 @@ if(!enrichmentWorkflow.includes('cancel-in-progress: true'))fail('Fresh enrichme
 const bootstrapAt=enrichmentWorkflow.indexOf('POST_CREATE_PHASE: bootstrap'),bootstrapPublishAt=enrichmentWorkflow.indexOf('POST_CREATE_PUBLISH_PHASE: bootstrap'),modelAt=enrichmentWorkflow.indexOf('Restore local editorial model cache'),reviewAt=enrichmentWorkflow.indexOf('POST_CREATE_PHASE: review');if(bootstrapAt<0||bootstrapPublishAt<bootstrapAt||modelAt<bootstrapPublishAt||reviewAt<modelAt)fail('Fast checkpoint is not published before review synthesis');
 if(!publisher.includes('POST_CREATE_PUBLISH_PHASE')||!publisher.includes("freshObj!==baseObj")||!publisher.includes('for(let publishAttempt=1;publishAttempt<=5;publishAttempt++)'))fail('Conflict-safe publisher contract missing');
 if(!publisher.includes('createPrWithRetry')||!publisher.includes('Transient GitHub PR-create failure'))fail('Publisher does not retry transient GitHub PR creation failures');
-console.log('Game Creator post-create contract passed: base page, series/rating/media, platform-aware professional critic indexing, non-destructive research, resilient quick review and heavy editorial upgrade are independent and durable.');
+console.log('Game Creator post-create contract passed: green ratings are prioritized for quick reviews; base page, series/rating/media, platform-aware professional critic indexing, non-destructive research and heavy editorial upgrade remain independent and durable.');
