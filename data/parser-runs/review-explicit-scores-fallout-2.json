@@ -1,0 +1,44 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "fallout-2",
+  "checked_at": "2026-08-17T17:22:23.928Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 2,
+  "scored": 1,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/fallout_2/review/27826",
+      "final_url": "https://stopgame.ru/game/fallout_2/review/27826",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/03/05/fallout-4-anniversary-edition-switch-2-review-good-game-good-port",
+      "final_url": "https://www.thesixthaxis.com/2026/03/05/fallout-4-anniversary-edition-switch-2-review-good-game-good-port/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}
