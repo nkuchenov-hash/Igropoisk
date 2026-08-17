@@ -7,6 +7,9 @@ on:
       - 'scripts/discover-review-sources-web.mjs'
       - 'scripts/discover-review-sources-web-v9.mjs'
       - 'scripts/discover-review-sources-web-v10.mjs'
+      - 'scripts/discover-review-sources-web-v11.mjs'
+      - 'scripts/discover-review-sources-web-v12.mjs'
+      - 'scripts/discover-review-sources-web-v13.mjs'
       - 'scripts/lib/review-search-result-normalizer.mjs'
       - 'scripts/lib/review-source-registry.mjs'
       - 'config/parsers/review-source-registry.json'
@@ -19,7 +22,7 @@ permissions:
 jobs:
   canonical-review-discovery:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -39,7 +42,7 @@ jobs:
           NODE
       - name: Verify transport and registry contracts
         run: |
-          node --check scripts/discover-review-sources-web-v10.mjs
+          for file in scripts/discover-review-sources-web-v{10,11,12,13}.mjs; do node --check "$file"; done
           node --check scripts/lib/review-source-registry.mjs
           node - <<'NODE'
           import('./scripts/lib/review-source-registry.mjs').then(({loadReviewSourceRegistry})=>{
@@ -50,7 +53,7 @@ jobs:
             console.log(JSON.stringify({registered_sources:registry.sources.length,extensions:registry.extensions||[]},null,2));
           });
           NODE
-          node -e "import('./scripts/discover-review-sources-web-v10.mjs').catch(error=>{ if(!/Missing game draft|Usage:/.test(String(error))) throw error })"
+          node -e "import('./scripts/discover-review-sources-web-v13.mjs').catch(error=>{ if(!/Missing game draft|Usage:/.test(String(error))) throw error })"
       - name: Run Rainbow Six Siege canonical review canary
         env:
           OPENAI_API_KEY: ''
@@ -67,7 +70,7 @@ jobs:
           if(review?.publication_gate?.status!=='green')throw new Error(`Rainbow Six Siege corpus still red: ${accepted} accepted`);
           if(review?.review_score?.status!=='green')throw new Error(`Rainbow Six Siege score still red: ${scored} scored`);
           NODE
-      - name: Run Bannerlord Early Access-to-1.0 review-year canary
+      - name: Run Bannerlord full-release review canary
         env:
           OPENAI_API_KEY: ''
           REVIEW_DETERMINISTIC_ONLY: '1'
@@ -83,6 +86,22 @@ jobs:
           if(review?.publication_gate?.status!=='green')throw new Error(`Bannerlord corpus still red: ${accepted} accepted`);
           if(review?.review_score?.status!=='green')throw new Error(`Bannerlord score still red: ${scored} scored`);
           NODE
+      - name: Run Total War Warhammer III broad-publisher canary
+        env:
+          OPENAI_API_KEY: ''
+          REVIEW_DETERMINISTIC_ONLY: '1'
+        run: node scripts/quality-control-loop.mjs review total-war-warhammer-iii || true
+      - name: Require Total War Warhammer III direct review and score evidence
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const review=JSON.parse(fs.readFileSync('data/reviews/total-war-warhammer-iii.json','utf8'));
+          const accepted=Number(review?.publication_gate?.accepted||review?.reviews?.length||0);
+          const scored=Number(review?.review_score?.calculation?.scored_sources||review?.review_score?.calculation?.source_count||0);
+          console.log(JSON.stringify({slug:'total-war-warhammer-iii',accepted,scored,corpus:review?.publication_gate?.status,score:review?.review_score?.status},null,2));
+          if(review?.publication_gate?.status!=='green')throw new Error(`Total War Warhammer III corpus still red: ${accepted} accepted`);
+          if(review?.review_score?.status!=='green')throw new Error(`Total War Warhammer III score still red: ${scored} scored`);
+          NODE
       - name: Preserve canary evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -95,4 +114,7 @@ jobs:
             data/research/mount-and-blade-ii-bannerlord-source-matrix.json
             data/reviews/mount-and-blade-ii-bannerlord.json
             data/parser-runs/review-web-discovery-mount-and-blade-ii-bannerlord.json
+            data/research/total-war-warhammer-iii-source-matrix.json
+            data/reviews/total-war-warhammer-iii.json
+            data/parser-runs/review-web-discovery-total-war-warhammer-iii.json
           if-no-files-found: error
