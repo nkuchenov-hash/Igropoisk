@@ -29,6 +29,8 @@ need(planNews,'plan-game-imports.mjs','news lifecycle ingress must also process 
 need(importPlanner,'data/game-import-requests.json','verified import planner must use the canonical import request queue');
 need(importPlanner,'verified_import:true','verified import tasks must be explicitly marked for the runtime');
 need(importPlanner,'data/parser-output/','non-Steam verified imports must materialize a parser seed');
+need(importPlanner,"productionPlanPath='tmp/news-game-page-plan.json'",'verified full-page imports must join the isolated production promotion plan');
+need(importPlanner,'full_page_required:fullPageImports.length','verified import production plan must track every full-page import');
 need(importAdapter,'registerVerifiedGameImports','verified game import adapter is missing');
 need(importAdapter,'full_page_import_requires_released_game','future imports must not accidentally become public pages');
 need(importAdapter,'non_steam_full_page_import_requires_verified_parser_seed','non-Steam full-page imports must require verified structured data');
@@ -36,6 +38,7 @@ need(workflow,"'data/game-import-requests.json'",'verified import queue changes 
 need(workflow,"'scripts/plan-game-imports.mjs'",'verified import planner changes must trigger the lifecycle immediately');
 need(workflow,"'scripts/lib/verified-game-import.mjs'",'verified import adapter changes must trigger the lifecycle immediately');
 need(workflow,'node scripts/test-verified-game-import.mjs','content lifecycle must run the verified-import contract test');
+need(workflow,'materialize-news-production-pages.mjs','content lifecycle must use isolated per-game production materialization');
 need(parser,'verified_canonical_game_registry','verified imports must preserve the canonical Game Registry title against storefront edition titles');
 need(parser,'store_title','storefront edition titles must remain available as metadata after canonicalization');
 need(parser,'canonical_game_registry_original_release','storefront parsing must preserve the canonical original release date');
