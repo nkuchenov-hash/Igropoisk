@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/kusan-city-of-wolves.json#review_score",
   "game_slug": "kusan-city-of-wolves",
-  "checked_at": "2026-08-17T09:43:03.705Z",
+  "checked_at": "2026-08-17T10:57:03.269Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,12 +20,37 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: Kusan: City of Wolves (PS5) - Fast-Paced Carnage in This Tough Hotline Miami-Like",
+      "url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:57:03.230Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      7
+    ],
+    "mean_10": 7,
+    "score_10": 7
   }
 }

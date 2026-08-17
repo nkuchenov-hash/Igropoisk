@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "kusan-city-of-wolves",
-  "generated_at": "2026-08-17T09:41:54.122Z",
+  "generated_at": "2026-08-17T10:55:46.791Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -16,14 +16,79 @@
     "search_title_variants": true,
     "review_hub_following": true
   },
-  "accepted": [],
+  "accepted": [
+    {
+      "url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
+      "title": "Review: Kusan: City of Wolves (PS5) - Fast-Paced Carnage in This Tough Hotline Miami-Like",
+      "discovery_method": "external_search",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "language": "en",
+      "id": "source-1",
+      "resolved_url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Kusan: City of Wolves.",
+      "evidence_points": [
+        "Kusan: City of Wolves' biggest inspiration, Hotline Miami , is evident from the moment I load into the game's prologue, which introduces fast-paced combat that feels like the 2012 classic.",
+        "Most of my time in Kusan is spent slicing my way through rooms of enemies, gradually unlocking new abilities and upgrades for the main character, Jin.",
+        "The game is extremely challenging throughout the course of the campaign, which can cause some frustration, but I felt extremely satisfied after clearing a stage. Boss fights are also introduced throughout the adventure, acting as a test of skill.",
+        "At first, you're restricted to a punch before quickly learning how to parry, throw a dagger, shoot a pistol, and more. These options encourage you to combine attacks to launch Jin through rooms quickly, being rewarded based on your time, combo, and variety of attacks.",
+        "You're also quickly introduced to the game's upgrade system, which sees you installing modules to add extras to Jin's toolkit. You may decide to install a node that increases your ammunition, movement speed, or lets you parry projectiles.",
+        "The way you grab upgrades is also enjoyable; you install them onto a grid-like panel, with each upgrade requiring a certain amount of room to be applied. Some require significant space, but you can expand your grid by spending the in-game currency you collect throughout the game.",
+        "Although Jin's arsenal is varied, parrying feels a bit stiff; the window isn't clear, even following the tutorial. I found myself unintentionally parrying an enemy, or failing to do so when I meant to.",
+        "This problem also translates to the controls, which can sometimes feel a bit rigid, but if you're able to pull off stylish combos, you're rewarded tremendously for your efforts. A ranking is presented at the end, encouraging you to master the stages.",
+        "This is also complemented by a funky musical score, which the developers say is influenced by Korean hip-hop.",
+        "The overall presentation of Kusan is akin to Bladerunner mixed with the anthropomorphic animal characters of Beastars . The visual presentation is stylish, with comic book-like cutscenes combined with gorgeous pixel art."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pushsquare.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T10:55:46.791Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 7,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:57:03.230Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    }
+  ],
   "rejected": [
     {
-      "publication": "IGN",
-      "url": "https://www.ign.com/games/kusan-city-of-wolves",
-      "title": "Kusan: City of Wolves - IGN",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/search",
       "reasons": [
-        "non_review_path"
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/share",
+      "reasons": [
+        "HTTP 404"
       ]
     }
   ],
@@ -235,8 +300,8 @@
       "source_id": "push-square",
       "name": "Push Square",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "found",
+      "notes": "verified direct review"
     },
     {
       "source_id": "nintendo-life",
@@ -283,6 +348,34 @@
     {
       "source_id": "videogamer",
       "name": "VideoGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-sixth-axis",
+      "name": "TheSixthAxis",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pc-invasion",
+      "name": "PC Invasion",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-spew",
+      "name": "GameSpew",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "hooked-gamers",
+      "name": "Hooked Gamers",
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
@@ -350,15 +443,15 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 37,
-    "checked": 37,
-    "accepted": 0,
-    "scored": 0,
+    "registered_editorial": 41,
+    "checked": 41,
+    "accepted": 1,
+    "scored": 1,
     "context_only_versions": 0,
     "blocked_verified": 0,
-    "contemporary": 0,
+    "contemporary": 1,
     "green": false,
     "passed": false,
-    "needs_more": 5
+    "needs_more": 4
   }
 }

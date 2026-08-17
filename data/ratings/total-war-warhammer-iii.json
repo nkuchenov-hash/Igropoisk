@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/total-war-warhammer-iii.json#review_score",
   "game_slug": "total-war-warhammer-iii",
-  "checked_at": "2026-08-17T09:44:10.444Z",
+  "checked_at": "2026-08-17T10:58:15.450Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -37,17 +37,40 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:44:10.406Z",
+        "checked_at": "2026-08-17T10:58:15.414Z",
         "url": "https://www.pcgamer.com/total-war-warhammer-3-review/",
         "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Total War Warhammer 3 Review | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2022/02/14/total-war-warhammer-3-review",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:58:15.414Z",
+        "url": "https://www.thesixthaxis.com/2022/02/14/total-war-warhammer-3-review/",
+        "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
       }
     }
   ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 1,
+    "source_count": 2,
     "values": [
+      9,
       9
     ],
     "mean_10": 9,

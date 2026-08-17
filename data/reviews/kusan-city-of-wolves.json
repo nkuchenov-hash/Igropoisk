@@ -2,16 +2,16 @@
   "schema_version": 11,
   "game_slug": "kusan-city-of-wolves",
   "game_id": "game_673d6b80b8df77b0b712",
-  "updated_at": "2026-08-17T09:43:03.705Z",
+  "updated_at": "2026-08-17T10:57:03.269Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "accepted": 0,
+    "accepted": 1,
     "status": "red-needs-revision",
     "full_registry_scan": true,
-    "checked_registered_sources": 37,
-    "applicable_registered_sources": 37
+    "checked_registered_sources": 41,
+    "applicable_registered_sources": 41
   },
   "regional_discovery": {
     "region": "ru",
@@ -74,14 +74,79 @@
     "complete": true,
     "found_but_not_accepted": []
   },
-  "reviews": [],
+  "reviews": [
+    {
+      "url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
+      "title": "Review: Kusan: City of Wolves (PS5) - Fast-Paced Carnage in This Tough Hotline Miami-Like",
+      "discovery_method": "external_search",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "language": "en",
+      "id": "source-1",
+      "resolved_url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Kusan: City of Wolves.",
+      "evidence_points": [
+        "Kusan: City of Wolves' biggest inspiration, Hotline Miami , is evident from the moment I load into the game's prologue, which introduces fast-paced combat that feels like the 2012 classic.",
+        "Most of my time in Kusan is spent slicing my way through rooms of enemies, gradually unlocking new abilities and upgrades for the main character, Jin.",
+        "The game is extremely challenging throughout the course of the campaign, which can cause some frustration, but I felt extremely satisfied after clearing a stage. Boss fights are also introduced throughout the adventure, acting as a test of skill.",
+        "At first, you're restricted to a punch before quickly learning how to parry, throw a dagger, shoot a pistol, and more. These options encourage you to combine attacks to launch Jin through rooms quickly, being rewarded based on your time, combo, and variety of attacks.",
+        "You're also quickly introduced to the game's upgrade system, which sees you installing modules to add extras to Jin's toolkit. You may decide to install a node that increases your ammunition, movement speed, or lets you parry projectiles.",
+        "The way you grab upgrades is also enjoyable; you install them onto a grid-like panel, with each upgrade requiring a certain amount of room to be applied. Some require significant space, but you can expand your grid by spending the in-game currency you collect throughout the game.",
+        "Although Jin's arsenal is varied, parrying feels a bit stiff; the window isn't clear, even following the tutorial. I found myself unintentionally parrying an enemy, or failing to do so when I meant to.",
+        "This problem also translates to the controls, which can sometimes feel a bit rigid, but if you're able to pull off stylish combos, you're rewarded tremendously for your efforts. A ranking is presented at the end, encouraging you to master the stages.",
+        "This is also complemented by a funky musical score, which the developers say is influenced by Korean hip-hop.",
+        "The overall presentation of Kusan is akin to Bladerunner mixed with the anthropomorphic animal characters of Beastars . The visual presentation is stylish, with comic book-like cutscenes combined with gorgeous pixel art."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pushsquare.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T10:55:46.791Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 7,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:57:03.230Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    }
+  ],
   "rejected": [
     {
-      "publication": "IGN",
-      "url": "https://www.ign.com/games/kusan-city-of-wolves",
-      "title": "Kusan: City of Wolves - IGN",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/search",
       "reasons": [
-        "non_review_path"
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/share",
+      "reasons": [
+        "HTTP 404"
       ]
     }
   ],
@@ -103,13 +168,38 @@
       "invented_scores_forbidden": true,
       "exact_canonical_version_required": true
     },
-    "sources": [],
+    "sources": [
+      {
+        "source_id": "source-1",
+        "configured_source_id": "push-square",
+        "publication": "Push Square",
+        "title": "Review: Kusan: City of Wolves (PS5) - Fast-Paced Carnage in This Tough Hotline Miami-Like",
+        "url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
+        "original_score": {
+          "score": 7,
+          "scale": 10,
+          "grade": null,
+          "display": "7/10"
+        },
+        "normalized_10": 7,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T10:57:03.230Z",
+          "url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
+          "configured_source_id": "push-square",
+          "direct_publisher": true
+        }
+      }
+    ],
     "excluded_sources": [],
     "calculation": {
-      "source_count": 0,
-      "values": [],
-      "mean_10": null,
-      "score_10": null
+      "source_count": 1,
+      "values": [
+        7
+      ],
+      "mean_10": 7,
+      "score_10": 7
     }
   }
 }

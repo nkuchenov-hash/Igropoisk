@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/hollow-knight.json#review_score",
   "game_slug": "hollow-knight",
-  "checked_at": "2026-08-17T09:37:15.268Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T10:52:29.702Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:37:15.219Z",
+        "checked_at": "2026-08-17T10:52:28.751Z",
         "url": "https://www.pcgamer.com/hollow-knight-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -59,21 +59,57 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:37:15.219Z",
+        "checked_at": "2026-08-17T10:52:28.751Z",
         "url": "https://gameinformer.com/review/hollow-knight/tough-battles-in-an-infected-kingdom",
         "configured_source_id": "game-informer",
         "direct_publisher": true
       }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "title": "Hollow Knight PC review - \"Full-bodied action\" | Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/hollow_knight/review/article-1895.html",
+      "original_score": {
+        "score": 10,
+        "scale": 10,
+        "grade": null,
+        "display": "10/10"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "registry:hooked-gamers",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:52:28.751Z",
+        "url": "https://www.hookedgamers.com/pc/hollow_knight/review/article-1895.html",
+        "configured_source_id": "hooked-gamers",
+        "direct_publisher": true
+      }
     }
   ],
-  "excluded_sources": [],
+  "excluded_sources": [
+    {
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/show/100225/hollow_knight_review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2017/03/13/hollow-knight-review",
+      "reason": "canonical_version"
+    }
+  ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       9.2,
-      9.25
+      9.25,
+      10
     ],
-    "mean_10": 9.225,
-    "score_10": 9.2
+    "mean_10": 9.4833,
+    "score_10": 9.5
   }
 }

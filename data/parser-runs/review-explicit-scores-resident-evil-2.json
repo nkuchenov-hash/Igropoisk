@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "resident-evil-2",
-  "checked_at": "2026-08-17T09:37:16.771Z",
+  "checked_at": "2026-08-17T10:51:44.537Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 3,
-  "scored": 2,
+  "accepted": 6,
+  "scored": 4,
   "context_only_versions": 1,
   "updates": [
     {
@@ -31,6 +31,24 @@
       "score": 9.5,
       "scale": 10,
       "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "score": 10,
+      "scale": 10,
+      "method": "registry:hooked-gamers",
       "scope": "editorial_review",
       "canonical_score_eligible": true
     }
@@ -67,6 +85,39 @@
       "blocked": false,
       "preserved_existing_score": false,
       "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/resident-evil-2",
+      "final_url": "https://www.pushsquare.com/reviews/ps5/resident-evil-2",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/resident_evil_2/review/article-2021.html",
+      "final_url": "https://www.hookedgamers.com/pc/resident_evil_2/review/article-2021.html",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2019/01/22/resident-evil-2-review",
+      "final_url": "https://www.thesixthaxis.com/2019/01/22/resident-evil-2-review/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
       "canonical_score_eligible": true
     }
   ]

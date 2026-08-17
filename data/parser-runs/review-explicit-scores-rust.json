@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "rust",
-  "checked_at": "2026-08-17T09:40:58.299Z",
+  "checked_at": "2026-08-17T10:55:17.117Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 1,
-  "scored": 1,
+  "accepted": 2,
+  "scored": 2,
   "context_only_versions": 0,
   "updates": [
     {
@@ -12,6 +12,15 @@
       "publication": "PC Gamer",
       "score": 80,
       "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "score": 6,
+      "scale": 10,
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": true
@@ -23,6 +32,17 @@
       "publication": "PC Gamer",
       "url": "https://www.pcgamer.com/rust-review",
       "final_url": "https://www.pcgamer.com/rust-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2021/06/10/rust-console-edition-review-ps4-xbox",
+      "final_url": "https://www.thesixthaxis.com/2021/06/10/rust-console-edition-review-ps4-xbox/",
       "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,

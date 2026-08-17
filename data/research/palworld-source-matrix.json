@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "palworld",
-  "generated_at": "2026-08-17T09:39:32.826Z",
+  "generated_at": "2026-08-17T10:53:10.509Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -54,7 +54,7 @@
       "domain": "gamesradar.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T09:39:32.826Z",
+        "checked_at": "2026-08-17T10:53:10.509Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -82,7 +82,7 @@
       },
       "validation": {
         "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-17T09:39:32.826Z",
+        "checked_at": "2026-08-17T10:53:10.509Z",
         "method": "registered-direct-publisher-preserved-v8",
         "reason": "HTTP 403"
       },
@@ -90,6 +90,64 @@
       "scale": null,
       "grade": "",
       "score_eligible": false
+    },
+    {
+      "url": "https://www.pushsquare.com/reviews/ps5/palworld",
+      "title": "Review: Palworld (PS5) - Expansive Catch",
+      "discovery_method": "external_search",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "language": "en",
+      "id": "source-3",
+      "resolved_url": "https://www.pushsquare.com/reviews/ps5/palworld",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for palworld.",
+      "evidence_points": [
+        "If ARK: Survival Evolved and Pokémon Legends Arceus had a child it’d come in the form of Palworld , a monster-taming, base-building, survival adventure title which wears it’s Pokémon inspiration proudly in the form of a medal on its breast.",
+        "Palworld has been available since September 2024 on PS5 in the form of an early access version. But it hasn’t been a smooth ride for dev Poketpair, with several lawsuits from Nintendo and The Pokemon Company against their monster-catching mechanics, specifically summoning creatures by throwing out capsules, causing delays to its development cycle.",
+        "With many months of additional work taken to fix these issues and add in hundreds of new significant features and changes, the studio has finally pushed out the 1.0 full release of its first ever open world, monster-tamer to compete with the world’s leading intellectual property, Pokémon.",
+        "The entire game is playable solo, co-op for up to four-players, or online multiplayer via a private or public server of up to 32 players. Meanwhile, the Guild system allows for friends to clan together within a server to share items and collaborate on bases without the fear of other’s disrupting or grieving their progression.",
+        "Much like other survival games, you’ll begin by customising your own character, by selecting your gender, hair style, and facial features.",
+        "You take on the role of a castaway whose ship has crash landed due to a mysterious fog and awaken on a strange beach in nothing but your underwear. You proceed with gathering sticks and rocks to craft tools and various resources to survive and thrive. After you’ve made the usual survival game tools – like an axe, spear, pickaxe and torch – you’ll progress by crafting Pal Spheres to capture Pals and level up.",
+        "In similar style to Pokémon: Legends Arceus, a vast variety of the Pals – 287 different species to be precise – can be found scattered throughout the open world environment and take little more than a toss of a Pal Sphere, a quick press of R2, to secure as a buddy. You’ll be attempting to sneak up on the vast majority since there are increased chances of capture if the Pal is struck from behind.",
+        "If you’ve played a monster-tamer before then you’ll be familiar with each creature being assigned a type which determines it’s moves, stats, and abilities. Pals are no different with a total of nine types, including Water, Grass, Fire, Ground, Electric, Ice, Dragon, Dark, and Neutral. A type advantage/disadvantage chart for battling is also available.",
+        "Types also determine which jobs they can carry out for you when roaming your base, for instance fire pals will be assigned to the furnace to smelt ore to ingots.",
+        "As with many other survival games, you’ll get as much out of Palworld as you put into it. You’re free to set out and explore the Palpagos archipelago open world as you please, with an overarching goal to search out the eight faction towers and defeat the faction bosses and their Pal companions to progress the main story."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pushsquare.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T10:53:10.509Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 8,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:54:31.029Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/palworld",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
     }
   ],
   "rejected": [
@@ -139,6 +197,20 @@
       "title": "Pokémon Company will “investigate” Palworld in light of plagiarism accusations",
       "reasons": [
         "no_review_signal"
+      ]
+    },
+    {
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/search",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/share",
+      "reasons": [
+        "HTTP 404"
       ]
     }
   ],
@@ -350,8 +422,8 @@
       "source_id": "push-square",
       "name": "Push Square",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "found",
+      "notes": "verified direct review"
     },
     {
       "source_id": "nintendo-life",
@@ -398,6 +470,34 @@
     {
       "source_id": "videogamer",
       "name": "VideoGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-sixth-axis",
+      "name": "TheSixthAxis",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pc-invasion",
+      "name": "PC Invasion",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-spew",
+      "name": "GameSpew",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "hooked-gamers",
+      "name": "Hooked Gamers",
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
@@ -465,15 +565,15 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 37,
-    "checked": 37,
-    "accepted": 2,
-    "scored": 0,
+    "registered_editorial": 41,
+    "checked": 41,
+    "accepted": 3,
+    "scored": 1,
     "context_only_versions": 0,
     "blocked_verified": 1,
-    "contemporary": 2,
+    "contemporary": 3,
     "green": false,
     "passed": false,
-    "needs_more": 3
+    "needs_more": 2
   }
 }

@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/honkai-star-rail.json#review_score",
   "game_slug": "honkai-star-rail",
-  "checked_at": "2026-08-17T09:39:50.613Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T10:54:00.750Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:39:50.577Z",
+        "checked_at": "2026-08-17T10:54:00.256Z",
         "url": "https://www.pushsquare.com/reviews/ps5/honkai-star-rail",
         "configured_source_id": "push-square",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:39:50.577Z",
+        "checked_at": "2026-08-17T10:54:00.256Z",
         "url": "https://www.pcgamer.com/honkai-star-rail-review/",
         "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Honkai: Star Rail Review | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2023/05/06/honkai-star-rail-review",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:54:00.713Z",
+        "url": "https://www.thesixthaxis.com/2023/05/06/honkai-star-rail-review/",
+        "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
       }
     }
@@ -81,12 +103,13 @@
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       8,
-      9
+      9,
+      7
     ],
-    "mean_10": 8.5,
-    "score_10": 8.5
+    "mean_10": 8,
+    "score_10": 8
   }
 }

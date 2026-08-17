@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/starfield.json#review_score",
   "game_slug": "starfield",
-  "checked_at": "2026-08-17T09:43:20.364Z",
+  "checked_at": "2026-08-17T10:58:00.044Z",
   "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:43:20.326Z",
+        "checked_at": "2026-08-17T10:57:58.704Z",
         "url": "https://www.pcgamer.com/starfield-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -59,7 +59,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:43:20.327Z",
+        "checked_at": "2026-08-17T10:57:58.704Z",
         "url": "https://www.gamesradar.com/starfield-review/",
         "configured_source_id": "gamesradar",
         "direct_publisher": true
@@ -81,22 +81,91 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:43:20.327Z",
+        "checked_at": "2026-08-17T10:57:58.704Z",
         "url": "https://gameinformer.com/review/starfield/overwhelming-scope",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: Starfield (PS5) - Better Than Ever, But Still No Space Skyrim",
+      "url": "https://www.pushsquare.com/reviews/ps5/starfield",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:57:58.704Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/starfield",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "title": "Starfield PC review - \"Fallout in Space\" | Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/starfield/review/article-2461.html",
+      "original_score": {
+        "score": 7.9,
+        "scale": 10,
+        "grade": null,
+        "display": "7.9/10"
+      },
+      "normalized_10": 7.9,
+      "score_evidence": {
+        "method": "registry:hooked-gamers",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:58:00.003Z",
+        "url": "https://www.hookedgamers.com/pc/starfield/review/article-2461.html",
+        "configured_source_id": "hooked-gamers",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Starfield PS5 Review – Same stars, new vessel | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/04/16/starfield-ps5-review-same-stars-new-vessel",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:58:00.003Z",
+        "url": "https://www.thesixthaxis.com/2026/04/16/starfield-ps5-review-same-stars-new-vessel/",
+        "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
       }
     }
   ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 3,
+    "source_count": 6,
     "values": [
       7.5,
       10,
-      8.5
+      8.5,
+      7,
+      7.9,
+      7
     ],
-    "mean_10": 8.6667,
-    "score_10": 8.7
+    "mean_10": 7.9833,
+    "score_10": 8
   }
 }

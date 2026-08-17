@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/grand-theft-auto-v.json#review_score",
   "game_slug": "grand-theft-auto-v",
-  "checked_at": "2026-08-17T09:42:08.759Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T10:56:35.953Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,9 +37,53 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:42:08.722Z",
+        "checked_at": "2026-08-17T10:56:35.002Z",
         "url": "https://gameinformer.com/games/grand_theft_auto_v/b/ps3/archive/2013/09/16/grand-theft-auto-v-review.aspx",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: GTA 5 (PS5) - Rockstar",
+      "url": "https://www.pushsquare.com/reviews/ps5/grand-theft-auto-v",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:56:35.002Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/grand-theft-auto-v",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "title": "Grand Theft Auto V PC review - \"Worth the wait?\" | Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/grand_theft_auto_v/review/article-1455.html",
+      "original_score": {
+        "score": 9.5,
+        "scale": 10,
+        "grade": null,
+        "display": "9.5/10"
+      },
+      "normalized_10": 9.5,
+      "score_evidence": {
+        "method": "registry:hooked-gamers",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:56:35.912Z",
+        "url": "https://www.hookedgamers.com/pc/grand_theft_auto_v/review/article-1455.html",
+        "configured_source_id": "hooked-gamers",
         "direct_publisher": true
       }
     }
@@ -56,14 +100,22 @@
       "publication": "GamesRadar+",
       "url": "https://www.gamesradar.com/games/grand-theft-auto/some-gta-5-players-cant-bring-their-characters-to-the-new-pc-upgrade-and-the-open-world-games-mixed-steam-reviews-are-hammering-fps-caps-and-a-lack-of-text-chat",
       "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2017/06/17/grand-theft-auto-vs-recent-steam-reviews-hit-overwhelmingly-negative-over-openiv-modding-ban",
+      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 1,
+    "source_count": 3,
     "values": [
-      9.75
+      9.75,
+      8,
+      9.5
     ],
-    "mean_10": 9.75,
-    "score_10": 9.8
+    "mean_10": 9.0833,
+    "score_10": 9.1
   }
 }

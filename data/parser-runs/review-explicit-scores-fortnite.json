@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "fortnite",
-  "checked_at": "2026-08-17T09:38:37.840Z",
+  "checked_at": "2026-08-17T10:52:15.507Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 5,
-  "scored": 2,
+  "accepted": 6,
+  "scored": 3,
   "context_only_versions": 0,
   "updates": [
     {
@@ -21,6 +21,15 @@
       "publication": "Game Informer",
       "score": 9.5,
       "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 87,
+      "scale": 100,
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": true
@@ -76,6 +85,17 @@
       "publication": "Game Informer",
       "url": "https://gameinformer.com/review/fortnite/an-epic-epoch",
       "final_url": "https://gameinformer.com/review/fortnite/an-epic-epoch",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/fortnite-review",
+      "final_url": "https://www.pcgamer.com/fortnite-review/",
       "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,

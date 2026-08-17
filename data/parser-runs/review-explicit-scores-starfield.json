@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "starfield",
-  "checked_at": "2026-08-17T09:43:20.327Z",
+  "checked_at": "2026-08-17T10:58:00.003Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 3,
-  "scored": 3,
+  "accepted": 6,
+  "scored": 6,
   "context_only_versions": 0,
   "updates": [
     {
@@ -29,6 +29,33 @@
       "configured_source_id": "game-informer",
       "publication": "Game Informer",
       "score": 8.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 7,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "score": 7.9,
+      "scale": 10,
+      "method": "registry:hooked-gamers",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "score": 7,
       "scale": 10,
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
@@ -63,6 +90,39 @@
       "publication": "Game Informer",
       "url": "https://gameinformer.com/review/starfield/overwhelming-scope",
       "final_url": "https://gameinformer.com/review/starfield/overwhelming-scope",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/starfield",
+      "final_url": "https://www.pushsquare.com/reviews/ps5/starfield",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/starfield/review/article-2461.html",
+      "final_url": "https://www.hookedgamers.com/pc/starfield/review/article-2461.html",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/04/16/starfield-ps5-review-same-stars-new-vessel",
+      "final_url": "https://www.thesixthaxis.com/2026/04/16/starfield-ps5-review-same-stars-new-vessel/",
       "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,

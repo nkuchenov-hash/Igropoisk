@@ -1,12 +1,49 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "mount-and-blade-ii-bannerlord",
-  "checked_at": "2026-08-17T09:38:24.404Z",
+  "checked_at": "2026-08-17T10:51:50.390Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 1,
-  "scored": 0,
+  "accepted": 5,
+  "scored": 4,
   "context_only_versions": 0,
-  "updates": [],
+  "updates": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 80,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "score": 8.7,
+      "scale": 10,
+      "method": "registry:hooked-gamers",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "score": 5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
   "checks": [
     {
       "configured_source_id": "stopgame",
@@ -17,6 +54,50 @@
       "blocked": false,
       "preserved_existing_score": false,
       "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/mount-and-blade-2-bannerlord-review",
+      "final_url": "https://www.pcgamer.com/mount-and-blade-2-bannerlord-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/mount-and-blade-ii-bannerlord",
+      "final_url": "https://www.pushsquare.com/reviews/ps5/mount-and-blade-ii-bannerlord",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/mount__blade_ii_bannerlord/review/article-2379.html",
+      "final_url": "https://www.hookedgamers.com/pc/mount__blade_ii_bannerlord/review/article-2379.html",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/01/13/mount-blade-2-bannerlord-war-sails-review",
+      "final_url": "https://www.thesixthaxis.com/2026/01/13/mount-blade-2-bannerlord-war-sails-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     }
   ]
