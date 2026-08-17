@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { parseAddedLines, validateFeatureCssText, validateMarkupText } from './validate-central-design-system.mjs';
+import { parseAddedLines, validateFeatureCssText, validateMarkupText, validateSectionHeadingActions } from './validate-central-design-system.mjs';
 
 const roles = {
   button: ['ig-button', 'ig-icon-button', 'ig-filter-chip', 'ig-action'],
@@ -28,6 +28,13 @@ assert.deepEqual(validateMarkupText('feature.js', `${open('div')} class="ig-chip
 assert.deepEqual(validateMarkupText('feature.js', `${open('span')} class="ig-hashtag">#Doom</span>`, roles, registeredComponents), []);
 assert.deepEqual(validateMarkupText('feature.js', `${open('div')} class="ig-empty-state\${kind}">`, roles, registeredComponents), []);
 assert.ok(validateMarkupText('feature.js', `${open('div')} style="color:red">x</div>`, roles, registeredComponents).length > 0);
+
+const boxedSectionCta = '<div class="section-head"><h2>Релизы</h2><a class="ig-button" href="calendar/">Календарь</a></div>';
+const lightweightSectionCta = '<div class="section-head"><h2>Релизы</h2><a class="ig-button ig-text-link" href="calendar/">Календарь →</a></div>';
+const nestedHeadingControls = '<div class="section-head"><h2>Новости</h2><div class="controls"><button class="ig-icon-button">→</button></div></div>';
+assert.ok(validateSectionHeadingActions('index.html', boxedSectionCta).length > 0, 'Boxed CTA must be rejected inside a section heading.');
+assert.deepEqual(validateSectionHeadingActions('index.html', lightweightSectionCta), [], 'Lightweight section navigation must remain allowed.');
+assert.deepEqual(validateSectionHeadingActions('index.html', nestedHeadingControls), [], 'Icon controls may remain in a section heading.');
 
 const designSystem = fs.readFileSync('assets/design-system.css', 'utf8');
 const hashtagRule = designSystem.match(/\.ig-hashtag\{([^}]*)\}/)?.[1] || '';
