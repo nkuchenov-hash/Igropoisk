@@ -40,7 +40,11 @@ assert.doesNotMatch(newsCss, /\.ig-news-game-unlinked\s*\{[^}]*display\s*:\s*non
 const hashtagAudit = fs.readFileSync('scripts/audit-news-game-hashtags.mjs', 'utf8');
 assert.match(hashtagAudit, /blockingIntegrityFindings/, 'Hashtag audit must distinguish link-integrity blockers from unresolved context.');
 assert.match(hashtagAudit, /deferred_context_findings/, 'Ambiguous context must remain observable in diagnostics.');
-assert.doesNotMatch(hashtagAudit, /blockingIntegrityFindings\s*=.*unresolvedExplicit/s, 'An ambiguous article with no verified hashtag must not globally block unrelated news publication.');
+const blockingStart = hashtagAudit.indexOf('const blockingIntegrityFindings =');
+const blockingEnd = hashtagAudit.indexOf(';', blockingStart);
+const blockingExpression = hashtagAudit.slice(blockingStart, blockingEnd + 1);
+assert.ok(blockingStart >= 0 && blockingEnd > blockingStart, 'Hashtag audit blocking expression must be inspectable.');
+assert.doesNotMatch(blockingExpression, /unresolvedExplicit/, 'An ambiguous article with no verified hashtag must not globally block unrelated news publication.');
 assert.match(hashtagAudit, /if\s*\(strict\s*&&\s*blockingIntegrityFindings\)/, 'Strict mode must block only actual hashtag/page integrity failures.');
 
 console.log('News verified game-page request, ambiguous-context isolation and visible hashtag tests passed.');
