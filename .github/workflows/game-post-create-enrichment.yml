@@ -61,6 +61,17 @@ jobs:
           node scripts/test-game-creator-boundary.mjs
           node scripts/test-game-creator-post-create.mjs
 
+      - name: Bootstrap series, rating and media for every requested game
+        env:
+          POST_CREATE_PHASE: bootstrap
+        run: node scripts/run-game-post-create-enrichment.mjs
+
+      - name: Publish fast module checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          POST_CREATE_PUBLISH_PHASE: bootstrap
+        run: node scripts/publish-game-post-create-overlay.mjs
+
       - name: Restore local editorial model cache
         uses: actions/cache@v4
         with:
@@ -83,10 +94,13 @@ jobs:
           ollama list | grep -q '^qwen3:1.7b' || ollama pull qwen3:1.7b
           ollama list | grep -q '^qwen3-vl:4b' || ollama pull qwen3-vl:4b
 
-      - name: Enrich newly created games immediately
+      - name: Build bounded review module batch
+        env:
+          POST_CREATE_PHASE: review
         run: node scripts/run-game-post-create-enrichment.mjs
 
-      - name: Publish isolated enrichment conflict-safely
+      - name: Publish review module checkpoint conflict-safely
         env:
           GH_TOKEN: ${{ github.token }}
+          POST_CREATE_PUBLISH_PHASE: review
         run: node scripts/publish-game-post-create-overlay.mjs
