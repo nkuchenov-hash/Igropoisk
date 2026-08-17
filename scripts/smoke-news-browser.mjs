@@ -84,6 +84,15 @@ async function verifyStaticHealth() {
   return health;
 }
 
+async function waitForNewsReady(page) {
+  await page.waitForFunction(() => {
+    const home = document.querySelector('[data-news-module="home"]');
+    const archive = document.querySelector('[data-news-module="archive"]');
+    return ['ready', 'empty', 'error'].includes(home?.dataset.newsStatus)
+      && ['ready', 'empty', 'error'].includes(archive?.dataset.newsStatus);
+  }, { timeout: 30000 });
+}
+
 const health = await verifyStaticHealth();
 const executablePath = browserPath();
 if (!executablePath) {
@@ -102,12 +111,7 @@ try {
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(String(error?.stack || error)));
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-  await page.waitForFunction(() => {
-    const home = document.querySelector('[data-news-module="home"]');
-    const archive = document.querySelector('[data-news-module="archive"]');
-    return ['ready', 'empty', 'error'].includes(home?.dataset.newsStatus)
-      && ['ready', 'empty', 'error'].includes(archive?.dataset.newsStatus);
-  }, { timeout: 30000 });
+  await waitForNewsReady(page);
 
   const state = await page.evaluate(() => {
     const apiHealth = window.IgropoiskNewsContent?.health?.() || {};
@@ -117,6 +121,7 @@ try {
       archiveStatus: document.querySelector('[data-news-module="archive"]')?.dataset.newsStatus || '',
       homeCards: document.querySelectorAll('[data-news-home] .ig-news-card').length,
       archiveCards: document.querySelectorAll('[data-news-archive] .ig-news-card').length,
+      linkedGameHashtags: document.querySelectorAll('[data-news-home] .ig-news-game-link[href]').length,
       search: Boolean(document.querySelector('[data-news-toolbar] [data-news-search]')),
       controls: document.querySelectorAll('[data-news-home-controls] [data-news-direction]').length,
       contentBackend: apiHealth.backend || '',
@@ -136,6 +141,7 @@ try {
   if (state.archiveStatus !== 'ready') errors.push(`Archive news status: ${state.archiveStatus}`);
   if (state.homeCards < 1) errors.push('Homepage news rendered no cards.');
   if (state.archiveCards < 1) errors.push('News archive rendered no cards.');
+  if (remoteBase && state.linkedGameHashtags < 1) errors.push('Production homepage news rendered no linked game hashtags.');
   if (!state.search) errors.push('News archive search was not rendered.');
   if (state.controls !== 2) errors.push(`Expected two homepage rail controls, found ${state.controls}.`);
   if (state.legacyScripts.length) errors.push(`Legacy news scripts loaded: ${state.legacyScripts.join(', ')}`);
@@ -144,6 +150,76 @@ try {
   }
   if (remoteBase && !state.contentVersion) errors.push('Production news snapshot version is missing.');
   if (remoteBase && state.storageImages < 1) errors.push('Production rendered no Object Storage news images.');
+
+  const interactions = {};
+  if (!errors.length) {
+    const summarySelector = '[data-news-home] .ig-news-card .ig-card__summary';
+    const summary = await page.$(summarySelector);
+    if (!summary) {
+      errors.push('Homepage news has no non-interactive card body to test card navigation.');
+    } else {
+      const expectedStoryHref = await page.$eval(summarySelector, element => element.closest('.ig-news-card')?.querySelector('[data-news-story-link][href]')?.href || '');
+      if (!expectedStoryHref) {
+        errors.push('Homepage news card has no story destination.');
+      } else {
+        await Promise.all([
+          page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }),
+          page.click(summarySelector)
+        ]);
+        const actualStoryUrl = new URL(page.url());
+        const expectedStoryUrl = new URL(expectedStoryHref);
+        const storyMatches = actualStoryUrl.searchParams.get('page') === 'news'
+          && actualStoryUrl.searchParams.get('story') === expectedStoryUrl.searchParams.get('story');
+        if (!storyMatches) errors.push(`News card click did not open its story: ${page.url()}`);
+        interactions.cardClickStory = storyMatches;
+      }
+    }
+  }
+
+  if (!errors.length) {
+    await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await waitForNewsReady(page);
+    const hashtagSelector = '[data-news-home] .ig-news-game-link[href]';
+    let hashtagCount = await page.$$eval(hashtagSelector, elements => elements.length);
+    if (!hashtagCount && !remoteBase) {
+      await page.evaluate(() => {
+        const card = document.querySelector('[data-news-home] .ig-news-card');
+        if (!card || !window.IgropoiskNews) return;
+        let host = card.querySelector('.ig-news-card__actions');
+        if (!host) {
+          host = document.createElement('div');
+          host.className = 'ig-chip-list ig-news-card__actions';
+          card.querySelector('.ig-card__body')?.appendChild(host);
+        }
+        host.insertAdjacentHTML('beforeend', window.IgropoiskNews.renderGameTags({
+          games: [{
+            slug: 'the-witcher-3-wild-hunt',
+            title: 'The Witcher 3: Wild Hunt',
+            pageExists: true,
+            pageUrl: 'game/the-witcher-3-wild-hunt/'
+          }]
+        }, { lang: 'ru' }));
+      });
+      hashtagCount = await page.$$eval(hashtagSelector, elements => elements.length);
+    }
+    if (!hashtagCount) {
+      errors.push('No linked game hashtag is available for click navigation testing.');
+    } else {
+      const expectedGameHref = await page.$eval(hashtagSelector, element => element.href);
+      await Promise.all([
+        page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }),
+        page.click(hashtagSelector)
+      ]);
+      const actualGameUrl = new URL(page.url());
+      const expectedGameUrl = new URL(expectedGameHref);
+      const gameMatches = actualGameUrl.origin === expectedGameUrl.origin
+        && actualGameUrl.pathname.replace(/\/+$/, '/') === expectedGameUrl.pathname.replace(/\/+$/, '/');
+      if (!gameMatches) errors.push(`Game hashtag click did not open its game page: expected ${expectedGameUrl.href}, got ${actualGameUrl.href}`);
+      interactions.hashtagClickGame = gameMatches;
+    }
+  }
+
+  state.interactions = interactions;
   const newsErrors = pageErrors.filter(error => /features\/news|IgropoiskNews|news module/i.test(error));
   if (newsErrors.length) errors.push(...newsErrors);
 

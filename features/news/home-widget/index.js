@@ -11,6 +11,7 @@
   const copy = api.labels(lang);
   let dragging = false;
   let moved = false;
+  let activePointerId = null;
   let startX = 0;
   let startScroll = 0;
 
@@ -49,28 +50,47 @@
     });
   }
 
+  function bindCardNavigation() {
+    document.addEventListener('click', event => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const card = event.target.closest?.('.ig-news-card');
+      if (!card) return;
+      if (event.target.closest('a,button,input,select,textarea,label,[role="button"]')) return;
+      const homeRail = card.closest('[data-news-home]');
+      if (homeRail?.dataset.newsDragged === 'true') return;
+      const storyLink = card.querySelector('[data-news-story-link][href]');
+      if (!storyLink?.href) return;
+      event.preventDefault();
+      event.stopPropagation();
+      window.location.assign(storyLink.href);
+    }, true);
+  }
+
   function bindMouseDrag() {
     rail.addEventListener('pointerdown', event => {
       if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      if (event.target.closest('a,button,input,select,textarea,label,[role="button"]')) return;
       dragging = true;
       moved = false;
+      activePointerId = event.pointerId;
       startX = event.clientX;
       startScroll = rail.scrollLeft;
-      rail.setPointerCapture?.(event.pointerId);
     });
     rail.addEventListener('pointermove', event => {
-      if (!dragging) return;
+      if (!dragging || event.pointerId !== activePointerId) return;
       const delta = event.clientX - startX;
-      if (Math.abs(delta) > 6) {
+      if (!moved && Math.abs(delta) > 6) {
         moved = true;
         rail.classList.add('is-dragging');
+        rail.setPointerCapture?.(event.pointerId);
       }
       if (moved) rail.scrollLeft = startScroll - delta;
     });
     const finish = event => {
-      if (!dragging) return;
+      if (!dragging || event.pointerId !== activePointerId) return;
       dragging = false;
-      rail.releasePointerCapture?.(event.pointerId);
+      if (rail.hasPointerCapture?.(event.pointerId)) rail.releasePointerCapture?.(event.pointerId);
+      activePointerId = null;
       rail.classList.remove('is-dragging');
       if (moved) {
         rail.dataset.newsDragged = 'true';
@@ -79,6 +99,7 @@
     };
     rail.addEventListener('pointerup', finish);
     rail.addEventListener('pointercancel', finish);
+    window.addEventListener('pointerup', finish);
     rail.addEventListener('click', event => {
       if (rail.dataset.newsDragged !== 'true') return;
       event.preventDefault();
@@ -105,6 +126,7 @@
   anchorControlsToHeading();
   ensureArchiveLink();
   bindControls();
+  bindCardNavigation();
   bindMouseDrag();
   render();
 })();
