@@ -194,7 +194,13 @@ write('data/catalog-visible.json', catalog);
 
 const safeTitle = String(title).replace(/[&<>"']/g, '');
 const safeYear = year || '';
-const html = `<!doctype html><html lang="ru" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safeTitle} — Игропоиск</title><link rel="stylesheet" href="../_shared/game-page.css"></head><body data-title="${safeTitle}" data-year="${safeYear}" data-slug="${slug}" data-game-id="${entity.id}" data-draft="${slug}"><script src="../_shared/game-shell.js"></script></body></html>`;
+const html = `<!doctype html><html lang="ru" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safeTitle} — Игропоиск</title><link rel="stylesheet" href="../_shared/game-page.css">
+  <link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">
+  <link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">
+</head><body data-title="${safeTitle}" data-year="${safeYear}" data-slug="${slug}" data-game-id="${entity.id}" data-draft="${slug}"><script src="../_shared/game-shell.js"></script>
+  <script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>
+  <script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>
+</body></html>`;
 const pagePath = path.join(root, 'game', slug, 'index.html');
 fs.mkdirSync(path.dirname(pagePath), { recursive: true });
 fs.writeFileSync(pagePath, `${html}\n`);
