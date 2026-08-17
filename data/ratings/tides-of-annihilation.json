@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/tides-of-annihilation.json#review_score",
   "game_slug": "tides-of-annihilation",
-  "checked_at": "2026-08-17T23:31:23.841Z",
+  "checked_at": "2026-08-17T23:39:59.047Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -21,7 +21,14 @@
     "exact_canonical_version_required": true
   },
   "sources": [],
-  "excluded_sources": [],
+  "excluded_sources": [
+    {
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/show/143243/maskarad_v_bloodlines_2_detali_tides_of_annihilation_stalker_2_mozhno_igrat_pervye_reviewy_avowed",
+      "reason": "canonical_version"
+    }
+  ],
   "calculation": {
     "source_count": 0,
     "values": [],

@@ -2,12 +2,12 @@
   "schema_version": 12,
   "game_slug": "tides-of-annihilation",
   "game_id": "game_22306a35b896215b276a",
-  "updated_at": "2026-08-17T23:31:23.841Z",
+  "updated_at": "2026-08-17T23:39:59.047Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "accepted": 0,
+    "accepted": 1,
     "status": "red-needs-revision",
     "full_registry_scan": true,
     "checked_registered_sources": 45,
@@ -27,8 +27,8 @@
       {
         "source_id": "stopgame",
         "name": "StopGame",
-        "status": "not_found",
-        "notes": "search completed; no verified direct review"
+        "status": "found",
+        "notes": "verified direct review"
       },
       {
         "source_id": "kanobu",
@@ -76,8 +76,90 @@
     "complete": true,
     "found_but_not_accepted": []
   },
-  "reviews": [],
+  "reviews": [
+    {
+      "url": "https://stopgame.ru/show/143243/maskarad_v_bloodlines_2_detali_tides_of_annihilation_stalker_2_mozhno_igrat_pervye_reviewy_avowed",
+      "title": "Маскарад в Bloodlines 2, детали Tides of Annihilation, STALKER 2 можно играть, первые обзоры Avowed…",
+      "discovery_method": "external_search",
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "language": "ru",
+      "id": "source-1",
+      "resolved_url": "https://stopgame.ru/show/143243/maskarad_v_bloodlines_2_detali_tides_of_annihilation_stalker_2_mozhno_igrat_pervye_reviewy_avowed",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Tides of Annihilation.",
+      "evidence_points": [
+        "Журналисты опубликовали первые полноценные обзоры &nbsp; Avowed , &nbsp; S.T.A.L.K.E.R. 2: Heart of Chornobyl получила ещё одну масштабную порцию правок, &nbsp; Knights in Tight Spaces обрела дату выхода, создатели &nbsp; Vampire: The Masquerade — Bloodlines 2 поделились новыми отрывками геймплея и подробностями о соблюдении маскарада в игре, больше деталей раскрыли авторы &nbsp; Tides of Annihilation , для &nbsp; Astro Bot выпустит 5 карт для скоростных забегов, Valve опубликовала список всех запланированных на 2025-й год мероприятий в Steam."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "stopgame.ru",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T23:39:33.743Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    }
+  ],
   "rejected": [
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/tides_of_annihilation",
+      "title": "Tides of Annihilation игра | StopGame.ru",
+      "reasons": [
+        "non_review_path"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/show/143312/geympley_tides_of_annihilation_uspehi_assassin_s_creed_shadows_chto_budet_s_marathon",
+      "title": "Геймплей Tides of Annihilation, успехи Assassin’s Creed Shadows, что будет с Marathon…",
+      "reasons": [
+        "no_review_signal"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/tides_of_annihilation/video",
+      "title": "Tides of Annihilation - видео к игре | StopGame.ru",
+      "reasons": [
+        "non_review_path"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/show/143242/tides_of_annihilation_anons_igry",
+      "title": "Tides of Annihilation: Анонс игры",
+      "reasons": [
+        "no_review_signal"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/show/155651/tides_of_annihilation_geympleynyy_trailer",
+      "title": "Tides of Annihilation: Геймплейный трейлер",
+      "reasons": [
+        "no_review_signal"
+      ]
+    },
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/tides-of-annihilation",
@@ -120,7 +202,14 @@
       "exact_canonical_version_required": true
     },
     "sources": [],
-    "excluded_sources": [],
+    "excluded_sources": [
+      {
+        "configured_source_id": "stopgame",
+        "publication": "StopGame",
+        "url": "https://stopgame.ru/show/143243/maskarad_v_bloodlines_2_detali_tides_of_annihilation_stalker_2_mozhno_igrat_pervye_reviewy_avowed",
+        "reason": "canonical_version"
+      }
+    ],
     "calculation": {
       "source_count": 0,
       "values": [],
