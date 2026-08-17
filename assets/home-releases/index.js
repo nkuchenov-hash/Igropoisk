@@ -2,7 +2,8 @@
 'use strict';
 const rail=document.querySelector('#releaseHomeGrid');
 if(!rail)return;
-document.querySelector('.home-showcase-heading--split a[href="calendar/"]')?.classList.add('ig-button');
+const calendarLink=document.querySelector('.home-showcase-heading--split a[href="calendar/"]');
+if(calendarLink){calendarLink.classList.add('ig-button','ig-text-link');calendarLink.textContent='Открыть календарь'}
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const initials=title=>String(title||'').split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
 const identity=value=>String(value||'').normalize('NFKD').toLowerCase().replace(/&amp;/g,' and ').replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
@@ -80,21 +81,32 @@ const crossSiteEligible=game=>{
   return game.editorial_quality?.manual_anticipated===true||(declaredEligible&&(pressDominant||pressPlusSteam||pressPlusPopular||multiFamilyPopular));
 };
 const anticipationScore=game=>Number(game.editorial_quality?.anticipation_score||anticipation(game).anticipation_score||popularEvidence(game)?.score||0);
-const anticipationLabel=game=>{
-  if(!crossSiteEligible(game))return '';
-  const publications=independentCount(game);
+const rating100=value=>Math.max(0,Math.min(100,Math.round(Number(value)||0)));
+const overallAnticipationRating=game=>{
+  const score=anticipationScore(game);
+  return score>0?rating100(score/1.22):null;
+};
+const playerAnticipationRating=game=>{
+  const evidence=popularEvidence(game);
   const position=steamPosition(game);
-  if(publications>=5)return `Ожидаемость: ${publications} независимых игровых изданий`;
-  if(publications>=3&&position>0)return `${publications} игровых издания · Steam Popular Upcoming #${position}`;
-  if(publications>=2)return `Ожидаемость подтверждена ${publications} независимыми изданиями`;
-  return 'Ожидаемость подтверждена несколькими площадками';
+  const signals=evidence?.signals||{};
+  const families=new Set(evidence?.families||[]);
+  const hasPlayerSignals=['reddit','youtube','twitch','steam_chart'].some(family=>families.has(family)||Number(signals[family]||0)>0);
+  const live=hasPlayerSignals&&popularIndex(game)>0?rating100(popularIndex(game)*2.5):null;
+  const steam=position>0?rating100(101-Math.min(100,position)):null;
+  if(live!==null&&steam!==null)return rating100(live*.7+steam*.3);
+  return live??steam;
+};
+const anticipationMeta=game=>{
+  const overall=overallAnticipationRating(game);
+  const players=playerAnticipationRating(game);
+  return [overall!==null?`Ожидание ${overall}`:'',players!==null?`Игроки ${players}`:''].filter(Boolean);
 };
 const card=(game,kind)=>{
   const event=primaryEvent(game);
   const diff=dayDiff(dateValue(event));
   const image=candidates(game)[0]||'';
-  const relevance=anticipationLabel(game);
-  const meta=[relevance,...(event.platforms||[]).slice(0,1)].filter(Boolean).join(' · ');
+  const meta=[...anticipationMeta(game),...(event.platforms||[]).slice(0,1)].filter(Boolean).join(' · ');
   return `<article class="ig-card ig-card--interactive home-release-card" data-release="${esc(game.slug)}" data-release-kind="${esc(kind)}"><a class="ig-card__part home-release-card__link" href="calendar/#game=${encodeURIComponent(game.slug)}"><div class="ig-card__media home-release-card__media" data-initials="${esc(initials(game.title))}">${image?`<img src="${esc(image)}" alt="Обложка ${esc(game.title)}" loading="lazy" decoding="async" data-cover-index="0">`:''}<span class="home-release-card__date ${kind==='recent'||Number.isFinite(diff)&&diff>=0&&diff<=7?'is-near':''}">${esc(dateLabel(event))}</span></div><div class="ig-card__part home-release-card__body"><h3>${esc(game.title)}</h3>${meta?`<div class="ig-card__part home-release-card__meta">${esc(meta)}</div>`:''}</div></a></article>`;
 };
 const bindFallbacks=games=>{
@@ -155,7 +167,7 @@ Promise.all([
   const selected=[...recent,...upcoming].slice(0,maximum);
   const rows=selected.map(row=>row.game);
 
-  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Сейчас нет релизов, у которых глобальная ожидаемость подтверждена несколькими независимыми игровыми изданиями.</div>';
+  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Сейчас нет подходящих ожидаемых релизов.</div>';
   bindFallbacks(rows);
   requestAnimationFrame(updateButtons);
 }).catch(error=>{
