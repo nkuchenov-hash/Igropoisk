@@ -1,0 +1,108 @@
+name: Enrich newly created Игропоиск games
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [staging]
+    paths:
+      - 'data/game-enrichment-requests/*.json'
+      - 'scripts/ensure-game-page.mjs'
+      - 'scripts/materialize-known-series.mjs'
+      - 'scripts/enrich-game-media-from-sources.mjs'
+      - 'scripts/run-game-post-create-enrichment.mjs'
+      - 'scripts/test-game-creator-post-create.mjs'
+      - 'scripts/lib/verified-game-import.mjs'
+      - 'game/_shared/game-page-materialized-data.js'
+      - '.github/workflows/game-post-create-enrichment.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+  models: read
+
+concurrency:
+  group: game-post-create-enrichment-staging
+  cancel-in-progress: false
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate post-create boundary
+        run: |
+          node --check scripts/ensure-game-page.mjs
+          node --check scripts/materialize-known-series.mjs
+          node --check scripts/enrich-game-media-from-sources.mjs
+          node --check scripts/run-game-post-create-enrichment.mjs
+          node --check scripts/test-game-creator-post-create.mjs
+          node --check scripts/lib/verified-game-import.mjs
+          node --check game/_shared/game-page-materialized-data.js
+          node scripts/test-game-creator-boundary.mjs
+          node scripts/test-game-creator-post-create.mjs
+      - name: Enrich newly created games immediately
+        run: node scripts/run-game-post-create-enrichment.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REVIEW_MODEL: ${{ vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
+          GITHUB_VISION_MODEL: ${{ vars.GITHUB_VISION_MODEL || vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
+          OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
+          OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
+          OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
+          POST_CREATE_REVIEW_BATCH: '3'
+          POST_CREATE_MAX_ATTEMPTS: '3'
+      - name: Stage isolated enrichment output
+        run: |
+          paths=(
+            data/game-enrichment-requests
+            data/game-registry
+            data/franchises
+            data/research
+            data/reviews
+            data/ratings
+            data/articles
+            data/article-drafts
+            data/article-media
+            data/media-candidates
+            data/parser-runs
+            data/quality-control
+            data/drafts
+            data/catalog-visible.json
+            article
+          )
+          existing=()
+          for path in "${paths[@]}"; do
+            if [ -e "$path" ]; then existing+=("$path"); fi
+          done
+          if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
+          git diff --cached --check
+      - name: Open and merge enrichment PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if git diff --cached --quiet; then
+            echo "No post-create enrichment changes."
+            exit 0
+          fi
+          branch="automation/post-create-enrichment-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Enrich newly created canonical games"
+          git push origin "$branch"
+          pr_url="$(gh pr create \
+            --base staging \
+            --head "$branch" \
+            --title "Post-create game enrichment ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
+            --body "Immediate non-blocking enrichment requested by the universal Game Creator. Canonical series are materialized deterministically; professional review evidence and review-derived rating are bootstrapped before the full review build; media is expanded only from original verified source pages, never search-engine proxy thumbnails. Unfinished work remains in the normal recurring catalog lifecycle.")"
+          gh pr merge "$pr_url" --merge --delete-branch
