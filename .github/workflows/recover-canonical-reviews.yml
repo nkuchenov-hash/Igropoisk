@@ -15,7 +15,9 @@ on:
       - 'scripts/rebind-existing-review.mjs'
       - 'scripts/recover-canonical-review-backlog.mjs'
       - 'scripts/publish-review-recovery-overlay.mjs'
+      - 'scripts/synthesize-review-github-models.mjs'
       - 'scripts/synthesize-review-local.mjs'
+      - 'scripts/enrich-review-media-github-models.mjs'
       - 'scripts/enrich-review-media-local.mjs'
       - 'scripts/audit-review-language-local.mjs'
       - 'scripts/lib/local-editorial-model.mjs'
@@ -31,6 +33,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  models: read
 
 concurrency:
   group: canonical-review-recovery
@@ -42,6 +45,11 @@ jobs:
     timeout-minutes: 240
     env:
       OPENAI_API_KEY: ''
+      GITHUB_TOKEN: ${{ github.token }}
+      GITHUB_REVIEW_MODEL: ${{ vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
+      GITHUB_VISION_MODEL: ${{ vars.GITHUB_VISION_MODEL || vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
+      LOCAL_TEXT_MODEL: qwen3:1.7b
+      LOCAL_VISION_MODEL: qwen3-vl:4b
     steps:
       - uses: actions/checkout@v4
         with:
@@ -62,6 +70,8 @@ jobs:
           node --check scripts/rebind-existing-review.mjs
           node --check scripts/recover-canonical-review-backlog.mjs
           node --check scripts/publish-review-recovery-overlay.mjs
+          node --check scripts/synthesize-review-github-models.mjs
+          node --check scripts/enrich-review-media-github-models.mjs
           node --check scripts/quality-control-loop-v4.mjs
           node --check scripts/build-top-250-canonical-review.mjs
           node --check scripts/validate-top-250.mjs
@@ -106,7 +116,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.ollama/models
-          key: ollama-review-recovery-v2
+          key: ollama-review-recovery-v3
 
       - name: Start local editorial model service
         if: steps.model_backlog.outputs.count != '0'
@@ -121,16 +131,16 @@ jobs:
           curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
 
       - name: Pull lightweight text editor
-        if: steps.model_backlog.outputs.rebind != '0'
+        if: steps.model_backlog.outputs.count != '0'
         run: ollama list | grep -q '^qwen3:1.7b' || ollama pull qwen3:1.7b
 
-      - name: Audit and rebind existing prose with lightweight text model
+      - name: Rebind existing prose and fail fast on media-only defects
         if: steps.model_backlog.outputs.rebind != '0'
         env:
           LOCAL_EDITORIAL_MODEL: qwen3:1.7b
-        run: node scripts/recover-canonical-review-backlog.mjs --rebind --concurrency 2 --timeout-ms 420000
+        run: node scripts/recover-canonical-review-backlog.mjs --rebind --concurrency 4 --timeout-ms 180000
 
-      - name: Detect reviews that still require full prose or media repair
+      - name: Detect reviews that still require targeted hard repair
         id: full_backlog
         if: steps.model_backlog.outputs.count != '0'
         run: |
@@ -149,15 +159,15 @@ jobs:
           console.log(`count=${count}`);
           NODE
 
-      - name: Pull multimodal repair model only for remaining hard cases
+      - name: Pull multimodal fallback only for remaining hard cases
         if: steps.full_backlog.outputs.count != '0'
         run: ollama list | grep -q '^qwen3-vl:4b' || ollama pull qwen3-vl:4b
 
-      - name: Repair only the remaining hard review cases
+      - name: Repair remaining cases with preserved prose and fast visual audit
         if: steps.full_backlog.outputs.count != '0'
         env:
-          LOCAL_EDITORIAL_MODEL: qwen3-vl:4b
-        run: node scripts/recover-canonical-review-backlog.mjs --local --concurrency 1 --timeout-ms 1200000
+          LOCAL_EDITORIAL_MODEL: qwen3:1.7b
+        run: node scripts/recover-canonical-review-backlog.mjs --local --concurrency 2 --timeout-ms 600000
 
       - name: Rebuild final canonical publication feed and Top-250
         run: |

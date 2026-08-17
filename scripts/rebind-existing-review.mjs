@@ -65,24 +65,27 @@ article.generation={...(article.generation||{}),score_rebound_at:article.updated
 write(articlePath,article);write(draftPath,article);
 
 function run(script,args=[]){return spawnSync('node',[script,...args],{cwd:root,encoding:'utf8',stdio:'inherit',env:process.env,maxBuffer:24*1024*1024})}
+
+// Validate content/media before spending model time on prose language. A failed media gate
+// leaves the canonical score/source rebind in place so the hard-repair pass can preserve
+// the existing prose and repair only the failing visual/content dimension.
+const validation=run('scripts/validate-review-output.mjs',[slug]);
+if(validation.status!==0){console.error(`${slug}: review output validation failed after canonical score/source rebind; preserving rebound prose for targeted repair`);process.exit(2)}
+
 const hash=proseHash(article),previousLanguage=read(`data/parser-runs/review-language-${slug}.json`);
 let languageDisposition='fresh-model-audit';
-if(deterministicOnly){
-  if(previousLanguage?.passed===true&&previousLanguage?.article_prose_sha256===hash){
-    languageDisposition='reused-green-audit';
-  }else if(originalPublicationStatus==='published'){
-    languageDisposition='legacy-published-audit-deferred';
-  }else{
-    console.error(`${slug}: unchanged prose was not previously published and has no reusable language audit; queued for model-assisted audit`);
-    process.exit(2);
-  }
+if(previousLanguage?.passed===true&&previousLanguage?.article_prose_sha256===hash){
+  languageDisposition='reused-green-audit';
+}else if(deterministicOnly&&originalPublicationStatus==='published'){
+  languageDisposition='legacy-published-audit-deferred';
+}else if(deterministicOnly){
+  console.error(`${slug}: unchanged prose was not previously published and has no reusable language audit; queued for model-assisted audit`);
+  process.exit(2);
 }else{
   const language=run('scripts/audit-review-language-local.mjs',[slug]);
   if(language.status!==0){console.error(`${slug}: local language audit failed`);process.exit(2)}
   languageDisposition='fresh-green-audit';
 }
-const validation=run('scripts/validate-review-output.mjs',[slug]);
-if(validation.status!==0){console.error(`${slug}: review output validation failed`);process.exit(2)}
 const finalArticle=read(articlePath);
 const languageDeferred=languageDisposition==='legacy-published-audit-deferred';
 finalArticle.publication_status='published';
@@ -94,5 +97,5 @@ finalArticle.quality_comment=languageDeferred
   : 'Existing substantive article retained; canonical source binding and review-owned score synchronized without prose regeneration.';
 finalArticle.updated_at=new Date().toISOString();
 write(articlePath,finalArticle);write(draftPath,finalArticle);
-write(`data/parser-runs/review-rebind-${slug}.json`,{parser:'review-score-surgical-rebind-v4',status:'green',game_slug:slug,checked_at:finalArticle.updated_at,score,full_corpus_sources:accepted.length,article_sources:reboundSources.length,words:articleWords,sections:article.sections.length,prose_regenerated:false,original_publication_status:originalPublicationStatus||null,original_quality_status:originalQualityStatus||null,language_disposition:languageDisposition,language_audit_deferred:languageDeferred});
+write(`data/parser-runs/review-rebind-${slug}.json`,{parser:'review-score-surgical-rebind-v5',status:'green',game_slug:slug,checked_at:finalArticle.updated_at,score,full_corpus_sources:accepted.length,article_sources:reboundSources.length,words:articleWords,sections:article.sections.length,prose_regenerated:false,original_publication_status:originalPublicationStatus||null,original_quality_status:originalQualityStatus||null,language_disposition:languageDisposition,language_audit_deferred:languageDeferred});
 console.log(JSON.stringify({slug,status:'green',score,full_corpus_sources:accepted.length,article_sources:reboundSources.length,words:articleWords,sections:article.sections.length,prose_regenerated:false,language_disposition:languageDisposition},null,2));
