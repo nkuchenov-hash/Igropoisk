@@ -101,6 +101,8 @@ jobs:
           node scripts/materialize-news-game-pages-fast.mjs --target "$production"
           cd "$production"
           git diff --check
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-production-boundaries.mjs
           paths=(game data/catalog-visible.json data/drafts data/game-content data/reviews data/articles data/guides data/similarity data/game-dna article)
           existing=()
           for path in "${paths[@]}"; do
@@ -108,7 +110,7 @@ jobs:
           done
           if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
           if git diff --cached --quiet; then exit 0; fi
-          branch="automation/news-fast-production-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          branch="automation/news-game-pages-fast-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git config user.name "igropoisk-content[bot]"
           git config user.email "igropoisk-content[bot]@users.noreply.github.com"
           git checkout -b "$branch"
