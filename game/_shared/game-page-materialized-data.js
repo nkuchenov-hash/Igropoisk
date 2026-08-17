@@ -49,12 +49,18 @@ function renderEnrichedMedia(draft,title){
   const renderGroup=(groupSelector,targetSelector,countSelector,items,label)=>{
     const group=document.querySelector(groupSelector),target=document.querySelector(targetSelector),count=document.querySelector(countSelector);if(!group||!target)return;
     const existing=new Set([...target.querySelectorAll('img')].map(image=>canonicalMedia(image.src)));
+    const template=target.querySelector('.ig-media-card');
     let added=0;
     for(const [index,item] of arr(items).entries()){
       const url=mediaUrl(item),key=canonicalMedia(url);if(!url||existing.has(key))continue;
       const source=typeof item==='object'?String(item.source_url||''):'';
-      const card=document.createElement('article');card.className='ig-media-card';
-      card.innerHTML=`<div class="ig-media-card__image"><img src="${esc(url)}" alt="${esc(title)}" loading="lazy"></div><div class="ig-media-card__body"><b>${esc(label)} ${index+1}</b>${source?`<small>Проверенный источник</small>`:`<small>${esc(title)}</small>`}</div>`;
+      const card=template?template.cloneNode(true):document.createElement('article');
+      if(!template){card.className='ig-media-card';card.innerHTML=`<img src="${esc(url)}" alt="${esc(title)}" loading="lazy"><b>${esc(label)} ${index+1}</b><small>${source?'Проверенный источник':esc(title)}</small>`}
+      else{
+        const image=card.querySelector('img');if(image){image.src=url;image.alt=title;image.removeAttribute('data-fallback')}
+        const heading=card.querySelector('b');if(heading)heading.textContent=`${label} ${index+1}`;
+        const note=card.querySelector('small');if(note)note.textContent=source?'Проверенный источник':title;
+      }
       target.appendChild(card);existing.add(key);added++;
     }
     const total=target.querySelectorAll('.ig-media-card').length;if(total){group.hidden=false;if(count)count.textContent=String(total)}
