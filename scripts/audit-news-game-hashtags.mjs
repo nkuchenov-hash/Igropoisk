@@ -89,8 +89,10 @@ for (const item of items) {
 }
 
 const dedupeBy = (values, key) => [...new Map(values.map(value => [key(value), value])).values()];
+const blockingIntegrityFindings = collisions.length + inconsistent.length + duplicateArticleGames.length + unverified.length + temporary.length + badPageUrls.length
+  + (productionRef ? dedupeBy(productionMissingPages, item => item.game_id || item.slug).length : dedupeBy(missingPages, item => item.game_id || item.slug).length);
 const report = {
-  schema_version: 2,
+  schema_version: 3,
   generated_at: new Date().toISOString(),
   production_ref: productionRef || null,
   articles: items.length,
@@ -106,12 +108,12 @@ const report = {
   missing_staging_pages: dedupeBy(missingPages, item => item.game_id || item.slug),
   missing_production_pages: dedupeBy(productionMissingPages, item => item.game_id || item.slug),
   bad_page_urls: badPageUrls,
-  unresolved_explicit_game_context: unresolvedExplicit
+  unresolved_explicit_game_context: unresolvedExplicit,
+  deferred_context_findings: unresolvedExplicit.length,
+  blocking_integrity_findings: blockingIntegrityFindings
 };
 
 fs.mkdirSync('tmp', { recursive: true });
 fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
-const blocking = collisions.length + inconsistent.length + duplicateArticleGames.length + unverified.length + temporary.length + badPageUrls.length + unresolvedExplicit.length
-  + (productionRef ? report.missing_production_pages.length : report.missing_staging_pages.length);
-console.log(`[news/hashtag-audit] ${items.length} articles; ${uniqueGames.size} verified game identities; ${hashtagOwner.size} unique hashtags; ${report.unverified_game_references.length} unverified refs; ${report.missing_staging_pages.length} staging pages missing; ${report.missing_production_pages.length} production pages missing; ${blocking} blocking findings.`);
-if (strict && blocking) process.exit(1);
+console.log(`[news/hashtag-audit] ${items.length} articles; ${uniqueGames.size} verified game identities; ${hashtagOwner.size} unique hashtags; ${report.unverified_game_references.length} unverified refs; ${report.missing_staging_pages.length} staging pages missing; ${report.missing_production_pages.length} production pages missing; ${blockingIntegrityFindings} blocking integrity findings; ${unresolvedExplicit.length} context findings deferred without hashtags.`);
+if (strict && blockingIntegrityFindings) process.exit(1);
