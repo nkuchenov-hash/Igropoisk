@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "roblox",
-  "generated_at": "2026-08-17T22:33:25.053Z",
+  "generated_at": "2026-08-17T22:50:48.922Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -16,47 +16,31 @@
     "search_title_variants": true,
     "review_hub_following": true
   },
-  "accepted": [
+  "accepted": [],
+  "rejected": [
     {
+      "publication": "StopGame",
       "url": "https://stopgame.ru/game/roblox/review/39230",
       "title": "Отзыв об игре Roblox от пользователя Денис Макаревич | StopGame.ru",
-      "configured_source_id": "stopgame",
+      "reasons": [
+        "user_generated_review"
+      ]
+    },
+    {
       "publication": "StopGame",
-      "language": "ru",
-      "id": "source-1",
-      "resolved_url": "https://stopgame.ru/game/roblox/review/39230",
-      "source_kind": "review",
-      "platform": "",
-      "version_context": "",
-      "published_at": "",
-      "author": "",
-      "canonical_score_eligible": true,
-      "version_validation": {
-        "score_eligible": true,
-        "reason": "canonical_version"
-      },
-      "identity_evidence": "Direct registered professional publisher review verified for roblox.",
-      "evidence_points": [],
-      "praise": [],
-      "criticism": [],
-      "mechanics": [],
-      "domain": "stopgame.ru",
-      "validation": {
-        "status": "accepted",
-        "checked_at": "2026-08-17T22:33:25.053Z",
-        "method": "registered-direct-publisher-http-v8",
-        "review_page": {
-          "accepted": true,
-          "reason": "review_path"
-        }
-      },
-      "score": null,
-      "scale": null,
-      "grade": "",
-      "score_eligible": false
-    }
-  ],
-  "rejected": [
+      "url": "https://stopgame.ru/game/roblox/review/39230",
+      "title": "Отзыв об игре Roblox от пользователя Денис Макаревич | StopGame.ru",
+      "reasons": [
+        "user_generated_review"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/roblox-review",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/roblox",
@@ -67,13 +51,6 @@
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/roblox-2",
-      "reasons": [
-        "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/roblox-review",
       "reasons": [
         "HTTP 404"
       ]
@@ -91,8 +68,8 @@
       "source_id": "stopgame",
       "name": "StopGame",
       "region": "ru",
-      "status": "found",
-      "notes": "verified direct review"
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     },
     {
       "source_id": "kanobu",
@@ -380,8 +357,8 @@
       {
         "source_id": "stopgame",
         "name": "StopGame",
-        "status": "found",
-        "notes": "verified direct review"
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
       },
       {
         "source_id": "kanobu",
@@ -432,13 +409,13 @@
   "coverage": {
     "registered_editorial": 41,
     "checked": 41,
-    "accepted": 1,
+    "accepted": 0,
     "scored": 0,
     "context_only_versions": 0,
     "blocked_verified": 0,
-    "contemporary": 1,
+    "contemporary": 0,
     "green": false,
     "passed": false,
-    "needs_more": 4
+    "needs_more": 5
   }
 }
