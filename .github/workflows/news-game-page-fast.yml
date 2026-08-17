@@ -31,13 +31,14 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Validate fast page path
+      - name: Validate news adapter and shared Game Creator
         run: |
-          node --check scripts/build-news-game-page-fast.mjs
+          node --check scripts/ensure-game-page.mjs
           node --check scripts/run-news-game-page-fast.mjs
           node --check scripts/materialize-news-game-pages-fast.mjs
           node --check scripts/parse-game-data.mjs
           node --check scripts/lib/news-game-registry-discovery.mjs
+          node scripts/test-game-creator-boundary.mjs
           python3 -m py_compile scripts/enforce_layout_contract.py
 
       - name: Parse game data and create ordinary pages immediately
@@ -55,7 +56,7 @@ jobs:
           cat tmp/news-game-page-fast.json
           python3 scripts/enforce_layout_contract.py --check
 
-      - name: Stage only fast page creation output
+      - name: Stage only Game Creator output
         id: staged
         run: |
           paths=(data/game-registry data/parser-output data/parser-runs data/drafts data/game-content data/catalog-visible.json game)
@@ -71,7 +72,7 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Merge fast page data into staging
+      - name: Merge Game Creator output into staging
         if: steps.staged.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -87,7 +88,7 @@ jobs:
             --base staging \
             --head "$branch" \
             --title "Create news-required game pages ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
-            --body "Fast path for verified games referenced by news. It parses structured game data and materializes the normal game-page shell immediately. Editorial review, Game DNA, similarity and guides remain in the regular lifecycle and no longer delay page existence.")"
+            --body "News resolves the canonical game and calls the shared Game Creator. The base page is materialized immediately from structured data. Review, Game DNA, similarity and guides are independent modules and do not delay page existence.")"
           gh pr merge "$pr_url" --merge --delete-branch
 
       - name: Promote every successfully created page to production
@@ -123,7 +124,7 @@ jobs:
             --base main \
             --head "$branch" \
             --title "Publish news-required game pages ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
-            --body "Publishes only the base game pages needed by verified news links. The page is available as soon as structured game data is parsed; review, Game DNA, similarity and guides stay in the regular lifecycle.")"
+            --body "Publishes only the base game pages needed by verified news links. Page existence is independent from review, Game DNA, similarity and guides.")"
           gh pr merge "$pr_url" --merge --delete-branch
 
       - name: Wait until created pages are live
@@ -145,7 +146,7 @@ jobs:
             sleep 5
           done
           if [ "$ready" != "true" ]; then
-            echo "One or more fast-created game pages did not become live."
+            echo "One or more Game Creator pages did not become live."
             exit 1
           fi
 
