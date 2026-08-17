@@ -73,12 +73,7 @@ async function runOne(slug,index){
     execution=await spawnNode('scripts/rebind-existing-review.mjs',[slug],env,timeoutMs);
     execution=await renderAfterRebind(slug,execution,env);
   }else if(phase==='deterministic'&&canonicalReady(slug)){
-    if(reusableArticle(slug)){
-      execution=await spawnNode('scripts/rebind-existing-review.mjs',[slug],env,Math.min(timeoutMs,180_000));
-      execution=await renderAfterRebind(slug,execution,env);
-    }else{
-      execution={code:2,signal:null,timedOut:false,stdout:'',stderr:`${slug}: canonical corpus and score are already green; no reusable article exists, so source discovery was skipped and prose repair remains queued.`};
-    }
+    execution={code:2,signal:null,timedOut:false,stdout:'',stderr:`${slug}: canonical corpus, score and regional discovery are already green; deterministic evidence recovery is complete and article repair is deferred to the dedicated rebind/model phases.`};
   }else{
     execution=await spawnNode('scripts/quality-control-loop.mjs',['review',slug],env,timeoutMs);
   }
