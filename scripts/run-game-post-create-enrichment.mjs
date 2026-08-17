@@ -70,7 +70,7 @@ async function bootstrapOne({request}){
   if(request.released!==false&&!scoreGreen(current)){
     if(exists('scripts/discover-review-sources-web.mjs'))await runAsync(`review-discovery:${slug}`,'scripts/discover-review-sources-web.mjs',[slug,'--all']);
     if(exists('scripts/promote-review-source-audit.mjs'))await runAsync(`review-audit:${slug}`,'scripts/promote-review-source-audit.mjs',[slug]);
-    await runAsync(`review-research:${slug}`,'scripts/prepare-review-research.mjs',[slug]);
+    await runAsync(`review-research:${slug}`,'scripts/prepare-post-create-review-research.mjs',[slug]);
     if(exists('scripts/enrich-review-explicit-scores.mjs'))await runAsync(`review-scores:${slug}`,'scripts/enrich-review-explicit-scores.mjs',[slug]);
     await runAsync(`rating:${slug}`,'scripts/calculate-ratings-from-research.mjs',[slug]);
   }
