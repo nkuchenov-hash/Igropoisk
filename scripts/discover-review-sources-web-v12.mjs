@@ -27,9 +27,10 @@ globalThis.fetch=async(input,init)=>{
   if(host!=='thesixthaxis.com'||url.pathname!=='/'||!url.searchParams.has('s')||!slug)return networkFetch(input,init);
 
   const tagUrl=`https://www.thesixthaxis.com/tag/${sixthAxisTagSlug(slug)}/`;
+  const bounded=()=>({...init,redirect:'follow',signal:AbortSignal.timeout(7000),headers:{...(init?.headers||{}),'user-agent':'Mozilla/5.0 (compatible; IgropoiskReviewDiscovery/12.1)','accept-language':'en,ru;q=.8'}});
   const [search,tag]=await Promise.allSettled([
-    networkFetch(input,init),
-    networkFetch(tagUrl,{...init,redirect:'follow',signal:AbortSignal.timeout(7000),headers:{...(init?.headers||{}),'user-agent':'Mozilla/5.0 (compatible; IgropoiskReviewDiscovery/12.0)','accept-language':'en,ru;q=.8'}})
+    networkFetch(input,bounded()),
+    networkFetch(tagUrl,bounded())
   ]);
   const parts=[];
   for(const result of [tag,search]){
