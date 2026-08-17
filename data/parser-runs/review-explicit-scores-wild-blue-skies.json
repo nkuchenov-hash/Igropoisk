@@ -1,11 +1,33 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "wild-blue-skies",
-  "checked_at": "2026-08-14T23:56:24.069Z",
+  "checked_at": "2026-08-17T09:43:17.980Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 0,
-  "scored": 0,
+  "accepted": 1,
+  "scored": 1,
   "context_only_versions": 0,
-  "updates": [],
-  "checks": []
+  "updates": [
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/wild-blue-skies/bland-homage",
+      "final_url": "https://gameinformer.com/review/wild-blue-skies/bland-homage",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
 }

@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/halo-campaign-evolved.json#review_score",
   "game_slug": "halo-campaign-evolved",
-  "checked_at": "2026-08-14T23:54:30.568Z",
+  "checked_at": "2026-08-17T09:41:50.979Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -37,9 +37,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:54:30.529Z",
+        "checked_at": "2026-08-17T09:41:50.936Z",
         "url": "https://www.eurogamer.net/halo-campaign-evolved-review",
         "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Halo: Campaign Evolved Review: Rollicking Revival",
+      "url": "https://gameinformer.com/review/halo-campaign-evolved/rollicking-revival",
+      "original_score": {
+        "score": 8.5,
+        "scale": 10,
+        "grade": null,
+        "display": "8.5/10"
+      },
+      "normalized_10": 8.5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T09:41:50.936Z",
+        "url": "https://gameinformer.com/review/halo-campaign-evolved/rollicking-revival",
+        "configured_source_id": "game-informer",
         "direct_publisher": true
       }
     }
@@ -71,11 +93,12 @@
     }
   ],
   "calculation": {
-    "source_count": 1,
+    "source_count": 2,
     "values": [
-      8
+      8,
+      8.5
     ],
-    "mean_10": 8,
-    "score_10": 8
+    "mean_10": 8.25,
+    "score_10": 8.3
   }
 }

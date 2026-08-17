@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/baldurs-gate-3.json#review_score",
   "game_slug": "baldurs-gate-3",
-  "checked_at": "2026-08-14T23:50:58.850Z",
+  "checked_at": "2026-08-17T09:38:26.649Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -37,9 +37,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:50:58.815Z",
+        "checked_at": "2026-08-17T09:38:26.614Z",
         "url": "https://www.playground.ru/baldurs_gate_3/opinion/obzor_baldurs_gate_3_luchshaya_rpg_sovremennosti-1644244",
         "configured_source_id": "playground",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Baldur&#039;s Gate 3 Review: A True Soul Stirrer",
+      "url": "https://gameinformer.com/review/baldurs-gate-3/a-true-soul-stirrer",
+      "original_score": {
+        "score": 9.5,
+        "scale": 10,
+        "grade": null,
+        "display": "9.5/10"
+      },
+      "normalized_10": 9.5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T09:38:26.614Z",
+        "url": "https://gameinformer.com/review/baldurs-gate-3/a-true-soul-stirrer",
+        "configured_source_id": "game-informer",
         "direct_publisher": true
       }
     }
@@ -53,8 +75,9 @@
     }
   ],
   "calculation": {
-    "source_count": 1,
+    "source_count": 2,
     "values": [
+      9.5,
       9.5
     ],
     "mean_10": 9.5,

@@ -1,15 +1,24 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "baldurs-gate-3",
-  "checked_at": "2026-08-14T23:50:58.815Z",
+  "checked_at": "2026-08-17T09:38:26.614Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 2,
-  "scored": 1,
+  "accepted": 3,
+  "scored": 2,
   "context_only_versions": 0,
   "updates": [
     {
       "configured_source_id": "playground",
       "publication": "PlayGround.ru",
+      "score": 9.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
       "score": 9.5,
       "scale": 10,
       "method": "jsonld.reviewRating",
@@ -38,6 +47,17 @@
       "blocked": false,
       "preserved_existing_score": false,
       "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/baldurs-gate-3/a-true-soul-stirrer",
+      "final_url": "https://gameinformer.com/review/baldurs-gate-3/a-true-soul-stirrer",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     }
   ]

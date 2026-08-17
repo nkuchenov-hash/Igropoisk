@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/tom-clancys-rainbow-six-siege.json#review_score",
   "game_slug": "tom-clancys-rainbow-six-siege",
-  "checked_at": "2026-08-14T23:48:19.927Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T09:38:29.152Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:48:19.889Z",
+        "checked_at": "2026-08-17T09:38:29.080Z",
         "url": "https://www.pcgamer.com/rainbow-six-siege-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-14T23:48:19.889Z",
+        "checked_at": "2026-08-17T09:38:29.080Z",
         "url": "https://www.gamesradar.com/rainbow-six-siege-review/",
         "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Rainbow Six Siege Review: A Slimmed-Down Combatant Struggles With",
+      "url": "https://gameinformer.com/games/rainbow_six_siege/b/playstation4/archive/2015/12/04/game-informer-rainbow-six-siege-review.aspx",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T09:38:29.115Z",
+        "url": "https://gameinformer.com/games/rainbow_six_siege/b/playstation4/archive/2015/12/04/game-informer-rainbow-six-siege-review.aspx",
+        "configured_source_id": "game-informer",
         "direct_publisher": true
       }
     }
@@ -81,12 +103,13 @@
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       9,
+      7,
       7
     ],
-    "mean_10": 8,
-    "score_10": 8
+    "mean_10": 7.6667,
+    "score_10": 7.7
   }
 }

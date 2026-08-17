@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "resident-evil-2",
-  "checked_at": "2026-08-14T23:49:33.976Z",
+  "checked_at": "2026-08-17T09:37:16.771Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 2,
-  "scored": 1,
+  "accepted": 3,
+  "scored": 2,
   "context_only_versions": 1,
   "updates": [
     {
@@ -24,6 +24,15 @@
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": false
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 9.5,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
     }
   ],
   "checks": [
@@ -48,6 +57,17 @@
       "preserved_existing_score": false,
       "trusted_editorial_score": true,
       "canonical_score_eligible": false
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/resident-evil-2/the-greater-of-two-evils",
+      "final_url": "https://gameinformer.com/review/resident-evil-2/the-greater-of-two-evils",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
     }
   ]
 }

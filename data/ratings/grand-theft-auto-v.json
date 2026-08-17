@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/grand-theft-auto-v.json#review_score",
   "game_slug": "grand-theft-auto-v",
-  "checked_at": "2026-08-14T23:55:14.926Z",
+  "checked_at": "2026-08-17T09:42:08.759Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,7 +20,30 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-3",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Grand Theft Auto V Review: The Seedy Side Of A Sunny State",
+      "url": "https://gameinformer.com/games/grand_theft_auto_v/b/ps3/archive/2013/09/16/grand-theft-auto-v-review.aspx",
+      "original_score": {
+        "score": 9.75,
+        "scale": 10,
+        "grade": null,
+        "display": "9.75/10"
+      },
+      "normalized_10": 9.75,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T09:42:08.722Z",
+        "url": "https://gameinformer.com/games/grand_theft_auto_v/b/ps3/archive/2013/09/16/grand-theft-auto-v-review.aspx",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [
     {
       "configured_source_id": "pc-gamer",
@@ -36,9 +59,11 @@
     }
   ],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      9.75
+    ],
+    "mean_10": 9.75,
+    "score_10": 9.8
   }
 }

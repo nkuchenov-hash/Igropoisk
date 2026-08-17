@@ -1,16 +1,25 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "fortnite",
-  "checked_at": "2026-08-14T23:51:00.906Z",
+  "checked_at": "2026-08-17T09:38:37.840Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 3,
-  "scored": 1,
+  "accepted": 5,
+  "scored": 2,
   "context_only_versions": 0,
   "updates": [
     {
       "configured_source_id": "digital-trends",
       "publication": "Digital Trends",
       "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 9.5,
       "scale": 10,
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
@@ -49,6 +58,28 @@
       "blocked": true,
       "preserved_existing_score": false,
       "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamespy-archive",
+      "publication": "GameSpy",
+      "url": "https://web.archive.org/web/20200722220248/https://arstechnica.com/gaming/2018/06/fortnite-fans-paying-massive-markup-for-rare-retail-discs",
+      "final_url": "",
+      "status": "http_503",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/fortnite/an-epic-epoch",
+      "final_url": "https://gameinformer.com/review/fortnite/an-epic-epoch",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
       "canonical_score_eligible": true
     }
   ]
