@@ -25,6 +25,8 @@ if(!runner.includes("'scripts/calculate-ratings-from-research.mjs'"))fail('Post-
 if(!runner.includes("'scripts/quality-control-loop.mjs'"))fail('Post-create runner does not build the canonical review');
 if(runner.indexOf("'scripts/calculate-ratings-from-research.mjs'")>runner.indexOf("'scripts/quality-control-loop.mjs'"))fail('Rating bootstrap must happen before the slower full review build');
 if(!runner.includes("'scripts/enrich-game-media-from-sources.mjs'"))fail('Post-create runner does not enrich media from verified source pages');
+if(!runner.includes("phase!=='review'")||!runner.includes("phase!=='bootstrap'"))fail('Post-create runner cannot separate bootstrap and review modules');
+if(!runner.includes('Bootstrap deliberately leaves request files untouched'))fail('Bootstrap checkpoint can self-trigger the workflow before review phase');
 if(!media.includes('provider:\'verified-source-page\''))fail('Media provenance is not retained');
 if(!media.includes('Search engines may aid human/source discovery'))fail('Media policy does not forbid retaining search-engine proxy images');
 if(!runtime.includes('renderEnrichedMedia(draft,title)'))fail('Enriched draft media is not exposed by the game page runtime');
@@ -34,7 +36,13 @@ if(!enrichmentWorkflow.includes("OPENAI_API_KEY: ''"))fail('Immediate enrichment
 if(!enrichmentWorkflow.includes('qwen3:1.7b')||!enrichmentWorkflow.includes('qwen3-vl:4b'))fail('Immediate enrichment lacks local text/vision fallbacks');
 if(!enrichmentWorkflow.includes('scripts/publish-game-post-create-overlay.mjs'))fail('Immediate enrichment does not use conflict-safe publication');
 if(!enrichmentWorkflow.includes('cancel-in-progress: true'))fail('Fresh Game Creator enrichment cannot cancel a stale run');
+const bootstrapAt=enrichmentWorkflow.indexOf('POST_CREATE_PHASE: bootstrap');
+const bootstrapPublishAt=enrichmentWorkflow.indexOf('POST_CREATE_PUBLISH_PHASE: bootstrap');
+const modelAt=enrichmentWorkflow.indexOf('Restore local editorial model cache');
+const reviewAt=enrichmentWorkflow.indexOf('POST_CREATE_PHASE: review');
+if(bootstrapAt<0||bootstrapPublishAt<bootstrapAt||modelAt<bootstrapPublishAt||reviewAt<modelAt)fail('Fast module checkpoint is not published before slower review synthesis');
+if(!publisher.includes('POST_CREATE_PUBLISH_PHASE'))fail('Conflict-safe publisher cannot isolate bootstrap and review checkpoints');
 if(!publisher.includes("freshObj!==baseObj"))fail('Conflict-safe publisher does not preserve newer parallel staging updates');
 if(!publisher.includes('for(let publishAttempt=1;publishAttempt<=5;publishAttempt++)'))fail('Conflict-safe publisher does not retry moving staging');
 
-console.log('Game Creator post-create contract passed: series, rating/review and verified-source media enrichment are automatic, persisted by every fast creator wrapper, locally model-capable, conflict-safe, stale-run cancelling, and remain non-blocking for base page existence.');
+console.log('Game Creator post-create contract passed: base pages, fast series/rating/media checkpoints and slower review synthesis are independent, persisted, locally model-capable, conflict-safe and stale-run cancelling.');
