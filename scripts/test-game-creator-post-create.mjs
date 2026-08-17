@@ -8,6 +8,8 @@ const series=read('scripts/materialize-known-series.mjs');
 const runner=read('scripts/run-game-post-create-enrichment.mjs');
 const media=read('scripts/enrich-game-media-from-sources.mjs');
 const runtime=read('game/_shared/game-page-materialized-data.js');
+const verifiedWorkflow=read('.github/workflows/verified-game-import-fast.yml');
+const newsWorkflow=read('.github/workflows/news-game-page-fast.yml');
 const fail=message=>{throw new Error(message)};
 
 if(!creator.includes('series: series || null'))fail('Game Creator does not preserve canonical series');
@@ -24,5 +26,7 @@ if(!runner.includes("'scripts/enrich-game-media-from-sources.mjs'"))fail('Post-c
 if(!media.includes('provider:\'verified-source-page\''))fail('Media provenance is not retained');
 if(!media.includes('Search engines may aid human/source discovery'))fail('Media policy does not forbid retaining search-engine proxy images');
 if(!runtime.includes('renderEnrichedMedia(draft,title)'))fail('Enriched draft media is not exposed by the game page runtime');
+if(!/paths=\([^\n]*data\/game-enrichment-requests/.test(verifiedWorkflow))fail('Verified-import wrapper discards Game Creator enrichment requests before staging');
+if(!/paths=\([^\n]*data\/game-enrichment-requests/.test(newsWorkflow))fail('News wrapper discards Game Creator enrichment requests before staging');
 
-console.log('Game Creator post-create contract passed: series, rating/review and verified-source media enrichment are automatic and remain non-blocking for base page existence.');
+console.log('Game Creator post-create contract passed: series, rating/review and verified-source media enrichment are automatic, persisted by every fast creator wrapper, and remain non-blocking for base page existence.');
