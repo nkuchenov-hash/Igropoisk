@@ -1,6 +1,6 @@
 {
-  "schema_version": 1,
-  "description": "Additive professional review sources used by the canonical review discovery pipeline. These are direct editorial publishers; aggregators remain discovery-only and never count as review evidence.",
+  "schema_version": 2,
+  "description": "Additive professional review sources used by the canonical review discovery pipeline. Direct publishers are preferred; historical-only publishers may also be recovered through an attributed critic index. Aggregator scores and user scores never count as publication votes.",
   "sources": [
     {
       "id": "the-sixth-axis",
@@ -84,6 +84,80 @@
           ]
         }
       }
+    },
+    {
+      "id": "gamepro-archive",
+      "name": "GamePro",
+      "domains": ["gamepro.com"],
+      "language": "en",
+      "regions": ["global"],
+      "modern": false,
+      "historical_only": true,
+      "trust": 0.82,
+      "weight": 0.82,
+      "review": {"discovery_url": "https://www.gamepro.com/"}
+    },
+    {
+      "id": "game-over-online-archive",
+      "name": "Game Over Online",
+      "domains": ["game-over.net"],
+      "language": "en",
+      "regions": ["global"],
+      "modern": false,
+      "historical_only": true,
+      "trust": 0.8,
+      "weight": 0.8,
+      "review": {"discovery_url": "https://www.game-over.net/"}
+    },
+    {
+      "id": "quandary-archive",
+      "name": "Quandary",
+      "domains": ["quandaryland.com"],
+      "language": "en",
+      "regions": ["global"],
+      "modern": false,
+      "historical_only": true,
+      "trust": 0.8,
+      "weight": 0.8,
+      "review": {"discovery_url": "https://www.quandaryland.com/"}
+    },
+    {
+      "id": "electric-playground-archive",
+      "name": "Electric Playground",
+      "domains": ["elecplay.com"],
+      "language": "en",
+      "regions": ["global"],
+      "modern": false,
+      "historical_only": true,
+      "trust": 0.8,
+      "weight": 0.8,
+      "review": {"discovery_url": "https://www.elecplay.com/"}
+    },
+    {
+      "id": "all-game-guide-archive",
+      "name": "All Game Guide",
+      "aliases": ["AllGame", "All Game"],
+      "domains": ["allgame.com"],
+      "language": "en",
+      "regions": ["global"],
+      "modern": false,
+      "historical_only": true,
+      "trust": 0.8,
+      "weight": 0.8,
+      "review": {"discovery_url": "https://www.allgame.com/"}
+    },
+    {
+      "id": "gamezilla-archive",
+      "name": "Gamezilla!",
+      "aliases": ["Gamezilla"],
+      "domains": ["gamezilla.com"],
+      "language": "en",
+      "regions": ["global"],
+      "modern": false,
+      "historical_only": true,
+      "trust": 0.8,
+      "weight": 0.8,
+      "review": {"discovery_url": "https://www.gamezilla.com/"}
     }
   ]
 }
