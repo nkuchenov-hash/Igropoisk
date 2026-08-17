@@ -38,23 +38,6 @@ jobs:
         run: |
           node --check scripts/discover-review-sources-web-v10.mjs
           node -e "import('./scripts/discover-review-sources-web-v10.mjs').catch(error=>{ if(!/Missing game draft|Usage:/.test(String(error))) throw error })" || true
-      - name: Diagnose GameRevolution publisher transport
-        run: |
-          node - <<'NODE'
-          const urls=[
-            'https://www.gamerevolution.com/?s=tom%20clancys%20rainbow%20six%20siege',
-            'https://www.gamerevolution.com/wp-json/wp/v2/search?search=tom%20clancys%20rainbow%20six%20siege&per_page=20',
-            'https://www.gamerevolution.com/review/69596-tom-clancys-rainbow-six-siege-review'
-          ];
-          for(const url of urls){
-            try{
-              const response=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(9000),headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskCanary/1.0)'}});
-              const body=await response.text();
-              const reviewLinks=[...body.matchAll(/href=["']([^"']*\/review\/[^"']*)["']/gi)].map(m=>m[1]);
-              console.log(JSON.stringify({url,status:response.status,final_url:response.url,bytes:body.length,review_links:[...new Set(reviewLinks)].slice(0,10),contains_target:/69596-tom-clancys-rainbow-six-siege-review/i.test(body),prefix:body.slice(0,180).replace(/\s+/g,' ')},null,2));
-            }catch(error){console.log(JSON.stringify({url,error:error.message},null,2));}
-          }
-          NODE
       - name: Run deterministic Rainbow Six Siege review recovery canary
         env:
           OPENAI_API_KEY: ''
