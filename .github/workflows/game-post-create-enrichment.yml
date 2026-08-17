@@ -13,6 +13,7 @@ on:
       - 'scripts/discover-review-sources-web.mjs'
       - 'scripts/discover-review-sources-web-v14.mjs'
       - 'scripts/discover-review-sources-web-v15.mjs'
+      - 'scripts/prepare-post-create-review-research.mjs'
       - 'scripts/lib/review-source-registry.mjs'
       - 'scripts/lib/review-score-extractor.mjs'
       - 'scripts/build-review-bootstrap-local.mjs'
@@ -63,6 +64,7 @@ jobs:
           node --check scripts/enrich-game-media-from-sources.mjs
           node --check scripts/discover-review-sources-web-v14.mjs
           node --check scripts/discover-review-sources-web-v15.mjs
+          node --check scripts/prepare-post-create-review-research.mjs
           node --check scripts/lib/review-source-registry.mjs
           node --check scripts/lib/review-score-extractor.mjs
           node --check scripts/build-review-bootstrap-local.mjs
