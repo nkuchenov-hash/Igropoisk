@@ -1,0 +1,480 @@
+{
+  "parser": "game-post-create-enrichment",
+  "status": "needs_revision",
+  "checked_at": "2026-08-17T16:08:46.054Z",
+  "requested": 9,
+  "complete": 1,
+  "deferred": 0,
+  "pending": 8,
+  "review_batch": [
+    "fallout-2",
+    "fallout-3",
+    "fallout-76"
+  ],
+  "results": [
+    {
+      "label": "known-series",
+      "script": "scripts/materialize-known-series.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"requested\": [\n    \"fallout-2\",\n    \"fallout-3\",\n    \"fallout-4\",\n    \"fallout-76\",\n    \"fallout-brotherhood-of-steel\",\n    \"fallout-new-vegas\",\n    \"fallout-shelter\",\n    \"fallout-tactics-brotherhood-of-steel\",\n    \"fallout\"\n  ],\n  \"series_groups\": 1,\n  \"files_written\": 9,\n  \"registry_backfilled\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-discovery:fallout-2",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"registered_editorial\": 43,\n  \"checked\": 43,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-audit:fallout-2",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 43,\n  \"applicable\": 43,\n  \"regional_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-research:fallout-2",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json(),text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:34:11\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "review-scores:fallout-2",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rating:fallout-2",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 1,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-2",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"pages_checked\": 3,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 7,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-discovery:fallout-3",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"registered_editorial\": 43,\n  \"checked\": 43,\n  \"accepted\": 3,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-audit:fallout-3",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 3,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 43,\n  \"applicable\": 43,\n  \"regional_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-research:fallout-3",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json(),text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:34:11\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "review-scores:fallout-3",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"accepted\": 3,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"updates\": 3,\n  \"preserved\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rating:fallout-3",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"status\": \"green\",\n  \"scored_sources\": 3,\n  \"excluded_sources\": 0,\n  \"score_10\": 9.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-3",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"pages_checked\": 5,\n  \"added_screenshots\": 4,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 26,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-4",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-4\",\n  \"pages_checked\": 13,\n  \"added_screenshots\": 24,\n  \"added_artwork\": 1,\n  \"total_screenshots\": 36,\n  \"total_artwork\": 3\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-discovery:fallout-76",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 6,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-audit:fallout-76",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"status\": \"green\",\n  \"accepted\": 6,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-research:fallout-76",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json(),text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:34:11\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "review-scores:fallout-76",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"accepted\": 6,\n  \"scored\": 6,\n  \"context_only_versions\": 0,\n  \"updates\": 6,\n  \"preserved\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rating:fallout-76",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 5.4,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-76",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"pages_checked\": 8,\n  \"added_screenshots\": 18,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 35,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-discovery:fallout-brotherhood-of-steel",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"registered_editorial\": 43,\n  \"checked\": 43,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-audit:fallout-brotherhood-of-steel",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 43,\n  \"applicable\": 43,\n  \"regional_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-research:fallout-brotherhood-of-steel",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json(),text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:34:11\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "review-scores:fallout-brotherhood-of-steel",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rating:fallout-brotherhood-of-steel",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-brotherhood-of-steel",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"pages_checked\": 1,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 0,\n  \"total_artwork\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-discovery:fallout-new-vegas",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "needs_revision",
+      "exit_code": 13,
+      "stdout": "",
+      "stderr": "Warning: Detected unsettled top-level await at file:///home/runner/work/Igropoisk/Igropoisk/scripts/discover-review-sources-web-v12.mjs:44\n  await import('./discover-review-sources-web-v11.mjs');\n  ^\n\n\n\n"
+    },
+    {
+      "label": "review-audit:fallout-new-vegas",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/promote-review-source-audit.mjs:15\nif(!matrix||!Array.isArray(matrix.accepted))throw new Error(`Missing full source matrix: ${matrixPath}`);\n                                                  ^\n\nError: Missing full source matrix: data/research/fallout-new-vegas-source-matrix.json\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/promote-review-source-audit.mjs:15:51\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "review-research:fallout-new-vegas",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json(),text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:34:11\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "review-scores:fallout-new-vegas",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/enrich-review-explicit-scores.mjs:16\nif(!review||!research||!game||!cfg)throw new Error(`Missing canonical review research/game draft for ${slug}`);\n                                         ^\n\nError: Missing canonical review research/game draft for fallout-new-vegas\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/enrich-review-explicit-scores.mjs:16:42\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "rating:fallout-new-vegas",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "node:fs:440\n    return binding.readFileUtf8(path, stringToFlags(options.flag));\n                   ^\n\nError: ENOENT: no such file or directory, open '/home/runner/work/Igropoisk/Igropoisk/data/reviews/fallout-new-vegas.json'\n    at Object.readFileSync (node:fs:440:20)\n    at read (file:///home/runner/work/Igropoisk/Igropoisk/scripts/calculate-ratings-from-research.mjs:9:36)\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/calculate-ratings-from-research.mjs:12:14\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {\n  errno: -2,\n  code: 'ENOENT',\n  syscall: 'open',\n  path: '/home/runner/work/Igropoisk/Igropoisk/data/reviews/fallout-new-vegas.json'\n}\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "media:fallout-new-vegas",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-new-vegas\",\n  \"pages_checked\": 2,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 12,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-discovery:fallout-shelter",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-audit:fallout-shelter",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-research:fallout-shelter",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json(),text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:34:11\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "review-scores:fallout-shelter",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rating:fallout-shelter",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-shelter",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"pages_checked\": 2,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 6,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-discovery:fallout-tactics-brotherhood-of-steel",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"registered_editorial\": 43,\n  \"checked\": 43,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-audit:fallout-tactics-brotherhood-of-steel",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 43,\n  \"applicable\": 43,\n  \"regional_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-research:fallout-tactics-brotherhood-of-steel",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json(),text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:34:11\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "review-scores:fallout-tactics-brotherhood-of-steel",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rating:fallout-tactics-brotherhood-of-steel",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-tactics-brotherhood-of-steel",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"pages_checked\": 2,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 5,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-discovery:fallout",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"registered_editorial\": 43,\n  \"checked\": 43,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-audit:fallout",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 43,\n  \"applicable\": 43,\n  \"regional_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-research:fallout",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24\nasync function call(body){if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required to expand an incomplete professional-review corpus');const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json(),text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                                                                                                                                               ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:24:368)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-review-research.mjs:34:11\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "review-scores:fallout",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rating:fallout",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "needs_revision",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 1,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"pages_checked\": 3,\n  \"added_screenshots\": 3,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 8,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review:fallout-2",
+      "script": "scripts/quality-control-loop.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"registered_editorial\": 43,\n  \"checked\": 43,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 43,\n  \"applicable\": 43,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"fallout-2\",\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 1,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Корпус: 1/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media-after-review:fallout-2",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"pages_checked\": 3,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 7,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review:fallout-3",
+      "script": "scripts/quality-control-loop.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"registered_editorial\": 43,\n  \"checked\": 43,\n  \"accepted\": 4,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"fallout-3\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 4,\n  \"trusted_scores_preserved\": 3,\n  \"checked\": 43,\n  \"applicable\": 43,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"fallout-3\",\n  \"accepted\": 4,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"updates\": 3,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"fallout-3\",\n  \"status\": \"green\",\n  \"scored_sources\": 3,\n  \"excluded_sources\": 1,\n  \"score_10\": 9.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"fallout-3\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Корпус: 4/5\",\n    \"Оценённые издания: 3/3\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media-after-review:fallout-3",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-3\",\n  \"pages_checked\": 6,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 26,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review:fallout-76",
+      "script": "scripts/quality-control-loop.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 5.4,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 32,\n  \"required\": 8\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"status\": \"needs_revision\",\n  \"sources\": 6,\n  \"reason\": \"synthesis requires another revision cycle\"\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 5.4,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 32,\n  \"required\": 8\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"status\": \"needs_revision\",\n  \"sources\": 6,\n  \"reason\": \"synthesis requires another revision cycle\"\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 5.4,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 32,\n  \"required\": 8\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"status\": \"needs_revision\",\n  \"sources\": 6,\n  \"reason\": \"synthesis requires another revision cycle\"\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 5.4,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 32,\n  \"required\": 8\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"status\": \"needs_revision\",\n  \"sources\": 6,\n  \"reason\": \"synthesis requires another revision cycle\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"fallout-76\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Обзор ещё не создан.\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:53\\n  if (!ready) throw new Error(`Local editorial model is not ready: ${LOCAL_EDITORIAL_MODEL}`);\\n                    ^\\n\\nError: Local editorial model is not ready: qwen3:1.7b\\n    at chatJson (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:53:21)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-local.mjs:18:11\\n\\nNode.js v22.23.2\\n\"\n  ]\n}\n",
+      "stderr": "/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:53\n  if (!ready) throw new Error(`Local editorial model is not ready: ${LOCAL_EDITORIAL_MODEL}`);\n                    ^\n\nError: Local editorial model is not ready: qwen3:1.7b\n    at chatJson (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:53:21)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-local.mjs:18:11\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review.mjs:20\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review.mjs:20:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review.mjs:38:15\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:53\n  if (!ready) throw new Error(`Local editorial model is not ready: ${LOCAL_EDITORIAL_MODEL}`);\n                    ^\n\nError: Local editorial model is not ready: qwen3:1.7b\n    at chatJson (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:53:21)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-local.mjs:18:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "label": "media-after-review:fallout-76",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-76\",\n  \"pages_checked\": 8,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 35,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "catalog-materialization",
+      "script": "scripts/materialize-catalog-game-data.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 126,\n  \"canonical_drafts_written\": 126,\n  \"draft_aliases_recovered\": 0,\n  \"requirements_recovered\": 46\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-feed",
+      "script": "scripts/materialize-review-publication-feed.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"dry_run\": false,\n  \"updated\": 0,\n  \"cleared\": 0,\n  \"valid\": 0,\n  \"needs_revision\": 126,\n  \"top_250_count\": 34\n}\n",
+      "stderr": ""
+    }
+  ]
+}

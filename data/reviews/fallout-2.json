@@ -1,0 +1,161 @@
+{
+  "schema_version": 11,
+  "game_slug": "fallout-2",
+  "game_id": null,
+  "updated_at": "2026-08-17T16:06:20.380Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "publication_gate": {
+    "minimum": 5,
+    "target": 20,
+    "accepted": 1,
+    "status": "red-needs-revision",
+    "full_registry_scan": true,
+    "checked_registered_sources": 43,
+    "applicable_registered_sources": 43
+  },
+  "regional_discovery": {
+    "region": "ru",
+    "checks": [
+      {
+        "source_id": "igromania",
+        "name": "Игромания",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "stopgame",
+        "name": "StopGame",
+        "status": "found",
+        "notes": "verified direct review"
+      },
+      {
+        "source_id": "kanobu",
+        "name": "Канобу",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "playground",
+        "name": "PlayGround.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vgtimes",
+        "name": "VGTimes",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "ixbt-games",
+        "name": "iXBT.games",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "gamemag",
+        "name": "GameMAG.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vk-play",
+        "name": "VK Play Media",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "shazoo",
+        "name": "Shazoo",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "absolute-games-archive",
+        "name": "Absolute Games",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      }
+    ],
+    "complete": true,
+    "found_but_not_accepted": []
+  },
+  "reviews": [
+    {
+      "url": "https://stopgame.ru/game/fallout_2/review/27826",
+      "title": "Отзыв об игре Fallout 2 от пользователя Мария Есенина | StopGame.ru",
+      "discovery_method": "external_search",
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "language": "ru",
+      "id": "source-1",
+      "resolved_url": "https://stopgame.ru/game/fallout_2/review/27826",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Fallout 2.",
+      "evidence_points": [
+        "И да, на самом деле раскрывая Fallout 2, можно легко прийти к выводу, что Тодд Говард, которого все обвиняют в несерьёзности - кроме города детей, сам не придумал почти ничего нового! В Fallout 2 есть говорящие когти смерти, умные кротокрысы, привидение (!), злое-злое правительство с ЭКСПЕРИМЕНТАМИ, бу! Всё это в сумме - второсортный скам, но люди полюбили согласившись на это. Это тот же момент, когда люди смотрят так называемые B-movie со своей долей шарма. Fallout 2 - это B-movie, (само)пародия, и трешачок и это работает."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "stopgame.ru",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T16:04:52.344Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    }
+  ],
+  "rejected": [],
+  "review_score": {
+    "status": "red-needs-revision",
+    "owner": "review",
+    "method": {
+      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+      "formula": "sum(normalized_10) / source_count",
+      "minimum_sources": 3,
+      "target_sources": 10,
+      "maximum_sources": null,
+      "use_all_eligible_sources": true,
+      "required_evidence_scope": "editorial_review",
+      "output_scale": 10,
+      "rounding_decimals": 1,
+      "one_vote_per_publication": true,
+      "aggregators_forbidden": true,
+      "invented_scores_forbidden": true,
+      "exact_canonical_version_required": true
+    },
+    "sources": [],
+    "excluded_sources": [
+      {
+        "configured_source_id": "stopgame",
+        "publication": "StopGame",
+        "url": "https://stopgame.ru/game/fallout_2/review/27826",
+        "reason": "canonical_version"
+      }
+    ],
+    "calculation": {
+      "source_count": 0,
+      "values": [],
+      "mean_10": null,
+      "score_10": null
+    }
+  }
+}
