@@ -1,0 +1,82 @@
+{
+  "parser": "game-post-create-enrichment",
+  "phase": "review",
+  "status": "needs_revision",
+  "checked_at": "2026-08-17T20:31:15.769Z",
+  "requested": 11,
+  "complete": 1,
+  "deferred": 0,
+  "pending": 10,
+  "bootstrap_concurrency": 0,
+  "review_batch": [
+    "fallout",
+    "fallout-2",
+    "fallout-tactics-brotherhood-of-steel"
+  ],
+  "results": [
+    {
+      "label": "review:fallout",
+      "script": "scripts/quality-control-loop.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"registered_editorial\": 43,\n  \"checked\": 43,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 43,\n  \"applicable\": 43,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"fallout\",\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 1,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Корпус: 1/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media-after-review:fallout",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"pages_checked\": 3,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 8,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review:fallout-2",
+      "script": "scripts/quality-control-loop.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"registered_editorial\": 43,\n  \"checked\": 43,\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 1,\n  \"checked\": 43,\n  \"applicable\": 43,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"fallout-2\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 0,\n  \"score_10\": 8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"fallout-2\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Корпус: 1/5\",\n    \"Оценённые издания: 1/3\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media-after-review:fallout-2",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"pages_checked\": 3,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 7,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review:fallout-tactics-brotherhood-of-steel",
+      "script": "scripts/quality-control-loop.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"registered_editorial\": 43,\n  \"checked\": 43,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 43,\n  \"applicable\": 43,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media-after-review:fallout-tactics-brotherhood-of-steel",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"pages_checked\": 2,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 5,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "catalog-materialization",
+      "script": "scripts/materialize-catalog-game-data.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 133,\n  \"canonical_drafts_written\": 133,\n  \"draft_aliases_recovered\": 0,\n  \"requirements_recovered\": 51\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "review-feed",
+      "script": "scripts/materialize-review-publication-feed.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"dry_run\": false,\n  \"updated\": 0,\n  \"cleared\": 0,\n  \"valid\": 0,\n  \"needs_revision\": 133,\n  \"top_250_count\": 34\n}\n",
+      "stderr": ""
+    }
+  ]
+}
