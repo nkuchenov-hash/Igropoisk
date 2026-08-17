@@ -48,7 +48,8 @@ on:
       - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
       - 'scripts/prepare-news-game-page-requests.mjs'
-      - 'scripts/build-news-game-page-fast.mjs'
+      - 'scripts/ensure-game-page.mjs'
+      - 'scripts/test-game-creator-boundary.mjs'
       - 'scripts/run-news-game-page-fast.mjs'
       - 'scripts/materialize-news-game-pages-fast.mjs'
       - 'scripts/validate-news-pipeline.mjs'
@@ -110,7 +111,7 @@ jobs:
           node --check scripts/hydrate-live-news-history.mjs
           node --check scripts/audit-news-game-hashtags.mjs
           node --check scripts/prepare-news-game-page-requests.mjs
-          node --check scripts/build-news-game-page-fast.mjs
+          node --check scripts/ensure-game-page.mjs
           node --check scripts/run-news-game-page-fast.mjs
           node --check scripts/materialize-news-game-pages-fast.mjs
           node --check scripts/lib/news-game-context-resolver.mjs
@@ -120,6 +121,7 @@ jobs:
           node --check scripts/lib/news-game-hashtag.mjs
           node --check scripts/lib/yandex-object-storage.mjs
           node --check scripts/publish-news-storage.mjs
+          node scripts/test-game-creator-boundary.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
@@ -176,7 +178,7 @@ jobs:
           process.stdout.write(`count=${result.count}\nrequests_b64=${result.requests_b64}\n`);
           NODE
 
-      - name: Create every verified missing game page through the fast structured-data path
+      - name: Create every verified missing game page through the shared Game Creator
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
