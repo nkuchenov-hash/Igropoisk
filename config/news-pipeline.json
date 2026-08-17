@@ -34,6 +34,13 @@
     "node scripts/normalize-news-game-hashtags.mjs",
     "node scripts/build-home-news.mjs"
   ],
+  "validation_commands": [
+    "node scripts/validate-news-pipeline.mjs --baseline HEAD",
+    "node scripts/test-news-content-api.mjs",
+    "node scripts/validate-news-module.mjs",
+    "node scripts/test-news-game-candidate-safety.mjs",
+    "node scripts/test-game-creator-boundary.mjs"
+  ],
   "health": {
     "output_file": "data/news-pipeline-health.json",
     "command": "node scripts/build-news-pipeline-health.mjs",
