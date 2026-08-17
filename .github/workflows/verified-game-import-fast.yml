@@ -1,0 +1,167 @@
+name: Fast verified game import pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [staging]
+    paths:
+      - 'data/game-import-requests.json'
+      - 'scripts/ensure-game-page.mjs'
+      - 'scripts/run-verified-game-import-fast.mjs'
+      - 'scripts/materialize-game-creator-pages.mjs'
+      - 'scripts/lib/verified-game-import.mjs'
+      - '.github/workflows/verified-game-import-fast.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: fast-verified-game-import-pages
+  cancel-in-progress: true
+
+jobs:
+  create-pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate verified import adapter and shared Game Creator
+        run: |
+          node --check scripts/ensure-game-page.mjs
+          node --check scripts/run-verified-game-import-fast.mjs
+          node --check scripts/materialize-game-creator-pages.mjs
+          node --check scripts/parse-game-data.mjs
+          node --check scripts/lib/verified-game-import.mjs
+          node scripts/test-verified-game-import.mjs
+          node scripts/test-game-creator-boundary.mjs
+          python3 -m py_compile scripts/enforce_layout_contract.py
+
+      - name: Register imports and create base pages
+        id: fast
+        run: |
+          node scripts/run-verified-game-import-fast.mjs || true
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('tmp/verified-game-import-fast.json', 'utf8'));
+          const games = Array.isArray(report.ready_games) ? report.ready_games : [];
+          process.stdout.write(`ready_count=${Number(report.ready_count || 0)}\nfailed_count=${Number(report.failed_count || 0)}\ngames_b64=${Buffer.from(JSON.stringify(games), 'utf8').toString('base64')}\n`);
+          NODE
+          cat tmp/verified-game-import-fast.json
+          python3 scripts/enforce_layout_contract.py --check
+
+      - name: Stage only verified Game Creator output
+        id: staged
+        run: |
+          paths=(data/game-registry data/parser-output data/parser-runs data/drafts data/game-content data/catalog-visible.json game)
+          existing=()
+          for path in "${paths[@]}"; do
+            if [ -e "$path" ]; then existing+=("$path"); fi
+          done
+          if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
+          git diff --check
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Merge base page data into staging
+        if: steps.staged.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch="automation/verified-game-staging-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Create verified-import base game pages"
+          git push origin "$branch"
+          pr_url="$(gh pr create \
+            --base staging \
+            --head "$branch" \
+            --title "Create verified-import game pages ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
+            --body "Registers verified imports and materializes only their base pages through the shared Game Creator. Optional content modules remain independent.")"
+          gh pr merge "$pr_url" --merge --delete-branch
+
+      - name: Promote every created base page to production
+        if: steps.fast.outputs.ready_count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git fetch origin main:refs/remotes/origin/main --force
+          production="$RUNNER_TEMP/verified-game-main"
+          rm -rf "$production"
+          git worktree add "$production" origin/main
+          node scripts/materialize-game-creator-pages.mjs \
+            --target "$production" \
+            --report tmp/verified-game-import-fast.json \
+            --output tmp/verified-game-import-fast-production.json
+          cd "$production"
+          git diff --check
+          python3 scripts/enforce_layout_contract.py --check
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-production-boundaries.mjs
+          paths=(game data/catalog-visible.json data/drafts data/game-content)
+          existing=()
+          for path in "${paths[@]}"; do
+            if [ -e "$path" ]; then existing+=("$path"); fi
+          done
+          if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
+          if git diff --cached --quiet; then exit 0; fi
+          branch="automation/verified-game-pages-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Publish verified-import base game pages"
+          git push origin "$branch"
+          pr_url="$(gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "Publish verified-import game pages ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
+            --body "Publishes only verified base game pages created through the shared Game Creator. Review, media, Game DNA, similarity and guides are independent modules.")"
+          gh pr merge "$pr_url" --merge --delete-branch
+
+      - name: Wait until created pages are live
+        if: steps.fast.outputs.ready_count != '0'
+        env:
+          GAMES_B64: ${{ steps.fast.outputs.games_b64 }}
+        run: |
+          set -euo pipefail
+          slugs="$(node -e "const a=JSON.parse(Buffer.from(process.env.GAMES_B64,'base64').toString('utf8'));process.stdout.write(a.map(x=>x.slug).join(' '))")"
+          base="https://nkuchenov-hash.github.io/Igropoisk"
+          ready=false
+          for attempt in $(seq 1 90); do
+            missing=0
+            for slug in $slugs; do
+              code="$(curl -L -sS -o /dev/null -w '%{http_code}' "$base/game/$slug/" || true)"
+              if [ "$code" != "200" ]; then missing=$((missing+1)); fi
+            done
+            if [ "$missing" = "0" ]; then ready=true; break; fi
+            sleep 5
+          done
+          if [ "$ready" != "true" ]; then
+            echo "One or more verified-import Game Creator pages did not become live."
+            exit 1
+          fi
+
+      - name: Preserve verified-import diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-game-import-fast-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            tmp/verified-game-import-fast.json
+            tmp/verified-game-import-fast-production.json
+          if-no-files-found: warn
+          retention-days: 14
