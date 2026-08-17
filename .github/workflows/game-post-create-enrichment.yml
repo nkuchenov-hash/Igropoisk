@@ -9,6 +9,8 @@ on:
       - 'scripts/ensure-game-page.mjs'
       - 'scripts/materialize-known-series.mjs'
       - 'scripts/enrich-game-media-from-sources.mjs'
+      - 'scripts/discover-review-sources-web.mjs'
+      - 'scripts/discover-review-sources-web-v14.mjs'
       - 'scripts/build-review-bootstrap-local.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/run-game-post-create-enrichment.mjs'
@@ -55,6 +57,7 @@ jobs:
           node --check scripts/ensure-game-page.mjs
           node --check scripts/materialize-known-series.mjs
           node --check scripts/enrich-game-media-from-sources.mjs
+          node --check scripts/discover-review-sources-web-v14.mjs
           node --check scripts/build-review-bootstrap-local.mjs
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/run-game-post-create-enrichment.mjs
