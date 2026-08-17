@@ -91,9 +91,9 @@ export function validateBingRssAdapter(){
   for(const [domain,scope] of cases){
     const urls=bingRssSearchUrls(`https://www.bing.com/search?q=${encodeURIComponent(`site:${domain} "Rainbow Six Siege" review score verdict 2015`)}`);
     if(urls.length!==4)throw new Error(`${domain} must receive generic, review-path and relaxed RSS queries.`);
-    const decoded=urls.map(url=>decodeURIComponent(url.toString()));
-    if(!decoded.some(url=>url.includes(`site:${scope}`)))throw new Error(`${domain} review-path scope contract failed.`);
-    if(!decoded.some(url=>url.includes('review 2015')&&!/score|verdict/i.test(url)))throw new Error(`${domain} relaxed review query contract failed.`);
+    const queries=urls.map(url=>url.searchParams.get('q')||'');
+    if(!queries.some(query=>query.includes(`site:${scope}`)))throw new Error(`${domain} review-path scope contract failed.`);
+    if(!queries.some(query=>query.includes('review 2015')&&!/\b(?:score|verdict)\b/i.test(query)))throw new Error(`${domain} relaxed review query contract failed.`);
   }
   const ign=bingRssSearchUrls('https://www.bing.com/search?q=site%3Aign.com+Rainbow+Six+Siege+review');
   if(ign.length!==1)throw new Error('Unconfigured path-scoped search must stay publisher-specific.');
