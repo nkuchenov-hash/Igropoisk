@@ -43,16 +43,22 @@ export function publisherLinksToSearchHtml(html,baseUrl,{pathPattern=/\/review\/
   return anchors.map(item=>`<a href="${escapeAttr(item.url)}">${escapeText(item.title)}</a>`).join('\n');
 }
 
+const relaxPublisherQuery=query=>String(query||'')
+  .replace(/\b(?:score|verdict)\b/gi,' ')
+  .replace(/\s+/g,' ')
+  .trim();
+
 export function bingRssSearchUrls(searchUrl){
   let original;
   try{original=new URL(String(searchUrl||''))}catch{return[]}
   const query=original.searchParams.get('q')||'',queries=[query];
   for(const {match,scope} of publisherReviewScopes){
     if(!match.test(query))continue;
-    queries.push(query.replace(match,scope));
+    const scoped=query.replace(match,scope);
+    queries.push(scoped,relaxPublisherQuery(query),relaxPublisherQuery(scoped));
     break;
   }
-  return [...new Set(queries)].map(q=>{
+  return [...new Set(queries.filter(Boolean))].map(q=>{
     const url=new URL(original);
     url.searchParams.set('q',q);
     url.searchParams.set('format','rss');
@@ -83,9 +89,11 @@ export function validateBingRssAdapter(){
     ['worthplaying.com','worthplaying.com/article']
   ];
   for(const [domain,scope] of cases){
-    const urls=bingRssSearchUrls(`https://www.bing.com/search?q=${encodeURIComponent(`site:${domain} "Rainbow Six Siege" review 2015`)}`);
-    if(urls.length!==2)throw new Error(`${domain} must receive generic and review-path RSS queries.`);
-    if(!decodeURIComponent(urls[1].toString()).includes(`site:${scope}`))throw new Error(`${domain} review-path scope contract failed.`);
+    const urls=bingRssSearchUrls(`https://www.bing.com/search?q=${encodeURIComponent(`site:${domain} "Rainbow Six Siege" review score verdict 2015`)}`);
+    if(urls.length!==4)throw new Error(`${domain} must receive generic, review-path and relaxed RSS queries.`);
+    const decoded=urls.map(url=>decodeURIComponent(url.toString()));
+    if(!decoded.some(url=>url.includes(`site:${scope}`)))throw new Error(`${domain} review-path scope contract failed.`);
+    if(!decoded.some(url=>url.includes('review 2015')&&!/score|verdict/i.test(url)))throw new Error(`${domain} relaxed review query contract failed.`);
   }
   const ign=bingRssSearchUrls('https://www.bing.com/search?q=site%3Aign.com+Rainbow+Six+Siege+review');
   if(ign.length!==1)throw new Error('Unconfigured path-scoped search must stay publisher-specific.');
