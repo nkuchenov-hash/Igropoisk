@@ -3,6 +3,8 @@ import fs from 'node:fs';
 
 const creator = fs.readFileSync('scripts/ensure-game-page.mjs', 'utf8');
 const news = fs.readFileSync('scripts/run-news-game-page-fast.mjs', 'utf8');
+const verifiedImport = fs.readFileSync('scripts/run-verified-game-import-fast.mjs', 'utf8');
+const newsMaterializer = fs.readFileSync('scripts/materialize-news-game-pages-fast.mjs', 'utf8');
 const fail = message => { throw new Error(message); };
 
 if (!creator.includes("mode: 'game_creator_structured_sources'")) fail('Universal Game Creator mode is missing');
@@ -15,5 +17,8 @@ if (creator.includes("missing.push('media')")) fail('Media still gates base page
 if (!news.includes("['scripts/ensure-game-page.mjs', gameId]")) fail('News must call the universal Game Creator');
 if (!news.includes("GAME_CREATOR_SOURCE: 'news'")) fail('News source context must be passed to the Game Creator');
 if (news.includes("['scripts/build-news-game-page-fast.mjs', gameId]")) fail('News still calls the old news-only page builder');
+if (!verifiedImport.includes("['scripts/ensure-game-page.mjs', gameId]")) fail('Verified imports must call the universal Game Creator');
+if (!verifiedImport.includes("GAME_CREATOR_SOURCE: 'verified_import'")) fail('Verified import source context must be passed to the Game Creator');
+if (!newsMaterializer.includes("import('./materialize-game-creator-pages.mjs')")) fail('News production materialization must use the shared Game Creator materializer');
 
-console.log('Game Creator boundary contract passed: page existence is independent from review/media/DNA/similarity modules.');
+console.log('Game Creator boundary contract passed: News and verified imports share one creator; page existence is independent from review/media/DNA/similarity modules.');
