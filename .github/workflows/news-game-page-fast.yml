@@ -1,0 +1,168 @@
+name: Fast news game page creation
+
+on:
+  workflow_dispatch:
+    inputs:
+      news_game_requests_b64:
+        description: Base64 JSON of verified games whose pages are required by news
+        required: true
+        type: string
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: fast-news-game-pages
+  cancel-in-progress: false
+
+jobs:
+  create-pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate fast page path
+        run: |
+          node --check scripts/build-news-game-page-fast.mjs
+          node --check scripts/run-news-game-page-fast.mjs
+          node --check scripts/materialize-news-game-pages-fast.mjs
+          node --check scripts/parse-game-data.mjs
+          node --check scripts/lib/news-game-registry-discovery.mjs
+          python3 -m py_compile scripts/enforce_layout_contract.py
+
+      - name: Parse game data and create ordinary pages immediately
+        id: fast
+        env:
+          NEWS_GAME_REQUESTS_B64: ${{ inputs.news_game_requests_b64 }}
+        run: |
+          node scripts/run-news-game-page-fast.mjs || true
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('tmp/news-game-page-fast.json', 'utf8'));
+          const games = Array.isArray(report.ready_games) ? report.ready_games : [];
+          process.stdout.write(`ready_count=${Number(report.ready_count || 0)}\nfailed_count=${Number(report.failed_count || 0)}\ngames_b64=${Buffer.from(JSON.stringify(games), 'utf8').toString('base64')}\n`);
+          NODE
+          cat tmp/news-game-page-fast.json
+          python3 scripts/enforce_layout_contract.py --check
+
+      - name: Stage only fast page creation output
+        id: staged
+        run: |
+          paths=(data/game-registry data/parser-output data/parser-runs data/drafts data/game-content data/catalog-visible.json game)
+          existing=()
+          for path in "${paths[@]}"; do
+            if [ -e "$path" ]; then existing+=("$path"); fi
+          done
+          if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
+          git diff --check
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Merge fast page data into staging
+        if: steps.staged.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch="automation/news-fast-pages-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Create news-required game pages immediately"
+          git push origin "$branch"
+          pr_url="$(gh pr create \
+            --base staging \
+            --head "$branch" \
+            --title "Create news-required game pages ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
+            --body "Fast path for verified games referenced by news. It parses structured game data and materializes the normal game-page shell immediately. Editorial review, Game DNA, similarity and guides remain in the regular lifecycle and no longer delay page existence.")"
+          gh pr merge "$pr_url" --merge --delete-branch
+
+      - name: Promote every successfully created page to production
+        if: steps.fast.outputs.ready_count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git fetch origin main:refs/remotes/origin/main --force
+          production="$RUNNER_TEMP/news-fast-main"
+          rm -rf "$production"
+          git worktree add "$production" origin/main
+          node scripts/materialize-news-game-pages-fast.mjs --target "$production"
+          cd "$production"
+          git diff --check
+          python3 scripts/enforce_layout_contract.py --check
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-production-boundaries.mjs
+          paths=(game data/catalog-visible.json data/drafts data/game-content)
+          existing=()
+          for path in "${paths[@]}"; do
+            if [ -e "$path" ]; then existing+=("$path"); fi
+          done
+          if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
+          if git diff --cached --quiet; then exit 0; fi
+          branch="automation/news-game-pages-fast-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Publish news-required game pages"
+          git push origin "$branch"
+          pr_url="$(gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "Publish news-required game pages ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
+            --body "Publishes only the base game pages needed by verified news links. The page is available as soon as structured game data is parsed; review, Game DNA, similarity and guides stay in the regular lifecycle.")"
+          gh pr merge "$pr_url" --merge --delete-branch
+
+      - name: Wait until created pages are live
+        if: steps.fast.outputs.ready_count != '0'
+        env:
+          NEWS_GAMES_B64: ${{ steps.fast.outputs.games_b64 }}
+        run: |
+          set -euo pipefail
+          slugs="$(node -e "const a=JSON.parse(Buffer.from(process.env.NEWS_GAMES_B64,'base64').toString('utf8'));process.stdout.write(a.map(x=>x.slug).join(' '))")"
+          base="https://nkuchenov-hash.github.io/Igropoisk"
+          ready=false
+          for attempt in $(seq 1 90); do
+            missing=0
+            for slug in $slugs; do
+              code="$(curl -L -sS -o /dev/null -w '%{http_code}' "$base/game/$slug/" || true)"
+              if [ "$code" != "200" ]; then missing=$((missing+1)); fi
+            done
+            if [ "$missing" = "0" ]; then ready=true; break; fi
+            sleep 5
+          done
+          if [ "$ready" != "true" ]; then
+            echo "One or more fast-created game pages did not become live."
+            exit 1
+          fi
+
+      - name: Republish deferred news when every requested page was created
+        if: steps.fast.outputs.ready_count != '0' && steps.fast.outputs.failed_count == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run news-pipeline.yml --ref staging -f force=true
+
+      - name: Preserve fast-page diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: news-game-page-fast-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            tmp/news-game-page-fast.json
+            tmp/news-game-page-plan.json
+            tmp/news-game-page-fast-production.json
+          if-no-files-found: warn
+          retention-days: 14
