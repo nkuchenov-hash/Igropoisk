@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/skatesterre.json#review_score",
   "game_slug": "skatesterre",
-  "checked_at": "2026-08-14T22:33:23.647Z",
+  "checked_at": "2026-08-17T20:44:04.458Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -21,7 +21,14 @@
     "exact_canonical_version_required": true
   },
   "sources": [],
-  "excluded_sources": [],
+  "excluded_sources": [
+    {
+      "configured_source_id": "game-spew",
+      "publication": "GameSpew",
+      "url": "https://www.gamespew.com/2026/08/skatesterre-review",
+      "reason": "canonical_version"
+    }
+  ],
   "calculation": {
     "source_count": 0,
     "values": [],

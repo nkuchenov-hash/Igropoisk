@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "balatro",
-  "checked_at": "2026-08-17T20:21:22.933Z",
+  "checked_at": "2026-08-17T20:48:57.941Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 3,
-  "scored": 2,
+  "accepted": 4,
+  "scored": 3,
   "context_only_versions": 0,
   "updates": [
     {
@@ -21,6 +21,15 @@
       "publication": "Push Square",
       "score": 9,
       "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 91,
+      "scale": 100,
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": true
@@ -54,6 +63,17 @@
       "publication": "Push Square",
       "url": "https://www.pushsquare.com/reviews/ps5/balatro",
       "final_url": "https://www.pushsquare.com/reviews/ps5/balatro",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/balatro-review",
+      "final_url": "https://www.pcgamer.com/balatro-review/",
       "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,

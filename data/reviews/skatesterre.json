@@ -2,16 +2,16 @@
   "schema_version": 11,
   "game_slug": "skatesterre",
   "game_id": null,
-  "updated_at": "2026-08-14T22:33:23.647Z",
+  "updated_at": "2026-08-17T20:44:04.458Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "accepted": 0,
+    "accepted": 1,
     "status": "red-needs-revision",
     "full_registry_scan": true,
-    "checked_registered_sources": 37,
-    "applicable_registered_sources": 37
+    "checked_registered_sources": 41,
+    "applicable_registered_sources": 41
   },
   "regional_discovery": {
     "region": "ru",
@@ -74,7 +74,47 @@
     "complete": true,
     "found_but_not_accepted": []
   },
-  "reviews": [],
+  "reviews": [
+    {
+      "url": "https://www.gamespew.com/2026/08/skatesterre-review",
+      "title": "Skatesterre review – A Tony Hawk’s wannabe that falls short",
+      "discovery_method": "external_search",
+      "configured_source_id": "game-spew",
+      "publication": "GameSpew",
+      "language": "en",
+      "id": "source-1",
+      "resolved_url": "https://www.gamespew.com/2026/08/skatesterre-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Skatesterre.",
+      "evidence_points": [],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "gamespew.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:42:48.312Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    }
+  ],
   "rejected": [],
   "review_score": {
     "status": "red-needs-revision",
@@ -95,7 +135,14 @@
       "exact_canonical_version_required": true
     },
     "sources": [],
-    "excluded_sources": [],
+    "excluded_sources": [
+      {
+        "configured_source_id": "game-spew",
+        "publication": "GameSpew",
+        "url": "https://www.gamespew.com/2026/08/skatesterre-review",
+        "reason": "canonical_version"
+      }
+    ],
     "calculation": {
       "source_count": 0,
       "values": [],

@@ -1,17 +1,20 @@
 {
-  "schema_version": 9,
+  "schema_version": 11,
   "game_slug": "disco-elysium",
-  "generated_at": "2026-08-17T13:48:13.348Z",
+  "generated_at": "2026-08-17T20:37:40.914Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
     "target_sources": 20,
     "maximum_sources": 20,
     "historical": false,
-    "min_contemporary": 5,
     "regional_discovery_required": true,
-    "unknown_publisher_policy": "reject_until_registered",
-    "canonical_score_requires_exact_version": true
+    "discovery_provider": "registered-direct-publisher-web-v8",
+    "audit_all": true,
+    "canonical_score_requires_exact_version": true,
+    "score_extraction_separate": true,
+    "search_title_variants": true,
+    "review_hub_following": true
   },
   "accepted": [
     {
@@ -48,12 +51,20 @@
       "domain": "ign.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T13:48:13.348Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.914Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:16.593Z",
+        "url": "https://www.ign.com/articles/2019/10/16/disco-elysium-review",
+        "configured_source_id": "ign",
+        "direct_publisher": true
       }
     },
     {
@@ -93,12 +104,20 @@
       "domain": "gameinformer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T13:48:13.348Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.914Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:16.593Z",
+        "url": "https://gameinformer.com/review/disco-elysium/disco-elysium-review-living-on-the-edge-and-loving-it",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
       }
     },
     {
@@ -114,8 +133,8 @@
       "published_at": "2019-11-05T15:33:10Z",
       "author": "Laura Dale",
       "language": "en",
-      "score": 0,
-      "scale": 0,
+      "score": null,
+      "scale": null,
       "grade": "",
       "score_eligible": false,
       "canonical_score_eligible": true,
@@ -140,8 +159,8 @@
       "domain": "polygon.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T13:48:13.348Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.914Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
@@ -161,10 +180,10 @@
       "published_at": "",
       "author": "",
       "language": "en",
-      "score": 0,
-      "scale": 0,
+      "score": 9,
+      "scale": 10,
       "grade": "",
-      "score_eligible": false,
+      "score_eligible": true,
       "canonical_score_eligible": true,
       "version_validation": {
         "score_eligible": true,
@@ -187,12 +206,20 @@
       "domain": "gamerevolution.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T13:48:13.348Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.914Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
+      },
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:16.593Z",
+        "url": "https://www.gamerevolution.com/review/620067-disco-elysium-review",
+        "configured_source_id": "game-revolution",
+        "direct_publisher": true
       }
     },
     {
@@ -234,26 +261,633 @@
       "domain": "rpgfan.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T13:48:13.348Z",
-        "reasons": [],
+        "checked_at": "2026-08-17T20:37:40.914Z",
+        "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
           "reason": "review_path"
         }
+      },
+      "score_evidence": {
+        "method": "semantic-editorial-label",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:17.562Z",
+        "url": "https://www.rpgfan.com/review/disco-elysium/",
+        "configured_source_id": "rpgfan",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.pcgamer.com/disco-elysium-review",
+      "publication": "PC Gamer",
+      "title": "Disco Elysium review",
+      "id": "source-6",
+      "configured_source_id": "pc-gamer",
+      "resolved_url": "https://www.pcgamer.com/disco-elysium-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Disco Elysium.",
+      "evidence_points": [
+        "Join the club for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
+        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
+        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
+        "An irresponsibly deep detective RPG that lets you be any kind of detective you want. Even a bad one.",
+        "PC Gamer's got your back Our experienced team dedicates many hours to every review, to really get to the heart of what matters most to you. Find out more about how we evaluate games and hardware.",
+        "What is it? A stylish, dialogue-heavy detective RPG. Expect to pay $40/&pound;35 Developer: ZA/UM Publisher: ZA/UM Reviewed on: GTX 1080, Intel i5-6600K, 16GB RAM Multiplayer: None Link: Official site Buy it: Steam / GOG",
+        "You are not well. You've woken up on the floor of a grimy hotel room with a hangover so devastating you might as well be dead. You don't remember who you are, which city you're in, or what happened the night before. Apparently you're a detective, in town to solve a murder, but you don't feel like a cop. You feel like shit.",
+        "Disco Elysium is a detective RPG of improbable depth. It's part Planescape: Torment, part police procedural, part psychodrama. Your fatally hungover detective peels himself off the carpet, naked except for a pair of soiled underpants, and begins the laborious process of piecing his broken mind back together, while simultaneously attempting to solve a gruesome murder on the wrong side of the tracks.",
+        "The game has stats, skill checks, companions, quests, and an interface inspired by classic Infinity Engine CRPGs and tabletop roleplaying games. But it also has a lot in common with visual novels and point-and-click adventures, with dense, branching dialogue and the ability to intimidate, charm, or bullshit your way out of tricky situations via several novels' worth of brilliantly strange, vibrant dialogue. There's no clicky Baldur's Gate-style combat here: everything happens via skill checks, dialogue, and text, including when things turn violent.",
+        "A man has been found hanging from a tree in an empty lot and it's your job to find out who killed him&mdash;if you can get near the corpse without puking. Disco Elysium's sallow, flare-wearing protagonist is a total disaster. The taste you get in your mouth the morning after a heavy night of drinking made flesh. The sticky floor of a discotheque given life. But the beauty of the game is how you can remould this grotesque lump of sin into something else entirely."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pcgamer.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.914Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 92,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:17.562Z",
+        "url": "https://www.pcgamer.com/disco-elysium-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.eurogamer.net/disco-elysium-review-large-scale-whodunit-with-a-lack-of-focus",
+      "publication": "Eurogamer",
+      "title": "Disco Elysium review - large-scale whodunit with a distinct lack of focus",
+      "id": "source-7",
+      "configured_source_id": "eurogamer",
+      "resolved_url": "https://www.eurogamer.net/disco-elysium-review-large-scale-whodunit-with-a-lack-of-focus",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Disco Elysium.",
+      "evidence_points": [
+        "When looking for an anecdote to illustrate both the fascination and frustration inherent in Disco Elysium , you need to go no further than its opening minutes. Your character wakes up with a killer headache, no memory of his past life and no clothes on. If you're feeling adventurous, you can make a grab for your tie, swinging away on the fan in your room. Failing the first of many many checks results in you dying of a heart attack and makes it clear that this game means business. Because while at that point it may all be fun and games to start over with a character slightly less inclined to instantly croak, it's actually one of many instances in which your body, brain or the outside world are out to get you.",
+        "Disco Elysium is built on a rather simple core idea, a noir detective mystery using the conventions of a CRPG. Instead of slaying monsters in fantasy combat, you spend your time sleuthing through the ruined streets of Revachol. The chief attraction then, is how downright obsessed developer ZA/UM is with the roleplaying mechanics of pen and paper games. Here you can invest in a myriad of skills that represent your body, mental state, knowledge and social graces. To keep things interesting you can't simply max all of them out, so while there are ways to find help, it's likely you're always going to struggle in situations your character isn't cut out for.",
+        "It's a bold way to make sure players never feel like they're fully in control, and for a while it's fun to watch your character fumble through an otherwise serious murder investigation. However, the inherent possibility of failure makes it possible to lock yourself out of the experience entirely. I played for seven hours when I had my own version of the heart attack anecdote: through a combination of refusing tasks, failing checks that would lead to alternative avenues and having no further skill points to spend to reattempt said checks, I had nowhere to go. All that mystery, normally so welcome, led me to a crossroads I wasn't even aware I was on. Afterwards I became an obsessive saver and skill point hoarder. Disco Elysium had shown me the mechanical heart within, and I felt like I could no longer rely on having the dice fall where they may.",
+        "Even if this was a likely very specific and rare occurrence, it's one of several ways in which Disco Elysium ends up destroying the illusion by making you aware of its inner workings. My political leanings get a score (to my absolute horror I have racked up a point for fascism somewhere), as well as my general demeanour (3 points under 'sad cop'). The obsession with numbers can make it feel so mechanical, although it's certainly impressive. No two player experiences will be the same, thanks to the myriad ways you can distribute your skills.",
+        "In Disco Elysium, your clothes and even your thoughts take influence on your stats. If you commit to a certain train of thought which crops up either randomly or during a conversation, you can then mull it over further in your 'thought cabinet' - basically the back of your head. After some time has passed, you have internalised the thought, which will lead you to do better or worse in certain areas. A deep-dive into the history of a famous actor, for example, causes me to lose perception, likely because I'm preoccupied with useless stuff when I should be busy with police work.",
+        "Frankly, I become preoccupied with a lot of stuff that isn't police work quite frequently, because that's what the game wants. The length of Disco Elysium isn't explained through a plot full of twists and turns, but by all the ways it's trying to distract you. Sure, side missions can be important to your overall progress, but in a genre in which you already do a lot of reading ZA/UM underestimated the usefulness of a good editor. Apparently everyone who worked on the game in any capacity contributed to the writing at some point, and that shows, because some conversations stay stubbornly devoid of any rhyme, reason or cohesive characterisation.",
+        "That is nowhere more obvious than in the protagonist himself. As an amnesiac, alcoholic and occasional drug connoisseur, the detective is the perfect character to be in-between personalities, his brain basically a drawer in dire need of tidying. Different aspects of your personality butt into conversations randomly, and you can decide whether to hear them out or listen to what they have to say. No matter how low your skill in a certain area is however, all parts of your personality are weighted equally when it comes to taking up real estate in your head, and thus on my screen. Sometimes I can tell Disco Elysium that no thank you, I do not want the encyclopaedic part of my brain to give me a complete rundown of the history of the part of town I've just entered. At other times, it will simply go ahead unasked.",
+        "These different voices and personalities could either be a representation of a mind in flux, or the result of an unrestrained outpour of content. I suspect the latter, mainly because while the game locks your skill growth, it never actually allows you to commit to any kind of moral compass. If it serves the game that I behave like a fascist, I can do that, and nothing is going to stop me - if I want to, I can discard thought models that don't work for me later on. It's confusing player freedom with inciting chaos at every opportunity.",
+        "While Disco Elysium shows you a downtrodden suburb in which teenagers take drugs and senior citizens play Boules on earthquake-cracked pavement, Disco Elysium doesn't allow me to be the type of character I want to be - an even remotely kind one, and I don't necessarily mean one with a higher empathy stat.",
+        "One character and one story may contain multitudes, but Disco Elysium has pushed that idea to extremes, making me a flippant macho and above all a weirdo who stands for nothing. Once the novelty wears off, I feel like I'm playing a game that insistently wants to prove to me how smart it is, and that, above anything, is just really tiring."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "eurogamer.net",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.914Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 3,
+      "scale": 5,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:17.562Z",
+        "url": "https://www.eurogamer.net/disco-elysium-review-large-scale-whodunit-with-a-lack-of-focus",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.gamespot.com/reviews/disco-elysium-review-pure-dynamite/1900-6417354",
+      "publication": "GameSpot",
+      "title": "Disco Elysium — GameSpot review",
+      "id": "source-8",
+      "configured_source_id": "gamespot",
+      "resolved_url": "https://www.gamespot.com/reviews/disco-elysium-review-pure-dynamite/1900-6417354",
+      "source_kind": "review",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T20:37:40.914Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.rockpapershotgun.com/disco-elysium-review",
+      "publication": "Rock Paper Shotgun",
+      "title": "Disco Elysium review",
+      "id": "source-9",
+      "configured_source_id": "rock-paper-shotgun",
+      "resolved_url": "https://www.rockpapershotgun.com/disco-elysium-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Disco Elysium.",
+      "evidence_points": [
+        "So, then. Disco Elysium , like Planescape: Torment , or even Fallout or Arcanum, is an isometric RPG with a lot of text. You, an alcoholic, probably drug-addicted cop in early middle age, wake up to face a new partner, a lynching that needs solving, and an apocalyptic hangover that has wiped your memory. So, you start the work of learning... well, everything.",
+        "I managed to stumble through solving a murder as an amnesiac alternate-'70s detective in much less than the 60 hours ZA/UM have set as their \"back of the box\" number for a complete run, although I don't doubt that there are that many hours of entertainment (and more) to be had in it. Just not all during one playthrough.",
+        "Almost all of Disco Elysium hangs off the text -- not just conversations, but basically any action, including combat and run of the mill lookin' at stuff. Even the movement of time over an in-game day is tied to you clicking through descriptions and dialogue. This perfectly regulates the first few days of the investigation, but by the end I found myself killing time by endlessly repeating conversations I'd already had. You're not allowed to go to bed until 9pm.",
+        "This means the faster you read, the faster you'll get through the game. Please prepare your massive wanking off motion, as is reasonable to deploy whenever anyone mentions how fast they read, but I am a fast reader. Even so, I don't think I could have stretched the game to 60 hours if I'd tried.",
+        "Ah, here. I've put my negative foot forward, but probably because my feelings about Disco Elysium aren't simple. Which is appropriate because it is a complex game. I hesitate to use the words \"flawed\" and \"masterpiece\" but I seem to have chiselled their shape out of the raw rock of this review nonetheless.",
+        "Disco Elysium is a very good game. It's frequently brilliant, in fact. I'll almost certainly replay it at least once more again. But the flaws are there enough that I'm not ready to tear out my beating heart and lay it, reverently, at Disco Elysium's feet. Others will though. Diamonds can have flaws, after all. It will be beloved -- absolutely beloved -- by many because it scratches a particular itch that has been left to prickle for years, and does it very well and with undeniable style.",
+        "There are things I love about Disco Elysium, of course. I would happily fall to my knees and propose marriage to the skill system right now. We'll live together in a countryside cottage with whitewashed walls and a rambling wildflower garden. It will be crowded.",
+        "As per most RPGs, you're still putting points into a list of physical and mental attributes, but they're more abstract and weird than your average roleplay-me-doo. The 24 of them are divided into four sets of six, under Intellect, Psyche, Physique and Motorics. When you start you can pick from one of three archetype cops, or build your own, and essentially the choice is what weight you put in these different areas. A bunch of points in Physique will make you strong, Intellect makes you smart, etc. And within those groups you have skills like Endurance and Logic, which are self explanatory, but also Shivers, Drama, Savoir Faire and Inland Empire. Much more mysterious.",
+        "Your skills determine you chance to succeed at actions in the game, tabletop dice style. The skill checks are often capricious, so I found myself crossing my fingers with every attempt, but it can sometimes be more interesting when you piss them right up the wall rather than pass with flying colours. You might want to persuade a canny old lady to sign a contract, for example, so higher Suggestion will give you a better chance of succeeding. But she tells you to do one, so you might try to forge her signature. Different skill again. Skills can also be modified by the clothes you wear, your previous actions, and so on. I changed outfits quite a lot, and enjoyed the high fashion combinations of e.g. a ushanka hat and marigold gloves.",
+        "The Thought Cabinet is a collection of ideas which you pick up from interactions in the world. Ruminating on them will Internalise them, which can, in turn, give you more bonuses or negatives. In my second playthrough I decided I'd joined the Remote Viewers Division of the police, essentially believing that I was part of a team of secret psychic cops, so I got -1 difficulty on all to all passive Psyche challenges, but a permanent -1 to my Drama skill, because I was now a gullible hack."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "rockpapershotgun.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.914Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.destructoid.com/review-disco-elysium-571464.phtml",
+      "publication": "Destructoid",
+      "title": "Disco Elysium — Destructoid review",
+      "id": "source-10",
+      "configured_source_id": "destructoid",
+      "resolved_url": "https://www.destructoid.com/review-disco-elysium-571464.phtml",
+      "source_kind": "review",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T20:37:40.914Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.hookedgamers.com/pc/disco_elysium/review/article-2113.html",
+      "title": "Disco Elysium PC review - \"I am the Law!\" | Hooked Gamers",
+      "discovery_method": "external_search",
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "language": "en",
+      "id": "source-11",
+      "resolved_url": "https://www.hookedgamers.com/pc/disco_elysium/review/article-2113.html",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Disco Elysium.",
+      "evidence_points": [
+        "Incredible inversion of typical RPG formula, fantastic characters and setting, the best representation of consciousness I�ve seen in a game."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "hookedgamers.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.914Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "publisher_rule"
+        }
+      },
+      "score": 10,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "registry:hooked-gamers",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:18.515Z",
+        "url": "https://www.hookedgamers.com/pc/disco_elysium/review/article-2113.html",
+        "configured_source_id": "hooked-gamers",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.thesixthaxis.com/2021/04/14/disco-elysium-the-final-cut-review-ps5-ps4-stadia-pc",
+      "title": "Disco Elysium: The Final Cut Review | TheSixthAxis",
+      "discovery_method": "external_search",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "language": "en",
+      "id": "source-12",
+      "resolved_url": "https://www.thesixthaxis.com/2021/04/14/disco-elysium-the-final-cut-review-ps5-ps4-stadia-pc",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Disco Elysium.",
+      "evidence_points": [
+        "Disco Elysium originally released to critical acclaim and multiple Game of the Year awards on PC in 2019 . Disco Elysium: The Final Cut aims to make it even better, with new Political Vision quests that were cut from the original game, more characters, a new area to explore, and full voice acting for all 300 characters &#8211; that&#8217;s more than 1.2 million words apparently. As it gradually proliferates across more platforms, starting with PlayStation and Stadia and with a free update for PC, more gamers can (and should) delve into this world.",
+        "Disco Elysium follows an amnesiac detective after a rather wild few nights of drinking as he tries to figure out who he is and what he&#8217;s done, whilst also solving a murder. It&#8217;s set in Martinaise, a poor, nearly forgotten part of a city called Revachol, where a socialist militia is the police and where people that call the actual police are considered snitches. The deep background to this setting and to many of the characters is flabbergasting, the history of Revachol and its political forces is extensive. The world is absolutely fascinating and rich with detail, which is only more impressive when you consider that, depending on how you play, you might not discover much of this background.",
+        "You&#8217;ll need to be careful of that, as embarrassing yourself can result in a game over, sending you back to your most recent save. The player not only has health, but also morale to look after. Early on I kept losing in a conversation because I stumbled into some troubling news for the player character and he&#8217;d take two hits to his morale, which gave me a game over screen explaining that he lost his mind and was later found living under a bridge and throwing faeces at passers-by. You&#8217;ll take hits to your morale when receiving bad news or failing to do something and you&#8217;ll lose health when you get physically hurt (of course), but thankfully you can improve both stats with skills or wearing certain clothes and use consumables to restore them.",
+        "Then there are checks on actions, like firing a gun, lying, or analysing a crime scene. These are percentage chances of success, with the chance being higher depending on your skills and other outside factors. These are split into white checks and red checks &#8211; if you fail a white check, you can try again later after you&#8217;ve increased the relevant skill, but you only get one try at a red check, so you&#8217;d best be careful. Checks aren&#8217;t necessarily important actions, they can be for anything, like grabbing a tie from a moving fan. They are affected by other elements as well &#8211; it&#8217;s easier to grab that tie if you turn the fan off first. Thing is, half the fun is finding out what happens when you fail these checks, as it plays out in the game. It doesn&#8217;t just fail and move on, you have to witness the failure.",
+        "Fail to flirt with someone, you&#8217;ll have to cringe/laugh your way through one of the dialogue options for failure, and the response to it. At one point I tried to establish my authority as a police officer over some suspects and failed, and ended up taking my partner&#8217;s gun and threatening to shoot myself if they didn&#8217;t give in. One of the options actually was to pull the trigger and, yes, it was obviously an instant game over. You can usually improve your chances of passing a check by doing things in the world as well, such as learning information from another source to help accuse somebody of lying to you.",
+        "All these systems combine to tell a story that&#8217;s at least as dark and mysterious as it is hilarious, and it&#8217;s nothing short of remarkable. The main narrative is incredibly deep, keeping its cards close to its chest whilst pointing at a nearby pack of Uno cards to try and distract you, but once revelations started coming in I was on the edge of my seat and hanging on every word. It might not be for the faint of heart, covering extremely mature topics, language, and vivid descriptions of rotting corpses, but its sense of humour and offbeat tone help soften it somewhat. This game probably won&#8217;t be for anyone that doesn&#8217;t enjoy lots of dialogue either, as that&#8217;s pretty much all of the game – The Final Cut&#8217;s new voice acting definitely helps in that regard.",
+        "It looks great, too. It has a pretty unique art style on the whole, and Martinaise is full of detail and the lighting and shadows are particularly impressive. There also aren&#8217;t too many game protagonists who looks quite this run down, nor do they have such glorious moustaches. It even snows occasionally, with the snow settling around the city and eventually melting away.",
+        "We do not license content or design to any other site. No element of this site can be used without written permission. All content should be considered opinion. Article posters are the individual owner of the article content. We are not affiliated with any third party.",
+        "Use of this website is subject to acceptance of our legal terms of service . Staff / Contact Us | Review Policy | Privacy Policy | Cookies Policy – Manage Consent",
+        "Advertising and PR: [email&#160;protected] | News: [email&#160;protected] TheSixthAxis is featured on: Metacritic , OpenCritic , vrgamecritic , Google News | listed on: NewsNow"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "thesixthaxis.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.914Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 10,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:18.515Z",
+        "url": "https://www.thesixthaxis.com/2021/04/14/disco-elysium-the-final-cut-review-ps5-ps4-stadia-pc/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
       }
     }
   ],
-  "rejected": [
+  "rejected": [],
+  "source_checks": [
     {
-      "publication": "GameSpot",
-      "url": "https://www.gamespot.com/reviews/disco-elysium-review-pure-dynamite/1900-6417354",
-      "title": "Disco Elysium — GameSpot review",
-      "reasons": [
-        "unavailable URL: 403"
-      ]
+      "source_id": "igromania",
+      "name": "Игромания",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "stopgame",
+      "name": "StopGame",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "kanobu",
+      "name": "Канобу",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "playground",
+      "name": "PlayGround.ru",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "vgtimes",
+      "name": "VGTimes",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ixbt-games",
+      "name": "iXBT.games",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamemag",
+      "name": "GameMAG.ru",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "vk-play",
+      "name": "VK Play Media",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "shazoo",
+      "name": "Shazoo",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pc-gamer",
+      "name": "PC Gamer",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "gamespot",
+      "name": "GameSpot",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "ign",
+      "name": "IGN",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "eurogamer",
+      "name": "Eurogamer",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "game-informer",
+      "name": "Game Informer",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "gamesradar",
+      "name": "GamesRadar+",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "polygon",
+      "name": "Polygon",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "rock-paper-shotgun",
+      "name": "Rock Paper Shotgun",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "game-revolution",
+      "name": "GameRevolution",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "ars-technica",
+      "name": "Ars Technica",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezone",
+      "name": "GameZone",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamepressure",
+      "name": "Gamepressure",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gry-online",
+      "name": "GRYOnline",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "worthplaying",
+      "name": "WorthPlaying",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rpgfan",
+      "name": "RPGFan",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "rpgamer",
+      "name": "RPGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "destructoid",
+      "name": "Destructoid",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "shacknews",
+      "name": "Shacknews",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pcworld",
+      "name": "PCWorld",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "guardian-games",
+      "name": "The Guardian",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "push-square",
+      "name": "Push Square",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "nintendo-life",
+      "name": "Nintendo Life",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "digital-trends",
+      "name": "Digital Trends",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "wired",
+      "name": "WIRED",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "egm",
+      "name": "EGM",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamebanshee",
+      "name": "GameBanshee",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "den-of-geek",
+      "name": "Den of Geek",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "videogamer",
+      "name": "VideoGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-sixth-axis",
+      "name": "TheSixthAxis",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "pc-invasion",
+      "name": "PC Invasion",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-spew",
+      "name": "GameSpew",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "hooked-gamers",
+      "name": "Hooked Gamers",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
     }
   ],
-  "source_proposals": [],
   "regional_discovery": {
     "region": "ru",
     "checks": [
@@ -316,10 +950,13 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "accepted": 5,
-    "scored": 3,
+    "registered_editorial": 41,
+    "checked": 41,
+    "accepted": 12,
+    "scored": 8,
     "context_only_versions": 0,
-    "contemporary": 5,
+    "blocked_verified": 2,
+    "contemporary": 12,
     "green": true,
     "passed": true,
     "needs_more": 0

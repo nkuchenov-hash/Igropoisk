@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/ball-x-pit.json#review_score",
   "game_slug": "ball-x-pit",
-  "checked_at": "2026-08-14T22:27:37.867Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T20:45:30.630Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -20,12 +20,152 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "This ball-bouncing roguelike is a roller coaster ride of excess",
+      "url": "https://www.pcgamer.com/games/roguelike/ball-x-pit-review",
+      "original_score": {
+        "score": 80,
+        "scale": 100,
+        "grade": null,
+        "display": "80/100"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:45:29.215Z",
+        "url": "https://www.pcgamer.com/games/roguelike/ball-x-pit-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Ball x Pit Review: Breathtaking Brick Breaking",
+      "url": "https://gameinformer.com/review/ball-x-pit/breathtaking-brick-breaking",
+      "original_score": {
+        "score": 8.75,
+        "scale": 10,
+        "grade": null,
+        "display": "8.75/10"
+      },
+      "normalized_10": 8.75,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:45:29.216Z",
+        "url": "https://gameinformer.com/review/ball-x-pit/breathtaking-brick-breaking",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Vampire Survivors and Breakout collide in this brilliant roguelike ball basher that struggles with repetition",
+      "url": "https://www.gamesradar.com/games/roguelike/ball-x-pit-review",
+      "original_score": {
+        "score": 3.5,
+        "scale": 5,
+        "grade": null,
+        "display": "3.5/5"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:45:29.216Z",
+        "url": "https://www.gamesradar.com/games/roguelike/ball-x-pit-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: Ball X Pit (PS5) - A Fiendishly Compelling Mix of Vampire Survivors and Breakout",
+      "url": "https://www.pushsquare.com/reviews/ps5/ball-x-pit",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:45:29.216Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/ball-x-pit",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "title": "Ball x Pit PC review - \"Ball bursting addiction\" | Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/ball_x_pit/review/article-2676.html",
+      "original_score": {
+        "score": 9.3,
+        "scale": 10,
+        "grade": null,
+        "display": "9.3/10"
+      },
+      "normalized_10": 9.3,
+      "score_evidence": {
+        "method": "registry:hooked-gamers",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:45:30.589Z",
+        "url": "https://www.hookedgamers.com/pc/ball_x_pit/review/article-2676.html",
+        "configured_source_id": "hooked-gamers",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Ball X Pit Review - Sphere factor | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2025/10/15/ball-x-pit-review-sphere-factor",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:45:30.589Z",
+        "url": "https://www.thesixthaxis.com/2025/10/15/ball-x-pit-review-sphere-factor/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 6,
+    "values": [
+      8,
+      8.75,
+      7,
+      8,
+      9.3,
+      9
+    ],
+    "mean_10": 8.3417,
+    "score_10": 8.3
   }
 }

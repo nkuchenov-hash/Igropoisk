@@ -1,31 +1,30 @@
 {
-  "schema_version": 8,
+  "schema_version": 9,
   "type": "review",
   "game_slug": "beast-of-reincarnation",
-  "game_id": "game_829e32334ee5548e2da7",
-  "canonical_title": "beast-of-reincarnation",
-  "checked_at": "2026-08-14T22:28:47.028Z",
+  "game_id": null,
+  "canonical_title": "Beast of Reincarnation",
+  "checked_at": "2026-08-17T20:45:00.303Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
-    "Корпус: 0/5",
-    "Оценённые издания: 0/3"
+    "No reusable existing article; queued for prose/media repair."
   ],
   "revision_history": [
     {
       "label": "web-discovery-full-registry",
       "script": "scripts/discover-review-sources-web.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"beast-of-reincarnation\",\n  \"registered_editorial\": 37,\n  \"checked\": 37,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"beast-of-reincarnation\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 5,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n",
       "stderr": ""
     },
     {
       "label": "promote-full-registry-audit",
       "script": "scripts/promote-review-source-audit.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"beast-of-reincarnation\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 37,\n  \"applicable\": 37,\n  \"regional_complete\": true\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"beast-of-reincarnation\",\n  \"status\": \"green\",\n  \"accepted\": 5,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -33,30 +32,31 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"beast-of-reincarnation\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"beast-of-reincarnation\",\n  \"accepted\": 5,\n  \"scored\": 5,\n  \"context_only_versions\": 0,\n  \"updates\": 5,\n  \"preserved\": 0\n}\n",
       "stderr": ""
     },
     {
       "label": "score-1",
       "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"beast-of-reincarnation\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"beast-of-reincarnation\",\n  \"status\": \"green\",\n  \"scored_sources\": 5,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.3,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
       "stderr": ""
     }
   ],
   "policy": {
     "keep_queued_until_green": true,
-    "deterministic_only": false,
+    "deterministic_only": true,
     "review_score_source": "data/reviews/{slug}.json#review_score",
     "research_primary": "complete-registered-source-direct-publisher-scan",
     "research_fallback": "registered-publisher-research-only-if-full-scan-missing",
     "score_enrichment": "direct-publisher-structured-markup-preserve-verified",
     "score_aggregation": "all-eligible-explicit-publisher-scores",
     "article_reuse": "surgical-rebind-before-regeneration",
-    "synthesis_fallback": "local-ollama-only-after-deterministic-recovery",
-    "visual_audit_fallback": "local-ollama-multimodal",
-    "language_audit_fallback": "local-ollama",
-    "web_discovery_attempts_per_qc": 1
+    "targeted_hard_repair": "preserve_rebound_prose_and_repair_only_failing_media_or_language",
+    "synthesis_fallback": "github-models-then-local-text",
+    "visual_audit_fallback": "github-models-then-local-multimodal",
+    "language_audit_fallback": "local-lightweight-text",
+    "web_discovery_attempts_per_qc": 0
   }
 }

@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/mewgenics.json#review_score",
   "game_slug": "mewgenics",
-  "checked_at": "2026-08-14T22:32:14.494Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T20:44:11.568Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -20,12 +20,83 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "The creator of The Binding of Isaac has transcended his own past work with this sprawling, endlessly surprising roguelike",
+      "url": "https://www.pcgamer.com/games/roguelike/mewgenics-review",
+      "original_score": {
+        "score": 92,
+        "scale": 100,
+        "grade": null,
+        "display": "92/100"
+      },
+      "normalized_10": 9.2,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:44:11.528Z",
+        "url": "https://www.pcgamer.com/games/roguelike/mewgenics-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Mewgenics Review: A Tale Of Two Kitties",
+      "url": "https://gameinformer.com/review/mewgenics/a-tale-of-two-kitties",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:44:11.528Z",
+        "url": "https://gameinformer.com/review/mewgenics/a-tale-of-two-kitties",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "This tactical cat roguelike has me hooked on perfecting my kitten army",
+      "url": "https://www.gamesradar.com/games/roguelike/mewgenics-review",
+      "original_score": {
+        "score": 4.5,
+        "scale": 5,
+        "grade": null,
+        "display": "4.5/5"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:44:11.528Z",
+        "url": "https://www.gamesradar.com/games/roguelike/mewgenics-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 3,
+    "values": [
+      9.2,
+      8,
+      9
+    ],
+    "mean_10": 8.7333,
+    "score_10": 8.7
   }
 }

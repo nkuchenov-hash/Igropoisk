@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/balatro.json#review_score",
   "game_slug": "balatro",
-  "checked_at": "2026-08-17T20:21:22.962Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T20:48:57.978Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:21:22.933Z",
+        "checked_at": "2026-08-17T20:48:57.941Z",
         "url": "https://gameinformer.com/review/balatro/a-winning-hand",
         "configured_source_id": "game-informer",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:21:22.933Z",
+        "checked_at": "2026-08-17T20:48:57.941Z",
         "url": "https://www.pushsquare.com/reviews/ps5/balatro",
         "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Balatro review",
+      "url": "https://www.pcgamer.com/balatro-review",
+      "original_score": {
+        "score": 91,
+        "scale": 100,
+        "grade": null,
+        "display": "91/100"
+      },
+      "normalized_10": 9.1,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:48:57.941Z",
+        "url": "https://www.pcgamer.com/balatro-review/",
+        "configured_source_id": "pc-gamer",
         "direct_publisher": true
       }
     }
@@ -75,12 +97,13 @@
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       9.5,
-      9
+      9,
+      9.1
     ],
-    "mean_10": 9.25,
-    "score_10": 9.3
+    "mean_10": 9.2,
+    "score_10": 9.2
   }
 }
