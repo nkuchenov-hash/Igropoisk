@@ -1,7 +1,7 @@
 {
-  "schema_version": 11,
+  "schema_version": 13,
   "game_slug": "counter-strike-2",
-  "generated_at": "2026-08-17T22:51:49.232Z",
+  "generated_at": "2026-08-17T23:31:02.311Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -14,7 +14,12 @@
     "canonical_score_requires_exact_version": true,
     "score_extraction_separate": true,
     "search_title_variants": true,
-    "review_hub_following": true
+    "review_hub_following": true,
+    "critic_index": "metacritic",
+    "critic_index_scope": "released_fallback",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true
   },
   "accepted": [
     {
@@ -39,7 +44,7 @@
       },
       "validation": {
         "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-17T22:51:49.232Z",
+        "checked_at": "2026-08-17T23:29:29.714Z",
         "method": "registered-direct-publisher-preserved-v8",
         "reason": "HTTP 403"
       },
@@ -64,9 +69,34 @@
       },
       "validation": {
         "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-17T22:51:49.232Z",
+        "checked_at": "2026-08-17T23:29:29.714Z",
         "method": "registered-direct-publisher-preserved-v8",
         "reason": "HTTP 504"
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.gamestar.de/artikel/counter-strike-2-test-steam-review%2C3401695.html",
+      "publication": "GameStar",
+      "title": "Counter-Strike 2 im Test",
+      "id": "source-3",
+      "configured_source_id": "gamestar",
+      "resolved_url": "https://www.gamestar.de/artikel/counter-strike-2-test-steam-review%2C3401695.html",
+      "source_kind": "review",
+      "language": "de",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T23:29:29.714Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
       },
       "score": null,
       "scale": null,
@@ -237,8 +267,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "unavailable",
-      "notes": "search transport unavailable"
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     },
     {
       "source_id": "ars-technica",
@@ -400,6 +430,34 @@
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_discovery": {
@@ -464,15 +522,20 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 41,
-    "checked": 41,
-    "accepted": 2,
+    "registered_editorial": 45,
+    "checked": 45,
+    "accepted": 3,
     "scored": 0,
     "context_only_versions": 0,
-    "blocked_verified": 2,
-    "contemporary": 2,
+    "blocked_verified": 3,
+    "contemporary": 3,
     "green": false,
     "passed": false,
-    "needs_more": 3
+    "needs_more": 2,
+    "critic_index_rows": 0,
+    "critic_index_added": 0,
+    "critic_index_scores_added": 0,
+    "critic_index_platform": "",
+    "removed_user_generated": 0
   }
 }

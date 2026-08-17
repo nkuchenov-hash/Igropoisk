@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/roblox.json#review_score",
   "game_slug": "roblox",
-  "checked_at": "2026-08-17T22:51:38.996Z",
+  "checked_at": "2026-08-17T23:29:53.781Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -21,7 +21,20 @@
     "exact_canonical_version_required": true
   },
   "sources": [],
-  "excluded_sources": [],
+  "excluded_sources": [
+    {
+      "configured_source_id": "playground",
+      "publication": "PlayGround.ru",
+      "url": "https://www.playground.ru/roblox/opinion/pryatki_s_kraskoj_v_roblox_detalnyj_obzor_luchshih_klonov_meccha_chameleon-1854791",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/blogs/topic/79276/igra_roblox_video_and_review",
+      "reason": "canonical_version"
+    }
+  ],
   "calculation": {
     "source_count": 0,
     "values": [],

@@ -1,7 +1,7 @@
 {
-  "schema_version": 11,
+  "schema_version": 13,
   "game_slug": "mewgenics",
-  "generated_at": "2026-08-17T22:54:39.690Z",
+  "generated_at": "2026-08-17T23:34:12.136Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -14,7 +14,12 @@
     "canonical_score_requires_exact_version": true,
     "score_extraction_separate": true,
     "search_title_variants": true,
-    "review_hub_following": true
+    "review_hub_following": true,
+    "critic_index": "metacritic",
+    "critic_index_scope": "released_fallback",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true
   },
   "accepted": [
     {
@@ -61,7 +66,7 @@
       "domain": "pcgamer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:54:39.690Z",
+        "checked_at": "2026-08-17T23:32:48.492Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -75,7 +80,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:55:55.138Z",
+        "checked_at": "2026-08-17T23:34:14.506Z",
         "url": "https://www.pcgamer.com/games/roguelike/mewgenics-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -119,7 +124,7 @@
       "domain": "gameinformer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:54:39.690Z",
+        "checked_at": "2026-08-17T23:32:48.492Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -133,7 +138,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:55:55.138Z",
+        "checked_at": "2026-08-17T23:34:14.506Z",
         "url": "https://gameinformer.com/review/mewgenics/a-tale-of-two-kitties",
         "configured_source_id": "game-informer",
         "direct_publisher": true
@@ -183,7 +188,7 @@
       "domain": "gamesradar.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:54:39.690Z",
+        "checked_at": "2026-08-17T23:32:48.492Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -197,7 +202,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:55:55.138Z",
+        "checked_at": "2026-08-17T23:34:14.506Z",
         "url": "https://www.gamesradar.com/games/roguelike/mewgenics-review/",
         "configured_source_id": "gamesradar",
         "direct_publisher": true
@@ -241,7 +246,7 @@
       "domain": "rpgfan.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:54:39.690Z",
+        "checked_at": "2026-08-17T23:32:48.492Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -255,10 +260,64 @@
       "score_evidence": {
         "method": "semantic-editorial-label",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:55:55.138Z",
+        "checked_at": "2026-08-17T23:34:14.506Z",
         "url": "https://www.rpgfan.com/review/mewgenics/",
         "configured_source_id": "rpgfan",
         "direct_publisher": true
+      }
+    },
+    {
+      "id": "source-5",
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "title": "Mewgenics — Eurogamer review",
+      "url": "https://www.metacritic.com/game/mewgenics/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/mewgenics/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 100,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Mewgenics attributed by Metacritic to Eurogamer.",
+      "evidence_points": [
+        "Germany Highly addictive tactical roguelite with flexible rules and endlessly motivating progression. Already one of the candidates for game of the year."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:34:12.136Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/mewgenics/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:34:12.136Z",
+        "url": "https://www.metacritic.com/game/mewgenics/critic-reviews/",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "Eurogamer",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
       }
     }
   ],
@@ -395,8 +454,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "unavailable",
+      "notes": "search transport unavailable"
     },
     {
       "source_id": "ars-technica",
@@ -558,6 +617,34 @@
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_discovery": {
@@ -622,15 +709,20 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 41,
-    "checked": 41,
-    "accepted": 4,
-    "scored": 4,
+    "registered_editorial": 45,
+    "checked": 45,
+    "accepted": 5,
+    "scored": 5,
     "context_only_versions": 0,
     "blocked_verified": 0,
-    "contemporary": 4,
-    "green": false,
-    "passed": false,
-    "needs_more": 1
+    "contemporary": 5,
+    "green": true,
+    "passed": true,
+    "needs_more": 0,
+    "critic_index_rows": 1,
+    "critic_index_added": 1,
+    "critic_index_scores_added": 0,
+    "critic_index_platform": "primary",
+    "removed_user_generated": 0
   }
 }

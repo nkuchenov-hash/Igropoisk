@@ -4,28 +4,27 @@
   "game_slug": "total-war-warhammer-iii",
   "game_id": null,
   "canonical_title": "Total War: WARHAMMER III",
-  "checked_at": "2026-08-17T22:55:37.652Z",
+  "checked_at": "2026-08-17T23:33:52.571Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
-    "Корпус: 3/5",
-    "Оценённые издания: 2/3"
+    "No reusable existing article; queued for prose/media repair."
   ],
   "revision_history": [
     {
       "label": "web-discovery-full-registry",
       "script": "scripts/discover-review-sources-web.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"total-war-warhammer-iii\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 3,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"total-war-warhammer-iii\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 3,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"total-war-warhammer-iii\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 6,\n  \"scored\": 5,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 3,\n  \"indexed_sources_added\": 3,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"green\"\n}\n",
       "stderr": ""
     },
     {
       "label": "promote-full-registry-audit",
       "script": "scripts/promote-review-source-audit.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"total-war-warhammer-iii\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 3,\n  \"trusted_scores_preserved\": 2,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"total-war-warhammer-iii\",\n  \"status\": \"green\",\n  \"accepted\": 6,\n  \"trusted_scores_preserved\": 5,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -33,15 +32,15 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"total-war-warhammer-iii\",\n  \"accepted\": 3,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"updates\": 2,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"total-war-warhammer-iii\",\n  \"accepted\": 6,\n  \"scored\": 5,\n  \"context_only_versions\": 0,\n  \"updates\": 2,\n  \"preserved\": 3\n}\n",
       "stderr": ""
     },
     {
       "label": "score-1",
       "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"total-war-warhammer-iii\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 2,\n  \"excluded_sources\": 1,\n  \"score_10\": 9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"total-war-warhammer-iii\",\n  \"status\": \"green\",\n  \"scored_sources\": 5,\n  \"excluded_sources\": 1,\n  \"score_10\": 9.3,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
       "stderr": ""
     }
   ],
@@ -58,6 +57,6 @@
     "synthesis_fallback": "github-models-then-local-text",
     "visual_audit_fallback": "github-models-then-local-multimodal",
     "language_audit_fallback": "local-lightweight-text",
-    "web_discovery_attempts_per_qc": 1
+    "web_discovery_attempts_per_qc": 0
   }
 }

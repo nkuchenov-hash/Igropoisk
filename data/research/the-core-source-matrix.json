@@ -1,7 +1,7 @@
 {
-  "schema_version": 11,
+  "schema_version": 13,
   "game_slug": "the-core",
-  "generated_at": "2026-08-17T22:55:28.782Z",
+  "generated_at": "2026-08-17T23:35:10.073Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -14,7 +14,12 @@
     "canonical_score_requires_exact_version": true,
     "score_extraction_separate": true,
     "search_title_variants": true,
-    "review_hub_following": true
+    "review_hub_following": true,
+    "critic_index": "metacritic",
+    "critic_index_scope": "released_fallback",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true
   },
   "accepted": [
     {
@@ -61,7 +66,7 @@
       "domain": "pcgamer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:55:28.782Z",
+        "checked_at": "2026-08-17T23:33:45.913Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -75,7 +80,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:56:44.335Z",
+        "checked_at": "2026-08-17T23:35:11.457Z",
         "url": "https://www.pcgamer.com/hardware/processors/intel-core-ultra-5-250k-plus-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -125,7 +130,7 @@
       "domain": "gamesradar.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:55:28.782Z",
+        "checked_at": "2026-08-17T23:33:45.913Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -139,7 +144,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:56:44.336Z",
+        "checked_at": "2026-08-17T23:35:11.457Z",
         "url": "https://www.gamesradar.com/tabletop-gaming/warhammer-the-old-world-core-set-review/",
         "configured_source_id": "gamesradar",
         "direct_publisher": true
@@ -183,7 +188,7 @@
       "domain": "thesixthaxis.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T22:55:28.782Z",
+        "checked_at": "2026-08-17T23:33:45.913Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -197,7 +202,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:56:44.336Z",
+        "checked_at": "2026-08-17T23:35:11.457Z",
         "url": "https://www.thesixthaxis.com/2025/10/24/yooka-replaylee-review-banjos-tribute-act-gets-their-encore/",
         "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
@@ -514,6 +519,34 @@
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_discovery": {
@@ -578,8 +611,8 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 41,
-    "checked": 41,
+    "registered_editorial": 45,
+    "checked": 45,
     "accepted": 3,
     "scored": 3,
     "context_only_versions": 0,
@@ -587,6 +620,11 @@
     "contemporary": 3,
     "green": false,
     "passed": false,
-    "needs_more": 2
+    "needs_more": 2,
+    "critic_index_rows": 0,
+    "critic_index_added": 0,
+    "critic_index_scores_added": 0,
+    "critic_index_platform": "primary",
+    "removed_user_generated": 0
   }
 }

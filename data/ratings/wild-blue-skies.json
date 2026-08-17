@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/wild-blue-skies.json#review_score",
   "game_slug": "wild-blue-skies",
-  "checked_at": "2026-08-17T22:55:28.688Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T23:33:47.748Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:55:28.649Z",
+        "checked_at": "2026-08-17T23:33:47.710Z",
         "url": "https://gameinformer.com/review/wild-blue-skies/bland-homage",
         "configured_source_id": "game-informer",
         "direct_publisher": true
@@ -59,21 +59,81 @@
       "score_evidence": {
         "method": "registry:worthplaying",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T22:55:28.649Z",
+        "checked_at": "2026-08-17T23:33:47.710Z",
         "url": "https://worthplaying.com/article/2026/8/13/reviews/150698-pc-review-wild-blue-skies/",
         "configured_source_id": "worthplaying",
         "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "Wild Blue Skies — IGN review",
+      "url": "https://www.metacritic.com/game/wild-blue-skies/critic-reviews/?platform=pc",
+      "original_score": {
+        "score": 50,
+        "scale": 100,
+        "grade": null,
+        "display": "50/100"
+      },
+      "normalized_10": 5,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:33:46.309Z",
+        "url": "https://www.metacritic.com/game/wild-blue-skies/critic-reviews/?platform=pc",
+        "configured_source_id": "ign",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "pc",
+        "attributed_publication": "IGN",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "shacknews",
+      "publication": "Shacknews",
+      "title": "Wild Blue Skies — Shacknews review",
+      "url": "https://www.metacritic.com/game/wild-blue-skies/critic-reviews/?platform=pc",
+      "original_score": {
+        "score": 50,
+        "scale": 100,
+        "grade": null,
+        "display": "50/100"
+      },
+      "normalized_10": 5,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:33:46.309Z",
+        "url": "https://www.metacritic.com/game/wild-blue-skies/critic-reviews/?platform=pc",
+        "configured_source_id": "shacknews",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "pc",
+        "attributed_publication": "Shacknews",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
       }
     }
   ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 2,
+    "source_count": 4,
     "values": [
       5,
-      8
+      8,
+      5,
+      5
     ],
-    "mean_10": 6.5,
-    "score_10": 6.5
+    "mean_10": 5.75,
+    "score_10": 5.8
   }
 }

@@ -1,7 +1,7 @@
 {
-  "schema_version": 11,
+  "schema_version": 13,
   "game_slug": "mistfall-hunter",
-  "generated_at": "2026-08-17T22:50:48.908Z",
+  "generated_at": "2026-08-17T23:29:29.474Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -14,9 +14,69 @@
     "canonical_score_requires_exact_version": true,
     "score_extraction_separate": true,
     "search_title_variants": true,
-    "review_hub_following": true
+    "review_hub_following": true,
+    "critic_index": "metacritic",
+    "critic_index_scope": "released_fallback",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true
   },
-  "accepted": [],
+  "accepted": [
+    {
+      "id": "source-1",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "mistfall-hunter — IGN review",
+      "url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 60,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for mistfall-hunter attributed by Metacritic to IGN.",
+      "evidence_points": [
+        "Adria Mistfall Hunter isn’t a revolutionary game, but it wins players over with its atmosphere, diverse classes, and tense matches. However, its weak solo experience, lack of a dedicated PvE mode, and monetization are likely to turn many players away. With a bit of luck, it’s a game that will only improve over time."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:29:29.474Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:29.474Z",
+        "url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
+        "configured_source_id": "ign",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "IGN",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    }
+  ],
   "rejected": [
     {
       "publication": "IGN",
@@ -24,38 +84,6 @@
       "title": "Mistfall Hunter - IGN",
       "reasons": [
         "non_review_path"
-      ]
-    },
-    {
-      "publication": "StopGame",
-      "url": "https://stopgame.ru/game/mistfall_hunter",
-      "title": "Mistfall Hunter игра | StopGame.ru",
-      "reasons": [
-        "non_review_path"
-      ]
-    },
-    {
-      "publication": "StopGame",
-      "url": "https://stopgame.ru/show/163118/reliz_mistfall_hunter_i_machine_party_geympley_the_defiant_buduschee_the_elder_scrolls_online",
-      "title": "Релиз Mistfall Hunter и Machine Party, геймплей The Defiant, будущее The Elder Scrolls Online…",
-      "reasons": [
-        "no_review_signal"
-      ]
-    },
-    {
-      "publication": "StopGame",
-      "url": "https://stopgame.ru/game/mistfall_hunter/prices",
-      "title": "Mistfall Hunter - цены | StopGame.ru",
-      "reasons": [
-        "non_review_path"
-      ]
-    },
-    {
-      "publication": "StopGame",
-      "url": "https://stopgame.ru/show/140931/mistfall_hunter_screenshots",
-      "title": "Mistfall Hunter: Скриншоты",
-      "reasons": [
-        "no_review_signal"
       ]
     },
     {
@@ -375,6 +403,34 @@
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_discovery": {
@@ -439,15 +495,20 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 41,
-    "checked": 41,
-    "accepted": 0,
-    "scored": 0,
+    "registered_editorial": 45,
+    "checked": 45,
+    "accepted": 1,
+    "scored": 1,
     "context_only_versions": 0,
     "blocked_verified": 0,
-    "contemporary": 0,
+    "contemporary": 1,
     "green": false,
     "passed": false,
-    "needs_more": 5
+    "needs_more": 4,
+    "critic_index_rows": 1,
+    "critic_index_added": 1,
+    "critic_index_scores_added": 0,
+    "critic_index_platform": "primary",
+    "removed_user_generated": 0
   }
 }
