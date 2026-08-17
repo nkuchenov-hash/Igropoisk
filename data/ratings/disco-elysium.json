@@ -1,0 +1,62 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/disco-elysium.json#review_score",
+  "game_slug": "disco-elysium",
+  "checked_at": "2026-08-17T13:48:16.995Z",
+  "status": "red-needs-revision",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [],
+  "excluded_sources": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2019/10/16/disco-elysium-review",
+      "reason": "missing_trusted_editorial_score_evidence"
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/review/disco-elysium/disco-elysium-review-living-on-the-edge-and-loving-it",
+      "reason": "missing_trusted_editorial_score_evidence"
+    },
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/reviews/2019/11/5/20948146/disco-elysium-review-pc",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/620067-disco-elysium-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/disco-elysium",
+      "reason": "missing_trusted_editorial_score_evidence"
+    }
+  ],
+  "calculation": {
+    "source_count": 0,
+    "values": [],
+    "mean_10": null,
+    "score_10": null
+  }
+}

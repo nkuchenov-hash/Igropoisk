@@ -1,0 +1,62 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/kingdom-come-deliverance.json#review_score",
+  "game_slug": "kingdom-come-deliverance",
+  "checked_at": "2026-08-17T13:48:12.804Z",
+  "status": "red-needs-revision",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [],
+  "excluded_sources": [
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/2018/02/17/kingdom-come-deliverance-review",
+      "reason": "missing_trusted_editorial_score_evidence"
+    },
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/games/kingdom_come_deliverance/b/xboxone/archive/2018/02/28/kingdom-come-deliverance-review-game-informer.aspx",
+      "reason": "missing_trusted_editorial_score_evidence"
+    },
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/368221-kingdom-come-deliverance-review-hardcore-henry",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "guardian-games",
+      "publication": "The Guardian",
+      "url": "https://www.theguardian.com/games/2018/feb/15/kingdom-come-deliverance-review-medieval-rpg",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps4/kingdom_come_deliverance",
+      "reason": "missing_trusted_editorial_score_evidence"
+    }
+  ],
+  "calculation": {
+    "source_count": 0,
+    "values": [],
+    "mean_10": null,
+    "score_10": null
+  }
+}

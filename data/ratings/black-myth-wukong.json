@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/black-myth-wukong.json#review_score",
   "game_slug": "black-myth-wukong",
-  "checked_at": "2026-08-14T16:35:43.289Z",
-  "status": "green",
+  "checked_at": "2026-08-17T14:18:12.819Z",
+  "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -20,119 +20,43 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [
-    {
-      "source_id": "source-1",
-      "configured_source_id": "ign",
-      "publication": "IGN",
-      "title": "Black Myth: Wukong Review - IGN",
-      "url": "https://www.ign.com/articles/black-myth-wukong-review-pc",
-      "original_score": {
-        "score": 8,
-        "scale": 10,
-        "grade": null,
-        "display": "8/10"
-      },
-      "normalized_10": 8,
-      "score_evidence": {
-        "method": "jsonld.reviewRating",
-        "scope": "editorial_review",
-        "checked_at": "2026-08-14T16:35:43.003Z",
-        "url": "https://www.ign.com/articles/black-myth-wukong-review-pc",
-        "configured_source_id": "ign",
-        "direct_publisher": true
-      }
-    },
-    {
-      "source_id": "source-2",
-      "configured_source_id": "pc-gamer",
-      "publication": "PC Gamer",
-      "title": "Black Myth: Wukong review",
-      "url": "https://www.pcgamer.com/games/rpg/black-myth-wukong-review",
-      "original_score": {
-        "score": 87,
-        "scale": 100,
-        "grade": null,
-        "display": "87/100"
-      },
-      "normalized_10": 8.7,
-      "score_evidence": {
-        "method": "jsonld.reviewRating",
-        "scope": "editorial_review",
-        "checked_at": "2026-08-14T16:35:43.003Z",
-        "url": "https://www.pcgamer.com/games/rpg/black-myth-wukong-review/",
-        "configured_source_id": "pc-gamer",
-        "direct_publisher": true
-      }
-    },
-    {
-      "source_id": "source-3",
-      "configured_source_id": "gamesradar",
-      "publication": "GamesRadar+",
-      "title": "Black Myth: Wukong review &ndash;",
-      "url": "https://www.gamesradar.com/games/action-rpg/black-myth-wukong-review",
-      "original_score": {
-        "score": 4,
-        "scale": 5,
-        "grade": null,
-        "display": "4/5"
-      },
-      "normalized_10": 8,
-      "score_evidence": {
-        "method": "jsonld.reviewRating",
-        "scope": "editorial_review",
-        "checked_at": "2026-08-14T16:35:43.003Z",
-        "url": "https://www.gamesradar.com/games/action-rpg/black-myth-wukong-review/",
-        "configured_source_id": "gamesradar",
-        "direct_publisher": true
-      }
-    },
-    {
-      "source_id": "source-6",
-      "configured_source_id": "push-square",
-      "publication": "Push Square",
-      "title": "Review: Black Myth: Wukong (PS5) - A Spectacularly Creative Action Romp",
-      "url": "https://www.pushsquare.com/reviews/ps5/black-myth-wukong",
-      "original_score": {
-        "score": 8,
-        "scale": 10,
-        "grade": null,
-        "display": "8/10"
-      },
-      "normalized_10": 8,
-      "score_evidence": {
-        "method": "jsonld.reviewRating",
-        "scope": "editorial_review",
-        "checked_at": "2026-08-14T16:35:43.254Z",
-        "url": "https://www.pushsquare.com/reviews/ps5/black-myth-wukong",
-        "configured_source_id": "push-square",
-        "direct_publisher": true
-      }
-    }
-  ],
+  "sources": [],
   "excluded_sources": [
     {
-      "configured_source_id": "gamespot",
-      "publication": "GameSpot",
-      "url": "https://www.gamespot.com/reviews/black-myth-wukong-review-monkey-business/1900-6418269",
-      "reason": "canonical_version"
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.ign.com/articles/black-myth-wukong-review-pc",
+      "reason": "missing_trusted_editorial_score_evidence"
+    },
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/games/rpg/black-myth-wukong-review",
+      "reason": "missing_trusted_editorial_score_evidence"
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/games/action-rpg/black-myth-wukong-review",
+      "reason": "missing_trusted_editorial_score_evidence"
     },
     {
       "configured_source_id": "guardian-games",
       "publication": "The Guardian",
       "url": "https://www.theguardian.com/games/article/2024/aug/27/black-myth-wukong-review-a-fantastically-exciting-action-game",
       "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/black-myth-wukong",
+      "reason": "missing_trusted_editorial_score_evidence"
     }
   ],
   "calculation": {
-    "source_count": 4,
-    "values": [
-      8,
-      8.7,
-      8,
-      8
-    ],
-    "mean_10": 8.175,
-    "score_10": 8.2
+    "source_count": 0,
+    "values": [],
+    "mean_10": null,
+    "score_10": null
   }
 }
