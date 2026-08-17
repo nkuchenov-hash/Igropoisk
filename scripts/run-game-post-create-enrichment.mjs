@@ -86,6 +86,7 @@ async function bootstrapOne({request}){
 
 if(doBootstrap){
   // Fast deterministic/source-backed modules publish before any prose synthesis.
+  // IMPORTANT: bootstrap is request-scoped and must never invoke catalog-wide materializers.
   run('known-series','scripts/materialize-known-series.mjs',requests.map(({request})=>request.slug));
   await mapLimit(requests,bootstrapConcurrency,bootstrapOne);
 }
@@ -100,10 +101,12 @@ if(doReview){
     attempted.add(slug);run(`review:${slug}`,'scripts/quality-control-loop.mjs',['review',slug,String(request.game_id||'')]);
     run(`media-after-review:${slug}`,'scripts/enrich-game-media-from-sources.mjs',[slug]);
   }
-}
 
-run('catalog-materialization','scripts/materialize-catalog-game-data.mjs');
-if(exists('scripts/materialize-review-publication-feed.mjs'))run('review-feed','scripts/materialize-review-publication-feed.mjs');
+  // Catalog-wide materialization belongs to the slower review/finalization phase only.
+  // Running it during bootstrap rewrites unrelated games and breaks module isolation.
+  run('catalog-materialization','scripts/materialize-catalog-game-data.mjs');
+  if(exists('scripts/materialize-review-publication-feed.mjs'))run('review-feed','scripts/materialize-review-publication-feed.mjs');
+}
 
 let complete=0,deferred=0,pending=0;
 if(doReview){
@@ -128,5 +131,6 @@ if(doReview){
     if(reviewReady(slug)&&series.ready&&media.ready)complete++;else pending++;
   }
 }
-write('data/parser-runs/game-post-create-enrichment.json',{parser:'game-post-create-enrichment',phase,status:pending?'needs_revision':'green',checked_at:new Date().toISOString(),requested:requests.length,complete,deferred,pending,bootstrap_concurrency:doBootstrap?bootstrapConcurrency:0,review_batch:reviewCandidates.map(({request})=>request.slug),results});
+const reportName=phase==='bootstrap'?'game-post-create-bootstrap.json':'game-post-create-enrichment.json';
+write(`data/parser-runs/${reportName}`,{parser:'game-post-create-enrichment',phase,status:pending?'needs_revision':'green',checked_at:new Date().toISOString(),requested:requests.length,complete,deferred,pending,bootstrap_concurrency:doBootstrap?bootstrapConcurrency:0,review_batch:reviewCandidates.map(({request})=>request.slug),results});
 console.log(JSON.stringify({phase,requested:requests.length,complete,deferred,pending,bootstrap_concurrency:doBootstrap?bootstrapConcurrency:0,review_batch:reviewCandidates.map(({request})=>request.slug)},null,2));
