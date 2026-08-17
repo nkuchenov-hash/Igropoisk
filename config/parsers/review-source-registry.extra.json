@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "description": "Additive professional review sources used by the canonical review discovery pipeline. These are direct editorial publishers; aggregators remain discovery-only and never count as review evidence.",
+  "sources": [
+    {
+      "id": "the-sixth-axis",
+      "name": "TheSixthAxis",
+      "aliases": ["The Sixth Axis"],
+      "domains": ["thesixthaxis.com"],
+      "language": "en",
+      "regions": ["global"],
+      "trust": 0.84,
+      "weight": 0.84,
+      "review": {
+        "discovery_url": "https://www.thesixthaxis.com/category/reviews/",
+        "score": {
+          "policy": "explicit_only",
+          "extractor_profile": "generic-explicit",
+          "default_scale": 10
+        }
+      }
+    },
+    {
+      "id": "pc-invasion",
+      "name": "PC Invasion",
+      "domains": ["pcinvasion.com"],
+      "language": "en",
+      "regions": ["global"],
+      "trust": 0.84,
+      "weight": 0.84,
+      "review": {
+        "discovery_url": "https://www.pcinvasion.com/reviews/",
+        "score": {
+          "policy": "explicit_only",
+          "extractor_profile": "generic-explicit",
+          "default_scale": 10
+        }
+      }
+    },
+    {
+      "id": "game-spew",
+      "name": "GameSpew",
+      "aliases": ["Game Spew"],
+      "domains": ["gamespew.com"],
+      "language": "en",
+      "regions": ["global"],
+      "trust": 0.82,
+      "weight": 0.82,
+      "review": {
+        "discovery_url": "https://www.gamespew.com/category/reviews/",
+        "score": {
+          "policy": "explicit_only",
+          "extractor_profile": "generic-explicit",
+          "default_scale": 10
+        }
+      }
+    },
+    {
+      "id": "hooked-gamers",
+      "name": "Hooked Gamers",
+      "domains": ["hookedgamers.com"],
+      "language": "en",
+      "regions": ["global"],
+      "trust": 0.81,
+      "weight": 0.81,
+      "review": {
+        "discovery_url": "https://www.hookedgamers.com/reviews/",
+        "page_rules": {
+          "url_allow": ["/review/", "review/article-"],
+          "url_deny": ["/preview/", "/features/"]
+        },
+        "score": {
+          "policy": "explicit_only",
+          "extractor_profile": "generic-explicit",
+          "default_scale": 10
+        }
+      }
+    }
+  ]
+}
