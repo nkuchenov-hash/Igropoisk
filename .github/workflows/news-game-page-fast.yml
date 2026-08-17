@@ -64,7 +64,7 @@ jobs:
       - name: Stage only Game Creator output
         id: staged
         run: |
-          paths=(data/game-registry data/parser-output data/parser-runs data/drafts data/game-content data/catalog-visible.json game)
+          paths=(data/game-registry data/parser-output data/parser-runs data/drafts data/game-content data/game-enrichment-requests data/catalog-visible.json game)
           existing=()
           for path in "${paths[@]}"; do
             if [ -e "$path" ]; then existing+=("$path"); fi
