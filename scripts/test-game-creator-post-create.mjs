@@ -10,6 +10,7 @@ const media=read('scripts/enrich-game-media-from-sources.mjs');
 const reviewDiscovery=read('scripts/discover-review-sources-web.mjs');
 const historicalDiscoveryV14=read('scripts/discover-review-sources-web-v14.mjs');
 const historicalDiscoveryV15=read('scripts/discover-review-sources-web-v15.mjs');
+const postCreateResearch=read('scripts/prepare-post-create-review-research.mjs');
 const reviewRegistry=read('scripts/lib/review-source-registry.mjs');
 const scoreExtractor=read('scripts/lib/review-score-extractor.mjs');
 const quickReview=read('scripts/build-review-bootstrap-local.mjs');
@@ -27,6 +28,8 @@ if(!creator.includes('reviewNeeded = released && !reviewReady'))fail('Released g
 if(!verified.includes('verified_series_attached'))fail('Matched verified imports still lose supplied series');
 if(!series.includes('data/franchises/${slug}.json')||!series.includes('canonical_series_backfilled'))fail('Known series materialization/backfill contract missing');
 if(!runner.includes("'scripts/calculate-ratings-from-research.mjs'")||!runner.includes("'scripts/enrich-game-media-from-sources.mjs'"))fail('Fast rating/media enrichment stages missing');
+if(!runner.includes("'scripts/prepare-post-create-review-research.mjs'"))fail('Post-create runner can still invoke the destructive general research expander');
+if(runner.includes("await runAsync(`review-research:${slug}`,'scripts/prepare-review-research.mjs'"))fail('Post-create runner still allows general research to erase verified historical evidence');
 if(!runner.includes("'scripts/build-review-bootstrap-local.mjs'")||!runner.includes("'scripts/quality-control-loop.mjs'"))fail('Quick/full review stages missing');
 if(runner.indexOf("'scripts/build-review-bootstrap-local.mjs'")>runner.indexOf("'scripts/quality-control-loop.mjs'"))fail('Quick review must publish before the heavy full-review upgrade');
 if(!runner.includes("review:fullReady?'ready':quickReady?'bootstrap_ready'"))fail('Quick review state is not observable independently from full review');
@@ -43,6 +46,7 @@ if(!reviewDiscovery.includes('discover-review-sources-web-v15.mjs'))fail('Canoni
 for(const marker of ['rpgFanCandidates','rpgamerCandidates','gameRevolutionCandidates'])if(!historicalDiscoveryV14.includes(marker))fail(`Historical review adapter missing: ${marker}`);
 if(!historicalDiscoveryV14.includes('allowQueryPermalink:true'))fail('Legacy GameRevolution permalink support missing');
 for(const marker of ['metacritic','historical-critic-index-attribution','metascore_as_vote:false','user_scores_as_votes:false','professional_only:true'])if(!historicalDiscoveryV15.includes(marker))fail(`Historical critic-index policy missing: ${marker}`);
+for(const marker of ['isTrustedEditorialScore','historical_index_preserved','post_create_verified_corpus_preserved','metascore_as_vote:false','user_scores_as_votes:false'])if(!postCreateResearch.includes(marker))fail(`Post-create verified corpus preservation missing: ${marker}`);
 if(!reviewRegistry.includes('user_generated_review')||!reviewRegistry.includes('от\\s+пользователя'))fail('User-generated review pages are not excluded from editorial corpus');
 if(!scoreExtractor.includes("method==='historical-critic-index-attribution'")||!scoreExtractor.includes("evidence.index_source==='metacritic'")||!scoreExtractor.includes('evidence.aggregate_score_used!==true'))fail('Historical attributed critic-score evidence contract missing');
 if(!quickReview.includes("review_stage:'bootstrap'")||!quickReview.includes('minimum_independent_professional_sources:3'))fail('Quick review is not a separately identified, 3-source professional bootstrap');
@@ -54,8 +58,9 @@ if(!/paths=\([^\n]*data\/game-enrichment-requests/.test(verifiedWorkflow)||!/pat
 if(!enrichmentWorkflow.includes("OPENAI_API_KEY: ''")||!enrichmentWorkflow.includes('qwen3:1.7b')||!enrichmentWorkflow.includes('qwen3-vl:4b'))fail('Local model fallbacks missing');
 if(!enrichmentWorkflow.includes('build-review-bootstrap-local.mjs'))fail('Post-create workflow does not validate/trigger the quick review builder');
 if(!enrichmentWorkflow.includes('discover-review-sources-web-v15.mjs'))fail('Historical v15 changes do not retrigger post-create enrichment');
+if(!enrichmentWorkflow.includes('prepare-post-create-review-research.mjs'))fail('Verified corpus preparer is not validated/retriggered by post-create workflow');
 if(!enrichmentWorkflow.includes('cancel-in-progress: true'))fail('Fresh enrichment cannot cancel stale run');
 const bootstrapAt=enrichmentWorkflow.indexOf('POST_CREATE_PHASE: bootstrap'),bootstrapPublishAt=enrichmentWorkflow.indexOf('POST_CREATE_PUBLISH_PHASE: bootstrap'),modelAt=enrichmentWorkflow.indexOf('Restore local editorial model cache'),reviewAt=enrichmentWorkflow.indexOf('POST_CREATE_PHASE: review');if(bootstrapAt<0||bootstrapPublishAt<bootstrapAt||modelAt<bootstrapPublishAt||reviewAt<modelAt)fail('Fast checkpoint is not published before review synthesis');
 if(!publisher.includes('POST_CREATE_PUBLISH_PHASE')||!publisher.includes("freshObj!==baseObj")||!publisher.includes('for(let publishAttempt=1;publishAttempt<=5;publishAttempt++)'))fail('Conflict-safe publisher contract missing');
 if(!publisher.includes('createPrWithRetry')||!publisher.includes('Transient GitHub PR-create failure'))fail('Publisher does not retry transient GitHub PR creation failures');
-console.log('Game Creator post-create contract passed: base page, series/rating/media, professional-only historical critic indexing, publishable quick review and heavy editorial upgrade are independent and durable.');
+console.log('Game Creator post-create contract passed: base page, series/rating/media, professional-only historical critic indexing, non-destructive post-create research, publishable quick review and heavy editorial upgrade are independent and durable.');
