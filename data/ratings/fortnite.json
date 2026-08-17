@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/fortnite.json#review_score",
   "game_slug": "fortnite",
-  "checked_at": "2026-08-17T09:38:37.874Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T10:52:15.552Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:38:37.806Z",
+        "checked_at": "2026-08-17T10:52:15.285Z",
         "url": "https://www.digitaltrends.com/gaming/fortnite-battle-royale-review/",
         "configured_source_id": "digital-trends",
         "direct_publisher": true
@@ -59,9 +59,31 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:38:37.840Z",
+        "checked_at": "2026-08-17T10:52:15.506Z",
         "url": "https://gameinformer.com/review/fortnite/an-epic-epoch",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Fortnite review",
+      "url": "https://www.pcgamer.com/fortnite-review",
+      "original_score": {
+        "score": 87,
+        "scale": 100,
+        "grade": null,
+        "display": "87/100"
+      },
+      "normalized_10": 8.7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:52:15.506Z",
+        "url": "https://www.pcgamer.com/fortnite-review/",
+        "configured_source_id": "pc-gamer",
         "direct_publisher": true
       }
     }
@@ -87,12 +109,13 @@
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 3,
     "values": [
       8,
-      9.5
+      9.5,
+      8.7
     ],
-    "mean_10": 8.75,
-    "score_10": 8.8
+    "mean_10": 8.7333,
+    "score_10": 8.7
   }
 }

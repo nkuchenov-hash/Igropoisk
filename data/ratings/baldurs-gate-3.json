@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/baldurs-gate-3.json#review_score",
   "game_slug": "baldurs-gate-3",
-  "checked_at": "2026-08-17T09:38:26.649Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T10:52:28.242Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:38:26.614Z",
+        "checked_at": "2026-08-17T10:52:27.310Z",
         "url": "https://www.playground.ru/baldurs_gate_3/opinion/obzor_baldurs_gate_3_luchshaya_rpg_sovremennosti-1644244",
         "configured_source_id": "playground",
         "direct_publisher": true
@@ -59,9 +59,75 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:38:26.614Z",
+        "checked_at": "2026-08-17T10:52:27.310Z",
         "url": "https://gameinformer.com/review/baldurs-gate-3/a-true-soul-stirrer",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Baldur",
+      "url": "https://www.pcgamer.com/baldurs-gate-3-review",
+      "original_score": {
+        "score": 97,
+        "scale": 100,
+        "grade": null,
+        "display": "97/100"
+      },
+      "normalized_10": 9.7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:52:27.310Z",
+        "url": "https://www.pcgamer.com/baldurs-gate-3-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: Baldur",
+      "url": "https://www.pushsquare.com/reviews/ps5/baldurs-gate-3",
+      "original_score": {
+        "score": 10,
+        "scale": 10,
+        "grade": null,
+        "display": "10/10"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:52:28.201Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/baldurs-gate-3",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Baldur&#039;s Gate 3 PS5 Review | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2023/10/03/baldurs-gate-3-ps5-review",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:52:28.201Z",
+        "url": "https://www.thesixthaxis.com/2023/10/03/baldurs-gate-3-ps5-review/",
+        "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
       }
     }
@@ -75,12 +141,15 @@
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 5,
     "values": [
       9.5,
-      9.5
+      9.5,
+      9.7,
+      10,
+      9
     ],
-    "mean_10": 9.5,
+    "mean_10": 9.54,
     "score_10": 9.5
   }
 }

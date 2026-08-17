@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "total-war-warhammer-iii",
-  "checked_at": "2026-08-17T09:44:10.407Z",
+  "checked_at": "2026-08-17T10:58:15.414Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 1,
-  "scored": 1,
+  "accepted": 2,
+  "scored": 2,
   "context_only_versions": 0,
   "updates": [
     {
@@ -12,6 +12,15 @@
       "publication": "PC Gamer",
       "score": 90,
       "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "score": 9,
+      "scale": 10,
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": true
@@ -23,6 +32,17 @@
       "publication": "PC Gamer",
       "url": "https://www.pcgamer.com/total-war-warhammer-3-review",
       "final_url": "https://www.pcgamer.com/total-war-warhammer-3-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2022/02/14/total-war-warhammer-3-review",
+      "final_url": "https://www.thesixthaxis.com/2022/02/14/total-war-warhammer-3-review/",
       "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,

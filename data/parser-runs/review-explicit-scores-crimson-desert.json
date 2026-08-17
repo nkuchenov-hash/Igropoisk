@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "crimson-desert",
-  "checked_at": "2026-08-17T09:42:15.203Z",
+  "checked_at": "2026-08-17T10:56:47.834Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 3,
-  "scored": 3,
+  "accepted": 6,
+  "scored": 6,
   "context_only_versions": 0,
   "updates": [
     {
@@ -28,6 +28,33 @@
     {
       "configured_source_id": "game-informer",
       "publication": "Game Informer",
+      "score": 7,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 6,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "score": 8.4,
+      "scale": 10,
+      "method": "registry:hooked-gamers",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
       "score": 7,
       "scale": 10,
       "method": "jsonld.reviewRating",
@@ -63,6 +90,39 @@
       "publication": "Game Informer",
       "url": "https://gameinformer.com/review/crimson-desert/open-world-overload",
       "final_url": "https://gameinformer.com/review/crimson-desert/open-world-overload",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/crimson-desert",
+      "final_url": "https://www.pushsquare.com/reviews/ps5/crimson-desert",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/crimson_desert/review/article-2713.html",
+      "final_url": "https://www.hookedgamers.com/pc/crimson_desert/review/article-2713.html",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/06/26/crimson-desert-review-2",
+      "final_url": "https://www.thesixthaxis.com/2026/06/26/crimson-desert-review-2/",
       "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,

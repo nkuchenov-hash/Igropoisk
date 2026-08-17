@@ -1,11 +1,11 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "halo-campaign-evolved",
-  "checked_at": "2026-08-17T09:41:50.936Z",
+  "checked_at": "2026-08-17T10:55:41.668Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 6,
+  "accepted": 7,
   "scored": 2,
-  "context_only_versions": 3,
+  "context_only_versions": 4,
   "updates": [
     {
       "configured_source_id": "pc-gamer",
@@ -51,6 +51,15 @@
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "score": 7,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": false
     }
   ],
   "checks": [
@@ -119,6 +128,17 @@
       "preserved_existing_score": false,
       "trusted_editorial_score": true,
       "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/07/23/halo-campaign-evolved-review",
+      "final_url": "https://www.thesixthaxis.com/2026/07/23/halo-campaign-evolved-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": false
     }
   ]
 }

@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/crimson-desert.json#review_score",
   "game_slug": "crimson-desert",
-  "checked_at": "2026-08-17T09:42:15.238Z",
+  "checked_at": "2026-08-17T10:56:47.875Z",
   "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:42:15.202Z",
+        "checked_at": "2026-08-17T10:56:47.077Z",
         "url": "https://www.pcgamer.com/games/action/crimson-desert-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -59,7 +59,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:42:15.202Z",
+        "checked_at": "2026-08-17T10:56:47.077Z",
         "url": "https://www.gamesradar.com/games/rpg/crimson-desert-review/",
         "configured_source_id": "gamesradar",
         "direct_publisher": true
@@ -81,22 +81,91 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:42:15.202Z",
+        "checked_at": "2026-08-17T10:56:47.077Z",
         "url": "https://gameinformer.com/review/crimson-desert/open-world-overload",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: Crimson Desert (PS5) - A Generational Open World Buried in Early Access Cruft",
+      "url": "https://www.pushsquare.com/reviews/ps5/crimson-desert",
+      "original_score": {
+        "score": 6,
+        "scale": 10,
+        "grade": null,
+        "display": "6/10"
+      },
+      "normalized_10": 6,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:56:47.077Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/crimson-desert",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "title": "Crimson Desert PC review - \"A Vast World of Adventure\" | Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/crimson_desert/review/article-2713.html",
+      "original_score": {
+        "score": 8.4,
+        "scale": 10,
+        "grade": null,
+        "display": "8.4/10"
+      },
+      "normalized_10": 8.4,
+      "score_evidence": {
+        "method": "registry:hooked-gamers",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:56:47.833Z",
+        "url": "https://www.hookedgamers.com/pc/crimson_desert/review/article-2713.html",
+        "configured_source_id": "hooked-gamers",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Crimson Desert Review | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/06/26/crimson-desert-review-2",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:56:47.833Z",
+        "url": "https://www.thesixthaxis.com/2026/06/26/crimson-desert-review-2/",
+        "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
       }
     }
   ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 3,
+    "source_count": 6,
     "values": [
       8,
       8,
+      7,
+      6,
+      8.4,
       7
     ],
-    "mean_10": 7.6667,
-    "score_10": 7.7
+    "mean_10": 7.4,
+    "score_10": 7.4
   }
 }

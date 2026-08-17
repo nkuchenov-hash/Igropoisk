@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/resident-evil-2.json#review_score",
   "game_slug": "resident-evil-2",
-  "checked_at": "2026-08-17T09:37:16.809Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T10:51:44.578Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:37:16.771Z",
+        "checked_at": "2026-08-17T10:51:43.232Z",
         "url": "https://www.pcgamer.com/resident-evil-2-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -59,9 +59,53 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T09:37:16.771Z",
+        "checked_at": "2026-08-17T10:51:43.232Z",
         "url": "https://gameinformer.com/review/resident-evil-2/the-greater-of-two-evils",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: Resident Evil 2 (PS5) - A Cheap and Fairly Cheerful Upgrade",
+      "url": "https://www.pushsquare.com/reviews/ps5/resident-evil-2",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:51:43.233Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/resident-evil-2",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "title": "Resident Evil 2 PC review - \"Something wicked this way comes\" | Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/resident_evil_2/review/article-2021.html",
+      "original_score": {
+        "score": 10,
+        "scale": 10,
+        "grade": null,
+        "display": "10/10"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "registry:hooked-gamers",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T10:51:44.536Z",
+        "url": "https://www.hookedgamers.com/pc/resident_evil_2/review/article-2021.html",
+        "configured_source_id": "hooked-gamers",
         "direct_publisher": true
       }
     }
@@ -72,15 +116,23 @@
       "publication": "GamesRadar+",
       "url": "https://www.gamesradar.com/resident-evil-2-remake-review",
       "reason": "variant_or_port:remake"
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2019/01/22/resident-evil-2-review",
+      "reason": "canonical_version"
     }
   ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 4,
     "values": [
       8.9,
-      9.5
+      9.5,
+      8,
+      10
     ],
-    "mean_10": 9.2,
-    "score_10": 9.2
+    "mean_10": 9.1,
+    "score_10": 9.1
   }
 }
