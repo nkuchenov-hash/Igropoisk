@@ -6,6 +6,23 @@ const root=process.cwd();
 export function loadReviewSourceRegistry(configPath='config/parsers/review-source-registry.json'){
   const registry=JSON.parse(fs.readFileSync(path.join(root,configPath),'utf8'));
   if(!Array.isArray(registry.sources))throw new Error(`Invalid review source registry: ${configPath}`);
+  const extensionPath=configPath.replace(/\.json$/i,'.extra.json');
+  const absoluteExtension=path.join(root,extensionPath);
+  if(fs.existsSync(absoluteExtension)){
+    const extension=JSON.parse(fs.readFileSync(absoluteExtension,'utf8'));
+    if(!Array.isArray(extension.sources))throw new Error(`Invalid review source registry extension: ${extensionPath}`);
+    const existingIds=new Set(registry.sources.map(source=>source.id));
+    const existingDomains=new Set(registry.sources.flatMap(source=>source.domains||[]));
+    for(const source of extension.sources){
+      if(!source?.id)throw new Error(`Review source registry extension entry is missing id: ${extensionPath}`);
+      if(existingIds.has(source.id))throw new Error(`Duplicate review source id in extension: ${source.id}`);
+      for(const domain of source.domains||[])if(existingDomains.has(domain))throw new Error(`Duplicate review source domain in extension: ${domain}`);
+      registry.sources.push(source);
+      existingIds.add(source.id);
+      for(const domain of source.domains||[])existingDomains.add(domain);
+    }
+    registry.extensions=[...(registry.extensions||[]),extensionPath];
+  }
   const {review:reviewDefaults={},...sourceDefaults}=registry.defaults||{};
   registry.sources=registry.sources.map(source=>({
     ...sourceDefaults,
