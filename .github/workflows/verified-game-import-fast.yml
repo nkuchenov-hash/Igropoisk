@@ -53,7 +53,7 @@ jobs:
           const fs = require('fs');
           const report = JSON.parse(fs.readFileSync('tmp/verified-game-import-fast.json', 'utf8'));
           const games = Array.isArray(report.ready_games) ? report.ready_games : [];
-          process.stdout.write(`ready_count=${Number(report.ready_count || 0)}\nfailed_count=${Number(report.failed_count || 0)}\ngames_b64=${Buffer.from(JSON.stringify(games), 'utf8').toString('base64')}\n`);
+          process.stdout.write(`ready_count=${Number(report.ready_count || 0)}\nfailed_count=${Number(report.failed_count || 0)}\ngames_b64=${Buffer.from(JSON.stringify(games),'utf8').toString('base64')}\n`);
           NODE
           cat tmp/verified-game-import-fast.json
           python3 scripts/enforce_layout_contract.py --check
@@ -93,7 +93,7 @@ jobs:
             --body "Registers verified imports and materializes only their base pages through the shared Game Creator. Optional content modules remain independent.")"
           gh pr merge "$pr_url" --merge --delete-branch
 
-      - name: Promote every created base page to production
+      - name: Promote every created base page to production and dispatch Pages
         if: steps.fast.outputs.ready_count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -118,19 +118,27 @@ jobs:
             if [ -e "$path" ]; then existing+=("$path"); fi
           done
           if [ ${#existing[@]} -gt 0 ]; then git add -A -- "${existing[@]}"; fi
-          if git diff --cached --quiet; then exit 0; fi
-          branch="automation/verified-game-pages-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          git config user.name "igropoisk-content[bot]"
-          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
-          git checkout -b "$branch"
-          git commit -m "Publish verified-import base game pages"
-          git push origin "$branch"
-          pr_url="$(gh pr create \
-            --base main \
-            --head "$branch" \
-            --title "Publish verified-import game pages ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
-            --body "Publishes only verified base game pages created through the shared Game Creator. Review, media, Game DNA, similarity and guides are independent modules.")"
-          gh pr merge "$pr_url" --merge --delete-branch
+          if ! git diff --cached --quiet; then
+            branch="automation/verified-game-pages-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            git config user.name "igropoisk-content[bot]"
+            git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+            git checkout -b "$branch"
+            git commit -m "Publish verified-import base game pages"
+            git push origin "$branch"
+            pr_url="$(gh pr create \
+              --base main \
+              --head "$branch" \
+              --title "Publish verified-import game pages ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
+              --body "Publishes only verified base game pages created through the shared Game Creator. Review, media, Game DNA, similarity and guides are independent modules.")"
+            gh pr merge "$pr_url" --merge --delete-branch
+          fi
+          production_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+          jq -n \
+            --arg sha "$production_sha" \
+            --arg source "verified-game-import-fast" \
+            '{event_type:"production-pages",client_payload:{production_sha:$sha,source:$source}}' \
+            | gh api --method POST "repos/${GITHUB_REPOSITORY}/dispatches" --input -
+          echo "Dispatched Pages for production SHA $production_sha"
 
       - name: Wait until created pages are live
         if: steps.fast.outputs.ready_count != '0'
