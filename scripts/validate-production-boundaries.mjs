@@ -51,6 +51,10 @@ const productionPrProfiles = [
   {
     branchPrefix: 'automation/popular-game-pages-',
     materializer: 'node scripts/materialize-popular-production-pages.mjs --target'
+  },
+  {
+    branchPrefix: 'automation/verified-game-pages-',
+    materializer: 'node scripts/materialize-game-creator-pages.mjs'
   }
 ];
 
