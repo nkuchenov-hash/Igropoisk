@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { duplicateIdentityMap, normalizeGameIdentity } from './lib/home-feed-identity.mjs';
 import { evaluateHomeReleaseQuality } from './lib/home-release-quality.mjs';
 
@@ -91,5 +92,18 @@ const reviewBlocked = evaluateHomeReleaseQuality({
 }, options);
 assert.equal(reviewBlocked.homepage_eligible, false);
 assert(reviewBlocked.reasons.includes('needs_review'));
+
+const homeReleaseUi = fs.readFileSync('assets/home-releases/index.js', 'utf8');
+for (const forbiddenCopy of [
+  'Ожидаемость:',
+  'Ожидаемость подтверждена',
+  'независимых игровых изданий',
+  'Steam Popular Upcoming #'
+]) {
+  assert.equal(homeReleaseUi.includes(forbiddenCopy), false, `Release cards must not expose evidence copy: ${forbiddenCopy}`);
+}
+assert(homeReleaseUi.includes('`Ожидание ${overall}`'), 'Release cards must expose compact overall anticipation rating');
+assert(homeReleaseUi.includes('`Игроки ${players}`'), 'Release cards may expose compact player anticipation rating');
+assert(homeReleaseUi.includes("calendarLink.textContent='Открыть календарь'"), 'Release calendar CTA must not include a decorative arrow');
 
 console.log('Home feed identity and release anticipation regression tests passed.');
