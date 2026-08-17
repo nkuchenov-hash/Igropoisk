@@ -77,6 +77,7 @@ const videos = parser?.media?.videos || [];
 const cover = first(parser?.media?.cover, ...entityMedia(entity, ['cover', 'keyArt']));
 const hero = first(parser?.media?.hero, ...entityMedia(entity, ['hero', 'keyArt', 'cover']), cover);
 const artwork = unique([...(parser?.media?.artwork || []), ...entityMedia(entity, ['keyArt', 'hero'])]);
+const mediaReady = Boolean(hero || cover || screenshots.length || artwork.length);
 const officialLinks = field(entity, 'officialLinks', {});
 const store = first(parser?.links?.store, steamAppId ? `https://store.steampowered.com/app/${steamAppId}/` : null);
 const official = first(parser?.links?.official, typeof officialLinks === 'string' ? officialLinks : officialLinks?.official);
@@ -100,7 +101,6 @@ const sources = sourceUrl ? [{
 const missing = [];
 if (!title) missing.push('identity.title');
 if (!sourceUrl) missing.push('identity.source');
-if (!hero && !cover && screenshots.length === 0) missing.push('media');
 if (missing.length) throw new Error(`${slug}: insufficient structured data for a real page: ${missing.join(', ')}`);
 
 // Optional modules are observed, but never gate the existence of the base game page.
@@ -129,14 +129,14 @@ const game = {
     editorial_ready: reviewReady,
     review_ready: reviewReady,
     review_required: released,
-    media_green: null,
+    media_green: mediaReady,
     mode: 'game_creator_structured_sources',
     creator_source: creatorSource,
     updated_at: nowIso,
     gate: {
       canonical_game_id: entity.id,
       title: Boolean(title),
-      media: Boolean(hero || cover || screenshots.length),
+      media: mediaReady,
       source_count: sources.length,
       missing,
       passed: true
@@ -144,6 +144,7 @@ const game = {
   },
   modules: {
     page: 'ready',
+    media: mediaReady ? 'ready' : 'pending',
     review: reviewReady ? 'ready' : 'pending',
     game_dna: gameDnaReady ? 'ready' : 'pending',
     similarity: similarityReady ? 'ready' : 'pending',
