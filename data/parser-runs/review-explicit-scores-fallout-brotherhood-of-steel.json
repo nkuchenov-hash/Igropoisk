@@ -1,11 +1,33 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "fallout-brotherhood-of-steel",
-  "checked_at": "2026-08-17T21:36:30.658Z",
+  "checked_at": "2026-08-17T22:00:41.727Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 0,
-  "scored": 0,
+  "accepted": 1,
+  "scored": 1,
   "context_only_versions": 0,
-  "updates": [],
-  "checks": []
+  "updates": [
+    {
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "score": 60,
+      "scale": 100,
+      "method": "semantic-editorial-label",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/fallout-brotherhood-of-steel",
+      "final_url": "https://www.rpgfan.com/review/fallout-brotherhood-of-steel/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
 }

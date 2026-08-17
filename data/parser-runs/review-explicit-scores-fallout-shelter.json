@@ -1,11 +1,33 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "fallout-shelter",
-  "checked_at": "2026-08-17T21:37:45.046Z",
+  "checked_at": "2026-08-17T22:00:55.093Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 0,
-  "scored": 0,
+  "accepted": 1,
+  "scored": 1,
   "context_only_versions": 0,
-  "updates": [],
-  "checks": []
+  "updates": [
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "score": 7,
+      "scale": 10,
+      "method": "registry:game-revolution",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "url": "https://www.gamerevolution.com/review/68407-fallout-shelter-review",
+      "final_url": "https://www.gamerevolution.com/review/68407-fallout-shelter-review",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
 }

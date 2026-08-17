@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/fallout-brotherhood-of-steel.json#review_score",
   "game_slug": "fallout-brotherhood-of-steel",
-  "checked_at": "2026-08-17T21:36:30.698Z",
+  "checked_at": "2026-08-17T22:00:41.763Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,12 +20,37 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "title": "Fallout: Brotherhood of Steel Review | RPGFan",
+      "url": "https://www.rpgfan.com/review/fallout-brotherhood-of-steel",
+      "original_score": {
+        "score": 60,
+        "scale": 100,
+        "grade": null,
+        "display": "60/100"
+      },
+      "normalized_10": 6,
+      "score_evidence": {
+        "method": "semantic-editorial-label",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T22:00:41.727Z",
+        "url": "https://www.rpgfan.com/review/fallout-brotherhood-of-steel/",
+        "configured_source_id": "rpgfan",
+        "direct_publisher": true
+      }
+    }
+  ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      6
+    ],
+    "mean_10": 6,
+    "score_10": 6
   }
 }

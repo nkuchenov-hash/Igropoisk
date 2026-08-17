@@ -2,7 +2,7 @@
   "schema_version": 11,
   "game_slug": "skatesterre",
   "game_id": null,
-  "updated_at": "2026-08-17T20:44:04.458Z",
+  "updated_at": "2026-08-17T21:58:11.024Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
@@ -101,21 +101,48 @@
       "mechanics": [],
       "domain": "gamespew.com",
       "validation": {
-        "status": "accepted",
-        "checked_at": "2026-08-17T20:42:48.312Z",
-        "method": "registered-direct-publisher-http-v8",
-        "review_page": {
-          "accepted": true,
-          "reason": "review_path"
-        }
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T21:56:51.960Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
       },
-      "score": null,
-      "scale": null,
+      "score": 5,
+      "scale": 10,
       "grade": "",
-      "score_eligible": false
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T21:58:10.987Z",
+        "url": "https://www.gamespew.com/2026/08/skatesterre-review/",
+        "configured_source_id": "game-spew",
+        "direct_publisher": true
+      }
     }
   ],
-  "rejected": [],
+  "rejected": [
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/skatesterre",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/skatesterre-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/skatesterre-review",
+      "reasons": [
+        "HTTP 503"
+      ]
+    }
+  ],
   "review_score": {
     "status": "red-needs-revision",
     "owner": "review",
@@ -134,20 +161,38 @@
       "invented_scores_forbidden": true,
       "exact_canonical_version_required": true
     },
-    "sources": [],
-    "excluded_sources": [
+    "sources": [
       {
+        "source_id": "source-1",
         "configured_source_id": "game-spew",
         "publication": "GameSpew",
+        "title": "Skatesterre review – A Tony Hawk’s wannabe that falls short",
         "url": "https://www.gamespew.com/2026/08/skatesterre-review",
-        "reason": "canonical_version"
+        "original_score": {
+          "score": 5,
+          "scale": 10,
+          "grade": null,
+          "display": "5/10"
+        },
+        "normalized_10": 5,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T21:58:10.987Z",
+          "url": "https://www.gamespew.com/2026/08/skatesterre-review/",
+          "configured_source_id": "game-spew",
+          "direct_publisher": true
+        }
       }
     ],
+    "excluded_sources": [],
     "calculation": {
-      "source_count": 0,
-      "values": [],
-      "mean_10": null,
-      "score_10": null
+      "source_count": 1,
+      "values": [
+        5
+      ],
+      "mean_10": 5,
+      "score_10": 5
     }
   }
 }

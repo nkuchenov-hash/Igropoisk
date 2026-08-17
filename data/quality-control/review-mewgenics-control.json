@@ -4,12 +4,12 @@
   "game_slug": "mewgenics",
   "game_id": null,
   "canonical_title": "Mewgenics",
-  "checked_at": "2026-08-17T20:44:11.575Z",
+  "checked_at": "2026-08-17T21:58:18.893Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
-    "Корпус: 3/5",
-    "Оценённые издания: 3/3"
+    "Корпус: 4/5",
+    "Оценённые издания: 4/3"
   ],
   "revision_history": [
     {
@@ -17,7 +17,7 @@
       "script": "scripts/discover-review-sources-web.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"mewgenics\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 3,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
+      "stdout": "{\n  \"slug\": \"mewgenics\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 4,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n",
       "stderr": ""
     },
     {
@@ -25,7 +25,7 @@
       "script": "scripts/promote-review-source-audit.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"mewgenics\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 3,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"mewgenics\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 4,\n  \"trusted_scores_preserved\": 3,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -33,7 +33,7 @@
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"mewgenics\",\n  \"accepted\": 3,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"updates\": 3,\n  \"preserved\": 0\n}\n",
+      "stdout": "{\n  \"slug\": \"mewgenics\",\n  \"accepted\": 4,\n  \"scored\": 4,\n  \"context_only_versions\": 0,\n  \"updates\": 4,\n  \"preserved\": 0\n}\n",
       "stderr": ""
     },
     {
@@ -41,7 +41,7 @@
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"mewgenics\",\n  \"status\": \"green\",\n  \"scored_sources\": 3,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.7,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stdout": "{\n  \"slug\": \"mewgenics\",\n  \"status\": \"green\",\n  \"scored_sources\": 4,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
       "stderr": ""
     }
   ],

@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "fallout-new-vegas",
-  "checked_at": "2026-08-17T20:46:48.587Z",
+  "checked_at": "2026-08-17T22:00:42.299Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 4,
-  "scored": 3,
+  "accepted": 5,
+  "scored": 4,
   "context_only_versions": 0,
   "updates": [
     {
@@ -31,6 +31,15 @@
       "score": 4.5,
       "scale": 5,
       "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "score": 85,
+      "scale": 100,
+      "method": "semantic-editorial-label",
       "scope": "editorial_review",
       "canonical_score_eligible": true
     }
@@ -74,6 +83,17 @@
       "publication": "GamesRadar+",
       "url": "https://www.gamesradar.com/fallout-new-vegas-review",
       "final_url": "https://www.gamesradar.com/fallout-new-vegas-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/fallout-new-vegas",
+      "final_url": "https://www.rpgfan.com/review/fallout-new-vegas/",
       "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,

@@ -1,7 +1,7 @@
 {
   "schema_version": 11,
   "game_slug": "fields-of-mistria",
-  "generated_at": "2026-08-17T20:38:36.365Z",
+  "generated_at": "2026-08-17T21:52:59.393Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -48,13 +48,10 @@
       "mechanics": [],
       "domain": "polygon.com",
       "validation": {
-        "status": "accepted",
-        "checked_at": "2026-08-17T20:38:36.365Z",
-        "method": "registered-direct-publisher-http-v8",
-        "review_page": {
-          "accepted": true,
-          "reason": "review_path"
-        }
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T21:52:59.393Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP fetch failed"
       },
       "score": null,
       "scale": null,
@@ -105,7 +102,7 @@
       "domain": "pcgamer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T20:38:36.365Z",
+        "checked_at": "2026-08-17T21:52:59.393Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -119,7 +116,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T20:39:53.825Z",
+        "checked_at": "2026-08-17T21:53:53.671Z",
         "url": "https://www.pcgamer.com/games/life-sim/fields-of-mistria-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -133,6 +130,27 @@
       "title": "Fields of Mistria is the best $14 I",
       "reasons": [
         "non_review_path"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/fields-of-mistria-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/fields-of-mistria",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/fields-of-mistria-2",
+      "reasons": [
+        "HTTP 404"
       ]
     }
   ],
@@ -260,8 +278,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "unavailable",
+      "notes": "search transport unavailable"
     },
     {
       "source_id": "ars-technica",
@@ -492,7 +510,7 @@
     "accepted": 2,
     "scored": 1,
     "context_only_versions": 0,
-    "blocked_verified": 0,
+    "blocked_verified": 1,
     "contemporary": 2,
     "green": false,
     "passed": false,

@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/skatesterre.json#review_score",
   "game_slug": "skatesterre",
-  "checked_at": "2026-08-17T20:44:04.458Z",
+  "checked_at": "2026-08-17T21:58:11.024Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -20,19 +20,37 @@
     "invented_scores_forbidden": true,
     "exact_canonical_version_required": true
   },
-  "sources": [],
-  "excluded_sources": [
+  "sources": [
     {
+      "source_id": "source-1",
       "configured_source_id": "game-spew",
       "publication": "GameSpew",
+      "title": "Skatesterre review – A Tony Hawk’s wannabe that falls short",
       "url": "https://www.gamespew.com/2026/08/skatesterre-review",
-      "reason": "canonical_version"
+      "original_score": {
+        "score": 5,
+        "scale": 10,
+        "grade": null,
+        "display": "5/10"
+      },
+      "normalized_10": 5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T21:58:10.987Z",
+        "url": "https://www.gamespew.com/2026/08/skatesterre-review/",
+        "configured_source_id": "game-spew",
+        "direct_publisher": true
+      }
     }
   ],
+  "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 1,
+    "values": [
+      5
+    ],
+    "mean_10": 5,
+    "score_10": 5
   }
 }
