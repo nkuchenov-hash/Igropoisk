@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-import {spawnSync} from 'node:child_process';
+import {spawn,spawnSync} from 'node:child_process';
 
 const root=process.cwd();
 const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
@@ -11,6 +11,7 @@ const requestDir=path.join(root,'data/game-enrichment-requests');
 const requestedSlugs=new Set(process.argv.slice(2).map(value=>String(value||'').trim().toLowerCase()).filter(Boolean));
 const maxAttempts=Math.max(1,Number(process.env.POST_CREATE_MAX_ATTEMPTS||3));
 const reviewBatch=Math.max(1,Number(process.env.POST_CREATE_REVIEW_BATCH||3));
+const bootstrapConcurrency=Math.max(1,Math.min(6,Number(process.env.POST_CREATE_BOOTSTRAP_CONCURRENCY||3)));
 const phase=String(process.env.POST_CREATE_PHASE||'all').trim().toLowerCase();
 if(!['all','bootstrap','review'].includes(phase))throw new Error(`Unsupported POST_CREATE_PHASE: ${phase}`);
 const doBootstrap=phase!=='review';
@@ -20,6 +21,36 @@ function run(label,script,args=[]){
   const result=spawnSync('node',[script,...args],{cwd:root,encoding:'utf8',stdio:'pipe',env:process.env,maxBuffer:32*1024*1024});
   results.push({label,script,status:result.status===0?'completed':'needs_revision',exit_code:result.status,stdout:(result.stdout||'').slice(-5000),stderr:(result.stderr||'').slice(-5000)});
   if(result.stdout)console.log(result.stdout);if(result.stderr)console.error(result.stderr);return result.status===0;
+}
+function runAsync(label,script,args=[]){
+  return new Promise(resolve=>{
+    const child=spawn('node',[script,...args],{cwd:root,env:process.env,stdio:['ignore','pipe','pipe']});
+    let stdout='',stderr='';
+    const append=(current,chunk)=>`${current}${String(chunk||'')}`.slice(-10000);
+    child.stdout.on('data',chunk=>{stdout=append(stdout,chunk)});
+    child.stderr.on('data',chunk=>{stderr=append(stderr,chunk)});
+    child.on('error',error=>{stderr=append(stderr,error?.stack||error?.message||String(error));finish(1)});
+    let finished=false;
+    const finish=code=>{
+      if(finished)return;finished=true;
+      const ok=Number(code)===0;
+      results.push({label,script,status:ok?'completed':'needs_revision',exit_code:Number(code),stdout:stdout.slice(-5000),stderr:stderr.slice(-5000)});
+      if(stdout)console.log(`[${label}]\n${stdout}`);if(stderr)console.error(`[${label}]\n${stderr}`);
+      resolve(ok);
+    };
+    child.on('close',finish);
+  });
+}
+async function mapLimit(items,limit,worker){
+  let cursor=0;
+  const count=Math.min(limit,items.length);
+  await Promise.all(Array.from({length:count},async()=>{
+    while(true){
+      const index=cursor++;
+      if(index>=items.length)return;
+      await worker(items[index],index);
+    }
+  }));
 }
 const scoreGreen=review=>review?.review_score?.status==='green'&&Number.isFinite(Number(review?.review_score?.calculation?.score_10));
 const reviewReady=slug=>{
@@ -40,21 +71,23 @@ const requestFiles=fs.readdirSync(requestDir).filter(name=>name.endsWith('.json'
 const requests=requestFiles.map(file=>({file,request:read(`data/game-enrichment-requests/${file}`,{})})).filter(({request})=>request?.slug&&(!requestedSlugs.size||requestedSlugs.has(String(request.slug).toLowerCase()))).filter(({request})=>!['complete','deferred_to_catalog_lifecycle'].includes(String(request.state||'')));
 if(!requests.length){console.log('[post-create] no pending enrichment requests');process.exit(0)}
 
+async function bootstrapOne({request}){
+  const slug=String(request.slug).toLowerCase();if(!exists(`data/drafts/${slug}.json`))return;
+  const current=read(`data/reviews/${slug}.json`,{});
+  if(request.released!==false&&!scoreGreen(current)){
+    if(exists('scripts/discover-review-sources-web.mjs'))await runAsync(`review-discovery:${slug}`,'scripts/discover-review-sources-web.mjs',[slug,'--all']);
+    if(exists('scripts/promote-review-source-audit.mjs'))await runAsync(`review-audit:${slug}`,'scripts/promote-review-source-audit.mjs',[slug]);
+    await runAsync(`review-research:${slug}`,'scripts/prepare-review-research.mjs',[slug]);
+    if(exists('scripts/enrich-review-explicit-scores.mjs'))await runAsync(`review-scores:${slug}`,'scripts/enrich-review-explicit-scores.mjs',[slug]);
+    await runAsync(`rating:${slug}`,'scripts/calculate-ratings-from-research.mjs',[slug]);
+  }
+  await runAsync(`media:${slug}`,'scripts/enrich-game-media-from-sources.mjs',[slug]);
+}
+
 if(doBootstrap){
   // Fast deterministic/source-backed modules publish before any prose synthesis.
   run('known-series','scripts/materialize-known-series.mjs',requests.map(({request})=>request.slug));
-  for(const {request} of requests){
-    const slug=String(request.slug).toLowerCase();if(!exists(`data/drafts/${slug}.json`))continue;
-    const current=read(`data/reviews/${slug}.json`,{});
-    if(request.released!==false&&!scoreGreen(current)){
-      if(exists('scripts/discover-review-sources-web.mjs'))run(`review-discovery:${slug}`,'scripts/discover-review-sources-web.mjs',[slug,'--all']);
-      if(exists('scripts/promote-review-source-audit.mjs'))run(`review-audit:${slug}`,'scripts/promote-review-source-audit.mjs',[slug]);
-      run(`review-research:${slug}`,'scripts/prepare-review-research.mjs',[slug]);
-      if(exists('scripts/enrich-review-explicit-scores.mjs'))run(`review-scores:${slug}`,'scripts/enrich-review-explicit-scores.mjs',[slug]);
-      run(`rating:${slug}`,'scripts/calculate-ratings-from-research.mjs',[slug]);
-    }
-    run(`media:${slug}`,'scripts/enrich-game-media-from-sources.mjs',[slug]);
-  }
+  await mapLimit(requests,bootstrapConcurrency,bootstrapOne);
 }
 
 let reviewCandidates=[];
@@ -91,9 +124,9 @@ if(doReview){
 }else{
   // Bootstrap deliberately leaves request files untouched so its checkpoint does not self-trigger/cancel the same workflow.
   for(const {request} of requests){
-    const slug=String(request.slug).toLowerCase(),series=seriesState(slug,request),media=mediaState(slug),review=read(`data/reviews/${slug}.json`,{});
+    const slug=String(request.slug).toLowerCase(),series=seriesState(slug,request),media=mediaState(slug);
     if(reviewReady(slug)&&series.ready&&media.ready)complete++;else pending++;
   }
 }
-write('data/parser-runs/game-post-create-enrichment.json',{parser:'game-post-create-enrichment',phase,status:pending?'needs_revision':'green',checked_at:new Date().toISOString(),requested:requests.length,complete,deferred,pending,review_batch:reviewCandidates.map(({request})=>request.slug),results});
-console.log(JSON.stringify({phase,requested:requests.length,complete,deferred,pending,review_batch:reviewCandidates.map(({request})=>request.slug)},null,2));
+write('data/parser-runs/game-post-create-enrichment.json',{parser:'game-post-create-enrichment',phase,status:pending?'needs_revision':'green',checked_at:new Date().toISOString(),requested:requests.length,complete,deferred,pending,bootstrap_concurrency:doBootstrap?bootstrapConcurrency:0,review_batch:reviewCandidates.map(({request})=>request.slug),results});
+console.log(JSON.stringify({phase,requested:requests.length,complete,deferred,pending,bootstrap_concurrency:doBootstrap?bootstrapConcurrency:0,review_batch:reviewCandidates.map(({request})=>request.slug)},null,2));
