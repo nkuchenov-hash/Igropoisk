@@ -63,6 +63,7 @@ on:
       - 'scripts/lib/news-game-hashtag.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/publish-news-storage.mjs'
+      - '.github/workflows/news-game-page-fast.yml'
       - '.github/workflows/news-pipeline.yml'
 
 permissions:
@@ -157,12 +158,12 @@ jobs:
           process.stdout.write(`count=${result.count}\nrequests_b64=${result.requests_b64}\n`);
           NODE
 
-      - name: Trigger canonical game lifecycle for every missing historical page
+      - name: Create every missing game page through the fast structured-data path
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
           NEWS_GAME_REQUESTS_B64: ${{ steps.game_pages.outputs.requests_b64 }}
-        run: gh workflow run content-pipeline.yml --ref staging -f news_game_requests_b64="$NEWS_GAME_REQUESTS_B64"
+        run: gh workflow run news-game-page-fast.yml --ref staging -f news_game_requests_b64="$NEWS_GAME_REQUESTS_B64"
 
       - name: Require every canonical hashtag to resolve before publication
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
