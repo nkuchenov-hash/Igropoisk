@@ -1,10 +1,10 @@
 {
-  "schema_version": 8,
+  "schema_version": 9,
   "type": "review",
   "game_slug": "mistfall-hunter",
   "game_id": null,
   "canonical_title": "mistfall-hunter",
-  "checked_at": "2026-08-17T10:54:19.027Z",
+  "checked_at": "2026-08-17T12:59:05.771Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
@@ -54,9 +54,10 @@
     "score_enrichment": "direct-publisher-structured-markup-preserve-verified",
     "score_aggregation": "all-eligible-explicit-publisher-scores",
     "article_reuse": "surgical-rebind-before-regeneration",
-    "synthesis_fallback": "local-ollama-only-after-deterministic-recovery",
-    "visual_audit_fallback": "local-ollama-multimodal",
-    "language_audit_fallback": "local-ollama",
+    "targeted_hard_repair": "preserve_rebound_prose_and_repair_only_failing_media_or_language",
+    "synthesis_fallback": "github-models-then-local-text",
+    "visual_audit_fallback": "github-models-then-local-multimodal",
+    "language_audit_fallback": "local-lightweight-text",
     "web_discovery_attempts_per_qc": 1
   }
 }

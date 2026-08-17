@@ -1,10 +1,10 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "wild-blue-skies",
-  "checked_at": "2026-08-17T10:57:51.712Z",
+  "checked_at": "2026-08-17T13:02:54.910Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 1,
-  "scored": 1,
+  "accepted": 2,
+  "scored": 2,
   "context_only_versions": 0,
   "updates": [
     {
@@ -15,6 +15,15 @@
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
       "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "worthplaying",
+      "publication": "WorthPlaying",
+      "score": 8,
+      "scale": 10,
+      "method": "registry:worthplaying",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
     }
   ],
   "checks": [
@@ -23,6 +32,17 @@
       "publication": "Game Informer",
       "url": "https://gameinformer.com/review/wild-blue-skies/bland-homage",
       "final_url": "https://gameinformer.com/review/wild-blue-skies/bland-homage",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "worthplaying",
+      "publication": "WorthPlaying",
+      "url": "https://worthplaying.com/article/2026/8/13/reviews/150698-pc-review-wild-blue-skies",
+      "final_url": "https://worthplaying.com/article/2026/8/13/reviews/150698-pc-review-wild-blue-skies/",
       "status": "explicit_editorial_score_found",
       "blocked": false,
       "preserved_existing_score": false,

@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/wild-blue-skies.json#review_score",
   "game_slug": "wild-blue-skies",
-  "checked_at": "2026-08-17T10:57:51.787Z",
+  "checked_at": "2026-08-17T13:02:54.956Z",
   "status": "red-needs-revision",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -37,20 +37,43 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T10:57:51.711Z",
+        "checked_at": "2026-08-17T13:02:54.910Z",
         "url": "https://gameinformer.com/review/wild-blue-skies/bland-homage",
         "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "worthplaying",
+      "publication": "WorthPlaying",
+      "title": "PC Review - 'Wild Blue Skies'",
+      "url": "https://worthplaying.com/article/2026/8/13/reviews/150698-pc-review-wild-blue-skies",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "registry:worthplaying",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T13:02:54.910Z",
+        "url": "https://worthplaying.com/article/2026/8/13/reviews/150698-pc-review-wild-blue-skies/",
+        "configured_source_id": "worthplaying",
         "direct_publisher": true
       }
     }
   ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 1,
+    "source_count": 2,
     "values": [
-      5
+      5,
+      8
     ],
-    "mean_10": 5,
-    "score_10": 5
+    "mean_10": 6.5,
+    "score_10": 6.5
   }
 }
