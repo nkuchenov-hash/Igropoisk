@@ -49,6 +49,7 @@ async function mapLimit(items,limit,worker){
   }));
 }
 const scoreGreen=review=>review?.review_score?.status==='green'&&Number.isFinite(Number(review?.review_score?.calculation?.score_10));
+const requestScoreGreen=({request})=>scoreGreen(read(`data/reviews/${String(request?.slug||'').toLowerCase()}.json`,{}));
 const reviewReady=slug=>{
   const review=read(`data/reviews/${slug}.json`,{}),article=read(`data/articles/${slug}.json`,{}),score=Number(review?.review_score?.calculation?.score_10);
   return review?.publication_gate?.status==='green'&&scoreGreen(review)&&String(article?.publication_status||'').toLowerCase()==='published'&&Number(article?.score)===score&&exists(`article/${slug}/index.html`);
@@ -87,9 +88,12 @@ if(doBootstrap){
 let reviewCandidates=[];
 const attempted=new Set();
 if(doReview){
-  // Every released game with a green canonical rating gets a publishable compact review first.
-  // The heavy 20-source editorial article is only an upgrade and may never erase/block this bootstrap review.
-  reviewCandidates=requests.filter(({request})=>request.released!==false&&!reviewReady(request.slug)&&Number(request.review_attempts||0)<maxAttempts).sort((a,b)=>Number(a.request.review_attempts||0)-Number(b.request.review_attempts||0)||String(a.request.requested_at||'').localeCompare(String(b.request.requested_at||''))).slice(0,reviewBatch);
+  // Green canonical ratings are ready for a useful compact review now, so they must not wait behind red research retries.
+  // The remaining batch capacity can still be used by non-green games for the heavier editorial upgrade path.
+  reviewCandidates=requests
+    .filter(({request})=>request.released!==false&&!reviewReady(request.slug)&&Number(request.review_attempts||0)<maxAttempts)
+    .sort((a,b)=>Number(requestScoreGreen(b))-Number(requestScoreGreen(a))||Number(a.request.review_attempts||0)-Number(b.request.review_attempts||0)||String(a.request.requested_at||'').localeCompare(String(b.request.requested_at||'')))
+    .slice(0,reviewBatch);
   for(const {request} of reviewCandidates){
     const slug=String(request.slug).toLowerCase();if(!exists(`data/drafts/${slug}.json`))continue;
     attempted.add(slug);
