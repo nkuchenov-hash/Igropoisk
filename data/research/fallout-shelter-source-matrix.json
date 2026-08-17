@@ -1,7 +1,7 @@
 {
-  "schema_version": 12,
+  "schema_version": 13,
   "game_slug": "fallout-shelter",
-  "generated_at": "2026-08-17T23:15:54.746Z",
+  "generated_at": "2026-08-17T23:29:39.913Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -15,10 +15,12 @@
     "score_extraction_separate": true,
     "search_title_variants": true,
     "review_hub_following": true,
-    "post_create_verified_corpus_preserved": true,
-    "professional_only": true,
+    "critic_index": "metacritic",
+    "critic_index_scope": "released_fallback",
     "metascore_as_vote": false,
-    "user_scores_as_votes": false
+    "user_scores_as_votes": false,
+    "professional_only": true,
+    "post_create_verified_corpus_preserved": true
   },
   "accepted": [
     {
@@ -62,7 +64,7 @@
       "domain": "gamerevolution.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T23:14:38.093Z",
+        "checked_at": "2026-08-17T23:28:44.128Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -72,10 +74,172 @@
       "score_evidence": {
         "method": "registry:game-revolution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T23:15:54.870Z",
+        "checked_at": "2026-08-17T23:29:40.104Z",
         "url": "https://www.gamerevolution.com/review/68407-fallout-shelter-review",
         "configured_source_id": "game-revolution",
         "direct_publisher": true
+      }
+    },
+    {
+      "id": "source-2",
+      "configured_source_id": "gamestar",
+      "publication": "GameStar",
+      "title": "Fallout Shelter — GameStar review",
+      "url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+      "resolved_url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+      "source_kind": "review",
+      "platform": "pc",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "de",
+      "score": 69,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Fallout Shelter attributed by Metacritic to GameStar.",
+      "evidence_points": [
+        "A nice little build-a-vault-game, great for spending a little time. But it lacks the depth to be motivating in the long term."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:29:36.594Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+        "index_platform": "pc",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:36.594Z",
+        "url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+        "configured_source_id": "gamestar",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "pc",
+        "attributed_publication": "GameStar",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-3",
+      "configured_source_id": "the-games-machine",
+      "publication": "The Games Machine",
+      "title": "Fallout Shelter — The Games Machine review",
+      "url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+      "resolved_url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+      "source_kind": "review",
+      "platform": "pc",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "it",
+      "score": 61,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Fallout Shelter attributed by Metacritic to The Games Machine.",
+      "evidence_points": [
+        "Fallout Shelter is a pretty nice game for mobile devices. The same cannot be said for the"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:29:36.594Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+        "index_platform": "pc",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:36.594Z",
+        "url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+        "configured_source_id": "the-games-machine",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "pc",
+        "attributed_publication": "The Games Machine",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "id": "source-4",
+      "configured_source_id": "cd-action",
+      "publication": "CD-Action",
+      "title": "Fallout Shelter — CD-Action review",
+      "url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+      "resolved_url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+      "source_kind": "review",
+      "platform": "pc",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "pl",
+      "score": 45,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Fallout Shelter attributed by Metacritic to CD-Action.",
+      "evidence_points": [
+        "Simply put, Bethesda showed us how not to port mobile games to big platforms. Fallout Shelter formula just does not fit"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:29:36.594Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+        "index_platform": "pc",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:36.594Z",
+        "url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+        "configured_source_id": "cd-action",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "pc",
+        "attributed_publication": "CD-Action",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
       }
     }
   ],
@@ -389,6 +553,34 @@
       "region": "global",
       "status": "not_found",
       "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     }
   ],
   "regional_discovery": {
@@ -453,17 +645,22 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "registered_editorial": 41,
-    "checked": 41,
-    "accepted": 1,
-    "scored": 1,
+    "registered_editorial": 45,
+    "checked": 45,
+    "accepted": 4,
+    "scored": 4,
     "context_only_versions": 0,
     "blocked_verified": 0,
-    "contemporary": 1,
+    "contemporary": 4,
     "green": false,
     "passed": false,
-    "needs_more": 4,
+    "needs_more": 1,
+    "critic_index_rows": 3,
+    "critic_index_added": 3,
+    "critic_index_scores_added": 0,
+    "critic_index_platform": "pc",
+    "removed_user_generated": 0,
     "historical_index_preserved": 0,
-    "trusted_scores_preserved": 1
+    "trusted_scores_preserved": 4
   }
 }

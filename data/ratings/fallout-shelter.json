@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/fallout-shelter.json#review_score",
   "game_slug": "fallout-shelter",
-  "checked_at": "2026-08-17T23:15:54.925Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-17T23:29:40.155Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,20 +37,110 @@
       "score_evidence": {
         "method": "registry:game-revolution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T23:15:54.870Z",
+        "checked_at": "2026-08-17T23:29:40.104Z",
         "url": "https://www.gamerevolution.com/review/68407-fallout-shelter-review",
         "configured_source_id": "game-revolution",
         "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "gamestar",
+      "publication": "GameStar",
+      "title": "Fallout Shelter — GameStar review",
+      "url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+      "original_score": {
+        "score": 69,
+        "scale": 100,
+        "grade": null,
+        "display": "69/100"
+      },
+      "normalized_10": 6.9,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:36.594Z",
+        "url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+        "configured_source_id": "gamestar",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "pc",
+        "attributed_publication": "GameStar",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "the-games-machine",
+      "publication": "The Games Machine",
+      "title": "Fallout Shelter — The Games Machine review",
+      "url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+      "original_score": {
+        "score": 61,
+        "scale": 100,
+        "grade": null,
+        "display": "61/100"
+      },
+      "normalized_10": 6.1,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:36.594Z",
+        "url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+        "configured_source_id": "the-games-machine",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "pc",
+        "attributed_publication": "The Games Machine",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "cd-action",
+      "publication": "CD-Action",
+      "title": "Fallout Shelter — CD-Action review",
+      "url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+      "original_score": {
+        "score": 45,
+        "scale": 100,
+        "grade": null,
+        "display": "45/100"
+      },
+      "normalized_10": 4.5,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:36.594Z",
+        "url": "https://www.metacritic.com/game/fallout-shelter/critic-reviews/?platform=pc",
+        "configured_source_id": "cd-action",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "pc",
+        "attributed_publication": "CD-Action",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
       }
     }
   ],
   "excluded_sources": [],
   "calculation": {
-    "source_count": 1,
+    "source_count": 4,
     "values": [
-      7
+      7,
+      6.9,
+      6.1,
+      4.5
     ],
-    "mean_10": 7,
-    "score_10": 7
+    "mean_10": 6.125,
+    "score_10": 6.1
   }
 }
