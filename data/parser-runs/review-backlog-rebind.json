@@ -1,9 +1,9 @@
 {
   "schema_version": 3,
   "phase": "rebind",
-  "started_at": "2026-08-17T23:39:13.474Z",
-  "checked_at": "2026-08-17T23:39:13.941Z",
-  "duration_ms": 467,
+  "started_at": "2026-08-18T11:44:02.030Z",
+  "checked_at": "2026-08-18T11:44:02.716Z",
+  "duration_ms": 686,
   "concurrency": 4,
   "timeout_ms": 180000,
   "selected": 26,
@@ -335,7 +335,8 @@
       "regional_complete": true,
       "article_status": "published",
       "comments": [
-        "Existing article could not be deterministically rebound; queued for prose/media repair."
+        "Оценка статьи не совпадает с review.review_score.",
+        "hogwarts-legacy: only 5/8 verified game-specific screenshots\n"
       ],
       "stdout_tail": "",
       "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n"
@@ -631,7 +632,7 @@
         "apex-legends: only 0/8 verified game-specific screenshots\n"
       ],
       "stdout_tail": "",
-      "stderr_tail": "apex-legends: blocked\n- duplicate scenes: apex-legends-8d079841d281177a05531885\napex-legends: review output validation failed after canonical score/source rebind; preserving rebound prose for targeted repair\n"
+      "stderr_tail": "apex-legends: blocked\n- meaningful carousels 8/3 max\n- identity: carousel commentary missing\n- loop: carousel commentary missing\n- systems: carousel commentary missing\n- world: carousel commentary missing\n- progression: carousel commentary missing\n- presentation: carousel commentary missing\n- friction: carousel commentary missing\n- legacy: carousel commentary missing\n- duplicate scenes: apex-legends-8d079841d281177a05531885\napex-legends: review output validation failed after canonical score/source rebind; preserving rebound prose for targeted repair\n"
     },
     {
       "slug": "honkai-star-rail",

@@ -1,12 +1,19 @@
 {
-  "validator": "review-output",
+  "validator": "review-output-carousel-v2",
   "slug": "mafia",
-  "checked_at": "2026-08-18T00:29:28.550Z",
+  "checked_at": "2026-08-18T12:34:21.222Z",
   "passed": false,
   "words": 2073,
   "sections": 9,
+  "meaningful_carousels": 8,
   "total_images": 18,
   "unique_images": 16,
+  "carousel_policy": {
+    "minimum_carousels": 2,
+    "maximum_carousels": 3,
+    "minimum_images": 2,
+    "maximum_images": 4
+  },
   "quality_thresholds": {
     "technicalFloor": {
       "minWidth": 480,
@@ -21,7 +28,18 @@
     "minRenderSuitability": 0.72
   },
   "errors": [
-    "tommy-story: images 0/1",
+    "meaningful carousels 8/3 max",
+    "what-it-is: carousel images 1, expected 2-4",
+    "what-it-is: carousel commentary missing",
+    "lost-heaven: carousel images 1, expected 2-4",
+    "lost-heaven: carousel commentary missing",
+    "driving: carousel commentary missing",
+    "missions: carousel commentary missing",
+    "combat: carousel commentary missing",
+    "difficulty: carousel commentary missing",
+    "presentation: carousel commentary missing",
+    "free-ride-ports: carousel images 1, expected 2-4",
+    "free-ride-ports: carousel commentary missing",
     "duplicate URLs: https://cdn.mobygames.com/screenshots/10290109-mafia-windows-in-the-beginning-of-the-game-you-are-a-regular-tax.jpg, https://cdn.mobygames.com/screenshots/3299651-mafia-windows-i-decide-to-smash-some-statues-with-my-trusty-base.jpg",
     "unknown dimensions: https://cdn.mobygames.com/screenshots/10290109-mafia-windows-in-the-beginning-of-the-game-you-are-a-regular-tax.jpg",
     "technical size floor 0x0/480x270: https://cdn.mobygames.com/screenshots/10290109-mafia-windows-in-the-beginning-of-the-game-you-are-a-regular-tax.jpg",
