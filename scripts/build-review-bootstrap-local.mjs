@@ -9,6 +9,11 @@ const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path
 const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,`${JSON.stringify(value,null,2)}\n`)};
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const countWords=value=>(String(value||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]+/g)||[]).length;
+const QUICK_REVIEW_TIMEOUT_MS=Math.max(60000,Math.min(240000,Number(process.env.QUICK_REVIEW_TIMEOUT_MS||120000)));
+const QUICK_REVIEW_NUM_CTX=Math.max(4096,Math.min(16384,Number(process.env.QUICK_REVIEW_NUM_CTX||8192)));
+const QUICK_REVIEW_NUM_PREDICT=Math.max(1600,Math.min(3600,Number(process.env.QUICK_REVIEW_NUM_PREDICT||2400)));
+const QUICK_REVIEW_MIN_WORDS=360;
+const QUICK_REVIEW_MAX_ATTEMPTS=2;
 const draft=read(`data/drafts/${slug}.json`),review=read(`data/reviews/${slug}.json`,{}),research=read(`data/research/${slug}-source-matrix.json`,{});
 if(!draft?.identity)throw new Error(`${slug}: game draft missing`);
 const score=Number(review?.review_score?.calculation?.score_10);
@@ -24,18 +29,47 @@ const existing=read(`data/review-bootstrap/${slug}.json`);
 if(existing?.publication_status==='published'&&Number(existing.score)===score&&fs.existsSync(path.join(root,'article',slug,'index.html'))){
   console.log(JSON.stringify({slug,status:'already_published',score,sources:existing.sources?.length||0},null,2));process.exit(0);
 }
-const sources=allSources.slice(0,8),validIds=new Set(sources.map((source,index)=>source.id||`source-${index+1}`));
-const sourceDigest=sources.map((source,index)=>({id:source.id||`source-${index+1}`,publication:source.publication||source.source||source.configured_source_id,title:source.title||'',score:source.score??null,scale:source.scale??null,praise:(source.praise||[]).slice(0,5),criticism:(source.criticism||[]).slice(0,5),evidence_points:(source.evidence_points||source.evidence||[]).slice(0,8),url:source.resolved_url||source.url}));
-const identity={title:draft.identity.title,release:draft.release,developers:draft.companies?.developers||[],publishers:draft.companies?.publishers||[],genres:draft.classification?.genres||[],description:draft.editorial?.integrated_description||draft.editorial?.short_description||'',features:draft.editorial?.features||[]};
-const schema={type:'object',additionalProperties:false,required:['title','dek','lead','sections','verdict'],properties:{title:{type:'string'},dek:{type:'string'},lead:{type:'string'},sections:{type:'array',minItems:4,maxItems:5,items:{type:'object',additionalProperties:false,required:['id','heading','paragraphs','source_ids'],properties:{id:{type:'string'},heading:{type:'string'},paragraphs:{type:'array',minItems:2,maxItems:4,items:{type:'string'}},source_ids:{type:'array',minItems:1,items:{type:'string'}}}}},verdict:{type:'object',additionalProperties:false,required:['summary','best_for','not_for'],properties:{summary:{type:'string'},best_for:{type:'array',items:{type:'string'}},not_for:{type:'array',items:{type:'string'}}}}}};
-const prompt=`Напиши первичный обзор Игропоиска на русском языке по игре ниже. Это уже публикуемый редакционный материал, а не заглушка, перевод или список чужих мнений. Он должен быстро дать читателю цельное понимание игры: что в ней делаешь, как работают главные системы, что критики считают сильным, что вызывает претензии и кому игра подходит сегодня. Пиши естественным русским языком, конкретно, без канцелярита и рекламной интонации. Используй ТОЛЬКО факты и выводы из предоставленных профессиональных источников, не выдумывай детали и не раскрывай крупные сюжетные повороты. Нужны 4–5 содержательных разделов, суммарно примерно 700–1100 слов. Каждый раздел обязан иметь source_ids реально подтверждающих его тезисы. Оценка Игропоиска уже рассчитана отдельно и равна ${score}/10; не пересчитывай её. Верни только JSON по схеме.\n\nИГРА:\n${JSON.stringify(identity)}\n\nПРОФЕССИОНАЛЬНЫЕ ИСТОЧНИКИ:\n${JSON.stringify(sourceDigest)}`;
-let generated=await chatJson({system:'Ты опытный русскоязычный игровой журналист. Пиши живой оригинальный текст, строго опираясь на предоставленные профессиональные рецензии.',prompt,schema,temperature:0.35,numPredict:7000});
-let sections=Array.isArray(generated.sections)?generated.sections:[],words=countWords([generated.lead,...sections.flatMap(section=>section.paragraphs||[]),generated.verdict?.summary].join(' '));
-if(sections.length<4||words<600){generated=await chatJson({system:'Ты редактор русскоязычного игрового издания. Дополни материал конкретикой из источников без воды и выдумок.',prompt:`${prompt}\n\nПредыдущий вариант слишком короткий: sections=${sections.length}, words=${words}. Перепиши целиком: минимум 4 раздела и 700 содержательных слов.`,schema,temperature:0.3,numPredict:8500});sections=Array.isArray(generated.sections)?generated.sections:[];words=countWords([generated.lead,...sections.flatMap(section=>section.paragraphs||[]),generated.verdict?.summary].join(' '));}
-if(sections.length<4||words<600)throw new Error(`${slug}: bootstrap review too short (${sections.length} sections, ${words} words)`);
+const sources=allSources.slice(0,6),validIds=new Set(sources.map((source,index)=>source.id||`source-${index+1}`));
+const sourceDigest=sources.map((source,index)=>({
+  id:source.id||`source-${index+1}`,
+  publication:source.publication||source.source||source.configured_source_id,
+  title:source.title||'',
+  score:source.score??null,
+  scale:source.scale??null,
+  praise:(source.praise||[]).slice(0,2),
+  criticism:(source.criticism||[]).slice(0,2),
+  evidence_points:(source.evidence_points||source.evidence||[]).slice(0,4)
+}));
+const identity={title:draft.identity.title,release:draft.release,developers:draft.companies?.developers||[],publishers:draft.companies?.publishers||[],genres:draft.classification?.genres||[],description:draft.editorial?.integrated_description||draft.editorial?.short_description||'',features:(draft.editorial?.features||[]).slice(0,8)};
+const schema={type:'object',additionalProperties:false,required:['title','dek','lead','sections','verdict'],properties:{title:{type:'string'},dek:{type:'string'},lead:{type:'string'},sections:{type:'array',minItems:3,maxItems:4,items:{type:'object',additionalProperties:false,required:['id','heading','paragraphs','source_ids'],properties:{id:{type:'string'},heading:{type:'string'},paragraphs:{type:'array',minItems:1,maxItems:3,items:{type:'string'}},source_ids:{type:'array',minItems:1,items:{type:'string'}}}}},verdict:{type:'object',additionalProperties:false,required:['summary','best_for','not_for'],properties:{summary:{type:'string'},best_for:{type:'array',maxItems:3,items:{type:'string'}},not_for:{type:'array',maxItems:3,items:{type:'string'}}}}}};
+const basePrompt=`Напиши быстрый публикуемый обзор Игропоиска на русском языке по игре ниже. Это компактный первый редакционный обзор, который позже может быть расширен отдельным full-review этапом. Дай цельное понимание игры: основной игровой процесс, сильные стороны, заметные недостатки и кому она подходит. Пиши естественным русским языком, без канцелярита, рекламной интонации и ощущения машинного перевода. Используй ТОЛЬКО факты и выводы из предоставленных профессиональных источников; не выдумывай детали и не раскрывай крупные сюжетные повороты. Нужны 3–4 содержательных раздела и примерно 450–700 слов. Каждый раздел обязан иметь source_ids, реально подтверждающие его тезисы. Оценка Игропоиска уже рассчитана отдельно и равна ${score}/10; не пересчитывай её. Верни только JSON по схеме.\n\nИГРА:\n${JSON.stringify(identity)}\n\nПРОФЕССИОНАЛЬНЫЕ ИСТОЧНИКИ:\n${JSON.stringify(sourceDigest)}`;
+async function generateQuickReview(){
+  const failures=[];
+  for(let attempt=1;attempt<=QUICK_REVIEW_MAX_ATTEMPTS;attempt++){
+    const retryNote=attempt===1?'':`\n\nПредыдущая попытка не дала пригодный компактный материал. Сделай ответ короче и проще: 3–4 раздела, 400–650 слов, только валидный JSON без пояснений.`;
+    try{
+      const generated=await chatJson({
+        system:'Ты опытный русскоязычный игровой журналист. Пиши живой оригинальный текст и строго опирайся на предоставленные профессиональные рецензии.',
+        prompt:`${basePrompt}${retryNote}`,
+        schema,
+        temperature:attempt===1?0.3:0.2,
+        numCtx:QUICK_REVIEW_NUM_CTX,
+        numPredict:QUICK_REVIEW_NUM_PREDICT,
+        timeoutMs:QUICK_REVIEW_TIMEOUT_MS
+      });
+      const sections=Array.isArray(generated.sections)?generated.sections:[];
+      const words=countWords([generated.lead,...sections.flatMap(section=>section.paragraphs||[]),generated.verdict?.summary].join(' '));
+      if(sections.length>=3&&words>=QUICK_REVIEW_MIN_WORDS)return{generated,sections,words,attempt,failures};
+      failures.push(`attempt ${attempt}: too short (${sections.length} sections, ${words} words)`);
+    }catch(error){failures.push(`attempt ${attempt}: ${error?.message||String(error)}`)}
+  }
+  throw new Error(`${slug}: bounded quick review generation failed: ${failures.join(' | ')}`);
+}
+const generatedResult=await generateQuickReview();
+const generated=generatedResult.generated,sections=generatedResult.sections,words=generatedResult.words;
 for(const section of sections){section.source_ids=[...new Set(section.source_ids||[])].filter(id=>validIds.has(id));if(!section.source_ids.length)throw new Error(`${slug}/${section.id}: no verified source_ids`)}
 const title=String(generated.title||`Обзор ${identity.title}`),dek=String(generated.dek||generated.lead||''),now=new Date().toISOString();
-const article={schema_version:1,review_stage:'bootstrap',publication_status:'published',slug,game_slug:slug,game_id:draft.game_id||draft.identity.game_id||null,title,dek,lead:generated.lead,author:'Редакция Игропоиска',published_at:new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}),updated_at:now,score,score_source:`data/reviews/${slug}.json#review_score`,reading_time_minutes:Math.max(4,Math.ceil(words/190)),sections,verdict:generated.verdict,sources:sources.map((source,index)=>({id:source.id||`source-${index+1}`,name:source.publication||source.source||source.configured_source_id||'Издание',title:source.title||'',url:source.resolved_url||source.url,purpose:[...(source.praise||[]).slice(0,1),...(source.criticism||[]).slice(0,1)].join(' · ')||'Профессиональная рецензия'})),methodology:{stage:'bootstrap',minimum_independent_professional_sources:3,accepted_sources:sources.length,independent_publications:publications.size,upgrade_target:'full_editorial_review'},generation:{provider:'local-ollama',model:LOCAL_EDITORIAL_MODEL,checked_at:now}};
+const article={schema_version:1,review_stage:'bootstrap',publication_status:'published',slug,game_slug:slug,game_id:draft.game_id||draft.identity.game_id||null,title,dek,lead:generated.lead,author:'Редакция Игропоиска',published_at:new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}),updated_at:now,score,score_source:`data/reviews/${slug}.json#review_score`,reading_time_minutes:Math.max(3,Math.ceil(words/190)),sections,verdict:generated.verdict,sources:sources.map((source,index)=>({id:source.id||`source-${index+1}`,name:source.publication||source.source||source.configured_source_id||'Издание',title:source.title||'',url:source.resolved_url||source.url,purpose:[...(source.praise||[]).slice(0,1),...(source.criticism||[]).slice(0,1)].join(' · ')||'Профессиональная рецензия'})),methodology:{stage:'bootstrap',minimum_independent_professional_sources:3,accepted_sources:sources.length,independent_publications:publications.size,upgrade_target:'full_editorial_review'},generation:{provider:'local-ollama',model:LOCAL_EDITORIAL_MODEL,checked_at:now,attempt:generatedResult.attempt,timeout_ms:QUICK_REVIEW_TIMEOUT_MS,num_ctx:QUICK_REVIEW_NUM_CTX,num_predict:QUICK_REVIEW_NUM_PREDICT}};
 const toc=sections.map((section,index)=>`<li><a href="#${esc(section.id)}"><span>${String(index+1).padStart(2,'0')}</span><b>${esc(section.heading)}</b></a></li>`).join('');
 const body=sections.map((section,index)=>`<section class="article-section" id="${esc(section.id)}"><h2><span>${String(index+1).padStart(2,'0')}</span>${esc(section.heading)}</h2>${(section.paragraphs||[]).map(paragraph=>`<p>${esc(paragraph)}</p>`).join('')}</section>`).join('');
 const best=(generated.verdict?.best_for||[]).map(item=>`<li>${esc(item)}</li>`).join(''),notFor=(generated.verdict?.not_for||[]).map(item=>`<li>${esc(item)}</li>`).join('');
@@ -44,5 +78,5 @@ const html=`<!doctype html><html lang="ru" data-theme="dark"><head><meta charset
 write(`data/review-bootstrap/${slug}.json`,article);
 const output=path.join(root,'article',slug,'index.html');fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,html);
 review.igropoisk_article={url:`../../article/${slug}/`,title,description:dek,score,score_source:`data/reviews/${slug}.json#review_score`,review_stage:'bootstrap',source_count:article.sources.length,updated_at:now};review.updated_at=now;write(`data/reviews/${slug}.json`,review);
-write(`data/parser-runs/review-bootstrap-${slug}.json`,{parser:'review-bootstrap-local',status:'green',game_slug:slug,checked_at:now,score,sources:article.sources.length,words,sections:sections.length,model:LOCAL_EDITORIAL_MODEL});
-console.log(JSON.stringify({slug,status:'published_bootstrap',score,sources:article.sources.length,words,sections:sections.length},null,2));
+write(`data/parser-runs/review-bootstrap-${slug}.json`,{parser:'review-bootstrap-local',status:'green',game_slug:slug,checked_at:now,score,sources:article.sources.length,words,sections:sections.length,model:LOCAL_EDITORIAL_MODEL,generation_attempt:generatedResult.attempt,timeout_ms:QUICK_REVIEW_TIMEOUT_MS});
+console.log(JSON.stringify({slug,status:'published_bootstrap',score,sources:article.sources.length,words,sections:sections.length,generation_attempt:generatedResult.attempt,timeout_ms:QUICK_REVIEW_TIMEOUT_MS},null,2));
