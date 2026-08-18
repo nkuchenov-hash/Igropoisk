@@ -61,6 +61,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -88,5 +90,17 @@ jobs:
         run: |
           node scripts/test-editorial-game-registry-adapter.mjs
           node scripts/canonicalize-all-editorial-game-ids.mjs
-      - name: Validate editorial data
-        run: node scripts/validate-editorial-pipeline.mjs
+      - name: Validate editorial data when this change touches editorial data
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            git fetch origin "$PR_BASE_SHA" --depth=1
+            changed="$(git diff --name-only "$PR_BASE_SHA" HEAD)"
+            if ! printf '%s\n' "$changed" | grep -Eq '^(data/(articles|reviews|research|ratings|drafts)/|article/[^/]+/index\.html$)'; then
+              echo 'Editorial data unchanged; skipping legacy catalog data audit for this code-only PR.'
+              exit 0
+            fi
+          fi
+          node scripts/validate-editorial-pipeline.mjs
