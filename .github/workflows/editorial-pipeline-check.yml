@@ -5,7 +5,14 @@ on:
     paths:
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/synthesize-review.mjs'
-      - 'scripts/enrich-review-media.mjs'
+      - 'scripts/enrich-review-media*.mjs'
+      - 'scripts/render-review-pages.mjs'
+      - 'scripts/promote-review-source-audit.mjs'
+      - 'scripts/lib/review-version-gate.mjs'
+      - 'scripts/test-review-carousel-version-gate.mjs'
+      - 'config/parsers/review-media-policy.json'
+      - 'article/_shared/review-carousel.js'
+      - 'article/_shared/review-shot-card.css'
       - 'scripts/canonicalize-editorial-game-id.mjs'
       - 'scripts/canonicalize-all-editorial-game-ids.mjs'
       - 'scripts/test-editorial-game-registry-adapter.mjs'
@@ -28,7 +35,14 @@ on:
     paths:
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/synthesize-review.mjs'
-      - 'scripts/enrich-review-media.mjs'
+      - 'scripts/enrich-review-media*.mjs'
+      - 'scripts/render-review-pages.mjs'
+      - 'scripts/promote-review-source-audit.mjs'
+      - 'scripts/lib/review-version-gate.mjs'
+      - 'scripts/test-review-carousel-version-gate.mjs'
+      - 'config/parsers/review-media-policy.json'
+      - 'article/_shared/review-carousel.js'
+      - 'article/_shared/review-shot-card.css'
       - 'scripts/canonicalize-editorial-game-id.mjs'
       - 'scripts/canonicalize-all-editorial-game-ids.mjs'
       - 'scripts/test-editorial-game-registry-adapter.mjs'
@@ -55,12 +69,21 @@ jobs:
           node --check scripts/prepare-review-research.mjs
           node --check scripts/synthesize-review.mjs
           node --check scripts/enrich-review-media.mjs
+          node --check scripts/enrich-review-media-github-models.mjs
+          node --check scripts/enrich-review-media-local.mjs
+          node --check scripts/render-review-pages.mjs
+          node --check scripts/promote-review-source-audit.mjs
+          node --check scripts/lib/review-version-gate.mjs
+          node --check scripts/test-review-carousel-version-gate.mjs
+          node --check article/_shared/review-carousel.js
           node --check scripts/canonicalize-editorial-game-id.mjs
           node --check scripts/canonicalize-all-editorial-game-ids.mjs
           node --check scripts/test-editorial-game-registry-adapter.mjs
           node --check scripts/lib/editorial-game-registry-adapter.mjs
           node --check assets/parser-method.js
           node --check article/_shared/review-article.js
+      - name: Validate review carousel and version contracts
+        run: node scripts/test-review-carousel-version-gate.mjs
       - name: Validate canonical editorial identity adapter
         run: |
           node scripts/test-editorial-game-registry-adapter.mjs
