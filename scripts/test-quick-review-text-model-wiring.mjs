@@ -2,16 +2,16 @@
 import fs from 'node:fs';
 
 const workflow=fs.readFileSync('.github/workflows/game-post-create-enrichment.yml','utf8');
-const synthesis=fs.readFileSync('scripts/build-review-bootstrap-commercial-local.mjs','utf8');
-const audit=fs.readFileSync('scripts/audit-review-bootstrap-local.mjs','utf8');
-const githubModel=fs.readFileSync('scripts/lib/github-editorial-model.mjs','utf8');
+const wrapper=fs.readFileSync('scripts/build-review-bootstrap-commercial.mjs','utf8');
+const grounded=fs.readFileSync('scripts/build-review-bootstrap-commercial-grounded.mjs','utf8');
 const fail=message=>{throw new Error(message)};
 
-for(const marker of ['models: read','GITHUB_REVIEW_MODEL: openai/gpt-4.1','GITHUB_AUDIT_MODEL: openai/gpt-4.1','EDITORIAL_PROVIDER: github'])if(!workflow.includes(marker))fail(`Commercial GitHub Models primary wiring missing: ${marker}`);
-for(const marker of ['LOCAL_TEXT_MODEL: qwen3:4b','LOCAL_EDITORIAL_MODEL: qwen3:4b','LOCAL_VISION_MODEL: qwen3-vl:4b','ollama-post-create-v2-qwen3-4b'])if(!workflow.includes(marker))fail(`Local fallback/vision wiring missing: ${marker}`);
-for(const marker of ['githubChatJson','GITHUB_EDITORIAL_MODEL',"requestedProvider==='local'", "provider='github-models'", "provider='local-ollama'"])if(!synthesis.includes(marker))fail(`Commercial synthesis provider routing missing: ${marker}`);
-for(const marker of ['githubChatJson','GITHUB_AUDIT_MODEL',"requestedProvider==='local'", "provider='github-models'", "provider='local-ollama'"])if(!audit.includes(marker))fail(`Commercial audit provider routing missing: ${marker}`);
-for(const marker of ['https://models.github.ai/inference/chat/completions','GITHUB_TOKEN','openai/gpt-4.1','response_format'])if(!githubModel.includes(marker))fail(`GitHub editorial client contract missing: ${marker}`);
-if(workflow.includes('GITHUB_VISION_MODEL'))fail('GitHub Models must not be coupled to the optional vision/full-review path');
+for(const forbidden of ['models: read','GITHUB_REVIEW_MODEL','GITHUB_AUDIT_MODEL','EDITORIAL_PROVIDER','scripts/lib/github-editorial-model.mjs'])if(workflow.includes(forbidden))fail(`Retired/external text-model dependency remains in commercial quick path: ${forbidden}`);
+for(const marker of ['build-review-bootstrap-commercial-grounded.mjs',"provider==='deterministic-evidence-v1'",'grounding_audit?.passed===true','editorial_quality?.passed===true'])if(!wrapper.includes(marker))fail(`Commercial deterministic wrapper missing: ${marker}`);
+for(const marker of ["provider:'deterministic-evidence-v1'",'grounded_claims:8','claim_support:claimSupport','usedPublications.size<3','words<220||words>500','lowercase latin intrusions','unsupported numbers'])if(!grounded.includes(marker))fail(`Deterministic professional-evidence builder missing: ${marker}`);
+for(const marker of ['Build and verify deterministic grounded quick reviews','Publish quick-review checkpoint before full upgrades','Restore local full-review model cache','Start local full-review model service','Ensure local text model for optional full upgrade','Ensure optional local vision model for full upgrades'])if(!workflow.includes(marker))fail(`Quick/full phase wiring missing: ${marker}`);
+const quickAt=workflow.indexOf('Build and verify deterministic grounded quick reviews'),quickPublishAt=workflow.indexOf('Publish quick-review checkpoint before full upgrades'),localAt=workflow.indexOf('Restore local full-review model cache');
+if(quickAt<0||quickPublishAt<quickAt||localAt<quickPublishAt)fail('Local models can still block the deterministic quick-review checkpoint');
+for(const marker of ['LOCAL_TEXT_MODEL: qwen3:4b','LOCAL_EDITORIAL_MODEL: qwen3:4b','LOCAL_VISION_MODEL: qwen3-vl:4b'])if(!workflow.includes(marker))fail(`Optional local full-review model wiring missing: ${marker}`);
 
-console.log('Quick-review model wiring passed: GitHub Models GPT-4.1 is the commercial text primary; qwen3:4b remains a local fallback and qwen3-vl:4b remains isolated to full-review vision.');
+console.log('Quick-review model wiring passed: commercial bootstrap is deterministic and model-independent; local qwen models start only after the published quick-review checkpoint for optional full upgrades.');
