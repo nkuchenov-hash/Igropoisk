@@ -14,6 +14,12 @@ on:
       - 'data/articles/*.json'
       - 'data/article-media/*.json'
       - 'article/*/index.html'
+  pull_request:
+    branches: [staging]
+    paths:
+      - 'scripts/publish-post-create-production.mjs'
+      - 'scripts/test-post-create-production-publisher.mjs'
+      - '.github/workflows/post-create-production-publisher.yml'
   workflow_dispatch:
 
 permissions:
@@ -22,7 +28,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: post-create-production-publisher
+  group: post-create-production-publisher-${{ github.event_name }}
   cancel-in-progress: false
 
 jobs:
@@ -42,6 +48,7 @@ jobs:
           node --check scripts/test-post-create-production-publisher.mjs
           node scripts/test-post-create-production-publisher.mjs
       - name: Publish only verified post-create game artifacts
+        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/publish-post-create-production.mjs
