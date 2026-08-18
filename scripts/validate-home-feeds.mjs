@@ -55,6 +55,7 @@ function dateTime(value, end = false) {
 const popular = readJson('data/popular/current.json');
 const popularRun = readJson('data/parser-runs/popular.json');
 const releases = readJson('data/releases/current.json');
+const publicReleases = readJson('data/releases/public.json');
 const releasesRun = readJson('data/parser-runs/releases.json');
 const quality = readOptionalJson('data/home-feeds-quality.json');
 const qualityRules = readJson('config/home-feeds-quality.json');
@@ -217,14 +218,43 @@ if (releases) {
 if (!releasesRun || !['success', 'partial'].includes(releasesRun.status)) {
   errors.push(`Release parser status is ${releasesRun?.status || 'missing'}.`);
 }
-if (!rules || rules.schema_version < 3 || !rules.eligibility?.include_recent || !rules.eligibility?.include_upcoming || rules.eligibility?.require_editorial_quality !== true) {
-  errors.push('Home release rules do not require editorial quality for both recent and upcoming releases.');
+
+let publicActiveReleases = 0;
+if (publicReleases) {
+  const rows = Array.isArray(publicReleases.releases) ? publicReleases.releases : [];
+  const today = new Date();
+  const todayStart = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
+  const recentDays = Math.max(1, Number(rules?.recent_release_days || 14));
+  const recentStart = todayStart - recentDays * 86_400_000;
+  const slugs = new Set();
+  for (const [index, game] of rows.entries()) {
+    if (!game?.slug || !game?.title) errors.push(`Public release item ${index + 1} has no slug or title.`);
+    if (slugs.has(game?.slug)) errors.push(`Public release feed contains duplicate slug: ${game.slug}.`);
+    slugs.add(game?.slug);
+    const event = Array.isArray(game?.events) ? game.events[0] : null;
+    if (!event) continue;
+    const start = dateTime(eventStart(event));
+    const end = dateTime(eventEnd(event), true);
+    const isTbd = start === null && end === null;
+    const isUpcoming = (start !== null && start >= todayStart) || (end !== null && end >= todayStart);
+    const isRecent = end !== null && end < todayStart && end >= recentStart;
+    if (isTbd || isUpcoming || isRecent) publicActiveReleases += 1;
+  }
+  if (!rows.length) errors.push('Public release calendar feed is empty.');
+  if (publicActiveReleases < 2) errors.push(`Public release calendar has only ${publicActiveReleases} active/recent rows; homepage carousel cannot be meaningfully populated.`);
+}
+
+if (!rules || rules.schema_version < 6 || !rules.eligibility?.include_recent || !rules.eligibility?.include_upcoming || rules.source !== 'data/releases/public.json' || rules.eligibility?.require_public_calendar_entry !== true || rules.eligibility?.do_not_apply_second_homepage_gate !== true) {
+  errors.push('Home release rules must consume the public calendar feed without a second homepage-only eligibility gate.');
 }
 if (!indexHtml.includes('id="releaseHomeGrid"') || !indexHtml.includes('assets/home-releases/index.js')) {
   errors.push('Homepage is not wired to the release feed runtime.');
 }
-for (const token of ['recent_release_days', "kind==='recent'", "kind==='upcoming'", 'homepage_eligible===true']) {
+for (const token of ['recent_release_days', "kind==='recent'", "kind==='upcoming'", "loadFeed('data/releases/public.json')", "addEventListener('wheel'", 'data-release-rail']) {
   if (!releasesRuntime.includes(token)) errors.push(`Home release runtime is missing required logic: ${token}.`);
+}
+if (releasesRuntime.includes('.filter(crossSiteEligible)')) {
+  errors.push('Home release runtime still applies the duplicate crossSiteEligible gate after public-calendar publication.');
 }
 
 if (errors.length) {
@@ -242,6 +272,8 @@ console.log(JSON.stringify({
     generated_at: releases?.generated_at || releases?.generatedAt || null,
     games: releases?.releases?.length || 0,
     homepage_eligible: Number(releases?.editorial_quality?.homepage_eligible_count || 0),
+    public_games: publicReleases?.releases?.length || 0,
+    public_active_or_recent: publicActiveReleases,
     parser_status: releasesRun?.status || null,
     recent_window_days: Number(rules?.recent_release_days || 7),
     maximum_cards: Number(rules?.maximum_cards || 12),
