@@ -1,0 +1,42 @@
+{
+  "parser": "game-post-create-enrichment",
+  "phase": "quick-review",
+  "status": "needs_revision",
+  "checked_at": "2026-08-18T00:15:53.256Z",
+  "requested": 13,
+  "complete": 0,
+  "deferred": 0,
+  "pending": 13,
+  "bootstrap_concurrency": 0,
+  "review_batch": [
+    "fallout-brotherhood-of-steel",
+    "fallout-3",
+    "fallout-new-vegas"
+  ],
+  "results": [
+    {
+      "label": "review-bootstrap:fallout-brotherhood-of-steel",
+      "script": "scripts/build-review-bootstrap-local.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:70\n  if (!raw) throw new Error('Local editorial model returned no content');\n                  ^\n\nError: Local editorial model returned no content\n    at chatJson (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:70:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:32:15\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "review-bootstrap:fallout-3",
+      "script": "scripts/build-review-bootstrap-local.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "node:internal/modules/run_main:123\n    triggerUncaughtException(\n    ^\n\nError: Local editorial model request timed out after 900000ms\n    at ClientRequest.<anonymous> (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:20:54)\n    at Object.onceWrapper (node:events:633:28)\n    at ClientRequest.emit (node:events:519:28)\n    at Socket.emitRequestTimeout (node:_http_client:931:9)\n    at Object.onceWrapper (node:events:633:28)\n    at Socket.emit (node:events:531:35)\n    at Socket._onTimeout (node:net:605:8)\n    at listOnTimeout (node:internal/timers:585:17)\n    at process.processTimers (node:internal/timers:521:7)\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "review-bootstrap:fallout-new-vegas",
+      "script": "scripts/build-review-bootstrap-local.mjs",
+      "status": "needs_revision",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:70\n  if (!raw) throw new Error('Local editorial model returned no content');\n                  ^\n\nError: Local editorial model returned no content\n    at chatJson (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:70:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:32:15\n\nNode.js v22.23.2\n"
+    }
+  ]
+}
