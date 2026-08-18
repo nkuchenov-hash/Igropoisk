@@ -1,0 +1,47 @@
+name: Publish post-create game enrichment to production
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - 'data/drafts/*.json'
+      - 'data/franchises/*.json'
+      - 'data/game-dna/*.json'
+      - 'data/similarity/*.json'
+      - 'data/reviews/*.json'
+      - 'data/ratings/*.json'
+      - 'data/review-bootstrap/*.json'
+      - 'data/articles/*.json'
+      - 'data/article-media/*.json'
+      - 'article/*/index.html'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: post-create-production-publisher
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate fail-closed publisher
+        run: |
+          node --check scripts/publish-post-create-production.mjs
+          node --check scripts/test-post-create-production-publisher.mjs
+          node scripts/test-post-create-production-publisher.mjs
+      - name: Publish only verified post-create game artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/publish-post-create-production.mjs
