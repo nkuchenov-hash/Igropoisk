@@ -21,6 +21,7 @@ on:
       - 'scripts/run-game-post-create-enrichment.mjs'
       - 'scripts/publish-game-post-create-overlay.mjs'
       - 'scripts/test-game-creator-post-create.mjs'
+      - 'scripts/test-quick-review-text-model-wiring.mjs'
       - 'scripts/lib/verified-game-import.mjs'
       - 'game/_shared/game-page-materialized-data.js'
       - '.github/workflows/game-post-create-enrichment.yml'
@@ -44,6 +45,7 @@ jobs:
       GITHUB_REVIEW_MODEL: ${{ vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
       GITHUB_VISION_MODEL: ${{ vars.GITHUB_VISION_MODEL || vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
       LOCAL_TEXT_MODEL: qwen3:1.7b
+      LOCAL_EDITORIAL_MODEL: qwen3:1.7b
       LOCAL_VISION_MODEL: qwen3-vl:4b
       POST_CREATE_REVIEW_BATCH: '3'
       POST_CREATE_MAX_ATTEMPTS: '3'
@@ -72,10 +74,12 @@ jobs:
           node --check scripts/run-game-post-create-enrichment.mjs
           node --check scripts/publish-game-post-create-overlay.mjs
           node --check scripts/test-game-creator-post-create.mjs
+          node --check scripts/test-quick-review-text-model-wiring.mjs
           node --check scripts/lib/verified-game-import.mjs
           node --check game/_shared/game-page-materialized-data.js
           node scripts/test-game-creator-boundary.mjs
           node scripts/test-game-creator-post-create.mjs
+          node scripts/test-quick-review-text-model-wiring.mjs
 
       - name: Bootstrap series, rating and media for every requested game
         env:
