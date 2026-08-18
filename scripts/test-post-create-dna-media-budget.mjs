@@ -9,6 +9,7 @@ const builder=read('scripts/build-game-dna.mjs');
 const validator=read('scripts/validate-game-dna.mjs');
 const media=read('scripts/enrich-game-media-from-sources.mjs');
 const quick=read('scripts/build-review-bootstrap-local.mjs');
+const runner=read('scripts/run-game-post-create-enrichment.mjs');
 const fail=message=>{throw new Error(message)};
 
 for(const marker of ['scripts/materialize-post-create-game-dna.mjs','Materialize Game DNA and similarity immediately after page creation','Publish Game DNA checkpoint before network enrichment',"POST_CREATE_PUBLISH_PHASE: dna","game/*/index.html"])if(!workflow.includes(marker))fail(`Fast post-create Game DNA workflow missing: ${marker}`);
@@ -22,5 +23,8 @@ for(const marker of ['const requested = new Set(process.argv.slice(2)','requeste
 for(const marker of ['targetScreens','Math.min(15','GAME_MEDIA_TARGET_SCREENSHOTS','discoveryNeeded','discovery_skipped','selectDiverse','candidateLimit=Math.min(72'])if(!media.includes(marker))fail(`Bounded useful-media policy missing: ${marker}`);
 if(media.includes('.slice(0,48)')||media.includes('candidateRecords.length>=240'))fail('Legacy excessive 48-shot/240-probe media policy is still active');
 if(!quick.includes('Math.max(180')||!quick.includes('QUICK_REVIEW_MIN_WORDS||220'))fail('Quick review editorial floor/default contract is missing');
+if(!quick.includes('QUICK_REVIEW_TIMEOUT_MS||300000')||!quick.includes("provider:'local-ollama'"))fail('Quick review is not using the durable local editorial path');
+if(quick.includes('models.github.ai')||quick.includes("provider:'github-models'"))fail('Retired GitHub Models dependency is still present in quick-review production code');
 if(!quick.includes('&quot;'))fail('Quick review HTML escaping is malformed');
-console.log('Post-create commercial-quality DNA, rollback and bounded media contract passed.');
+for(const marker of ['const quickOnly=doQuickReview&&!doFullReview','quickOnly?!quickReviewReady(slug):!reviewReady(slug)',"String(b.request.requested_at||'').localeCompare(String(a.request.requested_at||''))",'wasAttempted=attempted.has(slug)','run_attempts:Number(request.run_attempts||0)+(wasAttempted?1:0)','reviewExhausted=wasAttempted'])if(!runner.includes(marker))fail(`Post-create review queue starvation safeguard missing: ${marker}`);
+console.log('Post-create commercial-quality DNA, durable local quick review, fair queue and bounded media contract passed.');
