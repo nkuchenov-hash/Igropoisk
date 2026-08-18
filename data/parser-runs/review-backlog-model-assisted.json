@@ -1,15 +1,15 @@
 {
   "schema_version": 3,
   "phase": "model-assisted",
-  "started_at": "2026-08-17T13:28:05.141Z",
-  "checked_at": "2026-08-17T14:38:28.972Z",
-  "duration_ms": 4223832,
+  "started_at": "2026-08-17T23:39:23.976Z",
+  "checked_at": "2026-08-18T01:49:30.872Z",
+  "duration_ms": 7806896,
   "concurrency": 2,
   "timeout_ms": 600000,
-  "selected": 33,
+  "selected": 40,
   "green": 0,
-  "pending": 33,
-  "timed_out": 14,
+  "pending": 40,
+  "timed_out": 25,
   "results": [
     {
       "slug": "bloodborne",
@@ -187,28 +187,8 @@
       "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: loop\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
     },
     {
-      "slug": "kingdom-come-deliverance",
-      "index": 10,
-      "exit_code": 0,
-      "signal": null,
-      "timed_out": false,
-      "green": false,
-      "control_green": false,
-      "corpus_status": "green",
-      "score_status": "red-needs-revision",
-      "score": 0,
-      "regional_complete": true,
-      "article_status": "published",
-      "comments": [
-        "Корпус: 5/5",
-        "Оценённые издания: 0/3"
-      ],
-      "stdout_tail": "{\n  \"slug\": \"kingdom-come-deliverance\",\n  \"status\": \"green\",\n  \"accepted\": 5,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"rejected\": 1,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n\n{\n  \"slug\": \"kingdom-come-deliverance\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 5,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"kingdom-come-deliverance\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Корпус: 5/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
-      "stderr_tail": ""
-    },
-    {
       "slug": "sekiro-shadows-die-twice",
-      "index": 11,
+      "index": 10,
       "exit_code": 0,
       "signal": null,
       "timed_out": false,
@@ -227,28 +207,8 @@
       "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nsekiro-shadows-die-twice: only 0/8 verified game-specific screenshots\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nsekiro-shadows-die-twice: only 0/8 verified game-specific screenshots\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nsekiro-shadows-die-twice: only 0/8 verified game-specific screenshots\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nsekiro-shadows-die-twice: only 0/8 verified game-specific screenshots\n\n"
     },
     {
-      "slug": "disco-elysium",
-      "index": 12,
-      "exit_code": 0,
-      "signal": null,
-      "timed_out": false,
-      "green": false,
-      "control_green": false,
-      "corpus_status": "green",
-      "score_status": "red-needs-revision",
-      "score": 0,
-      "regional_complete": true,
-      "article_status": "published",
-      "comments": [
-        "Корпус: 5/5",
-        "Оценённые издания: 0/3"
-      ],
-      "stdout_tail": "{\n  \"slug\": \"disco-elysium\",\n  \"status\": \"green\",\n  \"accepted\": 5,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"rejected\": 1,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n\n{\n  \"slug\": \"disco-elysium\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 5,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"disco-elysium\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Корпус: 5/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
-      "stderr_tail": ""
-    },
-    {
       "slug": "resident-evil-2",
-      "index": 13,
+      "index": 11,
       "exit_code": null,
       "signal": "SIGTERM",
       "timed_out": true,
@@ -267,7 +227,7 @@
     },
     {
       "slug": "mount-and-blade-ii-bannerlord",
-      "index": 14,
+      "index": 12,
       "exit_code": null,
       "signal": "SIGTERM",
       "timed_out": true,
@@ -286,7 +246,7 @@
     },
     {
       "slug": "forza-horizon-5",
-      "index": 15,
+      "index": 13,
       "exit_code": null,
       "signal": "SIGTERM",
       "timed_out": true,
@@ -305,7 +265,7 @@
     },
     {
       "slug": "horizon-forbidden-west",
-      "index": 16,
+      "index": 14,
       "exit_code": 0,
       "signal": null,
       "timed_out": false,
@@ -325,7 +285,7 @@
     },
     {
       "slug": "stray",
-      "index": 17,
+      "index": 15,
       "exit_code": null,
       "signal": "SIGTERM",
       "timed_out": true,
@@ -344,7 +304,7 @@
     },
     {
       "slug": "baldurs-gate-3",
-      "index": 18,
+      "index": 16,
       "exit_code": null,
       "signal": "SIGTERM",
       "timed_out": true,
@@ -363,47 +323,27 @@
     },
     {
       "slug": "hogwarts-legacy",
-      "index": 19,
+      "index": 17,
       "exit_code": 0,
       "signal": null,
       "timed_out": false,
       "green": false,
       "control_green": false,
       "corpus_status": "green",
-      "score_status": "red-needs-revision",
-      "score": 0,
+      "score_status": "green",
+      "score": 7.9,
       "regional_complete": true,
       "article_status": "published",
       "comments": [
-        "Корпус: 6/5",
-        "Оценённые издания: 0/3"
+        "Оценка статьи не совпадает с review.review_score.",
+        "hogwarts-legacy: only 5/8 verified game-specific screenshots\n"
       ],
-      "stdout_tail": "{\n  \"slug\": \"hogwarts-legacy\",\n  \"status\": \"green\",\n  \"accepted\": 6,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"rejected\": 2,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n\n{\n  \"slug\": \"hogwarts-legacy\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 6,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"hogwarts-legacy\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Корпус: 6/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
-      "stderr_tail": ""
-    },
-    {
-      "slug": "black-myth-wukong",
-      "index": 20,
-      "exit_code": 0,
-      "signal": null,
-      "timed_out": false,
-      "green": false,
-      "control_green": false,
-      "corpus_status": "green",
-      "score_status": "red-needs-revision",
-      "score": 0,
-      "regional_complete": true,
-      "article_status": "published",
-      "comments": [
-        "Корпус: 5/5",
-        "Оценённые издания: 0/3"
-      ],
-      "stdout_tail": "{\n  \"slug\": \"black-myth-wukong\",\n  \"status\": \"green\",\n  \"accepted\": 5,\n  \"scored\": 4,\n  \"context_only_versions\": 0,\n  \"rejected\": 1,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n\n{\n  \"slug\": \"black-myth-wukong\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 5,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"black-myth-wukong\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Корпус: 5/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
-      "stderr_tail": ""
+      "stdout_tail": "{\n  \"slug\": \"hogwarts-legacy\",\n  \"status\": \"green\",\n  \"scored_sources\": 8,\n  \"excluded_sources\": 4,\n  \"score_10\": 7.9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"hogwarts-legacy\",\n  \"status\": \"green\",\n  \"scored_sources\": 8,\n  \"excluded_sources\": 4,\n  \"score_10\": 7.9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"hogwarts-legacy\",\n  \"status\": \"green\",\n  \"scored_sources\": 8,\n  \"excluded_sources\": 4,\n  \"score_10\": 7.9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"hogwarts-legacy\",\n  \"status\": \"green\",\n  \"scored_sources\": 8,\n  \"excluded_sources\": 4,\n  \"score_10\": 7.9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"hogwarts-legacy\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Оценка статьи не совпадает с review.review_score.\",\n    \"hogwarts-legacy: only 5/8 verified game-specific screenshots\\n\"\n  ]\n}\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nhogwarts-legacy: only 5/8 verified game-specific screenshots\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nhogwarts-legacy: only 5/8 verified game-specific screenshots\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nhogwarts-legacy: only 5/8 verified game-specific screenshots\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nhogwarts-legacy: only 5/8 verified game-specific screenshots\n\n"
     },
     {
       "slug": "mafia",
-      "index": 21,
+      "index": 18,
       "exit_code": 0,
       "signal": null,
       "timed_out": false,
@@ -577,7 +517,7 @@
     },
     {
       "slug": "mafia-iii",
-      "index": 22,
+      "index": 19,
       "exit_code": 0,
       "signal": null,
       "timed_out": false,
@@ -596,28 +536,8 @@
       "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: identity, legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nmafia-iii: only 0/8 verified game-specific screenshots\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: identity, legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nmafia-iii: only 0/8 verified game-specific screenshots\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: identity, legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nmafia-iii: only 0/8 verified game-specific screenshots\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: identity, legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nmafia-iii: only 0/8 verified game-specific screenshots\n\n"
     },
     {
-      "slug": "mafia-the-old-country",
-      "index": 23,
-      "exit_code": 0,
-      "signal": null,
-      "timed_out": false,
-      "green": false,
-      "control_green": false,
-      "corpus_status": "green",
-      "score_status": "red-needs-revision",
-      "score": 0,
-      "regional_complete": true,
-      "article_status": "published",
-      "comments": [
-        "Корпус: 6/5",
-        "Оценённые издания: 0/3"
-      ],
-      "stdout_tail": "{\n  \"slug\": \"mafia-the-old-country\",\n  \"status\": \"green\",\n  \"accepted\": 6,\n  \"scored\": 4,\n  \"context_only_versions\": 0,\n  \"rejected\": 2,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n\n{\n  \"slug\": \"mafia-the-old-country\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 6,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"mafia-the-old-country\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Корпус: 6/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
-      "stderr_tail": ""
-    },
-    {
       "slug": "fortnite",
-      "index": 24,
+      "index": 20,
       "exit_code": 0,
       "signal": null,
       "timed_out": false,
@@ -637,7 +557,7 @@
     },
     {
       "slug": "big-walk",
-      "index": 25,
+      "index": 21,
       "exit_code": null,
       "signal": "SIGTERM",
       "timed_out": true,
@@ -656,7 +576,7 @@
     },
     {
       "slug": "genshin-impact",
-      "index": 26,
+      "index": 22,
       "exit_code": 0,
       "signal": null,
       "timed_out": false,
@@ -676,7 +596,7 @@
     },
     {
       "slug": "valorant",
-      "index": 27,
+      "index": 23,
       "exit_code": 0,
       "signal": null,
       "timed_out": false,
@@ -696,7 +616,7 @@
     },
     {
       "slug": "apex-legends",
-      "index": 28,
+      "index": 24,
       "exit_code": 0,
       "signal": null,
       "timed_out": false,
@@ -715,28 +635,8 @@
       "stderr_tail": "apex-legends: blocked\n- duplicate scenes: apex-legends-8d079841d281177a05531885\napex-legends: review output validation failed after canonical score/source rebind; preserving rebound prose for targeted repair\n\napex-legends: only 0/8 verified game-specific screenshots\n\napex-legends: blocked\n- duplicate scenes: apex-legends-8d079841d281177a05531885\napex-legends: review output validation failed after canonical score/source rebind; preserving rebound prose for targeted repair\n\napex-legends: only 0/8 verified game-specific screenshots\n\napex-legends: blocked\n- duplicate scenes: apex-legends-8d079841d281177a05531885\napex-legends: review output validation failed after canonical score/source rebind; preserving rebound prose for targeted repair\n\napex-legends: only 0/8 verified game-specific screenshots\n\napex-legends: blocked\n- duplicate scenes: apex-legends-8d079841d281177a05531885\napex-legends: review output validation failed after canonical score/source rebind; preserving rebound prose for targeted repair\n\napex-legends: only 0/8 verified game-specific screenshots\n\n"
     },
     {
-      "slug": "overwatch-2",
-      "index": 29,
-      "exit_code": 0,
-      "signal": null,
-      "timed_out": false,
-      "green": false,
-      "control_green": false,
-      "corpus_status": "green",
-      "score_status": "red-needs-revision",
-      "score": 0,
-      "regional_complete": true,
-      "article_status": "published",
-      "comments": [
-        "Корпус: 6/5",
-        "Оценённые издания: 0/3"
-      ],
-      "stdout_tail": "{\n  \"slug\": \"overwatch-2\",\n  \"status\": \"green\",\n  \"accepted\": 6,\n  \"scored\": 3,\n  \"context_only_versions\": 0,\n  \"rejected\": 1,\n  \"unregistered\": 0,\n  \"regional_complete\": true,\n  \"minimum\": 5,\n  \"target\": 20\n}\n\n{\n  \"slug\": \"overwatch-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 6,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"overwatch-2\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Корпус: 6/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
-      "stderr_tail": ""
-    },
-    {
       "slug": "honkai-star-rail",
-      "index": 30,
+      "index": 25,
       "exit_code": 0,
       "signal": null,
       "timed_out": false,
@@ -755,8 +655,27 @@
       "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: systems, world, progression, presentation, friction, legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nhonkai-star-rail: only 0/8 verified game-specific screenshots\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: systems, world, progression, presentation, friction, legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nhonkai-star-rail: only 0/8 verified game-specific screenshots\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: systems, world, progression, presentation, friction, legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nhonkai-star-rail: only 0/8 verified game-specific screenshots\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: systems, world, progression, presentation, friction, legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nhonkai-star-rail: only 0/8 verified game-specific screenshots\n\n"
     },
     {
+      "slug": "rust",
+      "index": 26,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 6.8,
+      "regional_complete": true,
+      "article_status": "published",
+      "comments": [
+        "Existing article could not be deterministically rebound; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"rust\",\n  \"status\": \"green\",\n  \"scored_sources\": 7,\n  \"excluded_sources\": 0,\n  \"score_10\": 6.8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"rust\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 18,\n  \"required\": 8\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:49\nif(reboundSources.length<minSources) throw new Error(`Existing article resolves to ${reboundSources.length}/${minSources} accepted publishers`);\n                                           ^\n\nError: Existing article resolves to 0/5 accepted publishers\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:49:44\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
       "slug": "grand-theft-auto-v",
-      "index": 31,
+      "index": 27,
       "exit_code": null,
       "signal": "SIGTERM",
       "timed_out": true,
@@ -775,7 +694,7 @@
     },
     {
       "slug": "crimson-desert",
-      "index": 32,
+      "index": 28,
       "exit_code": null,
       "signal": "SIGTERM",
       "timed_out": true,
@@ -794,7 +713,7 @@
     },
     {
       "slug": "starfield",
-      "index": 33,
+      "index": 29,
       "exit_code": null,
       "signal": "SIGTERM",
       "timed_out": true,
@@ -809,6 +728,216 @@
         "No reusable existing article; queued for prose/media repair."
       ],
       "stdout_tail": "{\n  \"slug\": \"starfield\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"starfield\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 9,\n  \"required\": 8\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "slug": "total-war-warhammer-iii",
+      "index": 30,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 9.3,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"total-war-warhammer-iii\",\n  \"status\": \"green\",\n  \"scored_sources\": 5,\n  \"excluded_sources\": 1,\n  \"score_10\": 9.3,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"total-war-warhammer-iii\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 14,\n  \"required\": 8\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "slug": "mewgenics",
+      "index": 31,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 8.8,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"mewgenics\",\n  \"status\": \"green\",\n  \"scored_sources\": 5,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"mewgenics\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 15,\n  \"required\": 8\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "slug": "beast-of-reincarnation",
+      "index": 32,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 7.3,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"beast-of-reincarnation\",\n  \"status\": \"green\",\n  \"scored_sources\": 5,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.3,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"beast-of-reincarnation\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 14,\n  \"required\": 8\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "slug": "ball-x-pit",
+      "index": 33,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 8.3,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"ball-x-pit\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.3,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"ball-x-pit\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 10,\n  \"required\": 8\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "slug": "fallout",
+      "index": 34,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 9.1,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"fallout\",\n  \"status\": \"green\",\n  \"scored_sources\": 7,\n  \"excluded_sources\": 1,\n  \"score_10\": 9.1,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 14,\n  \"required\": 8\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "slug": "fallout-2",
+      "index": 35,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 9.1,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"green\",\n  \"scored_sources\": 10,\n  \"excluded_sources\": 0,\n  \"score_10\": 9.1,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-2\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 37,\n  \"required\": 8\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "slug": "fallout-brotherhood-of-steel",
+      "index": 36,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 7.6,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "Обзор ещё не создан.",
+        "fallout-brotherhood-of-steel: only 0/8 verified game-specific screenshots\n"
+      ],
+      "stdout_tail": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Обзор ещё не создан.\",\n    \"fallout-brotherhood-of-steel: only 0/8 verified game-specific screenshots\\n\"\n  ]\n}\n",
+      "stderr_tail": "fallout-brotherhood-of-steel: only 0/8 verified game-specific screenshots\n\nfallout-brotherhood-of-steel: only 0/8 verified game-specific screenshots\n\nfallout-brotherhood-of-steel: only 0/8 verified game-specific screenshots\n\nfallout-brotherhood-of-steel: only 0/8 verified game-specific screenshots\n\n"
+    },
+    {
+      "slug": "fallout-3",
+      "index": 37,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 9.4,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"fallout-3\",\n  \"status\": \"green\",\n  \"scored_sources\": 4,\n  \"excluded_sources\": 1,\n  \"score_10\": 9.4,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-3\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 41,\n  \"required\": 8\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "slug": "fallout-new-vegas",
+      "index": 38,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 8.8,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"fallout-new-vegas\",\n  \"status\": \"green\",\n  \"scored_sources\": 4,\n  \"excluded_sources\": 1,\n  \"score_10\": 8.8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-new-vegas\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 23,\n  \"required\": 8\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "slug": "fallout-76",
+      "index": 39,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 5.4,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"fallout-76\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 5.4,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 37,\n  \"required\": 8\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "slug": "resident-evil-requiem",
+      "index": 40,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 9,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"resident-evil-requiem\",\n  \"status\": \"green\",\n  \"scored_sources\": 4,\n  \"excluded_sources\": 1,\n  \"score_10\": 9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"resident-evil-requiem\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 10,\n  \"required\": 8\n}\n\n",
       "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
     }
   ]

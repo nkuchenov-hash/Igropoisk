@@ -4,36 +4,20 @@
   "game_slug": "fallout-brotherhood-of-steel",
   "game_id": null,
   "canonical_title": "Fallout: Brotherhood of Steel",
-  "checked_at": "2026-08-17T23:36:00.471Z",
+  "checked_at": "2026-08-18T01:19:34.501Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
-    "No reusable existing article; queued for prose/media repair."
+    "Обзор ещё не создан.",
+    "fallout-brotherhood-of-steel: only 0/8 verified game-specific screenshots\n"
   ],
   "revision_history": [
     {
       "label": "web-discovery-full-registry",
       "script": "scripts/discover-review-sources-web.mjs",
-      "status": "completed",
+      "status": "skipped",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"registered_editorial\": 53,\n  \"checked\": 53,\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"historical\": true,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 6,\n  \"scored\": 6,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 5,\n  \"indexed_sources_added\": 5,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"green\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "promote-full-registry-audit",
-      "script": "scripts/promote-review-source-audit.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"accepted\": 6,\n  \"trusted_scores_preserved\": 6,\n  \"checked\": 53,\n  \"applicable\": 53,\n  \"regional_complete\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "explicit-score-enrichment",
-      "script": "scripts/enrich-review-explicit-scores.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"accepted\": 6,\n  \"scored\": 6,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 5\n}\n",
-      "stderr": ""
+      "reason": "canonical corpus, score and regional discovery are already green"
     },
     {
       "label": "score-1",
@@ -42,11 +26,67 @@
       "exit_code": 0,
       "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
       "stderr": ""
+    },
+    {
+      "label": "media-discovery-1",
+      "script": "scripts/discover-review-media.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "fallout-brotherhood-of-steel: only 0/8 verified game-specific screenshots\n"
+    },
+    {
+      "label": "score-2",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media-discovery-2",
+      "script": "scripts/discover-review-media.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "fallout-brotherhood-of-steel: only 0/8 verified game-specific screenshots\n"
+    },
+    {
+      "label": "score-3",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media-discovery-3",
+      "script": "scripts/discover-review-media.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "fallout-brotherhood-of-steel: only 0/8 verified game-specific screenshots\n"
+    },
+    {
+      "label": "score-4",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media-discovery-4",
+      "script": "scripts/discover-review-media.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "fallout-brotherhood-of-steel: only 0/8 verified game-specific screenshots\n"
     }
   ],
   "policy": {
     "keep_queued_until_green": true,
-    "deterministic_only": true,
+    "deterministic_only": false,
     "review_score_source": "data/reviews/{slug}.json#review_score",
     "research_primary": "complete-registered-source-direct-publisher-scan",
     "research_fallback": "registered-publisher-research-only-if-full-scan-missing",
