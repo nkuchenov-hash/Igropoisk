@@ -1,6 +1,6 @@
 {
-  "schema_version": 12,
-  "purpose": "Собирать и проверять контент журнальных обзоров, не управляя структурой, сеткой, ширинами или визуальными размерами страницы.",
+  "schema_version": 13,
+  "purpose": "Собирать небольшой осмысленный визуальный ряд обзора: несколько каруселей из реально полезных кадров, а не заполнять картинкой каждый раздел.",
   "responsibility_boundary": {
     "design_system_is_only_layout_source": true,
     "builder_may_not_define_layout": true,
@@ -9,7 +9,7 @@
     "builder_may_not_choose_column_widths": true,
     "builder_may_not_choose_card_dimensions": true,
     "builder_only_populates_named_content_slots": true,
-    "content_slots": ["article_hero_art","article_title","article_dek","article_metadata","article_lead","article_sections","article_section_media","article_verdict","article_sources","article_author"]
+    "content_slots": ["article_hero_art", "article_title", "article_dek", "article_metadata", "article_lead", "article_sections", "article_section_media", "article_verdict", "article_sources", "article_author"]
   },
   "article_balance": {
     "minimum_words": 1600,
@@ -19,12 +19,20 @@
     "minimum_sections": 7,
     "target_sections": 8,
     "maximum_sections": 9,
-    "minimum_candidate_screenshots": 8,
-    "target_candidate_screenshots": 12,
-    "minimum_approved_screenshots": 7,
-    "minimum_total_screenshots": 7,
-    "minimum_unique_screenshots": 7,
-    "screenshots_per_section": {"minimum": 1, "target": 1, "maximum": 2}
+    "minimum_candidate_screenshots": 7,
+    "target_candidate_screenshots": 10,
+    "minimum_approved_screenshots": 6,
+    "minimum_total_screenshots": 6,
+    "minimum_unique_screenshots": 6,
+    "screenshots_per_section": {"minimum": 0, "target": 0, "maximum": 4},
+    "carousel_policy": {
+      "minimum_carousels": 2,
+      "target_carousels": 3,
+      "maximum_carousels": 3,
+      "minimum_images_per_carousel": 2,
+      "target_images_per_carousel": 3,
+      "maximum_images_per_carousel": 4
+    }
   },
   "hero_policy": {
     "required": true,
@@ -39,10 +47,12 @@
     "reject_bad_crop": true
   },
   "media_content_policy": {
-    "minimum_images_per_section_slot": 1,
-    "target_images_per_section_slot": 1,
-    "maximum_images_per_section_slot": 2,
+    "minimum_images_per_carousel": 2,
+    "target_images_per_carousel": 3,
+    "maximum_images_per_carousel": 4,
     "captions_required": true,
+    "carousel_commentary_required": true,
+    "visible_subject_required": true,
     "source_attribution_required": true,
     "alt_text_required": true,
     "builder_outputs_content_only": true,
@@ -59,17 +69,18 @@
   },
   "discovery_policy": {
     "independent_from_text_sources": true,
-    "continue_search_until_every_section_is_filled": true,
+    "continue_search_until_every_section_is_filled": false,
+    "stop_when_useful_carousel_pool_is_ready": true,
     "provider_order": ["official_store", "official_galleries", "press_kits", "game_databases", "editorial_galleries"],
     "minimum_search_rounds": 0,
-    "maximum_search_rounds_before_hard_error": 8,
+    "maximum_search_rounds_before_hard_error": 4,
     "expand_queries_after_each_round": true,
-    "search_queries_per_game_minimum": 4,
-    "search_result_pages_per_query": 2,
+    "search_queries_per_game_minimum": 2,
+    "search_result_pages_per_query": 1,
     "include_title_variants": true,
     "include_original_language_title": true,
     "include_platform_and_year_queries": true,
-    "include_section_specific_queries": true,
+    "include_section_specific_queries": false,
     "follow_thumbnail_to_original": true,
     "download_and_measure_every_candidate": true,
     "never_trust_declared_dimensions": true,
@@ -106,7 +117,7 @@
     "reject_duplicate_url": true,
     "reject_duplicate_scene": true,
     "reject_near_duplicate_crop": true,
-    "reject_reuse_across_sections": true,
+    "reject_reuse_across_carousels": true,
     "visual_quality_confidence": 0.78,
     "minimum_sharpness": 0.72,
     "minimum_compression_quality": 0.7,
@@ -123,7 +134,7 @@
     "scene_embedding_unique": false,
     "near_duplicate_threshold": 0.92,
     "same_scene_different_crop_forbidden": true,
-    "reuse_across_sections_forbidden": true
+    "reuse_across_carousels_forbidden": true
   },
   "publication_gate": {
     "fail_closed": true,
@@ -131,17 +142,19 @@
     "deployment_requires_content_pass": true,
     "missing_audit_is_failure": true,
     "missing_hero_art_is_failure": true,
-    "missing_one_image_in_any_section_is_failure": true,
+    "missing_one_image_in_any_section_is_failure": false,
+    "minimum_meaningful_carousels_required": 2,
     "any_duplicate_is_failure": true,
     "layout_validation_belongs_to_design_system": true,
     "content_validator_must_not_validate_layout_dimensions": true
   },
   "publication_invariants": [
-    "Каждый раздел получает хотя бы один уникальный кадр именно из этой игры; второй кадр добавляется только если он действительно помогает тезису.",
+    "Обзор содержит 2–3 осмысленные карусели, а не обязательную одиночную картинку в каждом разделе.",
+    "Каждая карусель содержит 2–4 разных кадра и ставится только рядом с тезисом, которому визуальный ряд действительно помогает.",
+    "Vision-аудит подписывает конкретно видимое содержимое каждого кадра и объясняет его связь с игрой; пустые универсальные подписи запрещены.",
     "Официальный Steam/CDN или press-kit предпочитается случайным поисковым изображениям: правильность игры важнее количества источников картинок.",
-    "Ни один URL или визуально совпадающая сцена не повторяется в статье.",
-    "Если проверенных кадров недостаточно, статья блокируется, а не заполняется чужими или сомнительными изображениями.",
-    "Подпись объясняет конкретный видимый кадр на языке статьи и выводится вторичным текстом дизайн-системы.",
+    "Ни один URL или визуально совпадающая сцена не повторяется между каруселями.",
+    "Если проверенных кадров недостаточно для двух осмысленных каруселей, visual upgrade блокируется, но быстрый текстовый обзор остаётся опубликованным.",
     "Сборщик не создаёт сетку, не задаёт размеры и не пишет inline layout CSS; он только заполняет именованные слоты дизайн-системы."
   ]
 }

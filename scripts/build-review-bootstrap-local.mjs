@@ -7,7 +7,7 @@ const root=process.cwd(),slug=String(process.argv[2]||'').trim().toLowerCase();
 if(!slug)throw new Error('Usage: build-review-bootstrap-local <slug>');
 const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
 const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,`${JSON.stringify(value,null,2)}\n`)};
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const countWords=value=>(String(value||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]+/g)||[]).length;
 const QUICK_REVIEW_TIMEOUT_MS=Math.max(60000,Math.min(240000,Number(process.env.QUICK_REVIEW_TIMEOUT_MS||120000)));
 const QUICK_REVIEW_NUM_CTX=Math.max(4096,Math.min(16384,Number(process.env.QUICK_REVIEW_NUM_CTX||8192)));
