@@ -24,10 +24,16 @@ const schema={type:'object',additionalProperties:false,required:['natural_russia
 }};
 let failed=false;
 for(const slug of slugs){
-  const article=read(`data/review-bootstrap/${slug}.json`),review=read(`data/reviews/${slug}.json`,{}),draft=read(`data/drafts/${slug}.json`,{});
+  const request=read(`data/game-enrichment-requests/${slug}.json`,{}),review=read(`data/reviews/${slug}.json`,{}),draft=read(`data/drafts/${slug}.json`,{}),score=Number(review?.review_score?.calculation?.score_10);
+  if(request?.released===false||review?.review_score?.status!=='green'||!Number.isFinite(score)){
+    console.log(JSON.stringify({slug,status:'skipped',reason:request?.released===false?'unreleased':'canonical_rating_not_green'},null,2));
+    continue;
+  }
+  const article=read(`data/review-bootstrap/${slug}.json`);
   if(!article){console.error(`${slug}: bootstrap review missing for audit`);failed=true;continue}
   const prose=textOf(article),evidence=evidenceOf(review),evidenceText=JSON.stringify({identity:{title:draft?.identity?.title,release:draft?.release,developers:draft?.companies?.developers,publishers:draft?.companies?.publishers,genres:draft?.classification?.genres,platforms:draft?.classification?.platforms},evidence});
-  const unsupportedNumbers=[...new Set(numbers(prose).filter(value=>!numbers(evidenceText).includes(value)))];
+  const allowedNumbers=new Set([...numbers(evidenceText),String(score)]);
+  const unsupportedNumbers=[...new Set(numbers(prose).filter(value=>!allowedNumbers.has(value)))];
   const latinIntrusions=[...new Set(lowerLatin(prose).filter(token=>!['fallout'].includes(token)))];
   const prompt=`Проведи строгий выпускающий фактчек и языковую редактуру короткого обзора игры. Текст должен звучать как оригинальный материал сильного русскоязычного игрового издания, а не как машинный перевод. Любое конкретное утверждение о механике, количестве, структуре мира, сюжете, управлении, визуале или аудитории должно прямо следовать из EVIDENCE/IDENTITY. Нельзя додумывать детали даже если они кажутся правдоподобными. Отдельно отмечай кальки, неграмотные словоформы, неуместные английские слова, бессмысленные или туманные формулировки. Высокая оценка factual_grounding допустима только если нет существенных неподтверждённых утверждений. Верни только JSON.\n\nТЕКСТ:\n${prose}\n\nIDENTITY + EVIDENCE:\n${evidenceText}`;
   let scores;
