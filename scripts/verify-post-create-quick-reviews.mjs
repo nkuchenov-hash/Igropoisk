@@ -19,9 +19,12 @@ for(const slug of slugs){
   }
   const article=read(`data/review-bootstrap/${slug}.json`,{});
   const ready=article?.publication_status==='published'&&Number(article?.score)===score&&exists(`article/${slug}/index.html`);
-  checked.push({slug,required:true,ready,score,quality_passed:article?.generation?.editorial_quality?.passed===true});
+  const editorialPassed=article?.generation?.editorial_quality?.passed===true;
+  const groundingPassed=article?.generation?.grounding_audit?.passed===true;
+  checked.push({slug,required:true,ready,score,editorial_passed:editorialPassed,grounding_passed:groundingPassed});
   if(!ready)failures.push(`${slug}: green-rated released game has no published bootstrap review at canonical score ${score}`);
-  else if(article?.generation?.editorial_quality?.passed!==true)failures.push(`${slug}: published bootstrap review does not carry a passed editorial quality gate`);
+  else if(!editorialPassed)failures.push(`${slug}: published bootstrap review does not carry a passed editorial quality gate`);
+  else if(!groundingPassed)failures.push(`${slug}: published bootstrap review does not carry a passed factual/language grounding audit`);
 }
 console.log(JSON.stringify({checked,failures},null,2));
 if(failures.length)process.exit(2);

@@ -29,6 +29,8 @@ on:
       - 'scripts/lib/review-source-registry.mjs'
       - 'scripts/lib/review-score-extractor.mjs'
       - 'scripts/build-review-bootstrap-local.mjs'
+      - 'scripts/build-review-bootstrap-commercial.mjs'
+      - 'scripts/audit-review-bootstrap-local.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/run-game-post-create-enrichment.mjs'
       - 'scripts/resolve-post-create-event-targets.mjs'
@@ -69,8 +71,8 @@ jobs:
     env:
       OPENAI_API_KEY: ''
       GITHUB_TOKEN: ${{ github.token }}
-      LOCAL_TEXT_MODEL: qwen3:1.7b
-      LOCAL_EDITORIAL_MODEL: qwen3:1.7b
+      LOCAL_TEXT_MODEL: qwen3:4b
+      LOCAL_EDITORIAL_MODEL: qwen3:4b
       LOCAL_VISION_MODEL: qwen3-vl:4b
       POST_CREATE_REVIEW_BATCH: '3'
       POST_CREATE_MAX_ATTEMPTS: '3'
@@ -110,6 +112,8 @@ jobs:
           node --check scripts/lib/review-source-registry.mjs
           node --check scripts/lib/review-score-extractor.mjs
           node --check scripts/build-review-bootstrap-local.mjs
+          node --check scripts/build-review-bootstrap-commercial.mjs
+          node --check scripts/audit-review-bootstrap-local.mjs
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/run-game-post-create-enrichment.mjs
           node --check scripts/resolve-post-create-event-targets.mjs
@@ -163,7 +167,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.ollama/models
-          key: ollama-post-create-v1
+          key: ollama-post-create-v2-qwen3-4b
 
       - name: Start local editorial model service
         run: |
@@ -187,21 +191,23 @@ jobs:
           echo "::error::Required text model $LOCAL_TEXT_MODEL is unavailable after retries."
           exit 1
 
-      - name: Build and verify bounded quick reviews for green-rated event-scoped games
+      - name: Build, fact-check and verify bounded quick reviews
         env:
-          POST_CREATE_PHASE: quick-review
           POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
         run: |
           set -euo pipefail
           IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
           for attempt in 1 2 3; do
-            echo "Quick-review generation pass $attempt/3"
-            node scripts/run-game-post-create-enrichment.mjs "${TARGETS[@]}"
-            if node scripts/verify-post-create-quick-reviews.mjs "${TARGETS[@]}"; then
+            echo "Grounded quick-review generation pass $attempt/3"
+            generation_failed=0
+            for slug in "${TARGETS[@]}"; do
+              node scripts/build-review-bootstrap-commercial.mjs "$slug" || generation_failed=1
+            done
+            if [ "$generation_failed" -eq 0 ] && node scripts/verify-post-create-quick-reviews.mjs "${TARGETS[@]}"; then
               exit 0
             fi
           done
-          echo "::error::Quick-review publication gate did not pass after bounded retries."
+          echo "::error::Grounded quick-review publication gate did not pass after bounded retries."
           exit 1
 
       - name: Publish quick-review checkpoint before full upgrades
