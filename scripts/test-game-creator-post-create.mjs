@@ -44,7 +44,7 @@ const fullPhaseEnd=blockEnd(runner,fullPhaseAt);
 const materializeAt=runner.indexOf("run('catalog-materialization'");
 if(fullPhaseAt<0||fullPhaseEnd<0||materializeAt<=fullPhaseAt||materializeAt>=fullPhaseEnd)fail('Catalog-wide materialization is not confined to the slow full-review phase');
 if(!runner.includes("phase==='bootstrap'?'game-post-create-bootstrap.json':phase==='quick-review'?'game-post-create-quick-review.json':phase==='full-review'?'game-post-create-full-review.json'"))fail('Independent post-create phase reports missing');
-if(!media.includes("provider:'verified-source-page'")||!media.includes('Search engines may aid source discovery')||!media.includes('removed_stale_screenshots')||!media.includes('media.url_template'))fail('Verified media provenance, registered-gallery, stale-cleanup or discovery policy missing');
+if(!media.includes("provider:'verified-source-page'")||!media.includes('search engines may aid source discovery')||!media.includes('removed_stale_screenshots')||!media.includes('media.url_template'))fail('Verified media provenance, registered-gallery, stale-cleanup or discovery policy missing');
 for(const marker of ['/media/${slug}/','/gallery/${slug}-screenshots/','/gallery/${slug}-artwork/','facebook[-_]?thumb'])if(!media.includes(marker))fail(`Historical native media gallery contract missing: ${marker}`);
 if(!reviewDiscovery.includes('discover-review-sources-web-v15.mjs'))fail('Canonical review discovery does not route through v15 critic index');
 for(const marker of ['rpgFanCandidates','rpgamerCandidates','gameRevolutionCandidates'])if(!historicalDiscoveryV14.includes(marker))fail(`Historical review adapter missing: ${marker}`);
