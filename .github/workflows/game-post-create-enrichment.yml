@@ -27,6 +27,7 @@ on:
       - 'scripts/publish-game-post-create-overlay.mjs'
       - 'scripts/test-game-creator-post-create.mjs'
       - 'scripts/test-quick-review-text-model-wiring.mjs'
+      - 'scripts/test-post-create-dna-media-budget.mjs'
       - 'scripts/lib/verified-game-import.mjs'
       - 'game/_shared/game-page-materialized-data.js'
       - '.github/workflows/game-post-create-enrichment.yml'
@@ -84,11 +85,13 @@ jobs:
           node --check scripts/publish-game-post-create-overlay.mjs
           node --check scripts/test-game-creator-post-create.mjs
           node --check scripts/test-quick-review-text-model-wiring.mjs
+          node --check scripts/test-post-create-dna-media-budget.mjs
           node --check scripts/lib/verified-game-import.mjs
           node --check game/_shared/game-page-materialized-data.js
           node scripts/test-game-creator-boundary.mjs
           node scripts/test-game-creator-post-create.mjs
           node scripts/test-quick-review-text-model-wiring.mjs
+          node scripts/test-post-create-dna-media-budget.mjs
 
       - name: Bootstrap series, rating and bounded media for every requested game
         env:
