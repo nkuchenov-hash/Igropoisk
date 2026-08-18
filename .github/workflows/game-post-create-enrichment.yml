@@ -33,6 +33,8 @@ on:
       - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/run-game-post-create-enrichment.mjs'
       - 'scripts/publish-game-post-create-overlay.mjs'
+      - 'scripts/publish-post-create-production.mjs'
+      - 'scripts/test-post-create-production-publisher.mjs'
       - 'scripts/test-game-creator-post-create.mjs'
       - 'scripts/test-quick-review-text-model-wiring.mjs'
       - 'scripts/test-post-create-dna-media-budget.mjs'
@@ -107,6 +109,8 @@ jobs:
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/run-game-post-create-enrichment.mjs
           node --check scripts/publish-game-post-create-overlay.mjs
+          node --check scripts/publish-post-create-production.mjs
+          node --check scripts/test-post-create-production-publisher.mjs
           node --check scripts/test-game-creator-post-create.mjs
           node --check scripts/test-quick-review-text-model-wiring.mjs
           node --check scripts/test-post-create-dna-media-budget.mjs
@@ -118,6 +122,7 @@ jobs:
           node scripts/test-game-creator-post-create.mjs
           node scripts/test-quick-review-text-model-wiring.mjs
           node scripts/test-post-create-dna-media-budget.mjs
+          node scripts/test-post-create-production-publisher.mjs
           node scripts/test-review-carousel-version-gate.mjs
 
       - name: Materialize Game DNA and similarity immediately after page creation
