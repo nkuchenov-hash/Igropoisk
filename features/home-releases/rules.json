@@ -1,5 +1,5 @@
 {
-  "schema_version": 6,
+  "schema_version": 7,
   "id": "home-releases",
   "title": "Новые и ожидаемые релизы на главной",
   "status": "active",
@@ -8,9 +8,9 @@
   "maximum_recent_cards": 4,
   "recent_release_days": 14,
   "sort": [
-    "recent_event_date_descending",
-    "upcoming_event_date_ascending",
-    "expected_score_descending",
+    "recent_release_date_descending",
+    "upcoming_release_date_ascending",
+    "anticipation_score_descending",
     "title_ascending"
   ],
   "eligibility": {
@@ -21,30 +21,45 @@
     "require_title": true,
     "require_event": true,
     "require_public_calendar_entry": true,
-    "reuse_public_calendar_notability_gate": true,
-    "do_not_apply_second_homepage_gate": true
+    "do_not_apply_second_homepage_gate": true,
+    "require_homepage_quality_cover": true
+  },
+  "cover_quality": {
+    "required": true,
+    "preferred_aspect_ratio": "2:3",
+    "minimum_width": 600,
+    "minimum_height": 900,
+    "minimum_bytes": 40000,
+    "minimum_aspect_ratio": 0.62,
+    "maximum_aspect_ratio": 0.72,
+    "require_verified_primary": true,
+    "reject_image_too_small_error": true,
+    "allow_official_steam_library_600x900_fallback": true,
+    "remove_card_if_all_candidates_fail": true
   },
   "interaction": {
     "horizontal_scroll": true,
     "mouse_wheel_scroll": true,
-    "touch_scroll": true,
+    "swipe_scroll": true,
     "arrow_buttons": "heading",
     "calendar_link": "calendar/"
   },
   "image_priority": [
-    "image.local_url",
-    "image.source_url",
-    "image_candidates",
+    "verified_primary_cover_passing_homepage_quality_gate",
     "steam_library_600x900"
   ],
   "editorial_rules": [
-    "Главная использует тот же публичный календарный feed, который уже прошёл календарный publication/notability gate.",
-    "Релиз, уже допущенный в публичный календарь, не должен повторно отсеиваться отдельным homepage-only фильтром ожидаемости.",
-    "Сначала показываются заметные релизы последних двух недель, затем ближайшие ожидаемые релизы по дате; рейтинг ожидания используется как дополнительный сигнал и tie-breaker.",
-    "На десктопе блок показывает несколько карточек одновременно и прокручивается колесом/тачпадом или компактными кнопками в заголовке.",
-    "Кнопки прокрутки не занимают место по бокам карточечной ленты и не ломают её выравнивание.",
-    "На мобильных устройствах используется нативный горизонтальный swipe без отдельных кнопок прокрутки.",
-    "Клик по карточке открывает соответствующий релиз в календаре.",
-    "При недоступной обложке используются резервные проверенные изображения; пустая карточка заменяется инициалами."
+    "Главная использует тот же публичный набор релизов, что и календарь, без повторного homepage-only фильтра.",
+    "Сначала показываются опубликованные релизы последних двух недель, затем ближайшие ожидаемые релизы по дате.",
+    "Рейтинг ожидания на карточке берётся из публичного expected_score; significance.score используется только как fallback для старых данных.",
+    "Лента ограничивается двенадцатью карточками и прокручивается только внутри своего блока.",
+    "На десктопе управление прокруткой находится в заголовке блока и не занимает боковые колонки рядом с карточками.",
+    "Колесо мыши и тачпад прокручивают релизы по горизонтали, на сенсорных экранах работает нативный swipe.",
+    "Обложка на главной обязательна: запрещены миниатюры, store capsules, header-изображения, растянутые низкокачественные файлы и любые изображения, не прошедшие homepage cover quality gate.",
+    "Основная обложка должна быть проверенной, не меньше 600×900, весить не меньше 40 КБ и иметь портретное соотношение сторон, близкое к 2:3; запись с ошибкой Image too small не считается допустимой.",
+    "Если основная обложка не проходит gate, разрешён только официальный Steam library_600x900 fallback; фактические размеры и пропорции изображения повторно проверяются браузером до показа.",
+    "Если ни одна обложка не проходит проверку, карточка удаляется с главной, а не публикуется с плохой картинкой или пустой заглушкой.",
+    "Карточка сохраняет нормальную портретную геометрию 2:3; обложку запрещено обрезать ради слишком узкой или неподходящей по формату карточки.",
+    "Клик по карточке открывает соответствующий релиз в календаре."
   ]
 }
