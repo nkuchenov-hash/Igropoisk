@@ -12,7 +12,7 @@ let timer=null;
 
 const scoreMarkup=item=>{
   const score=Number(item.score);
-  return Number.isFinite(score)?`<span class="ig-rating review-day-card__score"><strong>${score.toFixed(1)}</strong><small>Оценка<br>Игропоиска</small></span>`:'';
+  return Number.isFinite(score)?`<span class="ig-rating review-day-card__score"><strong>${score.toFixed(1)}</strong><small>Оценка Игропоиска</small></span>`:'';
 };
 
 const mainCard=item=>{
