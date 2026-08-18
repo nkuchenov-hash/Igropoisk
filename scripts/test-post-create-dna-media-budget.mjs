@@ -10,11 +10,15 @@ const validator=read('scripts/validate-game-dna.mjs');
 const media=read('scripts/enrich-game-media-from-sources.mjs');
 const quick=read('scripts/build-review-bootstrap-local.mjs');
 const runner=read('scripts/run-game-post-create-enrichment.mjs');
+const scope=read('scripts/resolve-post-create-event-targets.mjs');
 const fail=message=>{throw new Error(message)};
 
 for(const marker of ['scripts/materialize-post-create-game-dna.mjs','Materialize Game DNA and similarity immediately after page creation','Publish Game DNA checkpoint before network enrichment',"POST_CREATE_PUBLISH_PHASE: dna","game/*/index.html"])if(!workflow.includes(marker))fail(`Fast post-create Game DNA workflow missing: ${marker}`);
 const dnaAt=workflow.indexOf('Materialize Game DNA and similarity immediately after page creation'),dnaPublishAt=workflow.indexOf('Publish Game DNA checkpoint before network enrichment'),bootstrapAt=workflow.indexOf('Bootstrap series, rating and bounded media');
 if(dnaAt<0||dnaPublishAt<dnaAt||bootstrapAt<dnaPublishAt)fail('Game DNA is not checkpointed before network-heavy bootstrap');
+for(const marker of ['fetch-depth: 20','Resolve event-scoped game targets','POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}','scripts/resolve-post-create-event-targets.mjs'])if(!workflow.includes(marker))fail(`Post-create event scoping/performance contract missing: ${marker}`);
+if(workflow.includes('fetch-depth: 0'))fail('Post-create workflow still performs an unbounded full-history checkout');
+for(const marker of ['GITHUB_EVENT_PATH','pull_request','/pulls/${number}/files','/compare/${before}...${after}','data\\/game-enrichment-requests','game\\/([^/]+)\\/index','mode='])if(!scope.includes(marker))fail(`Event target resolver contract missing: ${marker}`);
 for(const marker of ["'data/game-dna'","'data/similarity'"])if(!publisher.includes(marker))fail(`Post-create publisher does not persist ${marker}`);
 for(const marker of ['scripts/build-game-dna.mjs','scripts/validate-game-dna.mjs','scripts/build-similarity-index.mjs','data/parser-runs/game-post-create-dna.json','missingDnaSlugs','game/${slug}/index.html',"game_dna:'ready'","dna:'ready'",'validation_scope:\'per_game_targeted_commercial_quality\'',"run('scripts/validate-game-dna.mjs',[slug])",'publication_policy:\'only_valid_commercial_quality_dna_changes_survive_to_checkpoint\'','ready_slugs:validDnaSlugs','previousDnaText','previousIndexText','restoreText'])if(!dna.includes(marker))fail(`Post-create DNA materializer missing commercial-quality safeguard: ${marker}`);
 if(dna.includes('process.exitCode=2'))fail('Independent DNA/similarity failures can still block the valid DNA checkpoint');
@@ -28,4 +32,4 @@ if(!quick.includes('QUICK_REVIEW_TIMEOUT_MS||300000')||!quick.includes("provider
 if(quick.includes('models.github.ai')||quick.includes("provider:'github-models'"))fail('Retired GitHub Models dependency is still present in quick-review production code');
 if(!quick.includes('&quot;'))fail('Quick review HTML escaping is malformed');
 for(const marker of ['const quickOnly=doQuickReview&&!doFullReview','quickOnly?!quickReviewReady(slug):!reviewReady(slug)',"String(b.request.requested_at||'').localeCompare(String(a.request.requested_at||''))",'wasAttempted=attempted.has(slug)','run_attempts:Number(request.run_attempts||0)+(wasAttempted?1:0)','reviewExhausted=wasAttempted'])if(!runner.includes(marker))fail(`Post-create review queue starvation safeguard missing: ${marker}`);
-console.log('Post-create semantic-precision DNA, durable local quick review, fair queue and bounded media contract passed.');
+console.log('Post-create event-scoped execution, bounded checkout, semantic-precision DNA, durable local quick review, fair queue and bounded media contract passed.');
