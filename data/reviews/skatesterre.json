@@ -2,12 +2,12 @@
   "schema_version": 12,
   "game_slug": "skatesterre",
   "game_id": null,
-  "updated_at": "2026-08-18T11:39:04.420Z",
+  "updated_at": "2026-08-18T18:33:36.873Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
-    "accepted": 2,
+    "accepted": 1,
     "status": "red-needs-revision",
     "full_registry_scan": true,
     "checked_registered_sources": 45,
@@ -102,7 +102,7 @@
       "domain": "gamespew.com",
       "validation": {
         "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-18T11:37:38.053Z",
+        "checked_at": "2026-08-18T18:32:09.588Z",
         "method": "registered-direct-publisher-preserved-v8",
         "reason": "HTTP 403"
       },
@@ -113,64 +113,10 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-18T11:39:04.389Z",
+        "checked_at": "2026-08-18T18:33:36.839Z",
         "url": "https://www.gamespew.com/2026/08/skatesterre-review/",
         "configured_source_id": "game-spew",
         "direct_publisher": true
-      }
-    },
-    {
-      "id": "source-2",
-      "configured_source_id": "shacknews",
-      "publication": "Shacknews",
-      "title": "Skatesterre — Shacknews review",
-      "url": "https://www.metacritic.com/game/skatesterre/critic-reviews/?platform=pc",
-      "resolved_url": "https://www.metacritic.com/game/skatesterre/critic-reviews/?platform=pc",
-      "source_kind": "review",
-      "platform": "pc",
-      "version_context": "",
-      "published_at": "",
-      "author": "",
-      "language": "en",
-      "score": 40,
-      "scale": 100,
-      "grade": "",
-      "score_eligible": true,
-      "canonical_score_eligible": true,
-      "version_validation": {
-        "score_eligible": true,
-        "reason": "canonical_version"
-      },
-      "identity_evidence": "Critic review for Skatesterre attributed by Metacritic to Shacknews.",
-      "evidence_points": [
-        "If you’re a longtime fan of the Tony Hawk’s Pro Skater series and desperately want a new game, and don’t care for what Activision is doing with it, you could certainly choose to play Skatesterre. You won’t have a good time, but it’s an option in front of you. The mechanics, controls, physics, and energy just aren’t there. And it isn’t really trying to do something different and whiffing; it’s the same blueprint, but stuff just doesn’t function properly. And there’s no personality to it besides “skateboarding game,” criminally underutilizing the athlete likeness in use. I walked in kind of intrigued to see what was on offer, and walked away shrugging. Them’s the breaks."
-      ],
-      "praise": [],
-      "criticism": [],
-      "mechanics": [],
-      "domain": "metacritic.com",
-      "validation": {
-        "status": "accepted-critic-index",
-        "checked_at": "2026-08-18T11:39:02.018Z",
-        "method": "metacritic-critic-attribution-v15.2",
-        "index_url": "https://www.metacritic.com/game/skatesterre/critic-reviews/?platform=pc",
-        "index_platform": "pc",
-        "original_review_url": ""
-      },
-      "score_evidence": {
-        "method": "critic-index-attribution",
-        "scope": "editorial_review",
-        "checked_at": "2026-08-18T11:39:02.018Z",
-        "url": "https://www.metacritic.com/game/skatesterre/critic-reviews/?platform=pc",
-        "configured_source_id": "shacknews",
-        "direct_publisher": false,
-        "historical": false,
-        "index_source": "metacritic",
-        "index_platform": "pc",
-        "attributed_publication": "Shacknews",
-        "aggregate_score_used": false,
-        "user_score_used": false,
-        "original_review_url": ""
       }
     }
   ],
@@ -232,51 +178,21 @@
         "score_evidence": {
           "method": "jsonld.reviewRating",
           "scope": "editorial_review",
-          "checked_at": "2026-08-18T11:39:04.389Z",
+          "checked_at": "2026-08-18T18:33:36.839Z",
           "url": "https://www.gamespew.com/2026/08/skatesterre-review/",
           "configured_source_id": "game-spew",
           "direct_publisher": true
-        }
-      },
-      {
-        "source_id": "source-2",
-        "configured_source_id": "shacknews",
-        "publication": "Shacknews",
-        "title": "Skatesterre — Shacknews review",
-        "url": "https://www.metacritic.com/game/skatesterre/critic-reviews/?platform=pc",
-        "original_score": {
-          "score": 40,
-          "scale": 100,
-          "grade": null,
-          "display": "40/100"
-        },
-        "normalized_10": 4,
-        "score_evidence": {
-          "method": "critic-index-attribution",
-          "scope": "editorial_review",
-          "checked_at": "2026-08-18T11:39:02.018Z",
-          "url": "https://www.metacritic.com/game/skatesterre/critic-reviews/?platform=pc",
-          "configured_source_id": "shacknews",
-          "direct_publisher": false,
-          "historical": false,
-          "index_source": "metacritic",
-          "index_platform": "pc",
-          "attributed_publication": "Shacknews",
-          "aggregate_score_used": false,
-          "user_score_used": false,
-          "original_review_url": ""
         }
       }
     ],
     "excluded_sources": [],
     "calculation": {
-      "source_count": 2,
+      "source_count": 1,
       "values": [
-        5,
-        4
+        5
       ],
-      "mean_10": 4.5,
-      "score_10": 4.5
+      "mean_10": 5,
+      "score_10": 5
     }
   },
   "version_gate": {
