@@ -1,0 +1,123 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/ark-survival-evolved.json#review_score",
+  "game_slug": "ark-survival-evolved",
+  "checked_at": "2026-08-17T23:33:55.580Z",
+  "status": "green",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Ark: Survival Evolved review",
+      "url": "https://www.pcgamer.com/ark-survival-evolved-review",
+      "original_score": {
+        "score": 72,
+        "scale": 100,
+        "grade": null,
+        "display": "72/100"
+      },
+      "normalized_10": 7.2,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:33:55.542Z",
+        "url": "https://www.pcgamer.com/ark-survival-evolved-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "ARK: Survival Evolved — IGN review",
+      "url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
+      "original_score": {
+        "score": 77,
+        "scale": 100,
+        "grade": null,
+        "display": "77/100"
+      },
+      "normalized_10": 7.7,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:33:54.259Z",
+        "url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
+        "configured_source_id": "ign",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "IGN",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "gamestar",
+      "publication": "GameStar",
+      "title": "ARK: Survival Evolved — GameStar review",
+      "url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
+      "original_score": {
+        "score": 70,
+        "scale": 100,
+        "grade": null,
+        "display": "70/100"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:33:54.259Z",
+        "url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
+        "configured_source_id": "gamestar",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "GameStar",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2018/12/18/ark-survival-evolved-switch-review",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 3,
+    "values": [
+      7.2,
+      7.7,
+      7
+    ],
+    "mean_10": 7.3,
+    "score_10": 7.3
+  }
+}

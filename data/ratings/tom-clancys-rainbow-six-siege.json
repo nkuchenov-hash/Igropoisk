@@ -1,0 +1,115 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/tom-clancys-rainbow-six-siege.json#review_score",
+  "game_slug": "tom-clancys-rainbow-six-siege",
+  "checked_at": "2026-08-17T23:39:24.042Z",
+  "status": "green",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-3",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Rainbow Six Siege review",
+      "url": "https://www.pcgamer.com/rainbow-six-siege-review",
+      "original_score": {
+        "score": 90,
+        "scale": 100,
+        "grade": null,
+        "display": "90/100"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T09:38:29.080Z",
+        "url": "https://www.pcgamer.com/rainbow-six-siege-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Rainbow Six: Siege review",
+      "url": "https://www.gamesradar.com/rainbow-six-siege-review",
+      "original_score": {
+        "score": 3.5,
+        "scale": 5,
+        "grade": null,
+        "display": "3.5/5"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T09:38:29.080Z",
+        "url": "https://www.gamesradar.com/rainbow-six-siege-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Rainbow Six Siege Review: A Slimmed-Down Combatant Struggles With",
+      "url": "https://gameinformer.com/games/rainbow_six_siege/b/playstation4/archive/2015/12/04/game-informer-rainbow-six-siege-review.aspx",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T09:38:29.115Z",
+        "url": "https://gameinformer.com/games/rainbow_six_siege/b/playstation4/archive/2015/12/04/game-informer-rainbow-six-siege-review.aspx",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/blogs/topic/77380/tom_clancys_rainbow_six_siege_review_igry",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "playground",
+      "publication": "PlayGround.ru",
+      "url": "https://www.playground.ru/rainbow_six_siege/opinion/rainbow_six_siege_obzor-550949",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 3,
+    "values": [
+      9,
+      7,
+      7
+    ],
+    "mean_10": 7.6667,
+    "score_10": 7.7
+  }
+}

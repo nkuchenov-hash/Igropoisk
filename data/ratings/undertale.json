@@ -1,0 +1,167 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/undertale.json#review_score",
+  "game_slug": "undertale",
+  "checked_at": "2026-08-14T23:47:00.980Z",
+  "status": "green",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "Undertale Review - IGN",
+      "url": "https://www.ign.com/articles/2018/09/18/undertale-review",
+      "original_score": {
+        "score": 10,
+        "scale": 10,
+        "grade": null,
+        "display": "10/10"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:47:00.822Z",
+        "url": "https://www.ign.com/articles/2018/09/18/undertale-review",
+        "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "nintendo-life",
+      "publication": "Nintendo Life",
+      "title": "Review: Undertale (Switch) - A Postmodern RPG Classic That Every Fan Of The Genre Should Play",
+      "url": "https://www.nintendolife.com/reviews/switch-eshop/undertale",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:47:00.822Z",
+        "url": "https://www.nintendolife.com/reviews/switch-eshop/undertale",
+        "configured_source_id": "nintendo-life",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: Undertale (PS4)",
+      "url": "https://www.pushsquare.com/reviews/ps4/undertale",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:47:00.822Z",
+        "url": "https://www.pushsquare.com/reviews/ps4/undertale",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "title": "Undertale review",
+      "url": "https://www.eurogamer.net/undertale-review",
+      "original_score": {
+        "score": 4,
+        "scale": 5,
+        "grade": null,
+        "display": "4/5"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:47:00.936Z",
+        "url": "https://www.eurogamer.net/undertale-review",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Undertale review",
+      "url": "https://www.pcgamer.com/undertale-review",
+      "original_score": {
+        "score": 91,
+        "scale": 100,
+        "grade": null,
+        "display": "91/100"
+      },
+      "normalized_10": 9.1,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:47:00.937Z",
+        "url": "https://www.pcgamer.com/undertale-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "https://www.gamespot.com/reviews/undertale-review/1900-6416315",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "rock-paper-shotgun",
+      "publication": "Rock Paper Shotgun",
+      "url": "https://www.rockpapershotgun.com/undertale-review",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "https://www.destructoid.com/review-undertale-ps4--454842.phtml",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 5,
+    "values": [
+      10,
+      9,
+      9,
+      8,
+      9.1
+    ],
+    "mean_10": 9.02,
+    "score_10": 9
+  }
+}

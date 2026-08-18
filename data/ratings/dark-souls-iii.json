@@ -1,0 +1,179 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/dark-souls-iii.json#review_score",
+  "game_slug": "dark-souls-iii",
+  "checked_at": "2026-08-14T23:47:00.229Z",
+  "status": "green",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "Dark Souls 3 Review - IGN",
+      "url": "https://www.ign.com/articles/2016/04/04/dark-souls-3-review",
+      "original_score": {
+        "score": 9.5,
+        "scale": 10,
+        "grade": null,
+        "display": "9.5/10"
+      },
+      "normalized_10": 9.5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:46:59.999Z",
+        "url": "https://www.ign.com/articles/2016/04/04/dark-souls-3-review",
+        "configured_source_id": "ign",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "game-revolution",
+      "publication": "GameRevolution",
+      "title": "Dark Souls III Review",
+      "url": "https://www.gamerevolution.com/review/70185-dark-souls-iii-review",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:47:00.120Z",
+        "url": "https://www.gamerevolution.com/review/70185-dark-souls-iii-review",
+        "configured_source_id": "game-revolution",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Dark Souls 3 review",
+      "url": "https://www.pcgamer.com/dark-souls-3-review",
+      "original_score": {
+        "score": 94,
+        "scale": 100,
+        "grade": null,
+        "display": "94/100"
+      },
+      "normalized_10": 9.4,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:47:00.120Z",
+        "url": "https://www.pcgamer.com/dark-souls-3-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-7",
+      "configured_source_id": "eurogamer",
+      "publication": "Eurogamer",
+      "title": "Dark Souls 3 review",
+      "url": "https://www.eurogamer.net/dark-souls-3-review",
+      "original_score": {
+        "score": 5,
+        "scale": 5,
+        "grade": null,
+        "display": "5/5"
+      },
+      "normalized_10": 10,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:47:00.120Z",
+        "url": "https://www.eurogamer.net/dark-souls-3-review",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-8",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Dark Souls 3 review",
+      "url": "https://www.gamesradar.com/dark-souls-3-review",
+      "original_score": {
+        "score": 4.5,
+        "scale": 5,
+        "grade": null,
+        "display": "4.5/5"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-14T23:47:00.120Z",
+        "url": "https://www.gamesradar.com/dark-souls-3-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "polygon",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/2016/4/4/11265022/dark-souls-3-review-from-software-ps4-playstation-4-xbox-one-pc-windows",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "gamespot",
+      "publication": "GameSpot",
+      "url": "http://www.gamespot.com/reviews/dark-souls-3-review/1900-6416397",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "ars-technica",
+      "publication": "Ars Technica",
+      "url": "https://arstechnica.com/gaming/2016/04/dark-souls-3-review-marching-towards-masochism",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "rock-paper-shotgun",
+      "publication": "Rock Paper Shotgun",
+      "url": "https://www.rockpapershotgun.com/dark-souls-iii-review-pc",
+      "reason": "canonical_version"
+    },
+    {
+      "configured_source_id": "destructoid",
+      "publication": "Destructoid",
+      "url": "http://www.destructoid.com/review-dark-souls-iii-350397.phtml",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 5,
+    "values": [
+      9.5,
+      9,
+      9.4,
+      10,
+      9
+    ],
+    "mean_10": 9.38,
+    "score_10": 9.4
+  }
+}

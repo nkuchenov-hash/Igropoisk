@@ -3,8 +3,8 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/total-war-warhammer-iii.json#review_score",
   "game_slug": "total-war-warhammer-iii",
-  "checked_at": "2026-08-17T13:26:33.631Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-18T00:49:34.128Z",
+  "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T13:26:33.602Z",
+        "checked_at": "2026-08-17T23:33:52.453Z",
         "url": "https://www.pcgamer.com/total-war-warhammer-3-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -59,21 +59,118 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T13:26:33.602Z",
+        "checked_at": "2026-08-17T23:33:52.453Z",
         "url": "https://www.thesixthaxis.com/2022/02/14/total-war-warhammer-3-review/",
         "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
       }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "Total War: WARHAMMER III — IGN review",
+      "url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+      "original_score": {
+        "score": 95,
+        "scale": 100,
+        "grade": null,
+        "display": "95/100"
+      },
+      "normalized_10": 9.5,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:33:50.635Z",
+        "url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+        "configured_source_id": "ign",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "IGN",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "pc-invasion",
+      "publication": "PC Invasion",
+      "title": "Total War: WARHAMMER III — PC Invasion review",
+      "url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+      "original_score": {
+        "score": 95,
+        "scale": 100,
+        "grade": null,
+        "display": "95/100"
+      },
+      "normalized_10": 9.5,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:33:50.635Z",
+        "url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+        "configured_source_id": "pc-invasion",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "PC Invasion",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "the-games-machine",
+      "publication": "The Games Machine",
+      "title": "Total War: WARHAMMER III — The Games Machine review",
+      "url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+      "original_score": {
+        "score": 95,
+        "scale": 100,
+        "grade": null,
+        "display": "95/100"
+      },
+      "normalized_10": 9.5,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:33:50.635Z",
+        "url": "https://www.metacritic.com/game/total-war-warhammer-iii/critic-reviews/",
+        "configured_source_id": "the-games-machine",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "The Games Machine",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
     }
   ],
-  "excluded_sources": [],
+  "excluded_sources": [
+    {
+      "configured_source_id": "gamemag",
+      "publication": "GameMAG.ru",
+      "url": "https://gamemag.ru/reviews/total-war-warhammer-iii-review",
+      "reason": "canonical_version"
+    }
+  ],
   "calculation": {
-    "source_count": 2,
+    "source_count": 5,
     "values": [
       9,
-      9
+      9,
+      9.5,
+      9.5,
+      9.5
     ],
-    "mean_10": 9,
-    "score_10": 9
+    "mean_10": 9.3,
+    "score_10": 9.3
   }
 }

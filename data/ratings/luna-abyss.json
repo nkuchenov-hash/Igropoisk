@@ -1,0 +1,109 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/luna-abyss.json#review_score",
+  "game_slug": "luna-abyss",
+  "checked_at": "2026-08-17T23:30:37.591Z",
+  "status": "green",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "title": "Review: Luna Abyss (PS5) - Don",
+      "url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:30:37.554Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Секундочку…",
+      "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:16:28.817Z",
+        "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "game-spew",
+      "publication": "GameSpew",
+      "title": "Luna Abyss — GameSpew review",
+      "url": "https://www.metacritic.com/game/luna-abyss/critic-reviews/",
+      "original_score": {
+        "score": 80,
+        "scale": 100,
+        "grade": null,
+        "display": "80/100"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:30:35.276Z",
+        "url": "https://www.metacritic.com/game/luna-abyss/critic-reviews/",
+        "configured_source_id": "game-spew",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "GameSpew",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    }
+  ],
+  "excluded_sources": [],
+  "calculation": {
+    "source_count": 3,
+    "values": [
+      8,
+      7,
+      8
+    ],
+    "mean_10": 7.6667,
+    "score_10": 7.7
+  }
+}
