@@ -2,28 +2,37 @@
   "schema_version": 4,
   "game_slug": "fallout-shelter",
   "game_id": "game_cdd4b40d1bcc712b6661",
-  "generated_at": "2026-08-18T17:27:49.199Z",
+  "generated_at": "2026-08-18T17:51:32.808Z",
   "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
   "source_dna": {
     "status": "auto",
-    "revision": 1,
+    "revision": 2,
     "quality": {
-      "populated_axes": 3,
+      "populated_axes": 9,
       "total_axes": 16,
-      "core_axes": 1,
+      "core_axes": 4,
       "total_core_axes": 7,
       "populated": [
         "genres",
+        "core_loop",
+        "traversal",
         "progression",
-        "multiplayer"
+        "perspective",
+        "setting",
+        "tone",
+        "multiplayer",
+        "mechanics"
       ],
       "populated_core": [
-        "progression"
+        "core_loop",
+        "traversal",
+        "progression",
+        "perspective"
       ],
-      "ready_for_similarity": false,
-      "needs_enrichment": true
+      "ready_for_similarity": true,
+      "needs_enrichment": false
     },
     "ref": "../game-dna/fallout-shelter.json"
   },
@@ -37,24 +46,42 @@
       "free_to_play"
     ],
     "subgenres": [],
-    "core_loop": [],
+    "core_loop": [
+      "combat",
+      "building",
+      "management",
+      "collecting"
+    ],
     "combat_style": [],
-    "traversal": [],
+    "traversal": [
+      "vehicles"
+    ],
     "world_structure": [],
     "mission_structure": [],
     "progression": [
-      "stats_builds"
+      "gear_loot",
+      "stats_builds",
+      "unlocks"
     ],
-    "perspective": [],
+    "perspective": [
+      "top_down"
+    ],
     "player_agency": [],
     "pacing": [],
     "narrative": [],
-    "setting": [],
-    "tone": [],
+    "setting": [
+      "post_apocalyptic"
+    ],
+    "tone": [
+      "comedic"
+    ],
     "multiplayer": [
       "singleplayer"
     ],
-    "mechanics": [],
+    "mechanics": [
+      "loot",
+      "companions"
+    ],
     "franchise": "fallout"
   },
   "recommendations": []

@@ -2,30 +2,41 @@
   "schema_version": 4,
   "game_slug": "fallout-76",
   "game_id": "game_5dfec3fa7b67f426ed78",
-  "generated_at": "2026-08-18T17:27:49.011Z",
+  "generated_at": "2026-08-18T17:51:32.580Z",
   "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
   "source_dna": {
     "status": "auto",
-    "revision": 1,
+    "revision": 2,
     "quality": {
-      "populated_axes": 4,
+      "populated_axes": 11,
       "total_axes": 16,
-      "core_axes": 2,
+      "core_axes": 6,
       "total_core_axes": 7,
       "populated": [
         "genres",
         "core_loop",
+        "combat_style",
+        "traversal",
+        "world_structure",
+        "mission_structure",
         "progression",
-        "multiplayer"
+        "setting",
+        "tone",
+        "multiplayer",
+        "mechanics"
       ],
       "populated_core": [
         "core_loop",
+        "combat_style",
+        "traversal",
+        "world_structure",
+        "mission_structure",
         "progression"
       ],
-      "ready_for_similarity": false,
-      "needs_enrichment": true
+      "ready_for_similarity": true,
+      "needs_enrichment": false
     },
     "ref": "../game-dna/fallout-76.json"
   },
@@ -35,27 +46,62 @@
     ],
     "subgenres": [],
     "core_loop": [
-      "exploration"
+      "combat",
+      "exploration",
+      "survival",
+      "crafting",
+      "building",
+      "management"
     ],
-    "combat_style": [],
-    "traversal": [],
-    "world_structure": [],
-    "mission_structure": [],
+    "combat_style": [
+      "melee",
+      "shooter"
+    ],
+    "traversal": [
+      "mounts",
+      "vehicles",
+      "flight"
+    ],
+    "world_structure": [
+      "open_world",
+      "mission_based",
+      "roguelike_runs"
+    ],
+    "mission_structure": [
+      "runs"
+    ],
     "progression": [
+      "gear_loot",
+      "crafting",
       "stats_builds"
     ],
     "perspective": [],
     "player_agency": [],
     "pacing": [],
     "narrative": [],
-    "setting": [],
-    "tone": [],
+    "setting": [
+      "fantasy",
+      "science_fiction",
+      "post_apocalyptic",
+      "superhero",
+      "space"
+    ],
+    "tone": [
+      "dark",
+      "serious",
+      "horror",
+      "hopeful"
+    ],
     "multiplayer": [
+      "singleplayer",
       "coop",
       "competitive",
       "mmo"
     ],
-    "mechanics": [],
+    "mechanics": [
+      "crafting",
+      "loot"
+    ],
     "franchise": "fallout"
   },
   "recommendations": []

@@ -4,9 +4,9 @@
   "slug": "fallout-shelter",
   "title": "Fallout Shelter",
   "status": "auto",
-  "revision": 1,
+  "revision": 2,
   "created_at": "2026-08-18T17:27:42.331Z",
-  "updated_at": "2026-08-18T17:27:42.331Z",
+  "updated_at": "2026-08-18T17:51:29.874Z",
   "locked_axes": [],
   "profile": {
     "genres": [
@@ -18,24 +18,42 @@
       "free_to_play"
     ],
     "subgenres": [],
-    "core_loop": [],
+    "core_loop": [
+      "combat",
+      "building",
+      "management",
+      "collecting"
+    ],
     "combat_style": [],
-    "traversal": [],
+    "traversal": [
+      "vehicles"
+    ],
     "world_structure": [],
     "mission_structure": [],
     "progression": [
-      "stats_builds"
+      "gear_loot",
+      "stats_builds",
+      "unlocks"
     ],
-    "perspective": [],
+    "perspective": [
+      "top_down"
+    ],
     "player_agency": [],
     "pacing": [],
     "narrative": [],
-    "setting": [],
-    "tone": [],
+    "setting": [
+      "post_apocalyptic"
+    ],
+    "tone": [
+      "comedic"
+    ],
     "multiplayer": [
       "singleplayer"
     ],
-    "mechanics": [],
+    "mechanics": [
+      "loot",
+      "companions"
+    ],
     "franchise": "fallout"
   },
   "provenance": {
@@ -48,16 +66,18 @@
       "confidence": 0.55
     },
     "core_loop": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     },
     "combat_style": {
       "mode": "inferred",
       "confidence": 0.55
     },
     "traversal": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     },
     "world_structure": {
       "mode": "inferred",
@@ -68,12 +88,14 @@
       "confidence": 0.55
     },
     "progression": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     },
     "perspective": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     },
     "player_agency": {
       "mode": "inferred",
@@ -88,38 +110,63 @@
       "confidence": 0.55
     },
     "setting": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     },
     "tone": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     },
     "multiplayer": {
       "mode": "inferred",
       "confidence": 0.55
     },
     "mechanics": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     }
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "kind": "professional_review_corpus",
+      "source_count": 4,
+      "sources": [
+        "game-revolution",
+        "gamestar",
+        "the-games-machine",
+        "cd-action"
+      ],
+      "snippet_count": 17,
+      "corpus_updated_at": "2026-08-18T11:40:29.008Z"
+    }
+  ],
   "notes": "",
   "quality": {
-    "populated_axes": 3,
+    "populated_axes": 9,
     "total_axes": 16,
-    "core_axes": 1,
+    "core_axes": 4,
     "total_core_axes": 7,
     "populated": [
       "genres",
+      "core_loop",
+      "traversal",
       "progression",
-      "multiplayer"
+      "perspective",
+      "setting",
+      "tone",
+      "multiplayer",
+      "mechanics"
     ],
     "populated_core": [
-      "progression"
+      "core_loop",
+      "traversal",
+      "progression",
+      "perspective"
     ],
-    "ready_for_similarity": false,
-    "needs_enrichment": true
+    "ready_for_similarity": true,
+    "needs_enrichment": false
   }
 }

@@ -4,9 +4,9 @@
   "slug": "fallout-new-vegas",
   "title": "Fallout: New Vegas",
   "status": "auto",
-  "revision": 1,
+  "revision": 2,
   "created_at": "2026-08-18T17:27:42.213Z",
-  "updated_at": "2026-08-18T17:27:42.213Z",
+  "updated_at": "2026-08-18T17:51:29.753Z",
   "locked_axes": [],
   "profile": {
     "genres": [
@@ -15,25 +15,49 @@
     ],
     "subgenres": [],
     "core_loop": [
-      "combat"
+      "combat",
+      "exploration",
+      "dialogue",
+      "crafting",
+      "strategy"
     ],
     "combat_style": [],
-    "traversal": [],
-    "world_structure": [],
-    "mission_structure": [],
+    "traversal": [
+      "mounts",
+      "vehicles"
+    ],
+    "world_structure": [
+      "roguelike_runs"
+    ],
+    "mission_structure": [
+      "runs"
+    ],
     "progression": [
+      "crafting",
       "stats_builds"
     ],
     "perspective": [],
     "player_agency": [],
     "pacing": [],
     "narrative": [],
-    "setting": [],
-    "tone": [],
-    "multiplayer": [
-      "singleplayer"
+    "setting": [
+      "fantasy",
+      "science_fiction",
+      "post_apocalyptic",
+      "western"
     ],
-    "mechanics": [],
+    "tone": [
+      "comedic"
+    ],
+    "multiplayer": [
+      "singleplayer",
+      "coop"
+    ],
+    "mechanics": [
+      "crafting",
+      "dialogue",
+      "companions"
+    ],
     "franchise": "fallout"
   },
   "provenance": {
@@ -46,28 +70,33 @@
       "confidence": 0.55
     },
     "core_loop": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 5
     },
     "combat_style": {
       "mode": "inferred",
       "confidence": 0.55
     },
     "traversal": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 5
     },
     "world_structure": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 5
     },
     "mission_structure": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 5
     },
     "progression": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 5
     },
     "perspective": {
       "mode": "inferred",
@@ -86,40 +115,67 @@
       "confidence": 0.55
     },
     "setting": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 5
     },
     "tone": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 5
     },
     "multiplayer": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 5
     },
     "mechanics": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 5
     }
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "kind": "professional_review_corpus",
+      "source_count": 5,
+      "sources": [
+        "game-informer",
+        "hooked-gamers",
+        "pc-gamer",
+        "gamesradar",
+        "rpgfan"
+      ],
+      "snippet_count": 33,
+      "corpus_updated_at": "2026-08-18T13:34:22.780Z"
+    }
+  ],
   "notes": "",
   "quality": {
-    "populated_axes": 4,
+    "populated_axes": 10,
     "total_axes": 16,
-    "core_axes": 2,
+    "core_axes": 5,
     "total_core_axes": 7,
     "populated": [
       "genres",
       "core_loop",
+      "traversal",
+      "world_structure",
+      "mission_structure",
       "progression",
-      "multiplayer"
+      "setting",
+      "tone",
+      "multiplayer",
+      "mechanics"
     ],
     "populated_core": [
       "core_loop",
+      "traversal",
+      "world_structure",
+      "mission_structure",
       "progression"
     ],
-    "ready_for_similarity": false,
-    "needs_enrichment": true
+    "ready_for_similarity": true,
+    "needs_enrichment": false
   }
 }

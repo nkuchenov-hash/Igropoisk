@@ -4,9 +4,9 @@
   "slug": "fallout-2",
   "title": "Fallout 2",
   "status": "auto",
-  "revision": 1,
+  "revision": 2,
   "created_at": "2026-08-18T17:27:41.773Z",
-  "updated_at": "2026-08-18T17:27:41.773Z",
+  "updated_at": "2026-08-18T17:51:29.250Z",
   "locked_axes": [],
   "profile": {
     "genres": [
@@ -14,26 +14,46 @@
       "rpg"
     ],
     "subgenres": [],
-    "core_loop": [],
-    "combat_style": [],
+    "core_loop": [
+      "combat",
+      "survival",
+      "collecting"
+    ],
+    "combat_style": [
+      "ranged",
+      "turn_based"
+    ],
     "traversal": [],
-    "world_structure": [],
-    "mission_structure": [],
+    "world_structure": [
+      "level_based"
+    ],
+    "mission_structure": [
+      "story_plus_side_content",
+      "levels"
+    ],
     "progression": [
+      "skill_tree",
       "stats_builds"
     ],
     "perspective": [],
-    "player_agency": [],
-    "pacing": [
-      "fast_action"
+    "player_agency": [
+      "character_creation"
     ],
-    "narrative": [],
-    "setting": [],
+    "pacing": [],
+    "narrative": [
+      "story_heavy"
+    ],
+    "setting": [
+      "fantasy",
+      "post_apocalyptic"
+    ],
     "tone": [],
     "multiplayer": [
       "singleplayer"
     ],
-    "mechanics": [],
+    "mechanics": [
+      "companions"
+    ],
     "franchise": "fallout"
   },
   "provenance": {
@@ -46,48 +66,56 @@
       "confidence": 0.55
     },
     "core_loop": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 10
     },
     "combat_style": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 10
     },
     "traversal": {
       "mode": "inferred",
       "confidence": 0.55
     },
     "world_structure": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 10
     },
     "mission_structure": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 10
     },
     "progression": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 10
     },
     "perspective": {
       "mode": "inferred",
       "confidence": 0.55
     },
     "player_agency": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 10
     },
     "pacing": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "insufficient_evidence",
+      "confidence": 0.2
     },
     "narrative": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 10
     },
     "setting": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 10
     },
     "tone": {
       "mode": "inferred",
@@ -98,27 +126,58 @@
       "confidence": 0.55
     },
     "mechanics": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 10
     }
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "kind": "professional_review_corpus",
+      "source_count": 10,
+      "sources": [
+        "rpgfan",
+        "pc-gamer",
+        "gamespot",
+        "ign",
+        "gamepro-archive",
+        "game-over-online-archive",
+        "quandary-archive",
+        "electric-playground-archive",
+        "all-game-guide-archive",
+        "gamezilla-archive"
+      ],
+      "snippet_count": 29,
+      "corpus_updated_at": "2026-08-18T13:24:22.702Z"
+    }
+  ],
   "notes": "",
   "quality": {
-    "populated_axes": 4,
+    "populated_axes": 11,
     "total_axes": 16,
-    "core_axes": 1,
+    "core_axes": 5,
     "total_core_axes": 7,
     "populated": [
       "genres",
+      "core_loop",
+      "combat_style",
+      "world_structure",
+      "mission_structure",
       "progression",
-      "pacing",
-      "multiplayer"
+      "player_agency",
+      "narrative",
+      "setting",
+      "multiplayer",
+      "mechanics"
     ],
     "populated_core": [
+      "core_loop",
+      "combat_style",
+      "world_structure",
+      "mission_structure",
       "progression"
     ],
-    "ready_for_similarity": false,
-    "needs_enrichment": true
+    "ready_for_similarity": true,
+    "needs_enrichment": false
   }
 }

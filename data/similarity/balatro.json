@@ -2,30 +2,39 @@
   "schema_version": 4,
   "game_slug": "balatro",
   "game_id": "game_866e9f38818a71b0a380",
-  "generated_at": "2026-08-18T17:27:48.698Z",
+  "generated_at": "2026-08-18T17:51:32.349Z",
   "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
   "source_dna": {
     "status": "auto",
-    "revision": 1,
+    "revision": 2,
     "quality": {
-      "populated_axes": 4,
+      "populated_axes": 10,
       "total_axes": 16,
-      "core_axes": 2,
+      "core_axes": 5,
       "total_core_axes": 7,
       "populated": [
         "genres",
         "core_loop",
         "traversal",
-        "multiplayer"
+        "world_structure",
+        "mission_structure",
+        "progression",
+        "setting",
+        "tone",
+        "multiplayer",
+        "mechanics"
       ],
       "populated_core": [
         "core_loop",
-        "traversal"
+        "traversal",
+        "world_structure",
+        "mission_structure",
+        "progression"
       ],
-      "ready_for_similarity": false,
-      "needs_enrichment": true
+      "ready_for_similarity": true,
+      "needs_enrichment": false
     },
     "ref": "../game-dna/balatro.json"
   },
@@ -41,27 +50,44 @@
     "subgenres": [],
     "core_loop": [
       "combat",
+      "exploration",
+      "stealth",
+      "puzzle_solving",
+      "building",
       "management",
       "collecting",
+      "racing",
       "strategy"
     ],
     "combat_style": [],
     "traversal": [
       "vehicles"
     ],
-    "world_structure": [],
-    "mission_structure": [],
-    "progression": [],
+    "world_structure": [
+      "roguelike_runs"
+    ],
+    "mission_structure": [
+      "runs"
+    ],
+    "progression": [
+      "unlocks"
+    ],
     "perspective": [],
     "player_agency": [],
     "pacing": [],
     "narrative": [],
-    "setting": [],
-    "tone": [],
+    "setting": [
+      "space"
+    ],
+    "tone": [
+      "hopeful"
+    ],
     "multiplayer": [
       "singleplayer"
     ],
-    "mechanics": [],
+    "mechanics": [
+      "puzzles"
+    ],
     "franchise": ""
   },
   "recommendations": []

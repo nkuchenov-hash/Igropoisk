@@ -4,21 +4,32 @@
   "slug": "fallout-brotherhood-of-steel",
   "title": "Fallout: Brotherhood of Steel",
   "status": "auto",
-  "revision": 1,
+  "revision": 2,
   "created_at": "2026-08-18T17:27:42.102Z",
-  "updated_at": "2026-08-18T17:27:42.102Z",
+  "updated_at": "2026-08-18T17:51:29.634Z",
   "locked_axes": [],
   "profile": {
     "genres": [
       "action_rpg"
     ],
     "subgenres": [],
-    "core_loop": [],
+    "core_loop": [
+      "combat",
+      "management"
+    ],
     "combat_style": [
+      "melee",
+      "ranged",
+      "shooter",
+      "hack_and_slash",
       "real_time"
     ],
-    "traversal": [],
-    "world_structure": [],
+    "traversal": [
+      "vehicles"
+    ],
+    "world_structure": [
+      "linear"
+    ],
     "mission_structure": [],
     "progression": [
       "stats_builds"
@@ -27,8 +38,13 @@
     "player_agency": [],
     "pacing": [],
     "narrative": [],
-    "setting": [],
-    "tone": [],
+    "setting": [
+      "fantasy"
+    ],
+    "tone": [
+      "dark",
+      "comedic"
+    ],
     "multiplayer": [
       "singleplayer",
       "coop"
@@ -46,20 +62,24 @@
       "confidence": 0.55
     },
     "core_loop": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "combat_style": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "traversal": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "world_structure": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "mission_structure": {
       "mode": "inferred",
@@ -86,12 +106,14 @@
       "confidence": 0.55
     },
     "setting": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "tone": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "multiplayer": {
       "mode": "inferred",
@@ -102,24 +124,47 @@
       "confidence": 0.55
     }
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "kind": "professional_review_corpus",
+      "source_count": 6,
+      "sources": [
+        "rpgfan",
+        "ign",
+        "game-informer",
+        "gamespy-archive",
+        "game-over-online-archive",
+        "gamezilla-archive"
+      ],
+      "snippet_count": 21,
+      "corpus_updated_at": "2026-08-18T13:24:25.534Z"
+    }
+  ],
   "notes": "",
   "quality": {
-    "populated_axes": 4,
+    "populated_axes": 9,
     "total_axes": 16,
-    "core_axes": 2,
+    "core_axes": 5,
     "total_core_axes": 7,
     "populated": [
       "genres",
+      "core_loop",
       "combat_style",
+      "traversal",
+      "world_structure",
       "progression",
+      "setting",
+      "tone",
       "multiplayer"
     ],
     "populated_core": [
+      "core_loop",
       "combat_style",
+      "traversal",
+      "world_structure",
       "progression"
     ],
-    "ready_for_similarity": false,
-    "needs_enrichment": true
+    "ready_for_similarity": true,
+    "needs_enrichment": false
   }
 }
