@@ -29,14 +29,13 @@ on:
       - 'scripts/build-review-bootstrap-local.mjs'
       - 'scripts/build-review-bootstrap-commercial.mjs'
       - 'scripts/build-review-bootstrap-commercial-grounded.mjs'
-      - 'scripts/build-review-bootstrap-commercial-local.mjs'
       - 'scripts/expand-review-bootstrap-local.mjs'
       - 'scripts/render-review-bootstrap.mjs'
-      - 'scripts/audit-review-bootstrap-local.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/run-game-post-create-enrichment.mjs'
       - 'scripts/resolve-post-create-event-targets.mjs'
       - 'scripts/verify-post-create-quick-reviews.mjs'
+      - 'scripts/smoke-published-review-pages.mjs'
       - 'scripts/lib/local-editorial-model.mjs'
       - 'scripts/publish-game-post-create-overlay.mjs'
       - 'scripts/publish-post-create-production.mjs'
@@ -117,14 +116,13 @@ jobs:
           node --check scripts/build-review-bootstrap-local.mjs
           node --check scripts/build-review-bootstrap-commercial.mjs
           node --check scripts/build-review-bootstrap-commercial-grounded.mjs
-          node --check scripts/build-review-bootstrap-commercial-local.mjs
           node --check scripts/expand-review-bootstrap-local.mjs
           node --check scripts/render-review-bootstrap.mjs
-          node --check scripts/audit-review-bootstrap-local.mjs
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/run-game-post-create-enrichment.mjs
           node --check scripts/resolve-post-create-event-targets.mjs
           node --check scripts/verify-post-create-quick-reviews.mjs
+          node --check scripts/smoke-published-review-pages.mjs
           node --check scripts/lib/local-editorial-model.mjs
           node --check scripts/publish-game-post-create-overlay.mjs
           node --check scripts/publish-post-create-production.mjs
@@ -189,13 +187,25 @@ jobs:
           POST_CREATE_PUBLISH_PHASE: quick-review
         run: node scripts/publish-game-post-create-overlay.mjs
 
+      - name: Verify published quick reviews on production Pages
+        env:
+          POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
+          REVIEW_SMOKE_ATTEMPTS: '36'
+          REVIEW_SMOKE_DELAY_MS: '5000'
+        run: |
+          IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
+          node scripts/smoke-published-review-pages.mjs "${TARGETS[@]}"
+
       - name: Restore local full-review model cache
+        continue-on-error: true
         uses: actions/cache@v4
         with:
           path: ~/.ollama/models
           key: ollama-post-create-v2-qwen3-4b
 
       - name: Start local full-review model service
+        id: full_model_service
+        continue-on-error: true
         run: |
           set -euo pipefail
           curl -fsSL https://ollama.com/install.sh | sh
@@ -207,6 +217,7 @@ jobs:
           curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
 
       - name: Ensure local text model for optional full upgrade
+        if: steps.full_model_service.outcome == 'success'
         run: |
           set -euo pipefail
           for attempt in 1 2 3 4 5; do
@@ -218,6 +229,7 @@ jobs:
           exit 0
 
       - name: Ensure optional local vision model for full upgrades
+        if: steps.full_model_service.outcome == 'success'
         run: |
           set -euo pipefail
           for attempt in 1 2 3; do
@@ -229,6 +241,9 @@ jobs:
           exit 0
 
       - name: Run bounded full-review upgrades for event-scoped games
+        id: full_upgrade
+        if: steps.full_model_service.outcome == 'success'
+        continue-on-error: true
         env:
           POST_CREATE_PHASE: full-review
           POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
@@ -238,6 +253,7 @@ jobs:
           node scripts/run-game-post-create-enrichment.mjs "${TARGETS[@]}"
 
       - name: Publish full-review checkpoint conflict-safely
+        if: steps.full_upgrade.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           POST_CREATE_PUBLISH_PHASE: full-review
