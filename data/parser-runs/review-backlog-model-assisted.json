@@ -1,9 +1,9 @@
 {
   "schema_version": 3,
   "phase": "model-assisted",
-  "started_at": "2026-08-18T11:44:17.678Z",
-  "checked_at": "2026-08-18T13:54:25.610Z",
-  "duration_ms": 7807932,
+  "started_at": "2026-08-18T18:40:45.191Z",
+  "checked_at": "2026-08-18T20:50:55.008Z",
+  "duration_ms": 7809816,
   "concurrency": 2,
   "timeout_ms": 600000,
   "selected": 41,
@@ -938,7 +938,7 @@
       "comments": [
         "No reusable existing article; queued for prose/media repair."
       ],
-      "stdout_tail": "{\n  \"slug\": \"fallout-76\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 5.4,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 37,\n  \"required\": 7\n}\n\n",
+      "stdout_tail": "{\n  \"slug\": \"fallout-76\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 5.4,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-76\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 28,\n  \"required\": 7\n}\n\n",
       "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
     },
     {
