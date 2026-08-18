@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "tides-of-annihilation",
-  "generated_at": "2026-08-18T09:52:28.740Z",
+  "generated_at": "2026-08-18T11:41:57.576Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -19,8 +19,7 @@
     "critic_index_scope": "released_fallback",
     "metascore_as_vote": false,
     "user_scores_as_votes": false,
-    "professional_only": true,
-    "post_create_verified_corpus_preserved": true
+    "professional_only": true
   },
   "accepted": [
     {
@@ -52,7 +51,7 @@
       "domain": "stopgame.ru",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-18T09:51:51.199Z",
+        "checked_at": "2026-08-18T11:40:33.585Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -67,13 +66,6 @@
   ],
   "rejected": [
     {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/tides-of-annihilation-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    },
-    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/tides-of-annihilation",
       "reasons": [
@@ -85,6 +77,13 @@
       "url": "https://www.rpgfan.com/review/tides-of-annihilation-2",
       "reasons": [
         "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/tides-of-annihilation-review",
+      "reasons": [
+        "HTTP 503"
       ]
     }
   ],
@@ -481,8 +480,6 @@
     "critic_index_added": 0,
     "critic_index_scores_added": 0,
     "critic_index_platform": "primary",
-    "removed_user_generated": 0,
-    "historical_index_preserved": 0,
-    "trusted_scores_preserved": 0
+    "removed_user_generated": 0
   }
 }

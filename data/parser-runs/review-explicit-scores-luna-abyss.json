@@ -1,7 +1,7 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "luna-abyss",
-  "checked_at": "2026-08-17T23:30:37.555Z",
+  "checked_at": "2026-08-18T11:41:54.686Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 3,
   "scored": 3,
@@ -11,6 +11,15 @@
       "configured_source_id": "push-square",
       "publication": "Push Square",
       "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "score": 7,
       "scale": 10,
       "method": "jsonld.reviewRating",
       "scope": "editorial_review",
@@ -33,10 +42,10 @@
       "configured_source_id": "the-sixth-axis",
       "publication": "TheSixthAxis",
       "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review",
-      "final_url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review",
-      "status": "no_explicit_editorial_score",
+      "final_url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review/",
+      "status": "explicit_editorial_score_found",
       "blocked": false,
-      "preserved_existing_score": true,
+      "preserved_existing_score": false,
       "trusted_editorial_score": true,
       "canonical_score_eligible": true
     },

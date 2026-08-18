@@ -1,8 +1,8 @@
 {
-  "schema_version": 11,
+  "schema_version": 12,
   "game_slug": "provoron",
   "game_id": null,
-  "updated_at": "2026-08-17T23:36:38.408Z",
+  "updated_at": "2026-08-18T11:40:33.483Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
@@ -77,6 +77,13 @@
   "reviews": [],
   "rejected": [
     {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/provoron-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/provoron",
       "reasons": [
@@ -88,13 +95,6 @@
       "url": "https://www.rpgfan.com/review/provoron-2",
       "reasons": [
         "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/provoron-review",
-      "reasons": [
-        "HTTP 503"
       ]
     }
   ],
@@ -124,5 +124,9 @@
       "mean_10": null,
       "score_10": null
     }
+  },
+  "version_gate": {
+    "canonical_title": "Provoron",
+    "removed_wrong_version": 0
   }
 }
