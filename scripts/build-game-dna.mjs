@@ -68,6 +68,7 @@ const buildReviewEvidenceBundle = (corpus = {}) => {
   const lower = text.toLowerCase();
   const hints = [];
   if (/\baction points?\b/.test(lower) && /\b(combat|weapon|attack|ranged|sniper)\b/.test(lower)) hints.push('turn-based combat');
+  if (/\b(ranged|rifle|sniper|machine guns?|laser rifles?|firearms?)\b/.test(lower)) hints.push('ranged combat');
   if (/\bcharacter creation\b|\bcreate (?:your|a|his or her|her or his) character\b|\bcharacters? (?:that )?can be created\b/.test(lower)) hints.push('create your character');
   if (/\bquests?\b/.test(lower) && /\b(side quest|karma|reputation|towns?|optional quest)\b/.test(lower)) hints.push('side quest');
   if (/\bnpcs?\b.{0,140}\b(?:join|party|with you)\b/.test(lower) || /\bcompanions?\b/.test(lower)) hints.push('companions');
@@ -116,14 +117,16 @@ for (const item of targets) {
   const reviewCorpus = read(`data/reviews/${slug}.json`, {});
   const reviewEvidence = buildReviewEvidenceBundle(reviewCorpus);
   const baseEntity = materializeGameDna({ game, catalogItem: item, existing, now });
+  // The raw review corpus is used only to derive explicit, high-confidence hints above.
+  // Feeding all review prose into the generic keyword matcher creates semantic bleed
+  // (for example, "level" in character levelling becoming world_structure.level_based).
   const sourceText = [
     game?.editorial?.short_description,
     game?.editorial?.integrated_description,
     ...(game?.editorial?.features || []),
-    reviewEvidence.text,
     ...reviewEvidence.hints,
   ].filter(Boolean).join(' ');
-  const evidenceGame = reviewEvidence.text ? {
+  const evidenceGame = reviewEvidence.hints.length ? {
     ...game,
     editorial: {
       ...(game?.editorial || {}),
@@ -132,7 +135,7 @@ for (const item of targets) {
   } : game;
   const entity = materializeGameDna({ game: evidenceGame, catalogItem: item, existing, now });
   const locked = new Set(entity.locked_axes || []);
-  if (reviewEvidence.text && entity.status === 'auto') {
+  if (reviewEvidence.hints.length && entity.status === 'auto') {
     for (const axis of DNA_PROFILE_AXES) {
       if (locked.has(axis)) continue;
       if (JSON.stringify(baseEntity.profile?.[axis] || []) === JSON.stringify(entity.profile?.[axis] || [])) continue;
@@ -150,6 +153,7 @@ for (const item of targets) {
         source_count: reviewEvidence.source_count,
         sources: reviewEvidence.sources.slice(0, 20),
         snippet_count: reviewEvidence.snippet_count,
+        derived_hints: reviewEvidence.hints,
         corpus_updated_at: reviewCorpus?.updated_at || null,
       },
     ];
