@@ -2,7 +2,8 @@
 'use strict';
 const rail=document.querySelector('#releaseHomeGrid');
 if(!rail)return;
-const calendarLink=document.querySelector('.home-showcase-heading--split a[href="calendar/"]');
+const heading=document.querySelector('.home-showcase-heading--split');
+const calendarLink=heading?.querySelector('a[href="calendar/"]')||null;
 if(calendarLink){calendarLink.classList.add('ig-button','ig-text-link');calendarLink.textContent='Открыть календарь'}
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const initials=title=>String(title||'').split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
@@ -56,35 +57,15 @@ const loadFeed=async path=>{
 let popularByIdentity=new Map();
 const anticipation=game=>game.anticipation||{};
 const popularEvidence=game=>popularByIdentity.get(identity(game.slug))||popularByIdentity.get(identity(game.title))||null;
-const independentCount=game=>Math.max(
-  Number(anticipation(game).independent_publication_count||0),
-  Number(game.editorial_quality?.independent_source_count||0),
-  Number(popularEvidence(game)?.news_sources||0),
-  Number(popularEvidence(game)?.news_publishers?.length||0)
-);
 const steamPosition=game=>Number(anticipation(game).steam_popular_upcoming_position||game.editorial_quality?.steam_popular_upcoming_position||0);
-const evidenceFamilies=game=>[...new Set([...(anticipation(game).evidence_families||[]),...(popularEvidence(game)?.families||[])].filter(Boolean))];
 const popularIndex=game=>Number(anticipation(game).popular_index??popularEvidence(game)?.score??0);
-const popularConfidence=game=>Number(anticipation(game).popular_confidence??popularEvidence(game)?.confidence??0);
-const independentFamilies=game=>evidenceFamilies(game).filter(family=>!['steam_chart','steam','official_store','store','rawg'].includes(String(family).toLowerCase()));
-const crossSiteEligible=game=>{
-  const publications=independentCount(game);
-  const families=independentFamilies(game);
-  const score=popularIndex(game);
-  const confidence=popularConfidence(game);
-  const position=steamPosition(game);
-  const declaredEligible=game.editorial_quality?.homepage_eligible===true||anticipation(game).homepage_eligible===true;
-  const pressDominant=publications>=5;
-  const pressPlusSteam=publications>=3&&position>0&&position<=50;
-  const pressPlusPopular=publications>=2&&score>=8&&confidence>=0.4;
-  const multiFamilyPopular=publications>=2&&families.length>=2&&score>=8&&confidence>=0.4;
-  return game.editorial_quality?.manual_anticipated===true||(declaredEligible&&(pressDominant||pressPlusSteam||pressPlusPopular||multiFamilyPopular));
-};
-const anticipationScore=game=>Number(game.editorial_quality?.anticipation_score||anticipation(game).anticipation_score||popularEvidence(game)?.score||0);
+const legacyAnticipationScore=game=>Number(game.editorial_quality?.anticipation_score||anticipation(game).anticipation_score||popularEvidence(game)?.score||0);
 const rating100=value=>Math.max(0,Math.min(100,Math.round(Number(value)||0)));
 const overallAnticipationRating=game=>{
-  const score=anticipationScore(game);
-  return score>0?rating100(score/1.22):null;
+  const expected=Number(game.expected_score?.score??game.significance?.score??0);
+  if(expected>0)return rating100(expected);
+  const legacy=legacyAnticipationScore(game);
+  return legacy>0?rating100(legacy/1.22):null;
 };
 const playerAnticipationRating=game=>{
   const evidence=popularEvidence(game);
@@ -124,25 +105,50 @@ const bindFallbacks=games=>{
     });
   });
 };
-
-const railButtons=[...document.querySelectorAll('[data-release-rail]')];
-railButtons.forEach(button=>{
-  button.classList.add('ig-icon-button');
-  button.addEventListener('click',()=>{
-    const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
-    const next=Math.max(0,Math.min(max,rail.scrollLeft+Number(button.dataset.releaseRail)*Math.max(320,rail.clientWidth*.82)));
-    rail.scrollTo({left:next,behavior:'smooth'});
-  });
-});
+const ensureControls=()=>{
+  if(!heading)return {controls:null,buttons:[]};
+  let actions=heading.querySelector('.home-showcase-heading__actions');
+  if(!actions){
+    actions=document.createElement('div');
+    actions.className='home-showcase-heading__actions';
+    const controls=document.createElement('div');
+    controls.className='ig-control-group home-releases__controls';
+    controls.hidden=true;
+    controls.setAttribute('aria-label','Прокрутка релизов');
+    controls.innerHTML='<button class="ig-icon-button" type="button" data-release-rail="-1" aria-label="Предыдущие релизы">←</button><button class="ig-icon-button" type="button" data-release-rail="1" aria-label="Следующие релизы">→</button>';
+    actions.append(controls);
+    if(calendarLink)actions.append(calendarLink);
+    heading.append(actions);
+  }
+  return {controls:actions.querySelector('.home-releases__controls'),buttons:[...actions.querySelectorAll('[data-release-rail]')]};
+};
+const {controls:railControls,buttons:railButtons}=ensureControls();
+railButtons.forEach(button=>button.addEventListener('click',()=>{
+  const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
+  const step=Math.max(320,rail.clientWidth*.82);
+  const next=Math.max(0,Math.min(max,rail.scrollLeft+Number(button.dataset.releaseRail)*step));
+  rail.scrollTo({left:next,behavior:'smooth'});
+}));
 const updateButtons=()=>{
   const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
-  railButtons.forEach(button=>button.disabled=button.dataset.releaseRail==='-1'?rail.scrollLeft<=2:rail.scrollLeft>=max-2);
+  if(railControls)railControls.hidden=max<=2;
+  railButtons.forEach(button=>{button.disabled=button.dataset.releaseRail==='-1'?rail.scrollLeft<=2:rail.scrollLeft>=max-2});
 };
 rail.addEventListener('scroll',updateButtons,{passive:true});
+rail.addEventListener('wheel',event=>{
+  const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
+  if(max<=2)return;
+  const delta=Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY;
+  if(!delta)return;
+  const next=Math.max(0,Math.min(max,rail.scrollLeft+delta));
+  if(Math.abs(next-rail.scrollLeft)<1)return;
+  event.preventDefault();
+  rail.scrollLeft=next;
+},{passive:false});
 window.addEventListener('resize',updateButtons,{passive:true});
 
 Promise.all([
-  loadFeed('data/releases/current.json'),
+  loadFeed('data/releases/public.json'),
   fetch('features/home-releases/rules.json',{cache:'no-store'}).then(response=>response.ok?response.json():{}),
   loadFeed('data/popular/current.json')
 ]).then(([payload,rules,popularPayload])=>{
@@ -154,24 +160,25 @@ Promise.all([
   const recentDays=Math.max(1,Number(rules.recent_release_days||14));
   const maximumRecent=Math.min(maximum,Math.max(0,Number(rules.maximum_recent_cards||4)));
   const classified=(payload.releases||[])
-    .filter(crossSiteEligible)
+    .filter(game=>game&&game.slug&&game.title&&Array.isArray(game.events)&&game.events.length)
     .map(game=>({game,event:primaryEvent(game)}))
     .map(row=>({...row,kind:releaseKind(row.event,recentDays)}))
     .filter(row=>row.kind!=='expired');
 
   const recent=classified.filter(row=>row.kind==='recent')
-    .sort((a,b)=>anticipationScore(b.game)-anticipationScore(a.game)||String(dateEndValue(b.event)||'').localeCompare(String(dateEndValue(a.event)||'')))
+    .sort((a,b)=>String(dateEndValue(b.event)||'').localeCompare(String(dateEndValue(a.event)||''))||(overallAnticipationRating(b.game)||0)-(overallAnticipationRating(a.game)||0))
     .slice(0,maximumRecent);
   const upcoming=classified.filter(row=>row.kind==='upcoming')
-    .sort((a,b)=>anticipationScore(b.game)-anticipationScore(a.game)||String(dateValue(a.event)||'9999').localeCompare(String(dateValue(b.event)||'9999')));
+    .sort((a,b)=>String(dateValue(a.event)||'9999').localeCompare(String(dateValue(b.event)||'9999'))||(overallAnticipationRating(b.game)||0)-(overallAnticipationRating(a.game)||0));
   const selected=[...recent,...upcoming].slice(0,maximum);
   const rows=selected.map(row=>row.game);
 
-  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Сейчас нет подходящих ожидаемых релизов.</div>';
+  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Сейчас нет опубликованных новых или ожидаемых релизов.</div>';
   bindFallbacks(rows);
   requestAnimationFrame(updateButtons);
 }).catch(error=>{
   console.warn('Home releases:',error);
   rail.innerHTML='<div class="home-release-empty">Календарь временно недоступен.</div>';
+  requestAnimationFrame(updateButtons);
 });
 })();

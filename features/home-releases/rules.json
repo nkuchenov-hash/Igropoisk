@@ -1,15 +1,16 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "id": "home-releases",
   "title": "Новые и ожидаемые релизы на главной",
   "status": "active",
-  "source": "data/releases/current.json",
+  "source": "data/releases/public.json",
   "maximum_cards": 12,
   "maximum_recent_cards": 4,
   "recent_release_days": 14,
   "sort": [
-    "anticipation_score_descending",
+    "recent_event_date_descending",
     "upcoming_event_date_ascending",
+    "expected_score_descending",
     "title_ascending"
   ],
   "eligibility": {
@@ -19,20 +20,15 @@
     "include_tbd_after_dated": true,
     "require_title": true,
     "require_event": true,
-    "require_editorial_quality": true,
-    "require_homepage_anticipation": true,
-    "published_page_alone_is_not_signal": true,
-    "gaming_press_research_window_days": 120,
-    "cross_site_minimum_publications": 3,
-    "press_dominant_minimum_publications": 5,
-    "popular_plus_press_minimum_publications": 2,
-    "steam_strong_rank_maximum": 50,
-    "steam_strong_minimum_publications": 3
+    "require_public_calendar_entry": true,
+    "reuse_public_calendar_notability_gate": true,
+    "do_not_apply_second_homepage_gate": true
   },
   "interaction": {
     "horizontal_scroll": true,
     "mouse_wheel_scroll": true,
-    "arrow_buttons": true,
+    "touch_scroll": true,
+    "arrow_buttons": "heading",
     "calendar_link": "calendar/"
   },
   "image_priority": [
@@ -42,14 +38,12 @@
     "steam_library_600x900"
   ],
   "editorial_rules": [
-    "Календарь сохраняет валидные релизы, но главная показывает только релизы с подтвержденной заметной ожидаемостью.",
-    "Наличие опубликованной страницы Игропоиска само по себе не является сигналом ожидаемости.",
-    "Ожидаемость исследуется отдельно от краткосрочного Popular: для сильных upcoming-кандидатов проверяется до 120 дней материалов разных игровых изданий.",
-    "Три независимых игровых издания плюс сильная позиция Steam Popular Upcoming считаются подтвержденным глобальным сигналом; пять независимых изданий могут подтвердить игру и без сильного Steam-ранга.",
-    "Два независимых издания допускаются только вместе с сильным текущим Popular-сигналом.",
-    "Одна карточка магазина, один источник или только опубликованная страница Игропоиска не считаются достаточным сигналом для главной.",
-    "Сначала показываются заметные релизы последних двух недель, затем ожидаемые релизы по силе сигнала и дате.",
-    "Карточки прокручиваются только внутри своего блока.",
+    "Главная использует тот же публичный календарный feed, который уже прошёл календарный publication/notability gate.",
+    "Релиз, уже допущенный в публичный календарь, не должен повторно отсеиваться отдельным homepage-only фильтром ожидаемости.",
+    "Сначала показываются заметные релизы последних двух недель, затем ближайшие ожидаемые релизы по дате; рейтинг ожидания используется как дополнительный сигнал и tie-breaker.",
+    "На десктопе блок показывает несколько карточек одновременно и прокручивается колесом/тачпадом или компактными кнопками в заголовке.",
+    "Кнопки прокрутки не занимают место по бокам карточечной ленты и не ломают её выравнивание.",
+    "На мобильных устройствах используется нативный горизонтальный swipe без отдельных кнопок прокрутки.",
     "Клик по карточке открывает соответствующий релиз в календаре.",
     "При недоступной обложке используются резервные проверенные изображения; пустая карточка заменяется инициалами."
   ]
