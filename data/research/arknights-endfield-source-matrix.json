@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "arknights-endfield",
-  "generated_at": "2026-08-18T18:07:20.737Z",
+  "generated_at": "2026-08-18T18:36:28.830Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -19,8 +19,7 @@
     "critic_index_scope": "released_fallback",
     "metascore_as_vote": false,
     "user_scores_as_votes": false,
-    "professional_only": true,
-    "post_create_verified_corpus_preserved": true
+    "professional_only": true
   },
   "accepted": [
     {
@@ -60,13 +59,10 @@
       "mechanics": [],
       "domain": "pushsquare.com",
       "validation": {
-        "status": "accepted",
-        "checked_at": "2026-08-18T18:06:58.302Z",
-        "method": "registered-direct-publisher-http-v8",
-        "review_page": {
-          "accepted": true,
-          "reason": "review_path"
-        }
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-18T18:35:05.908Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
       },
       "score": 8,
       "scale": 10,
@@ -84,6 +80,13 @@
   ],
   "rejected": [
     {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/arknights-endfield-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/arknights-endfield",
       "reasons": [
@@ -93,13 +96,6 @@
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/arknights-endfield-2",
-      "reasons": [
-        "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/arknights-endfield-review",
       "reasons": [
         "HTTP 404"
       ]
@@ -489,7 +485,7 @@
     "accepted": 1,
     "scored": 1,
     "context_only_versions": 0,
-    "blocked_verified": 0,
+    "blocked_verified": 1,
     "contemporary": 1,
     "green": false,
     "passed": false,
@@ -498,8 +494,6 @@
     "critic_index_added": 0,
     "critic_index_scores_added": 0,
     "critic_index_platform": "primary",
-    "removed_user_generated": 0,
-    "historical_index_preserved": 0,
-    "trusted_scores_preserved": 1
+    "removed_user_generated": 0
   }
 }

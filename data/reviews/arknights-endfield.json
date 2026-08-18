@@ -2,7 +2,7 @@
   "schema_version": 12,
   "game_slug": "arknights-endfield",
   "game_id": null,
-  "updated_at": "2026-08-18T18:07:21.423Z",
+  "updated_at": "2026-08-18T18:36:31.274Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
@@ -11,9 +11,7 @@
     "status": "red-needs-revision",
     "full_registry_scan": true,
     "checked_registered_sources": 45,
-    "applicable_registered_sources": 45,
-    "maximum": 20,
-    "post_create_verified_corpus_preserved": true
+    "applicable_registered_sources": 45
   },
   "regional_discovery": {
     "region": "ru",
@@ -114,13 +112,10 @@
       "mechanics": [],
       "domain": "pushsquare.com",
       "validation": {
-        "status": "accepted",
-        "checked_at": "2026-08-18T18:06:58.302Z",
-        "method": "registered-direct-publisher-http-v8",
-        "review_page": {
-          "accepted": true,
-          "reason": "review_path"
-        }
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-18T18:35:05.908Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
       },
       "score": 8,
       "scale": 10,
@@ -138,6 +133,13 @@
   ],
   "rejected": [
     {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/arknights-endfield-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/arknights-endfield",
       "reasons": [
@@ -147,13 +149,6 @@
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/arknights-endfield-2",
-      "reasons": [
-        "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/arknights-endfield-review",
       "reasons": [
         "HTTP 404"
       ]
