@@ -49,9 +49,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Detect expensive game-data scopes
+        id: scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only "$BASE_SHA" HEAD)"
+          printf '%s\n' "$changed"
+          if printf '%s\n' "$changed" | grep -Eq '^(data/(drafts|game-media)/|config/(game-page-quality-v2\.json|game-media-steam-overrides\.json)$|scripts/(repair-game-media-from-steam|validate-game-media-quality|materialize-catalog-game-data|run-game-catalog-enrichment)\.mjs$|game/_shared/game-media-recovery\.js$)'; then
+            echo 'game_media=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'game_media=false' >> "$GITHUB_OUTPUT"
+          fi
+          if printf '%s\n' "$changed" | grep -Eq '^(data/similarity/|scripts/(build-similarity-index|enrich-game-relations)\.mjs$|game/_shared/game-page-similarity\.js$)'; then
+            echo 'similarity=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'similarity=false' >> "$GITHUB_OUTPUT"
+          fi
       - name: Install browser validation dependency
         run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
       - name: Verify shared runtime and quality-controller syntax
@@ -89,10 +109,16 @@ jobs:
       - name: Exercise canonical catalog materialization
         run: node scripts/materialize-catalog-game-data.mjs
       - name: Exercise verified Steam media repair
+        if: steps.scope.outputs.game_media == 'true'
         run: node scripts/repair-game-media-from-steam.mjs
       - name: Produce media quality diagnoses
+        if: steps.scope.outputs.game_media == 'true'
         run: node scripts/validate-game-media-quality.mjs
+      - name: Skip full-catalog media network audit for unrelated changes
+        if: steps.scope.outputs.game_media != 'true'
+        run: echo 'No game-media inputs changed; full-catalog remote image probing is not relevant to this PR.'
       - name: Rebuild similarity reasons for the full catalog
+        if: steps.scope.outputs.similarity == 'true'
         run: node scripts/build-similarity-index.mjs
       - name: Verify target game pages and review rendering in browser
         run: node scripts/smoke-game-page-browser.mjs
