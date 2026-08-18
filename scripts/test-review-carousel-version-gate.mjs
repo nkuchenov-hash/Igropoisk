@@ -8,6 +8,7 @@ const local=read('scripts/enrich-review-media-local.mjs');
 const github=read('scripts/enrich-review-media-github-models.mjs');
 const openai=read('scripts/enrich-review-media.mjs');
 const renderer=read('scripts/render-review-pages.mjs');
+const validator=read('scripts/validate-review-output.mjs');
 const runtime=read('article/_shared/review-carousel.js');
 const fail=message=>{throw new Error(message)};
 const carousel=policy.article_balance?.carousel_policy||{};
@@ -18,7 +19,10 @@ for(const [name,source] of [['local',local],['github',github],['openai',openai]]
   for(const marker of ['minimumCarousels','minimumImages','media_commentary','visible_subject','commentary'])if(!source.includes(marker))fail(`${name} visual path missing carousel marker: ${marker}`);
   if(/ровно один|exactly one verified image per section/i.test(source))fail(`${name} visual path still forces one screenshot per section`);
 }
-for(const marker of ['meaningful carousels','media_commentary','carouselCount'])if(!renderer.includes(marker))fail(`Renderer missing meaningful-carousel contract: ${marker}`);
+for(const [name,source] of [['renderer',renderer],['validator',validator]]){
+  for(const marker of ['meaningful carousels','media_commentary','minimumCarousels','minimumImages'])if(!source.includes(marker))fail(`${name} missing meaningful-carousel contract: ${marker}`);
+  if(source.includes('images.length<Number(balance.screenshots_per_section?.minimum'))fail(`${name} still requires screenshots in every section`);
+}
 if(!runtime.includes("entry.commentary||''"))fail('Runtime carousel drops visual commentary');
 const wrong=[
   [{title:'Fallout 76: Wastelanders Review'},'Fallout 76'],
