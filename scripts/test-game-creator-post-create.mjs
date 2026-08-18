@@ -64,7 +64,8 @@ if(!quickReview.includes("review_stage:'bootstrap'")||!quickReview.includes('min
 if(!quickReview.includes("review?.review_score?.status!=='green'"))fail('Quick review can publish before canonical rating is green');
 for(const marker of ['build-review-bootstrap-commercial-local.mjs','audit-review-bootstrap-local.mjs','grounding_audit?.passed===true','editorial_quality?.passed===true'])if(!commercialQuick.includes(marker))fail(`Direct commercial quick-review wrapper missing: ${marker}`);
 for(const forbidden of ['build-review-bootstrap-local.mjs','expand-review-bootstrap-local.mjs'])if(commercialQuick.includes(forbidden))fail(`Slow legacy commercial quick-review stage remains: ${forbidden}`);
-if(commercialQuick.indexOf('audit-review-bootstrap-local.mjs')>commercialQuick.indexOf('render-review-bootstrap.mjs'))fail('Commercial quick review can render before factual/language audit passes');
+const auditAt=commercialQuick.indexOf('audit-review-bootstrap-local.mjs'),newRenderAt=commercialQuick.lastIndexOf('render-review-bootstrap.mjs');
+if(auditAt<0||newRenderAt<auditAt)fail('New commercial quick review can render before factual/language audit passes');
 for(const marker of ['factual_grounding','natural_russian','unsupportedNumbers','lowercase_latin_intrusions','process.exit(2)'])if(!quickAudit.includes(marker))fail(`Quick-review factual/language audit missing: ${marker}`);
 if(!quickVerifier.includes("editorial_quality?.passed===true")||!quickVerifier.includes("grounding_audit?.passed===true")||!quickVerifier.includes('process.exit(2)'))fail('Quick-review publication is not verified fail-closed for prose and grounding');
 if(!reviewFeed.includes('bootstrapDesired')||!reviewFeed.includes("feed.igropoisk_article.review_stage==='full'"))fail('Full review feed materializer can erase a valid bootstrap review or cannot upgrade it');
