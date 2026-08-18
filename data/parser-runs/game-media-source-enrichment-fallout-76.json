@@ -1,27 +1,35 @@
 {
-  "parser": "game-media-source-enrichment-v2.2",
+  "parser": "game-media-source-enrichment-v2.3-bounded",
   "status": "green",
   "game_slug": "fallout-76",
-  "checked_at": "2026-08-18T09:50:55.478Z",
+  "checked_at": "2026-08-18T17:28:13.883Z",
   "historical": false,
   "quality_floor": {
     "minimum_width": 480,
     "minimum_height": 270,
     "minimum_bytes": 25000
   },
+  "targets": {
+    "minimum_screenshots": 7,
+    "target_screenshots": 10,
+    "target_artwork": 4
+  },
   "concurrency": {
     "pages": 6,
     "probes": 10
   },
-  "source_pages": 19,
+  "source_pages": 0,
   "registered_media_surfaces": 12,
-  "pages_checked": 19,
-  "candidates_checked": 240,
+  "pages_checked": 0,
+  "candidates_checked": 0,
+  "discovery_skipped": true,
   "removed_stale_screenshots": 0,
   "removed_stale_artwork": 0,
-  "added_screenshots": 24,
+  "trimmed_screenshots": 38,
+  "trimmed_artwork": 4,
+  "added_screenshots": 0,
   "added_artwork": 0,
-  "total_screenshots": 48,
-  "total_artwork": 8,
-  "policy": "Search engines may aid source discovery, but only original URLs from current verified publisher/store/gallery pages are retained; stale media and social thumbnails are removed."
+  "total_screenshots": 10,
+  "total_artwork": 4,
+  "policy": "Keep a compact diverse verified media set. Stop discovery when the useful target is already satisfied; search engines may aid source discovery, but only original publisher/store/gallery URLs are retained."
 }

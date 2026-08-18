@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "gunz-the-duel",
-  "generated_at": "2026-08-18T11:42:23.191Z",
+  "generated_at": "2026-08-18T17:29:28.629Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -19,7 +19,8 @@
     "critic_index_scope": "released_fallback",
     "metascore_as_vote": false,
     "user_scores_as_votes": false,
-    "professional_only": true
+    "professional_only": true,
+    "post_create_verified_corpus_preserved": true
   },
   "accepted": [],
   "rejected": [
@@ -31,17 +32,17 @@
       ]
     },
     {
-      "publication": "RPGFan",
-      "url": "https://www.rpgfan.com/review/gunz-the-duel-2",
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/gunz-the-duel-review",
       "reasons": [
         "HTTP 404"
       ]
     },
     {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/gunz-the-duel-review",
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/gunz-the-duel-2",
       "reasons": [
-        "HTTP 503"
+        "HTTP 404"
       ]
     }
   ],
@@ -169,8 +170,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "unavailable",
-      "notes": "search transport unavailable"
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     },
     {
       "source_id": "ars-technica",
@@ -438,6 +439,8 @@
     "critic_index_added": 0,
     "critic_index_scores_added": 0,
     "critic_index_platform": "primary",
-    "removed_user_generated": 0
+    "removed_user_generated": 0,
+    "historical_index_preserved": 0,
+    "trusted_scores_preserved": 0
   }
 }
