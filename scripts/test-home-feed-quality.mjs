@@ -94,6 +94,8 @@ assert.equal(reviewBlocked.homepage_eligible, false);
 assert(reviewBlocked.reasons.includes('needs_review'));
 
 const homeReleaseUi = fs.readFileSync('assets/home-releases/index.js', 'utf8');
+const homeReleaseCss = fs.readFileSync('assets/home-releases/index.css', 'utf8');
+const homeReleaseRules = JSON.parse(fs.readFileSync('features/home-releases/rules.json', 'utf8'));
 for (const forbiddenCopy of [
   'Ожидаемость:',
   'Ожидаемость подтверждена',
@@ -105,5 +107,14 @@ for (const forbiddenCopy of [
 assert(homeReleaseUi.includes('`Ожидание ${overall}`'), 'Release cards must expose compact overall anticipation rating');
 assert(homeReleaseUi.includes('`Игроки ${players}`'), 'Release cards may expose compact player anticipation rating');
 assert(homeReleaseUi.includes("calendarLink.textContent='Открыть календарь'"), 'Release calendar CTA must not include a decorative arrow');
+assert(homeReleaseUi.includes("loadFeed('data/releases/public.json')"), 'Homepage releases must consume the public calendar feed');
+assert.equal(homeReleaseUi.includes('.filter(crossSiteEligible)'), false, 'Homepage must not apply a second anticipation gate after the public calendar gate');
+assert(homeReleaseUi.includes("addEventListener('wheel'"), 'Desktop release rail must support mouse-wheel/trackpad scrolling');
+assert(homeReleaseUi.includes('data-release-rail="-1"') && homeReleaseUi.includes('data-release-rail="1"'), 'Release rail must expose previous/next controls');
+assert(homeReleaseUi.includes("controls.className='ig-control-group home-releases__controls'"), 'Release controls must use the central control group in the heading');
+assert(homeReleaseCss.includes('.home-showcase-heading__actions'), 'Release carousel controls must be positioned in the heading, not on the rail sides');
+assert.equal(homeReleaseRules.source, 'data/releases/public.json', 'Home release rules must point to the public calendar feed');
+assert.equal(homeReleaseRules.eligibility?.do_not_apply_second_homepage_gate, true, 'Rules must prohibit the duplicate homepage eligibility gate');
+assert.equal(homeReleaseRules.interaction?.arrow_buttons, 'heading', 'Release arrows belong in the heading, not at the rail edges');
 
 console.log('Home feed identity and release anticipation regression tests passed.');
