@@ -28,6 +28,7 @@ on:
       - 'scripts/lib/review-score-extractor.mjs'
       - 'scripts/build-review-bootstrap-local.mjs'
       - 'scripts/build-review-bootstrap-commercial.mjs'
+      - 'scripts/build-review-bootstrap-commercial-local.mjs'
       - 'scripts/expand-review-bootstrap-local.mjs'
       - 'scripts/render-review-bootstrap.mjs'
       - 'scripts/audit-review-bootstrap-local.mjs'
@@ -114,6 +115,7 @@ jobs:
           node --check scripts/lib/review-score-extractor.mjs
           node --check scripts/build-review-bootstrap-local.mjs
           node --check scripts/build-review-bootstrap-commercial.mjs
+          node --check scripts/build-review-bootstrap-commercial-local.mjs
           node --check scripts/expand-review-bootstrap-local.mjs
           node --check scripts/render-review-bootstrap.mjs
           node --check scripts/audit-review-bootstrap-local.mjs
@@ -202,8 +204,8 @@ jobs:
         run: |
           set -euo pipefail
           IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
-          for attempt in 1 2 3; do
-            echo "Grounded quick-review generation pass $attempt/3"
+          for attempt in 1 2; do
+            echo "Grounded quick-review generation pass $attempt/2"
             generation_failed=0
             for slug in "${TARGETS[@]}"; do
               node scripts/build-review-bootstrap-commercial.mjs "$slug" || generation_failed=1
@@ -212,7 +214,7 @@ jobs:
               exit 0
             fi
           done
-          echo "::error::Grounded quick-review publication gate did not pass after bounded retries."
+          echo "::error::Grounded quick-review publication gate did not pass after two bounded attempts."
           exit 1
 
       - name: Publish quick-review checkpoint before full upgrades
