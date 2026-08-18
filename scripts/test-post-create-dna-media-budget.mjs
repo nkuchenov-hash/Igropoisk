@@ -19,6 +19,6 @@ if(dna.includes('process.exitCode=2'))fail('Independent DNA/similarity failures 
 for(const marker of ['const requested = new Set(process.argv.slice(2)','requested.size ? allFiles.filter','requested DNA entity is missing',"requested.size ? 'targeted' : 'catalog'"])if(!validator.includes(marker))fail(`Targeted Game DNA validation missing: ${marker}`);
 for(const marker of ['targetScreens','Math.min(15','GAME_MEDIA_TARGET_SCREENSHOTS','discoveryNeeded','discovery_skipped','selectDiverse','candidateLimit=Math.min(72'])if(!media.includes(marker))fail(`Bounded useful-media policy missing: ${marker}`);
 if(media.includes('.slice(0,48)')||media.includes('candidateRecords.length>=240'))fail('Legacy excessive 48-shot/240-probe media policy is still active');
-if(!quick.includes('QUICK_REVIEW_MIN_WORDS||180'))fail('Quick review still rejects concise source-grounded drafts by default');
+if(!quick.includes('Math.max(180')||!quick.includes('QUICK_REVIEW_MIN_WORDS||220'))fail('Quick review editorial floor/default contract is missing');
 if(!quick.includes('&quot;'))fail('Quick review HTML escaping is malformed');
 console.log('Post-create partial-progress DNA and bounded media contract passed.');
