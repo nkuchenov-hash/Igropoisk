@@ -1,40 +1,42 @@
 {
   "parser": "post-create-game-dna-v5-commercial-quality",
   "status": "needs_revision",
-  "checked_at": "2026-08-18T17:51:33.048Z",
-  "targets": 30,
-  "from_pending_requests": 30,
-  "from_missing_dna_backfill": 0,
-  "dna_ready": 10,
+  "checked_at": "2026-08-18T17:57:41.775Z",
+  "targets": 32,
+  "from_pending_requests": 32,
+  "from_missing_dna_backfill": 2,
+  "dna_ready": 1,
   "validation_scope": "per_game_targeted_commercial_quality",
   "publication_policy": "only_valid_commercial_quality_dna_changes_survive_to_checkpoint",
   "ready_slugs": [
+    "fallout-2"
+  ],
+  "invalid_or_missing": [
+    "arknights-endfield",
     "balatro",
-    "fallout-2",
+    "beastlink",
+    "burn-with-me",
+    "control-resonant",
     "fallout-3",
     "fallout-76",
     "fallout-brotherhood-of-steel",
     "fallout-new-vegas",
     "fallout-shelter",
-    "fallout",
-    "luna-abyss",
-    "the-sinking-city-2"
-  ],
-  "invalid_or_missing": [
-    "arknights-endfield",
-    "beastlink",
-    "burn-with-me",
     "fallout-tactics-brotherhood-of-steel",
+    "fallout",
     "final-fantasy-resonance",
     "gunz-the-duel",
     "i-hear-the-forest",
+    "luna-abyss",
     "nvidia",
     "order-of-the-sinking-star",
     "remothered-red-nun-s-legacy",
+    "ritual-of-raven",
     "sarco",
     "stars-reach",
     "the-blood-of-dawnwalker",
     "the-lantern-of-the-laughless-saint",
+    "the-sinking-city-2",
     "tides-of-annihilation",
     "time-to-wake-up",
     "tomb-raider-legacy-of-atlantis",
@@ -48,7 +50,13 @@
       "slug": "arknights-endfield",
       "step": "validate",
       "exit_code": 2,
-      "stderr": "data/game-dna/arknights-endfield.json: targeted post-create DNA is below the commercial enrichment gate (8/16 axes, 4/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+      "stderr": "data/game-dna/arknights-endfield.json: targeted post-create DNA is not similarity-ready (5/16 axes, 3/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/arknights-endfield.json: targeted post-create DNA is below the commercial enrichment gate (5/16 axes, 3/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+    },
+    {
+      "slug": "balatro",
+      "step": "validate",
+      "exit_code": 2,
+      "stderr": "data/game-dna/balatro.json: targeted post-create DNA is not similarity-ready (4/16 axes, 2/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/balatro.json: targeted post-create DNA is below the commercial enrichment gate (4/16 axes, 2/7 core axes); requires >=9 populated axes and >=4 core axes\n"
     },
     {
       "slug": "beastlink",
@@ -63,10 +71,52 @@
       "stderr": "data/game-dna/burn-with-me.json: targeted post-create DNA is not similarity-ready (4/16 axes, 1/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/burn-with-me.json: targeted post-create DNA is below the commercial enrichment gate (4/16 axes, 1/7 core axes); requires >=9 populated axes and >=4 core axes\n"
     },
     {
+      "slug": "control-resonant",
+      "step": "validate",
+      "exit_code": 2,
+      "stderr": "data/game-dna/control-resonant.json: targeted post-create DNA is not similarity-ready (4/16 axes, 2/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/control-resonant.json: targeted post-create DNA is below the commercial enrichment gate (4/16 axes, 2/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+    },
+    {
+      "slug": "fallout-3",
+      "step": "validate",
+      "exit_code": 2,
+      "stderr": "data/game-dna/fallout-3.json: targeted post-create DNA is below the commercial enrichment gate (8/16 axes, 4/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+    },
+    {
+      "slug": "fallout-76",
+      "step": "validate",
+      "exit_code": 2,
+      "stderr": "data/game-dna/fallout-76.json: targeted post-create DNA is below the commercial enrichment gate (6/16 axes, 3/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+    },
+    {
+      "slug": "fallout-brotherhood-of-steel",
+      "step": "validate",
+      "exit_code": 2,
+      "stderr": "data/game-dna/fallout-brotherhood-of-steel.json: targeted post-create DNA is not similarity-ready (5/16 axes, 3/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/fallout-brotherhood-of-steel.json: targeted post-create DNA is below the commercial enrichment gate (5/16 axes, 3/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+    },
+    {
+      "slug": "fallout-new-vegas",
+      "step": "validate",
+      "exit_code": 2,
+      "stderr": "data/game-dna/fallout-new-vegas.json: targeted post-create DNA is not similarity-ready (6/16 axes, 2/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/fallout-new-vegas.json: targeted post-create DNA is below the commercial enrichment gate (6/16 axes, 2/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+    },
+    {
+      "slug": "fallout-shelter",
+      "step": "validate",
+      "exit_code": 2,
+      "stderr": "data/game-dna/fallout-shelter.json: targeted post-create DNA is not similarity-ready (6/16 axes, 2/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/fallout-shelter.json: targeted post-create DNA is below the commercial enrichment gate (6/16 axes, 2/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+    },
+    {
       "slug": "fallout-tactics-brotherhood-of-steel",
       "step": "validate",
       "exit_code": 2,
-      "stderr": "data/game-dna/fallout-tactics-brotherhood-of-steel.json: targeted post-create DNA is below the commercial enrichment gate (7/16 axes, 3/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+      "stderr": "data/game-dna/fallout-tactics-brotherhood-of-steel.json: targeted post-create DNA is not similarity-ready (6/16 axes, 2/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/fallout-tactics-brotherhood-of-steel.json: targeted post-create DNA is below the commercial enrichment gate (6/16 axes, 2/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+    },
+    {
+      "slug": "fallout",
+      "step": "validate",
+      "exit_code": 2,
+      "stderr": "data/game-dna/fallout.json: targeted post-create DNA is below the commercial enrichment gate (8/16 axes, 4/7 core axes); requires >=9 populated axes and >=4 core axes\n"
     },
     {
       "slug": "final-fantasy-resonance",
@@ -87,6 +137,12 @@
       "stderr": "data/game-dna/i-hear-the-forest.json: targeted post-create DNA is not similarity-ready (6/16 axes, 1/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/i-hear-the-forest.json: targeted post-create DNA is below the commercial enrichment gate (6/16 axes, 1/7 core axes); requires >=9 populated axes and >=4 core axes\n"
     },
     {
+      "slug": "luna-abyss",
+      "step": "validate",
+      "exit_code": 2,
+      "stderr": "data/game-dna/luna-abyss.json: targeted post-create DNA is below the commercial enrichment gate (7/16 axes, 3/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+    },
+    {
       "slug": "nvidia",
       "step": "validate",
       "exit_code": 2,
@@ -103,6 +159,12 @@
       "step": "validate",
       "exit_code": 2,
       "stderr": "data/game-dna/remothered-red-nun-s-legacy.json: targeted post-create DNA is not similarity-ready (6/16 axes, 2/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/remothered-red-nun-s-legacy.json: targeted post-create DNA is below the commercial enrichment gate (6/16 axes, 2/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+    },
+    {
+      "slug": "ritual-of-raven",
+      "step": "validate",
+      "exit_code": 2,
+      "stderr": "data/game-dna/ritual-of-raven.json: targeted post-create DNA is not similarity-ready (3/16 axes, 0/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/ritual-of-raven.json: targeted post-create DNA is below the commercial enrichment gate (3/16 axes, 0/7 core axes); requires >=9 populated axes and >=4 core axes\n"
     },
     {
       "slug": "sarco",
@@ -129,10 +191,16 @@
       "stderr": "data/game-dna/the-lantern-of-the-laughless-saint.json: targeted post-create DNA is not similarity-ready (4/16 axes, 2/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/the-lantern-of-the-laughless-saint.json: targeted post-create DNA is below the commercial enrichment gate (4/16 axes, 2/7 core axes); requires >=9 populated axes and >=4 core axes\n"
     },
     {
+      "slug": "the-sinking-city-2",
+      "step": "validate",
+      "exit_code": 2,
+      "stderr": "data/game-dna/the-sinking-city-2.json: targeted post-create DNA is below the commercial enrichment gate (7/16 axes, 3/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+    },
+    {
       "slug": "tides-of-annihilation",
       "step": "validate",
       "exit_code": 2,
-      "stderr": "data/game-dna/tides-of-annihilation.json: targeted post-create DNA is below the commercial enrichment gate (7/16 axes, 4/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+      "stderr": "data/game-dna/tides-of-annihilation.json: targeted post-create DNA is not similarity-ready (4/16 axes, 1/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/tides-of-annihilation.json: targeted post-create DNA is below the commercial enrichment gate (4/16 axes, 1/7 core axes); requires >=9 populated axes and >=4 core axes\n"
     },
     {
       "slug": "time-to-wake-up",
