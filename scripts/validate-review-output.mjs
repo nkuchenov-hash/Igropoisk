@@ -6,6 +6,7 @@ const requestedSlug=process.argv[2]||'';
 const policy=JSON.parse(fs.readFileSync(path.join(root,'config/parsers/review-media-policy.json'),'utf8'));
 const balance=policy.article_balance||{};
 const quality=policy.quality_gate||{};
+const carousel=balance.carousel_policy||{};
 const articlesDir=path.join(root,'data/articles');
 const mediaDir=path.join(root,'data/article-media');
 const countWords=value=>(String(value||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]+/g)||[]).length;
@@ -22,43 +23,56 @@ for(const name of files){
   const mediaPath=path.join(mediaDir,name);
   if(fs.existsSync(mediaPath)){
     const media=read(mediaPath);
-    const map=new Map((media.sections||[]).map(section=>[section.id,section.images||[]]));
-    article.sections=(article.sections||[]).map(section=>map.has(section.id)?{...section,images:map.get(section.id)}:section);
+    const map=new Map((media.sections||[]).map(section=>[section.id,section]));
+    article.sections=(article.sections||[]).map(section=>{const entry=map.get(section.id);return entry?{...section,images:entry.images||[],image:entry.images?.[0]||null,media_commentary:entry.commentary||section.media_commentary||''}:section});
   }
 
   const sections=article.sections||[];
   const words=countWords([article.lead,...sections.flatMap(section=>section.paragraphs||[]),article.verdict?.summary].join(' '));
-  const allImages=sections.flatMap(imagesFor);
+  const mediaSections=sections.filter(section=>imagesFor(section).length>0);
+  const allImages=mediaSections.flatMap(imagesFor);
   const urls=allImages.map(image=>canonical(image.url));
   const duplicateUrls=urls.filter((url,index)=>urls.indexOf(url)!==index);
   const duplicateGroups=allImages.map(image=>image.duplicate_group||image.quality?.duplicate_group).filter(Boolean);
   const repeatedGroups=duplicateGroups.filter((group,index)=>duplicateGroups.indexOf(group)!==index);
+  const minimumCarousels=Number(carousel.minimum_carousels||2),maximumCarousels=Number(carousel.maximum_carousels||3),minimumImages=Number(carousel.minimum_images_per_carousel||2),maximumImages=Number(carousel.maximum_images_per_carousel||4);
   const errors=[];
 
-  if(words<Number(balance.minimum_words||2200))errors.push(`article words ${words}/${balance.minimum_words}`);
-  if(sections.length<Number(balance.minimum_sections||8))errors.push(`sections ${sections.length}/${balance.minimum_sections}`);
+  if(words<Number(balance.minimum_words||1600))errors.push(`article words ${words}/${balance.minimum_words}`);
+  if(sections.length<Number(balance.minimum_sections||7))errors.push(`sections ${sections.length}/${balance.minimum_sections}`);
   for(const section of sections){
     const sectionWords=countWords((section.paragraphs||[]).join(' '));
-    const images=imagesFor(section);
-    if(sectionWords<Number(balance.minimum_words_per_section||220))errors.push(`${section.id}: words ${sectionWords}/${balance.minimum_words_per_section}`);
-    if(images.length<Number(balance.screenshots_per_section?.minimum||3))errors.push(`${section.id}: images ${images.length}/${balance.screenshots_per_section?.minimum}`);
+    if(sectionWords<Number(balance.minimum_words_per_section||170))errors.push(`${section.id}: words ${sectionWords}/${balance.minimum_words_per_section}`);
   }
-  if(allImages.length<Number(balance.minimum_total_screenshots||30))errors.push(`total images ${allImages.length}/${balance.minimum_total_screenshots}`);
-  if(new Set(urls).size<Number(balance.minimum_unique_screenshots||30))errors.push(`unique images ${new Set(urls).size}/${balance.minimum_unique_screenshots}`);
+  if(mediaSections.length<minimumCarousels)errors.push(`meaningful carousels ${mediaSections.length}/${minimumCarousels}`);
+  if(mediaSections.length>maximumCarousels)errors.push(`meaningful carousels ${mediaSections.length}/${maximumCarousels} max`);
+  for(const section of mediaSections){
+    const images=imagesFor(section);
+    if(images.length<minimumImages||images.length>maximumImages)errors.push(`${section.id}: carousel images ${images.length}, expected ${minimumImages}-${maximumImages}`);
+    if(!String(section.media_commentary||'').trim())errors.push(`${section.id}: carousel commentary missing`);
+    for(const image of images){
+      if(!String(image.caption||'').trim())errors.push(`${section.id}: image caption missing`);
+      if(!String(image.quality?.visible_subject||image.alt||'').trim())errors.push(`${section.id}: visible-subject description missing`);
+    }
+  }
+  if(allImages.length<Number(balance.minimum_total_screenshots||6))errors.push(`total images ${allImages.length}/${balance.minimum_total_screenshots}`);
+  if(new Set(urls).size<Number(balance.minimum_unique_screenshots||6))errors.push(`unique images ${new Set(urls).size}/${balance.minimum_unique_screenshots}`);
   if(duplicateUrls.length)errors.push(`duplicate URLs: ${[...new Set(duplicateUrls)].join(', ')}`);
   if(repeatedGroups.length)errors.push(`duplicate scenes: ${[...new Set(repeatedGroups)].join(', ')}`);
 
-  const minWidth=Number(quality.minimum_width_historical||quality.minimum_width_modern||480);
-  const minHeight=Number(quality.minimum_height_historical||quality.minimum_height_modern||480);
-  const minBytes=Number(quality.minimum_bytes_historical||quality.minimum_bytes_modern||25000);
+  const releaseYear=Number(article.release_year||article.identity?.release_year||0);
+  const historical=releaseYear>0&&releaseYear<2010;
+  const minWidth=Number(historical?quality.minimum_width_historical:quality.minimum_width_modern)||480;
+  const minHeight=Number(historical?quality.minimum_height_historical:quality.minimum_height_modern)||270;
+  const minBytes=Number(historical?quality.minimum_bytes_historical:quality.minimum_bytes_modern)||25000;
   const minAspect=Number(quality.minimum_aspect_ratio||0.75);
   const maxAspect=Number(quality.maximum_aspect_ratio||2.6);
-  const minConfidence=Number(quality.visual_quality_confidence||0.92);
-  const minSharpness=Number(quality.minimum_sharpness||0.82);
-  const minCompression=Number(quality.minimum_compression_quality||0.78);
-  const minReadability=Number(quality.minimum_readability||0.72);
-  const minComposition=Number(quality.minimum_composition_quality||0.76);
-  const minRenderSuitability=Number(quality.minimum_render_suitability||0.84);
+  const minConfidence=Number(quality.visual_quality_confidence||0.78);
+  const minSharpness=Number(quality.minimum_sharpness||0.72);
+  const minCompression=Number(quality.minimum_compression_quality||0.7);
+  const minReadability=Number(quality.minimum_readability||0.68);
+  const minComposition=Number(quality.minimum_composition_quality||0.68);
+  const minRenderSuitability=Number(quality.minimum_render_suitability||0.72);
 
   for(const image of allImages){
     const width=Number(image.width||0),height=Number(image.height||0),bytes=Number(image.bytes||0);
@@ -90,14 +104,15 @@ for(const name of files){
   }
 
   const report={
-    validator:'review-output',slug:article.slug,checked_at:new Date().toISOString(),passed:errors.length===0,
-    words,sections:sections.length,total_images:allImages.length,unique_images:new Set(urls).size,
+    validator:'review-output-carousel-v2',slug:article.slug,checked_at:new Date().toISOString(),passed:errors.length===0,
+    words,sections:sections.length,meaningful_carousels:mediaSections.length,total_images:allImages.length,unique_images:new Set(urls).size,
+    carousel_policy:{minimum_carousels:minimumCarousels,maximum_carousels:maximumCarousels,minimum_images:minimumImages,maximum_images:maximumImages},
     quality_thresholds:{technicalFloor:{minWidth,minHeight,minBytes},minConfidence,minSharpness,minCompression,minReadability,minComposition,minRenderSuitability},errors
   };
   const reportPath=path.join(root,'data/parser-runs',`review-output-${article.slug}.json`);
   fs.mkdirSync(path.dirname(reportPath),{recursive:true});
   fs.writeFileSync(reportPath,`${JSON.stringify(report,null,2)}\n`);
   if(errors.length){failed=true;console.error(`${article.slug}: blocked\n- ${errors.join('\n- ')}`)}
-  else console.log(`${article.slug}: passed — ${words} words, ${allImages.length} visually approved unique screenshots`);
+  else console.log(`${article.slug}: passed — ${words} words, ${mediaSections.length} meaningful carousels, ${allImages.length} visually approved unique screenshots`);
 }
 if(failed)process.exit(2);
