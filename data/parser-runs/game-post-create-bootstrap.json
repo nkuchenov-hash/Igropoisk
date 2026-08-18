@@ -2,7 +2,7 @@
   "parser": "game-post-create-enrichment",
   "phase": "bootstrap",
   "status": "needs_revision",
-  "checked_at": "2026-08-18T18:03:52.601Z",
+  "checked_at": "2026-08-18T18:13:10.520Z",
   "requested": 32,
   "complete": 0,
   "deferred": 0,
@@ -31,7 +31,7 @@
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"burn-with-me\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 13,\n  \"candidates_checked\": 24,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 9,\n  \"total_artwork\": 1\n}\n",
+      "stdout": "{\n  \"slug\": \"burn-with-me\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 13,\n  \"candidates_checked\": 24,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 9,\n  \"total_artwork\": 1\n}\n",
       "stderr": ""
     },
     {
@@ -39,7 +39,7 @@
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"control-resonant\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 13,\n  \"candidates_checked\": 24,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 10,\n  \"total_artwork\": 1\n}\n",
+      "stdout": "{\n  \"slug\": \"control-resonant\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": true,\n  \"pages_checked\": 0,\n  \"candidates_checked\": 0,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 10,\n  \"total_artwork\": 1\n}\n",
       "stderr": ""
     },
     {
@@ -91,11 +91,35 @@
       "stderr": ""
     },
     {
+      "label": "media:fallout-brotherhood-of-steel",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"historical\": true,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 14,\n  \"candidates_checked\": 68,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 0,\n  \"total_artwork\": 2\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-new-vegas",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-new-vegas\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": true,\n  \"pages_checked\": 0,\n  \"candidates_checked\": 0,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 10,\n  \"total_artwork\": 4\n}\n",
+      "stderr": ""
+    },
+    {
       "label": "review-scores:arknights-endfield",
       "script": "scripts/enrich-review-explicit-scores.mjs",
       "status": "completed",
       "exit_code": 0,
       "stdout": "{\n  \"slug\": \"arknights-endfield\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-shelter",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": true,\n  \"pages_checked\": 0,\n  \"candidates_checked\": 0,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 10,\n  \"total_artwork\": 4\n}\n",
       "stderr": ""
     },
     {
@@ -115,30 +139,6 @@
       "stderr": ""
     },
     {
-      "label": "media:fallout-new-vegas",
-      "script": "scripts/enrich-game-media-from-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-new-vegas\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": true,\n  \"pages_checked\": 0,\n  \"candidates_checked\": 0,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 10,\n  \"total_artwork\": 4\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "media:fallout-shelter",
-      "script": "scripts/enrich-game-media-from-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-shelter\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": true,\n  \"pages_checked\": 0,\n  \"candidates_checked\": 0,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 10,\n  \"total_artwork\": 4\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "media:fallout-tactics-brotherhood-of-steel",
-      "script": "scripts/enrich-game-media-from-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"historical\": true,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 14,\n  \"candidates_checked\": 34,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 5,\n  \"total_artwork\": 3\n}\n",
-      "stderr": ""
-    },
-    {
       "label": "media:fallout",
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
@@ -152,6 +152,14 @@
       "status": "completed",
       "exit_code": 0,
       "stdout": "{\n  \"slug\": \"final-fantasy-resonance\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": true,\n  \"pages_checked\": 0,\n  \"candidates_checked\": 0,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 10,\n  \"total_artwork\": 4\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:fallout-tactics-brotherhood-of-steel",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-tactics-brotherhood-of-steel\",\n  \"historical\": true,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 14,\n  \"candidates_checked\": 34,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 5,\n  \"total_artwork\": 3\n}\n",
       "stderr": ""
     },
     {
@@ -203,14 +211,6 @@
       "stderr": ""
     },
     {
-      "label": "media:fallout-brotherhood-of-steel",
-      "script": "scripts/enrich-game-media-from-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"historical\": true,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 14,\n  \"candidates_checked\": 68,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 0,\n  \"total_artwork\": 2\n}\n",
-      "stderr": ""
-    },
-    {
       "label": "media:luna-abyss",
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
@@ -223,7 +223,7 @@
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"i-hear-the-forest\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 13,\n  \"candidates_checked\": 30,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 8,\n  \"total_artwork\": 1\n}\n",
+      "stdout": "{\n  \"slug\": \"i-hear-the-forest\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 13,\n  \"candidates_checked\": 24,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 8,\n  \"total_artwork\": 1\n}\n",
       "stderr": ""
     },
     {
@@ -287,7 +287,7 @@
       "script": "scripts/enrich-game-media-from-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"gunz-the-duel\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 13,\n  \"candidates_checked\": 30,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 8,\n  \"total_artwork\": 1\n}\n",
+      "stdout": "{\n  \"slug\": \"gunz-the-duel\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 13,\n  \"candidates_checked\": 24,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 8,\n  \"total_artwork\": 1\n}\n",
       "stderr": ""
     },
     {
@@ -491,14 +491,6 @@
       "stderr": ""
     },
     {
-      "label": "media:stars-reach",
-      "script": "scripts/enrich-game-media-from-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"stars-reach\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 13,\n  \"candidates_checked\": 24,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 9,\n  \"total_artwork\": 1\n}\n",
-      "stderr": ""
-    },
-    {
       "label": "review-discovery:the-lantern-of-the-laughless-saint",
       "script": "scripts/discover-review-sources-web.mjs",
       "status": "needs_revision",
@@ -544,6 +536,14 @@
       "status": "completed",
       "exit_code": 0,
       "stdout": "{\n  \"slug\": \"the-lantern-of-the-laughless-saint\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": true,\n  \"pages_checked\": 0,\n  \"candidates_checked\": 0,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 10,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:stars-reach",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"stars-reach\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 13,\n  \"candidates_checked\": 24,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 9,\n  \"total_artwork\": 1\n}\n",
       "stderr": ""
     },
     {
@@ -643,6 +643,22 @@
       "stderr": ""
     },
     {
+      "label": "media:time-to-wake-up",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"time-to-wake-up\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": true,\n  \"pages_checked\": 0,\n  \"candidates_checked\": 0,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 10,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "media:you-are-empty-absolute-edition",
+      "script": "scripts/enrich-game-media-from-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"you-are-empty-absolute-edition\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": true,\n  \"pages_checked\": 0,\n  \"candidates_checked\": 0,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 10,\n  \"total_artwork\": 1\n}\n",
+      "stderr": ""
+    },
+    {
       "label": "review-discovery:twisted-tower",
       "script": "scripts/discover-review-sources-web.mjs",
       "status": "needs_revision",
@@ -688,22 +704,6 @@
       "status": "completed",
       "exit_code": 0,
       "stdout": "{\n  \"slug\": \"twisted-tower\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": true,\n  \"pages_checked\": 0,\n  \"candidates_checked\": 0,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 10,\n  \"total_artwork\": 1\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "media:you-are-empty-absolute-edition",
-      "script": "scripts/enrich-game-media-from-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"you-are-empty-absolute-edition\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": true,\n  \"pages_checked\": 0,\n  \"candidates_checked\": 0,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 0,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 10,\n  \"total_artwork\": 1\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "media:time-to-wake-up",
-      "script": "scripts/enrich-game-media-from-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"time-to-wake-up\",\n  \"historical\": false,\n  \"target_screenshots\": 10,\n  \"target_artwork\": 4,\n  \"discovery_skipped\": false,\n  \"pages_checked\": 13,\n  \"candidates_checked\": 24,\n  \"removed_stale_screenshots\": 0,\n  \"removed_stale_artwork\": 0,\n  \"added_screenshots\": 1,\n  \"added_artwork\": 0,\n  \"total_screenshots\": 10,\n  \"total_artwork\": 1\n}\n",
       "stderr": ""
     },
     {
