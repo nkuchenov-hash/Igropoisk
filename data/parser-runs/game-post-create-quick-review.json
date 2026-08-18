@@ -2,33 +2,23 @@
   "parser": "game-post-create-enrichment",
   "phase": "quick-review",
   "status": "needs_revision",
-  "checked_at": "2026-08-18T17:38:51.952Z",
-  "requested": 30,
-  "complete": 1,
+  "checked_at": "2026-08-18T18:20:54.601Z",
+  "requested": 1,
+  "complete": 0,
   "deferred": 0,
-  "pending": 29,
+  "pending": 1,
   "bootstrap_concurrency": 0,
   "review_batch": [
-    "fallout-brotherhood-of-steel",
-    "fallout-3",
-    "fallout-new-vegas"
+    "fallout-2"
   ],
   "results": [
     {
-      "label": "review-bootstrap:fallout-3",
+      "label": "review-bootstrap:fallout-2",
       "script": "scripts/build-review-bootstrap-local.mjs",
       "status": "needs_revision",
       "exit_code": 1,
       "stdout": "",
-      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:90\n  throw new Error(`${slug}: quick review failed editorial quality gate: ${failures.join(' | ')}`);\n        ^\n\nError: fallout-3: quick review failed editorial quality gate: github attempt 1: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n | github attempt 2: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n | local fallback: Local editorial model request timed out after 120000ms\n    at generateQuickReview (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:90:9)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:92:23\n\nNode.js v22.23.2\n"
-    },
-    {
-      "label": "review-bootstrap:fallout-new-vegas",
-      "script": "scripts/build-review-bootstrap-local.mjs",
-      "status": "needs_revision",
-      "exit_code": 1,
-      "stdout": "",
-      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:90\n  throw new Error(`${slug}: quick review failed editorial quality gate: ${failures.join(' | ')}`);\n        ^\n\nError: fallout-new-vegas: quick review failed editorial quality gate: github attempt 1: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n | github attempt 2: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n | local fallback: Local editorial model request timed out after 120000ms\n    at generateQuickReview (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:90:9)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:92:23\n\nNode.js v22.23.2\n"
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:79\n  throw new Error(`${slug}: quick review failed editorial quality gate: ${failures.join(' | ')}`);\n        ^\n\nError: fallout-2: quick review failed editorial quality gate: local attempt 1: duplicate long sentences 3, unique sentence ratio 0.83/0.86 | local attempt 2: duplicate paragraphs 1, duplicate long sentences 3, unique sentence ratio 0.86/0.86\n    at generateQuickReview (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:79:9)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:81:23\n\nNode.js v22.23.2\n"
     }
   ]
 }
