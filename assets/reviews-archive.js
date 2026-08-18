@@ -19,7 +19,7 @@ const isPublished=article=>{
 const card=article=>{
   const score=Number(article.score);
   const gameTitle=article.identity?.title||article.game_title||article.game_slug||'Игра';
-  return `<a class="review-archive-card" href="../article/${encodeURIComponent(article.slug)}/"><div class="review-archive-card__media"><img src="${esc(article.hero)}" alt="${esc(gameTitle)}" loading="lazy" decoding="async">${Number.isFinite(score)?`<span class="review-archive-card__score">${score.toFixed(1)}</span>`:''}</div><div class="review-archive-card__body"><div class="review-archive-card__meta"><span>${esc(gameTitle)}</span><span>•</span><span>${esc(article.published_at||'')}</span></div><h2>${esc(article.title)}</h2><p>${esc(article.dek||article.lead||'')}</p><div class="review-archive-card__footer"><span>${esc(article.author||'Редакция Игропоиска')}</span><span>Читать →</span></div></div></a>`;
+  return `<a class="ig-card ig-card--interactive reviews-archive__card" href="../article/${encodeURIComponent(article.slug)}/"><div class="ig-media-tile reviews-archive__card-media"><img src="${esc(article.hero)}" alt="${esc(gameTitle)}" loading="lazy" decoding="async">${Number.isFinite(score)?`<span class="ig-rating reviews-archive__score">${score.toFixed(1)}</span>`:''}</div><div class="reviews-archive__body"><div class="ig-muted reviews-archive__meta"><span>${esc(gameTitle)}</span><span>•</span><span>${esc(article.published_at||'')}</span></div><h2 class="ig-game-display">${esc(article.title)}</h2><p class="ig-muted">${esc(article.dek||article.lead||'')}</p><div class="reviews-archive__footer"><span>${esc(article.author||'Редакция Игропоиска')}</span><strong>Читать →</strong></div></div></a>`;
 };
 
 function filtered(){
@@ -37,8 +37,7 @@ function filtered(){
 function render(){
   const items=filtered();
   count.innerHTML=`<strong>${items.length}</strong> ${items.length===1?'обзор':'обзоров'}`;
-  grid.innerHTML=items.length?items.map(card).join(''):'<div class="reviews-archive__empty">По этому запросу обзоров нет.</div>';
-  grid.querySelectorAll('img').forEach(img=>img.addEventListener('error',()=>img.closest('.review-archive-card__media')?.classList.add('is-broken'),{once:true}));
+  grid.innerHTML=items.length?items.map(card).join(''):'<div class="ig-empty-state reviews-archive__empty">По этому запросу обзоров нет.</div>';
 }
 
 async function fetchArticle(slug){
@@ -80,7 +79,7 @@ async function load(){
   }catch(error){
     console.warn('Reviews archive:',error);
     count.textContent='';
-    grid.innerHTML='<div class="reviews-archive__empty">Не удалось загрузить каталог обзоров.</div>';
+    grid.innerHTML='<div class="ig-empty-state reviews-archive__empty">Не удалось загрузить каталог обзоров.</div>';
   }
 }
 
