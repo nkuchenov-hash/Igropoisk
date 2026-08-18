@@ -27,8 +27,7 @@ function applyGlobalScore(state){
   const row=document.querySelector('#ratingList > div:first-child');
   if(row){
     set(row.querySelector('strong'),score);
-    const bar=row.querySelector('i b');
-    if(bar)bar.style.width=state.green?`${Math.max(0,Math.min(100,state.canonical*10))}%`:'0%';
+    if(!state.green)row.querySelector('i')?.remove();
   }
 }
 function suppressUnpublishedReviewRows(){
