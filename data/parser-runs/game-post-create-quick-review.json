@@ -1,12 +1,12 @@
 {
   "parser": "game-post-create-enrichment",
   "phase": "quick-review",
-  "status": "needs_revision",
-  "checked_at": "2026-08-18T18:20:54.601Z",
+  "status": "green",
+  "checked_at": "2026-08-18T18:43:18.655Z",
   "requested": 1,
-  "complete": 0,
+  "complete": 1,
   "deferred": 0,
-  "pending": 1,
+  "pending": 0,
   "bootstrap_concurrency": 0,
   "review_batch": [
     "fallout-2"
@@ -15,10 +15,10 @@
     {
       "label": "review-bootstrap:fallout-2",
       "script": "scripts/build-review-bootstrap-local.mjs",
-      "status": "needs_revision",
-      "exit_code": 1,
-      "stdout": "",
-      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:79\n  throw new Error(`${slug}: quick review failed editorial quality gate: ${failures.join(' | ')}`);\n        ^\n\nError: fallout-2: quick review failed editorial quality gate: local attempt 1: duplicate long sentences 3, unique sentence ratio 0.83/0.86 | local attempt 2: duplicate paragraphs 1, duplicate long sentences 3, unique sentence ratio 0.86/0.86\n    at generateQuickReview (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:79:9)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-bootstrap-local.mjs:81:23\n\nNode.js v22.23.2\n"
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"fallout-2\",\n  \"status\": \"published_bootstrap\",\n  \"score\": 9.1,\n  \"sources\": 8,\n  \"words\": 230,\n  \"sections\": 3,\n  \"provider\": \"local-ollama\",\n  \"model\": \"qwen3:1.7b\",\n  \"generation_attempt\": 2,\n  \"editorial_quality\": {\n    \"passed\": true,\n    \"reasons\": [],\n    \"words\": 230,\n    \"sections\": 3,\n    \"duplicate_paragraphs\": [],\n    \"duplicate_sentences\": [],\n    \"unique_sentence_ratio\": 1,\n    \"generic_heading_count\": 0\n  }\n}\n",
+      "stderr": ""
     }
   ]
 }
