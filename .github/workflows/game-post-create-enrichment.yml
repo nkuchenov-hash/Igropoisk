@@ -37,6 +37,7 @@ on:
       - 'scripts/resolve-post-create-event-targets.mjs'
       - 'scripts/verify-post-create-quick-reviews.mjs'
       - 'scripts/lib/local-editorial-model.mjs'
+      - 'scripts/lib/github-editorial-model.mjs'
       - 'scripts/publish-game-post-create-overlay.mjs'
       - 'scripts/publish-post-create-production.mjs'
       - 'scripts/test-post-create-production-publisher.mjs'
@@ -60,6 +61,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  models: read
 
 concurrency:
   group: game-post-create-enrichment-v2-staging
@@ -73,6 +75,9 @@ jobs:
     env:
       OPENAI_API_KEY: ''
       GITHUB_TOKEN: ${{ github.token }}
+      GITHUB_REVIEW_MODEL: openai/gpt-4.1
+      GITHUB_AUDIT_MODEL: openai/gpt-4.1
+      EDITORIAL_PROVIDER: github
       LOCAL_TEXT_MODEL: qwen3:4b
       LOCAL_EDITORIAL_MODEL: qwen3:4b
       LOCAL_VISION_MODEL: qwen3-vl:4b
@@ -124,6 +129,7 @@ jobs:
           node --check scripts/resolve-post-create-event-targets.mjs
           node --check scripts/verify-post-create-quick-reviews.mjs
           node --check scripts/lib/local-editorial-model.mjs
+          node --check scripts/lib/github-editorial-model.mjs
           node --check scripts/publish-game-post-create-overlay.mjs
           node --check scripts/publish-post-create-production.mjs
           node --check scripts/test-post-create-production-publisher.mjs
