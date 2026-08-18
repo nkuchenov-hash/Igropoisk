@@ -52,10 +52,16 @@ for (const file of files) {
   for (const axis of dna.locked_axes || []) if (!DNA_PROFILE_AXES.includes(axis)) errors.push(`${relative}: locked_axes contains unknown axis ${axis}`);
   const expectedQuality = profileQuality(dna.profile || {});
   if (JSON.stringify(dna.quality || null) !== JSON.stringify(expectedQuality)) errors.push(`${relative}: quality snapshot is stale; run build-game-dna.mjs`);
+  if (requested.size && !expectedQuality.ready_for_similarity) {
+    errors.push(`${relative}: targeted post-create DNA is not similarity-ready (${expectedQuality.populated_axes}/${expectedQuality.total_axes} axes, ${expectedQuality.core_axes}/${expectedQuality.total_core_axes} core axes); requires at least 6 populated axes and 3 core axes`);
+  }
+  if (requested.size && expectedQuality.needs_enrichment) {
+    errors.push(`${relative}: targeted post-create DNA is below the commercial enrichment gate (${expectedQuality.populated_axes}/${expectedQuality.total_axes} axes, ${expectedQuality.core_axes}/${expectedQuality.total_core_axes} core axes); requires >=9 populated axes and >=4 core axes`);
+  }
 }
 
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(2);
 }
-console.log(`Game DNA validation passed for ${slugs.size} ${requested.size ? 'targeted' : 'catalog'} entities.`);
+console.log(`Game DNA validation passed for ${slugs.size} ${requested.size ? 'targeted commercial-quality' : 'catalog'} entities.`);

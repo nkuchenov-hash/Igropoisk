@@ -10,6 +10,8 @@ const requested=new Set(process.argv.slice(2).map(value=>String(value||'').trim(
 const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
 const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,`${JSON.stringify(value,null,2)}\n`)};
 const exists=relative=>fs.existsSync(path.join(root,relative));
+const readText=relative=>{try{return fs.readFileSync(path.join(root,relative),'utf8')}catch{return null}};
+const restoreText=(relative,previous)=>{const target=path.join(root,relative);if(previous===null){fs.rmSync(target,{force:true});return;}fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,previous)};
 const run=(script,args=[])=>spawnSync('node',[script,...args],{cwd:root,encoding:'utf8',stdio:'pipe',env:process.env,maxBuffer:24*1024*1024});
 
 const requestSlugs=fs.existsSync(requestDir)?fs.readdirSync(requestDir)
@@ -28,12 +30,25 @@ const slugs=[...new Set([...requestSlugs,...missingDnaSlugs])]
 const results=[];
 const validDnaSlugs=[];
 for(const slug of slugs){
+  const dnaPath=`data/game-dna/${slug}.json`;
+  const indexPath='data/game-dna/index.json';
+  const previousDnaText=readText(dnaPath);
+  const previousIndexText=readText(indexPath);
   const dna=run('scripts/build-game-dna.mjs',[slug]);
   results.push({slug,step:'dna',status:dna.status===0?'completed':'needs_revision',exit_code:dna.status,stdout:(dna.stdout||'').slice(-3000),stderr:(dna.stderr||'').slice(-3000)});
-  if(dna.status!==0||!exists(`data/game-dna/${slug}.json`))continue;
+  if(dna.status!==0||!exists(dnaPath)){
+    restoreText(dnaPath,previousDnaText);
+    restoreText(indexPath,previousIndexText);
+    continue;
+  }
   const validation=run('scripts/validate-game-dna.mjs',[slug]);
   results.push({slug,step:'validate',status:validation.status===0?'completed':'needs_revision',exit_code:validation.status,stdout:(validation.stdout||'').slice(-3000),stderr:(validation.stderr||'').slice(-3000)});
-  if(validation.status===0)validDnaSlugs.push(slug);
+  if(validation.status!==0){
+    restoreText(dnaPath,previousDnaText);
+    restoreText(indexPath,previousIndexText);
+    continue;
+  }
+  validDnaSlugs.push(slug);
 }
 for(const slug of validDnaSlugs){
   const similarity=run('scripts/build-similarity-index.mjs',[slug]);
@@ -51,6 +66,6 @@ for(const slug of invalidOrMissing){
 }
 const similarityFailed=results.filter(item=>item.step==='similarity'&&item.status!=='completed').map(item=>item.slug);
 const failed=results.filter(item=>item.status!=='completed');
-const report={parser:'post-create-game-dna-v4-partial-progress',status:invalidOrMissing.length||failed.length?'needs_revision':'green',checked_at:new Date().toISOString(),targets:slugs.length,from_pending_requests:requestSlugs.length,from_missing_dna_backfill:missingDnaSlugs.length,dna_ready:validDnaSlugs.length,validation_scope:'per_game_targeted',publication_policy:'valid_dna_publishes_even_if_other_games_or_similarity_need_revision',ready_slugs:validDnaSlugs,invalid_or_missing:invalidOrMissing,similarity_needs_revision:similarityFailed,failed:failed.map(item=>({slug:item.slug,step:item.step,exit_code:item.exit_code,stderr:item.stderr}))};
+const report={parser:'post-create-game-dna-v5-commercial-quality',status:invalidOrMissing.length||failed.length?'needs_revision':'green',checked_at:new Date().toISOString(),targets:slugs.length,from_pending_requests:requestSlugs.length,from_missing_dna_backfill:missingDnaSlugs.length,dna_ready:validDnaSlugs.length,validation_scope:'per_game_targeted_commercial_quality',publication_policy:'only_valid_commercial_quality_dna_changes_survive_to_checkpoint',ready_slugs:validDnaSlugs,invalid_or_missing:invalidOrMissing,similarity_needs_revision:similarityFailed,failed:failed.map(item=>({slug:item.slug,step:item.step,exit_code:item.exit_code,stderr:item.stderr}))};
 write('data/parser-runs/game-post-create-dna.json',report);
 console.log(JSON.stringify(report,null,2));

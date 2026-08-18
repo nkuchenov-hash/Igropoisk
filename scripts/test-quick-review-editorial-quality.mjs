@@ -4,10 +4,9 @@ import fs from 'node:fs';
 const source=fs.readFileSync('scripts/build-review-bootstrap-local.mjs','utf8');
 const fail=message=>{throw new Error(message)};
 for(const marker of [
-  'https://models.github.ai/inference/chat/completions',
-  "GITHUB_REVIEW_MODEL||'openai/gpt-4.1'",
-  "provider:'github-models'",
   "provider:'local-ollama'",
+  'QUICK_REVIEW_TIMEOUT_MS||300000',
+  'for(let attempt=1;attempt<=2;attempt++)',
   'duplicate paragraphs',
   'duplicate long sentences',
   'unique sentence ratio',
@@ -17,8 +16,6 @@ for(const marker of [
   'Не повторяй одну мысль или формулировку',
   'Заголовки разделов должны быть конкретными'
 ])if(!source.includes(marker))fail(`Quick-review editorial quality contract missing: ${marker}`);
-const githubAt=source.indexOf('if(process.env.GITHUB_TOKEN)');
-const localAt=source.indexOf('const generated=await localJson');
-if(githubAt<0||localAt<0||githubAt>localAt)fail('GitHub Models must be attempted before the local emergency fallback');
+for(const retired of ['https://models.github.ai/inference/chat/completions',"provider:'github-models'",'GITHUB_REVIEW_MODEL'])if(source.includes(retired))fail(`Retired GitHub Models dependency remains in quick-review production code: ${retired}`);
 if(source.includes("if(existing?.publication_status==='published'&&Number(existing.score)===score&&fs.existsSync(path.join(root,'article',slug,'index.html'))){\n  console.log(JSON.stringify({slug,status:'already_published'"))fail('Existing bootstrap reviews can bypass the editorial quality gate');
-console.log('Quick-review primary-model and anti-repetition contract passed.');
+console.log('Quick-review durable local-model and anti-repetition contract passed.');
