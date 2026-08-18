@@ -197,6 +197,7 @@ jobs:
           node scripts/smoke-published-review-pages.mjs "${TARGETS[@]}"
 
       - name: Restore local full-review model cache
+        if: vars.POST_CREATE_FULL_UPGRADE == 'true'
         continue-on-error: true
         uses: actions/cache@v4
         with:
@@ -205,6 +206,7 @@ jobs:
 
       - name: Start local full-review model service
         id: full_model_service
+        if: vars.POST_CREATE_FULL_UPGRADE == 'true'
         continue-on-error: true
         run: |
           set -euo pipefail
@@ -217,7 +219,7 @@ jobs:
           curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
 
       - name: Ensure local text model for optional full upgrade
-        if: steps.full_model_service.outcome == 'success'
+        if: vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_model_service.outcome == 'success'
         run: |
           set -euo pipefail
           for attempt in 1 2 3 4 5; do
@@ -229,7 +231,7 @@ jobs:
           exit 0
 
       - name: Ensure optional local vision model for full upgrades
-        if: steps.full_model_service.outcome == 'success'
+        if: vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_model_service.outcome == 'success'
         run: |
           set -euo pipefail
           for attempt in 1 2 3; do
@@ -242,7 +244,7 @@ jobs:
 
       - name: Run bounded full-review upgrades for event-scoped games
         id: full_upgrade
-        if: steps.full_model_service.outcome == 'success'
+        if: vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_model_service.outcome == 'success'
         continue-on-error: true
         env:
           POST_CREATE_PHASE: full-review
@@ -253,7 +255,7 @@ jobs:
           node scripts/run-game-post-create-enrichment.mjs "${TARGETS[@]}"
 
       - name: Publish full-review checkpoint conflict-safely
-        if: steps.full_upgrade.outcome == 'success'
+        if: vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_upgrade.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           POST_CREATE_PUBLISH_PHASE: full-review
