@@ -1,241 +1,84 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import crypto from 'node:crypto';
+import { ensureVisibleReleaseCovers, validateVisibleReleaseCovers } from './lib/release-cover-resolver.mjs';
 
 const root = process.cwd();
-const releaseFile = path.join(root, 'data/releases/current.json');
-const popularFile = path.join(root, 'data/popular/current.json');
-const outputDir = path.join(root, 'assets/covers/releases');
-const timeoutMs = 18_000;
+const currentFile = path.join(root, 'data/releases/current.json');
+const publicFile = path.join(root, 'data/releases/public.json');
 
 const readJSON = (file, fallback) => {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
   catch { return fallback; }
 };
 const writeJSON = (file, value) => fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
-const clean = value => String(value || '').trim();
-const canonical = value => clean(value).normalize('NFKD').toLowerCase()
-  .replace(/&amp;/g, ' and ')
-  .replace(/[^a-z0-9а-яё]+/gi, ' ')
-  .replace(/\s+/g, ' ')
-  .trim();
-const unique = values => [...new Set((values || []).map(clean).filter(Boolean))];
-const exists = relative => Boolean(relative && fs.existsSync(path.join(root, relative)));
+const keyOf = item => String(item?.id || item?.slug || '').trim();
 
-function extensionFor(contentType, url = '') {
-  const type = clean(contentType).split(';')[0].toLowerCase();
-  if (type === 'image/png') return 'png';
-  if (type === 'image/webp') return 'webp';
-  if (type === 'image/avif') return 'avif';
-  if (type === 'image/gif') return 'gif';
-  const match = clean(url).match(/\.(png|webp|avif|gif|jpe?g)(?:$|[?#])/i);
-  return match ? match[1].toLowerCase().replace('jpeg', 'jpg') : 'jpg';
+const current = readJSON(currentFile, { releases: [] });
+const publicCalendar = readJSON(publicFile, { releases: [], personalized_releases: [] });
+const visibleByKey = new Map();
+for (const release of [...(publicCalendar.releases || []), ...(publicCalendar.personalized_releases || [])]) {
+  const key = keyOf(release);
+  if (key && !visibleByKey.has(key)) visibleByKey.set(key, release);
 }
+const visible = [...visibleByKey.values()];
+if (!visible.length) throw new Error('Public release calendar has no visible releases to cover.');
 
-function steamCandidates(appid) {
-  const id = Number(appid);
-  if (!id) return [];
-  return [
-    `https://cdn.akamai.steamstatic.com/steam/apps/${id}/library_600x900_2x.jpg`,
-    `https://cdn.akamai.steamstatic.com/steam/apps/${id}/library_600x900.jpg`,
-    `https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/library_600x900_2x.jpg`,
-    `https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/library_600x900.jpg`,
-    `https://shared.akamai.steamstatic.com/steam/apps/${id}/library_600x900_2x.jpg`,
-    `https://shared.akamai.steamstatic.com/steam/apps/${id}/library_600x900.jpg`,
-    `https://cdn.akamai.steamstatic.com/steam/apps/${id}/header.jpg`,
-    `https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/header.jpg`,
-    `https://shared.akamai.steamstatic.com/steam/apps/${id}/header.jpg`,
-    `https://cdn.akamai.steamstatic.com/steam/apps/${id}/capsule_616x353.jpg`,
-    `https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/capsule_616x353.jpg`,
-    `https://cdn.akamai.steamstatic.com/steam/apps/${id}/capsule_467x181.jpg`,
-    `https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/capsule_467x181.jpg`
-  ];
-}
-
-async function appDetailsCandidates(appid) {
-  const id = Number(appid);
-  if (!id) return [];
-  try {
-    const response = await fetch(`https://store.steampowered.com/api/appdetails?appids=${id}&cc=us&l=english`, {
-      signal: AbortSignal.timeout(timeoutMs),
-      headers: {
-        'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverCache/1.0',
-        'accept-language': 'en-US,en;q=0.9'
-      }
-    });
-    if (!response.ok) return [];
-    const payload = await response.json();
-    const data = payload?.[id]?.data || {};
-    return unique([
-      data.capsule_imagev5,
-      data.header_image,
-      data.background,
-      data.background_raw,
-      ...(data.screenshots || []).slice(0, 2).flatMap(row => [row.path_full, row.path_thumbnail])
-    ]);
-  } catch {
-    return [];
-  }
-}
-
-function popularMaps(payload) {
-  const bySlug = new Map();
-  const byTitle = new Map();
-  for (const item of payload?.ranking || []) {
-    if (item.slug) bySlug.set(item.slug, item);
-    if (item.title) byTitle.set(canonical(item.title), item);
-  }
-  return { bySlug, byTitle };
-}
-
-function copyLocalCandidate(record, candidates) {
-  for (const candidate of candidates) {
-    const relative = candidate.replace(/^\.\.\//, '');
-    if (!relative.startsWith('assets/') || !exists(relative)) continue;
-    const ext = extensionFor('', relative);
-    const targetRelative = `assets/covers/releases/${record.slug}.${ext}`;
-    const source = path.join(root, relative);
-    const target = path.join(root, targetRelative);
-    fs.mkdirSync(path.dirname(target), { recursive: true });
-    if (path.resolve(source) !== path.resolve(target)) fs.copyFileSync(source, target);
-    const bytes = fs.readFileSync(target);
-    return {
-      local_url: targetRelative,
-      bytes: bytes.length,
-      sha256: crypto.createHash('sha256').update(bytes).digest('hex'),
-      source_url: candidate,
-      status: 'deployment_cached'
-    };
-  }
-  return null;
-}
-
-async function downloadCandidate(record, candidates) {
-  for (const url of candidates) {
-    if (!/^https?:\/\//i.test(url)) continue;
-    try {
-      const response = await fetch(url, {
-        signal: AbortSignal.timeout(timeoutMs),
-        redirect: 'follow',
-        headers: {
-          'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverCache/1.0',
-          'accept': 'image/avif,image/webp,image/png,image/jpeg,image/*;q=0.8,*/*;q=0.5',
-          'referer': 'https://store.steampowered.com/'
-        }
-      });
-      if (!response.ok) continue;
-      const contentType = clean(response.headers.get('content-type')).split(';')[0].toLowerCase();
-      if (!contentType.startsWith('image/')) continue;
-      const bytes = Buffer.from(await response.arrayBuffer());
-      if (bytes.length < 8_000) continue;
-      const ext = extensionFor(contentType, url);
-      const targetRelative = `assets/covers/releases/${record.slug}.${ext}`;
-      const target = path.join(root, targetRelative);
-      fs.mkdirSync(path.dirname(target), { recursive: true });
-      fs.writeFileSync(target, bytes);
-      return {
-        local_url: targetRelative,
-        bytes: bytes.length,
-        content_type: contentType,
-        sha256: crypto.createHash('sha256').update(bytes).digest('hex'),
-        source_url: url,
-        status: 'deployment_cached'
-      };
-    } catch {
-      // Try the next official image candidate.
-    }
-  }
-  return null;
-}
-
-function primaryDate(record) {
-  const event = (record.events || []).slice().sort((a, b) =>
-    String(a.date_start || a.date || '9999').localeCompare(String(b.date_start || b.date || '9999'))
-  )[0] || {};
-  return event.date || event.date_start || '9999-12-31';
-}
-
-async function mapPool(items, limit, worker) {
-  let cursor = 0;
-  const results = new Array(items.length);
-  await Promise.all(Array.from({ length: Math.max(1, limit) }, async () => {
-    while (cursor < items.length) {
-      const index = cursor++;
-      results[index] = await worker(items[index], index);
-    }
-  }));
-  return results;
-}
-
-const releasePayload = readJSON(releaseFile, { releases: [] });
-const popularPayload = readJSON(popularFile, { ranking: [] });
-const { bySlug, byTitle } = popularMaps(popularPayload);
-const records = releasePayload.releases || [];
-fs.mkdirSync(outputDir, { recursive: true });
-
-let cached = 0;
-let reused = 0;
-let missing = 0;
-
-await mapPool(records, 4, async record => {
-  const existing = record.image?.local_url;
-  if (existing && exists(existing)) {
-    reused++;
-    return;
-  }
-
-  const popular = bySlug.get(record.slug) || byTitle.get(canonical(record.title)) || {};
-  const localCandidates = unique([
-    popular.image,
-    ...(popular.image_candidates || []),
-    record.image?.local_url
-  ]);
-  let result = copyLocalCandidate(record, localCandidates);
-
-  if (!result) {
-    const appDetails = await appDetailsCandidates(record.external_ids?.steam);
-    const remoteCandidates = unique([
-      ...localCandidates,
-      ...(popular.image_candidates || []),
-      popular.cover_source,
-      ...(record.image_candidates || []),
-      ...steamCandidates(record.external_ids?.steam),
-      ...appDetails,
-      record.image?.source_url
-    ]);
-    result = await downloadCandidate(record, remoteCandidates);
-  }
-
-  if (!result) {
-    missing++;
-    console.warn(`No local cover cached for ${record.slug}`);
-    return;
-  }
-
-  record.image = {
-    ...(record.image || {}),
-    source_url: result.source_url || record.image?.source_url || null,
-    local_url: result.local_url,
-    content_type: result.content_type || record.image?.content_type,
-    bytes: result.bytes,
-    sha256: result.sha256,
-    status: result.status,
-    verified: true
-  };
-  record.image_candidates = unique([result.local_url, ...(record.image_candidates || [])]);
-  cached++;
+const resolution = await ensureVisibleReleaseCovers(visible, {
+  root,
+  visibleIds: visible.map(release => release.id),
+  minimumBytes: 40_000,
+  minimumWidth: 600,
+  minimumHeight: 900,
+  minimumRatio: 0.62,
+  maximumRatio: 0.72,
+  concurrency: 6
 });
 
-writeJSON(releaseFile, releasePayload);
-
-const today = new Date().toISOString().slice(0, 10);
-const nearest = records
-  .filter(record => primaryDate(record) >= today)
-  .sort((a, b) => primaryDate(a).localeCompare(primaryDate(b)))
-  .slice(0, 6);
-const nearestMissing = nearest.filter(record => !exists(record.image?.local_url));
-
-console.log(`Release covers: ${cached} cached, ${reused} reused, ${missing} unresolved.`);
-if (nearestMissing.length) {
-  throw new Error(`Nearest releases have no local covers: ${nearestMissing.map(record => record.slug).join(', ')}`);
+if (resolution.unresolved.length) {
+  throw new Error(`Quality release covers unresolved: ${resolution.unresolved.map(item => `${item.slug}: ${item.error}`).join(' | ')}`);
 }
+
+const resolvedByKey = new Map(resolution.candidates.map(release => [keyOf(release), release]));
+const syncRelease = release => {
+  const resolved = resolvedByKey.get(keyOf(release));
+  if (!resolved?.image) return release;
+  return {
+    ...release,
+    external_ids: resolved.external_ids || release.external_ids,
+    image: resolved.image,
+    image_candidates: [...new Set([
+      resolved.image.local_url,
+      ...(release.image_candidates || []),
+      ...(resolved.image.candidate_urls || [])
+    ].filter(Boolean))]
+  };
+};
+
+const nextPublic = {
+  ...publicCalendar,
+  releases: (publicCalendar.releases || []).map(syncRelease),
+  personalized_releases: (publicCalendar.personalized_releases || []).map(syncRelease)
+};
+const validationErrors = validateVisibleReleaseCovers(nextPublic, {
+  minimumBytes: 40_000,
+  minimumWidth: 600,
+  minimumHeight: 900,
+  minimumRatio: 0.62,
+  maximumRatio: 0.72
+});
+if (validationErrors.length) throw new Error(`Public cover contract failed: ${validationErrors.join(' | ')}`);
+
+const nextCurrent = {
+  ...current,
+  releases: (current.releases || []).map(syncRelease)
+};
+writeJSON(currentFile, nextCurrent);
+writeJSON(publicFile, nextPublic);
+
+console.log(JSON.stringify({
+  requested: resolution.statistics.requested,
+  resolved: resolution.statistics.resolved,
+  unresolved: resolution.statistics.unresolved,
+  coverage_percent: resolution.statistics.coverage_percent,
+  rule: 'Every visible release keeps its place and receives a verified >=600x900 portrait cover before publication; no card is dropped to hide missing media.'
+}, null, 2));

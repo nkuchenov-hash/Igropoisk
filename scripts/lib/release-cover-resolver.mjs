@@ -1,12 +1,32 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { steamStoreArtworkCandidates } from './steam-store-artwork.mjs';
+import { imageSize } from 'image-size';
 
 const DEFAULT_TIMEOUT = 15_000;
-const DEFAULT_MINIMUM_BYTES = 4_000;
+const DEFAULT_MINIMUM_BYTES = 40_000;
+const DEFAULT_MINIMUM_WIDTH = 600;
+const DEFAULT_MINIMUM_HEIGHT = 900;
+const DEFAULT_MINIMUM_RATIO = 0.62;
+const DEFAULT_MAXIMUM_RATIO = 0.72;
 const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
-const uniq = values => [...new Set((values || []).filter(Boolean))];
+const uniq = values => [...new Set((values || []).map(value => String(value || '').trim()).filter(Boolean))];
+const clean = value => String(value || '').trim();
+const canonical = value => clean(value).normalize('NFKD').toLowerCase()
+  .replace(/&amp;/g, ' and ')
+  .replace(/[^a-z0-9а-яё]+/gi, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
+
+function thresholds(options = {}) {
+  return {
+    minimumBytes: Math.max(1, Number(options.minimumBytes || DEFAULT_MINIMUM_BYTES)),
+    minimumWidth: Math.max(1, Number(options.minimumWidth || DEFAULT_MINIMUM_WIDTH)),
+    minimumHeight: Math.max(1, Number(options.minimumHeight || DEFAULT_MINIMUM_HEIGHT)),
+    minimumRatio: Number(options.minimumRatio || DEFAULT_MINIMUM_RATIO),
+    maximumRatio: Number(options.maximumRatio || DEFAULT_MAXIMUM_RATIO)
+  };
+}
 
 function extensionFor(contentType) {
   if (contentType === 'image/png') return 'png';
@@ -15,13 +35,41 @@ function extensionFor(contentType) {
   return 'jpg';
 }
 
-async function existingLocalImage(root, image, minimumBytes) {
-  const localUrl = String(image?.local_url || '').trim();
-  if (!localUrl) return null;
+export function inspectReleaseCover(bytes, options = {}) {
+  const quality = thresholds(options);
   try {
-    const stat = await fs.stat(path.join(root, localUrl));
-    if (!stat.isFile() || stat.size < minimumBytes) return null;
-    return { ...image, status: 'downloaded_verified', bytes: stat.size, verified: true };
+    const size = imageSize(bytes);
+    const width = Number(size.width || 0);
+    const height = Number(size.height || 0);
+    const ratio = height > 0 ? width / height : 0;
+    const byteLength = Number(bytes?.length || 0);
+    const valid = byteLength >= quality.minimumBytes
+      && width >= quality.minimumWidth
+      && height >= quality.minimumHeight
+      && ratio >= quality.minimumRatio
+      && ratio <= quality.maximumRatio;
+    return { valid, width, height, ratio, bytes: byteLength };
+  } catch {
+    return { valid: false, width: 0, height: 0, ratio: 0, bytes: Number(bytes?.length || 0) };
+  }
+}
+
+async function existingLocalImage(root, image, options) {
+  const localUrl = clean(image?.local_url);
+  if (!localUrl || image?.verified !== true) return null;
+  try {
+    const bytes = await fs.readFile(path.join(root, localUrl));
+    const inspected = inspectReleaseCover(bytes, options);
+    if (!inspected.valid) return null;
+    return {
+      ...image,
+      width: inspected.width,
+      height: inspected.height,
+      bytes: inspected.bytes,
+      error: null,
+      status: 'downloaded_verified',
+      verified: true
+    };
   } catch {
     return null;
   }
@@ -31,7 +79,7 @@ async function fetchJson(url) {
   const response = await fetch(url, {
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
     headers: {
-      'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/1.2',
+      'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.0',
       'accept-language': 'en-US,en;q=0.9'
     }
   });
@@ -39,92 +87,186 @@ async function fetchJson(url) {
   return response.json();
 }
 
-async function steamAppDetails(appid) {
+async function steamAppIdByTitle(title) {
   try {
-    const payload = await fetchJson(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=us&l=english`);
-    return payload?.[appid]?.success ? payload[appid].data : null;
-  } catch {
-    return null;
-  }
+    const response = await fetch(`https://store.steampowered.com/search/results/?query&term=${encodeURIComponent(title)}&start=0&count=20&dynamic_data=&force_infinite=1&cc=us&l=english&json=1`, {
+      signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
+      headers: { 'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.0' }
+    });
+    if (!response.ok) return null;
+    const payload = await response.json();
+    const rows = String(payload.results_html || '').match(/<a[^>]+data-ds-appid="[^"]+"[\s\S]*?<\/a>/gi) || [];
+    const wanted = canonical(title);
+    for (const row of rows) {
+      const appid = Number((row.match(/data-ds-appid="([^"]+)"/i)?.[1] || '').split(',')[0]);
+      const foundTitle = String(row.match(/<span class="title">([\s\S]*?)<\/span>/i)?.[1] || '').replace(/<[^>]+>/g, ' ').trim();
+      if (appid && canonical(foundTitle) === wanted) return appid;
+    }
+  } catch {}
+  return null;
 }
 
-function steamStaticCandidates(appid) {
+function steamStaticPosterCandidates(appid) {
   if (!appid) return [];
   const roots = [
     `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${appid}`,
+    `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${appid}`,
     `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}`,
+    `https://shared.akamai.steamstatic.com/steam/apps/${appid}`
   ];
   return roots.flatMap(root => [
     `${root}/library_600x900_2x.jpg`,
-    `${root}/library_600x900.jpg`,
-    `${root}/header.jpg`,
-    `${root}/capsule_616x353.jpg`,
-    `${root}/capsule_231x87.jpg`,
+    `${root}/library_600x900.jpg`
   ]);
 }
 
-function steamCoverCandidates(appid, data, image, storeArtwork = []) {
-  const screenshots = Array.isArray(data?.screenshots) ? data.screenshots : [];
+async function steamStorePosterCandidates(appid) {
+  if (!appid) return [];
+  const urls = [];
+  try {
+    const response = await fetch(`https://store.steampowered.com/app/${appid}/?cc=us&l=english`, {
+      signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
+      headers: {
+        'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.0',
+        'accept-language': 'en-US,en;q=0.9'
+      }
+    });
+    if (response.ok) {
+      const html = await response.text();
+      const matches = html.match(/https?:\\?\/\\?\/[^"'< ]+library_600x900(?:_2x)?\.(?:jpg|jpeg|png|webp)[^"'< ]*/gi) || [];
+      for (const raw of matches) urls.push(raw.replace(/\\\//g, '/').replace(/&amp;/g, '&'));
+    }
+  } catch {}
+  return uniq([...urls, ...steamStaticPosterCandidates(appid)]);
+}
+
+function trustedSourcePageUrls(release) {
+  return uniq((release?.sources || [])
+    .filter(source => ['official_store', 'official', 'first_party', 'publisher', 'developer'].includes(String(source?.family || '').toLowerCase()))
+    .map(source => source?.url));
+}
+
+async function pageArtworkCandidates(url) {
+  if (!/^https?:\/\//i.test(url)) return [];
+  try {
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
+      redirect: 'follow',
+      headers: {
+        'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.0',
+        'accept-language': 'en-US,en;q=0.9'
+      }
+    });
+    if (!response.ok) return [];
+    const html = await response.text();
+    const urls = [];
+    for (const match of html.matchAll(/<meta[^>]+(?:property|name)=["'](?:og:image|twitter:image)["'][^>]+content=["']([^"']+)["']/gi)) urls.push(match[1]);
+    for (const match of html.matchAll(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["'](?:og:image|twitter:image)["']/gi)) urls.push(match[1]);
+    for (const match of html.matchAll(/<link[^>]+rel=["']image_src["'][^>]+href=["']([^"']+)["']/gi)) urls.push(match[1]);
+    return uniq(urls.map(value => value.replace(/&amp;/g, '&')));
+  } catch {
+    return [];
+  }
+}
+
+async function officialArtworkCandidates(release) {
+  const pages = trustedSourcePageUrls(release);
+  const results = await Promise.all(pages.slice(0, 8).map(pageArtworkCandidates));
+  return uniq(results.flat());
+}
+
+async function wikipediaCoverCandidates(title) {
+  const url = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(`intitle:\"${title}\" video game`)}&gsrlimit=8&prop=pageimages|extracts&exintro=1&explaintext=1&piprop=original|thumbnail&pithumbsize=1800&format=json&origin=*`;
+  try {
+    const payload = await fetchJson(url);
+    const wanted = canonical(title);
+    const urls = [];
+    for (const page of Object.values(payload.query?.pages || {})) {
+      const pageTitle = canonical(String(page.title || '').replace(/\s*\([^)]*\)\s*$/, ''));
+      const extract = String(page.extract || '');
+      if (pageTitle !== wanted || !/video game|game developed|game published/i.test(extract)) continue;
+      if (page?.original?.source) urls.push(page.original.source);
+      if (page?.thumbnail?.source) urls.push(page.thumbnail.source);
+    }
+    return uniq(urls);
+  } catch {
+    return [];
+  }
+}
+
+function explicitPosterCandidates(release) {
   return uniq([
-    ...steamStaticCandidates(appid),
-    ...(image?.candidate_urls || []),
-    ...storeArtwork,
-    image?.source_url,
-    data?.capsule_imagev5,
-    data?.capsule_image,
-    data?.header_image,
-    data?.background,
-    data?.background_raw,
-    screenshots[0]?.path_full,
-    screenshots[0]?.path_thumbnail
-  ]);
+    ...(release?.image?.candidate_urls || []),
+    ...(release?.image_candidates || []),
+    release?.image?.source_url
+  ]).filter(url => /library_600x900|cover|poster|box.?art/i.test(url));
 }
 
-async function downloadImage(url, minimumBytes) {
+async function downloadImage(url, options) {
   const response = await fetch(url, {
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
-    headers: { 'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/1.2' }
+    redirect: 'follow',
+    headers: { 'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.0' }
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const contentType = String(response.headers.get('content-type') || '').split(';')[0].toLowerCase();
   if (!ALLOWED_TYPES.has(contentType)) throw new Error(`Unsupported type ${contentType || 'unknown'}`);
   const bytes = Buffer.from(await response.arrayBuffer());
-  if (bytes.length < minimumBytes) throw new Error(`Image too small: ${bytes.length} bytes`);
-  return { bytes, contentType };
+  const inspected = inspectReleaseCover(bytes, options);
+  if (!inspected.valid) {
+    throw new Error(`Cover quality rejected: ${inspected.width}x${inspected.height}, ${inspected.bytes} bytes`);
+  }
+  return { bytes, contentType, ...inspected };
 }
 
-async function resolveOne(root, release, minimumBytes) {
-  const existing = await existingLocalImage(root, release?.image, minimumBytes);
+async function resolveOne(root, release, options) {
+  const existing = await existingLocalImage(root, release?.image, options);
   if (existing) return { release: { ...release, image: existing }, resolved: true, source: 'existing_local' };
 
-  const appid = Number(release?.external_ids?.steam);
-  const validAppid = Number.isFinite(appid) ? appid : null;
-  const [steamData, storeArtwork] = validAppid
-    ? await Promise.all([steamAppDetails(validAppid), steamStoreArtworkCandidates(validAppid)])
-    : [null, []];
-  const candidates = steamCoverCandidates(validAppid, steamData, release?.image || {}, storeArtwork);
+  const declaredAppid = Number(release?.external_ids?.steam);
+  const appid = Number.isFinite(declaredAppid) && declaredAppid > 0
+    ? declaredAppid
+    : await steamAppIdByTitle(release?.title || '');
+  const [steamPosters, officialArtwork, wikipediaArtwork] = await Promise.all([
+    steamStorePosterCandidates(appid),
+    officialArtworkCandidates(release),
+    wikipediaCoverCandidates(release?.title || '')
+  ]);
+  const candidates = uniq([
+    ...explicitPosterCandidates(release),
+    ...steamPosters,
+    ...officialArtwork,
+    ...wikipediaArtwork
+  ]);
   let lastError = null;
 
   for (const url of candidates) {
     try {
-      const { bytes, contentType } = await downloadImage(url, minimumBytes);
-      const ext = extensionFor(contentType);
+      const image = await downloadImage(url, options);
+      const ext = extensionFor(image.contentType);
       const localUrl = `assets/covers/releases/${release.slug}.${ext}`;
       const target = path.join(root, localUrl);
       await fs.mkdir(path.dirname(target), { recursive: true });
-      await fs.writeFile(target, bytes);
+      await fs.writeFile(target, image.bytes);
       return {
         release: {
           ...release,
+          external_ids: {
+            ...(release.external_ids || {}),
+            steam: release?.external_ids?.steam || appid || null
+          },
           image: {
             ...(release.image || {}),
             source_url: url,
             candidate_urls: candidates,
             local_url: localUrl,
-            content_type: contentType,
-            bytes: bytes.length,
-            sha256: crypto.createHash('sha256').update(bytes).digest('hex'),
-            kind: release.image?.kind || 'official_store_cover',
+            content_type: image.contentType,
+            width: image.width,
+            height: image.height,
+            bytes: image.bytes.length,
+            sha256: crypto.createHash('sha256').update(image.bytes).digest('hex'),
+            kind: 'verified_portrait_cover',
+            error: null,
             verified: true,
             status: 'downloaded_verified'
           }
@@ -146,7 +288,7 @@ async function resolveOne(root, release, minimumBytes) {
         local_url: null,
         verified: false,
         status: 'unresolved',
-        error: lastError?.message || 'No usable cover candidates'
+        error: lastError?.message || 'No quality portrait cover candidates'
       }
     },
     resolved: false,
@@ -157,8 +299,8 @@ async function resolveOne(root, release, minimumBytes) {
 export async function ensureVisibleReleaseCovers(candidates = [], options = {}) {
   const root = options.root || process.cwd();
   const visibleIds = new Set(options.visibleIds || []);
-  const minimumBytes = Math.max(1, Number(options.minimumBytes || DEFAULT_MINIMUM_BYTES));
   const concurrency = Math.max(1, Math.min(8, Number(options.concurrency || 6)));
+  const quality = thresholds(options);
   const next = candidates.map(item => ({ ...item }));
   const targetIndexes = [];
   next.forEach((candidate, index) => {
@@ -171,7 +313,7 @@ export async function ensureVisibleReleaseCovers(candidates = [], options = {}) 
   const runners = Array.from({ length: Math.min(concurrency, targetIndexes.length || 1) }, async () => {
     while (cursor < targetIndexes.length) {
       const index = targetIndexes[cursor++];
-      const result = await resolveOne(root, next[index], minimumBytes);
+      const result = await resolveOne(root, next[index], quality);
       next[index] = result.release;
       if (result.resolved) resolved.push({ id: result.release.id, slug: result.release.slug, source: result.source });
       else unresolved.push({ id: result.release.id, slug: result.release.slug, title: result.release.title, error: result.release.image?.error || 'unresolved' });
@@ -185,23 +327,41 @@ export async function ensureVisibleReleaseCovers(candidates = [], options = {}) 
       requested: targetIndexes.length,
       resolved: resolved.length,
       unresolved: unresolved.length,
-      coverage_percent: targetIndexes.length ? Number(((resolved.length / targetIndexes.length) * 100).toFixed(2)) : 100
+      coverage_percent: targetIndexes.length ? Number(((resolved.length / targetIndexes.length) * 100).toFixed(2)) : 100,
+      minimum_width: quality.minimumWidth,
+      minimum_height: quality.minimumHeight,
+      minimum_bytes: quality.minimumBytes,
+      minimum_ratio: quality.minimumRatio,
+      maximum_ratio: quality.maximumRatio
     },
     resolved,
     unresolved
   };
 }
 
-export function validateVisibleReleaseCovers(publicCalendar = {}) {
+export function validateVisibleReleaseCovers(publicCalendar = {}, options = {}) {
   const errors = [];
+  const quality = thresholds(options);
   const visible = [
     ...(publicCalendar.releases || []),
     ...(publicCalendar.personalized_releases || [])
   ];
   for (const release of visible) {
-    if (!release?.image?.local_url || release?.image?.status !== 'downloaded_verified' || release?.image?.verified !== true) {
-      errors.push(`Visible release cover unresolved: ${release?.id || release?.slug || 'unknown'}`);
-    }
+    const image = release?.image || {};
+    const width = Number(image.width || 0);
+    const height = Number(image.height || 0);
+    const bytes = Number(image.bytes || 0);
+    const ratio = height > 0 ? width / height : 0;
+    const qualityOk = image.local_url
+      && image.status === 'downloaded_verified'
+      && image.verified === true
+      && bytes >= quality.minimumBytes
+      && width >= quality.minimumWidth
+      && height >= quality.minimumHeight
+      && ratio >= quality.minimumRatio
+      && ratio <= quality.maximumRatio
+      && !/too small|quality rejected|http 404/i.test(String(image.error || ''));
+    if (!qualityOk) errors.push(`Visible release quality cover unresolved: ${release?.id || release?.slug || 'unknown'}`);
   }
   return uniq(errors);
 }
