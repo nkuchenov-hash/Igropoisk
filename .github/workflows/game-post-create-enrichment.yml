@@ -7,8 +7,13 @@ on:
     paths:
       - 'data/game-enrichment-requests/*.json'
       - 'config/parsers/review-source-registry*.json'
+      - 'config/game-dna-taxonomy.json'
       - 'scripts/ensure-game-page.mjs'
       - 'scripts/materialize-known-series.mjs'
+      - 'scripts/materialize-post-create-game-dna.mjs'
+      - 'scripts/build-game-dna.mjs'
+      - 'scripts/validate-game-dna.mjs'
+      - 'scripts/build-similarity-index.mjs'
       - 'scripts/enrich-game-media-from-sources.mjs'
       - 'scripts/discover-review-sources-web.mjs'
       - 'scripts/discover-review-sources-web-v14.mjs'
@@ -22,6 +27,7 @@ on:
       - 'scripts/publish-game-post-create-overlay.mjs'
       - 'scripts/test-game-creator-post-create.mjs'
       - 'scripts/test-quick-review-text-model-wiring.mjs'
+      - 'scripts/test-post-create-dna-media-budget.mjs'
       - 'scripts/lib/verified-game-import.mjs'
       - 'game/_shared/game-page-materialized-data.js'
       - '.github/workflows/game-post-create-enrichment.yml'
@@ -63,6 +69,10 @@ jobs:
         run: |
           node --check scripts/ensure-game-page.mjs
           node --check scripts/materialize-known-series.mjs
+          node --check scripts/materialize-post-create-game-dna.mjs
+          node --check scripts/build-game-dna.mjs
+          node --check scripts/validate-game-dna.mjs
+          node --check scripts/build-similarity-index.mjs
           node --check scripts/enrich-game-media-from-sources.mjs
           node --check scripts/discover-review-sources-web-v14.mjs
           node --check scripts/discover-review-sources-web-v15.mjs
@@ -75,16 +85,21 @@ jobs:
           node --check scripts/publish-game-post-create-overlay.mjs
           node --check scripts/test-game-creator-post-create.mjs
           node --check scripts/test-quick-review-text-model-wiring.mjs
+          node --check scripts/test-post-create-dna-media-budget.mjs
           node --check scripts/lib/verified-game-import.mjs
           node --check game/_shared/game-page-materialized-data.js
           node scripts/test-game-creator-boundary.mjs
           node scripts/test-game-creator-post-create.mjs
           node scripts/test-quick-review-text-model-wiring.mjs
+          node scripts/test-post-create-dna-media-budget.mjs
 
-      - name: Bootstrap series, rating and media for every requested game
+      - name: Bootstrap series, rating and bounded media for every requested game
         env:
           POST_CREATE_PHASE: bootstrap
         run: node scripts/run-game-post-create-enrichment.mjs
+
+      - name: Materialize Game DNA and similarity for every requested game
+        run: node scripts/materialize-post-create-game-dna.mjs
 
       - name: Publish fast module checkpoint
         env:
