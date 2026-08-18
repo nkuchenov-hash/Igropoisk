@@ -4,6 +4,7 @@ import path from 'node:path';
 import { DNA_PROFILE_AXES, DNA_STATUSES, normalizeTagList, profileQuality } from './lib/game-dna.mjs';
 
 const root = process.cwd();
+const requested = new Set(process.argv.slice(2).map(value => String(value || '').trim().toLowerCase()).filter(Boolean));
 const read = (relative, fallback = null) => {
   try { return JSON.parse(fs.readFileSync(path.join(root, relative), 'utf8')); } catch { return fallback; }
 };
@@ -18,7 +19,10 @@ if (!fs.existsSync(dir)) {
 const errors = [];
 const gameIds = new Map();
 const slugs = new Set();
-for (const file of fs.readdirSync(dir).filter((name) => name.endsWith('.json') && name !== 'index.json')) {
+const allFiles = fs.readdirSync(dir).filter((name) => name.endsWith('.json') && name !== 'index.json');
+const files = requested.size ? allFiles.filter(name => requested.has(name.replace(/\.json$/,''))) : allFiles;
+for (const slug of requested) if (!allFiles.includes(`${slug}.json`)) errors.push(`data/game-dna/${slug}.json: requested DNA entity is missing`);
+for (const file of files) {
   const relative = `data/game-dna/${file}`;
   const dna = read(relative);
   if (!dna || typeof dna !== 'object') { errors.push(`${relative}: invalid JSON entity`); continue; }
@@ -54,4 +58,4 @@ if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(2);
 }
-console.log(`Game DNA validation passed for ${slugs.size} entities.`);
+console.log(`Game DNA validation passed for ${slugs.size} ${requested.size ? 'targeted' : 'catalog'} entities.`);
