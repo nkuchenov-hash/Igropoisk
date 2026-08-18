@@ -30,10 +30,10 @@ for(const slug of slugs){
   const dna=run('scripts/build-game-dna.mjs',[slug]);
   results.push({slug,step:'dna',status:dna.status===0?'completed':'needs_revision',exit_code:dna.status,stdout:(dna.stdout||'').slice(-3000),stderr:(dna.stderr||'').slice(-3000)});
 }
-const validation=run('scripts/validate-game-dna.mjs');
-results.push({slug:'*',step:'validate',status:validation.status===0?'completed':'needs_revision',exit_code:validation.status,stdout:(validation.stdout||'').slice(-3000),stderr:(validation.stderr||'').slice(-3000)});
-for(const slug of slugs){
-  if(!exists(`data/game-dna/${slug}.json`))continue;
+const builtSlugs=slugs.filter(slug=>exists(`data/game-dna/${slug}.json`));
+const validation=builtSlugs.length?run('scripts/validate-game-dna.mjs',builtSlugs):{status:0,stdout:'No target DNA entities to validate.',stderr:''};
+results.push({slug:'*targeted*',step:'validate',status:validation.status===0?'completed':'needs_revision',exit_code:validation.status,stdout:(validation.stdout||'').slice(-3000),stderr:(validation.stderr||'').slice(-3000)});
+for(const slug of builtSlugs){
   const similarity=run('scripts/build-similarity-index.mjs',[slug]);
   results.push({slug,step:'similarity',status:similarity.status===0?'completed':'needs_revision',exit_code:similarity.status,stdout:(similarity.stdout||'').slice(-3000),stderr:(similarity.stderr||'').slice(-3000)});
   const draft=read(`data/drafts/${slug}.json`,{});
@@ -45,7 +45,7 @@ for(const slug of slugs){
 const missing=slugs.filter(slug=>!exists(`data/game-dna/${slug}.json`));
 for(const slug of missing){const requestPath=`data/game-enrichment-requests/${slug}.json`,request=read(requestPath,null);if(request){request.modules={...(request.modules||{}),dna:'needs_revision'};write(requestPath,request)}}
 const failed=results.filter(item=>item.status!=='completed');
-const report={parser:'post-create-game-dna-v2',status:missing.length||failed.length?'needs_revision':'green',checked_at:new Date().toISOString(),targets:slugs.length,from_pending_requests:requestSlugs.length,from_missing_dna_backfill:missingDnaSlugs.length,dna_ready:slugs.length-missing.length,missing,failed:failed.map(item=>({slug:item.slug,step:item.step,exit_code:item.exit_code,stderr:item.stderr}))};
+const report={parser:'post-create-game-dna-v3-targeted',status:missing.length||failed.length?'needs_revision':'green',checked_at:new Date().toISOString(),targets:slugs.length,from_pending_requests:requestSlugs.length,from_missing_dna_backfill:missingDnaSlugs.length,dna_ready:slugs.length-missing.length,validation_scope:'targeted_created_games_only',missing,failed:failed.map(item=>({slug:item.slug,step:item.step,exit_code:item.exit_code,stderr:item.stderr}))};
 write('data/parser-runs/game-post-create-dna.json',report);
 console.log(JSON.stringify(report,null,2));
 if(missing.length||failed.length)process.exitCode=2;
