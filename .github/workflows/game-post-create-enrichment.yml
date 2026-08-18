@@ -18,7 +18,6 @@ on:
       - 'scripts/build-similarity-index.mjs'
       - 'scripts/enrich-game-media-from-sources.mjs'
       - 'scripts/enrich-review-media.mjs'
-      - 'scripts/enrich-review-media-github-models.mjs'
       - 'scripts/enrich-review-media-local.mjs'
       - 'scripts/render-review-pages.mjs'
       - 'scripts/promote-review-source-audit.mjs'
@@ -33,6 +32,8 @@ on:
       - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/run-game-post-create-enrichment.mjs'
       - 'scripts/resolve-post-create-event-targets.mjs'
+      - 'scripts/verify-post-create-quick-reviews.mjs'
+      - 'scripts/lib/local-editorial-model.mjs'
       - 'scripts/publish-game-post-create-overlay.mjs'
       - 'scripts/publish-post-create-production.mjs'
       - 'scripts/test-post-create-production-publisher.mjs'
@@ -55,7 +56,6 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  models: read
 
 concurrency:
   group: game-post-create-enrichment-v2-staging
@@ -69,8 +69,6 @@ jobs:
     env:
       OPENAI_API_KEY: ''
       GITHUB_TOKEN: ${{ github.token }}
-      GITHUB_REVIEW_MODEL: ${{ vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
-      GITHUB_VISION_MODEL: ${{ vars.GITHUB_VISION_MODEL || vars.GITHUB_REVIEW_MODEL || 'openai/gpt-4.1' }}
       LOCAL_TEXT_MODEL: qwen3:1.7b
       LOCAL_EDITORIAL_MODEL: qwen3:1.7b
       LOCAL_VISION_MODEL: qwen3-vl:4b
@@ -102,7 +100,6 @@ jobs:
           node --check scripts/build-similarity-index.mjs
           node --check scripts/enrich-game-media-from-sources.mjs
           node --check scripts/enrich-review-media.mjs
-          node --check scripts/enrich-review-media-github-models.mjs
           node --check scripts/enrich-review-media-local.mjs
           node --check scripts/render-review-pages.mjs
           node --check scripts/promote-review-source-audit.mjs
@@ -116,6 +113,8 @@ jobs:
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/run-game-post-create-enrichment.mjs
           node --check scripts/resolve-post-create-event-targets.mjs
+          node --check scripts/verify-post-create-quick-reviews.mjs
+          node --check scripts/lib/local-editorial-model.mjs
           node --check scripts/publish-game-post-create-overlay.mjs
           node --check scripts/publish-post-create-production.mjs
           node --check scripts/test-post-create-production-publisher.mjs
@@ -177,39 +176,33 @@ jobs:
           done
           curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
 
-      - name: Ensure required text model and optional vision model
+      - name: Ensure required text model for quick review
         run: |
           set -euo pipefail
-          pull_required() {
-            model="$1"
-            for attempt in 1 2 3 4 5; do
-              ollama list | grep -Fq "$model" && return 0
-              ollama pull "$model" && return 0
-              sleep $((attempt * 5))
-            done
-            echo "::error::Required text model $model is unavailable after retries."
-            return 1
-          }
-          pull_optional() {
-            model="$1"
-            for attempt in 1 2 3; do
-              ollama list | grep -Fq "$model" && return 0
-              ollama pull "$model" && return 0
-              sleep $((attempt * 5))
-            done
-            echo "::warning::Optional vision model $model is unavailable; quick text review will continue and full visual upgrade remains pending."
-            return 0
-          }
-          pull_required "$LOCAL_TEXT_MODEL"
-          pull_optional "$LOCAL_VISION_MODEL"
+          for attempt in 1 2 3 4 5; do
+            ollama list | grep -Fq "$LOCAL_TEXT_MODEL" && exit 0
+            ollama pull "$LOCAL_TEXT_MODEL" && exit 0
+            sleep $((attempt * 5))
+          done
+          echo "::error::Required text model $LOCAL_TEXT_MODEL is unavailable after retries."
+          exit 1
 
-      - name: Build bounded quick reviews for green-rated event-scoped games
+      - name: Build and verify bounded quick reviews for green-rated event-scoped games
         env:
           POST_CREATE_PHASE: quick-review
           POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
         run: |
+          set -euo pipefail
           IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
-          node scripts/run-game-post-create-enrichment.mjs "${TARGETS[@]}"
+          for attempt in 1 2 3; do
+            echo "Quick-review generation pass $attempt/3"
+            node scripts/run-game-post-create-enrichment.mjs "${TARGETS[@]}"
+            if node scripts/verify-post-create-quick-reviews.mjs "${TARGETS[@]}"; then
+              exit 0
+            fi
+          done
+          echo "::error::Quick-review publication gate did not pass after bounded retries."
+          exit 1
 
       - name: Publish quick-review checkpoint before full upgrades
         env:
@@ -217,10 +210,22 @@ jobs:
           POST_CREATE_PUBLISH_PHASE: quick-review
         run: node scripts/publish-game-post-create-overlay.mjs
 
+      - name: Ensure optional local vision model for full upgrades
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            ollama list | grep -Fq "$LOCAL_VISION_MODEL" && exit 0
+            ollama pull "$LOCAL_VISION_MODEL" && exit 0
+            sleep $((attempt * 5))
+          done
+          echo "::warning::Optional vision model $LOCAL_VISION_MODEL is unavailable; the published quick review remains valid and visual full-review upgrade stays queued."
+          exit 0
+
       - name: Run bounded full-review upgrades for event-scoped games
         env:
           POST_CREATE_PHASE: full-review
           POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
+          GITHUB_TOKEN: ''
         run: |
           IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
           node scripts/run-game-post-create-enrichment.mjs "${TARGETS[@]}"

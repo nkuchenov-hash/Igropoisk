@@ -11,6 +11,8 @@ const media=read('scripts/enrich-game-media-from-sources.mjs');
 const quick=read('scripts/build-review-bootstrap-local.mjs');
 const runner=read('scripts/run-game-post-create-enrichment.mjs');
 const scope=read('scripts/resolve-post-create-event-targets.mjs');
+const verifier=read('scripts/verify-post-create-quick-reviews.mjs');
+const localModel=read('scripts/lib/local-editorial-model.mjs');
 const fail=message=>{throw new Error(message)};
 
 for(const marker of ['scripts/materialize-post-create-game-dna.mjs','Materialize Game DNA and similarity immediately after page creation','Publish Game DNA checkpoint before network enrichment',"POST_CREATE_PUBLISH_PHASE: dna","game/*/index.html"])if(!workflow.includes(marker))fail(`Fast post-create Game DNA workflow missing: ${marker}`);
@@ -32,4 +34,11 @@ if(!quick.includes('QUICK_REVIEW_TIMEOUT_MS||300000')||!quick.includes("provider
 if(quick.includes('models.github.ai')||quick.includes("provider:'github-models'"))fail('Retired GitHub Models dependency is still present in quick-review production code');
 if(!quick.includes('&quot;'))fail('Quick review HTML escaping is malformed');
 for(const marker of ['const quickOnly=doQuickReview&&!doFullReview','quickOnly?!quickReviewReady(slug):!reviewReady(slug)',"String(b.request.requested_at||'').localeCompare(String(a.request.requested_at||''))",'wasAttempted=attempted.has(slug)','run_attempts:Number(request.run_attempts||0)+(wasAttempted?1:0)','reviewExhausted=wasAttempted'])if(!runner.includes(marker))fail(`Post-create review queue starvation safeguard missing: ${marker}`);
-console.log('Post-create event-scoped execution, bounded checkout, semantic-precision DNA, durable local quick review, fair queue and bounded media contract passed.');
+for(const forbidden of ['models: read','GITHUB_REVIEW_MODEL','GITHUB_VISION_MODEL','scripts/enrich-review-media-github-models.mjs'])if(workflow.includes(forbidden))fail(`Retired GitHub Models workflow dependency remains: ${forbidden}`);
+for(const marker of ['Ensure required text model for quick review','Ensure optional local vision model for full upgrades',"GITHUB_TOKEN: ''"])if(!workflow.includes(marker))fail(`Local-only full-review workflow safeguard missing: ${marker}`);
+const quickAt=workflow.indexOf('Build and verify bounded quick reviews for green-rated event-scoped games'),visionAt=workflow.indexOf('Ensure optional local vision model for full upgrades'),fullAt=workflow.indexOf('Run bounded full-review upgrades for event-scoped games');
+if(quickAt<0||visionAt<quickAt||fullAt<visionAt)fail('Vision model provisioning must happen after verified quick-review publication and before the full-review upgrade');
+for(const marker of ['scripts/verify-post-create-quick-reviews.mjs','for attempt in 1 2 3','Quick-review publication gate did not pass after bounded retries'])if(!workflow.includes(marker))fail(`Fail-closed quick-review retry contract missing: ${marker}`);
+for(const marker of ['publication_status',"editorial_quality?.passed===true",'process.exit(2)','green-rated released game has no published bootstrap review'])if(!verifier.includes(marker))fail(`Quick-review verifier contract missing: ${marker}`);
+for(const marker of ['repeatPenalty=1.18','repeatLastN=1024','repeat_penalty: repeatPenalty','repeat_last_n: repeatLastN'])if(!localModel.includes(marker))fail(`Local anti-repetition model option missing: ${marker}`);
+console.log('Post-create event-scoped execution, bounded checkout, semantic-precision DNA, fail-closed local quick review, local-only full upgrade, fair queue and bounded media contract passed.');

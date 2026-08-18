@@ -47,7 +47,7 @@ export async function imageToBase64(url, {timeoutMs=15000, maxBytes=8_000_000}={
   return buffer.toString('base64');
 }
 
-export async function chatJson({system='', prompt, schema='json', images=[], temperature=0.2, numCtx=32768, numPredict=12000, timeoutMs=900000}) {
+export async function chatJson({system='', prompt, schema='json', images=[], temperature=0.2, numCtx=32768, numPredict=12000, timeoutMs=900000, repeatPenalty=1.18, repeatLastN=1024}) {
   if (!prompt) throw new Error('Local editorial prompt is required');
   const ready = await localModelReady();
   if (!ready) throw new Error(`Local editorial model is not ready: ${LOCAL_EDITORIAL_MODEL}`);
@@ -63,7 +63,7 @@ export async function chatJson({system='', prompt, schema='json', images=[], tem
         ...(system ? [{role: 'system', content: system}] : []),
         {role: 'user', content: prompt, ...(images.length ? {images} : {})}
       ],
-      options: {temperature, num_ctx: numCtx, num_predict: numPredict}
+      options: {temperature, num_ctx: numCtx, num_predict: numPredict, repeat_penalty: repeatPenalty, repeat_last_n: repeatLastN}
     }
   });
   const raw = payload?.message?.content;
