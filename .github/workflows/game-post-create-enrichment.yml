@@ -112,13 +112,19 @@ jobs:
           node scripts/test-post-create-dna-media-budget.mjs
           node scripts/test-review-carousel-version-gate.mjs
 
+      - name: Materialize Game DNA and similarity immediately after page creation
+        run: node scripts/materialize-post-create-game-dna.mjs
+
+      - name: Publish Game DNA checkpoint before network enrichment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          POST_CREATE_PUBLISH_PHASE: dna
+        run: node scripts/publish-game-post-create-overlay.mjs
+
       - name: Bootstrap series, rating and bounded media for every requested game
         env:
           POST_CREATE_PHASE: bootstrap
         run: node scripts/run-game-post-create-enrichment.mjs
-
-      - name: Materialize Game DNA and similarity for every requested game
-        run: node scripts/materialize-post-create-game-dna.mjs
 
       - name: Publish fast module checkpoint
         env:
