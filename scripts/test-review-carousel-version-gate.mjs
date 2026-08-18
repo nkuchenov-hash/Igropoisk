@@ -10,6 +10,7 @@ const openai=read('scripts/enrich-review-media.mjs');
 const renderer=read('scripts/render-review-pages.mjs');
 const validator=read('scripts/validate-review-output.mjs');
 const runtime=read('article/_shared/review-carousel.js');
+const dynamicRuntime=read('article/_shared/review-article.js');
 const fail=message=>{throw new Error(message)};
 const carousel=policy.article_balance?.carousel_policy||{};
 if(Number(carousel.minimum_carousels)!==2||Number(carousel.target_carousels)!==3||Number(carousel.minimum_images_per_carousel)!==2||Number(carousel.maximum_images_per_carousel)!==4)fail('Review carousel policy must be 2-3 meaningful carousels with 2-4 images each');
@@ -24,6 +25,7 @@ for(const [name,source] of [['renderer',renderer],['validator',validator]]){
   if(source.includes('images.length<Number(balance.screenshots_per_section?.minimum'))fail(`${name} still requires screenshots in every section`);
 }
 if(!runtime.includes("entry.commentary||''"))fail('Runtime carousel drops visual commentary');
+for(const marker of ['media_commentary','article-shot-card__commentary','entry.commentary'])if(!dynamicRuntime.includes(marker))fail(`Dynamic review runtime drops carousel semantics: ${marker}`);
 const wrong=[
   [{title:'Fallout 76: Wastelanders Review'},'Fallout 76'],
   [{title:'Some Game — DLC Review'},'Some Game'],
