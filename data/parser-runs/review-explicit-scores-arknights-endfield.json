@@ -1,0 +1,33 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "arknights-endfield",
+  "checked_at": "2026-08-18T08:41:31.284Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 1,
+  "scored": 1,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/arknights-endfield",
+      "final_url": "https://www.pushsquare.com/reviews/ps5/arknights-endfield",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}
