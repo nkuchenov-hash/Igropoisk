@@ -1,21 +1,104 @@
 {
-  "schema_version": 2,
+  "schema_version": 11,
   "game_slug": "overwatch-2",
-  "updated_at": "2026-08-11T00:29:57.743Z",
+  "game_id": "game_04fc0e2ad067f2544988",
+  "updated_at": "2026-08-17T20:39:50.355Z",
+  "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
-    "required": 20,
-    "accepted": 20,
-    "passed": true
+    "minimum": 5,
+    "target": 20,
+    "accepted": 13,
+    "status": "green",
+    "full_registry_scan": true,
+    "checked_registered_sources": 41,
+    "applicable_registered_sources": 41
+  },
+  "regional_discovery": {
+    "region": "ru",
+    "checks": [
+      {
+        "source_id": "igromania",
+        "name": "Игромания",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "stopgame",
+        "name": "StopGame",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "kanobu",
+        "name": "Канобу",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "playground",
+        "name": "PlayGround.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vgtimes",
+        "name": "VGTimes",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "ixbt-games",
+        "name": "iXBT.games",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "gamemag",
+        "name": "GameMAG.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vk-play",
+        "name": "VK Play Media",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "shazoo",
+        "name": "Shazoo",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      }
+    ],
+    "complete": true,
+    "found_but_not_accepted": []
   },
   "reviews": [
     {
       "id": "source-1",
+      "configured_source_id": "ign",
       "publication": "IGN",
-      "title": "overwatch-2 — IGN review",
+      "title": "Overwatch 2 Review - IGN",
       "url": "https://www.ign.com/articles/overwatch-2-review",
-      "author": "Simon Cardy",
+      "resolved_url": "https://www.ign.com/articles/overwatch-2-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "2022-10-04T19:00:27.000Z",
-      "evidence": [
+      "author": "Simon Cardy",
+      "language": "en",
+      "score": 8,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for overwatch-2.",
+      "evidence_points": [
         "Is Overwatch 2 truly a sequel? It’s a question that has lingered around the second iteration of Blizzard’s multiplayer shooter ever since its unveiling in 2019, and one that intensified",
         "The bigger question, as Overwatch 2 begins to open up to the public as a free-to-play game, is how many of those new ideas are positive changes – different is,",
         "Because it’s not a radical reinvention, Overwatch 2 still revolves around the exciting, team-based hero shooter gameplay that made the original such a massive hit when it launched in 2016.",
@@ -25,92 +108,52 @@
         "It begs the question of where “off tanks” fit in right now. D.Va is undoubtedly one of my favourite heroes to play as, but I feel a certain amount of",
         "On one hand, this huge shift in team composition is a thrilling breath of fresh air, and – critically – something significant to set Overwatch 2 apart from its predecessor."
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "ign.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:38:37.133Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:39:48.212Z",
+        "url": "https://www.ign.com/articles/overwatch-2-review",
+        "configured_source_id": "ign",
+        "direct_publisher": true
+      }
     },
     {
       "id": "source-2",
-      "publication": "Game Rant",
-      "title": "overwatch-2 — Game Rant review",
-      "url": "https://gamerant.com/overwatch-2-review/",
-      "author": "Dalton Cooper",
-      "published_at": "2022-10-04T19:00:14Z",
-      "evidence": [
-        "The original Overwatch game was a massive success for Blizzard, earning widespread critical acclaim and becoming one of gaming's biggest new IPs of the last decade. Blizzard supported the first",
-        "Before expanding on its downsides, it must be stressed that Overwatch 2 is an incredibly fun game that will keep fans entertained for hundreds of hours. It features an impressive",
-        "The biggest change in Overwatch 2 is the drop from a 6v6 setup to 5v5 , which is dramatic but doesn't prevent the game from still feeling like Overwatch .",
-        "Other Overwatch 2 Tank heroes have had their existing abilities retained, but amplified, for the most part. Reinhardt can now throw two Fire Strikes at a time , and he",
-        "There are those who will long for the original Overwatch 's 6v6 setup, but most will take to 5v5 quickly. It's one of Overwatch 2 's riskiest and best changes,",
-        "Overwatch 2 has a new hero for each role. The new Damage hero is Sojourn, a soldier with enhanced mobility whose abilities cater to both those who enjoy the simplicity",
-        "Most hardcore Overwatch fans likely participated in the Overwatch 2 multiplayer betas, and so they have already played Sojourn and Junker Queen, but Kiriko is brand-new for launch. Kiriko is",
-        "Kiriko's Ultimate ability in Overwatch 2 is a force to be reckoned with in the right hands. It creates a path of torii gates that grant any teammates in it"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-3",
-      "publication": "Eurogamer",
-      "title": "overwatch-2 — Eurogamer review",
-      "url": "https://www.eurogamer.net/overwatch-2-review-a-brilliant-teamplay-experience-in-the-grip-of-an-existential-crisis",
-      "author": "",
-      "published_at": "2022-10-14T09:07:04.813413+00:00",
-      "evidence": [
-        "Overwatch is a superhero story, and if there's one thing superheroes adore doing in their marketing materials, it's staring dramatically outward at something you can't see. Overwatch 2 's launch",
-        "Heading the group is Sojourn, one of Overwatch 2's three new faces at launch, a nimble Damage hero who is all about chaining things together - knee-slides into high jumps,",
-        "What could they be staring at? If this were a Marvel movie poster it would be some villain from the back catalogue, or the concept of Hope. This being Overwatch,",
-        "But perhaps what they are really gazing at is what Overwatch 2 could be, given, oh, at least a year's worth of updates. Overwatch 2 is more marketing event than",
-        "All of the original heroes have been tweaked, a couple (Orisa and Doomfist) to the point of switching classes, and there's a fresh spin on escort mode, Push, in which",
-        "Its overwriting of Overwatch 1 aside, Overwatch 2's most controversial element is the new Battle Pass monetisation system, whereby players either pay real money to unlock each nine-week season's spread",
-        "This has justifiably annoyed the hell out of returning players, but the system isn't that obnoxious by free-to-play standards - damning with faint praise, I know. Most of what you",
-        "Grinding to unlock a new hero every season without paying is undeniably onerous, however. Efficiency levels will vary, but the first season's pacing suggests you'll need to play every day,"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-4",
-      "publication": "PC Gamer",
-      "title": "overwatch-2 — PC Gamer review",
-      "url": "https://www.pcgamer.com/overwatch-2-review/",
-      "author": "https://www.pcgamer.com/author/tyler-colp/",
-      "published_at": "2022-10-15T16:00:31Z",
-      "evidence": [
-        "Join the club for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
-        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
-        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
-        "PC Gamer's got your back Our experienced team dedicates many hours to every review, to really get to the heart of what matters most to you. Find out more about",
-        "What is it? A sci-fi 5 vs. 5 hero shooter set in a near-future Earth. Expect to pay Free-to-play Release date: October 4 Developer: Blizzard Publisher: Activision Blizzard Reviewed on:",
-        "As a free-to-play successor to Blizzard's 2016 hero shooter (that also replaces the original game), Overwatch 2 is both reinvigorating and regressive. It's an exciting new reason to play a",
-        "Overwatch 2's greatest strength is that it's still Overwatch. Behind all the updated menus, the battle pass, the challenges, and the reworked maps is the game that demonstrated an alternative",
-        "Overwatch 2 is Overwatch 1 at 1.5X speed. It's the same game, but compressed. Two teams battle over an objective in beautifully rendered, near-future locations around the world. Each side"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-5",
-      "publication": "GamesRadar+",
-      "title": "overwatch-2 — GamesRadar+ review",
-      "url": "https://www.gamesradar.com/overwatch-2-review/",
-      "author": "https://www.gamesradar.com/author/alyssa-mercante/",
-      "published_at": "2022-10-04T19:00:17Z",
-      "evidence": [
-        "Join the GamesRadar community for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
-        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
-        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
-        "Overwatch 2 shines and pops with updated graphics and gorgeous new maps, but its deviation from the source material is impossible to ignore",
-        "Why you can trust GamesRadar+ Our experts review games, movies and tech over countless hours, so you can choose the best for you. Find out more about our reviews policy.",
-        "Overwatch 2 exists in a liminal space, sitting somewhere between a major update to the original game and a proper standalone sequel. It launches into Early Access without its new",
-        "Release date: October 4, 2022 (Early Access) Platform(s): PC, Xbox Series X, Xbox One, PS5, PS4, Switch Developer/Publisher: Blizzard/Activision",
-        "While there's no denying that Overwatch 2 can feel just as snappy and lively as the groundbreaking original, there's clearly something off about it. Maybe it's because Blizzard drastically switched"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-6",
+      "configured_source_id": "game-informer",
       "publication": "Game Informer",
-      "title": "overwatch-2 — Game Informer review",
+      "title": "Overwatch 2 Review: A Heroic Return",
       "url": "https://gameinformer.com/review/overwatch-2/a-heroic-return",
-      "author": "Brian Shea",
+      "resolved_url": "https://gameinformer.com/review/overwatch-2/a-heroic-return",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "",
-      "evidence": [
+      "author": "Brian Shea",
+      "language": "en",
+      "score": 9,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for overwatch-2.",
+      "evidence_points": [
         "Overwatch took the gaming world by storm when it launched in 2016, thanks to its well-balanced roster of unique heroes and terrific objective-based, first-person-shooting gameplay. The game’s popularity endured through",
         "The core gameplay feels simultaneously familiar and fresh. Capturing an objective with a coordinated assault or activating your Ultimate during a crucial last-second push to secure the victory is just",
         "The new 5v5 format is perhaps the most significant change in Overwatch. Now, traditional team comps drop to one tank, making its role as a damage sponge and utility player",
@@ -120,16 +163,52 @@
         "Progress accumulates steadily regardless of if you pay the $10 (or the equivalent of in-game coins) for the boosted premium Battle Pass. However, it’s disappointing that you need to reach",
         "While I’m certainly wary of this new system going forward, for now, the structure seems like a reasonable alternative to the previous framework. Thanks to a sneak peek of the"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "gameinformer.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:38:37.133Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:39:48.212Z",
+        "url": "https://gameinformer.com/review/overwatch-2/a-heroic-return",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
     },
     {
-      "id": "source-7",
+      "id": "source-3",
+      "configured_source_id": "polygon",
       "publication": "Polygon",
-      "title": "overwatch-2 — Polygon review",
-      "url": "https://www.polygon.com/reviews/23385539/overwatch-2-review-battle-pass-free-to-play-blizzard-entertainment/",
-      "author": "Michael McWhertor",
+      "title": "Overwatch is dead; long live Overwatch 2",
+      "url": "https://www.polygon.com/reviews/23385539/overwatch-2-review-battle-pass-free-to-play-blizzard-entertainment",
+      "resolved_url": "https://www.polygon.com/reviews/23385539/overwatch-2-review-battle-pass-free-to-play-blizzard-entertainment",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "2022-10-04T19:00:00Z",
-      "evidence": [
+      "author": "Michael McWhertor",
+      "language": "en",
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for overwatch-2.",
+      "evidence_points": [
         "When Blizzard Entertainment revealed Overwatch 2 to the world nearly three years ago, then-game director Jeff Kaplan, the man who shepherded the original Overwatch from failed MMO to dominant hero",
         "Blizzard has certainly redefined what a sequel means with Overwatch 2, but not in the way that Kaplan had seemingly envisioned. Because Overwatch 2 is not a sequel in the",
         "Overwatch 2 may not earn its “2” — branding it Overwatch 2.0 might have felt more apt — but it does earn its “early access” launch designation. Overwatch 2 arrives",
@@ -139,66 +218,44 @@
         "The removal of stun moves like Cassidy’s flashbang and Mei’s ability to freeze enemies with her Endothermic Blaster has also reduced frustration. It’s never been pleasurable to be on the",
         "These hero adjustments coincide with another major change to Overwatch 2’s design: Teams are now composed of five heroes , as opposed to six, an attempt on Blizzard’s part to"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "polygon.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:38:37.133Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      }
     },
     {
-      "id": "source-8",
-      "publication": "GameSpot",
-      "title": "overwatch-2 — GameSpot review",
-      "url": "https://www.gamespot.com/reviews/overwatch-2-review-same-as-it-ever-was/1900-6417972/?ftag=CAD-01-10abi2f",
-      "author": "",
-      "published_at": "",
-      "evidence": [
-        "tent-sc132=\"\" class=\"text-center oc-ad mobile-box\" id=\"nn_mobile_mpu2\"> Jessica Howard GameSpot Top Critic 8 / 10 Oct 12, 2022 Overwatch 2 improves upon the core gameplay and characters fans love, but loses some of its predecessor's spirit in the process. Read full review Kenneth Shepard Kotaku <div _ngcontent-sc146=\"\" class=\"top"
-      ],
-      "access_mode": "opencritic_excerpt"
-    },
-    {
-      "id": "source-9",
-      "publication": "Rock Paper Shotgun",
-      "title": "overwatch-2 — Rock Paper Shotgun review",
-      "url": "https://www.rockpapershotgun.com/overwatch-2-review-in-progress",
-      "author": "",
-      "published_at": "2022-10-04T19:00:00+00:00",
-      "evidence": [
-        "Put a screenshot of Overwatch 2 next to a screenshot of Overwatch 1 , and you'd be hard-pressed to spot any difference. Both display a vast chaotic ballet, in which",
-        "Guiding my old favourite heroes through venerable maps like King's Row and Route 66, it's like I never left. In many ways, it feels like I've simply been given a",
-        "The good news is I needn't spend long explaining the game. Even people who never played the original know what Overwatch is. It's a vibrant, punishing team-based hero shooter, with",
-        "The single biggest change Overwatch 2 brings to its matches is the new 5v5 team composition. Heroes in Overwatch are divided into three classes: Tank, Damage, and Support. In Overwatch",
-        "It took a few games, but I definitely began to feel the difference that the lower team size brings. It feels harder to hold a spot against an enemy push.",
-        "It's good, because I do remember the frustration of repeatedly failing to break through an enemy team's well-established defensive line. That's much rarer these days. Lowering the number of players",
-        "It should come as no surprise that Overwatch 2 looks, sounds, and feels wonderful to play. The maps are captivating and tightly designed; the heroes even more so. I say",
-        "A few of the original heroes have had quite substantial reworks to their abilities for Overwatch 2. Bastion can now move around while using its minigun, but it only lasts"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-10",
-      "publication": "Tom’s Guide",
-      "title": "overwatch-2 — Tom’s Guide review",
-      "url": "https://www.tomsguide.com/reviews/overwatch-2",
-      "author": "https://www.tomsguide.com/author/malcolm-mcmillan",
-      "published_at": "2022-10-04T20:17:25Z",
-      "evidence": [
-        "Join the Tom's Guide Club for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
-        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
-        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
-        "Overwatch 2 still has the same enjoyable gameplay loop and incredible character design from Blizzard&rsquo;s original hero shooter. But this free-to-play update is iterative, rather than groundbreaking.",
-        "Why you can trust Tom's Guide Our writers and editors spend hours analyzing and reviewing products, services, and apps to help find what's best for you. Find out more about",
-        "Overwatch 2 is an enjoyable, but not groundbreaking, follow-up to 2016&rsquo;s Overwatch. Blizzard's online hero shooter is &mdash; for now &mdash; still a player-versus-player (PvP) online game where you and",
-        "The other big pitfall that Overwatch 2 faces is the introduction of some new mechanics that could ultimately stratify players. The first-time user experience prevents new players from feeling overwhelmed,",
-        "Platform:&nbsp; PC, PS4, PS5, Switch, Xbox One, Xbox Series X/S Price:&nbsp; Free-to-play, with microtransactions Release Date:&nbsp; October 4, 2022 Genre:&nbsp; Multiplayer FPS"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-11",
+      "id": "source-4",
+      "configured_source_id": "nintendo-life",
       "publication": "Nintendo Life",
-      "title": "overwatch-2 — Nintendo Life review",
+      "title": "Review: Overwatch 2 (Switch) - Solid F2P Shooting That Doesn",
       "url": "https://www.nintendolife.com/reviews/switch-eshop/overwatch-2",
-      "author": "Nintendo Life",
+      "resolved_url": "https://www.nintendolife.com/reviews/switch-eshop/overwatch-2",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "2022-10-07T12:00:00+00:00",
-      "evidence": [
+      "author": "Nintendo Life",
+      "language": "en",
+      "score": 7,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for overwatch-2.",
+      "evidence_points": [
         "The recent release of Splatoon 3 spawned an interesting discussion over what justifies a sequel. Considering that Splatoon 2 is still playable on the Switch and maintains a healthy player",
         "Though Overwatch 2 certainly could be classified as an FPS, its heavy focus on teamwork and maximizing the utility of each character’s abilities imbues the gameplay with plenty of MOBA",
         "Lucio the healer, for example, is constantly putting out a healing aura in a circle around him, and the effect of this aura can be boosted or switched to a",
@@ -208,104 +265,52 @@
         "All of this is well and good, but perhaps the biggest drawback to here is that almost all of the above could be said for its predecessor. Plainly put, Overwatch",
         "In another example, medals used to be given out at the end of a match spotlighting important contributions from select members of each team, such as time on the payload"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "nintendolife.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:38:37.133Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:39:48.212Z",
+        "url": "https://www.nintendolife.com/reviews/switch-eshop/overwatch-2",
+        "configured_source_id": "nintendo-life",
+        "direct_publisher": true
+      }
     },
     {
-      "id": "source-12",
-      "publication": "Forbes",
-      "title": "overwatch-2 — Forbes review",
-      "url": "https://www.forbes.com/sites/krisholt/2022/10/04/overwatch-2-review-a-bold-step-forward-for-the-most-part/?sh=205cc99f6973",
-      "author": "Kris Holt",
-      "published_at": "",
-      "evidence": [
-        "Overwatch 2 is finally here! While major steps forward for the Overwatch franchise are long overdue after two and a half years without a new hero, the sequel is debuting",
-        "Blizzard split development of the player vs. player (PVP) side and the co-op player vs. environment (PVE) modes to get the former out sooner. We won’t have a proper understanding",
-        "The decision to drop one tank player per team, despite the reservations that some players have, is one of the best changes Blizzard has ever made to Overwatch . It",
-        "The new Push game type builds on that dynamic really well. The action ebbs and flows all over the the map as the robot swings from one side to the",
-        "Like the rest of Overwatch 2 (that Blizzard level of polish is undeniably fantastic here), the new maps look terrific. Team 4 has given the old maps a revamp as",
-        "The new heroes look great too. Moreover, they’re all great additions to the roster. Sojourn is a solid choice for newcomers, since her kit is one that’s easy to pick",
-        "In the moment-to-moment gameplay, Overwatch 2 is one of the most enjoyable gaming experiences I’ve had in a long time (for the record, Overwatch 1 is my second-favorite game of",
-        "The monetization strikes me as overly aggressive. I completely understand that the premium Battle Pass and shop are how Team 4 is funding the ongoing development of Overwatch 2. But"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-13",
-      "publication": "Shacknews",
-      "title": "overwatch-2 — Shacknews review",
-      "url": "https://www.shacknews.com/article/132524/overwatch-2-review",
-      "author": "",
-      "published_at": "",
-      "evidence": [
-        "Overwatch 2 brings a fresh new coat of paint to the popular hero-based team FPS, but is there enough here to truly warrant being called a sequel?",
-        "I’ve played enough Overwatch to know when I’m looking at Overwatch. Sure, I may be a bit rusty, and we may have some interesting core changes here that make things",
-        "Overwatch 2 has some changes that set it apart from the original game, though I wouldn’t say those changes are numerous. The 6v6 of the original game has been reduced",
-        "I will say Overwatch 2’s visual refresh looks quite polished. The heroes look great in their Overwatch 2 skins, but if you have an existing Battle.net account with first game",
-        "I think varying mileage will also be a thing for the 5v5 comp. It’s worth noting that roles are split between Tank, Attacker, and Support, and some roles are limited.",
-        "The new heroes are also nice and seem to fit right into the cast. Junker Queen is the new Tank with a boomeranging Jagged Blade knife that can be thrown,",
-        "Each new hero is fun and I enjoyed seeing how they fit into the existing cast. Sojourn in particular was an active blast to play with her mix of speedy",
-        "New Queen Street is one of the new maps and it utilizes the Push mode. It's a shiny metropolis with zig-zagging roads. The curving path the robot has to travel"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-14",
-      "publication": "Metro Gaming",
-      "title": "overwatch-2 — Metro Gaming review",
-      "url": "https://metro.co.uk/2022/10/04/overwatch-2-review-a-heroic-shooter-sequel-17501877/",
-      "author": "",
-      "published_at": "",
-      "evidence": [
-        "--> Cheri Faulkner Metro GameCentral Top Critic 9 / 10 Oct 4, 2022 A breath of fresh air for the Overwatch franchise, with the new game modes, characters, and mechanics all working together superbly well, for a genuinely exciting sequel. Read full review David Rodriguez Hobby Consolas <div _ngcontent-sc146=\"\" class=\"top-critic"
-      ],
-      "access_mode": "opencritic_excerpt"
-    },
-    {
-      "id": "source-15",
-      "publication": "Hobby Consolas",
-      "title": "overwatch-2 — Hobby Consolas review",
-      "url": "https://www.hobbyconsolas.com/reviews/analisis-overwatch-2-ps5-ps4-xbox-series-xs-xbox-one-nintendo-switch-pc-ahora-completamente-gratuito-1133535",
-      "author": "David Rodríguez",
-      "published_at": "2022-10-05T09:24:07+02:00",
-      "evidence": [
-        "No es una secuela ni mucho menos. Los cambios no son tan rotundos si eres veterano de OW. ¿Llega demasiado tarde? \"},\"positiveNotes\":{\"@type\":\"ItemList\",\"itemListElement\":\" Gratuito para todo el mundo. Jugabilidad más pulida.",
-        "¡Llega la caballería! Escoge tanque, DPS o support porque toca lanzarse de cabeza a Overwatch 2 con su estreno gratuito mundial en consolas y PC. ¿Qué nos ha parecido después",
-        "Soldado 76 dijo una vez: \"los viejos soldados nunca mueren. Y tampoco desaparecen.\" Overwatch llevaba años acusando un terrible desgaste y la caída en picado parecía sentenciar completamente su trayectoria,",
-        "Esta nueva entrega ya se encuentra disponible en PS5, PS4, Xbox Series X|S, Xbox One, Nintendo Switch y PC en formato free to play para todo el mundo. Da igual",
-        "Así que ya sabéis, podéis ir a saludar de nuevo a Winston y compañía para experimentar por vosotros mismos la experiencia que Blizzard ha trasladado a esta \"secuela\". Pero parad",
-        "Hace unos meses os hablábamos sobre las mejoras jugables de Overwatch 2 en una de sus betas cerradas. Dado que pocas cosas han cambiado y a que no hay nada",
-        "No vamos a repasar la historia de la franquicia hero shoorter de Blizzard porque quizá podría llegar antes Overwatch 3 y porque muchos y muchas ya saben qué pasó desde",
-        "Malas decisiones, muchísimas malas decisiones han acompañado a una de las IP con más potencial del medio y por eso estamos aquí, por eso estamos ante lo que denominamos Overwatch"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-16",
-      "publication": "TheSixthAxis",
-      "title": "overwatch-2 — TheSixthAxis review",
-      "url": "https://www.thesixthaxis.com/2022/10/12/overwatch-2-review/",
-      "author": "Nick Petrasiti",
-      "published_at": "2022-10-12T16:00:19+00:00",
-      "evidence": [
-        "As a fan of Overwatch, it&#8217;s fair to say I approached Overwatch 2 warily, unsure of the proposed changes and wanting to be convinced. On first impressions? Yeah, it&#8217;s more",
-        "But how do you correctly create a sequel to a massively successful live service game, anyway? The original game saw people spend hours (or money) collecting various outfits, emotes and",
-        "The switch to free to play was logical and the carry over of everything necessary. I’ve spoke to dozens of people who passingly mentioned they wouldn&#8217;t bother playing if they",
-        "The first major change up comes in the form of switching from 6v6 matches to 5v5. Depending on which mode you are playing, this drastically changes up the formats of",
-        "This has meant that some of the tanks have had to be reworked. Orisa is one of those that’s had a complete overhaul, now giving her a Javelin which she",
-        "The main issue with this is that the only tank now suited to slow-moving payload objectives is Reinhardt. Generally you need a main tank to hold the payload while everyone",
-        "It’s not just the tanks that have had a rework. Stun abilities have been significantly reduced in Overwatch 2, with Brigitte having her stun removed from her Shield Bash, and",
-        "Amongst the old guard, we now have three new heroes to mess around with. The excellent Sojourn manages to feel more Call of Duty than Soldier 76 and I took"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-17",
+      "id": "source-5",
+      "configured_source_id": "game-revolution",
       "publication": "GameRevolution",
-      "title": "overwatch-2 — GameRevolution review",
+      "title": "Overwatch 2 Review",
       "url": "https://www.gamerevolution.com/review/850545-overwatch-2-review-worth-playing-pc-ps5-xbox-switch",
-      "author": "",
+      "resolved_url": "https://www.gamerevolution.com/review/850545-overwatch-2-review-worth-playing-pc-ps5-xbox-switch",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "",
-      "evidence": [
+      "author": "",
+      "language": "en",
+      "score": 6,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for overwatch-2.",
+      "evidence_points": [
         "Overwatch 2 is a weird sequel. Game developers almost exclusively want to go bigger and better with their follow-ups, but that distinctly isn’t the cast here. Blizzard has decided to",
         "Overwatch 2 is free-to-play and has launched in early access (even though Blizzard hasn’t widely advertised this fact). This allowed the developer to make moderate changes and tweaks that it",
         "Overwatch 2 feels more like a meaningful update than a proper sequel — Overwatch 1.5 would be more appropriate. However, the changes made have resulted in a faster-paced and more",
@@ -315,35 +320,52 @@
         "But Blizzard pulling all of Overwatch’s heroes into Overwatch 2 hasn’t been a completely smooth transition. While the likes of Genji and Winston are thriving in this new environment, heroes",
         "Brigitte’s stun ability with her shield has been completely removed, Mei’s freeze gun no longer freezes, and Cassidy’s stick of dynamite is replaced with a magnetic grenade — not exactly"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "gamerevolution.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:38:37.133Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:39:48.320Z",
+        "url": "https://www.gamerevolution.com/review/850545-overwatch-2-review-worth-playing-pc-ps5-xbox-switch",
+        "configured_source_id": "game-revolution",
+        "direct_publisher": true
+      }
     },
     {
-      "id": "source-18",
-      "publication": "Attack of the Fanboy",
-      "title": "overwatch-2 — Attack of the Fanboy review",
-      "url": "https://attackofthefanboy.com/reviews/overwatch-2-review/",
-      "author": "Noah Nelson",
-      "published_at": "2022-10-04T19:00:51+00:00",
-      "evidence": [
-        "The Overtime clock is ticking. You respawn and use Lúcio’s Crossfade and Amp It Up abilities to give you, Sojourn, and Echo the speed boost you all need to get",
-        "—Suddenly, with calculated communication, all of your allied Heroes simultaneously use their ultimate abilities. A field of deadly proximity mines litter the objective, railgun beams slice through the air, and",
-        "Overwatch 2 is one of the most exhilarating gaming experiences available today. But, if you’ve played Overwatch 1, you already know that. For players like me who have never played",
-        "While Overwatch 2 might simply be more Overwatch , that isn’t necessarily a bad thing considering how good the original was and how well Blizzard has managed to fine-tune the",
-        "Overwatch 2 is a confusing sequel . In the world of live-service games, sequels aren’t common since a revamp and rebranding of the original game is just as acceptable. When",
-        "There are three big changes that qualify this Overwatch sequel: free-to-play , an ongoing seasonal schedule, and shifting the team composition from 6v6 to 5v5. Starting the tried-and-true seasonal release",
-        "For the most part, the fact that it is now free-to-play and has consistent seasons in the works is a welcomed change for Overwatch 2 . More players are bound",
-        "Another positive change is switching the 6v6 formula to 5v5. Because of this change, teams primarily, but not necessarily, are made up of one Tank, two Damage, and two Support"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-19",
+      "id": "source-6",
+      "configured_source_id": "guardian-games",
       "publication": "The Guardian",
-      "title": "overwatch-2 — The Guardian review",
+      "title": "Overwatch 2 review – a free-to-play shooter for the rest of us",
       "url": "https://www.theguardian.com/games/2022/oct/06/overwatch-2-review-pc-ps45-xbox-one-xbox-series-xs-activision-blizzard",
-      "author": "https://www.theguardian.com/profile/keithstuart",
+      "resolved_url": "https://www.theguardian.com/games/2022/oct/06/overwatch-2-review-pc-ps45-xbox-one-xbox-series-xs-activision-blizzard",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "2022-10-06T10:42:36.000Z",
-      "evidence": [
+      "author": "https://www.theguardian.com/profile/keithstuart",
+      "language": "en",
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for overwatch-2.",
+      "evidence_points": [
         "PC, Xbox, PlayStation 4/5, Nintendo Switch; Activision Blizzard It’s not really a sequel, but Overwatch’s enthusiastic rejection of self-serious military shooters still draws you in",
         "PC, Xbox, PlayStation 4/5, Nintendo Switch; Activision Blizzard It’s not really a sequel, but Overwatch’s enthusiastic rejection of self-serious military shooters still draws you in",
         "I f Overwatch 2 were a movie, it would probably be called a reboot or a reimagining rather than a sequel. This is the same team-based sci-fi shooter we’ve been",
@@ -353,33 +375,632 @@
         "All of the mainstay characters have been variously tweaked, buffed and nerfed to add tactical variety. Many felt that the original game was becoming too heavily reliant on characters with",
         "Meanwhile, support characters now heal automatically, which makes them more attractive to play with, and newbie favourite Bastion no longer turns into a stationary turret but instead calls in an"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "theguardian.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:38:37.133Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      }
     },
     {
-      "id": "source-20",
-      "publication": "Screen Rant",
-      "title": "overwatch-2 — Screen Rant review",
-      "url": "https://screenrant.com/overwatch-2-game-review/",
-      "author": "Jason Hon",
-      "published_at": "2022-10-04T19:00:13Z",
-      "evidence": [
-        "After years of delays and a controversial development, Overwatch 's competitive 6v6 hero-based shooter is gone, and in its place is Overwatch 2 . Blizzard's free-to-play sequel, developed by Team",
-        "Plans for the sequel's release have changed since its 2019 announcement, and Overwatch 2 's PvE Co-Op isn't releasing in 2022 , but was teased when the game was announced.",
-        "The original Overwatch quickly became a hit with its tight, team-based gameplay and unique characters. Team 4's character designers crafted many characters with individual personalities and abilities, and over the",
-        "Each match now only has one tank on a team to help defend their teammates rather than OW1 's 2/2/2 setup of having two of each class in a game.",
-        "The decision to shift to 5v5 battles feels both appropriate and necessary the more time players spend with the game. New gameplay adjustments, responsive controls, and the upgraded UI help",
-        "Battle Passes are becoming a popular method of giving players a long list of cosmetics and skins to unlock as they level up in a F2P multiplayer game. Games like",
-        "One of the most frustrating aspects of Overwatch 2 's release is how details about its Battle Passes and locked heroes weren't revealed until weeks before its release. In the",
-        "Players who can fully level up their Battle Passes to the maximum level of 80 will unlock Overwatch 2 's first Mythic Skin for Genji . The new highest tier"
+      "url": "https://www.eurogamer.net/overwatch-2-review-a-brilliant-teamplay-experience-in-the-grip-of-an-existential-crisis",
+      "publication": "Eurogamer",
+      "title": "Overwatch 2 review - a brilliant teamplay experience in the grip of an existential crisis",
+      "id": "source-7",
+      "configured_source_id": "eurogamer",
+      "resolved_url": "https://www.eurogamer.net/overwatch-2-review-a-brilliant-teamplay-experience-in-the-grip-of-an-existential-crisis",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for overwatch-2.",
+      "evidence_points": [
+        "Overwatch is a superhero story, and if there's one thing superheroes adore doing in their marketing materials, it's staring dramatically outward at something you can't see. Overwatch 2 's launch menu art is a classic example of this - and also, a convenient cross-section for the game's wonderfully varied, albeit mostly returning characters. There's Tracer, original mascot and the game's worst troll, using her teleport dash to mess up the enemy rearguard, then rewinding herself to safety. There's Mercy, a single-target healer who handles like a ninja given a well-spaced team, with the ability to swoop towards allies. And Genji, an actual ninja - terrifying with his sword unsheathed, a puny, scuttling annoyance to any hero whose shots he can't parry.",
+        "Heading the group is Sojourn, one of Overwatch 2's three new faces at launch, a nimble Damage hero who is all about chaining things together - knee-slides into high jumps, rifle shots into energy for her auxiliary railgun. The only hero class missing from the picture is the Tank. But wait, I think that's Winston's elbow in the bottom corner, Winston being a giant, kindly ape whose job is to bellyflop the objective, chuck up a forcefield and bathe everybody outside it in a soothing cloud of electricity. Five exquisitely different characters out of a running total of 35, all of them gazing raptly at the top-left corner of the screen.",
+        "But perhaps what they are really gazing at is what Overwatch 2 could be, given, oh, at least a year's worth of updates. Overwatch 2 is more marketing event than sequel right now, a free-to-play reboot of the 2016 teamplay shooter that is plainly designed to keep the existing PvP community afloat ahead of Actual New Stuff like the much-demanded story-driven co-op modes, which are currently scheduled for 2023.",
+        "All of the original heroes have been tweaked, a couple (Orisa and Doomfist) to the point of switching classes, and there's a fresh spin on escort mode, Push, in which you babysit a galloping robot. These additions sit alongside structural changes such as reducing the headcount to five-a-side, and a restriction to just one Tank per team in Competitive modes. Blizzard has also overhauled the graphics, though I'd challenge anyone to notice the difference without putting the two games next to each other. This is no longer possible, of course, because Blizzard has taken the original Overwatch offline, which perhaps explains the ferocious DDOS attacks that have contributed to the most catastrophic online launch in recent memory.",
+        "Its overwriting of Overwatch 1 aside, Overwatch 2's most controversial element is the new Battle Pass monetisation system, whereby players either pay real money to unlock each nine-week season's spread of cosmetics and new features, or crank out match XP to acquire them one by one, completing time-limited challenges to accelerate the process.",
+        "This has justifiably annoyed the hell out of returning players, but the system isn't that obnoxious by free-to-play standards - damning with faint praise, I know. Most of what you unlock is just optional flair, and the asymmetrical nature of Overwatch PvP makes for less chance of a straightforward power gap when it comes to premium Pass owners bagging each season's single new hero weeks in advance. While the challenges are theoretically at odds with teamplay in encouraging you to, say, play Support regardless of the situation, I've found that they serve as a pleasing, light-touch way of steering the PvP community, luring you towards overlooked characters or modes.",
+        "Grinding to unlock a new hero every season without paying is undeniably onerous, however. Efficiency levels will vary, but the first season's pacing suggests you'll need to play every day, and I can imagine players giving up and shelling out for premium if they find themselves a few tiers short with a day to go. Beyond that, there's that familiar sense of F2P ennui from knowing that the game is always trying to sell you something, however elegantly. Overwatch has always been good at slyly guiding player behaviour - for instance, the fact that each hero has a distinct audible gait, triggering specific muscle memories even before you see them. It's depressing to think of all that insight being applied to the curation of yet another content stream that is fluid enough to be habit-forming, but sluggish enough to tempt out an impatient purchase now and then.",
+        "The new heroes are, so far, not really worth either paying or grinding for, though they're clever creations in themselves. The problem is that they're designed to fill gaps in the existing repertoire, rather than to add new styles, often stealing their best tricks from old characters. If you're a seasoned veteran, you'll probably be underwhelmed. If you're new to the franchise, the existing cast are quite enough to be getting on with - and in any case, the new heroes are mostly geared for experienced players.",
+        "The easiest to pick up is Sojourn, with her no-nonsense rifle: you can make a contribution to the match just by blasting away as you follow the payload, taking your time to master those underlying alternations between rifle fire and railgun shots, sliding and jumping. The trickiest is probably Junker Queen, an Aussie tank who can bellow at team-mates to buff them, and who keeps herself alive by leeching health with short-ranged strikes, rather than cowering behind a shield. She can throw and recall her dagger Thor-style, often catching victims on the return flight, but she really needs to close the gap to be effective, relying on Damage heroes to cover her approach.",
+        "This reliance is, of course, more pressing in Competitive modes with only one tank slot per team. My total inability to make headway as Junker Queen notwithstanding, I think this new restriction is a smart adjustment, though not transformative. It avoids the classic gambit of fielding two or three tanks to win through sheer attrition, while making the tank player's skill and choice of hero more significant. If you love wading through multiple health bars and energy barriers, you can still field a multi-tank apocalypse in Unranked play, to say nothing of the often-broken, player-created modes in the Arcade suite."
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "eurogamer.net",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:38:37.133Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 3,
+      "scale": 5,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:39:48.320Z",
+        "url": "https://www.eurogamer.net/overwatch-2-review-a-brilliant-teamplay-experience-in-the-grip-of-an-existential-crisis",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.pcgamer.com/overwatch-2-review",
+      "publication": "PC Gamer",
+      "title": "Overwatch 2 review",
+      "id": "source-8",
+      "configured_source_id": "pc-gamer",
+      "resolved_url": "https://www.pcgamer.com/overwatch-2-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for overwatch-2.",
+      "evidence_points": [
+        "Join the club for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
+        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
+        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
+        "Overwatch 2 revitalizes the stagnant hero shooter, but misunderstands what made it great.",
+        "PC Gamer's got your back Our experienced team dedicates many hours to every review, to really get to the heart of what matters most to you. Find out more about how we evaluate games and hardware.",
+        "What is it? A sci-fi 5 vs. 5 hero shooter set in a near-future Earth. Expect to pay Free-to-play Release date: October 4 Developer: Blizzard Publisher: Activision Blizzard Reviewed on: RTX 3080, Ryzen 9 3900X, 32GB RAM Multiplayer? Yes Link: Official site",
+        "It's taken every single cell in my brain to try to determine why Overwatch 2 is a sequel.",
+        "As a free-to-play successor to Blizzard's 2016 hero shooter (that also replaces the original game), Overwatch 2 is both reinvigorating and regressive. It's an exciting new reason to play a game that shaped modern shooters and get a glimpse at why nothing in the last six years has bested it. But its biggest changes and invasive monetization system threaten to drain the joy out of it until there's nothing left.",
+        "Overwatch 2's greatest strength is that it's still Overwatch. Behind all the updated menus, the battle pass, the challenges, and the reworked maps is the game that demonstrated an alternative FPS, where a variety of skills were acknowledged and rewarded. Despite how much it's stacked on top of it, Blizzard hasn't buried the boldest aspects of the original game.",
+        "Overwatch 2 is Overwatch 1 at 1.5X speed. It's the same game, but compressed. Two teams battle over an objective in beautifully rendered, near-future locations around the world. Each side has a tank hero, two damage dealers, and two support. It's an FPS in form, but matches unfold a little differently than they do in most other shooters. Both teams fight to occupy space on the map with all their various hero abilities and ultimates. A tank who charges into the fray is backed by their team of support and DPS who use that aggression to punish enemy mistakes, whether they stepped within range of a killing blow or made themselves vulnerable by misusing all of their abilities."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pcgamer.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:38:37.133Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 74,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:39:48.320Z",
+        "url": "https://www.pcgamer.com/overwatch-2-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.gamesradar.com/overwatch-2-review",
+      "publication": "GamesRadar+",
+      "title": "Overwatch 2 review:",
+      "id": "source-9",
+      "configured_source_id": "gamesradar",
+      "resolved_url": "https://www.gamesradar.com/overwatch-2-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for overwatch-2.",
+      "evidence_points": [
+        "Join the GamesRadar community for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
+        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
+        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
+        "Overwatch 2 shines and pops with updated graphics and gorgeous new maps, but its deviation from the source material is impossible to ignore",
+        "Why you can trust GamesRadar+ Our experts review games, movies and tech over countless hours, so you can choose the best for you. Find out more about our reviews policy.",
+        "Overwatch 2 exists in a liminal space, sitting somewhere between a major update to the original game and a proper standalone sequel. It launches into Early Access without its new co-operative PvE mode, which isn't due out until sometime next year, and the core multiplayer offering features a strange mixture of characters and maps that are both old and new. Overwatch 2 has been difficult to pin down ever since it was announced in 2019 &ndash; familiar, and at times wholly unrecognizable &ndash; and that feeling hasn't dissipated now that I've sunk hours into it.",
+        "Release date: October 4, 2022 (Early Access) Platform(s): PC, Xbox Series X, Xbox One, PS5, PS4, Switch Developer/Publisher: Blizzard/Activision",
+        "While there's no denying that Overwatch 2 can feel just as snappy and lively as the groundbreaking original, there's clearly something off about it. Maybe it's because Blizzard drastically switched gears mid-development, taking Overwatch 2 from a sequel with the same, shared multiplayer as Overwatch 1 before transforming it into a free-to-play title that replaces the original game entirely. While Overwatch 2 is certainly an expansion upon the original, Blizzard has been open about its desires to attract new players to the series, and the sequel's battle pass model and faster, more frenetic gameplay reflect that.",
+        "Overwatch 2 looks undeniably brilliant. With its bright, bold colors and deep blacks, legacy maps like King's Row are far more legible and exciting. Every existing hero has received a visual upgrade &ndash; from a new default skin to shinier metals, more detailed facial features, and better-flowing hair &ndash; while the effects that accompany hero abilities are more crisp and detailed. Blizzard has meticulously redesigned every strand and strap with care, and it makes Overwatch 2 look and feel like more than a simple upgrade.&nbsp;",
+        "That same regenerative spirit has been applied to character movement and combat, too &ndash; but that's where the problems begin. Overwatch 2 is a faster and more punishing experience than its predecessor. Much of the change in gameplay and combat pacing results from Blizzard's decision to alter the way teams are structured, with the sequel based on five versus five encounters between one tank, two healers, and two DPS heroes. It's a shift that has wide-reaching implications on the meta."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "gamesradar.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:38:37.133Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.gamespot.com/reviews/overwatch-2-review-same-as-it-ever-was/1900-6417972",
+      "publication": "GameSpot",
+      "title": "overwatch-2 — GameSpot review",
+      "id": "source-10",
+      "configured_source_id": "gamespot",
+      "resolved_url": "https://www.gamespot.com/reviews/overwatch-2-review-same-as-it-ever-was/1900-6417972",
+      "source_kind": "review",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T20:38:37.133Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.rockpapershotgun.com/overwatch-2-review-in-progress",
+      "publication": "Rock Paper Shotgun",
+      "title": "Overwatch 2 review-in-progress: tonnes of fun marred by context and expectations",
+      "id": "source-11",
+      "configured_source_id": "rock-paper-shotgun",
+      "resolved_url": "https://www.rockpapershotgun.com/overwatch-2-review-in-progress",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for overwatch-2.",
+      "evidence_points": [
+        "Put a screenshot of Overwatch 2 next to a screenshot of Overwatch 1 , and you'd be hard-pressed to spot any difference. Both display a vast chaotic ballet, in which two teams composed of some of the most well-realised characters in hero shooters wage war until one team emerges triumphant. Just like its predecessor, Overwatch 2 is one of the most delicately crafted sensory onslaughts I've experienced in a game.",
+        "Guiding my old favourite heroes through venerable maps like King's Row and Route 66, it's like I never left. In many ways, it feels like I've simply been given a reason to play Overwatch 1 again. Is that enough for a sequel? Is it enough to justify the incredibly confusing, lengthy, and oft-botched process of trying to make Overwatch feel relevant again? I'm not certain it is. But perhaps it should be.",
+        "The good news is I needn't spend long explaining the game. Even people who never played the original know what Overwatch is. It's a vibrant, punishing team-based hero shooter, with a strong emphasis on the \"team\" part. You and your squadmates create a team out of a roster of 30-odd heroes, and fight to complete objectives such as escorting a payload across the map or capturing a target area and holding it against the enemy. Matches are fast, hectic, and oodles of fun.",
+        "The single biggest change Overwatch 2 brings to its matches is the new 5v5 team composition. Heroes in Overwatch are divided into three classes: Tank, Damage, and Support. In Overwatch 1 the matches were 6v6, and the most common composition was always two of each hero class - a composition enforced by Overwatch's main role queue mode. Overwatch 2 has seen fit to remove one of the tank roles.",
+        "It took a few games, but I definitely began to feel the difference that the lower team size brings. It feels harder to hold a spot against an enemy push. Often, one concentrated attack is enough to break your ranks - and your only recourse is to consolidate and push right back. Matches have always felt aggressive in Overwatch, but in Overwatch 2 I felt less of a sense of pondering the best course of action. You don't often have to think about why you're failing to break the enemy's defence, whether to switch to a different hero, and so on. The best course of action is almost always to reconvene and push.",
+        "It's good, because I do remember the frustration of repeatedly failing to break through an enemy team's well-established defensive line. That's much rarer these days. Lowering the number of players in a match is also good news for performance, matchmaking, and reducing the visual clutter during team fights. But I still can't help but feel like something has been lost in the process. It feels easier to switch off my brain playing Overwatch 2, which may be a good thing or a bad thing depending on your perspective.",
+        "It should come as no surprise that Overwatch 2 looks, sounds, and feels wonderful to play. The maps are captivating and tightly designed; the heroes even more so. I say it again: these are possibly the most well-realised characters in the genre, and - subjective opinions on skins aside - they've never looked better. The first-person animations are wondrous to behold, and the sound design elevates it all even further. Cassidy's Peacekeeper still feels weighty and dangerous. Junkrat's grenades still have that incredibly satisfying THONK as they leave the launcher. Zenyatta's orbs still SHWING past like lethal and musical shards of glass.",
+        "A few of the original heroes have had quite substantial reworks to their abilities for Overwatch 2. Bastion can now move around while using its minigun, but it only lasts a few seconds now. Doomfist has been moved over from Damage to Tank, and he's got a new Power Block ability that gives him huge damage reduction while powering up his next Rocket Punch with the damage he soaks up. Orisa has perhaps the biggest rework of all. She has a new primary weapon, a powerful javelin throw skillshot ability, a javelin spin ability which blocks incoming projectiles ala D.Va, and a new Ultimate which pulls in nearby enemies and deals major damage after a few seconds.",
+        "By contrast, other heroes have basically not been touched at all, which I'll admit is a bit disappointing, particularly for players who main those heroes. Most hero changes lie somewhere in the middle, with tweaks to abilities that help the characters fit into the new aggressive 5v5 meta Blizzard have created. Almost all stun effects have been removed from the game, and each of the hero classes have been given new global passives. Tanks, for example, now have knockback resistance and provide less Ultimate charge to enemies when damaged, helping them fulfil a more aggressive brawler-esque role to compensate for the loss of a second tank on the team. It's a shrewd change that illustrates how much thought has gone into subtly reinventing Overwatch 2's fast-paced battles.",
+        "There's an attention to detail in the hero design that very few games can compete with, and I was happy to see that Overwatch 2's three new heroes maintain that high standard. And even more important than that - they all just feel fun right out of the gate. The first one I tried was Junker Queen, a big Aussie tank with a giant shotgun and a throwing knife that wounds enemies while healing herself. Next up was Sojourn, a Canadian soldier with cybernetic arms and legs. She's a frighteningly strong damage-dealer in the vein of Soldier: 76, with a fast-firing rifle and a secondary fire beam that deals high damage once charged up by using the primary fire mode."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "rockpapershotgun.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:38:37.133Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.thesixthaxis.com/2022/10/12/overwatch-2-review",
+      "publication": "TheSixthAxis",
+      "title": "Overwatch 2 Review | TheSixthAxis",
+      "id": "source-12",
+      "configured_source_id": "the-sixth-axis",
+      "resolved_url": "https://www.thesixthaxis.com/2022/10/12/overwatch-2-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for overwatch-2.",
+      "evidence_points": [
+        "As a fan of Overwatch, it&#8217;s fair to say I approached Overwatch 2 warily, unsure of the proposed changes and wanting to be convinced. On first impressions? Yeah, it&#8217;s more Overwatch and that&#8217;s not a bad thing, but it means it also feels more like Overwatch 1.5 instead of a full blown sequel.",
+        "But how do you correctly create a sequel to a massively successful live service game, anyway? The original game saw people spend hours (or money) collecting various outfits, emotes and other golden weapons to show off, and you can bet your bottom dollar people don’t want to lose that.",
+        "The switch to free to play was logical and the carry over of everything necessary. I’ve spoke to dozens of people who passingly mentioned they wouldn&#8217;t bother playing if they lost their progress, so Blizzard clearly made the right call here.",
+        "The first major change up comes in the form of switching from 6v6 matches to 5v5. Depending on which mode you are playing, this drastically changes up the formats of the match. If you are playing in the role-based queue, you are now only allowed one tank, two support and two assault characters. Long gone are days where players will turtle behind a double wall of tanks and shields and you now actually have to make a push to finish your objective, which makes for a faster paced of play – no one wants to spend ages firing pea shooters into brick walls, it’s just not exciting.",
+        "This has meant that some of the tanks have had to be reworked. Orisa is one of those that’s had a complete overhaul, now giving her a Javelin which she can throw at enemies with some serious force. She can also spin the Javelin and charge forward proving her with much needed momentum. This, coupled with the fact that she no longer has her barrier has properly transitioned her from a stationary wall to a mobile damage dealer, which is kind of scary. This front foot style was one I relished when finding myself in this role.",
+        "The main issue with this is that the only tank now suited to slow-moving payload objectives is Reinhardt. Generally you need a main tank to hold the payload while everyone else cuts about and fights the other team, but tanks now have a split role between attack and defence. Attacking with the payload is definitely harder, but maybe we just need time to adapt.",
+        "It’s not just the tanks that have had a rework. Stun abilities have been significantly reduced in Overwatch 2, with Brigitte having her stun removed from her Shield Bash, and Cassidy losing his Flashbang. Bastion is a new beast these days as well, losing his ability to become a stationary turret and instead just transforming into a tank, an ability that used to be tied to his ultimate.",
+        "Amongst the old guard, we now have three new heroes to mess around with. The excellent Sojourn manages to feel more Call of Duty than Soldier 76 and I took to her immediately, with her super slide and super jump combo giving her a freedom of movement only seen in a few characters on the roster. Shoot enough times with her primary fire and you charge her secondary fire which is a powerful rail gun. Charge up her ultimate ability, and she can fire that bad boy without needing to charge for a set period of time. It’s pretty lethal.",
+        "New aggressive tank Junker Queen also enters the fray, dragging opponents in with her knife and then shotgunning them when up close. She feels a little like Roadhog in a sense, but her would/adrenaline rush abilities do enough to set her apart, forcing you to keep attacking so you can heal as you deal damage.",
+        "Last but certainly not least, we have Kiriko, a ninja support character who can heal and buff her allies. She also loves Foxes! With her ability to climb walls and teleport, she’s like the love child of Genji and Mercy – I’m sure there&#8217;s already some slash fiction out there…"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "thesixthaxis.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:38:37.133Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 8,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:39:49.699Z",
+        "url": "https://www.thesixthaxis.com/2022/10/12/overwatch-2-review/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.pushsquare.com/reviews/ps5/overwatch-2",
+      "title": "Review: Overwatch 2 (PS5) - More 2.0 Than a Full Sequel",
+      "discovery_method": "external_search",
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "language": "en",
+      "id": "source-13",
+      "resolved_url": "https://www.pushsquare.com/reviews/ps5/overwatch-2",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for overwatch-2.",
+      "evidence_points": [
+        "It's better to think of Overwatch 2 as Overwatch 2.0 instead of a full sequel. While many of its playable Heroes have undergone significant changes — alongside the introduction of three brand-new ones — this is essentially the same game you've been playing for the past six years. Activision Blizzard has (quite literally) stuck a number on the end and called it a day. However, for those in need of an excuse to return to the online title, that might be all it takes. A massively updated version of the same game, Overwatch (2) is still great to play.",
+        "The developer has been smart about the re-introduction too, lowering the barrier of entry to just a download. Overwatch 2 ditches the price point of its predecessor for the free-to-play model, replacing loot boxes with a Battle Pass along the way. The latest way of delivering cosmetics (both free and paid for) will always have its doubters, but it's almost objectively better than the randomised nature of loot boxes. Overwatch joins Fortnite , Apex Legends , and the rest in the present, which is always nice to see.",
+        "Its first seasonal Battle Pass isn't quite up to snuff, however. With challenges being the main way of rising through the ranks via XP gains, levelling up feels like it takes slightly too long. Completing a match and knocking off a few challenges only got us maybe a quarter of the way closer to our next reward. And that's even with the 20 per cent XP bonus awarded to owners of the premium Battle Pass. Furthermore, not including payouts of the premium currency for some of the tiers? That's a big no-no. We welcome the free-to-play model, but Activision Blizzard has some kinks to iron out before Overwatch 2 can be a real winner.",
+        "Luckily, it already is in-game once you beat the queue system and load up a match. New players will have Heroes unlocked for them gradually, making it easier to get to grips with specific roles, while returning veterans have the full line-up at their fingertips straight from the off. One of the biggest gameplay changes in Overwatch 2 sees each team drop a player for a 5v5 bout consisting of two DPS (damage per second) characters, a Tank, and two Support. The first game allowed a second Tank to join the party, so the sequel switches shields for HP-guzzling action.",
+        "It's a change that speeds gameplay up, allowing more aggressive players to thrive. Reinhardt's shield will always stop a team in its tracks and Orisa still feels unstoppable — especially since the new update adds a javelin to her arsenal — but with just one on the battlefield, they become much more manageable. Soldier 76 could sprint behind enemy lines, or Pharah can rain rockets down from above. DPS characters have always been able to do this, but with one less Tank to worry about, matches have become much more hotly contested.",
+        "Complementing the gameplay changes and balance tweaks is a smattering of new content. The three new Heroes are Junker Queen, Sojourn, and Kiriko, and they're accompanied by six new maps and a game mode named Push. Is that enough content to justify a sequel? Of course not.",
+        "Overwatch 2 isn't much more than a marketing strategy designed to re-ignite player interest in a game that hasn't really had much to shout about for a number of years. Proven by the fact you can't even play the original game anymore — Activision Blizzard has taken it offline in its entirety — Overwatch 2 is pitched as the new norm. The saving grace is that the only barrier to entry is an internet connection.",
+        "It's a bit of a double-edged sword, though, because it's worked. Interest in the new game shoots player queues into the thousands once the USA wakes up, and as the likes of Warzone take a backseat before its own sequel hits next month, the internet is ablaze with all things Overwatch 2. What new and returning players find is a quality gameplay loop that still puts a lot of other multiplayer titles to shame.",
+        "Although, what they won't find are the story missions and online co-op mode Activision Blizzard revealed alongside the sequel nearly three years ago. Now set to be patched into the game in 2023, it's the sort of content that would have better justified putting the number two at the end of its name. Overwatch 2 has theoretically launched into Early Access, though, so expect the studio to point towards that as an excuse should it come under fire. For the average customer, this is the full game.",
+        "Except that's the thing, and we can't get away from it: Overwatch was a fantastic game that played brilliantly. The exact same can be said of its sequel. No matter how much one could moan about missing content or Battle Passes, the beauty of a live-service title is there's more to come and you (probably) won't be paying for it. It's just so easy to get your mates online for a few rounds and enjoy what is still one of the best multiplayer games around."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pushsquare.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:38:37.133Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 8,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:39:50.310Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/overwatch-2",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
     }
   ],
-  "game_id": "game_04fc0e2ad067f2544988",
-  "igropoisk_article": {
-    "url": "../../article/overwatch-2/",
-    "title": "overwatch-2 — разбор Игропоиска",
-    "description": "Подробный разбор overwatch-2: игровой цикл, системы, мир, прогрессия, подача, слабые места и то, как игра воспринимается сейчас.",
-    "score": 8.3
+  "rejected": [
+    {
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/search",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/share",
+      "reasons": [
+        "HTTP 404"
+      ]
+    }
+  ],
+  "source_proposals": [],
+  "review_score": {
+    "status": "green",
+    "owner": "review",
+    "method": {
+      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+      "formula": "sum(normalized_10) / source_count",
+      "minimum_sources": 3,
+      "target_sources": 10,
+      "maximum_sources": null,
+      "use_all_eligible_sources": true,
+      "required_evidence_scope": "editorial_review",
+      "output_scale": 10,
+      "rounding_decimals": 1,
+      "one_vote_per_publication": true,
+      "aggregators_forbidden": true,
+      "invented_scores_forbidden": true,
+      "exact_canonical_version_required": true
+    },
+    "sources": [
+      {
+        "source_id": "source-1",
+        "configured_source_id": "ign",
+        "publication": "IGN",
+        "title": "Overwatch 2 Review - IGN",
+        "url": "https://www.ign.com/articles/overwatch-2-review",
+        "original_score": {
+          "score": 8,
+          "scale": 10,
+          "grade": null,
+          "display": "8/10"
+        },
+        "normalized_10": 8,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:39:48.212Z",
+          "url": "https://www.ign.com/articles/overwatch-2-review",
+          "configured_source_id": "ign",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-2",
+        "configured_source_id": "game-informer",
+        "publication": "Game Informer",
+        "title": "Overwatch 2 Review: A Heroic Return",
+        "url": "https://gameinformer.com/review/overwatch-2/a-heroic-return",
+        "original_score": {
+          "score": 9,
+          "scale": 10,
+          "grade": null,
+          "display": "9/10"
+        },
+        "normalized_10": 9,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:39:48.212Z",
+          "url": "https://gameinformer.com/review/overwatch-2/a-heroic-return",
+          "configured_source_id": "game-informer",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-4",
+        "configured_source_id": "nintendo-life",
+        "publication": "Nintendo Life",
+        "title": "Review: Overwatch 2 (Switch) - Solid F2P Shooting That Doesn",
+        "url": "https://www.nintendolife.com/reviews/switch-eshop/overwatch-2",
+        "original_score": {
+          "score": 7,
+          "scale": 10,
+          "grade": null,
+          "display": "7/10"
+        },
+        "normalized_10": 7,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:39:48.212Z",
+          "url": "https://www.nintendolife.com/reviews/switch-eshop/overwatch-2",
+          "configured_source_id": "nintendo-life",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-5",
+        "configured_source_id": "game-revolution",
+        "publication": "GameRevolution",
+        "title": "Overwatch 2 Review",
+        "url": "https://www.gamerevolution.com/review/850545-overwatch-2-review-worth-playing-pc-ps5-xbox-switch",
+        "original_score": {
+          "score": 6,
+          "scale": 10,
+          "grade": null,
+          "display": "6/10"
+        },
+        "normalized_10": 6,
+        "score_evidence": {
+          "method": "registry:game-revolution",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:39:48.320Z",
+          "url": "https://www.gamerevolution.com/review/850545-overwatch-2-review-worth-playing-pc-ps5-xbox-switch",
+          "configured_source_id": "game-revolution",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-7",
+        "configured_source_id": "eurogamer",
+        "publication": "Eurogamer",
+        "title": "Overwatch 2 review - a brilliant teamplay experience in the grip of an existential crisis",
+        "url": "https://www.eurogamer.net/overwatch-2-review-a-brilliant-teamplay-experience-in-the-grip-of-an-existential-crisis",
+        "original_score": {
+          "score": 3,
+          "scale": 5,
+          "grade": null,
+          "display": "3/5"
+        },
+        "normalized_10": 6,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:39:48.320Z",
+          "url": "https://www.eurogamer.net/overwatch-2-review-a-brilliant-teamplay-experience-in-the-grip-of-an-existential-crisis",
+          "configured_source_id": "eurogamer",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-8",
+        "configured_source_id": "pc-gamer",
+        "publication": "PC Gamer",
+        "title": "Overwatch 2 review",
+        "url": "https://www.pcgamer.com/overwatch-2-review",
+        "original_score": {
+          "score": 74,
+          "scale": 100,
+          "grade": null,
+          "display": "74/100"
+        },
+        "normalized_10": 7.4,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:39:48.320Z",
+          "url": "https://www.pcgamer.com/overwatch-2-review/",
+          "configured_source_id": "pc-gamer",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-12",
+        "configured_source_id": "the-sixth-axis",
+        "publication": "TheSixthAxis",
+        "title": "Overwatch 2 Review | TheSixthAxis",
+        "url": "https://www.thesixthaxis.com/2022/10/12/overwatch-2-review",
+        "original_score": {
+          "score": 8,
+          "scale": 10,
+          "grade": null,
+          "display": "8/10"
+        },
+        "normalized_10": 8,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:39:49.699Z",
+          "url": "https://www.thesixthaxis.com/2022/10/12/overwatch-2-review/",
+          "configured_source_id": "the-sixth-axis",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-13",
+        "configured_source_id": "push-square",
+        "publication": "Push Square",
+        "title": "Review: Overwatch 2 (PS5) - More 2.0 Than a Full Sequel",
+        "url": "https://www.pushsquare.com/reviews/ps5/overwatch-2",
+        "original_score": {
+          "score": 8,
+          "scale": 10,
+          "grade": null,
+          "display": "8/10"
+        },
+        "normalized_10": 8,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:39:50.310Z",
+          "url": "https://www.pushsquare.com/reviews/ps5/overwatch-2",
+          "configured_source_id": "push-square",
+          "direct_publisher": true
+        }
+      }
+    ],
+    "excluded_sources": [
+      {
+        "configured_source_id": "polygon",
+        "publication": "Polygon",
+        "url": "https://www.polygon.com/reviews/23385539/overwatch-2-review-battle-pass-free-to-play-blizzard-entertainment",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "guardian-games",
+        "publication": "The Guardian",
+        "url": "https://www.theguardian.com/games/2022/oct/06/overwatch-2-review-pc-ps45-xbox-one-xbox-series-xs-activision-blizzard",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "gamesradar",
+        "publication": "GamesRadar+",
+        "url": "https://www.gamesradar.com/overwatch-2-review",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "gamespot",
+        "publication": "GameSpot",
+        "url": "https://www.gamespot.com/reviews/overwatch-2-review-same-as-it-ever-was/1900-6417972",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "rock-paper-shotgun",
+        "publication": "Rock Paper Shotgun",
+        "url": "https://www.rockpapershotgun.com/overwatch-2-review-in-progress",
+        "reason": "canonical_version"
+      }
+    ],
+    "calculation": {
+      "source_count": 8,
+      "values": [
+        8,
+        9,
+        7,
+        6,
+        6,
+        7.4,
+        8,
+        8
+      ],
+      "mean_10": 7.425,
+      "score_10": 7.4
+    }
   }
 }

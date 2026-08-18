@@ -1,40 +1,104 @@
 {
-  "schema_version": 2,
+  "schema_version": 11,
   "game_slug": "hogwarts-legacy",
-  "updated_at": "2026-08-11T00:29:57.725Z",
+  "game_id": "game_11b38327dce7121057e3",
+  "updated_at": "2026-08-18T00:29:26.465Z",
+  "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
-    "required": 20,
-    "accepted": 20,
-    "passed": true
+    "minimum": 5,
+    "target": 20,
+    "accepted": 12,
+    "status": "green",
+    "full_registry_scan": true,
+    "checked_registered_sources": 41,
+    "applicable_registered_sources": 41
+  },
+  "regional_discovery": {
+    "region": "ru",
+    "checks": [
+      {
+        "source_id": "igromania",
+        "name": "Игромания",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "stopgame",
+        "name": "StopGame",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "kanobu",
+        "name": "Канобу",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "playground",
+        "name": "PlayGround.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vgtimes",
+        "name": "VGTimes",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "ixbt-games",
+        "name": "iXBT.games",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "gamemag",
+        "name": "GameMAG.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vk-play",
+        "name": "VK Play Media",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "shazoo",
+        "name": "Shazoo",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      }
+    ],
+    "complete": true,
+    "found_but_not_accepted": []
   },
   "reviews": [
     {
       "id": "source-1",
-      "publication": "Game Rant",
-      "title": "Hogwarts Legacy — Game Rant review",
-      "url": "https://gamerant.com/hogwarts-legacy-review/",
-      "author": "Dalton Cooper",
-      "published_at": "2023-02-06T11:00:16Z",
-      "evidence": [
-        "Ever since the Harry Potter franchise exploded in popularity in the late 90s, fans have been dreaming of getting their Hogwarts letter and visiting the magical school for their own",
-        "After creating their character, Hogwarts Legacy players are thrust into the Wizarding World with an exciting opening cut-scene that establishes the game's core mystery and introduces some of its principal",
-        "Hogwarts Legacy wastes little time getting players their first spells, which include the basic Lumos to light dark areas and Levioso to levitate objects. While spells are used to great",
-        "There have been some concerns that Hogwarts Legacy 's relatively low number of spells compared to other games would be a problem, but that's not the case at all. Hogwarts",
-        "Hogwarts Legacy combat is fun most of the time, but it's not perfect. The boss fights in Hogwarts Legacy are dull and repetitive, while the troll fights are downright obnoxious.",
-        "Besides the standard spells that players learn from their teachers at Hogwarts, Hogwarts Legacy also lets players learn the three Unforgivable Curses : Crucio, Imperio, and Avada Kedavra. Crucio lets",
-        "Anyone interested in obtaining all the Unforgivable Curses in Hogwarts Legacy will need to complete one of the game's companion quests. Three of the four Hogwarts Houses have their own",
-        "Regardless, the companion quests are only one type of side quest in Hogwarts Legacy . Hogwarts Legacy is absolutely stuffed with side quests , and while most of them are"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-2",
+      "configured_source_id": "ign",
       "publication": "IGN",
-      "title": "Hogwarts Legacy — IGN review",
+      "title": "Hogwarts Legacy Review - IGN",
       "url": "https://www.ign.com/articles/hogwarts-legacy-review-harry-potter-ps5-xbox-pc",
-      "author": "Travis Northup",
+      "resolved_url": "https://www.ign.com/articles/hogwarts-legacy-review-harry-potter-ps5-xbox-pc",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "2023-02-06T11:00:58.000Z",
-      "evidence": [
+      "author": "Travis Northup",
+      "language": "en",
+      "score": 9,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Hogwarts Legacy.",
+      "evidence_points": [
         "Like many, I’ve been waiting for a truly excellent Harry Potter game since I was in the third grade. In that time, we’ve gotten some respectable LEGO Potter games ,",
         "Right in line with most Harry Potter tales before it, Legacy’s plot has more holes than a fishnet stocking and sorta just expects you to accept that its magical world",
         "If you’re like me, you’ll roll your eyes during moments when you’re introduced to 100 years’ worth of dead characters lecturing you from paintings about the importance of some stuff",
@@ -44,54 +108,52 @@
         "Unexpectedly, I even found myself looking forward to hanging out with my professors, whether it was my main man Professor Fig, who serves as both something of a mentor and",
         "Even better, though, is the world itself, which is just packed with nearly everything I wanted in a Potter game and more. You’ll find yourself exploring Hogwarts’ stone-cobbled halls and"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "ign.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.890Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:41.620Z",
+        "url": "https://www.ign.com/articles/hogwarts-legacy-review-harry-potter-ps5-xbox-pc",
+        "configured_source_id": "ign",
+        "direct_publisher": true
+      }
     },
     {
-      "id": "source-3",
-      "publication": "PC Gamer",
-      "title": "Hogwarts Legacy — PC Gamer review",
-      "url": "https://www.pcgamer.com/hogwarts-legacy-review/",
-      "author": "https://www.pcgamer.com/author/morgan-park/",
-      "published_at": "2023-02-11T00:36:32Z",
-      "evidence": [
-        "Join the club for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
-        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
-        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
-        "PC Gamer's got your back Our experienced team dedicates many hours to every review, to really get to the heart of what matters most to you. Find out more about",
-        "What is it? An open world RPG in the Harry Potter universe Expect to pay: $60/&pound;55 Release date: February 10, 2023 Developer: Avalanche Software Publisher: Warner Bros. Interactive Reviewed on:",
-        "I was over 20 hours into Hogwarts Legacy before it revealed that, on top of being an expansive RPG with skill trees, wizard combat, crafting, environmental puzzles, and loads of",
-        "It certainly suffers from a meandering start and distracting technical issues, but once I was set free to explore the entirety of Hogwarts and miles of countryside surrounding it, I",
-        "Like those open-world classics I just mentioned, Hogwarts Legacy is a game you've probably played before, but also a rarity: a big-budget RPG attempting to bottle up all of the"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-4",
-      "publication": "GamesRadar+",
-      "title": "Hogwarts Legacy — GamesRadar+ review",
-      "url": "https://www.gamesradar.com/hogwarts-legacy-review/",
-      "author": "https://www.gamesradar.com/author/josh-west/",
-      "published_at": "2023-02-06T11:02:05Z",
-      "evidence": [
-        "Join the GamesRadar community for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
-        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
-        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
-        "With its stunning recreation of beloved Harry Potter landmarks and thrilling combat, Hogwarts Legacy definitely has its moments. Sadly, it tries to do too much all at once, and never",
-        "Why you can trust GamesRadar+ Our experts review games, movies and tech over countless hours, so you can choose the best for you. Find out more about our reviews policy.",
-        "Hogwarts Legacy struggles to balance authenticity against the acceleration of its action, though it does a fine job of concealing a tension between its overlapping role-playing, open-world, and action-adventure systems.",
-        "Release date: February 10, 2023 Platform(s): PS5, PC, Xbox Series X Developer: Avalanche Software Publisher: WB. Games",
-        "Harry Potter and the Philosopher's Stone, and the works that followed it, established a fascinating fantasy world full of magic, monsters, procedures, and politics. We explored this from the perspective"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-5",
+      "id": "source-2",
+      "configured_source_id": "game-informer",
       "publication": "Game Informer",
-      "title": "Hogwarts Legacy — Game Informer review",
+      "title": "Hogwarts Legacy Review: A Potion Well-Brewed",
       "url": "https://gameinformer.com/review/hogwarts-legacy/a-potion-well-brewed",
-      "author": "Matt Miller",
+      "resolved_url": "https://gameinformer.com/review/hogwarts-legacy/a-potion-well-brewed",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "",
-      "evidence": [
+      "author": "Matt Miller",
+      "language": "en",
+      "score": 9,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Hogwarts Legacy.",
+      "evidence_points": [
         "Capturing the essence of an established fiction is tricky business, especially when translating into a new medium. It’s a big reason licensed games frequently miss the mark, sometimes failing to",
         "By setting the game in the 1800s, the developer is able to borrow story elements and locations from later in the timeline, but otherwise tell a new story free of",
         "From the armor suits that come to attention as you pass to books that fly around like birds waiting to be snatched from the air, Hogwarts is a delightful environment",
@@ -100,16 +162,52 @@
         "I encountered several minor technical issues over the course of my lengthy playthrough, such as pop-in while moving fast or long door-opening loads. And some of the game systems are",
         "Like all our reviews, Game Informer ’s critical evaluation and scoring of Hogwarts Legacy is based on the game itself, not external factors. However, potential players should be aware of"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "gameinformer.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.890Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:41.620Z",
+        "url": "https://gameinformer.com/review/hogwarts-legacy/a-potion-well-brewed",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
     },
     {
-      "id": "source-6",
+      "id": "source-3",
+      "configured_source_id": "polygon",
       "publication": "Polygon",
-      "title": "Hogwarts Legacy — Polygon review",
-      "url": "https://www.polygon.com/reviews/23603142/hogwarts-legacy-review-harry-potter-jk-rowling-transphobic-ps5-pc-xbox/",
-      "author": "Gita Jackson",
+      "title": "Hogwarts Legacy wants to make everyone happy, but Harry Potter gets in the way",
+      "url": "https://www.polygon.com/reviews/23603142/hogwarts-legacy-review-harry-potter-jk-rowling-transphobic-ps5-pc-xbox",
+      "resolved_url": "https://www.polygon.com/reviews/23603142/hogwarts-legacy-review-harry-potter-jk-rowling-transphobic-ps5-pc-xbox",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "2023-02-17T13:00:00Z",
-      "evidence": [
+      "author": "Gita Jackson",
+      "language": "en",
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Hogwarts Legacy.",
+      "evidence_points": [
         "Hogwarts Legacy is not so much a video game as it is an attempt to resolve what was a particular writer’s very specific point of view into a “universe” that",
         "Joanne Rowling wrote Harry Potter and the Philosopher’s Stone, famously, as a single mother struggling in poverty. It would make her richer than most people in the world. When the",
         "Describing my fandom for the series is telling the story of an entire generation. People still casually drop their Hogwarts house in their dating profiles; proper nouns like “Voldemort” have",
@@ -119,154 +217,44 @@
         "Hogwarts Legacy is an open-world adventure game from Avalanche Software, a developer known primarily for making the Disney Infinity series and licensed movie tie-ins — the last game it released",
         "In Hogwarts Legacy, you play as a new student at the famed wizarding school who soon finds themselves embroiled in an ancient conspiracy, and uses their newfound powers to quell"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "polygon.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.890Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      }
     },
     {
-      "id": "source-7",
-      "publication": "GameSpot",
-      "title": "Hogwarts Legacy — GameSpot review",
-      "url": "https://www.gamespot.com/reviews/hogwarts-legacy-review-sleight-of-hand/1900-6418032/?ftag=CAD-01-10abi2f",
-      "author": "",
-      "published_at": "",
-      "evidence": [
-        "ef=\"https://www.polygon.com/reviews/23603142/hogwarts-legacy-review-harry-potter-jk-rowling-transphobic-ps5-pc-xbox\">Read full review GameSpot Staff GameSpot Top Critic 6 / 10 Feb 17, 2023 Hogwarts Legacy brilliantly adapts all of the source material fans of the Potterverse will expect, but wastes it on a rote open-world filled with mundane quests. Read full review Kevin Dunsmore Hardcore Gamer <div _ngcontent-sc150=\"\""
-      ],
-      "access_mode": "opencritic_excerpt"
-    },
-    {
-      "id": "source-8",
-      "publication": "Hardcore Gamer",
-      "title": "Hogwarts Legacy — Hardcore Gamer review",
-      "url": "https://hardcoregamer.com/?post_type=post&p=437267",
-      "author": "",
-      "published_at": "",
-      "evidence": [
-        "New partnership with TransferRoom will allow for biggest reinvention of the mode in franchise history.",
-        "We got to go hands-on with Tsuru Reef, the sole map launching alongside the season, and it was an absolute joy and might be the best map released yet.",
-        "Almost 30 years since its inception, the Brigandine franchise gets a new follow-up with Brigandine Abyss.",
-        "The past decade and a half of gaming has been rife with nasty and overreaching corporate decisions that are increasing in frequency.",
-        "A great pixel-art roguelike action extraction shooter into the slime-infested tunnels of a planet that's dangerous and rewarding in equal measures.",
-        "Truck-kun is Supporting Me from Another World?! is Strange Scaffold's latest title, making players run over people and objects for isekai support.",
-        "Update 2.1 for Project Motor Racing delivers major quality-of-life, immersion, and a fully rebuilt GT4 and GT3 classes.",
-        "Splatoon Raiders is a new take on Nintendo's shooting franchise, turning the Salmon Run mode into a standalone spin-off experience."
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-9",
-      "publication": "Tom’s Guide",
-      "title": "Hogwarts Legacy — Tom’s Guide review",
-      "url": "https://www.tomsguide.com/reviews/hogwarts-legacy",
-      "author": "https://www.tomsguide.com/author/rory-mellon",
-      "published_at": "2023-02-06T10:59:51Z",
-      "evidence": [
-        "Join the Tom's Guide Club for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
-        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
-        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
-        "Hogwarts Legacy delivers on the promise of creating your own story within the beloved Wizarding World of Harry Potter. The experience is occasionally blighted by bland open-world padding, and it's",
-        "Why you can trust Tom's Guide Our writers and editors spend hours analyzing and reviewing products, services, and apps to help find what's best for you. Find out more about",
-        "Platforms: PC, PS5 (reviewed), Xbox Series X Price: $70 Release Date: February 10, 2023 Genre: Adventure",
-        "Hogwarts Legacy is the first (non-mobile) game set in the Wizarding World of Harry Potter for more than 10 years. Until now, outside of rushed movie tie-ins and Lego games,",
-        "For years, Potter fans have dreamt about an open-world game that would let them live out their childhood dreams of attending the famous school of witchcraft and wizardry. And I&rsquo;m"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-10",
-      "publication": "DualShockers",
-      "title": "Hogwarts Legacy — DualShockers review",
-      "url": "https://www.dualshockers.com/hogwarts-legacy-review/",
-      "author": "Kyle Knight",
-      "published_at": "2023-02-12T23:30:17Z",
-      "evidence": [
-        "An immersive Wizarding World experience that's a bit too light on RPG innovation. Dualshockers was provided a copy by the publisher for review purposes.",
-        "Twenty years ago, I was gifted my first console: the PlayStation. Included with it was a copy of Harry Potter and the Philosopher's Stone, which wasn't just my introduction to",
-        "Much like the dreams I used to have in my younger years, Hogwarts Legacy begins with your acceptance letter to the infamous school of witchcraft and wizardry. You are, however,",
-        "But, before you set off on your adventure, you must create and customise your character. I was under the impression that Hogwarts Legacy would have an extensive array of customisation",
-        "Throughout your journey as a fifth-year Hogwarts student, you will be joined by your right-hand man, Professor Fig. Together you will attempt to unravel the mystery of why this ancient",
-        "When you're developing a triple-A video game set in one of the most popular universes of all time, creating a new story that is equally as unique as it is",
-        "Not only does Hogwarts Legacy fail to grip you into its story, but it also introduces one of its main villains in such a nonchalant way that I questioned how",
-        "Despite the clear amount of love that has gone into recreating this wizarding world, there are some basic gameplay elements that let it down."
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-11",
-      "publication": "Metro Gaming",
-      "title": "Hogwarts Legacy — Metro Gaming review",
-      "url": "https://metro.co.uk/2023/02/06/hogwarts-legacy-review-the-best-harry-potter-video-game-ever-made-18230040/",
-      "author": "",
-      "published_at": "",
-      "evidence": [
-        "> Nick Gillett Metro GameCentral Top Critic 8 / 10 Feb 6, 2023 A truly wizard RPG, whose historical setting frees it from the limitations of the books and films, with an open world experience that entertains no matter how much you care about the source material. Read full review Álvaro Alonso Hobby Consolas <div _ngcontent-sc150=\""
-      ],
-      "access_mode": "opencritic_excerpt"
-    },
-    {
-      "id": "source-12",
-      "publication": "Hobby Consolas",
-      "title": "Hogwarts Legacy — Hobby Consolas review",
-      "url": "https://www.hobbyconsolas.com/reviews/analisis-hogwarts-legacy-ps5-xbox-series-xs-pc-1195536",
-      "author": "Álvaro Alonso",
-      "published_at": "2023-02-06T12:00:11+01:00",
-      "evidence": [
-        "Como RPG es un juego deficiente. La estructura de mundo abierto \\\"familiar\\\". Sólo le falta el Quidditch para ser el juego de Harry Potter definitivo. \"},\"positiveNotes\":{\"@type\":\"ItemList\",\"itemListElement\":\" La representación del mundo",
-        "Ya hemos recibido la carta. Ya hemos elegido varita. El sombrero seleccionador ya nos ha asignado una casa. Ya hemos ido a clase, aprendido hechizos, volado en escoba y vivido",
-        "Nada más empezar Hogwarts Legacy , mientras el personaje protagonista se dirige hacia el Colegio de Magia y Hechicería para ingresar directamente en quinto año (algo muy inusual), el carruaje",
-        "Quería dar comienzo a este análisis de Hogwarts Legacy hablando sobre este minúsculo detalle, porque fue en ese precioso momento, tan sólo unos minutos después de iniciar partida y crear",
-        "Puede parecer un detalle sin importancia, pero el hecho de que en ese momento nadie nos explique por qué acaba de suceder eso, lo convierte en una especie de guiño",
-        "Y es algo que se aprecia a lo largo y ancho de todo Hogwarts Legacy, porque el juego que se han marcado es un verdadero monumento al mundo mágico .",
-        "Hogwarts Legacy tiene lugar en el año 1800, es decir, cien años antes de los acontecimientos que se narran en los libros y las películas de Harry Potter . Nosotros",
-        "Pero ese no es el único motivo por el que somos especiales: el personaje protagonista es capaz de ver retazos de una magia antigua , invisible para el resto de"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-13",
-      "publication": "TheSixthAxis",
-      "title": "Hogwarts Legacy — TheSixthAxis review",
-      "url": "https://www.thesixthaxis.com/2023/02/06/hogwarts-legacy-review/",
-      "author": "TSA Staff",
-      "published_at": "2023-02-06T11:24:27+00:00",
-      "evidence": [
-        "Since that first fuzzy look at Hogwarts Legacy – courtesy of a 2018 leak – Harry Potter have waited patiently for the series’ first proper AAA video game since the",
-        "Over the past several years we’ve had a trilogy of lacklustre new movies and a fan base that&#8217;s been splintered by the harmful rhetoric of Harry Potter author, J.K. Rowling.",
-        "The promise of a truly open world Harry Potter game makes Hogwarts Legacy an instant buy for some. Past movie adaptations have given us glimpses of what this might look",
-        "Being set in the 1890s means that Hogwarts Legacy predates the Harry Potter saga by roughly a century. It’s a double-edged sword, allowing Avalanche to tell their own story though",
-        "The game’s biggest narrative strength is how it pulls from the wider Wizarding World lore. While much of this may have been a bit of an afterthought during the writing",
-        "Hogwarts Legacy slots into the action RPG genre with its mix of spell-infused combat, open world adventuring, and character customisation. It’s not as deep as The Witcher III or Skyrim",
-        "Combat has you dousing opponents with basic bullet-like projectiles from your wand, combining these with a grimoire of charms, curses, and other incantations. Where some foes can be flung around",
-        "Another thing Hogwarts Legacy has in common with Warner’s flagship games is how it populates its game world with riddle-like puzzles, collectibles, side quests, and other points of interest. Although"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-14",
-      "publication": "Destructoid",
-      "title": "Hogwarts Legacy — Destructoid review",
-      "url": "https://www.destructoid.com/reviews/review-hogwarts-legacy/",
-      "author": "Chris Carter",
-      "published_at": "",
-      "evidence": [
-        "Legacy indeed Recommended Videos The Harry Potter franchise has seen tremendous ups and downs: the likes of which stand out even among other multi-billion-dollar franchises. I remember reading the first",
-        "The Harry Potter franchise has seen tremendous ups and downs: the likes of which stand out even among other multi-billion-dollar franchises. I remember reading the first book in a day",
-        "Hogwarts Legacy (PC, PS4, PS5 [reviewed], Switch, Xbox One, Xbox Series X/S) Developer: Avalanche Software Publisher: Warner Bros. Games Released: February 10, 2023 (PS5, Xbox Series X/S) / April 4,",
-        "Although they had a lot of help with the development of Hogwarts Legacy from satellite studios, it’s fascinating to see Avalanche Software in this position, making an expansive open world",
-        "The music, presentation, and myriad lore bits really make it. It’s got Gringotts. It’s got Hogsmeade. And of course, Hogwarts, with expansive detail. The world has a heavy synergy with",
-        "It also has some bog standard open world concepts, like Detective Vision (cloaked as the Revelio revealing spell), a light stealth system that often doesn’t justify its existence, a map",
-        "That’s because much of Hogwarts Legacy is restrained, which is unique in an era of open world bloat. There are just enough ingredients to warrant a planting and harvesting minigame,",
-        "Combat seems underwhelming at first, but on higher difficulty levels with more spells to command (and some talent points for good measure, which you get way too late into the"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-15",
+      "id": "source-4",
+      "configured_source_id": "game-revolution",
       "publication": "GameRevolution",
-      "title": "Hogwarts Legacy — GameRevolution review",
+      "title": "Hogwarts Legacy Review",
       "url": "https://www.gamerevolution.com/review/934630-hogwarts-legacy-review-ps5-pc-xbox-ps4-switch",
-      "author": "",
+      "resolved_url": "https://www.gamerevolution.com/review/934630-hogwarts-legacy-review-ps5-pc-xbox-ps4-switch",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "",
-      "evidence": [
+      "author": "",
+      "language": "en",
+      "score": 6,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Hogwarts Legacy.",
+      "evidence_points": [
         "Hogwarts Legacy is Harry Potter-flavored comfort food — it is as crowd-pleasing a game as you’re likely to find. It’s ironic, then, that it releases in controversial circumstances, as author",
         "Set in the late 1800s, this is an alarmingly pleasant Hogwarts that’s far removed from orphan Harry’s often traumatic experiences — there are no tormenting teachers like Severus Snape, no",
         "Unlike the Harry Potter series, which balances the bright and fantastical with characters enduring very relatable pain and grief, Hogwarts Legacy’s cast is mostly plain and forgettable, your player-character included.",
@@ -276,54 +264,52 @@
         "Within this world, Avalanche has made sure that almost every single Harry Potter box has been checked. Do you want to browse every shop in Hogsmeade? You can. What about",
         "For anyone even partially interested in the Wizarding World, Hogwarts Legacy can seriously raise your dopamine levels with the sheer number of things to do shoved in here. Throw in"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "gamerevolution.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.890Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score_evidence": {
+        "method": "registry:game-revolution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:41.620Z",
+        "url": "https://www.gamerevolution.com/review/934630-hogwarts-legacy-review-ps5-pc-xbox-ps4-switch",
+        "configured_source_id": "game-revolution",
+        "direct_publisher": true
+      }
     },
     {
-      "id": "source-16",
-      "publication": "PlayStation LifeStyle",
-      "title": "Hogwarts Legacy — PlayStation LifeStyle review",
-      "url": "https://www.playstationlifestyle.net/review/877353-hogwarts-legacy-review-ps5/",
-      "author": "",
-      "published_at": "",
-      "evidence": [
-        "Hogwarts Legacy promises to take fans inside the halls of Hogwarts in a 1:1 scale experience for the first time. This premise is something that Harry Potter fans have spent",
-        "For the most part, Avalanche has nailed it. Hogwarts Legacy is the closest we’ve been to living the life of a student at the titular academy, with only a few",
-        "In Hogwarts Legacy, you play a student starting at the school as a fifth year. You begin the game by boarding a thestral carriage with your mentor, Professor Fig, and",
-        "Ranrok leads a rebellious faction of goblins who hope to break free of what they consider oppressive treatment by wizards. Unfortunately, he hopes to harness the ancient magic to do",
-        "The mystery surrounding your character’s special abilities propels the entertaining story forward, but it’s definitely the backdrop here, with Legacy’s open world being the real star of the show. You’ll",
-        "Hogwarts Legacy’s sense of scale is its most impressive feat. The titular school is a sprawling castle with a plethora of nooks and crannies to explore, and throughout the game,",
-        "Just when Hogwarts starts to feel familiar, the game pulls the camera back and introduces the rest of the game world. Around ten hours in, you start exploring the countryside",
-        "However, Hogwarts Legacy isn’t just a nostalgia fest. While it does have a litany of references to characters, locations, and concepts from the rest of the franchise, it stands on"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-17",
-      "publication": "Attack of the Fanboy",
-      "title": "Hogwarts Legacy — Attack of the Fanboy review",
-      "url": "https://attackofthefanboy.com/reviews/hogwarts-legacy-review/",
-      "author": "Noah Nelson",
-      "published_at": "2023-02-09T19:51:47+00:00",
-      "evidence": [
-        "Scores of witches and wizards have been craving an immersive Wizarding World experience ever since their first page or frame in J. K. Rowling&#8217;s fantastic Harry Potter series. It&#8217;s a",
-        "Hogwarts Legacy is Avalanche Software&#8217;s single-player open-world RPG adventure set in an 1800s Hogwarts valley, which encompasses the castle, Hogsmeade, surrounding hamlets, and much more. It is the game you",
-        "After completing the main story of the game and getting a taste of everything Hogwarts Legacy has to offer (which is a lot ), I can confidently say that this",
-        "Hogwarts Legacy wastes no time with introductions . You pick your preferred graphics option , create your character, receive your letter to Hogwarts, and get in the carriage. We all",
-        "The grandeur and shrouded mystery of the plot mixed with the lunacy of a class of fifth years meddling in affairs far beyond their pay grade is unequivocally Harry Potter",
-        "On the flip side, the side quests and activities that feature fellow students and characters outside the castle walls are deviously distracting in the best way possible . The main",
-        "The pace at which you unlock and explore the world of Hogwarts Legacy is expertly crafted . Instead of throwing you into an endless ocean of spells, collectibles, potions, plants,",
-        "As mentioned previously, Hogwarts Legacy is a big game filled with lots of activities. While this can be a red flag in video games, the open world, Hogsmeade, and Hogwarts"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-18",
+      "id": "source-5",
+      "configured_source_id": "guardian-games",
       "publication": "The Guardian",
-      "title": "Hogwarts Legacy — The Guardian review",
+      "title": "Hogwarts Legacy review – wizarding wish-fulfilment whose magic wears off",
       "url": "https://www.theguardian.com/games/2023/feb/06/hogwarts-legacy-review-wizarding-wish-fulfilment-whose-magic-wears-off",
-      "author": "https://www.theguardian.com/profile/keza-macdonald",
+      "resolved_url": "https://www.theguardian.com/games/2023/feb/06/hogwarts-legacy-review-wizarding-wish-fulfilment-whose-magic-wears-off",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "2023-02-06T14:27:42.000Z",
-      "evidence": [
+      "author": "https://www.theguardian.com/profile/keza-macdonald",
+      "language": "en",
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Hogwarts Legacy.",
+      "evidence_points": [
         "PlayStation 5 (version tested), Xbox Series X, PC; Avalanche/Portkey Games Being able to wield a wand in the hallowed halls is enchanting, but what’s beneath the spell is competent but",
         "PlayStation 5 (version tested), Xbox Series X, PC; Avalanche/Portkey Games Being able to wield a wand in the hallowed halls is enchanting, but what’s beneath the spell is competent but",
         "G iven how merciless modern pop culture is in its exploitation of childhood nostalgia, it’s remarkable there has been no credible attempt at a big-budget Harry Potter video game before",
@@ -333,28 +319,44 @@
         "I had a very enjoyable time inside Hogwarts, attending lessons and exploring at night with the help of a Disillusionment charm and the Alohomora lockpicking spell, but this game is",
         "But outside Hogwarts and Hogsmeade, the game doesn’t have nearly so much personality. The story, which revolves around a goblin uprising, is thin and uninteresting, and interrogates nothing about the"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "theguardian.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.890Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      }
     },
     {
-      "id": "source-19",
-      "publication": "PlayStation Universe",
-      "title": "Hogwarts Legacy — PlayStation Universe review",
-      "url": "https://www.psu.com/reviews/hogwarts-legacy-ps5-review/",
-      "author": "",
-      "published_at": "",
-      "evidence": [
-        "_ngcontent-sc150=\"\" class=\"author-info col-4 row no-gutters\"> Michael Harradence PlayStation Universe Top Critic 9.5 / 10.0 Feb 6, 2023 Hogwarts Legacy is a compelling fantasy-RPG packed with stunning scenery, memorable characters and fantastic combat. Not only is it a brilliant love letter to fans of the Wizarding World, it excels as a game in its own right, so even non-Potter fans will find themselves immersed in its great story and characters. Read full review Liam Croft Push Square <i _ngcontent-sc150="
-      ],
-      "access_mode": "opencritic_excerpt"
-    },
-    {
-      "id": "source-20",
+      "id": "source-6",
+      "configured_source_id": "push-square",
       "publication": "Push Square",
-      "title": "Hogwarts Legacy — Push Square review",
+      "title": "Review: Hogwarts Legacy (PS5) - A Harry Potter Dream Come True",
       "url": "https://www.pushsquare.com/reviews/ps5/hogwarts-legacy",
-      "author": "Push Square",
+      "resolved_url": "https://www.pushsquare.com/reviews/ps5/hogwarts-legacy",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "2023-02-06T11:00:00+00:00",
-      "evidence": [
+      "author": "Push Square",
+      "language": "en",
+      "score": 8,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Hogwarts Legacy.",
+      "evidence_points": [
         "For so many bookworms of the late 1990s to mid 2000s, Hogwarts Legacy is something of a dream game. After a long line of bang-average licensed titles, developer Avalanche Software",
         "However, it can't be ignored just how much of a problematic person the series' real-life author has become. J.K. Rowling holds views we strongly disagree with, and we're not interested",
         "Many members of the transgender community and its supporters have justified reasons for skipping the title entirely, no matter how much of a childhood dream come true it may appear",
@@ -364,14 +366,535 @@
         "You haven't rocked up at Hogwarts as an 11-year-old, though: you're actually starting your wizarding education as a fifth year. It turns out you're a late bloomer, but while He",
         "What follows is a lengthy campaign that combines classroom visits with deadly excursions to find out how this power can be harnessed to put an end to the revolt led"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pushsquare.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.890Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:42.417Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/hogwarts-legacy",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.pcgamer.com/hogwarts-legacy-review",
+      "publication": "PC Gamer",
+      "title": "Hogwarts Legacy review",
+      "id": "source-7",
+      "configured_source_id": "pc-gamer",
+      "resolved_url": "https://www.pcgamer.com/hogwarts-legacy-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Hogwarts Legacy.",
+      "evidence_points": [
+        "Join the club for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
+        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
+        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
+        "PC Gamer's got your back Our experienced team dedicates many hours to every review, to really get to the heart of what matters most to you. Find out more about how we evaluate games and hardware.",
+        "What is it? An open world RPG in the Harry Potter universe Expect to pay: $60/&pound;55 Release date: February 10, 2023 Developer: Avalanche Software Publisher: Warner Bros. Interactive Reviewed on: RTX 3060, Ryzen 7 5700G 3.8Ghz, 16GB RAM Link: Official Site",
+        "I was over 20 hours into Hogwarts Legacy before it revealed that, on top of being an expansive RPG with skill trees, wizard combat, crafting, environmental puzzles, and loads of sidequests, it's also a quaint home decorating game with a splash of zoo management. This is a much larger game than I think anyone was anticipating and as I've completed the main quest and dozens of sidequests over 50 hours, I'm still surprised by how good each individual element is.",
+        "It certainly suffers from a meandering start and distracting technical issues, but once I was set free to explore the entirety of Hogwarts and miles of countryside surrounding it, I enjoyed Hogwarts Legacy in the same ways I did The Witcher 3 or Red Dead Redemption 2: moseying across a convincingly rendered world at my own pace, letting myself disappear into a character I'm increasingly invested in.",
+        "Like those open-world classics I just mentioned, Hogwarts Legacy is a game you've probably played before, but also a rarity: a big-budget RPG attempting to bottle up all of the prestige, splendor, and expectations of a massive media property into a seamless sandbox. For the most part, it nails it. This is Harry Potter's Arkham Asylum moment&mdash;a game telling its own story in an established world, unshackled by the restrictive deadlines and creative boundaries of a movie tie-in, created by a studio that was itself once relegated to obligatory marketing products like Toy Story 3: The Video Game.",
+        "Hogwarts Legacy had a firm grasp on my brain throughout my playthrough. I'd catch myself thinking about zapping dark wizards with blasts of Confringo when I should be preparing dinner or pondering what scarf goes best with my new favorite coat, which plant I should grow to brew invisibility potions quicker, and whether or not the game will ever stop hitching when I move between Hogwarts' many towers (it won't). I'm also, unfortunately, thinking about JK Rowling.",
+        "Usually it&rsquo;s an uncomplicated thing when games are good. We like them, they surprise us, I write about it, it's fun. But the fun of Hogwarts Legacy forms a unique set of conflicted feelings: I&rsquo;m enjoying a game that&rsquo;s an extension of JK Rowling, a powerful person who's used their platform to make transphobic comments in the last several years, applying her wealth and fame to promote an ideology that rejects and further marginalizes one of society's most vulnerable communities.&nbsp;"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pcgamer.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.890Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 83,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:42.417Z",
+        "url": "https://www.pcgamer.com/hogwarts-legacy-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.gamesradar.com/hogwarts-legacy-review",
+      "publication": "GamesRadar+",
+      "title": "Hogwarts Legacy review:",
+      "id": "source-8",
+      "configured_source_id": "gamesradar",
+      "resolved_url": "https://www.gamesradar.com/hogwarts-legacy-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Hogwarts Legacy.",
+      "evidence_points": [
+        "Join the GamesRadar community for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
+        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
+        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
+        "With its stunning recreation of beloved Harry Potter landmarks and thrilling combat, Hogwarts Legacy definitely has its moments. Sadly, it tries to do too much all at once, and never quite settles into a comfortable rhythm, or leverages the player experience against the established laws of the wizarding world",
+        "Why you can trust GamesRadar+ Our experts review games, movies and tech over countless hours, so you can choose the best for you. Find out more about our reviews policy.",
+        "Hogwarts Legacy struggles to balance authenticity against the acceleration of its action, though it does a fine job of concealing a tension between its overlapping role-playing, open-world, and action-adventure systems. Standing beside the Great Lake, gazing up at the Hogwarts School of Witchcraft and Wizardry, is undeniably awe-inspiring. As is sweeping the valleys surrounding Hogsmeade by broomstick, catching but a glimpse of its many turrets and towers piercing a starry sky; or spotting the shadow of the vast castle on some distant horizon, as you battle beasts and dark wizards into the depths of the Forbidden Forest and beyond.",
+        "Release date: February 10, 2023 Platform(s): PS5, PC, Xbox Series X Developer: Avalanche Software Publisher: WB. Games",
+        "Harry Potter and the Philosopher's Stone, and the works that followed it, established a fascinating fantasy world full of magic, monsters, procedures, and politics. We explored this from the perspective of the Boy Who Lived, though it's really the School He Attended that attracted attention. Hogwarts became an avenue for adventure and weird homework assignments, where chosen children could master spellcraft and unravel mysteries woven through the fabric of the castle.",
+        "At a surface level, Hogwarts Legacy understands this entirely. It's why you can spend hours idly walking labyrinthian corridors. Why you're free to marvel at the grand old architecture. To chase apparitions, hunt for secrets, and listen to students bicker about House Points without interruption. Hogwarts Legacy nails this part of the fantasy with an ambitious recreation of the school grounds, but you have to go out in search of interaction eventually.",
+        "Developer Avalanche Software promised that Hogwarts Legacy would let us \"experience life as a student at Hogwarts School of Witchcraft and Wizardry\". There is truth to this, as you're able to attend a selection of wonderfully-scripted classes: Astronomy, Charms, Defense Against the Dark Arts, Herbology, History of Magic, Potions, and Transfiguration, and electives like Care of Magical Creatures and Divination. But these sessions are fleeting &ndash; rare opportunities to feel like an ordinary student of Hogwarts before a hidden truth of the wizarding world demands your full attention.&nbsp;"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "gamesradar.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.890Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 3.5,
+      "scale": 5,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:42.417Z",
+        "url": "https://www.gamesradar.com/hogwarts-legacy-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.gamespot.com/reviews/hogwarts-legacy-review-sleight-of-hand/1900-6418032",
+      "publication": "GameSpot",
+      "title": "Hogwarts Legacy — GameSpot review",
+      "id": "source-9",
+      "configured_source_id": "gamespot",
+      "resolved_url": "https://www.gamespot.com/reviews/hogwarts-legacy-review-sleight-of-hand/1900-6418032",
+      "source_kind": "review",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T20:37:40.890Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.thesixthaxis.com/2023/02/06/hogwarts-legacy-review",
+      "publication": "TheSixthAxis",
+      "title": "Hogwarts Legacy Review | TheSixthAxis",
+      "id": "source-10",
+      "configured_source_id": "the-sixth-axis",
+      "resolved_url": "https://www.thesixthaxis.com/2023/02/06/hogwarts-legacy-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Hogwarts Legacy.",
+      "evidence_points": [
+        "Since that first fuzzy look at Hogwarts Legacy – courtesy of a 2018 leak – Harry Potter have waited patiently for the series’ first proper AAA video game since the last main film blew up the box office well over a decade ago. A lot has changed since then, and we’re not just talking about the ever-raising bar for prestige, open world games.",
+        "Over the past several years we’ve had a trilogy of lacklustre new movies and a fan base that&#8217;s been splintered by the harmful rhetoric of Harry Potter author, J.K. Rowling. Despite efforts to distance themselves from this controversy, and to make Hogwarts Legacy the most inclusive entry in this billion dollar franchise, developer Avalanche Software is fighting an uphill battle in that regard. Even without this pressure, and the justifiable reasons to avoid Hogwarts Legacy, they’ve had to carry the weighty burden of fan expectations, with the hype train finally arriving at Hogsmeade Station all these years later.",
+        "The promise of a truly open world Harry Potter game makes Hogwarts Legacy an instant buy for some. Past movie adaptations have given us glimpses of what this might look like, though none allow you to roam the halls of Hogwarts Castle and beyond quite like this. You star as a wizard or witch of your own making, arriving at the world-famous school as a fifth year student. Not only are you playing catch up, you immediately find yourself embroiled in a mystery of murder, monsters, and ancient magic.",
+        "Being set in the 1890s means that Hogwarts Legacy predates the Harry Potter saga by roughly a century. It’s a double-edged sword, allowing Avalanche to tell their own story though one that isn’t able to lean on beloved characters or set piece moments from the books and films. That said, Hogwarts itself and many of the locales you visit will be instantly familiar, imitating how they appear in the movies, albeit augmented to suit the era.",
+        "The game’s biggest narrative strength is how it pulls from the wider Wizarding World lore. While much of this may have been a bit of an afterthought during the writing of the books, here it is put to great effect, helping to flesh out the universe and introduce a diverse cast of characters. A lot of passion has also gone into making your experience as a Hogwarts student feel authentic, being sorted into one of the four houses – though you can override this, if you prefer – each house coming with their own common room and living quarters. You’ll interact with fellow students, professors, and the myriad characters who populate the castle, Hogsmeade village, and other hamlets.",
+        "Hogwarts Legacy slots into the action RPG genre with its mix of spell-infused combat, open world adventuring, and character customisation. It’s not as deep as The Witcher III or Skyrim , though over time, you’ll unlock an increasing number of ways to spice up your playstyle, learning new spells, levelling up, and upgrading your gear.",
+        "Another thing Hogwarts Legacy has in common with Warner’s flagship games is how it populates its game world with riddle-like puzzles, collectibles, side quests, and other points of interest. Although entirely optional, these activities encourage players to explore their surroundings and stray from the critical path, inevitably multiplying your total play time in doing so.",
+        "Your day-to-day life in Hogwarts will be mostly spent jumping from classroom to classroom, picking up new spells and unlocking a wider web of game mechanics and systems, such as growing magical plants and brewing potions. Avalanche succeeds in giving students a taste of the various wizarding disciplines the school has to offer, though they can mesh together awkwardly at times. You’ll need to visit the greenhouse and dungeons regularly to collect reagents and potions, with players only able to slot four spells at any given time. This results in counterintuitive busy work as you dip into loadout and fast travel menus, even if the process becomes second nature after a while.",
+        "Disappointingly there couldn&#8217;t be a reasonable discussion of this game, review and the wider context. The comments section is now closed and all comments deleted.",
+        "We do not license content or design to any other site. No element of this site can be used without written permission. All content should be considered opinion. Article posters are the individual owner of the article content. We are not affiliated with any third party."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "thesixthaxis.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.890Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 7,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:43.347Z",
+        "url": "https://www.thesixthaxis.com/2023/02/06/hogwarts-legacy-review/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.destructoid.com/reviews/review-hogwarts-legacy",
+      "publication": "Destructoid",
+      "title": "Hogwarts Legacy — Destructoid review",
+      "id": "source-11",
+      "configured_source_id": "destructoid",
+      "resolved_url": "https://www.destructoid.com/reviews/review-hogwarts-legacy",
+      "source_kind": "review",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T20:37:40.890Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.hookedgamers.com/pc/hogwarts_legacy/review/article-2399.html",
+      "title": "Hogwarts Legacy PC review - \"Welcome to Hogwarts\" | Hooked Gamers",
+      "discovery_method": "external_search",
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "language": "en",
+      "id": "source-12",
+      "resolved_url": "https://www.hookedgamers.com/pc/hogwarts_legacy/review/article-2399.html",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Hogwarts Legacy.",
+      "evidence_points": [],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "hookedgamers.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.890Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "publisher_rule"
+        }
+      },
+      "score": 8.8,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "registry:hooked-gamers",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:43.347Z",
+        "url": "https://www.hookedgamers.com/pc/hogwarts_legacy/review/article-2399.html",
+        "configured_source_id": "hooked-gamers",
+        "direct_publisher": true
+      }
     }
   ],
-  "game_id": "game_11b38327dce7121057e3",
-  "igropoisk_article": {
-    "url": "../../article/hogwarts-legacy/",
-    "title": "Hogwarts Legacy — разбор Игропоиска",
-    "description": "Подробный разбор Hogwarts Legacy: игровой цикл, системы, мир, прогрессия, подача, слабые места и то, как игра воспринимается сейчас.",
-    "score": 8.3
+  "rejected": [],
+  "source_proposals": [],
+  "review_score": {
+    "status": "green",
+    "owner": "review",
+    "method": {
+      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+      "formula": "sum(normalized_10) / source_count",
+      "minimum_sources": 3,
+      "target_sources": 10,
+      "maximum_sources": null,
+      "use_all_eligible_sources": true,
+      "required_evidence_scope": "editorial_review",
+      "output_scale": 10,
+      "rounding_decimals": 1,
+      "one_vote_per_publication": true,
+      "aggregators_forbidden": true,
+      "invented_scores_forbidden": true,
+      "exact_canonical_version_required": true
+    },
+    "sources": [
+      {
+        "source_id": "source-1",
+        "configured_source_id": "ign",
+        "publication": "IGN",
+        "title": "Hogwarts Legacy Review - IGN",
+        "url": "https://www.ign.com/articles/hogwarts-legacy-review-harry-potter-ps5-xbox-pc",
+        "original_score": {
+          "score": 9,
+          "scale": 10,
+          "grade": null,
+          "display": "9/10"
+        },
+        "normalized_10": 9,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:41.620Z",
+          "url": "https://www.ign.com/articles/hogwarts-legacy-review-harry-potter-ps5-xbox-pc",
+          "configured_source_id": "ign",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-2",
+        "configured_source_id": "game-informer",
+        "publication": "Game Informer",
+        "title": "Hogwarts Legacy Review: A Potion Well-Brewed",
+        "url": "https://gameinformer.com/review/hogwarts-legacy/a-potion-well-brewed",
+        "original_score": {
+          "score": 9,
+          "scale": 10,
+          "grade": null,
+          "display": "9/10"
+        },
+        "normalized_10": 9,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:41.620Z",
+          "url": "https://gameinformer.com/review/hogwarts-legacy/a-potion-well-brewed",
+          "configured_source_id": "game-informer",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-4",
+        "configured_source_id": "game-revolution",
+        "publication": "GameRevolution",
+        "title": "Hogwarts Legacy Review",
+        "url": "https://www.gamerevolution.com/review/934630-hogwarts-legacy-review-ps5-pc-xbox-ps4-switch",
+        "original_score": {
+          "score": 6,
+          "scale": 10,
+          "grade": null,
+          "display": "6/10"
+        },
+        "normalized_10": 6,
+        "score_evidence": {
+          "method": "registry:game-revolution",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:41.620Z",
+          "url": "https://www.gamerevolution.com/review/934630-hogwarts-legacy-review-ps5-pc-xbox-ps4-switch",
+          "configured_source_id": "game-revolution",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-6",
+        "configured_source_id": "push-square",
+        "publication": "Push Square",
+        "title": "Review: Hogwarts Legacy (PS5) - A Harry Potter Dream Come True",
+        "url": "https://www.pushsquare.com/reviews/ps5/hogwarts-legacy",
+        "original_score": {
+          "score": 8,
+          "scale": 10,
+          "grade": null,
+          "display": "8/10"
+        },
+        "normalized_10": 8,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:42.417Z",
+          "url": "https://www.pushsquare.com/reviews/ps5/hogwarts-legacy",
+          "configured_source_id": "push-square",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-7",
+        "configured_source_id": "pc-gamer",
+        "publication": "PC Gamer",
+        "title": "Hogwarts Legacy review",
+        "url": "https://www.pcgamer.com/hogwarts-legacy-review",
+        "original_score": {
+          "score": 83,
+          "scale": 100,
+          "grade": null,
+          "display": "83/100"
+        },
+        "normalized_10": 8.3,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:42.417Z",
+          "url": "https://www.pcgamer.com/hogwarts-legacy-review/",
+          "configured_source_id": "pc-gamer",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-8",
+        "configured_source_id": "gamesradar",
+        "publication": "GamesRadar+",
+        "title": "Hogwarts Legacy review:",
+        "url": "https://www.gamesradar.com/hogwarts-legacy-review",
+        "original_score": {
+          "score": 3.5,
+          "scale": 5,
+          "grade": null,
+          "display": "3.5/5"
+        },
+        "normalized_10": 7,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:42.417Z",
+          "url": "https://www.gamesradar.com/hogwarts-legacy-review/",
+          "configured_source_id": "gamesradar",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-10",
+        "configured_source_id": "the-sixth-axis",
+        "publication": "TheSixthAxis",
+        "title": "Hogwarts Legacy Review | TheSixthAxis",
+        "url": "https://www.thesixthaxis.com/2023/02/06/hogwarts-legacy-review",
+        "original_score": {
+          "score": 7,
+          "scale": 10,
+          "grade": null,
+          "display": "7/10"
+        },
+        "normalized_10": 7,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:43.347Z",
+          "url": "https://www.thesixthaxis.com/2023/02/06/hogwarts-legacy-review/",
+          "configured_source_id": "the-sixth-axis",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-12",
+        "configured_source_id": "hooked-gamers",
+        "publication": "Hooked Gamers",
+        "title": "Hogwarts Legacy PC review - \"Welcome to Hogwarts\" | Hooked Gamers",
+        "url": "https://www.hookedgamers.com/pc/hogwarts_legacy/review/article-2399.html",
+        "original_score": {
+          "score": 8.8,
+          "scale": 10,
+          "grade": null,
+          "display": "8.8/10"
+        },
+        "normalized_10": 8.8,
+        "score_evidence": {
+          "method": "registry:hooked-gamers",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:43.347Z",
+          "url": "https://www.hookedgamers.com/pc/hogwarts_legacy/review/article-2399.html",
+          "configured_source_id": "hooked-gamers",
+          "direct_publisher": true
+        }
+      }
+    ],
+    "excluded_sources": [
+      {
+        "configured_source_id": "polygon",
+        "publication": "Polygon",
+        "url": "https://www.polygon.com/reviews/23603142/hogwarts-legacy-review-harry-potter-jk-rowling-transphobic-ps5-pc-xbox",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "guardian-games",
+        "publication": "The Guardian",
+        "url": "https://www.theguardian.com/games/2023/feb/06/hogwarts-legacy-review-wizarding-wish-fulfilment-whose-magic-wears-off",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "gamespot",
+        "publication": "GameSpot",
+        "url": "https://www.gamespot.com/reviews/hogwarts-legacy-review-sleight-of-hand/1900-6418032",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "destructoid",
+        "publication": "Destructoid",
+        "url": "https://www.destructoid.com/reviews/review-hogwarts-legacy",
+        "reason": "canonical_version"
+      }
+    ],
+    "calculation": {
+      "source_count": 8,
+      "values": [
+        9,
+        9,
+        6,
+        8,
+        8.3,
+        7,
+        7,
+        8.8
+      ],
+      "mean_10": 7.8875,
+      "score_10": 7.9
+    }
   }
 }

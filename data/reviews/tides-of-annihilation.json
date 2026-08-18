@@ -1,0 +1,180 @@
+{
+  "schema_version": 12,
+  "game_slug": "tides-of-annihilation",
+  "game_id": "game_22306a35b896215b276a",
+  "updated_at": "2026-08-18T09:52:29.500Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "publication_gate": {
+    "minimum": 5,
+    "target": 20,
+    "accepted": 1,
+    "status": "red-needs-revision",
+    "full_registry_scan": true,
+    "checked_registered_sources": 45,
+    "applicable_registered_sources": 45,
+    "maximum": 20,
+    "post_create_verified_corpus_preserved": true
+  },
+  "regional_discovery": {
+    "region": "ru",
+    "checks": [
+      {
+        "source_id": "igromania",
+        "name": "Игромания",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "stopgame",
+        "name": "StopGame",
+        "status": "found",
+        "notes": "verified direct review"
+      },
+      {
+        "source_id": "kanobu",
+        "name": "Канобу",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "playground",
+        "name": "PlayGround.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vgtimes",
+        "name": "VGTimes",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "ixbt-games",
+        "name": "iXBT.games",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "gamemag",
+        "name": "GameMAG.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vk-play",
+        "name": "VK Play Media",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "shazoo",
+        "name": "Shazoo",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      }
+    ],
+    "complete": true,
+    "found_but_not_accepted": []
+  },
+  "reviews": [
+    {
+      "url": "https://stopgame.ru/show/143243/maskarad_v_bloodlines_2_detali_tides_of_annihilation_stalker_2_mozhno_igrat_pervye_reviewy_avowed",
+      "title": "Маскарад в Bloodlines 2, детали Tides of Annihilation, STALKER 2 можно играть, первые обзоры Avowed…",
+      "discovery_method": "external_search",
+      "configured_source_id": "stopgame",
+      "publication": "StopGame",
+      "language": "ru",
+      "id": "source-1",
+      "resolved_url": "https://stopgame.ru/show/143243/maskarad_v_bloodlines_2_detali_tides_of_annihilation_stalker_2_mozhno_igrat_pervye_reviewy_avowed",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Tides of Annihilation.",
+      "evidence_points": [
+        "Журналисты опубликовали первые полноценные обзоры &nbsp; Avowed , &nbsp; S.T.A.L.K.E.R. 2: Heart of Chornobyl получила ещё одну масштабную порцию правок, &nbsp; Knights in Tight Spaces обрела дату выхода, создатели &nbsp; Vampire: The Masquerade — Bloodlines 2 поделились новыми отрывками геймплея и подробностями о соблюдении маскарада в игре, больше деталей раскрыли авторы &nbsp; Tides of Annihilation , для &nbsp; Astro Bot выпустит 5 карт для скоростных забегов, Valve опубликовала список всех запланированных на 2025-й год мероприятий в Steam."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "stopgame.ru",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-18T09:51:51.199Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    }
+  ],
+  "rejected": [
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/tides-of-annihilation-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/tides-of-annihilation",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/tides-of-annihilation-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    }
+  ],
+  "source_proposals": [],
+  "review_score": {
+    "status": "red-needs-revision",
+    "owner": "review",
+    "method": {
+      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+      "formula": "sum(normalized_10) / source_count",
+      "minimum_sources": 3,
+      "target_sources": 10,
+      "maximum_sources": null,
+      "use_all_eligible_sources": true,
+      "required_evidence_scope": "editorial_review",
+      "output_scale": 10,
+      "rounding_decimals": 1,
+      "one_vote_per_publication": true,
+      "aggregators_forbidden": true,
+      "invented_scores_forbidden": true,
+      "exact_canonical_version_required": true
+    },
+    "sources": [],
+    "excluded_sources": [
+      {
+        "configured_source_id": "stopgame",
+        "publication": "StopGame",
+        "url": "https://stopgame.ru/show/143243/maskarad_v_bloodlines_2_detali_tides_of_annihilation_stalker_2_mozhno_igrat_pervye_reviewy_avowed",
+        "reason": "canonical_version"
+      }
+    ],
+    "calculation": {
+      "source_count": 0,
+      "values": [],
+      "mean_10": null,
+      "score_10": null
+    }
+  }
+}

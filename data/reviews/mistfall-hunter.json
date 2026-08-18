@@ -1,41 +1,232 @@
 {
-  "schema_version": 2,
+  "schema_version": 11,
   "game_slug": "mistfall-hunter",
-  "updated_at": "2026-08-11T00:29:57.746Z",
+  "updated_at": "2026-08-17T23:29:38.521Z",
   "publication_gate": {
-    "target_required": 20,
-    "required": 2,
-    "accepted": 2,
-    "limited_coverage": true,
-    "passed": true
+    "minimum": 5,
+    "target": 20,
+    "accepted": 1,
+    "status": "red-needs-revision",
+    "full_registry_scan": true,
+    "checked_registered_sources": 45,
+    "applicable_registered_sources": 45
   },
   "reviews": [
     {
       "id": "source-1",
-      "publication": "DualShockers",
-      "title": "Mistfall Hunter Review: A Potentially Great Game that Gets in ...",
-      "url": "https://www.dualshockers.com/mistfall-hunter-review/",
-      "evidence": [
-        "A review of the new extraction Soulslike game, Mistfall Hunter."
-      ],
-      "access_mode": "search_excerpt"
-    },
-    {
-      "id": "source-2",
+      "configured_source_id": "ign",
       "publication": "IGN",
-      "title": "Mistfall Hunter - IGN",
-      "url": "https://www.ign.com/games/mistfall-hunter",
-      "evidence": [
-        "Mistfall Hunter is a third-person action PvPvE extraction RPG. Gear up for different classes, master combos and strategic skills, and face intense battles against monsters or players, solo or with ..."
+      "title": "mistfall-hunter — IGN review",
+      "url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "score": 60,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for mistfall-hunter attributed by Metacritic to IGN.",
+      "evidence_points": [
+        "Adria Mistfall Hunter isn’t a revolutionary game, but it wins players over with its atmosphere, diverse classes, and tense matches. However, its weak solo experience, lack of a dedicated PvE mode, and monetization are likely to turn many players away. With a bit of luck, it’s a game that will only improve over time."
       ],
-      "access_mode": "search_excerpt"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-17T23:29:29.474Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T23:29:29.474Z",
+        "url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
+        "configured_source_id": "ign",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "IGN",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
     }
   ],
   "game_id": "game_2a9e09061acdd3b520bb",
-  "igropoisk_article": {
-    "url": "../../article/mistfall-hunter/",
-    "title": "mistfall-hunter — разбор Игропоиска",
-    "description": "Подробный разбор mistfall-hunter: игровой цикл, системы, мир, прогрессия, подача, слабые места и то, как игра воспринимается сейчас.",
-    "score": 8.3
+  "igropoisk_article": null,
+  "source_registry": "config/parsers/review-source-registry.json",
+  "regional_discovery": {
+    "region": "ru",
+    "checks": [
+      {
+        "source_id": "igromania",
+        "name": "Игромания",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "stopgame",
+        "name": "StopGame",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "kanobu",
+        "name": "Канобу",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "playground",
+        "name": "PlayGround.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vgtimes",
+        "name": "VGTimes",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "ixbt-games",
+        "name": "iXBT.games",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "gamemag",
+        "name": "GameMAG.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vk-play",
+        "name": "VK Play Media",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "shazoo",
+        "name": "Shazoo",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      }
+    ],
+    "complete": true,
+    "found_but_not_accepted": []
+  },
+  "rejected": [
+    {
+      "publication": "IGN",
+      "url": "https://www.ign.com/games/mistfall-hunter",
+      "title": "Mistfall Hunter - IGN",
+      "reasons": [
+        "non_review_path"
+      ]
+    },
+    {
+      "publication": "IGN",
+      "url": "https://www.ign.com/games/mistfall-hunter",
+      "title": "Mistfall Hunter - IGN",
+      "reasons": [
+        "non_review_path"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/mistfall-hunter",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/mistfall-hunter-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/mistfall-hunter-review",
+      "reasons": [
+        "HTTP 404"
+      ]
+    }
+  ],
+  "review_score": {
+    "status": "red-needs-revision",
+    "owner": "review",
+    "method": {
+      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+      "formula": "sum(normalized_10) / source_count",
+      "minimum_sources": 3,
+      "target_sources": 10,
+      "maximum_sources": null,
+      "use_all_eligible_sources": true,
+      "required_evidence_scope": "editorial_review",
+      "output_scale": 10,
+      "rounding_decimals": 1,
+      "one_vote_per_publication": true,
+      "aggregators_forbidden": true,
+      "invented_scores_forbidden": true,
+      "exact_canonical_version_required": true
+    },
+    "sources": [
+      {
+        "source_id": "source-1",
+        "configured_source_id": "ign",
+        "publication": "IGN",
+        "title": "mistfall-hunter — IGN review",
+        "url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
+        "original_score": {
+          "score": 60,
+          "scale": 100,
+          "grade": null,
+          "display": "60/100"
+        },
+        "normalized_10": 6,
+        "score_evidence": {
+          "method": "critic-index-attribution",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T23:29:29.474Z",
+          "url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
+          "configured_source_id": "ign",
+          "direct_publisher": false,
+          "historical": false,
+          "index_source": "metacritic",
+          "index_platform": "primary",
+          "attributed_publication": "IGN",
+          "aggregate_score_used": false,
+          "user_score_used": false,
+          "original_review_url": ""
+        }
+      }
+    ],
+    "excluded_sources": [],
+    "calculation": {
+      "source_count": 1,
+      "values": [
+        6
+      ],
+      "mean_10": 6,
+      "score_10": 6
+    }
   }
 }

@@ -1,40 +1,104 @@
 {
-  "schema_version": 2,
+  "schema_version": 11,
   "game_slug": "black-myth-wukong",
-  "updated_at": "2026-08-11T00:29:57.729Z",
+  "game_id": "game_ddfb49802e631e4d0acb",
+  "updated_at": "2026-08-17T20:38:36.901Z",
+  "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
-    "required": 20,
-    "accepted": 20,
-    "passed": true
+    "minimum": 5,
+    "target": 20,
+    "accepted": 9,
+    "status": "green",
+    "full_registry_scan": true,
+    "checked_registered_sources": 41,
+    "applicable_registered_sources": 41
+  },
+  "regional_discovery": {
+    "region": "ru",
+    "checks": [
+      {
+        "source_id": "igromania",
+        "name": "Игромания",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "stopgame",
+        "name": "StopGame",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "kanobu",
+        "name": "Канобу",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "playground",
+        "name": "PlayGround.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vgtimes",
+        "name": "VGTimes",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "ixbt-games",
+        "name": "iXBT.games",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "gamemag",
+        "name": "GameMAG.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vk-play",
+        "name": "VK Play Media",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "shazoo",
+        "name": "Shazoo",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      }
+    ],
+    "complete": true,
+    "found_but_not_accepted": []
   },
   "reviews": [
     {
       "id": "source-1",
-      "publication": "Game Rant",
-      "title": "Black Myth: Wukong — Game Rant review",
-      "url": "https://gamerant.com/black-myth-wukong-review/",
-      "author": "Dalton Cooper",
-      "published_at": "2024-08-16T14:00:12Z",
-      "evidence": [
-        "I was completely blown away by Black Myth: Wukong 's first trailer in 2020. Boasting jaw-dropping visuals and flashy, action-packed combat, Black Myth: Wukong immediately drew me in with its",
-        "Anyone going into Black Myth: Wukong expecting it to be more God of War or Devil May Cry than Soulslike is in for a rude awakening. While there's been some",
-        "The desire to differentiate Black Myth: Wukong from Soulslikes is puzzling, as the game is very clearly trying to ape FromSoftware's formula. Players fight their way from shrine to shrine",
-        "Another way Black Myth differs from most Soulslikes is that players are stuck with basically one weapon throughout the course of the game: the legendary staff from the Journey to",
-        "Spells play a huge part in Black Myth: Wukong 's combat, with players unlocking a variety of fun spells over the course of the game. I won't give away all",
-        "I tested Black Myth: Wukong using a PC powered by Nvidia GeForce RTX 3080, 3.70 GHz AMD Ryzen 9 5900X 12-Core Processor, and 32.0 GB RAM.",
-        "Besides spells and whacking enemies with the staff, Black Myth: Wukong also lets players briefly summon spirits of certain enemies to unleash a powerful attack. Black Myth has dozens of",
-        "When everything clicks, Black Myth: Wukong combat almost feels like a dance. Players will dodge out of the way of attacks at the last second, unleash a devastating heavy attack"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-2",
+      "configured_source_id": "ign",
       "publication": "IGN",
-      "title": "Black Myth: Wukong — IGN review",
+      "title": "Black Myth: Wukong Review - IGN",
       "url": "https://www.ign.com/articles/black-myth-wukong-review-pc",
-      "author": "Mitchell Saltzman",
+      "resolved_url": "https://www.ign.com/articles/black-myth-wukong-review-pc",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "2024-08-16T14:00:00.000Z",
-      "evidence": [
+      "author": "Mitchell Saltzman",
+      "language": "en",
+      "score": 8,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Black Myth: Wukong.",
+      "evidence_points": [
         "I’ve never been so utterly blown away, yet simultaneously so unbelievably frustrated by a game as I have been with Black Myth: Wukong. This is, undoubtedly, one of the most",
         "Black Myth: Wukong’s story is somewhat of a follow up to the classic novel Journey to the West by Wu Cheng’en, a book that I only personally know thanks to",
         "You play as The Destined One, a literal monkey who wakes up one morning and decides to set out on a roughly 40-hour journey to locate the six relics of",
@@ -44,16 +108,52 @@
         "Combat in Black Myth: Wukong is simple and elegant, thanks in part to some tools that are really fun to play around with. Success hinges on a delicate balance of",
         "You also have access to a small handful of spells, governed by a mana meter, that are versatile enough to be useful in a wide array of situations. The Immobilize"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "ign.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:35.847Z",
+        "url": "https://www.ign.com/articles/black-myth-wukong-review-pc",
+        "configured_source_id": "ign",
+        "direct_publisher": true
+      }
     },
     {
-      "id": "source-3",
+      "id": "source-2",
+      "configured_source_id": "pc-gamer",
       "publication": "PC Gamer",
-      "title": "Black Myth: Wukong — PC Gamer review",
-      "url": "https://www.pcgamer.com/games/rpg/black-myth-wukong-review/",
-      "author": "https://www.pcgamer.com/author/tyler-colp/",
+      "title": "Black Myth: Wukong review",
+      "url": "https://www.pcgamer.com/games/rpg/black-myth-wukong-review",
+      "resolved_url": "https://www.pcgamer.com/games/rpg/black-myth-wukong-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "2024-08-16T14:00:23Z",
-      "evidence": [
+      "author": "https://www.pcgamer.com/author/tyler-colp/",
+      "language": "en",
+      "score": 87,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Black Myth: Wukong.",
+      "evidence_points": [
         "Join the club for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
         "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
         "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
@@ -63,35 +163,52 @@
         "What is it? A beautiful and challenging singleplayer action RPG based on a Journey to the West. Release date August 20, 2024 Expect to pay $60/&pound;50 Developer GameScience Publisher GameScience",
         "Dark Souls never let me stick my tongue out as a giant frog and slap my enemies around with it. It never let me create a posse of clones to"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pcgamer.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:35.848Z",
+        "url": "https://www.pcgamer.com/games/rpg/black-myth-wukong-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
     },
     {
-      "id": "source-4",
-      "publication": "Eurogamer",
-      "title": "Black Myth: Wukong — Eurogamer review",
-      "url": "https://www.eurogamer.net/black-myth-wukong-review",
-      "author": "",
-      "published_at": "2024-08-20T02:00:00+00:00",
-      "evidence": [
-        "Black Myth: Wukong is nothing if not ambitious. As many of its early trailers and tech demos implied, this was a game punching above its weight. It wasn't just a",
-        "But now, after spending upwards of 40 hours retracing the steps of its titular simian hero as the silent but deadly Destined One, Black Myth emerges as a game that",
-        "But outside of those pulse-racing encounters, Black Myth is an altogether more mind-numbing experience, its thrilling highs undone by baggy world design, an uneven difficulty curve and disjointed storytelling. Ostensibly,",
-        "It's all very straightforward in hindsight. But this is also a game where you'll finish one chapter fighting a flaming bear on a top of a hill one minute, then",
-        "Alas, these contrivances are made worse by Black Myth's muddled environments. Foregoing a map and compass is one thing, but Wukong's biggest sin is letting its pursuit of realism run",
-        "Maybe it's harsh to hold these fundamentally linear spaces to the same standards as larger open worlds. But whichever way you slice it, there's no denying that Black Myth lacks",
-        "It would help if the action between its spectacular boss fights at least kept your thumbs busy in the interim, but sadly the 'Lesser' Yaoguai demons roaming these lands very",
-        "It also makes grinding up for a particularly hard boss quite laborious, though in fairness, Black Myth's difficulty is reasonably well pitched for the most part. As long as you"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-5",
+      "id": "source-3",
+      "configured_source_id": "gamesradar",
       "publication": "GamesRadar+",
-      "title": "Black Myth: Wukong — GamesRadar+ review",
-      "url": "https://www.gamesradar.com/games/action-rpg/black-myth-wukong-review/",
-      "author": "https://www.gamesradar.com/author/austin-wood/",
+      "title": "Black Myth: Wukong review &ndash;",
+      "url": "https://www.gamesradar.com/games/action-rpg/black-myth-wukong-review",
+      "resolved_url": "https://www.gamesradar.com/games/action-rpg/black-myth-wukong-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "2024-08-16T14:00:18Z",
-      "evidence": [
+      "author": "https://www.gamesradar.com/author/austin-wood/",
+      "language": "en",
+      "score": 4,
+      "scale": 5,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Black Myth: Wukong.",
+      "evidence_points": [
         "Join the GamesRadar community for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
         "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
         "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
@@ -101,154 +218,52 @@
         "You could blast through Black Myth: Wukong as a 20-hour boss rush, but you could also spend over 40 hours hunting down every boss, collectible, and NPC. A full half",
         "Release date: August 20, 2024 Platform(s): PC, PS5 Developer: In-house Publisher: Game Science&nbsp;"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "gamesradar.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:35.848Z",
+        "url": "https://www.gamesradar.com/games/action-rpg/black-myth-wukong-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
     },
     {
-      "id": "source-6",
-      "publication": "GameSpot",
-      "title": "Black Myth: Wukong — GameSpot review",
-      "url": "https://www.gamespot.com/reviews/black-myth-wukong-review-monkey-business/1900-6418269/",
-      "author": "",
-      "published_at": "",
-      "evidence": [
-        "et=\"_blank\" href=\"https://www.gamesradar.com/games/action-rpg/black-myth-wukong-review/\">Read full review Richard Wakeling GameSpot Top Critic 8 / 10 Aug 16, 2024 Black Myth: Wukong is an uneven game where the highlights often outnumber the lowlights. Read full review <a class=\"deco-none\" href=\"/critic/87"
-      ],
-      "access_mode": "opencritic_excerpt"
-    },
-    {
-      "id": "source-7",
-      "publication": "Hardcore Gamer",
-      "title": "Black Myth: Wukong — Hardcore Gamer review",
-      "url": "https://hardcoregamer.com/review-black-myth-wukong/",
-      "author": "Adam Beck",
-      "published_at": "2024-08-16T14:00:13Z",
-      "evidence": [
-        "We are seeing more developers from the mobile space breaking out into the AAA market as of late. Just this year we had the Korean Shift Up bringing the spectacular",
-        "Black Myth: Wukong takes place in mythological China, with it being loosely based on Journey to the West. This isn&rsquo;t really about Wukong himself, or the trickster&rsquo;s actions through the",
-        "The story is one of the more compelling parts, meeting characters that you may be familiar with in the lore, but how it&rsquo;s told isn&rsquo;t always particularly well done. While",
-        "With that said, the events that occur in each chapter, even though still vague, are cinematic and will have you on the edge of your seat. They are borderline God",
-        "Combat is arguably the weakest component to Black Myth: Wukong , but that&rsquo;s still not saying much considering the package as a whole is woven together so nicely. Because you",
-        "This has elements of Souls games, but it&rsquo;s closer to a traditional action game. You won&rsquo;t be managing attributes, but instead be given skill points that can be spent to",
-        "It's also all about bringing the right loadout to a fight. Most of the time, you'll gravitate towards specific skills in the open world, but there are bosses that will",
-        "With that said, while we make the comparison to Souls games, Black Myth: Wukong is much easier than what you might expect. There were only a handful of bosses that"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-8",
-      "publication": "Rock Paper Shotgun",
-      "title": "Black Myth: Wukong — Rock Paper Shotgun review",
-      "url": "https://www.rockpapershotgun.com/black-myth-wukong-review",
-      "author": "",
-      "published_at": "2024-08-16T14:00:00+00:00",
-      "evidence": [
-        "Black Myth: Wukong is an action RPG that leans a bit into the Souls camp and a bit into the adventure camp. And either way, it's a spectacular journey that",
-        "The game's based on one of the great classical Chinese novels Journey To The West, which I've not read. But, from the start of the game I gather that Wukong",
-        "Forgive my ignorance, as I find Black Myth's Soulsy story delivery quite difficult to follow. Those familiar with the source material or those with particularly discerning ear holes may find",
-        "Before cosying up with the novel, though, comes the twiddling of your thumbs on a rotund piece of plastic (or the patter of your fingers, depending on whether you use",
-        "Onwards through a series of slightly disjointed chapters (might make more sense in the novel), each whisking you off to realms of swaying groves and golden sands and curved roof",
-        "This doesn't mean that Black Myth's world is one big funnel, oh no. As I said in my preview, I think its use of space is remarkably authentic, with alternate",
-        "So no, the world doesn't interlock and intertwine quite like a Souls game. But this doesn't mean you aren't challenged by careful enemy placement and hidden pathways and well-paced 'breathers'",
-        "Like seriously, I am unsure whether I've ever been wowed quite like I have with Black Myth. I can't recall the amount of times I've stopped dead in my tracks"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-9",
-      "publication": "Tom’s Guide",
-      "title": "Black Myth: Wukong — Tom’s Guide review",
-      "url": "https://www.tomsguide.com/gaming/black-myth-wukong-review",
-      "author": "https://www.tomsguide.com/author/tony-polanco",
-      "published_at": "2024-08-20T10:30:31Z",
-      "evidence": [
-        "Join the Tom's Guide Club for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
-        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
-        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
-        "Black Myth: Wukong features stunning graphics, engaging mechanics and an imaginative setting. However, it's bogged down by odd level design choices and a few technical hiccups. Despite its faults, it's",
-        "Why you can trust Tom's Guide Our writers and editors spend hours analyzing and reviewing products, services, and apps to help find what's best for you. Find out more about",
-        "Platform:&nbsp; PC (reviewed), PS5 Price: &nbsp;$59 Release date: &nbsp;August 20, 2024 Genre: &nbsp;Action-adventure, RPG",
-        "Black Myth: Wukong is an enjoyable experience that narrowly misses perfection. Steeped in Chinese mythology, this action-adventure game from developer GameScience features stunning graphics, thrilling gameplay and imaginative boss battles.",
-        "I&rsquo;ve looked forward to Black Myth: Wukong ever since its announcement back in December 2020. The Unreal Engine 5-powered graphics and over-the-top boss battles caught my attention but I was"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-10",
-      "publication": "TheSixthAxis",
-      "title": "Black Myth: Wukong — TheSixthAxis review",
-      "url": "https://www.thesixthaxis.com/2024/08/16/black-myth-wukong-review/",
-      "author": "Jason Coles",
-      "published_at": "2024-08-16T14:00:49+00:00",
-      "evidence": [
-        "Black: Myth: Wukong is a game that&#8217;s been in the minds of many since its announcement. From its staggeringly beautiful first reveal to the swirl of controversy and controversy-driven popularity",
-        "As a huge fan of the Monkey King and a lot of the ways his story has been told in media, from Dragon Ball, Tower of God, and Enslaved: Odyssey",
-        "Black: Myth Wukong makes a strong, albeit slow, first impression. Scenery flies by as you fly through the sky to get into a fight I&#8217;m not allowed to talk about",
-        "Combat is a blend of unleashing physical and magical attacks, with some dodging thrown in for good measure. It&#8217;s pretty fluid, and some of the spells are incredibly cool, along",
-        "However, and this is kind of a big deal for me, the action never felt anywhere near as good as it looked. No combination of new abilities, bosses, or anything",
-        "I&#8217;m also not 100% sure where the Soulslike comparisons came from for this game. I&#8217;ve played nearly every Soulslike that&#8217;s come out (including a bunch of games that I&#8217;d frankly",
-        "They certainly get tougher as you go on, but there&#8217;s none of the fear that Soulslikes instills, nor is there any pattern recognition that&#8217;s really needed to succeed. Your hero",
-        "I found the story enjoyable overall though, which is good news if that&#8217;s your main worry. It&#8217;s hard not to find a story of magic and monkeys enjoyable though, even"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-11",
-      "publication": "Hobby Consolas",
-      "title": "Black Myth: Wukong — Hobby Consolas review",
-      "url": "https://www.hobbyconsolas.com/reviews/analisis-black-myth-wukong-pc-ps5-1400466",
-      "author": "David Rodríguez",
-      "published_at": "2024-08-16T16:09:13+02:00",
-      "evidence": [
-        "Mal optimizado. Historia mal aprovechada. El diseño de niveles simplón. \"},\"positiveNotes\":{\"@type\":\"ItemList\",\"itemListElement\":\" La fluidez del combate y los poderes. Gráficamente espectacular.&nbsp; \"},\"itemReviewed\":{\"@type\":\"VideoGame\",\"name\":\"Black Myth: Wukong\",\"image\":{\"@type\":\"ImageObject\",\"url\":\"https:\\/\\/imagenes.hobbyconsolas.com\\/files\\/image_1920_1080\\/uploads\\/imagenes\\/2023\\/05\\/22\\/68bfa37a44e97.jpeg\",\"width\":1920,\"height\":1080},\"aggregateRating\":{\"@type\":\"AggregateRating\",\"itemReviewed\":\"Black Myth: Wukong\",\"bestRating\":100,\"worstRating\":0,\"ratingValue\":\"78\",\"reviewCount\":1}}} Hobby Consolas Iniciar sesión Mi",
-        "Black Myth: Wukong es uno de los juegos más deseados del año. Ya he jugado a este título de acción desarrollado por el estudio chino Game Science y en este",
-        "Black Myth Wukong se ganó a los fans de los juegos de acción cuando, hace unos cuantos años, mostró un alucinante gameplay que puso todos los focos en su propuesta",
-        "Game Science se presenta ante el mundo como un estudio chino a tener muy en cuenta entregando un segundo juego que presume de calidad técnica y un gameplay espectacular. ¿Pero",
-        "En estos últimos días me he enfrentado a un viaje desafiante, espectacular y adictivo con esta propuesta de acción que, según sus creadores, no es un soulslike. Sin embargo, también",
-        "¿Merece la pena este juego? ¿Es verdaderamente esa joya de jade con la que llevamos soñando desde hace cuatro años? ¿Puede ser uno de los juegos más difíciles de los",
-        "Es hora de descubrir los secretos de Sun Wukong y de su místico viaje por la lejana China y responder a todas esas preguntas y muchas más en este análisis",
-        "La primera sorpresa que me ha dejado el juego es saber que Black Myth Wukong no está protagonizado por Wukong. Efectivamente, el Rey Mono no es el personaje jugable principal,"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-12",
-      "publication": "Metro Gaming",
-      "title": "Black Myth: Wukong — Metro Gaming review",
-      "url": "https://metro.co.uk/2024/08/22/black-myth-wukong-ps5-review-a-barrel-monkeys-21466658/",
-      "author": "",
-      "published_at": "",
-      "evidence": [
-        "eviews/analisis-black-myth-wukong-pc-ps5-1400466\">Read full review GameCentral Metro GameCentral Top Critic 6 / 10 Aug 22, 2024 An ambitious but uneven action role-player, with impressive visuals and excellent boss battles, that are held back by an inherent shallowness – particularly in the lack of meaningful exploration. Read full review Will Borger Shacknews <div _ngcontent-sc14"
-      ],
-      "access_mode": "opencritic_excerpt"
-    },
-    {
-      "id": "source-13",
-      "publication": "Shacknews",
-      "title": "Black Myth: Wukong — Shacknews review",
-      "url": "https://www.shacknews.com/article/141226/black-myth-wukong-review-return-to-monke",
-      "author": "",
-      "published_at": "",
-      "evidence": [
-        "Action games are defined by the dance. You know, the back and forth between you and (preferably) a boss, dodging, parrying, landing a sick punish, backing off, occasionally getting hit,",
-        "So I hope you’ll believe me when I tell you I wish I liked Black Myth: Wukong more than I do. Because there are parts of it where it sings.",
-        "But I’m getting ahead of myself. Let’s start at the beginning. If you’re unaware, Black Myth: Wukong is more or less a sequel to Wu Cheng’en’s seminal Chinese novel Journey",
-        "You step into the shoes of The Destined One, a monkey who is seeking out the six relics of Wukong. Conveniently, The Destined One also looks just like Sun Wukong,",
-        "By far the best part of the game’s storytelling, though, are the beautifully animated cutscenes that play at the end of each chapter and give you some background on that",
-        "It’d be easy to label Black Myth: Wukong a Souls-like, but that’s only half-right. Yes, there’s a stamina bar you have to manage; shrines that function as bonfires and serve",
-        "It’s an interesting series of design choices, and it mostly works. For the most part, Wukong functions as a traditional action game with Souls-like features. A Soulslite, if you will.",
-        "But that’s not the only monkey business you can get up to. You’ll also get access to spells that can turn the tide of a fight. The first you’ll come"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-14",
+      "id": "source-4",
+      "configured_source_id": "guardian-games",
       "publication": "The Guardian",
-      "title": "Black Myth: Wukong — The Guardian review",
+      "title": "Black Myth: Wukong review – a fantastically exciting action game",
       "url": "https://www.theguardian.com/games/article/2024/aug/27/black-myth-wukong-review-a-fantastically-exciting-action-game",
-      "author": "Patricia Hernandez",
+      "resolved_url": "https://www.theguardian.com/games/article/2024/aug/27/black-myth-wukong-review-a-fantastically-exciting-action-game",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "2024-08-27T13:47:17.000Z",
-      "evidence": [
+      "author": "Patricia Hernandez",
+      "language": "en",
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Black Myth: Wukong.",
+      "evidence_points": [
         "PlayStation 5, PC; Game Science Prior to this release, few would have heard of Chinese developer Game Science, but the studio has produced a totally original epic",
         "PlayStation 5, PC; Game Science Prior to this release, few would have heard of Chinese developer Game Science, but the studio has produced a totally original epic",
         "B lack Myth: Wukong is a video game obsessed with spectacle – but inspiring awe requires confidence. Such self-assuredness is a rarity in big-budget games, where concerns about mainstream palatability",
@@ -258,54 +273,44 @@
         "Death may be a certainty, but it’s also like getting a taste of reincarnation. A game such as Wukong, which is rooted in Buddhism, is therefore a perfect fit for",
         "Unlike most action games of its ilk, Wukong is not an open-world game: there’s no mini map dotted with tasks, no quest log to examine. Sometimes the lack of assistance"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "theguardian.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      }
     },
     {
-      "id": "source-15",
-      "publication": "Screen Rant",
-      "title": "Black Myth: Wukong — Screen Rant review",
-      "url": "https://screenrant.com/black-myth-wukong-review/",
-      "author": "ScreenRant Team",
-      "published_at": "2024-08-16T14:00:11Z",
-      "evidence": [
-        "In the role of the 'Destined One', Black Myth: Wukong takes players on a cinematic, story-driven experience in an Action RPG based on an adaptation of Journey To The West.",
-        "While there are elements of great design by developer GameScience - engaging narrative and varied boss fights especially - Black Myth: Wukong also presents issues that can severely impact the",
-        "In its optimal settings, Black Myth: Wukong is a cinematic masterpiece , with stunning and captivating visuals that truly immerse you in its world. It has achieved high amounts of",
-        "From the reflections in rippling water to capturing the veins on every single tiny leaf of flora surrounding you, it's a shame that, due to its appalling performance, it isn't",
-        "Black Myth: Wukong's new gameplay trailer ends by advising players to kill, steal, lie, and lust. This advice shows Wukong will be an unlikely hero.",
-        "These fatal flaws consist of frequent stuttering, severe lag, desynced audio, and terrible frame rates. Aside from the frustrating amount of stuttering, the frequent cutting of audio also heavily impacts",
-        "With the recommended specs for the game that should allow for optimal performance, many areas from Chapter 2 onwards are entirely unplayable and become only marginally better when on the",
-        "Black Myth: Wukong recommends the minimum Processor: Intel Core i5-8400 / AMD Ryzen 5 1600. Their recommended Processor, which I own and used to test the game, is Intel Core"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-16",
-      "publication": "Wccftech",
-      "title": "Black Myth: Wukong — Wccftech review",
-      "url": "https://wccftech.com/review/black-myth-wukong-a-compelling-journey-into-chinese-tradition/",
-      "author": "Francesco De Meo",
-      "published_at": "",
-      "evidence": [
-        "Black Myth: Wukong made more than a few heads turn with its reveal trailer released back in 2020, but it was with the switch to Unreal Engine 5 that the",
-        "Being from an unproven studio, many wondered if Game Science had what it takes to create a compelling action role-playing game experience. After spending around 25 hours with the game,",
-        "Black Myth: Wukong is based on Journey to the West, a novel published in China in the 16th century detailing the story of Sun Wukong, a monkey born from a",
-        "The Black Myth: Wukong story is a concise retelling of the traditional story, so those familiar with it will not be wholly surprised by the game's story. Being not a",
-        "The Black Myth: Wukong story is possibly made more enjoyable by the great amount of care developer Game Science put into world-building. Though hidden inside the menu, the game provides",
-        "While the story may not be everyone's cup of tea, Black Myth: Wukong definitely delivers when it comes to gameplay, although it may feel a little lacking in depth compared",
-        "Unlike the Souls series, however, the Destined One can only use staves as the main weapon, which all come with the same moveset, which is comprised of a light combo",
-        "Despite stances not altering the moveset a lot, they do make quite a difference. In Smash stance, for example, timing the Varied Combo to intercept an enemy attack will grant"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-17",
+      "id": "source-5",
+      "configured_source_id": "push-square",
       "publication": "Push Square",
-      "title": "Black Myth: Wukong — Push Square review",
+      "title": "Review: Black Myth: Wukong (PS5) - A Spectacularly Creative Action Romp",
       "url": "https://www.pushsquare.com/reviews/ps5/black-myth-wukong",
-      "author": "Push Square",
+      "resolved_url": "https://www.pushsquare.com/reviews/ps5/black-myth-wukong",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "2024-08-23T16:30:00+00:00",
-      "evidence": [
+      "author": "Push Square",
+      "language": "en",
+      "score": 8,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Black Myth: Wukong.",
+      "evidence_points": [
         "Black Myth: Wukong is, ultimately, a game about boss fights. Tense, dynamic boss fights that'll have you gawking in awe one minute, and potentially spiking your controller the next. This",
         "Structurally, Wukong is a traditional Soulslike. There are shrines that you'll return to upon death, there are dedicated boss arenas, and the level design is largely linear, always funnelling you",
         "Wukong is at its weakest when you're trotting between boss encounters. We're not saying that the game needs exploration, that it would be better if it copied Elden Ring's homework",
@@ -315,57 +320,403 @@
         "But Wukong doesn't want you to get bogged down in lore and narrative — it wants you to clobber demons with your smacking stick, and in that regard, it's fairly",
         "However, the combat system only gets better as the game goes on, thanks to a slew of unlockable perks, skills, and magical feats that all dovetail quite spectacularly in the"
       ],
-      "access_mode": "direct"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pushsquare.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:36.343Z",
+        "url": "https://www.pushsquare.com/reviews/ps5/black-myth-wukong",
+        "configured_source_id": "push-square",
+        "direct_publisher": true
+      }
     },
     {
-      "id": "source-18",
-      "publication": "PlayStation Universe",
-      "title": "Black Myth: Wukong — PlayStation Universe review",
-      "url": "https://www.psu.com/reviews/black-myth-wukong-review-ps5/",
-      "author": "",
+      "url": "https://www.eurogamer.net/black-myth-wukong-review",
+      "publication": "Eurogamer",
+      "title": "Black Myth: Wukong review - a disjointed and uneven action spectacle",
+      "id": "source-6",
+      "configured_source_id": "eurogamer",
+      "resolved_url": "https://www.eurogamer.net/black-myth-wukong-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
       "published_at": "",
-      "evidence": [
-        "or-info col-4 row no-gutters\"> Simon Sayers PlayStation Universe Top Critic 8.5 / 10.0 Aug 31, 2024 Packed full with secrets, Black Myth: Wukong offers a lot more content than meets the eye. While the main story path feels a bit repetitive with one boss after the other, the exploration and hidden side content makes up for it. Having a bigger arsenal of weapons and stances would have made the experience more fun, but it's a good experience nonetheless. Read full review Aaron Potter Daily Mirror <i _ngc"
-      ],
-      "access_mode": "opencritic_excerpt"
-    },
-    {
-      "id": "source-19",
-      "publication": "Everyeye.it",
-      "title": "Black Myth: Wukong — Everyeye.it review",
-      "url": "https://www.everyeye.it/articoli/recensione-black-myth-wukong-re-scimmia-non-delude-64297.html",
-      "author": "https://www.facebook.com/Xagerhate",
-      "published_at": "2024-08-16T16:00:00+02:00",
-      "evidence": [
-        "L'action RPG in Unreal Engine 5 di Game Science è appagante come pochi altri esponenti del genere, nonostante alcuni limiti.",
-        "Si è parlato tanto di Black Myth Wukong , nel bene e nel male. C'è stato chi ha esultato al suo annuncio, complice una cornice visiva di livello al limite",
-        "Come noto, l'ordito narrativo di Black Myth Wukong è liberamente ispirato a Il Viaggio in Occidente, uno dei quattro romanzi più importanti della letteratura classica cinese che in passato è",
-        "Per fare qualche esempio, è proprio a questo componimento, risalente a quasi 450 anni fa, che si rifà Enslaved: Odyssey to the West , una gemma dimenticata del catalogo di",
-        "A seguito di una serie di peripezie che si avvicendano sullo schermo nelle prime battute di Black Myth (e che preferiamo non anticipare per non rovinarvi la sorpresa), il leggendario",
-        "C'è da fare un appunto, a nostro avviso, solo sulla cifra adottata per sviluppare il racconto, che alterna momenti piuttosto didascalici in cui l'avanzamento della trama viene esplicitata in modo",
-        "Arriviamo, quindi, alla ricetta ludica imbastita per Black Myth Wukong, uno dei principali argomenti di discussione nei mesi precedenti all'uscita, una diatriba probabilmente alimentata dal materiale promozionale che, secondo noi,",
-        "Quello che a prima vista poteva apparire come l'ennesimo emulo della produzione di From Software, magari abbellito da una veste tecnica e artistica d'eccellenza, all'atto pratico è un titolo mosso"
-      ],
-      "access_mode": "direct"
-    },
-    {
-      "id": "source-20",
-      "publication": "Slant Magazine",
-      "title": "Black Myth: Wukong — Slant Magazine review",
-      "url": "https://www.slantmagazine.com/games/black-myth-wukong-review/",
       "author": "",
-      "published_at": "",
-      "evidence": [
-        "href=\"/critic/1711/aaron-riccio\"> Aaron Riccio Slant Magazine Top Critic Aug 16, 2024 Wukong excels at allowing players to feel increasingly like the Monkey King himself. This is an action RPG whose focus is less on punishing, labyrinthine environments and more on delivering precise, melee-based combat encounters that put the Destined One’s agility to the test. Read full review Gameblog Top Critic <div _ngcontent-sc150=\"\" c"
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Black Myth: Wukong.",
+      "evidence_points": [
+        "Black Myth: Wukong is nothing if not ambitious. As many of its early trailers and tech demos implied, this was a game punching above its weight. It wasn't just a lavish retelling of the epic Chinese novel Journey to the West, a work that games have rarely engaged with outside of Asia (Ninja Theory's Enslaved: Odyssey to the West notwithstanding), but it also seemed to be demonstrating a level of technical mastery and visual pizzazz we hadn't quite seen before . It immediately put developer Game Science on the map, even if it wasn't always for the most savoury of reasons.",
+        "But now, after spending upwards of 40 hours retracing the steps of its titular simian hero as the silent but deadly Destined One, Black Myth emerges as a game that frustrates more than it delights. Its plentiful supply of grand, sweeping boss battles set the heart alight at regular intervals, its mythological menagerie bristling with the same kind of malicious energy and intent as their FromSoft equivalents. They are the tentpoles that hold this game aloft, their sharp claws, vicious fangs and powerful hoofs often tearing up the screen in exquisite and sumptuous detail. Indeed, they're the kind of bosses that will probably go down as some of the most dramatic of this generation, with its glistening dragons that rage across icy lakes and rippling pools, muscular tigers that sup in temples of blood, and giant bears, wolves, rats and spiders that command the elements to devastating effect.",
+        "But outside of those pulse-racing encounters, Black Myth is an altogether more mind-numbing experience, its thrilling highs undone by baggy world design, an uneven difficulty curve and disjointed storytelling. Ostensibly, this is a quest about reviving the legendary Sun Wukong, who scattered himself to the wind in the form of six relics after being defeated in battle centuries earlier. As the Destined One, you'll travel through forests, sand, ice, ash and more to bring them back to your mountain home, winding your way through its alternately narrow and wide linear environments until you reach the big bad in possession of it.",
+        "Maybe it's harsh to hold these fundamentally linear spaces to the same standards as larger open worlds. But whichever way you slice it, there's no denying that Black Myth lacks that compositional eye for design that would help frame its luscious environments in a friendlier and more curious light. You rarely move forward in Black Myth because you feel motivated by the story, or because you got sidetracked by something interesting in your immediate eyeline. Rather, it's really all you can do to find some sense of purpose in this world, and it raises the question: how can a game based on a work called 'Journey to the West' feel so utterly directionless?",
+        "That said, there are also plenty of occasions where that David and Goliath dynamic really works in Black Myth's favour, amping up the drama as you tussle with these enormous, fantastical creatures, and deftly weave through showers of lightning, icy squalls and large, open jaws. Even its more down to earth, monkey-sized foes still put on a good show, too, filling the screen with all manner of visual effects to test your nerve and timing. Occasionally, it can all get a bit messy, obscuring the action and your place within it (and often to your detriment). But the camera does a decent job of keeping pace with you most of the time, and it frames the action in a way that feels tense, desperate and exciting.",
+        "It's just a shame how quickly those feelings dissipate when you do run into one of these spikes, and it reveals just how much wasted potential there is in its underlying combat system. At its most basic level, the Destined One has far more in common with the likes of Kratos and Bayonetta than FromSoft's Tarnished or Chosen Undead here, relying more on the rapid display of brute force button mashing and pitch-perfect dodging to bring down his enemies than the tentative prodding over the parapet of a shield. But despite the multiple and many-pronged skill trees at your disposal, which can all be respecced for free whenever you get to a shrine, a lot of its upgrades fall into the same trap Cyberpunk 2077 did before its 2.0 update, mostly offering meagre stat boosts rather than fundamentally changing your available skill set.",
+        "Mistakes are costly in Black Myth, and casting a spell at the wrong time can be surprisingly devastating, as they not only have painfully long cooldowns, but their use is also curtailed by your limited mana pool, which can rarely be replenished outside of resting at a shrine. It's a shame, as the spells are easily Black Myth: Wukong at its most fun. The highlight without doubt is the Destined One's signature Immobilise spell, which freezes enemies in place for a limited time so you can really start to pile on the pain. Likewise, his Transformation spells, though few in number, allow him to fight in the guise of other demons for a time, each with their own unique light, heavy and special attacks to play with and, crucially, their own separate health bar - which can be a lifeline in certain boss fights.",
+        "It all speaks to Black Myth's clear desire to dazzle and entertain, and there are times when it really delivers on that power fantasy, making you forget the long hours spent grinding and gnashing your teeth as you try and figure out where to go, or whether this boss you're bashing your head against is even relevant to the main story. But Wukong's glitz and glamour can only paste over its cracks for so long, as behind all that razmataz is a hollowness it never quite shakes. Its unpleasant (and badly lip-synced) supporting cast also do little to make it feel more inviting as you go along, and by the end you'll wonder whether this journey was even worth making in the first place. Yes, there are some spectacular boss fights to have along the way, but those after something more would be better off looking in a different direction.",
+        "Get access to commenting, personalised reading recommendations, newsletters, and more!",
+        "Feature&nbsp;| How Black Myth: Wukong has changed the game for Chinese developers"
       ],
-      "access_mode": "opencritic_excerpt"
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "eurogamer.net",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 3,
+      "scale": 5,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:36.343Z",
+        "url": "https://www.eurogamer.net/black-myth-wukong-review",
+        "configured_source_id": "eurogamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.gamespot.com/reviews/black-myth-wukong-review-monkey-business/1900-6418269",
+      "publication": "GameSpot",
+      "title": "Black Myth: Wukong — GameSpot review",
+      "id": "source-7",
+      "configured_source_id": "gamespot",
+      "resolved_url": "https://www.gamespot.com/reviews/black-myth-wukong-review-monkey-business/1900-6418269",
+      "source_kind": "review",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "validation": {
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 403"
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.rockpapershotgun.com/black-myth-wukong-review",
+      "publication": "Rock Paper Shotgun",
+      "title": "Black Myth: Wukong review: a refreshing adventure after Elden Ring's knotty DLC",
+      "id": "source-8",
+      "configured_source_id": "rock-paper-shotgun",
+      "resolved_url": "https://www.rockpapershotgun.com/black-myth-wukong-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Black Myth: Wukong.",
+      "evidence_points": [
+        "Black Myth: Wukong is an action RPG that leans a bit into the Souls camp and a bit into the adventure camp. And either way, it's a spectacular journey that works for mostly everyone: those after challenging fights against Chinese mythological creatures, and those after the same thing, but with a little less challenge than your typical Soulslikes . What separates Black Myth from the crowd, though, is its slick presentation and a sense of generosity. You're to witness the most lavish, cinematic worlds and its creatures. And you're to enjoy battering everything with your staff as a highly athletic monkey with copious spells at his furry follicles and fingertips. It's been a while since I've played anything quite as impressive as this.",
+        "The game's based on one of the great classical Chinese novels Journey To The West, which I've not read. But, from the start of the game I gather that Wukong rebelled against Heaven and he got kicked into the nether. Many years pass and you, a person sitting behind a screen, take control of the Destined One: a monkey who's essentially Wukong reincarnate. What is your mission? To thwack the shite out of various Yaoguai (mythical creatures) and remind them that you're back in the game, baby. Back to reclaim&hellip; something.",
+        "Forgive my ignorance, as I find Black Myth's Soulsy story delivery quite difficult to follow. Those familiar with the source material or those with particularly discerning ear holes may find it a lot easier, but I struggle with rats the size of skyscrapers and headless monks speaking in riddles. Thing is, though, I don't mind it one bit? With Souls it can frustrate, because their universes exist purely in-game and if I don't understand something, I know the only answers lie in a 40-minute, interpretative YouTube video. With Black Myth, I'm just lapping up the spectacle, the drama, the boiling spittle ejected from the mouth of a blazing deity as it roars at me. Ignorance here only really means bliss, as no matter where you sit on the understanding scale, you'll be adding Journey To The West to your cart immediately.",
+        "Before cosying up with the novel, though, comes the twiddling of your thumbs on a rotund piece of plastic (or the patter of your fingers, depending on whether you use the equally good mouse and keyboard). Black Myth is of the Souls school of action RPGs, for the most part: you dodge bruising enemy attacks, you wait for your stamina to recover, you drink from a Gourd to replenish health (an Estus), you rest at Shrines (Bonfires), you Get The Idea. Except it's a generous Soulslike, to the point where it straddles - rather beautifully - the line between hard and \"let's crack on with the journey, shall we?\", making it a Souls-venture hybrid that pushes you and pushes you onwards.",
+        "Onwards through a series of slightly disjointed chapters (might make more sense in the novel), each whisking you off to realms of swaying groves and golden sands and curved roof tiles dusted with snow. Sure, some chapters have their tougher, more irritating sections, but the general rhythm of exploration is spot on. And that's down to each realm's linear structure, opting for more compact zones stitched together by Shrines, as opposed to, say, Elden Ring 's vast open world.",
+        "This doesn't mean that Black Myth's world is one big funnel, oh no. As I said in my preview, I think its use of space is remarkably authentic, with alternate pathways that don't feel like they've been laid down by a level designer's mouse. Okay yes, there are obvious arenas and routes; this is a video game, after all. But I do think they are all designed thoughtfully, as if everything in Game Science's power has been poured into making this a mythical universe that's not been created just for you and your power chase.",
+        "So no, the world doesn't interlock and intertwine quite like a Souls game. But this doesn't mean you aren't challenged by careful enemy placement and hidden pathways and well-paced 'breathers' between boss battles. There are times, though, when things are laid out in such a way that you think you're able to jump over to a ledge or up a log and you'll bonk an invisible wall. Eh, it's a restriction that's quickly shrugged off given just how beautiful Black Myth is.",
+        "Like seriously, I am unsure whether I've ever been wowed quite like I have with Black Myth. I can't recall the amount of times I've stopped dead in my tracks and panned the camera over frescoes on rock, or idols carved into wooden panels, or the intricacy of the Chinese mythological architecture. The little details, like snow trails left by your body and your staff and the way sakura blooms out of a Shrine you've visited for the first time? Stop it.",
+        "Still, you are an angry monkey and there's only so much gawping at glistening turtle incense burners you can do before it's time to slaughter. And slaughter is channelled through your hips and your staff, where lithe movements and stick-twirls make for fights that aren't only stylish, but punchy too. There's no blocking, besides spinning your staff to deflect arrows, so fights are a dance of dodges and well-timed strikes at the most basic level. Defeat an enemy and they'll drop Will (Souls), except you don't lose these on death! Instead, Will sticks with you no matter what, and not only does it act as a currency to purchase materials and craft things (more on this in a sec), it's a means of levelling up. Ding up and you'll earn Sparks, which you can pop into many a skill tree.",
+        "And this is where more of Black Myth's generosity lies. You can invest in three different staff stances: Smash, Pillar, and Thrust, each switchable on the fly and each with their own unlockable movesets. They're all useful in certain situations, where Smash is great for one-on-one duels and general fights, Pillar lets you hop onto your staff to avoid sweeps and, later, even lets you sip from your Gourd atop it like you've gone for a quick old fashioned at the rooftop bar while the rabble nip at your impossibly long stool leg. Thrust is unlocked a little later, and acts almost like a spear, letting you jab from a distance, retreat, then close the gap. I love switching between them all, honestly. Alterations let you transform into even more powerful creatures for an extended time, too, like literally one of the first bosses you face."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "rockpapershotgun.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "score_eligible": false
+    },
+    {
+      "url": "https://www.thesixthaxis.com/2024/08/16/black-myth-wukong-review",
+      "publication": "TheSixthAxis",
+      "title": "Black Myth: Wukong Review | TheSixthAxis",
+      "id": "source-9",
+      "configured_source_id": "the-sixth-axis",
+      "resolved_url": "https://www.thesixthaxis.com/2024/08/16/black-myth-wukong-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "en",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Black Myth: Wukong.",
+      "evidence_points": [
+        "Black: Myth: Wukong is a game that&#8217;s been in the minds of many since its announcement. From its staggeringly beautiful first reveal to the swirl of controversy and controversy-driven popularity surrounding its development, the latest adaptation of Journey to the West can&#8217;t stay out of the limelight.",
+        "As a huge fan of the Monkey King and a lot of the ways his story has been told in media, from Dragon Ball, Tower of God, and Enslaved: Odyssey to the West, I&#8217;ve been looking forward to Black Myth: Wukong since I first saw it. That anticipation for this game was dampened significantly by the reports on deeply seated sexist attitude within the studio , but they&#8217;re not going to be taken into account for this review. However, they definitely bear mentioning.",
+        "Black: Myth Wukong makes a strong, albeit slow, first impression. Scenery flies by as you fly through the sky to get into a fight I&#8217;m not allowed to talk about according to the embargo rules and then, you pick up with the actual story, and off you go. You charge through the trees learning more about how to play the game why you take out different monstrous enemies as you go, and quickly come across your first boss to slay. However, things go poorly no matter how well you do, and this is where you meet a dude who has roots growing out of his face, and is your Navi equivalent for the game. He&#8217;ll appear and guide you throughout, and help you find your next checkpoint, which are little shrines, along with explaining some mechanics, warning you about bosses, and teaching you the odd trick or two.",
+        "Combat is a blend of unleashing physical and magical attacks, with some dodging thrown in for good measure. It&#8217;s pretty fluid, and some of the spells are incredibly cool, along with basically all of the animations being like sugar for your eyes. The enemy designs are also exceptional, with fights in just the opening few hours including fox demons, a big old frog, and a werewolf-looking boss that definitely climbed out of Bloodborne.",
+        "However, and this is kind of a big deal for me, the action never felt anywhere near as good as it looked. No combination of new abilities, bosses, or anything else, managed to change that through the run of the game. I just don&#8217;t think the feel of Black Myth: Wukong is anywhere near the looks of the game, and for me, that&#8217;s a big issue. I&#8217;d always rather play a game that looked worse than it played, and not the other way around.",
+        "I&#8217;m also not 100% sure where the Soulslike comparisons came from for this game. I&#8217;ve played nearly every Soulslike that&#8217;s come out (including a bunch of games that I&#8217;d frankly rather never think about again), and while this game does have things like a checkpoint that can respawn enemies, that&#8217;s about as far as it goes. This is just an action game where sometimes the bosses are hard.",
+        "They certainly get tougher as you go on, but there&#8217;s none of the fear that Soulslikes instills, nor is there any pattern recognition that&#8217;s really needed to succeed. Your hero dodges very well, which meant that I took down a lot of bosses on my first or second try, with the second try often being because I&#8217;d messed about too much in the boss run and used up all of my resources. Again, they all look incredible, but that&#8217;s about it.",
+        "I found the story enjoyable overall though, which is good news if that&#8217;s your main worry. It&#8217;s hard not to find a story of magic and monkeys enjoyable though, even if all of the dialogue hams things up. That&#8217;s a compliment, just so we&#8217;re all clear, but I do also appreciate the it might mean it misses for some people.",
+        "We do not license content or design to any other site. No element of this site can be used without written permission. All content should be considered opinion. Article posters are the individual owner of the article content. We are not affiliated with any third party.",
+        "Use of this website is subject to acceptance of our legal terms of service . Staff / Contact Us | Review Policy | Privacy Policy | Cookies Policy – Manage Consent"
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "thesixthaxis.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-17T20:37:40.993Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 6,
+      "scale": 10,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-17T20:38:36.863Z",
+        "url": "https://www.thesixthaxis.com/2024/08/16/black-myth-wukong-review/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
+      }
     }
   ],
-  "game_id": "game_ddfb49802e631e4d0acb",
-  "igropoisk_article": {
-    "url": "../../article/black-myth-wukong/",
-    "title": "Black Myth: Wukong — разбор Игропоиска",
-    "description": "Подробный разбор Black Myth: Wukong: игровой цикл, системы, мир, прогрессия, подача, слабые места и то, как игра воспринимается сейчас.",
-    "score": 8.3
+  "rejected": [],
+  "source_proposals": [],
+  "review_score": {
+    "status": "green",
+    "owner": "review",
+    "method": {
+      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+      "formula": "sum(normalized_10) / source_count",
+      "minimum_sources": 3,
+      "target_sources": 10,
+      "maximum_sources": null,
+      "use_all_eligible_sources": true,
+      "required_evidence_scope": "editorial_review",
+      "output_scale": 10,
+      "rounding_decimals": 1,
+      "one_vote_per_publication": true,
+      "aggregators_forbidden": true,
+      "invented_scores_forbidden": true,
+      "exact_canonical_version_required": true
+    },
+    "sources": [
+      {
+        "source_id": "source-1",
+        "configured_source_id": "ign",
+        "publication": "IGN",
+        "title": "Black Myth: Wukong Review - IGN",
+        "url": "https://www.ign.com/articles/black-myth-wukong-review-pc",
+        "original_score": {
+          "score": 8,
+          "scale": 10,
+          "grade": null,
+          "display": "8/10"
+        },
+        "normalized_10": 8,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:35.847Z",
+          "url": "https://www.ign.com/articles/black-myth-wukong-review-pc",
+          "configured_source_id": "ign",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-2",
+        "configured_source_id": "pc-gamer",
+        "publication": "PC Gamer",
+        "title": "Black Myth: Wukong review",
+        "url": "https://www.pcgamer.com/games/rpg/black-myth-wukong-review",
+        "original_score": {
+          "score": 87,
+          "scale": 100,
+          "grade": null,
+          "display": "87/100"
+        },
+        "normalized_10": 8.7,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:35.848Z",
+          "url": "https://www.pcgamer.com/games/rpg/black-myth-wukong-review/",
+          "configured_source_id": "pc-gamer",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-3",
+        "configured_source_id": "gamesradar",
+        "publication": "GamesRadar+",
+        "title": "Black Myth: Wukong review &ndash;",
+        "url": "https://www.gamesradar.com/games/action-rpg/black-myth-wukong-review",
+        "original_score": {
+          "score": 4,
+          "scale": 5,
+          "grade": null,
+          "display": "4/5"
+        },
+        "normalized_10": 8,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:35.848Z",
+          "url": "https://www.gamesradar.com/games/action-rpg/black-myth-wukong-review/",
+          "configured_source_id": "gamesradar",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-5",
+        "configured_source_id": "push-square",
+        "publication": "Push Square",
+        "title": "Review: Black Myth: Wukong (PS5) - A Spectacularly Creative Action Romp",
+        "url": "https://www.pushsquare.com/reviews/ps5/black-myth-wukong",
+        "original_score": {
+          "score": 8,
+          "scale": 10,
+          "grade": null,
+          "display": "8/10"
+        },
+        "normalized_10": 8,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:36.343Z",
+          "url": "https://www.pushsquare.com/reviews/ps5/black-myth-wukong",
+          "configured_source_id": "push-square",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-6",
+        "configured_source_id": "eurogamer",
+        "publication": "Eurogamer",
+        "title": "Black Myth: Wukong review - a disjointed and uneven action spectacle",
+        "url": "https://www.eurogamer.net/black-myth-wukong-review",
+        "original_score": {
+          "score": 3,
+          "scale": 5,
+          "grade": null,
+          "display": "3/5"
+        },
+        "normalized_10": 6,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:36.343Z",
+          "url": "https://www.eurogamer.net/black-myth-wukong-review",
+          "configured_source_id": "eurogamer",
+          "direct_publisher": true
+        }
+      },
+      {
+        "source_id": "source-9",
+        "configured_source_id": "the-sixth-axis",
+        "publication": "TheSixthAxis",
+        "title": "Black Myth: Wukong Review | TheSixthAxis",
+        "url": "https://www.thesixthaxis.com/2024/08/16/black-myth-wukong-review",
+        "original_score": {
+          "score": 6,
+          "scale": 10,
+          "grade": null,
+          "display": "6/10"
+        },
+        "normalized_10": 6,
+        "score_evidence": {
+          "method": "jsonld.reviewRating",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-17T20:38:36.863Z",
+          "url": "https://www.thesixthaxis.com/2024/08/16/black-myth-wukong-review/",
+          "configured_source_id": "the-sixth-axis",
+          "direct_publisher": true
+        }
+      }
+    ],
+    "excluded_sources": [
+      {
+        "configured_source_id": "guardian-games",
+        "publication": "The Guardian",
+        "url": "https://www.theguardian.com/games/article/2024/aug/27/black-myth-wukong-review-a-fantastically-exciting-action-game",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "gamespot",
+        "publication": "GameSpot",
+        "url": "https://www.gamespot.com/reviews/black-myth-wukong-review-monkey-business/1900-6418269",
+        "reason": "canonical_version"
+      },
+      {
+        "configured_source_id": "rock-paper-shotgun",
+        "publication": "Rock Paper Shotgun",
+        "url": "https://www.rockpapershotgun.com/black-myth-wukong-review",
+        "reason": "canonical_version"
+      }
+    ],
+    "calculation": {
+      "source_count": 6,
+      "values": [
+        8,
+        8.7,
+        8,
+        8,
+        6,
+        6
+      ],
+      "mean_10": 7.45,
+      "score_10": 7.5
+    }
   }
 }
