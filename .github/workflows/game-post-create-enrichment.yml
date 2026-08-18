@@ -5,8 +5,6 @@ on:
   push:
     branches: [staging]
     paths:
-      - 'data/game-enrichment-requests/*.json'
-      - 'game/*/index.html'
       - 'config/parsers/review-source-registry*.json'
       - 'config/parsers/review-media-policy.json'
       - 'config/game-dna-taxonomy.json'
@@ -30,6 +28,8 @@ on:
       - 'scripts/lib/review-score-extractor.mjs'
       - 'scripts/build-review-bootstrap-local.mjs'
       - 'scripts/build-review-bootstrap-commercial.mjs'
+      - 'scripts/expand-review-bootstrap-local.mjs'
+      - 'scripts/render-review-bootstrap.mjs'
       - 'scripts/audit-review-bootstrap-local.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
       - 'scripts/run-game-post-create-enrichment.mjs'
@@ -41,6 +41,7 @@ on:
       - 'scripts/test-post-create-production-publisher.mjs'
       - 'scripts/test-game-creator-post-create.mjs'
       - 'scripts/test-quick-review-text-model-wiring.mjs'
+      - 'scripts/test-commercial-quick-review-depth.mjs'
       - 'scripts/test-post-create-dna-media-budget.mjs'
       - 'scripts/test-review-carousel-version-gate.mjs'
       - 'scripts/lib/verified-game-import.mjs'
@@ -113,6 +114,8 @@ jobs:
           node --check scripts/lib/review-score-extractor.mjs
           node --check scripts/build-review-bootstrap-local.mjs
           node --check scripts/build-review-bootstrap-commercial.mjs
+          node --check scripts/expand-review-bootstrap-local.mjs
+          node --check scripts/render-review-bootstrap.mjs
           node --check scripts/audit-review-bootstrap-local.mjs
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/run-game-post-create-enrichment.mjs
@@ -124,6 +127,7 @@ jobs:
           node --check scripts/test-post-create-production-publisher.mjs
           node --check scripts/test-game-creator-post-create.mjs
           node --check scripts/test-quick-review-text-model-wiring.mjs
+          node --check scripts/test-commercial-quick-review-depth.mjs
           node --check scripts/test-post-create-dna-media-budget.mjs
           node --check scripts/test-review-carousel-version-gate.mjs
           node --check scripts/lib/verified-game-import.mjs
@@ -132,6 +136,7 @@ jobs:
           node scripts/test-game-creator-boundary.mjs
           node scripts/test-game-creator-post-create.mjs
           node scripts/test-quick-review-text-model-wiring.mjs
+          node scripts/test-commercial-quick-review-depth.mjs
           node scripts/test-post-create-dna-media-budget.mjs
           node scripts/test-post-create-production-publisher.mjs
           node scripts/test-review-carousel-version-gate.mjs
