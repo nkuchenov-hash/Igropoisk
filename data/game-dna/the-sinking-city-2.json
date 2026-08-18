@@ -4,9 +4,9 @@
   "slug": "the-sinking-city-2",
   "title": "The Sinking City 2",
   "status": "auto",
-  "revision": 1,
+  "revision": 2,
   "created_at": "2026-08-18T17:27:43.868Z",
-  "updated_at": "2026-08-18T17:27:43.868Z",
+  "updated_at": "2026-08-18T17:51:31.513Z",
   "locked_axes": [],
   "profile": {
     "genres": [
@@ -15,30 +15,55 @@
     ],
     "subgenres": [],
     "core_loop": [
+      "combat",
       "exploration",
+      "puzzle_solving",
+      "dialogue",
       "survival",
       "crafting",
-      "combat"
+      "management"
     ],
-    "combat_style": [],
+    "combat_style": [
+      "shooter"
+    ],
     "traversal": [
-      "vehicles"
+      "vehicles",
+      "on_foot"
     ],
-    "world_structure": [],
-    "mission_structure": [],
-    "progression": [],
+    "world_structure": [
+      "open_world",
+      "linear",
+      "level_based"
+    ],
+    "mission_structure": [
+      "levels"
+    ],
+    "progression": [
+      "crafting",
+      "unlocks"
+    ],
     "perspective": [],
-    "player_agency": [],
+    "player_agency": [
+      "fixed_protagonist"
+    ],
     "pacing": [],
-    "narrative": [],
-    "setting": [],
+    "narrative": [
+      "story_heavy"
+    ],
+    "setting": [
+      "space"
+    ],
     "tone": [
       "horror"
     ],
     "multiplayer": [
-      "singleplayer"
+      "singleplayer",
+      "mmo"
     ],
-    "mechanics": [],
+    "mechanics": [
+      "crafting",
+      "puzzles"
+    ],
     "franchise": ""
   },
   "provenance": {
@@ -51,81 +76,119 @@
       "confidence": 0.55
     },
     "core_loop": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "combat_style": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "traversal": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "world_structure": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "mission_structure": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "progression": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "perspective": {
       "mode": "inferred",
       "confidence": 0.55
     },
     "player_agency": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "pacing": {
       "mode": "inferred",
       "confidence": 0.55
     },
     "narrative": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "setting": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "tone": {
       "mode": "inferred",
       "confidence": 0.55
     },
     "multiplayer": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     },
     "mechanics": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 6
     }
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "kind": "professional_review_corpus",
+      "source_count": 6,
+      "sources": [
+        "pc-gamer",
+        "gamesradar",
+        "push-square",
+        "the-sixth-axis",
+        "ign",
+        "gamestar"
+      ],
+      "snippet_count": 48,
+      "corpus_updated_at": "2026-08-18T13:44:25.671Z"
+    }
+  ],
   "notes": "",
   "quality": {
-    "populated_axes": 5,
+    "populated_axes": 13,
     "total_axes": 16,
-    "core_axes": 2,
+    "core_axes": 6,
     "total_core_axes": 7,
     "populated": [
       "genres",
       "core_loop",
+      "combat_style",
       "traversal",
+      "world_structure",
+      "mission_structure",
+      "progression",
+      "player_agency",
+      "narrative",
+      "setting",
       "tone",
-      "multiplayer"
+      "multiplayer",
+      "mechanics"
     ],
     "populated_core": [
       "core_loop",
-      "traversal"
+      "combat_style",
+      "traversal",
+      "world_structure",
+      "mission_structure",
+      "progression"
     ],
-    "ready_for_similarity": false,
-    "needs_enrichment": true
+    "ready_for_similarity": true,
+    "needs_enrichment": false
   }
 }

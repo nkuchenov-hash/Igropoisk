@@ -2,33 +2,44 @@
   "schema_version": 4,
   "game_slug": "luna-abyss",
   "game_id": "game_9ccc26e386bcdb714fa7",
-  "generated_at": "2026-08-18T17:27:49.592Z",
+  "generated_at": "2026-08-18T17:51:32.962Z",
   "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
   "source_dna": {
     "status": "auto",
-    "revision": 1,
+    "revision": 2,
     "quality": {
-      "populated_axes": 7,
+      "populated_axes": 13,
       "total_axes": 16,
-      "core_axes": 2,
+      "core_axes": 7,
       "total_core_axes": 7,
       "populated": [
         "genres",
         "core_loop",
+        "combat_style",
         "traversal",
-        "pacing",
+        "world_structure",
+        "mission_structure",
+        "progression",
+        "perspective",
         "narrative",
+        "setting",
         "tone",
-        "multiplayer"
+        "multiplayer",
+        "mechanics"
       ],
       "populated_core": [
         "core_loop",
-        "traversal"
+        "combat_style",
+        "traversal",
+        "world_structure",
+        "mission_structure",
+        "progression",
+        "perspective"
       ],
-      "ready_for_similarity": false,
-      "needs_enrichment": true
+      "ready_for_similarity": true,
+      "needs_enrichment": false
     },
     "ref": "../game-dna/luna-abyss.json"
   },
@@ -43,35 +54,115 @@
     ],
     "subgenres": [],
     "core_loop": [
-      "management",
-      "platforming",
       "combat",
-      "exploration"
-    ],
-    "combat_style": [],
-    "traversal": [
+      "exploration",
+      "puzzle_solving",
+      "management",
       "platforming"
     ],
-    "world_structure": [],
-    "mission_structure": [],
-    "progression": [],
-    "perspective": [],
-    "player_agency": [],
-    "pacing": [
-      "fast_action"
+    "combat_style": [
+      "shooter"
     ],
+    "traversal": [
+      "vehicles",
+      "platforming"
+    ],
+    "world_structure": [
+      "level_based"
+    ],
+    "mission_structure": [
+      "levels"
+    ],
+    "progression": [
+      "abilities",
+      "unlocks"
+    ],
+    "perspective": [
+      "first_person"
+    ],
+    "player_agency": [],
+    "pacing": [],
     "narrative": [
+      "cinematic",
       "story_heavy"
     ],
-    "setting": [],
+    "setting": [
+      "fantasy",
+      "science_fiction",
+      "space"
+    ],
     "tone": [
+      "dark",
+      "horror",
       "gritty"
     ],
     "multiplayer": [
       "singleplayer"
     ],
-    "mechanics": [],
+    "mechanics": [
+      "puzzles"
+    ],
     "franchise": ""
   },
-  "recommendations": []
+  "recommendations": [
+    {
+      "slug": "the-sinking-city-2",
+      "game_id": "game_6d18c2661870f81c37ce",
+      "title": "The Sinking City 2",
+      "year": 2026,
+      "score": 0.4664,
+      "base_score": 0.4664,
+      "penalty": 0,
+      "core_matches": 5,
+      "compared_core_axes": 6,
+      "dna_status": "auto",
+      "image": "https://store.akamai.steamstatic.com/images/storepagebackground/app/2825860?t=1787046902",
+      "reasons": [
+        "Боевая модель",
+        "Основной игровой цикл",
+        "Структура заданий",
+        "Перемещение",
+        "Прогрессия",
+        "Нарратив"
+      ],
+      "signals": [
+        {
+          "axis": "combat_style",
+          "overlap": 1,
+          "contribution": 0.1,
+          "label": "Боевая модель"
+        },
+        {
+          "axis": "core_loop",
+          "overlap": 0.571,
+          "contribution": 0.0914,
+          "label": "Основной игровой цикл"
+        },
+        {
+          "axis": "mission_structure",
+          "overlap": 1,
+          "contribution": 0.07,
+          "label": "Структура заданий"
+        },
+        {
+          "axis": "traversal",
+          "overlap": 0.5,
+          "contribution": 0.04,
+          "label": "Перемещение"
+        },
+        {
+          "axis": "progression",
+          "overlap": 0.5,
+          "contribution": 0.04,
+          "label": "Прогрессия"
+        },
+        {
+          "axis": "narrative",
+          "overlap": 0.5,
+          "contribution": 0.03,
+          "label": "Нарратив"
+        }
+      ]
+    }
+  ]
 }

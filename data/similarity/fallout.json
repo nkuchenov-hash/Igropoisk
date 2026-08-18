@@ -2,30 +2,42 @@
   "schema_version": 4,
   "game_slug": "fallout",
   "game_id": "game_6c7f3f81263d9a409505",
-  "generated_at": "2026-08-18T17:27:49.326Z",
+  "generated_at": "2026-08-18T17:51:32.884Z",
   "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
   "source_dna": {
     "status": "auto",
-    "revision": 1,
+    "revision": 2,
     "quality": {
-      "populated_axes": 4,
+      "populated_axes": 11,
       "total_axes": 16,
-      "core_axes": 2,
+      "core_axes": 7,
       "total_core_axes": 7,
       "populated": [
         "genres",
         "core_loop",
+        "combat_style",
+        "traversal",
+        "world_structure",
+        "mission_structure",
         "progression",
+        "perspective",
+        "player_agency",
+        "setting",
         "multiplayer"
       ],
       "populated_core": [
         "core_loop",
-        "progression"
+        "combat_style",
+        "traversal",
+        "world_structure",
+        "mission_structure",
+        "progression",
+        "perspective"
       ],
-      "ready_for_similarity": false,
-      "needs_enrichment": true
+      "ready_for_similarity": true,
+      "needs_enrichment": false
     },
     "ref": "../game-dna/fallout.json"
   },
@@ -36,20 +48,52 @@
     ],
     "subgenres": [],
     "core_loop": [
-      "exploration"
+      "combat",
+      "exploration",
+      "traversal",
+      "stealth",
+      "dialogue",
+      "survival",
+      "building",
+      "management"
     ],
-    "combat_style": [],
-    "traversal": [],
-    "world_structure": [],
-    "mission_structure": [],
+    "combat_style": [
+      "shooter",
+      "turn_based"
+    ],
+    "traversal": [
+      "mounts",
+      "vehicles"
+    ],
+    "world_structure": [
+      "level_based",
+      "roguelike_runs"
+    ],
+    "mission_structure": [
+      "story_plus_side_content",
+      "levels"
+    ],
     "progression": [
+      "skill_tree",
+      "abilities",
       "stats_builds"
     ],
-    "perspective": [],
-    "player_agency": [],
+    "perspective": [
+      "first_person",
+      "isometric",
+      "top_down"
+    ],
+    "player_agency": [
+      "fixed_protagonist",
+      "character_creation"
+    ],
     "pacing": [],
     "narrative": [],
-    "setting": [],
+    "setting": [
+      "modern",
+      "fantasy",
+      "post_apocalyptic"
+    ],
     "tone": [],
     "multiplayer": [
       "singleplayer"
@@ -57,5 +101,124 @@
     "mechanics": [],
     "franchise": "fallout"
   },
-  "recommendations": []
+  "recommendations": [
+    {
+      "slug": "fallout-2",
+      "game_id": "game_2278b9106a76e8359871",
+      "title": "Fallout 2",
+      "year": 1998,
+      "score": 0.43,
+      "base_score": 0.39,
+      "penalty": 0,
+      "core_matches": 4,
+      "compared_core_axes": 5,
+      "dna_status": "auto",
+      "image": "https://store.akamai.steamstatic.com/images/storepagebackground/app/38410?t=1572025546",
+      "reasons": [
+        "Структура заданий",
+        "Прогрессия",
+        "Боевая модель",
+        "Структура мира",
+        "Жанры",
+        "та же серия"
+      ],
+      "signals": [
+        {
+          "axis": "mission_structure",
+          "overlap": 1,
+          "contribution": 0.07,
+          "label": "Структура заданий"
+        },
+        {
+          "axis": "progression",
+          "overlap": 0.667,
+          "contribution": 0.0533,
+          "label": "Прогрессия"
+        },
+        {
+          "axis": "combat_style",
+          "overlap": 0.5,
+          "contribution": 0.05,
+          "label": "Боевая модель"
+        },
+        {
+          "axis": "world_structure",
+          "overlap": 0.5,
+          "contribution": 0.05,
+          "label": "Структура мира"
+        },
+        {
+          "axis": "genres",
+          "overlap": 1,
+          "contribution": 0.04,
+          "label": "Жанры"
+        },
+        {
+          "axis": "franchise",
+          "overlap": 1,
+          "contribution": 0.04,
+          "label": "та же серия"
+        }
+      ]
+    },
+    {
+      "slug": "fallout-3",
+      "game_id": "game_6ecbc73056b1bd66fb90",
+      "title": "Fallout 3",
+      "year": 2008,
+      "score": 0.4233,
+      "base_score": 0.3833,
+      "penalty": 0,
+      "core_matches": 4,
+      "compared_core_axes": 6,
+      "dna_status": "auto",
+      "image": "https://store.akamai.steamstatic.com/images/storepagebackground/app/22370?t=1732208097",
+      "reasons": [
+        "Основной игровой цикл",
+        "Прогрессия",
+        "та же серия",
+        "Свобода игрока",
+        "Перемещение",
+        "Структура заданий"
+      ],
+      "signals": [
+        {
+          "axis": "core_loop",
+          "overlap": 0.625,
+          "contribution": 0.1,
+          "label": "Основной игровой цикл"
+        },
+        {
+          "axis": "progression",
+          "overlap": 0.667,
+          "contribution": 0.0533,
+          "label": "Прогрессия"
+        },
+        {
+          "axis": "franchise",
+          "overlap": 1,
+          "contribution": 0.04,
+          "label": "та же серия"
+        },
+        {
+          "axis": "player_agency",
+          "overlap": 0.667,
+          "contribution": 0.04,
+          "label": "Свобода игрока"
+        },
+        {
+          "axis": "traversal",
+          "overlap": 0.5,
+          "contribution": 0.04,
+          "label": "Перемещение"
+        },
+        {
+          "axis": "mission_structure",
+          "overlap": 0.5,
+          "contribution": 0.035,
+          "label": "Структура заданий"
+        }
+      ]
+    }
+  ]
 }

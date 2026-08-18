@@ -2,31 +2,43 @@
   "schema_version": 4,
   "game_slug": "the-sinking-city-2",
   "game_id": "game_6d18c2661870f81c37ce",
-  "generated_at": "2026-08-18T17:27:50.097Z",
+  "generated_at": "2026-08-18T17:51:33.036Z",
   "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
   "source_dna": {
     "status": "auto",
-    "revision": 1,
+    "revision": 2,
     "quality": {
-      "populated_axes": 5,
+      "populated_axes": 13,
       "total_axes": 16,
-      "core_axes": 2,
+      "core_axes": 6,
       "total_core_axes": 7,
       "populated": [
         "genres",
         "core_loop",
+        "combat_style",
         "traversal",
+        "world_structure",
+        "mission_structure",
+        "progression",
+        "player_agency",
+        "narrative",
+        "setting",
         "tone",
-        "multiplayer"
+        "multiplayer",
+        "mechanics"
       ],
       "populated_core": [
         "core_loop",
-        "traversal"
+        "combat_style",
+        "traversal",
+        "world_structure",
+        "mission_structure",
+        "progression"
       ],
-      "ready_for_similarity": false,
-      "needs_enrichment": true
+      "ready_for_similarity": true,
+      "needs_enrichment": false
     },
     "ref": "../game-dna/the-sinking-city-2.json"
   },
@@ -37,31 +49,116 @@
     ],
     "subgenres": [],
     "core_loop": [
+      "combat",
       "exploration",
+      "puzzle_solving",
+      "dialogue",
       "survival",
       "crafting",
-      "combat"
+      "management"
     ],
-    "combat_style": [],
+    "combat_style": [
+      "shooter"
+    ],
     "traversal": [
-      "vehicles"
+      "vehicles",
+      "on_foot"
     ],
-    "world_structure": [],
-    "mission_structure": [],
-    "progression": [],
+    "world_structure": [
+      "open_world",
+      "linear",
+      "level_based"
+    ],
+    "mission_structure": [
+      "levels"
+    ],
+    "progression": [
+      "crafting",
+      "unlocks"
+    ],
     "perspective": [],
-    "player_agency": [],
+    "player_agency": [
+      "fixed_protagonist"
+    ],
     "pacing": [],
-    "narrative": [],
-    "setting": [],
+    "narrative": [
+      "story_heavy"
+    ],
+    "setting": [
+      "space"
+    ],
     "tone": [
       "horror"
     ],
     "multiplayer": [
-      "singleplayer"
+      "singleplayer",
+      "mmo"
     ],
-    "mechanics": [],
+    "mechanics": [
+      "crafting",
+      "puzzles"
+    ],
     "franchise": ""
   },
-  "recommendations": []
+  "recommendations": [
+    {
+      "slug": "luna-abyss",
+      "game_id": "game_9ccc26e386bcdb714fa7",
+      "title": "Luna Abyss",
+      "year": 2026,
+      "score": 0.4664,
+      "base_score": 0.4664,
+      "penalty": 0,
+      "core_matches": 5,
+      "compared_core_axes": 6,
+      "dna_status": "auto",
+      "image": "https://store.akamai.steamstatic.com/images/storepagebackground/app/1933000?t=1779870125",
+      "reasons": [
+        "Боевая модель",
+        "Основной игровой цикл",
+        "Структура заданий",
+        "Перемещение",
+        "Прогрессия",
+        "Нарратив"
+      ],
+      "signals": [
+        {
+          "axis": "combat_style",
+          "overlap": 1,
+          "contribution": 0.1,
+          "label": "Боевая модель"
+        },
+        {
+          "axis": "core_loop",
+          "overlap": 0.571,
+          "contribution": 0.0914,
+          "label": "Основной игровой цикл"
+        },
+        {
+          "axis": "mission_structure",
+          "overlap": 1,
+          "contribution": 0.07,
+          "label": "Структура заданий"
+        },
+        {
+          "axis": "traversal",
+          "overlap": 0.5,
+          "contribution": 0.04,
+          "label": "Перемещение"
+        },
+        {
+          "axis": "progression",
+          "overlap": 0.5,
+          "contribution": 0.04,
+          "label": "Прогрессия"
+        },
+        {
+          "axis": "narrative",
+          "overlap": 0.5,
+          "contribution": 0.03,
+          "label": "Нарратив"
+        }
+      ]
+    }
+  ]
 }

@@ -4,9 +4,9 @@
   "slug": "balatro",
   "title": "Balatro",
   "status": "auto",
-  "revision": 1,
+  "revision": 2,
   "created_at": "2026-08-18T17:27:41.436Z",
-  "updated_at": "2026-08-18T17:27:41.436Z",
+  "updated_at": "2026-08-18T17:51:28.896Z",
   "locked_axes": [],
   "profile": {
     "genres": [
@@ -20,27 +20,44 @@
     "subgenres": [],
     "core_loop": [
       "combat",
+      "exploration",
+      "stealth",
+      "puzzle_solving",
+      "building",
       "management",
       "collecting",
+      "racing",
       "strategy"
     ],
     "combat_style": [],
     "traversal": [
       "vehicles"
     ],
-    "world_structure": [],
-    "mission_structure": [],
-    "progression": [],
+    "world_structure": [
+      "roguelike_runs"
+    ],
+    "mission_structure": [
+      "runs"
+    ],
+    "progression": [
+      "unlocks"
+    ],
     "perspective": [],
     "player_agency": [],
     "pacing": [],
     "narrative": [],
-    "setting": [],
-    "tone": [],
+    "setting": [
+      "space"
+    ],
+    "tone": [
+      "hopeful"
+    ],
     "multiplayer": [
       "singleplayer"
     ],
-    "mechanics": [],
+    "mechanics": [
+      "puzzles"
+    ],
     "franchise": ""
   },
   "provenance": {
@@ -53,8 +70,9 @@
       "confidence": 0.55
     },
     "core_loop": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     },
     "combat_style": {
       "mode": "inferred",
@@ -65,16 +83,19 @@
       "confidence": 0.55
     },
     "world_structure": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     },
     "mission_structure": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     },
     "progression": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     },
     "perspective": {
       "mode": "inferred",
@@ -93,40 +114,65 @@
       "confidence": 0.55
     },
     "setting": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     },
     "tone": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     },
     "multiplayer": {
       "mode": "inferred",
       "confidence": 0.55
     },
     "mechanics": {
-      "mode": "inferred",
-      "confidence": 0.55
+      "mode": "professional_review_evidence",
+      "confidence": 0.8,
+      "source_count": 4
     }
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "kind": "professional_review_corpus",
+      "source_count": 4,
+      "sources": [
+        "game-informer",
+        "gamesradar",
+        "push-square",
+        "pc-gamer"
+      ],
+      "snippet_count": 40,
+      "corpus_updated_at": "2026-08-18T11:41:23.716Z"
+    }
+  ],
   "notes": "",
   "quality": {
-    "populated_axes": 4,
+    "populated_axes": 10,
     "total_axes": 16,
-    "core_axes": 2,
+    "core_axes": 5,
     "total_core_axes": 7,
     "populated": [
       "genres",
       "core_loop",
       "traversal",
-      "multiplayer"
+      "world_structure",
+      "mission_structure",
+      "progression",
+      "setting",
+      "tone",
+      "multiplayer",
+      "mechanics"
     ],
     "populated_core": [
       "core_loop",
-      "traversal"
+      "traversal",
+      "world_structure",
+      "mission_structure",
+      "progression"
     ],
-    "ready_for_similarity": false,
-    "needs_enrichment": true
+    "ready_for_similarity": true,
+    "needs_enrichment": false
   }
 }
