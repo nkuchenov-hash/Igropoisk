@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "luna-abyss",
-  "generated_at": "2026-08-17T23:30:37.047Z",
+  "generated_at": "2026-08-18T11:41:53.186Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -19,8 +19,7 @@
     "critic_index_scope": "released_fallback",
     "metascore_as_vote": false,
     "user_scores_as_votes": false,
-    "professional_only": true,
-    "post_create_verified_corpus_preserved": true
+    "professional_only": true
   },
   "accepted": [
     {
@@ -64,7 +63,7 @@
       "domain": "pushsquare.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T23:29:32.049Z",
+        "checked_at": "2026-08-18T11:40:29.111Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -74,7 +73,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T23:30:37.554Z",
+        "checked_at": "2026-08-18T11:41:54.686Z",
         "url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
         "configured_source_id": "push-square",
         "direct_publisher": true
@@ -84,7 +83,7 @@
       "id": "source-2",
       "configured_source_id": "the-sixth-axis",
       "publication": "TheSixthAxis",
-      "title": "Секундочку…",
+      "title": "Luna Abyss Review | TheSixthAxis",
       "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review",
       "resolved_url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review",
       "source_kind": "review",
@@ -120,7 +119,7 @@
       "domain": "thesixthaxis.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-17T23:29:32.049Z",
+        "checked_at": "2026-08-18T11:40:29.111Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -130,7 +129,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T23:16:28.817Z",
+        "checked_at": "2026-08-18T11:41:54.686Z",
         "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review/",
         "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
@@ -168,7 +167,7 @@
       "domain": "metacritic.com",
       "validation": {
         "status": "accepted-critic-index",
-        "checked_at": "2026-08-17T23:30:35.276Z",
+        "checked_at": "2026-08-18T11:41:53.186Z",
         "method": "metacritic-critic-attribution-v15.2",
         "index_url": "https://www.metacritic.com/game/luna-abyss/critic-reviews/",
         "index_platform": "primary",
@@ -177,7 +176,7 @@
       "score_evidence": {
         "method": "critic-index-attribution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-17T23:30:35.276Z",
+        "checked_at": "2026-08-18T11:41:53.186Z",
         "url": "https://www.metacritic.com/game/luna-abyss/critic-reviews/",
         "configured_source_id": "game-spew",
         "direct_publisher": false,
@@ -193,6 +192,13 @@
   ],
   "rejected": [
     {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/luna-abyss-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/luna-abyss",
       "reasons": [
@@ -202,13 +208,6 @@
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/luna-abyss-2",
-      "reasons": [
-        "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/luna-abyss-review",
       "reasons": [
         "HTTP 404"
       ]
@@ -338,8 +337,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "unavailable",
+      "notes": "search transport unavailable"
     },
     {
       "source_id": "ars-technica",
@@ -607,8 +606,6 @@
     "critic_index_added": 1,
     "critic_index_scores_added": 0,
     "critic_index_platform": "primary",
-    "removed_user_generated": 0,
-    "historical_index_preserved": 0,
-    "trusted_scores_preserved": 3
+    "removed_user_generated": 0
   }
 }
