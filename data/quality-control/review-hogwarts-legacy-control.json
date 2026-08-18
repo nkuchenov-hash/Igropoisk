@@ -4,36 +4,20 @@
   "game_slug": "hogwarts-legacy",
   "game_id": null,
   "canonical_title": "Hogwarts Legacy",
-  "checked_at": "2026-08-17T20:38:43.438Z",
+  "checked_at": "2026-08-18T00:29:26.794Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
-    "Existing article could not be deterministically rebound; queued for prose/media repair."
+    "Оценка статьи не совпадает с review.review_score.",
+    "hogwarts-legacy: only 5/8 verified game-specific screenshots\n"
   ],
   "revision_history": [
     {
       "label": "web-discovery-full-registry",
       "script": "scripts/discover-review-sources-web.mjs",
-      "status": "completed",
+      "status": "skipped",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"hogwarts-legacy\",\n  \"registered_editorial\": 41,\n  \"checked\": 41,\n  \"accepted\": 12,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 2,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "promote-full-registry-audit",
-      "script": "scripts/promote-review-source-audit.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"hogwarts-legacy\",\n  \"status\": \"green\",\n  \"accepted\": 12,\n  \"trusted_scores_preserved\": 0,\n  \"checked\": 41,\n  \"applicable\": 41,\n  \"regional_complete\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "explicit-score-enrichment",
-      "script": "scripts/enrich-review-explicit-scores.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"hogwarts-legacy\",\n  \"accepted\": 12,\n  \"scored\": 8,\n  \"context_only_versions\": 0,\n  \"updates\": 8,\n  \"preserved\": 0\n}\n",
-      "stderr": ""
+      "reason": "canonical corpus, score and regional discovery are already green"
     },
     {
       "label": "score-1",
@@ -50,11 +34,91 @@
       "exit_code": 1,
       "stdout": "",
       "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "media-discovery-1",
+      "script": "scripts/discover-review-media.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "hogwarts-legacy: only 5/8 verified game-specific screenshots\n"
+    },
+    {
+      "label": "score-2",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"hogwarts-legacy\",\n  \"status\": \"green\",\n  \"scored_sources\": 8,\n  \"excluded_sources\": 4,\n  \"score_10\": 7.9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rebind-2",
+      "script": "scripts/rebind-existing-review.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "media-discovery-2",
+      "script": "scripts/discover-review-media.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "hogwarts-legacy: only 5/8 verified game-specific screenshots\n"
+    },
+    {
+      "label": "score-3",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"hogwarts-legacy\",\n  \"status\": \"green\",\n  \"scored_sources\": 8,\n  \"excluded_sources\": 4,\n  \"score_10\": 7.9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rebind-3",
+      "script": "scripts/rebind-existing-review.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "media-discovery-3",
+      "script": "scripts/discover-review-media.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "hogwarts-legacy: only 5/8 verified game-specific screenshots\n"
+    },
+    {
+      "label": "score-4",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"hogwarts-legacy\",\n  \"status\": \"green\",\n  \"scored_sources\": 8,\n  \"excluded_sources\": 4,\n  \"score_10\": 7.9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "rebind-4",
+      "script": "scripts/rebind-existing-review.mjs",
+      "status": "revision-required",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51\nif(invalidSections.length) throw new Error(`Existing article has sections with no surviving accepted publisher citation: ${invalidSections.join(', ')}`);\n                                 ^\n\nError: Existing article has sections with no surviving accepted publisher citation: legacy\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/rebind-existing-review.mjs:51:34\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.2\n"
+    },
+    {
+      "label": "media-discovery-4",
+      "script": "scripts/discover-review-media.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "hogwarts-legacy: only 5/8 verified game-specific screenshots\n"
     }
   ],
   "policy": {
     "keep_queued_until_green": true,
-    "deterministic_only": true,
+    "deterministic_only": false,
     "review_score_source": "data/reviews/{slug}.json#review_score",
     "research_primary": "complete-registered-source-direct-publisher-scan",
     "research_fallback": "registered-publisher-research-only-if-full-scan-missing",
