@@ -1,8 +1,8 @@
 {
   "schema_version": 4,
   "game_slug": "leafy-corner",
-  "game_id": "",
-  "generated_at": "2026-08-14T02:46:06.002Z",
+  "game_id": "game_778f98d05eb9aace0748",
+  "generated_at": "2026-08-18T17:27:51.186Z",
   "algorithm": "game-dna-weighted-v1",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
@@ -10,22 +10,26 @@
     "status": "auto",
     "revision": 1,
     "quality": {
-      "populated_axes": 6,
+      "populated_axes": 8,
       "total_axes": 16,
-      "core_axes": 1,
+      "core_axes": 3,
       "total_core_axes": 7,
       "populated": [
         "genres",
         "subgenres",
+        "core_loop",
         "traversal",
+        "mission_structure",
         "pacing",
         "multiplayer",
         "mechanics"
       ],
       "populated_core": [
-        "traversal"
+        "core_loop",
+        "traversal",
+        "mission_structure"
       ],
-      "ready_for_similarity": false,
+      "ready_for_similarity": true,
       "needs_enrichment": true
     },
     "ref": "../game-dna/leafy-corner.json"
@@ -34,19 +38,26 @@
     "genres": [
       "casual",
       "indie",
-      "simulation"
+      "simulation",
+      "казуальные_игры",
+      "инди",
+      "симуляторы"
     ],
     "subgenres": [
       "mouse_only_option",
       "category_playable_at_your_own_pace"
     ],
-    "core_loop": [],
+    "core_loop": [
+      "management"
+    ],
     "combat_style": [],
     "traversal": [
       "vehicles"
     ],
     "world_structure": [],
-    "mission_structure": [],
+    "mission_structure": [
+      "contracts"
+    ],
     "progression": [],
     "perspective": [],
     "player_agency": [],
