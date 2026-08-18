@@ -1,0 +1,34 @@
+name: Quick review editorial quality
+
+on:
+  pull_request:
+    branches: [staging]
+    paths:
+      - 'scripts/build-review-bootstrap-local.mjs'
+      - 'scripts/test-quick-review-editorial-quality.mjs'
+      - '.github/workflows/quick-review-editorial-quality.yml'
+  push:
+    branches: [staging]
+    paths:
+      - 'scripts/build-review-bootstrap-local.mjs'
+      - 'scripts/test-quick-review-editorial-quality.mjs'
+      - '.github/workflows/quick-review-editorial-quality.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check quick-review builder syntax
+        run: |
+          node --check scripts/build-review-bootstrap-local.mjs
+          node --check scripts/test-quick-review-editorial-quality.mjs
+      - name: Enforce primary model and anti-repetition gate
+        run: node scripts/test-quick-review-editorial-quality.mjs
