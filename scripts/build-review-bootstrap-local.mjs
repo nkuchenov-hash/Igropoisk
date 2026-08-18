@@ -9,11 +9,13 @@ const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path
 const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,`${JSON.stringify(value,null,2)}\n`)};
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const countWords=value=>(String(value||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]+/g)||[]).length;
-const QUICK_REVIEW_TIMEOUT_MS=Math.max(60000,Math.min(240000,Number(process.env.QUICK_REVIEW_TIMEOUT_MS||120000)));
+const normalize=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[«»"'`]/g,'').replace(/[^a-zа-яё0-9]+/gi,' ').replace(/\s+/g,' ').trim();
+const QUICK_REVIEW_TIMEOUT_MS=Math.max(60000,Math.min(180000,Number(process.env.QUICK_REVIEW_TIMEOUT_MS||120000)));
+const QUICK_REVIEW_GITHUB_TIMEOUT_MS=Math.max(30000,Math.min(120000,Number(process.env.QUICK_REVIEW_GITHUB_TIMEOUT_MS||75000)));
 const QUICK_REVIEW_NUM_CTX=Math.max(4096,Math.min(16384,Number(process.env.QUICK_REVIEW_NUM_CTX||8192)));
-const QUICK_REVIEW_NUM_PREDICT=Math.max(1200,Math.min(3600,Number(process.env.QUICK_REVIEW_NUM_PREDICT||2200)));
-const QUICK_REVIEW_MIN_WORDS=Math.max(160,Math.min(360,Number(process.env.QUICK_REVIEW_MIN_WORDS||180)));
-const QUICK_REVIEW_MAX_ATTEMPTS=2;
+const QUICK_REVIEW_NUM_PREDICT=Math.max(1200,Math.min(3600,Number(process.env.QUICK_REVIEW_NUM_PREDICT||2400)));
+const QUICK_REVIEW_MIN_WORDS=Math.max(180,Math.min(420,Number(process.env.QUICK_REVIEW_MIN_WORDS||220)));
+const GITHUB_MODEL=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';
 const draft=read(`data/drafts/${slug}.json`),review=read(`data/reviews/${slug}.json`,{}),research=read(`data/research/${slug}-source-matrix.json`,{});
 if(!draft?.identity)throw new Error(`${slug}: game draft missing`);
 const score=Number(review?.review_score?.calculation?.score_10);
@@ -25,51 +27,73 @@ const publications=new Set(allSources.map(source=>String(source.publication||sou
 if(allSources.length<3||publications.size<3){
   console.log(JSON.stringify({slug,status:'skipped',reason:'fewer_than_three_independent_professional_sources',sources:allSources.length,publications:publications.size},null,2));process.exit(0);
 }
+function assessEditorialQuality(generated){
+  const sections=Array.isArray(generated?.sections)?generated.sections:[];
+  const paragraphs=[generated?.lead,...sections.flatMap(section=>section?.paragraphs||[]),generated?.verdict?.summary].map(value=>String(value||'').trim()).filter(Boolean);
+  const words=countWords(paragraphs.join(' '));
+  const normalizedParagraphs=paragraphs.map(normalize).filter(value=>value.length>=40);
+  const paragraphCounts=new Map();for(const value of normalizedParagraphs)paragraphCounts.set(value,(paragraphCounts.get(value)||0)+1);
+  const duplicateParagraphs=[...paragraphCounts.entries()].filter(([,count])=>count>1).map(([text,count])=>({text:text.slice(0,120),count}));
+  const sentences=paragraphs.flatMap(value=>String(value).split(/(?<=[.!?…])\s+/)).map(normalize).filter(value=>value.length>=45);
+  const sentenceCounts=new Map();for(const value of sentences)sentenceCounts.set(value,(sentenceCounts.get(value)||0)+1);
+  const duplicateSentences=[...sentenceCounts.entries()].filter(([,count])=>count>1).map(([text,count])=>({text:text.slice(0,140),count}));
+  const uniqueSentenceRatio=sentences.length?new Set(sentences).size/sentences.length:1;
+  const headings=sections.map(section=>normalize(section?.heading)).filter(Boolean);
+  const genericHeadingCount=headings.filter(value=>/^(основной игровой процесс|сильные стороны|заметные недостатки|кому подходит игра|итог)$/.test(value)).length;
+  const reasons=[];
+  if(sections.length<3)reasons.push(`sections ${sections.length}/3`);
+  if(words<QUICK_REVIEW_MIN_WORDS)reasons.push(`words ${words}/${QUICK_REVIEW_MIN_WORDS}`);
+  if(duplicateParagraphs.length)reasons.push(`duplicate paragraphs ${duplicateParagraphs.length}`);
+  if(duplicateSentences.length)reasons.push(`duplicate long sentences ${duplicateSentences.length}`);
+  if(sentences.length>=6&&uniqueSentenceRatio<0.86)reasons.push(`unique sentence ratio ${uniqueSentenceRatio.toFixed(2)}/0.86`);
+  if(genericHeadingCount>=3)reasons.push(`generic headings ${genericHeadingCount}`);
+  return{passed:reasons.length===0,reasons,words,sections:sections.length,duplicate_paragraphs:duplicateParagraphs,duplicate_sentences:duplicateSentences,unique_sentence_ratio:Number(uniqueSentenceRatio.toFixed(3)),generic_heading_count:genericHeadingCount};
+}
 const existing=read(`data/review-bootstrap/${slug}.json`);
 if(existing?.publication_status==='published'&&Number(existing.score)===score&&fs.existsSync(path.join(root,'article',slug,'index.html'))){
-  console.log(JSON.stringify({slug,status:'already_published',score,sources:existing.sources?.length||0},null,2));process.exit(0);
+  const existingQuality=assessEditorialQuality(existing);
+  if(existingQuality.passed){console.log(JSON.stringify({slug,status:'already_published',score,sources:existing.sources?.length||0,quality:existingQuality},null,2));process.exit(0)}
+  console.log(`${slug}: existing bootstrap review failed editorial quality gate; regenerating: ${existingQuality.reasons.join(', ')}`);
 }
-const sources=allSources.slice(0,6),validIds=new Set(sources.map((source,index)=>source.id||`source-${index+1}`));
+const sources=allSources.slice(0,8),validIds=new Set(sources.map((source,index)=>source.id||`source-${index+1}`));
 const sourceDigest=sources.map((source,index)=>({
   id:source.id||`source-${index+1}`,
   publication:source.publication||source.source||source.configured_source_id,
-  title:source.title||'',
-  score:source.score??null,
-  scale:source.scale??null,
-  praise:(source.praise||[]).slice(0,2),
-  criticism:(source.criticism||[]).slice(0,2),
-  evidence_points:(source.evidence_points||source.evidence||[]).slice(0,4)
+  title:source.title||'',score:source.score??null,scale:source.scale??null,
+  snippet:source.snippet||source.summary||source.description||source.identity_evidence||'',
+  praise:(source.praise||[]).slice(0,4),criticism:(source.criticism||[]).slice(0,4),
+  evidence_points:(source.evidence_points||source.evidence||[]).slice(0,6)
 }));
-const identity={title:draft.identity.title,release:draft.release,developers:draft.companies?.developers||[],publishers:draft.companies?.publishers||[],genres:draft.classification?.genres||[],description:draft.editorial?.integrated_description||draft.editorial?.short_description||'',features:(draft.editorial?.features||[]).slice(0,8)};
+const identity={title:draft.identity.title,release:draft.release,developers:draft.companies?.developers||[],publishers:draft.companies?.publishers||[],genres:draft.classification?.genres||[],platforms:draft.classification?.platforms||[],description:draft.editorial?.integrated_description||draft.editorial?.short_description||'',features:(draft.editorial?.features||[]).slice(0,10)};
 const schema={type:'object',additionalProperties:false,required:['title','dek','lead','sections','verdict'],properties:{title:{type:'string'},dek:{type:'string'},lead:{type:'string'},sections:{type:'array',minItems:3,maxItems:4,items:{type:'object',additionalProperties:false,required:['id','heading','paragraphs','source_ids'],properties:{id:{type:'string'},heading:{type:'string'},paragraphs:{type:'array',minItems:1,maxItems:3,items:{type:'string'}},source_ids:{type:'array',minItems:1,items:{type:'string'}}}}},verdict:{type:'object',additionalProperties:false,required:['summary','best_for','not_for'],properties:{summary:{type:'string'},best_for:{type:'array',maxItems:3,items:{type:'string'}},not_for:{type:'array',maxItems:3,items:{type:'string'}}}}}};
-const basePrompt=`Напиши быстрый публикуемый обзор Игропоиска на русском языке по игре ниже. Это компактный первый редакционный обзор, который позже может быть расширен отдельным full-review этапом. Дай цельное понимание игры: основной игровой процесс, сильные стороны, заметные недостатки и кому она подходит. Пиши естественным русским языком, без канцелярита, рекламной интонации и ощущения машинного перевода. Используй ТОЛЬКО факты и выводы из предоставленных профессиональных источников; не выдумывай детали и не раскрывай крупные сюжетные повороты. Нужны 3–4 содержательных раздела и примерно 250–500 слов: не раздувай текст ради объёма. Каждый раздел обязан иметь source_ids, реально подтверждающие его тезисы. Оценка Игропоиска уже рассчитана отдельно и равна ${score}/10; не пересчитывай её. Верни только JSON по схеме.\n\nИГРА:\n${JSON.stringify(identity)}\n\nПРОФЕССИОНАЛЬНЫЕ ИСТОЧНИКИ:\n${JSON.stringify(sourceDigest)}`;
+const basePrompt=`Напиши быстрый публикуемый обзор Игропоиска на русском языке по игре ниже. Это полноценный короткий редакционный материал, а не шаблон, SEO-текст, перевод или перечень чужих мнений. Читатель должен понять, что в игре реально делаешь, какие системы/ощущения определяют опыт, за что критики её ценят и что им мешает.\n\nПРАВИЛА:\n- 3–4 содержательных раздела, примерно 300–600 слов; не раздувай ради объёма.\n- Заголовки разделов должны быть конкретными для этой игры, а не «Сильные стороны»/«Недостатки»/«Кому подходит».\n- Не повторяй одну мысль или формулировку в разных абзацах; lead и verdict не должны дублировать друг друга.\n- Каждый абзац должен сообщать новую конкретную мысль именно об этой игре.\n- Используй только факты/выводы из ИГРА и ПРОФЕССИОНАЛЬНЫЕ ИСТОЧНИКИ; если источники не подтверждают деталь, не выдумывай её.\n- Каждый раздел обязан иметь source_ids реально подтверждающих его тезисы.\n- Естественный современный русский, без кальки, канцелярита и рекламной интонации.\n- Оценка Игропоиска уже рассчитана отдельно: ${score}/10. Не пересчитывай её.\nВерни только JSON.\n\nИГРА:\n${JSON.stringify(identity)}\n\nПРОФЕССИОНАЛЬНЫЕ ИСТОЧНИКИ:\n${JSON.stringify(sourceDigest)}`;
+async function githubJson(prompt,retry=false){
+  const token=process.env.GITHUB_TOKEN;if(!token)throw new Error('GITHUB_TOKEN unavailable');
+  const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model:GITHUB_MODEL,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор. Пиши живой, точный и небанальный текст. Не повторяй предложения, не имитируй перевод и не заполняй объём общими словами.'},{role:'user',content:retry?`${prompt}\n\nПредыдущий вариант не прошёл редакционный gate. Перепиши целиком более конкретно, без повторов и шаблонных заголовков.`:prompt}],response_format:{type:'json_object'},temperature:retry?0.25:0.35,max_tokens:3500}),signal:AbortSignal.timeout(QUICK_REVIEW_GITHUB_TIMEOUT_MS)});
+  if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${(await response.text()).slice(0,600)}`);
+  const payload=await response.json(),raw=payload.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no quick-review JSON');
+  return JSON.parse(String(raw).replace(/^```json\s*|\s*```$/g,''));
+}
+async function localJson(prompt){return chatJson({system:'Ты опытный русскоязычный игровой журналист. Пиши живой оригинальный текст, без повторов, строго опираясь на предоставленные профессиональные рецензии.',prompt,schema,temperature:0.2,numCtx:QUICK_REVIEW_NUM_CTX,numPredict:QUICK_REVIEW_NUM_PREDICT,timeoutMs:QUICK_REVIEW_TIMEOUT_MS})}
 async function generateQuickReview(){
   const failures=[];
-  for(let attempt=1;attempt<=QUICK_REVIEW_MAX_ATTEMPTS;attempt++){
-    const retryNote=attempt===1?'':`\n\nПредыдущая попытка не дала пригодный компактный материал. Ответь проще: 3–4 раздела, минимум ${QUICK_REVIEW_MIN_WORDS} содержательных слов, только валидный JSON без пояснений.`;
-    try{
-      const generated=await chatJson({
-        system:'Ты опытный русскоязычный игровой журналист. Пиши живой оригинальный текст и строго опирайся на предоставленные профессиональные рецензии.',
-        prompt:`${basePrompt}${retryNote}`,
-        schema,
-        temperature:attempt===1?0.3:0.2,
-        numCtx:QUICK_REVIEW_NUM_CTX,
-        numPredict:QUICK_REVIEW_NUM_PREDICT,
-        timeoutMs:QUICK_REVIEW_TIMEOUT_MS
-      });
-      const sections=Array.isArray(generated.sections)?generated.sections:[];
-      const words=countWords([generated.lead,...sections.flatMap(section=>section.paragraphs||[]),generated.verdict?.summary].join(' '));
-      if(sections.length>=3&&words>=QUICK_REVIEW_MIN_WORDS)return{generated,sections,words,attempt,failures};
-      failures.push(`attempt ${attempt}: too short (${sections.length} sections, ${words} words)`);
-    }catch(error){failures.push(`attempt ${attempt}: ${error?.message||String(error)}`)}
+  if(process.env.GITHUB_TOKEN){
+    for(let attempt=1;attempt<=2;attempt++){
+      try{const generated=await githubJson(basePrompt,attempt>1),quality=assessEditorialQuality(generated);if(quality.passed)return{generated,quality,provider:'github-models',model:GITHUB_MODEL,attempt,failures};failures.push(`github attempt ${attempt}: ${quality.reasons.join(', ')}`)}catch(error){failures.push(`github attempt ${attempt}: ${error?.message||String(error)}`)}
+    }
   }
-  throw new Error(`${slug}: bounded quick review generation failed: ${failures.join(' | ')}`);
+  try{
+    const generated=await localJson(`${basePrompt}\n\nЭто аварийный локальный fallback. Сделай компактный, но законченный текст и особенно избегай повторов.`),quality=assessEditorialQuality(generated);
+    if(quality.passed)return{generated,quality,provider:'local-ollama',model:LOCAL_EDITORIAL_MODEL,attempt:1,failures};
+    failures.push(`local fallback: ${quality.reasons.join(', ')}`);
+  }catch(error){failures.push(`local fallback: ${error?.message||String(error)}`)}
+  throw new Error(`${slug}: quick review failed editorial quality gate: ${failures.join(' | ')}`);
 }
 const generatedResult=await generateQuickReview();
-const generated=generatedResult.generated,sections=generatedResult.sections,words=generatedResult.words;
+const generated=generatedResult.generated,sections=Array.isArray(generated.sections)?generated.sections:[],words=generatedResult.quality.words;
 for(const section of sections){section.source_ids=[...new Set(section.source_ids||[])].filter(id=>validIds.has(id));if(!section.source_ids.length)throw new Error(`${slug}/${section.id}: no verified source_ids`)}
 const title=String(generated.title||`Обзор ${identity.title}`),dek=String(generated.dek||generated.lead||''),now=new Date().toISOString();
-const article={schema_version:1,review_stage:'bootstrap',publication_status:'published',slug,game_slug:slug,game_id:draft.game_id||draft.identity.game_id||null,title,dek,lead:generated.lead,author:'Редакция Игропоиска',published_at:new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}),updated_at:now,score,score_source:`data/reviews/${slug}.json#review_score`,reading_time_minutes:Math.max(2,Math.ceil(words/190)),sections,verdict:generated.verdict,sources:sources.map((source,index)=>({id:source.id||`source-${index+1}`,name:source.publication||source.source||source.configured_source_id||'Издание',title:source.title||'',url:source.resolved_url||source.url,purpose:[...(source.praise||[]).slice(0,1),...(source.criticism||[]).slice(0,1)].join(' · ')||'Профессиональная рецензия'})),methodology:{stage:'bootstrap',minimum_independent_professional_sources:3,accepted_sources:sources.length,independent_publications:publications.size,upgrade_target:'full_editorial_review'},generation:{provider:'local-ollama',model:LOCAL_EDITORIAL_MODEL,checked_at:now,attempt:generatedResult.attempt,timeout_ms:QUICK_REVIEW_TIMEOUT_MS,num_ctx:QUICK_REVIEW_NUM_CTX,num_predict:QUICK_REVIEW_NUM_PREDICT,minimum_words:QUICK_REVIEW_MIN_WORDS}};
+const article={schema_version:2,review_stage:'bootstrap',publication_status:'published',slug,game_slug:slug,game_id:draft.game_id||draft.identity.game_id||null,title,dek,lead:generated.lead,author:'Редакция Игропоиска',published_at:new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}),updated_at:now,score,score_source:`data/reviews/${slug}.json#review_score`,reading_time_minutes:Math.max(2,Math.ceil(words/190)),sections,verdict:generated.verdict,sources:sources.map((source,index)=>({id:source.id||`source-${index+1}`,name:source.publication||source.source||source.configured_source_id||'Издание',title:source.title||'',url:source.resolved_url||source.url,purpose:[...(source.praise||[]).slice(0,1),...(source.criticism||[]).slice(0,1)].join(' · ')||'Профессиональная рецензия'})),methodology:{stage:'bootstrap',minimum_independent_professional_sources:3,accepted_sources:sources.length,independent_publications:publications.size,upgrade_target:'full_editorial_review'},generation:{provider:generatedResult.provider,model:generatedResult.model,checked_at:now,attempt:generatedResult.attempt,github_timeout_ms:QUICK_REVIEW_GITHUB_TIMEOUT_MS,local_timeout_ms:QUICK_REVIEW_TIMEOUT_MS,minimum_words:QUICK_REVIEW_MIN_WORDS,editorial_quality:generatedResult.quality,prior_failures:generatedResult.failures}};
 const toc=sections.map((section,index)=>`<li><a href="#${esc(section.id)}"><span>${String(index+1).padStart(2,'0')}</span><b>${esc(section.heading)}</b></a></li>`).join('');
 const body=sections.map((section,index)=>`<section class="article-section" id="${esc(section.id)}"><h2><span>${String(index+1).padStart(2,'0')}</span>${esc(section.heading)}</h2>${(section.paragraphs||[]).map(paragraph=>`<p>${esc(paragraph)}</p>`).join('')}</section>`).join('');
 const best=(generated.verdict?.best_for||[]).map(item=>`<li>${esc(item)}</li>`).join(''),notFor=(generated.verdict?.not_for||[]).map(item=>`<li>${esc(item)}</li>`).join('');
@@ -78,5 +102,5 @@ const html=`<!doctype html><html lang="ru" data-theme="dark"><head><meta charset
 write(`data/review-bootstrap/${slug}.json`,article);
 const output=path.join(root,'article',slug,'index.html');fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,html);
 review.igropoisk_article={url:`../../article/${slug}/`,title,description:dek,score,score_source:`data/reviews/${slug}.json#review_score`,review_stage:'bootstrap',source_count:article.sources.length,updated_at:now};review.updated_at=now;write(`data/reviews/${slug}.json`,review);
-write(`data/parser-runs/review-bootstrap-${slug}.json`,{parser:'review-bootstrap-local',status:'green',game_slug:slug,checked_at:now,score,sources:article.sources.length,words,sections:sections.length,model:LOCAL_EDITORIAL_MODEL,generation_attempt:generatedResult.attempt,timeout_ms:QUICK_REVIEW_TIMEOUT_MS,minimum_words:QUICK_REVIEW_MIN_WORDS});
-console.log(JSON.stringify({slug,status:'published_bootstrap',score,sources:article.sources.length,words,sections:sections.length,generation_attempt:generatedResult.attempt,timeout_ms:QUICK_REVIEW_TIMEOUT_MS,minimum_words:QUICK_REVIEW_MIN_WORDS},null,2));
+write(`data/parser-runs/review-bootstrap-${slug}.json`,{parser:'review-bootstrap-quality-v2',status:'green',game_slug:slug,checked_at:now,score,sources:article.sources.length,words,sections:sections.length,provider:generatedResult.provider,model:generatedResult.model,generation_attempt:generatedResult.attempt,editorial_quality:generatedResult.quality});
+console.log(JSON.stringify({slug,status:'published_bootstrap',score,sources:article.sources.length,words,sections:sections.length,provider:generatedResult.provider,model:generatedResult.model,generation_attempt:generatedResult.attempt,editorial_quality:generatedResult.quality},null,2));
