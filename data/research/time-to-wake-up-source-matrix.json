@@ -1,14 +1,51 @@
 {
-  "parser": "review-professional-critic-index-v15.2",
-  "status": "needs_revision",
-  "game_slug": "tides-of-annihilation",
-  "checked_at": "2026-08-18T08:43:12.407Z",
+  "schema_version": 13,
+  "game_slug": "time-to-wake-up",
+  "generated_at": "2026-08-18T08:43:28.140Z",
   "source_registry": "config/parsers/review-source-registry.json",
-  "accepted": 1,
-  "scored": 0,
-  "context_only_versions": 0,
-  "blocked_verified": 0,
-  "registered_editorial": 45,
+  "policy": {
+    "minimum_sources": 5,
+    "target_sources": 20,
+    "maximum_sources": 20,
+    "historical": false,
+    "regional_discovery_required": true,
+    "discovery_provider": "registered-direct-publisher-web-v8",
+    "audit_all": true,
+    "canonical_score_requires_exact_version": true,
+    "score_extraction_separate": true,
+    "search_title_variants": true,
+    "review_hub_following": true,
+    "critic_index": "metacritic",
+    "critic_index_scope": "released_fallback",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true,
+    "post_create_verified_corpus_preserved": true
+  },
+  "accepted": [],
+  "rejected": [
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/time-to-wake-up-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/time-to-wake-up",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/time-to-wake-up-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    }
+  ],
   "source_checks": [
     {
       "source_id": "igromania",
@@ -21,8 +58,8 @@
       "source_id": "stopgame",
       "name": "StopGame",
       "region": "ru",
-      "status": "found",
-      "notes": "verified direct review"
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     },
     {
       "source_id": "kanobu",
@@ -326,46 +363,84 @@
       "notes": "search completed; no verified direct review"
     }
   ],
-  "regional_complete": true,
-  "audit_all": true,
-  "search_title_variants": true,
-  "review_hub_following": true,
-  "professional_only": true,
-  "legacy_stack": {
-    "primary": {
-      "script": "scripts/discover-review-sources-web-v14.mjs",
-      "status": 2,
-      "signal": null,
-      "error": "",
-      "timed_out": false
-    },
-    "fallback": null
-  },
-  "critic_index": {
-    "provider": "metacritic",
-    "url": "https://www.metacritic.com/game/tides-of-annihilation/critic-reviews/",
-    "platform": "primary",
-    "reachable": true,
-    "status": 200,
-    "rows": 0,
-    "attempts": [
+  "regional_discovery": {
+    "region": "ru",
+    "checks": [
       {
-        "url": "https://www.metacritic.com/game/tides-of-annihilation/critic-reviews/",
-        "platform": "primary",
-        "status": 200,
-        "rows": 0
+        "source_id": "igromania",
+        "name": "Игромания",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
       },
       {
-        "url": "https://www.metacritic.com/game/tides-of-annihilation/critic-reviews/?platform=pc",
-        "platform": "pc",
-        "status": 200,
-        "rows": 0
+        "source_id": "stopgame",
+        "name": "StopGame",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "kanobu",
+        "name": "Канобу",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "playground",
+        "name": "PlayGround.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vgtimes",
+        "name": "VGTimes",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "ixbt-games",
+        "name": "iXBT.games",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "gamemag",
+        "name": "GameMAG.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vk-play",
+        "name": "VK Play Media",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "shazoo",
+        "name": "Shazoo",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
       }
     ],
-    "added_sources": 0,
-    "added_scores": 0,
-    "metascore_as_vote": false,
-    "user_scores_as_votes": false
+    "complete": true,
+    "found_but_not_accepted": []
   },
-  "removed_user_generated": 0
+  "coverage": {
+    "registered_editorial": 45,
+    "checked": 45,
+    "accepted": 0,
+    "scored": 0,
+    "context_only_versions": 0,
+    "blocked_verified": 0,
+    "contemporary": 0,
+    "green": false,
+    "passed": false,
+    "needs_more": 5,
+    "critic_index_rows": 0,
+    "critic_index_added": 0,
+    "critic_index_scores_added": 0,
+    "critic_index_platform": "primary",
+    "removed_user_generated": 0,
+    "historical_index_preserved": 0,
+    "trusted_scores_preserved": 0
+  }
 }
