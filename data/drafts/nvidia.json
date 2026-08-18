@@ -1,36 +1,41 @@
 {
   "schema_version": 5,
   "publication": {
-    "status": "needs_revision",
-    "gate_passed": false,
-    "public_ready": false,
+    "status": "published",
+    "gate_passed": true,
+    "page_available": true,
+    "public_ready": true,
+    "editorial_ready": false,
     "review_ready": false,
     "review_required": false,
     "media_green": false,
-    "mode": "structured_sources",
-    "updated_at": "2026-08-14T22:12:40.970Z",
+    "mode": "game_creator_structured_sources",
+    "creator_source": "news",
+    "updated_at": "2026-08-18T15:56:08.043Z",
     "gate": {
       "canonical_game_id": "game_c5614a965a7862797f3d",
       "title": true,
       "media": false,
-      "source_count": 0,
-      "minimum_screenshots": 6,
-      "accepted_screenshots": 0,
-      "missing": [
-        "identity.source",
-        "companies.developers",
-        "classification.genres",
-        "classification.platforms",
-        "media.hero_or_cover",
-        "screenshots:0/6"
-      ],
-      "passed": false
+      "source_count": 1,
+      "missing": [],
+      "passed": true
     }
+  },
+  "modules": {
+    "page": "ready",
+    "media": "pending",
+    "media_enrichment": "queued",
+    "review": "pending",
+    "series": "not_known",
+    "game_dna": "pending",
+    "similarity": "pending",
+    "guides": "missing"
   },
   "game_id": "game_c5614a965a7862797f3d",
   "identity": {
     "slug": "nvidia",
     "title": "nvidia",
+    "series": null,
     "steam_appid": null,
     "aliases": [
       "nvidia"
@@ -81,8 +86,15 @@
     "developer": "",
     "publisher": ""
   },
-  "sources": [],
-  "updated_at": "2026-08-14T22:12:40.970Z",
+  "sources": [
+    {
+      "name": "Проверенный источник (news)",
+      "url": "https://www.gamingonlinux.com/2026/08/nvidia-geforce-now-finally-adds-official-firefox-support/",
+      "type": "database",
+      "checked_at": "2026-08-18T15:56:08.043Z"
+    }
+  ],
+  "updated_at": "2026-08-18T15:56:08.043Z",
   "relations": {
     "franchise": {
       "name": "",
