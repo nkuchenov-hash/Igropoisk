@@ -1,21 +1,24 @@
 .home-editorial-showcase{--showcase-gap:32px;--showcase-card-height:480px}
 .home-editorial-showcase__grid{display:grid;grid-template-columns:minmax(360px,.92fr) minmax(0,1.08fr);gap:var(--showcase-gap);align-items:stretch}
 .reviews-of-day,.home-releases{display:flex;min-width:0;height:var(--showcase-card-height);min-height:var(--showcase-card-height);flex-direction:column}
+.reviews-of-day{position:relative}
+.reviews-of-day>.home-showcase-heading{display:none}
 .home-showcase-heading{min-height:48px;display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .home-showcase-heading h2{margin:0}
 .home-showcase-heading__icon{display:none!important}
 .home-widget-loading{display:grid;place-items:center;width:100%;min-height:360px}
-.reviews-of-day__main{min-height:0;flex:1}
-.review-day-card{position:relative;display:block;height:100%;min-height:0;overflow:hidden;isolation:isolate}
+.reviews-of-day__main{min-height:0;height:100%;flex:1}
+.review-day-card{position:relative;display:block;height:100%;min-height:0;overflow:hidden;isolation:isolate;transform:none}
+.review-day-card:hover{transform:none}
 .review-day-card__media{position:absolute;inset:0;z-index:0;overflow:hidden}
 .review-day-card__media img{width:100%;height:100%}
 .review-day-card__veil{position:absolute;inset:0;z-index:1;pointer-events:none}
-.review-day-card__copy{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;width:min(76%,520px);height:100%;min-width:0;padding:20px 24px 18px}
-.review-day-card__eyebrow{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.review-day-card__copy{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:flex-start;width:min(61%,540px);height:100%;min-width:0;padding:30px 28px 116px}
+.review-day-card__eyebrow{display:flex;align-items:center;gap:9px;margin-bottom:14px}
 .review-day-card__eyebrow:before{content:"";width:3px;height:18px}
-.review-day-card h3{max-width:470px;margin:0 0 10px}
-.review-day-card__dek{display:-webkit-box;max-width:465px;margin:0;overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.review-day-card__footer{display:flex;align-items:center;gap:12px;margin-top:13px}
+.review-day-card h3{max-width:500px;margin:0 0 12px}
+.review-day-card__dek{display:-webkit-box;max-width:475px;margin:0;overflow:hidden;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.review-day-card__footer{display:flex;align-items:center;gap:12px;margin-top:auto}
 .review-day-card__score{display:grid;place-items:center;min-width:128px;min-height:58px;padding:7px 10px}
 .review-day-card__score strong,.review-day-card__score small{display:block}
 .review-day-card__author{display:grid;grid-template-columns:38px minmax(0,1fr);align-items:center;gap:10px;min-width:0}
@@ -23,7 +26,8 @@
 .review-day-card__author-copy{display:grid;gap:2px;min-width:0}
 .review-day-card__author-copy strong,.review-day-card__author-copy span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .review-day-card__cta{display:inline-flex;align-items:center;gap:10px;align-self:flex-start;margin-top:12px;padding:10px 16px}
-.reviews-of-day__rail-shell{display:grid;grid-template-columns:38px minmax(0,1fr) 38px;gap:8px;align-items:center;flex:0 0 96px;padding:10px}
+.reviews-of-day__rail-shell{position:absolute;left:0;right:0;bottom:0;z-index:4;display:grid;grid-template-columns:116px 38px minmax(0,1fr) 38px;gap:8px;align-items:center;height:96px;padding:10px}
+.reviews-of-day__rail-label{display:flex;align-items:center;height:100%;padding-inline:4px}
 .reviews-of-day__rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(184px,32%);gap:8px;overflow-x:auto;scroll-snap-type:x proximity;overscroll-behavior-inline:contain;scrollbar-width:none}
 .reviews-of-day__rail::-webkit-scrollbar{display:none}
 .review-day-mini{display:grid;grid-template-columns:68px minmax(0,1fr) auto;gap:9px;align-items:center;min-height:72px;padding:7px;scroll-snap-align:start}
@@ -35,23 +39,23 @@
 @media(max-width:1180px){
   .home-editorial-showcase__grid{grid-template-columns:1fr}
   .reviews-of-day,.home-releases{height:auto;min-height:auto}
-  .reviews-of-day__main{min-height:390px}
-  .review-day-card{min-height:390px}
-  .review-day-card__copy{width:min(68%,600px)}
-  .reviews-of-day__rail{grid-auto-columns:minmax(200px,29%)}
+  .reviews-of-day__main{min-height:430px}
+  .review-day-card{min-height:430px}
+  .review-day-card__copy{width:min(58%,590px)}
+  .reviews-of-day__rail{grid-auto-columns:minmax(190px,30%)}
 }
 @media(max-width:700px){
-  .review-day-card{min-height:430px}
-  .review-day-card__copy{justify-content:flex-end;width:100%;min-height:430px;padding:118px 20px 22px}
+  .review-day-card{min-height:470px}
+  .review-day-card__copy{justify-content:flex-start;width:100%;min-height:470px;padding:92px 20px 108px}
   .review-day-card h3{max-width:100%}
   .review-day-card__dek{-webkit-line-clamp:2}
   .review-day-card__footer{gap:10px}
   .review-day-card__score{min-width:122px}
   .review-day-card__author{grid-template-columns:34px minmax(0,1fr)}
   .review-day-card__avatar{width:34px;height:34px}
-  .reviews-of-day__rail-shell{grid-template-columns:minmax(0,1fr)}
+  .reviews-of-day__rail-shell{grid-template-columns:minmax(0,1fr);height:94px}
   .reviews-of-day__rail{grid-auto-columns:minmax(205px,76%)}
-  .reviews-of-day__rail-shell>.home-rail-button{display:none}
+  .reviews-of-day__rail-label,.reviews-of-day__rail-shell>.home-rail-button{display:none}
 }
 @media(max-width:460px){
   .review-day-card__copy{padding-inline:17px}
