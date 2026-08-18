@@ -42,6 +42,12 @@ on:
       - 'article/_shared/review-shot-card.css'
       - 'game/_shared/game-page-materialized-data.js'
       - '.github/workflows/game-post-create-enrichment.yml'
+  pull_request:
+    branches: [staging]
+    types: [closed]
+    paths:
+      - 'data/game-enrichment-requests/*.json'
+      - 'game/*/index.html'
 
 permissions:
   contents: write
@@ -54,6 +60,7 @@ concurrency:
 
 jobs:
   enrich:
+    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
