@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {isTrustedEditorialScore} from './lib/review-score-extractor.mjs';
+import {isWrongVersionReview} from './lib/review-version-gate.mjs';
 
 const root=process.cwd();
 const slug=process.argv[2];
@@ -10,32 +11,14 @@ const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path
 const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n')};
 const canonicalUrl=value=>{try{const url=new URL(String(value||''));url.hash='';for(const key of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','ftag'])url.searchParams.delete(key);return `${url.origin}${url.pathname.replace(/\/$/,'')}`}catch{return String(value||'')}};
 const pubKey=value=>String(value||'').toLowerCase().replace(/[^a-zа-яё0-9]+/gi,'');
-const normalized=value=>String(value||'').normalize('NFKC').replace(/[™®©]/g,'').replace(/\s+/g,' ').trim().toLowerCase();
 
 const matrixPath=`data/research/${slug}-source-matrix.json`,reviewPath=`data/reviews/${slug}.json`,matrix=read(matrixPath),existing=read(reviewPath,{}),draft=read(`data/drafts/${slug}.json`,{}),quality=read('config/game-page-quality-v2.json',{});
 if(!matrix||!Array.isArray(matrix.accepted))throw new Error(`Missing full source matrix: ${matrixPath}`);
 if(matrix.policy?.audit_all!==true)throw new Error('Only a complete --all source audit may be promoted into the canonical corpus');
 const canonicalTitle=String(draft?.identity?.title||existing?.title||slug.replace(/-/g,' ')).trim();
-
-function wrongVersion(item){
-  if(item?.canonical_score_eligible===false)return false;
-  const versionContext=String(item?.version_context||'').trim();
-  if(versionContext&&!/^(?:canonical|base|original)$/i.test(versionContext))return true;
-  const rawTitle=String(item?.title||'').replace(/\s+/g,' ').trim();
-  const titleLower=normalized(rawTitle),gameLower=normalized(canonicalTitle);
-  const at=titleLower.indexOf(gameLower);if(at<0)return false;
-  const suffix=rawTitle.slice(at+canonicalTitle.length).trim();
-  if(!suffix||/^(?:review|обзор|рецензия)\b/i.test(suffix))return false;
-  const colon=suffix.match(/^[:：]\s*(.*?)\s+(?:review|обзор|рецензия)\b/i);
-  if(colon&&String(colon[1]||'').trim())return true;
-  if(/^[—–-]\s*(?:dlc|expansion|update|edition|remaster(?:ed)?|remake|episode|chapter|season)\b/i.test(suffix))return true;
-  const url=String(item?.resolved_url||item?.url||'');
-  return /\/(?:dlc|expansion|add-?on|episode|chapter|season)(?:\/|-)/i.test(url);
-}
-
-const removedWrongVersion=matrix.accepted.filter(wrongVersion);
+const removedWrongVersion=matrix.accepted.filter(item=>isWrongVersionReview(item,canonicalTitle));
 if(removedWrongVersion.length){
-  matrix.accepted=matrix.accepted.filter(item=>!wrongVersion(item));
+  matrix.accepted=matrix.accepted.filter(item=>!isWrongVersionReview(item,canonicalTitle));
   matrix.rejected=[...(matrix.rejected||[]),...removedWrongVersion.map(item=>({publication:item.publication||item.source||item.configured_source_id||'',url:item.resolved_url||item.url||'',title:item.title||'',reasons:['wrong_game_version_or_expansion_review']}))];
   matrix.coverage={...(matrix.coverage||{}),accepted:matrix.accepted.length,scored:matrix.accepted.filter(item=>item.score_eligible&&isTrustedEditorialScore(item)).length,removed_wrong_version:Number(matrix.coverage?.removed_wrong_version||0)+removedWrongVersion.length};
   write(matrixPath,matrix);
