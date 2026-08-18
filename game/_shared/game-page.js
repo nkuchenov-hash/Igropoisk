@@ -15,7 +15,7 @@
   similarity.defer=true;
   document.head.appendChild(similarity);
   const reviewControl=document.createElement('script');
-  reviewControl.src='../_shared/game-page-review-publication-control.js?v=20260812-3';
+  reviewControl.src='../_shared/game-page-review-publication-control.js?v=20260818-2';
   reviewControl.defer=true;
   document.head.appendChild(reviewControl);
   const materialized=document.createElement('script');
