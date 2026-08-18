@@ -117,4 +117,22 @@ assert.equal(homeReleaseRules.source, 'data/releases/public.json', 'Home release
 assert.equal(homeReleaseRules.eligibility?.do_not_apply_second_homepage_gate, true, 'Rules must prohibit the duplicate homepage eligibility gate');
 assert.equal(homeReleaseRules.interaction?.arrow_buttons, 'heading', 'Release arrows belong in the heading, not at the rail edges');
 
-console.log('Home feed identity and release anticipation regression tests passed.');
+assert.equal(homeReleaseRules.eligibility?.require_homepage_quality_cover, true, 'Homepage release cards must require a quality cover');
+assert.equal(homeReleaseRules.cover_quality?.required, true, 'Homepage cover quality gate must be mandatory');
+assert(Number(homeReleaseRules.cover_quality?.minimum_width) >= 600, 'Homepage cover minimum width must be at least 600px');
+assert(Number(homeReleaseRules.cover_quality?.minimum_height) >= 900, 'Homepage cover minimum height must be at least 900px');
+assert(Number(homeReleaseRules.cover_quality?.minimum_bytes) >= 40000, 'Homepage cover minimum file size must be at least 40 KB');
+assert(Number(homeReleaseRules.cover_quality?.minimum_aspect_ratio) >= 0.6, 'Homepage cover minimum aspect ratio is too permissive');
+assert(Number(homeReleaseRules.cover_quality?.maximum_aspect_ratio) <= 0.75, 'Homepage cover maximum aspect ratio is too permissive');
+assert.equal(homeReleaseRules.cover_quality?.remove_card_if_all_candidates_fail, true, 'A release with no acceptable cover must be removed from the homepage');
+assert(homeReleaseUi.includes('primaryCoverApproved'), 'Homepage runtime must validate primary cover metadata');
+assert(homeReleaseUi.includes('hasHomepageCoverCandidate'), 'Homepage runtime must filter out releases without an acceptable cover candidate');
+assert(homeReleaseUi.includes('image.naturalWidth') && homeReleaseUi.includes('image.naturalHeight'), 'Homepage runtime must verify actual loaded image dimensions');
+assert(homeReleaseUi.includes("media.classList.add('is-cover-ready')"), 'A cover must stay hidden until runtime quality verification succeeds');
+assert(homeReleaseUi.includes('rejectCard(cardElement)'), 'A card with no acceptable cover must be removed instead of showing a bad image');
+assert.equal(homeReleaseUi.includes("game.image?.source_url,\n    ...(game.image_candidates||[])"), false, 'Unverified generic image candidates must not be preferred on the homepage');
+assert(homeReleaseCss.includes('aspect-ratio:2/3'), 'Homepage release media must use standard portrait 2:3 geometry');
+assert(homeReleaseCss.includes('object-fit:contain'), 'Homepage release covers must not be cropped to fill a mismatched slot');
+assert(homeReleaseCss.includes('grid-auto-columns:clamp(218px,16vw,238px)'), 'Desktop release cards must use a stable portrait-card width instead of narrow percentage columns');
+
+console.log('Home feed identity, release anticipation and cover-quality regression tests passed.');
