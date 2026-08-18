@@ -10,8 +10,23 @@ let items=[];
 let activeIndex=0;
 let timer=null;
 
-const mainCard=item=>`<a class="ig-card ig-card--interactive review-day-card" href="article/${encodeURIComponent(item.slug)}/"><div class="ig-card__body review-day-card__copy"><span class="review-day-card__eyebrow">${esc(item.game_title||'Обзор Игропоиска')}</span><h3 class="ig-card__title">${esc(item.title)}</h3><p class="ig-card__summary review-day-card__dek">${esc(item.dek||'')}</p><div class="ig-card__meta review-day-card__meta"><span>${esc(item.author||'Редакция Игропоиска')}</span><span>${esc(item.published_at||'')}</span></div></div><div class="ig-card__media review-day-card__media"><img src="${esc(item.hero||'')}" alt="${esc(item.game_title||item.title)}" loading="eager" decoding="async"></div>${Number.isFinite(Number(item.score))?`<span class="ig-rating review-day-card__score">${Number(item.score).toFixed(1)}</span>`:''}</a>`;
-const miniCard=(item,index)=>`<button class="ig-button review-day-mini${index===activeIndex?' is-active':''}" type="button" data-review-index="${index}" aria-label="Показать обзор ${esc(item.game_title||item.title)}"><img src="${esc(item.hero||'')}" alt="" loading="lazy" decoding="async"><span>${esc(item.game_title||item.title)}</span></button>`;
+const scoreMarkup=item=>{
+  const score=Number(item.score);
+  return Number.isFinite(score)?`<span class="ig-rating review-day-card__score"><strong>${score.toFixed(1)}</strong><small>Оценка Игропоиска</small></span>`:'';
+};
+
+const mainCard=item=>{
+  const gameTitle=item.game_title||item.title||'Обзор Игропоиска';
+  const author=item.author||'Редакция Игропоиска';
+  const summary=item.dek||item.title||'';
+  return `<a class="ig-card ig-card--interactive review-day-card" href="article/${encodeURIComponent(item.slug)}/" aria-label="Читать обзор ${esc(gameTitle)}"><div class="ig-card__media review-day-card__media"><img src="${esc(item.hero||'')}" alt="${esc(gameTitle)}" loading="eager" decoding="async"></div><span class="review-day-card__veil" aria-hidden="true"></span><div class="ig-card__body review-day-card__copy"><span class="review-day-card__eyebrow">Обзор дня</span><h3 class="ig-card__title">${esc(gameTitle)}</h3><p class="ig-card__summary review-day-card__dek">${esc(summary)}</p><span class="review-day-card__footer">${scoreMarkup(item)}<span class="review-day-card__author"><span class="review-day-card__avatar" aria-hidden="true">ИП</span><span class="review-day-card__author-copy"><strong>${esc(author)}</strong><span>${esc(item.published_at||'')}</span></span></span></span><span class="review-day-card__cta">Читать обзор <span aria-hidden="true">→</span></span></div></a>`;
+};
+
+const miniCard=(item,index)=>{
+  const gameTitle=item.game_title||item.title||'Обзор';
+  const score=Number(item.score);
+  return `<button class="ig-button review-day-mini${index===activeIndex?' is-active':''}" type="button" data-review-index="${index}" aria-label="Показать обзор ${esc(gameTitle)}"${index===activeIndex?' aria-current="true"':''}><img src="${esc(item.hero||'')}" alt="" loading="lazy" decoding="async"><span class="review-day-mini__copy"><span class="review-day-mini__title">${esc(gameTitle)}</span></span>${Number.isFinite(score)?`<span class="review-day-mini__score">${score.toFixed(1)}</span>`:''}</button>`;
+};
 
 function revealActiveMini(){
   const active=rail.querySelector('.is-active');
