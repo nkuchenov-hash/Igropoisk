@@ -1,0 +1,166 @@
+{
+  "schema_version": 12,
+  "game_slug": "beastlink",
+  "game_id": null,
+  "updated_at": "2026-08-18T18:07:35.379Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "publication_gate": {
+    "minimum": 5,
+    "target": 20,
+    "accepted": 0,
+    "status": "red-needs-revision",
+    "full_registry_scan": true,
+    "checked_registered_sources": 45,
+    "applicable_registered_sources": 45,
+    "maximum": 20,
+    "post_create_verified_corpus_preserved": true
+  },
+  "regional_discovery": {
+    "region": "ru",
+    "checks": [
+      {
+        "source_id": "igromania",
+        "name": "Игромания",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "stopgame",
+        "name": "StopGame",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "kanobu",
+        "name": "Канобу",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "playground",
+        "name": "PlayGround.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vgtimes",
+        "name": "VGTimes",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "ixbt-games",
+        "name": "iXBT.games",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "gamemag",
+        "name": "GameMAG.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vk-play",
+        "name": "VK Play Media",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "shazoo",
+        "name": "Shazoo",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      }
+    ],
+    "complete": true,
+    "found_but_not_accepted": []
+  },
+  "reviews": [],
+  "rejected": [
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/beastlink",
+      "title": "BeastLink игра | StopGame.ru",
+      "reasons": [
+        "non_review_path"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/show/160866/beastlink_trailer",
+      "title": "BeastLink: Трейлер",
+      "reasons": [
+        "no_review_signal"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/beastlink/compilations",
+      "title": "BeastLink - подборки с игрой | StopGame.ru",
+      "reasons": [
+        "non_review_path"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/beastlink/gallery",
+      "title": "BeastLink - скриншоты игры | StopGame.ru",
+      "reasons": [
+        "non_review_path"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/beastlink",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/beastlink-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/beastlink-review",
+      "reasons": [
+        "HTTP 404"
+      ]
+    }
+  ],
+  "version_gate": {
+    "canonical_title": "BeastLink",
+    "removed_wrong_version": 0
+  },
+  "review_score": {
+    "status": "red-needs-revision",
+    "owner": "review",
+    "method": {
+      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+      "formula": "sum(normalized_10) / source_count",
+      "minimum_sources": 3,
+      "target_sources": 10,
+      "maximum_sources": null,
+      "use_all_eligible_sources": true,
+      "required_evidence_scope": "editorial_review",
+      "output_scale": 10,
+      "rounding_decimals": 1,
+      "one_vote_per_publication": true,
+      "aggregators_forbidden": true,
+      "invented_scores_forbidden": true,
+      "exact_canonical_version_required": true
+    },
+    "sources": [],
+    "excluded_sources": [],
+    "calculation": {
+      "source_count": 0,
+      "values": [],
+      "mean_10": null,
+      "score_10": null
+    }
+  }
+}
