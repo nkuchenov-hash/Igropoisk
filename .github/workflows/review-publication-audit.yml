@@ -9,10 +9,12 @@ on:
       - 'data/drafts/**'
       - 'data/articles/**'
       - 'data/reviews/**'
+      - 'data/review-bootstrap/**'
       - 'game/**'
       - 'article/**'
       - 'scripts/audit-review-publication.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
+      - 'scripts/test-game-page-bootstrap-review-publication.mjs'
       - '.github/workflows/review-publication-audit.yml'
   schedule:
     - cron: '17 */6 * * *'
@@ -32,6 +34,10 @@ jobs:
         run: |
           node --check scripts/audit-review-publication.mjs
           node --check scripts/materialize-review-publication-feed.mjs
+          node --check scripts/test-game-page-bootstrap-review-publication.mjs
+          node --check game/_shared/game-page-review-publication-control.js
+      - name: Verify game pages expose green bootstrap reviews
+        run: node scripts/test-game-page-bootstrap-review-publication.mjs
       - name: Audit actual user-visible review publication
         run: node scripts/audit-review-publication.mjs
       - name: Measure identity-safe feed repairs without changing repository files

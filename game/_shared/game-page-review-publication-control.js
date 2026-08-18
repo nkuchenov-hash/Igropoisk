@@ -7,16 +7,25 @@ const released=d=>{const s=String(d?.release?.status||'').toLowerCase();if(/upco
 const decisionPromise=Promise.all([
   json(`../../data/reviews/${encodeURIComponent(slug)}.json`),
   json(`../../data/articles/${encodeURIComponent(slug)}.json`),
+  json(`../../data/review-bootstrap/${encodeURIComponent(slug)}.json`),
   json(`../../data/drafts/${encodeURIComponent(slug)}.json`)
-]).then(([feed,article,draft])=>{
+]).then(([feed,article,bootstrap,draft])=>{
   const canonical=Number(feed?.review_score?.calculation?.score_10);
-  const green=feed?.publication_gate?.status==='green'
-    &&feed?.review_score?.status==='green'
-    &&Number.isFinite(canonical)
+  const corpusGreen=feed?.publication_gate?.status==='green'&&feed?.review_score?.status==='green'&&Number.isFinite(canonical);
+  const fullReady=corpusGreen
     &&String(article?.publication_status||'').toLowerCase()==='published'
     &&String(article?.game_slug||article?.slug||'')===slug
     &&Number(article?.score)===canonical;
-  return{feed,article,draft,canonical,green,isReleased:released(draft)};
+  const bootstrapReady=corpusGreen
+    &&feed?.igropoisk_article?.review_stage==='bootstrap'
+    &&String(bootstrap?.publication_status||'').toLowerCase()==='published'
+    &&bootstrap?.review_stage==='bootstrap'
+    &&String(bootstrap?.game_slug||bootstrap?.slug||'')===slug
+    &&Number(bootstrap?.score)===canonical
+    &&Array.isArray(bootstrap?.sources)
+    &&bootstrap.sources.length>=3;
+  const green=fullReady||bootstrapReady;
+  return{feed,article,bootstrap,draft,canonical,green,reviewStage:fullReady?'full':bootstrapReady?'bootstrap':null,isReleased:released(draft)};
 });
 let observer=null,scheduled=false,applying=false;
 const set=(node,value)=>{if(node&&node.textContent!==value)node.textContent=value};
