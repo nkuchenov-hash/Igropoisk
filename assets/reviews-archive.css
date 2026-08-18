@@ -1,0 +1,31 @@
+.reviews-archive{padding-top:34px;padding-bottom:72px}
+.reviews-archive__breadcrumb{display:flex;align-items:center;gap:9px;margin-bottom:34px;color:var(--ig-muted);font-size:16px}
+.reviews-archive__breadcrumb a:hover{color:var(--ig-text)}
+.reviews-archive__head{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,420px);gap:48px;align-items:end;margin-bottom:34px}
+.reviews-archive__kicker{margin-bottom:10px;color:var(--ig-accent);font-size:16px;font-weight:850;letter-spacing:.09em;text-transform:uppercase}
+.reviews-archive__head h1{margin:0;font:850 clamp(38px,4vw,62px)/.98 var(--ig-game-display);letter-spacing:-.05em}
+.reviews-archive__lead{margin:0;color:var(--ig-muted);font-size:18px;line-height:1.55}
+.reviews-archive__toolbar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--ig-line)}
+.reviews-archive__count{color:var(--ig-muted);font-size:16px}
+.reviews-archive__count strong{color:var(--ig-text)}
+.reviews-archive__search{width:min(100%,390px);height:44px;border:1px solid var(--ig-line-strong);border-radius:7px;background:var(--ig-surface);color:var(--ig-text);padding:0 13px;outline:none}
+.reviews-archive__search:focus{border-color:var(--ig-accent)}
+.reviews-archive__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.reviews-archive__loading{grid-column:1/-1;min-height:260px;display:grid;place-items:center;border:1px dashed var(--ig-line-strong);border-radius:10px;color:var(--ig-muted)}
+.review-archive-card{position:relative;display:grid;grid-template-rows:220px minmax(0,1fr);overflow:hidden;border:1px solid var(--ig-line);border-radius:10px;background:var(--ig-surface);box-shadow:var(--ig-shadow);transition:transform .18s ease,border-color .18s ease}
+.review-archive-card:hover{transform:translateY(-2px);border-color:var(--ig-line-strong)}
+.review-archive-card__media{position:relative;overflow:hidden;background:var(--ig-surface-3)}
+.review-archive-card__media:after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(0deg,var(--ig-surface),transparent)}
+.review-archive-card__media img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.review-archive-card:hover .review-archive-card__media img{transform:scale(1.025)}
+.review-archive-card__score{position:absolute;top:12px;right:12px;z-index:2;display:grid;place-items:center;min-width:54px;height:38px;padding:0 10px;border:1px solid color-mix(in srgb,var(--ig-accent) 50%,var(--ig-line-strong));border-radius:6px;background:rgba(7,16,23,.84);color:#c384ff;font:850 17px/1 var(--ig-game-display);backdrop-filter:blur(10px)}
+.review-archive-card__body{display:flex;min-width:0;flex-direction:column;padding:18px}
+.review-archive-card__meta{display:flex;align-items:center;gap:9px;margin-bottom:9px;color:var(--ig-muted);font-size:16px;line-height:1.35}
+.review-archive-card__body h2{margin:0 0 10px;font:800 23px/1.12 var(--ig-game-display);letter-spacing:-.032em}
+.review-archive-card__body p{display:-webkit-box;margin:0;color:var(--ig-muted);font-size:16px;line-height:1.5;overflow:hidden;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.review-archive-card__footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:18px;color:var(--ig-text);font-size:16px;font-weight:750}
+.review-archive-card__footer span:last-child{color:var(--ig-accent)}
+.reviews-archive__empty{grid-column:1/-1;padding:48px 22px;border:1px dashed var(--ig-line-strong);border-radius:10px;color:var(--ig-muted);text-align:center}
+@media(min-width:1800px){.reviews-archive__grid{grid-template-columns:repeat(4,minmax(0,1fr))}.review-archive-card{grid-template-rows:240px minmax(0,1fr)}}
+@media(max-width:1050px){.reviews-archive__grid{grid-template-columns:repeat(2,minmax(0,1fr))}.reviews-archive__head{grid-template-columns:1fr;gap:16px}}
+@media(max-width:650px){.reviews-archive{padding-top:22px}.reviews-archive__breadcrumb{margin-bottom:24px}.reviews-archive__head{margin-bottom:26px}.reviews-archive__lead{font-size:16px}.reviews-archive__toolbar{align-items:stretch;flex-direction:column}.reviews-archive__search{width:100%}.reviews-archive__grid{grid-template-columns:1fr;gap:14px}.review-archive-card{grid-template-rows:210px minmax(0,1fr)}.review-archive-card__body h2{font-size:22px}}
