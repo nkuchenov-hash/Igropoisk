@@ -30,7 +30,7 @@ assert(homepage.includes('data-ig-release-nav'), 'Homepage release calendar navi
 assert(homepage.includes('data-ig-home-editorial="section"'), 'Homepage editorial/release section is missing.');
 assert(homepage.includes('assets/reviews-of-day/index.css?v=20260819-1'), 'Reviews-of-day stylesheet is missing.');
 assert(homepage.includes('assets/home-releases/index.css?v=20260804-1'), 'Home releases stylesheet is missing.');
-assert(homepage.includes('assets/reviews-of-day/index.js?v=20260819-1'), 'Reviews-of-day script is missing.');
+assert(homepage.includes('assets/reviews-of-day/index.js?v=20260819-2'), 'Reviews-of-day script is missing.');
 assert(homepage.includes('assets/home-releases/index.js?v=20260805-1'), 'Home releases script is missing.');
 assert(homepage.includes('href="reviews/"'), 'Homepage review archive link is missing.');
 assert(!/data-ig-release-home|assets\/release-home\.(?:css|js)/.test(homepage), 'Legacy release-home injection remains in index.html.');
