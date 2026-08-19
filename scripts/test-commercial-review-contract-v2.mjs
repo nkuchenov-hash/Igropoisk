@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+import {strengthenJsonSchema} from './lib/local-editorial-model.mjs';
 const read=path=>fs.readFileSync(path,'utf8');
 const json=path=>JSON.parse(read(path));
 const contract=json('config/review-commercial-contract.json');
@@ -31,9 +32,15 @@ assert.ok(synthesis.includes('persist()'),'sectioned local review does not persi
 assert.ok(!synthesis.includes('numPredict:10000'),'monolithic 3000+ word local generation was reintroduced');
 assert.ok(!synthesis.includes('LOCAL_GENERATION_TIMEOUT_MS=900000'),'monolithic 15-minute local generation timeout was reintroduced');
 for(const marker of ['deterministic-fallback','screenshots_only:true','artwork_in_carousels:false'])assert.ok(carousel.includes(marker),`provider-free carousel fallback missing: ${marker}`);
-for(const marker of ["'qwen3:4b'",'repeatPenalty=1.18','repeatLastN=1024'])assert.ok(local.includes(marker),`local editorial transport contract missing: ${marker}`);
+for(const marker of ["'qwen3:4b'",'repeatPenalty=1.18','repeatLastN=1024','strengthenJsonSchema'])assert.ok(local.includes(marker),`local editorial transport contract missing: ${marker}`);
+const sampleSchema={type:'object',required:['title','lead'],properties:{title:{type:'string'},lead:{type:'string'},optional:{type:'string'}}};
+const strengthened=strengthenJsonSchema(sampleSchema);
+assert.equal(strengthened.properties.title.minLength,1,'required local editorial title must reject an empty string');
+assert.equal(strengthened.properties.lead.minLength,1,'required local editorial lead must reject an empty string');
+assert.equal(strengthened.properties.optional.minLength,undefined,'optional strings must not be made mandatory by transport hardening');
+assert.equal(sampleSchema.properties.title.minLength,undefined,'schema hardening must not mutate the caller schema');
 const legacy=read('scripts/run-game-post-create-enrichment.mjs');for(const forbidden of ['deferred_to_catalog_lifecycle','POST_CREATE_MAX_ATTEMPTS','build-review-bootstrap-local.mjs','quality-control-loop.mjs'])assert.ok(!legacy.includes(forbidden),`legacy enrichment path still contains forbidden bypass: ${forbidden}`);
 const validator=read('scripts/validate-commercial-review-v2.mjs');assert.ok(validator.includes('exhaustive_discovery'),'validator must understand exhaustive below-preferred fallback');assert.ok(!validator.includes("status:'blocked'"),'validator must not emit terminal blocked state');
 const media=read('scripts/enforce-commercial-game-media.mjs');assert.ok(!media.includes("status:'blocked'"),'media enrichment must not emit terminal blocked state');
 const overlay=read('scripts/publish-game-post-create-overlay.mjs');assert.ok(overlay.includes("'data/review-article-corpus'"),'overlay must persist article corpus between retry passes');assert.ok(overlay.includes("'data/review-discovery-audits'"),'overlay must persist discovery audit between retry passes');assert.ok(overlay.includes("'data/article-drafts'"),'overlay must persist deterministic commercial article drafts between retry passes');assert.ok(overlay.includes("'data/article-section-drafts'"),'overlay must persist completed local review sections between retry passes');
-console.log('Commercial review contract v2 static boundary passed, including provider-independent fallback, bounded research, persistent sectioned synthesis and per-request concurrency.');
+console.log('Commercial review contract v2 static boundary passed, including provider-independent fallback, bounded research, persistent sectioned synthesis, non-empty structured fields and per-request concurrency.');
