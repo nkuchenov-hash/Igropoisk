@@ -1,7 +1,7 @@
 {
   "parser": "post-create-game-dna-v5-commercial-quality",
   "status": "needs_revision",
-  "checked_at": "2026-08-19T23:06:14.611Z",
+  "checked_at": "2026-08-19T23:28:33.446Z",
   "targets": 1,
   "from_pending_requests": 56,
   "from_missing_dna_backfill": 26,
@@ -10,15 +10,15 @@
   "publication_policy": "only_valid_commercial_quality_dna_changes_survive_to_checkpoint",
   "ready_slugs": [],
   "invalid_or_missing": [
-    "luna-abyss"
+    "tides-of-annihilation"
   ],
   "similarity_needs_revision": [],
   "failed": [
     {
-      "slug": "luna-abyss",
+      "slug": "tides-of-annihilation",
       "step": "validate",
       "exit_code": 2,
-      "stderr": "data/game-dna/luna-abyss.json: targeted post-create DNA is below the commercial enrichment gate (7/16 axes, 3/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+      "stderr": "data/game-dna/tides-of-annihilation.json: targeted post-create DNA is not similarity-ready (4/16 axes, 1/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/tides-of-annihilation.json: targeted post-create DNA is below the commercial enrichment gate (4/16 axes, 1/7 core axes); requires >=9 populated axes and >=4 core axes\n"
     }
   ]
 }
