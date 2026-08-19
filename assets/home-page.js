@@ -162,10 +162,10 @@ function loadEnhancedSearch() {
   if (document.querySelector('script[data-search-page]')) return;
   const style = document.createElement('link');
   style.rel = 'stylesheet';
-  style.href = 'assets/search-page.css?v=20260819-2';
+  style.href = 'assets/search-page.css?v=20260819-4';
   document.head.appendChild(style);
   const script = document.createElement('script');
-  script.src = 'assets/search-page.js?v=20260819-2';
+  script.src = 'assets/search-page.js?v=20260819-4';
   script.dataset.searchPage = 'true';
   script.onload = () => {
     document.querySelector('.search-side-action')?.addEventListener('click', () => {
