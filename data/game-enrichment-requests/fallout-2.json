@@ -17,9 +17,9 @@
     "similarity": "ready"
   },
   "reason": "fallout-2-sectioned-persistent-commercial-review-v11-meta-schema-acceptance",
-  "last_run_at": "2026-08-19T23:00:19.822Z",
-  "run_attempts": 6,
-  "review_attempts": 6,
+  "last_run_at": "2026-08-19T23:24:24.095Z",
+  "run_attempts": 7,
+  "review_attempts": 7,
   "observed": {
     "series_games": 9,
     "screenshots": 20,
@@ -33,8 +33,8 @@
   "retry": {
     "terminal": false,
     "retryable": true,
-    "stage": "meta-preflight",
-    "last_error": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-sectioned-review-meta.mjs:68\n  if(leadGate.length){persist();throw new Error(`${slug}: compact lead preflight failed: ${lastError||leadGate.join('; ')}`)}\n                                      ^\n\nError: fallout-2: compact lead preflight failed: lead 79/120\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-sectioned-review-meta.mjs:68:39\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n\nNode.js v22.23.2",
-    "updated_at": "2026-08-19T23:00:19.823Z"
+    "stage": "long-review",
+    "last_error": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:101\n  throw new Error(`${slug}: section ${id} failed bounded component gate: ${errors.join('; ')}`)\n        ^\n\nError: fallout-2: section character-and-builds failed bounded component gate: words 178/260\n    at buildSection (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:101:9)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:103:33\n\nNode.js v22.23.2",
+    "updated_at": "2026-08-19T23:24:24.095Z"
   }
 }
