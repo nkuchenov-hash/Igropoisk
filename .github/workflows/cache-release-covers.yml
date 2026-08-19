@@ -5,7 +5,9 @@ on:
   schedule:
     - cron: '17 4 * * *'
   push:
-    branches: [staging]
+    branches:
+      - staging
+      - fix/production-release-cover-fulfillment
     paths:
       - 'scripts/cache-release-covers.mjs'
       - 'scripts/lib/release-cover-resolver.mjs'
@@ -16,11 +18,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: release-cover-cache-staging
+  group: release-cover-cache-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  cache:
+  cache-staging:
+    if: github.ref_name == 'staging'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -54,5 +57,78 @@ jobs:
           fi
           git diff --check
           git commit -m 'Fulfill verified release covers in staging'
+          git pull --rebase origin staging
+          git push origin HEAD:staging
+
+  stage-production-blobs:
+    if: github.ref_name == 'fix/production-release-cover-fulfillment'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout production candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: source
+          persist-credentials: false
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Materialize and verify production candidate covers
+        working-directory: source
+        run: |
+          npm install --no-save --ignore-scripts image-size@2
+          node scripts/repair-release-slugs.mjs
+          node scripts/enrich-release-anticipation.mjs
+          node scripts/materialize-release-calendar.mjs
+          node scripts/validate-release-calendar.mjs
+
+      - name: Checkout staging write target
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+          path: staging
+          fetch-depth: 0
+
+      - name: Copy only verified visible production covers into staging asset cache
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const crypto = require('crypto');
+          const sourceRoot = path.resolve('source');
+          const stagingRoot = path.resolve('staging');
+          const calendar = JSON.parse(fs.readFileSync(path.join(sourceRoot, 'data/releases/public.json'), 'utf8'));
+          const visible = [...(calendar.releases || []), ...(calendar.personalized_releases || [])];
+          if (!visible.length) throw new Error('No visible production releases were materialized.');
+          for (const release of visible) {
+            const image = release.image || {};
+            if (!image.local_url || image.status !== 'downloaded_verified' || image.verified !== true) throw new Error(`Unverified production cover: ${release.id || release.slug}`);
+            const src = path.join(sourceRoot, image.local_url);
+            const bytes = fs.readFileSync(src);
+            const sha256 = crypto.createHash('sha256').update(bytes).digest('hex');
+            if (sha256 !== image.sha256 || bytes.length !== Number(image.bytes || 0)) throw new Error(`Production cover checksum mismatch: ${release.slug}`);
+            const dest = path.join(stagingRoot, image.local_url);
+            fs.mkdirSync(path.dirname(dest), { recursive: true });
+            fs.writeFileSync(dest, bytes);
+          }
+          console.log(`Staged ${visible.length} verified production cover blobs.`);
+          NODE
+
+      - name: Commit verified production cover blobs to staging only
+        working-directory: staging
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/covers/releases
+          if git diff --cached --quiet; then
+            echo 'Exact production cover blobs already exist in staging.'
+            exit 0
+          fi
+          git diff --check
+          git commit -m 'Cache verified production release cover blobs in staging'
           git pull --rebase origin staging
           git push origin HEAD:staging
