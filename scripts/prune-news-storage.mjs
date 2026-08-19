@@ -92,6 +92,91 @@ export function buildSnapshotRetentionPlan(objects, {
   });
 }
 
+function mediaKeyFromUrl(value, { endpoint, bucket, mediaPrefix }) {
+  if (typeof value !== 'string' || !value) return '';
+  try {
+    const url = new URL(value);
+    const expectedOrigin = new URL(endpoint).origin;
+    if (url.origin !== expectedOrigin) return '';
+    const bucketPrefix = `/${encodeURIComponent(bucket)}/`;
+    if (!url.pathname.startsWith(bucketPrefix)) return '';
+    const key = url.pathname.slice(bucketPrefix.length).split('/').map(segment => decodeURIComponent(segment)).join('/');
+    const normalizedPrefix = `${mediaPrefix.replace(/\/$/, '')}/`;
+    return key.startsWith(normalizedPrefix) ? key : '';
+  } catch {
+    return '';
+  }
+}
+
+function collectMediaKeys(value, options, output = new Set()) {
+  if (Array.isArray(value)) {
+    value.forEach(item => collectMediaKeys(item, options, output));
+    return output;
+  }
+  if (!value || typeof value !== 'object') return output;
+  for (const [key, child] of Object.entries(value)) {
+    if (key === 'image' && typeof child === 'string') {
+      const mediaKey = mediaKeyFromUrl(child, options);
+      if (mediaKey) output.add(mediaKey);
+    } else {
+      collectMediaKeys(child, options, output);
+    }
+  }
+  return output;
+}
+
+export function buildMediaRetentionPlan(objects, referencedKeys, { mediaPrefix = 'news/media' } = {}) {
+  const prefix = `${mediaPrefix.replace(/\/$/, '')}/`;
+  const referenced = referencedKeys instanceof Set ? referencedKeys : new Set(referencedKeys || []);
+  const scoped = objects.filter(object => object.key.startsWith(prefix));
+  const retainedObjects = scoped.filter(object => referenced.has(object.key));
+  const removedObjects = scoped.filter(object => !referenced.has(object.key));
+  return Object.freeze({
+    referencedKeys: Object.freeze([...referenced].sort()),
+    retainedObjects: Object.freeze(retainedObjects),
+    removedObjects: Object.freeze(removedObjects),
+    retainedBytes: sumBytes(retainedObjects),
+    removedBytes: sumBytes(removedObjects),
+    totalBytes: sumBytes(scoped)
+  });
+}
+
+async function collectCurrentManifestMediaKeys(storage, manifest, { snapshotPrefix, mediaPrefix }) {
+  const output = new Set();
+  const expectedSnapshotPrefix = `${snapshotPrefix.replace(/\/$/, '')}/${manifest.version}/`;
+  for (const entry of Object.values(manifest.files || {})) {
+    const key = String(entry?.key || '');
+    if (!key.startsWith(expectedSnapshotPrefix)) throw new Error(`Current manifest file is outside ${expectedSnapshotPrefix}.`);
+    const response = await storage.getObject(key);
+    const payload = await response.json();
+    collectMediaKeys(payload, {
+      endpoint: storage.endpoint,
+      bucket: storage.bucket,
+      mediaPrefix
+    }, output);
+  }
+  return output;
+}
+
+function collectNextPublicationMediaKeys(root, config, storage, mediaPrefix) {
+  const output = new Set();
+  const storageConfig = config.publication?.storage || {};
+  const files = new Set([
+    ...(storageConfig.public_files || []),
+    'data/news-events.json'
+  ]);
+  for (const file of files) {
+    const absolute = `${root}/${file}`;
+    if (!fs.existsSync(absolute)) continue;
+    collectMediaKeys(readJson(absolute), {
+      endpoint: storage.endpoint,
+      bucket: storage.bucket,
+      mediaPrefix
+    }, output);
+  }
+  return output;
+}
+
 async function deleteObjects(storage, objects, concurrency = 16) {
   let deleted = 0;
   for (let index = 0; index < objects.length; index += concurrency) {
@@ -116,6 +201,7 @@ export async function pruneNewsStorage({
   const currentManifestKey = storageConfig.current_manifest || 'news/manifests/current.json';
   const snapshotPrefix = storageConfig.snapshot_prefix || 'news/snapshots';
   const mediaPrefix = storageConfig.media_prefix || 'news/media';
+  const deleteConcurrency = Number(retention.delete_concurrency || 16);
 
   const currentResponse = await storage.getObject(currentManifestKey);
   const currentManifest = await currentResponse.json();
@@ -127,7 +213,7 @@ export async function pruneNewsStorage({
     storage.listObjects({ prefix: `${snapshotPrefix.replace(/\/$/, '')}/` }),
     storage.listObjects({ prefix: `${mediaPrefix.replace(/\/$/, '')}/` })
   ]);
-  const plan = buildSnapshotRetentionPlan(snapshotObjects, {
+  const snapshotPlan = buildSnapshotRetentionPlan(snapshotObjects, {
     snapshotPrefix,
     currentVersion: currentManifest.version,
     keepRecentSnapshots: retention.keep_recent_snapshots ?? 12,
@@ -135,37 +221,65 @@ export async function pruneNewsStorage({
     deleteIncompleteSnapshots: retention.delete_incomplete_snapshots !== false
   });
 
-  let deletedObjects = 0;
-  if (!dryRun && plan.removedObjects.length) {
-    deletedObjects = await deleteObjects(storage, plan.removedObjects, Number(retention.delete_concurrency || 16));
+  let currentMediaKeys = new Set();
+  let mediaSweepSafe = false;
+  let mediaSweepReason = '';
+  try {
+    currentMediaKeys = await collectCurrentManifestMediaKeys(storage, currentManifest, { snapshotPrefix, mediaPrefix });
+    mediaSweepSafe = true;
+  } catch (error) {
+    mediaSweepReason = String(error?.message || error);
+  }
+  const nextMediaKeys = collectNextPublicationMediaKeys(root, config, storage, mediaPrefix);
+  const referencedMediaKeys = new Set([...currentMediaKeys, ...nextMediaKeys]);
+  const mediaPlan = buildMediaRetentionPlan(mediaObjects, referencedMediaKeys, { mediaPrefix });
+
+  let deletedSnapshotObjects = 0;
+  let deletedMediaObjects = 0;
+  if (!dryRun && snapshotPlan.removedObjects.length) {
+    deletedSnapshotObjects = await deleteObjects(storage, snapshotPlan.removedObjects, deleteConcurrency);
+  }
+  if (!dryRun && mediaSweepSafe && mediaPlan.removedObjects.length) {
+    deletedMediaObjects = await deleteObjects(storage, mediaPlan.removedObjects, deleteConcurrency);
   }
 
   if (!dryRun) {
     await storage.headObject(currentManifestKey);
     await storage.headObject(`${snapshotPrefix.replace(/\/$/, '')}/${currentManifest.version}/manifest.json`);
+    for (const key of currentMediaKeys) await storage.headObject(key);
   }
 
+  const snapshotReclaimed = dryRun ? 0 : snapshotPlan.removedBytes;
+  const mediaReclaimed = dryRun || !mediaSweepSafe ? 0 : mediaPlan.removedBytes;
   const report = Object.freeze({
-    schema_version: 2,
+    schema_version: 3,
     dry_run: dryRun,
     current_manifest_schema_version: currentManifest.schemaVersion,
     current_version: currentManifest.version,
-    snapshot_versions_before: plan.versions,
-    snapshot_versions_retained: plan.retainedVersions.length,
-    snapshot_versions_removed: plan.removedVersions.length,
-    snapshot_objects_removed: dryRun ? 0 : deletedObjects,
-    snapshot_bytes_before: plan.totalBytes,
-    snapshot_bytes_retained: plan.retainedBytes,
-    snapshot_bytes_reclaimed: dryRun ? 0 : plan.removedBytes,
-    planned_reclaim_bytes: plan.removedBytes,
-    media_objects_preserved: mediaObjects.length,
-    media_bytes_preserved: sumBytes(mediaObjects),
-    history_policy: 'Monthly archive and news/media are preserved; only redundant immutable snapshot versions are pruned.',
-    retained_versions: plan.retainedVersions,
-    removed_versions: plan.removedVersions
+    snapshot_versions_before: snapshotPlan.versions,
+    snapshot_versions_retained: snapshotPlan.retainedVersions.length,
+    snapshot_versions_removed: snapshotPlan.removedVersions.length,
+    snapshot_objects_removed: dryRun ? 0 : deletedSnapshotObjects,
+    snapshot_bytes_before: snapshotPlan.totalBytes,
+    snapshot_bytes_retained: snapshotPlan.retainedBytes,
+    snapshot_bytes_reclaimed: snapshotReclaimed,
+    media_sweep_safe: mediaSweepSafe,
+    media_sweep_reason: mediaSweepReason,
+    media_objects_before: mediaObjects.length,
+    media_objects_referenced: mediaPlan.retainedObjects.length,
+    media_objects_removed: dryRun || !mediaSweepSafe ? 0 : deletedMediaObjects,
+    media_bytes_before: mediaPlan.totalBytes,
+    media_bytes_retained: mediaPlan.retainedBytes,
+    media_bytes_reclaimed: mediaReclaimed,
+    planned_snapshot_reclaim_bytes: snapshotPlan.removedBytes,
+    planned_media_reclaim_bytes: mediaSweepSafe ? mediaPlan.removedBytes : 0,
+    total_bytes_reclaimed: snapshotReclaimed + mediaReclaimed,
+    history_policy: 'Current live media and every media object referenced by the complete next publication archive are protected; only unreferenced media and redundant snapshot versions are deleted.',
+    retained_versions: snapshotPlan.retainedVersions,
+    removed_versions: snapshotPlan.removedVersions
   });
 
-  console.log(`[news/storage] ${dryRun ? 'planned' : 'completed'} cleanup: ${report.snapshot_versions_before} snapshot versions -> ${report.snapshot_versions_retained}; ${report.snapshot_versions_removed} versions removable; ${(report.planned_reclaim_bytes / 1024 / 1024).toFixed(1)} MiB reclaimable; ${report.media_objects_preserved} media objects preserved.`);
+  console.log(`[news/storage] ${dryRun ? 'planned' : 'completed'} cleanup: snapshots ${report.snapshot_versions_before} -> ${report.snapshot_versions_retained}, ${(report.planned_snapshot_reclaim_bytes / 1024 / 1024).toFixed(1)} MiB snapshot reclaim; media ${report.media_objects_before} -> ${report.media_objects_referenced}, ${(report.planned_media_reclaim_bytes / 1024 / 1024).toFixed(1)} MiB safe media reclaim${mediaSweepSafe ? '' : ` skipped (${mediaSweepReason})`}.`);
   return report;
 }
 
