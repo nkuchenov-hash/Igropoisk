@@ -5,7 +5,7 @@ const rail=document.querySelector('#reviewsOfDayRail');
 if(!main||!rail)return;
 
 const AUTO_ROTATE_MS=30000;
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
 let items=[];
 let activeIndex=0;
 let timer=null;
@@ -59,20 +59,24 @@ function restartTimer(){
 }
 
 const railButtons=[...document.querySelectorAll('[data-review-rail]')];
+const scrollRail=direction=>{
+  const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
+  if(max<=2)return;
+  const step=Math.max(260,rail.clientWidth*.75);
+  const atStart=rail.scrollLeft<=2;
+  const atEnd=rail.scrollLeft>=max-2;
+  const next=direction>0&&atEnd
+    ?0
+    :direction<0&&atStart
+      ?max
+      :Math.max(0,Math.min(max,rail.scrollLeft+direction*step));
+  rail.scrollTo({left:next,behavior:'smooth'});
+};
 railButtons.forEach(button=>{
   button.classList.add('ig-icon-button');
-  button.addEventListener('click',()=>{
-    const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
-    const next=Math.max(0,Math.min(max,rail.scrollLeft+Number(button.dataset.reviewRail)*Math.max(260,rail.clientWidth*.75)));
-    rail.scrollTo({left:next,behavior:'smooth'});
-  });
+  button.disabled=false;
+  button.addEventListener('click',()=>scrollRail(Number(button.dataset.reviewRail)||1));
 });
-const updateButtons=()=>{
-  const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
-  railButtons.forEach(button=>button.disabled=button.dataset.reviewRail==='-1'?rail.scrollLeft<=2:rail.scrollLeft>=max-2);
-};
-rail.addEventListener('scroll',updateButtons,{passive:true});
-window.addEventListener('resize',updateButtons,{passive:true});
 
 fetch('data/home-widgets/reviews-of-day.json',{cache:'no-store'})
   .then(response=>{if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json()})
@@ -82,7 +86,6 @@ fetch('data/home-widgets/reviews-of-day.json',{cache:'no-store'})
     activeIndex=0;
     render();
     restartTimer();
-    requestAnimationFrame(updateButtons);
   })
   .catch(error=>{
     console.warn('Reviews of day:',error);
