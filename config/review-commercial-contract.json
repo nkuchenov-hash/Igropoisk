@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "id": "igropoisk-commercial-review-v2",
+  "reference_baseline": "data/articles/mafia-ii.json",
+  "purpose": "Единый обязательный стандарт для любого опубликованного обзора и медиакорпуса страницы игры.",
+  "source_corpus": {
+    "score_corpus_separate_from_article_corpus": true,
+    "aggregator_index_may_seed_discovery_but_never_satisfy_article_gate": true,
+    "direct_or_archived_full_review_required": true,
+    "minimum_independent_full_reviews": 15,
+    "target_independent_full_reviews": 20,
+    "candidate_target": 32,
+    "minimum_source_body_words": 450,
+    "minimum_dossier_claims_per_source": 6,
+    "one_source_per_publication": true,
+    "professional_editorial_only": true,
+    "user_reviews_forbidden": true
+  },
+  "article": {
+    "minimum_words": 3000,
+    "target_words": 3400,
+    "maximum_words_without_editor_approval": 4500,
+    "minimum_sections": 8,
+    "target_sections": 9,
+    "maximum_sections": 10,
+    "minimum_paragraphs_per_section": 3,
+    "minimum_words_per_section": 260,
+    "minimum_sources_per_section": 3,
+    "minimum_materially_used_sources": 12,
+    "lead_minimum_words": 120,
+    "require_strengths_and_weaknesses": true,
+    "require_specific_game_examples": true,
+    "require_natural_russian": true,
+    "reject_generic_ai_filler": true,
+    "reject_translationese": true,
+    "reject_unattributed_specific_claims": true
+  },
+  "game_media": {
+    "minimum_unique_screenshots": 15,
+    "target_unique_screenshots": 20,
+    "maximum_unique_screenshots": 24,
+    "target_artwork": 6,
+    "maximum_artwork": 8,
+    "artwork_must_never_enter_screenshot_pool": true,
+    "dedupe_by_url": true,
+    "dedupe_by_asset_family": true,
+    "dedupe_by_content_hash": true,
+    "fail_closed_below_minimum_screenshots": true
+  },
+  "article_media": {
+    "minimum_carousels": 4,
+    "target_carousels": 5,
+    "maximum_carousels": 6,
+    "minimum_images_per_carousel": 3,
+    "target_images_per_carousel": 4,
+    "maximum_images_per_carousel": 5,
+    "minimum_total_unique_screenshots": 15,
+    "target_total_unique_screenshots": 20,
+    "screenshots_only": true,
+    "artwork_allowed_only_for_hero": true,
+    "source_attribution_required": true,
+    "caption_required": true,
+    "reuse_across_carousels_forbidden": true
+  },
+  "publication": {
+    "short_bootstrap_is_not_a_published_review": true,
+    "full_article_required_for_review_status": true,
+    "full_article_and_media_gate_required_before_pages_publish": true,
+    "live_pages_smoke_required": true
+  }
+}
