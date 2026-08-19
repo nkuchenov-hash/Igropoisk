@@ -37,52 +37,33 @@ const releaseKind=(event,recentDays)=>{
   if((Number.isFinite(start)&&start>=today)||(Number.isFinite(end)&&end>=today))return 'upcoming';
   return 'expired';
 };
-let coverQuality={
-  minimum_width:600,
-  minimum_height:900,
-  minimum_bytes:40000,
-  minimum_aspect_ratio:.62,
-  maximum_aspect_ratio:.72,
-  require_verified_primary:true,
-  reject_image_too_small_error:true,
-  allow_official_steam_library_600x900_fallback:true,
-  remove_card_if_all_candidates_fail:true
-};
+let coverQuality={minimum_width:600,minimum_height:900,minimum_aspect_ratio:.62,maximum_aspect_ratio:.72};
 const coverRatio=(width,height)=>height>0?width/height:0;
-const primaryCoverApproved=game=>{
-  const image=game.image||{};
-  const width=Number(image.width||0);
-  const height=Number(image.height||0);
-  const bytes=Number(image.bytes||0);
-  const ratio=coverRatio(width,height);
-  const error=String(image.error||'').toLowerCase();
-  if(coverQuality.require_verified_primary!==false&&image.verified!==true)return false;
-  if(width<Number(coverQuality.minimum_width||600)||height<Number(coverQuality.minimum_height||900))return false;
-  if(bytes<Number(coverQuality.minimum_bytes||40000))return false;
-  if(ratio<Number(coverQuality.minimum_aspect_ratio||.62)||ratio>Number(coverQuality.maximum_aspect_ratio||.72))return false;
-  if(coverQuality.reject_image_too_small_error!==false&&/image too small|too small/.test(error))return false;
-  return Boolean(image.local_url||image.source_url);
-};
 const steamPosterCandidates=game=>{
-  if(coverQuality.allow_official_steam_library_600x900_fallback===false)return [];
   const id=Number(game.external_ids?.steam);
   if(!id)return [];
   return [
+    `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${id}/library_600x900_2x.jpg`,
     `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/library_600x900.jpg`,
+    `https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/library_600x900_2x.jpg`,
     `https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/library_600x900.jpg`
   ];
 };
-const candidates=game=>{
-  const primary=primaryCoverApproved(game);
-  const primaryUrls=primary?[game.image?.local_url,game.image?.source_url,...(game.image_candidates||[]).filter(url=>/library_600x900/i.test(String(url||'')))]:[];
-  return [...new Set([...primaryUrls,...steamPosterCandidates(game)].filter(Boolean))];
-};
-const hasHomepageCoverCandidate=game=>primaryCoverApproved(game)||steamPosterCandidates(game).length>0;
+const candidates=game=>[...new Set([
+  game.image?.local_url,
+  ...(game.image?.candidate_urls||[]),
+  ...(game.image_candidates||[]),
+  game.image?.source_url,
+  ...steamPosterCandidates(game)
+].filter(Boolean))];
 const loadedCoverApproved=image=>{
   const width=Number(image.naturalWidth||0);
   const height=Number(image.naturalHeight||0);
   const ratio=coverRatio(width,height);
-  return width>=Number(coverQuality.minimum_width||600)&&height>=Number(coverQuality.minimum_height||900)&&ratio>=Number(coverQuality.minimum_aspect_ratio||.62)&&ratio<=Number(coverQuality.maximum_aspect_ratio||.72);
+  return width>=Number(coverQuality.minimum_width||600)
+    &&height>=Number(coverQuality.minimum_height||900)
+    &&ratio>=Number(coverQuality.minimum_aspect_ratio||.62)
+    &&ratio<=Number(coverQuality.maximum_aspect_ratio||.72);
 };
 const loadFeed=async path=>{
   if(window.IgropoiskHomeFeeds?.load)return window.IgropoiskHomeFeeds.load(path);
@@ -122,9 +103,10 @@ const anticipationMeta=game=>{
 const card=(game,kind)=>{
   const event=primaryEvent(game);
   const diff=dayDiff(dateValue(event));
-  const image=candidates(game)[0]||'';
+  const image=candidates(game)[0];
+  if(!image)throw new Error(`Public release has no cover candidate: ${game.slug}`);
   const meta=[...anticipationMeta(game),...(event.platforms||[]).slice(0,1)].filter(Boolean).join(' · ');
-  return `<article class="ig-card ig-card--interactive home-release-card" data-release="${esc(game.slug)}" data-release-kind="${esc(kind)}"><a class="ig-card__part home-release-card__link" href="calendar/#game=${encodeURIComponent(game.slug)}"><div class="ig-card__media home-release-card__media">${image?`<img src="${esc(image)}" alt="Обложка ${esc(game.title)}" loading="lazy" decoding="async" data-cover-index="0">`:''}<span class="home-release-card__date ${kind==='recent'||Number.isFinite(diff)&&diff>=0&&diff<=7?'is-near':''}">${esc(dateLabel(event))}</span></div><div class="ig-card__part home-release-card__body"><h3>${esc(game.title)}</h3>${meta?`<div class="ig-card__part home-release-card__meta">${esc(meta)}</div>`:''}</div></a></article>`;
+  return `<article class="ig-card ig-card--interactive home-release-card" data-release="${esc(game.slug)}" data-release-kind="${esc(kind)}"><a class="ig-card__part home-release-card__link" href="calendar/#game=${encodeURIComponent(game.slug)}"><div class="ig-card__media home-release-card__media"><img src="${esc(image)}" alt="Обложка ${esc(game.title)}" loading="lazy" decoding="async" data-cover-index="0"><span class="home-release-card__date ${kind==='recent'||Number.isFinite(diff)&&diff>=0&&diff<=7?'is-near':''}">${esc(dateLabel(event))}</span></div><div class="ig-card__part home-release-card__body"><h3>${esc(game.title)}</h3>${meta?`<div class="ig-card__part home-release-card__meta">${esc(meta)}</div>`:''}</div></a></article>`;
 };
 const ensureControls=()=>{
   if(!heading)return {controls:null,buttons:[]};
@@ -155,27 +137,26 @@ const updateButtons=()=>{
   if(railControls)railControls.hidden=max<=2;
   railButtons.forEach(button=>{button.disabled=button.dataset.releaseRail==='-1'?rail.scrollLeft<=2:rail.scrollLeft>=max-2});
 };
-const rejectCard=cardElement=>{
-  cardElement.remove();
-  if(!rail.querySelector('.home-release-card'))rail.innerHTML='<div class="home-release-empty">Сейчас нет релизов с обложками достаточного качества.</div>';
-  requestAnimationFrame(updateButtons);
-};
 const bindFallbacks=games=>{
   rail.querySelectorAll('.home-release-card').forEach(cardElement=>{
     const game=games.find(item=>item.slug===cardElement.dataset.release);
     const image=cardElement.querySelector('img');
     const media=cardElement.querySelector('.home-release-card__media');
-    if(!game||!image||!media){rejectCard(cardElement);return}
+    if(!game||!image||!media)return;
     const urls=candidates(game);
     const nextCandidate=()=>{
       media.classList.remove('is-cover-ready');
       const next=Number(image.dataset.coverIndex||0)+1;
-      if(next>=urls.length){rejectCard(cardElement);return}
+      if(next>=urls.length){
+        media.dataset.coverContract='failed';
+        console.error(`Homepage cover contract failed for ${game.slug}; the publication pipeline must repair this cover instead of dropping the card.`);
+        return;
+      }
       image.dataset.coverIndex=String(next);
       image.src=urls[next];
     };
     const verifyLoaded=()=>{
-      if(loadedCoverApproved(image)){media.classList.add('is-cover-ready');return}
+      if(loadedCoverApproved(image)){media.classList.add('is-cover-ready');media.dataset.coverContract='ready';return}
       nextCandidate();
     };
     image.addEventListener('load',verifyLoaded);
@@ -211,7 +192,6 @@ Promise.all([
   const maximumRecent=Math.min(maximum,Math.max(0,Number(rules.maximum_recent_cards||4)));
   const classified=(payload.releases||[])
     .filter(game=>game&&game.slug&&game.title&&Array.isArray(game.events)&&game.events.length)
-    .filter(hasHomepageCoverCandidate)
     .map(game=>({game,event:primaryEvent(game)}))
     .map(row=>({...row,kind:releaseKind(row.event,recentDays)}))
     .filter(row=>row.kind!=='expired');
@@ -224,7 +204,7 @@ Promise.all([
   const selected=[...recent,...upcoming].slice(0,maximum);
   const rows=selected.map(row=>row.game);
 
-  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Сейчас нет релизов с обложками достаточного качества.</div>';
+  rail.innerHTML=selected.length?selected.map(row=>card(row.game,row.kind)).join(''):'<div class="home-release-empty">Сейчас нет опубликованных новых или ожидаемых релизов.</div>';
   bindFallbacks(rows);
   requestAnimationFrame(updateButtons);
 }).catch(error=>{
