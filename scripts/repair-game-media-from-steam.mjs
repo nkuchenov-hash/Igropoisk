@@ -93,6 +93,7 @@ for(const [slug,raw] of targets){
   const developers=Array.isArray(data.developers)?data.developers:[];
   const publishers=Array.isArray(data.publishers)?data.publishers:[];
   const platforms=Object.entries(data.platforms||{}).filter(([,enabled])=>enabled).map(([name])=>name==='windows'?'Windows':name==='mac'?'macOS':name==='linux'?'Linux':name);
+  const poster=`https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}/library_600x900.jpg`;
   draft.identity={...(draft.identity||{}),slug,steam_appid:appid};
   if(!draft.identity.title)draft.identity.title=data.name;
   draft.release={...(draft.release||{}),date_text:data.release_date?.date||draft.release?.date_text||'',status:data.release_date?.coming_soon?'upcoming':draft.release?.status||'released'};
@@ -100,10 +101,10 @@ for(const [slug,raw] of targets){
   draft.classification={...(draft.classification||{}),genres:(data.genres||[]).map(item=>item.description).filter(Boolean),platforms:platforms.length?platforms:(draft.classification?.platforms||[])};
   draft.media={
     ...(draft.media||{}),
-    cover:data.header_image||draft.media?.cover||'',
+    cover:poster,
     hero:data.background_raw||data.background||data.header_image||draft.media?.hero||'',
     screenshots:screenshots.slice(0,18),
-    artwork:[...new Set([data.background_raw,data.background,data.header_image].filter(Boolean))].map((url,index)=>({url,caption:index===0?'Ключевой арт':'Обложка',source_url:`https://store.steampowered.com/app/${appid}/`})),
+    artwork:[...new Set([data.background_raw,data.background,data.header_image].filter(Boolean))].map((url,index)=>({url,caption:index===0?'Ключевой арт':'Официальный арт',source_url:`https://store.steampowered.com/app/${appid}/`})),
     videos:(data.movies||[]).slice(0,6).map(movie=>({kind:'video',category:'official',title:movie.name||`${data.name} — видео`,url:movie.webm?.max||movie.mp4?.max||'',thumbnail:movie.thumbnail||'',source_url:`https://store.steampowered.com/app/${appid}/`,provider:'Steam'})).filter(item=>item.url)
   };
   draft.links={...(draft.links||{}),store:`https://store.steampowered.com/app/${appid}/`};
@@ -112,6 +113,6 @@ for(const [slug,raw] of targets){
   draft.publication={...(draft.publication||{}),mode:'structured_sources',checked_at:new Date().toISOString()};
   fs.mkdirSync(path.dirname(draftPath),{recursive:true});
   fs.writeFileSync(draftPath,`${JSON.stringify(draft,null,2)}\n`);
-  console.log(`${slug}: ${screenshots.length} verified Steam screenshots`);
+  console.log(`${slug}: ${screenshots.length} verified Steam screenshots; vertical poster ${poster}`);
   await sleep(600);
 }
