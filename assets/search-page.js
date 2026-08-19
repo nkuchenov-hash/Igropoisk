@@ -89,6 +89,7 @@ function normalizeGame(item,rich={},draft={}){
   const editorial=rich.editorial||draft.editorial||{};
   const ratings=rich.ratings||draft.ratings||{};
   const media=rich.media||draft.media||{};
+  const gameMeta=draft.game?.meta||{};
   const fallback=featuredBySlug.get(item.slug)||{};
   const appid=finite(item.steam_appid||identity.steam_appid||fallback.appid);
   const genres=[...new Set(asArray(classification.genres).map(normalizeGenre).filter(Boolean))];
@@ -106,7 +107,7 @@ function normalizeGame(item,rich={},draft={}){
     pop:finite(item.pop)||finite(fallback.pop)||finite(item.year),
     desc:editorial.short_description||editorial.integrated_description||fallback.desc||'',
     appid,
-    cover:item.cover||media.cover||draft.cover||fallback.cover||steamCover(appid),
+    cover:item.cover||media.cover||gameMeta.cover_url||draft.cover||fallback.cover||steamCover(appid),
     editorChoice:Boolean(item.editorChoice||fallback.editorChoice)
   };
 }
@@ -162,7 +163,7 @@ function bind(){
   $('#results').addEventListener('error',event=>{const image=event.target;if(!(image instanceof HTMLImageElement)||!image.closest('.result-media'))return;const fallback=document.createElement('div');fallback.className='result-placeholder';fallback.textContent=image.dataset.fallback||'ИП';image.replaceWith(fallback)},true);
   $$('[data-page="search"]').forEach(trigger=>trigger.addEventListener('click',()=>window.setTimeout(()=>$('#query')?.focus({preventScroll:true}),0)));
 }
-async function loadJson(path){const response=await fetch(`${path}?v=20260819-3`,{cache:'no-store'});if(!response.ok)throw new Error(`${path}: ${response.status}`);return response.json()}
+async function loadJson(path){const response=await fetch(`${path}?v=20260819-4`,{cache:'no-store'});if(!response.ok)throw new Error(`${path}: ${response.status}`);return response.json()}
 async function loadRichMap(){const settled=await Promise.allSettled(CONTENT_SHARDS.map(file=>loadJson(`data/game-content/${file}`)));const map=new Map();settled.forEach(result=>{if(result.status!=='fulfilled')return;Object.entries(result.value?.games||{}).forEach(([slug,data])=>map.set(slug,data))});return map}
 async function enrichMissingFromDrafts(items,richMap){
   const needs=items.filter(item=>{const rich=richMap.get(item.slug);const identity=rich?.identity||{};const classification=rich?.classification||{};return !rich||(!item.cover&&!identity.steam_appid)||!asArray(classification.genres).length});
@@ -173,7 +174,7 @@ async function loadCatalog(){
   try{
     const [visible,richMap]=await Promise.all([loadJson('data/catalog-visible.json'),loadRichMap()]);
     const drafts=await enrichMissingFromDrafts(visible,richMap);
-    catalog=visible.map(item=>normalizeGame(item,richMap.get(item.slug)||{},drafts.get(item.slug)||{}));
+    catalog=visible.map(item=>normalizeGame(item,richMap.get(item.slug)||{},drafts.get(item.slug)||{})).filter(game=>Boolean(game.cover));
     const years=catalog.map(game=>finite(game.year)).filter(Boolean);const minYear=Math.min(...years,2000),maxYear=Math.max(...years,2026);$('#yearFrom').min=minYear;$('#yearFrom').max=maxYear;$('#yearFrom').value=minYear;$('#yearTo').min=minYear;$('#yearTo').max=maxYear;$('#yearTo').value=maxYear;
   }catch(error){console.warn('Игропоиск: search catalog unavailable',error);catalog=[...featured];}
   updateCounts();updateLiveSuggestions();renderResults();
