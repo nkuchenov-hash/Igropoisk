@@ -10,16 +10,16 @@
   "creator_source": "commercial_acceptance_v9",
   "modules": {
     "series": "ready",
-    "review": "needs_search",
+    "review": "needs_revision",
     "media": "ready",
     "rating": "ready",
     "dna": "ready",
     "similarity": "ready"
   },
   "reason": "fallout-2-final-commercial-review-v9-acceptance",
-  "last_run_at": "2026-08-19T09:36:07.562Z",
-  "run_attempts": 1,
-  "review_attempts": 1,
+  "last_run_at": "2026-08-19T11:18:21.070Z",
+  "run_attempts": 2,
+  "review_attempts": 2,
   "observed": {
     "series_games": 9,
     "screenshots": 20,
@@ -29,12 +29,12 @@
     "similarity": true,
     "review_stage": null
   },
-  "state": "needs_search",
+  "state": "needs_revision",
   "retry": {
     "terminal": false,
     "retryable": true,
-    "stage": "article-corpus",
-    "last_error": null,
-    "updated_at": "2026-08-19T10:59:00.000Z"
+    "stage": "long-review",
+    "last_error": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-openai.mjs:23\nasync function openai(body){const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(300000)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('OpenAI returned no output_text');return JSON.parse(text.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                    ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at openai (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-openai.mjs:23:277)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-openai.mjs:32:13\n\nNode.js v22.23.2\nfallout-2: OpenAI synthesis unavailable or exceeded bounded budget; switching to local qwen3:4b\nnode:internal/modules/run_main:123\n    triggerUncaughtException(\n    ^\n\nError: Local editorial model request timed out after 900000ms\n    at ClientRequest.<anonymous> (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:20:54)\n    at Object.onceWrapper (node:events:633:28)\n    at ClientRequest.emit (node:events:519:28)\n    at Socket.emitRequestTimeout (node:_http_client:931:9)\n    at Object.onceWrapper (node:events:633:28)\n    at Socket.emit (node:events:531:35)\n    at Socket._onTimeout (node:net:605:8)\n    at listOnTimeout (node:internal/timers:585:17)\n    at process.processTimers (node:internal/timers:521:7)\n\nNode.js v22.23.2",
+    "updated_at": "2026-08-19T11:18:21.071Z"
   }
 }
