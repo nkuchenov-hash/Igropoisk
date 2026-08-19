@@ -1,14 +1,14 @@
 {
   "schema_version": 3,
   "phase": "deterministic",
-  "started_at": "2026-08-19T09:52:15.323Z",
-  "checked_at": "2026-08-19T10:04:58.744Z",
-  "duration_ms": 763421,
+  "started_at": "2026-08-19T22:13:37.842Z",
+  "checked_at": "2026-08-19T22:27:52.022Z",
+  "duration_ms": 854180,
   "concurrency": 6,
   "timeout_ms": 720000,
-  "selected": 93,
+  "selected": 102,
   "green": 0,
-  "pending": 93,
+  "pending": 102,
   "timed_out": 0,
   "results": [
     {
@@ -1902,7 +1902,7 @@
     {
       "slug": "red-dead-redemption",
       "index": 88,
-      "exit_code": 0,
+      "exit_code": 2,
       "signal": null,
       "timed_out": false,
       "green": false,
@@ -1915,8 +1915,8 @@
       "comments": [
         "No reusable existing article; queued for prose/media repair."
       ],
-      "stdout_tail": "{\n  \"slug\": \"red-dead-redemption\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 4,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"red-dead-redemption\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 5,\n  \"scored\": 1,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 1,\n  \"indexed_sources_added\": 1,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"green\"\n}\n\n{\n  \"slug\": \"red-dead-redemption\",\n  \"status\": \"green\",\n  \"accepted\": 5,\n  \"trusted_scores_preserved\": 1,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"red-dead-redemption\",\n  \"accepted\": 5,\n  \"scored\": 4,\n  \"context_only_versions\": 0,\n  \"updates\": 3,\n  \"preserved\": 1\n}\n\n{\n  \"slug\": \"red-dead-redemption\",\n  \"status\": \"green\",\n  \"scored_sources\": 4,\n  \"excluded_sources\": 1,\n  \"score_10\": 8.8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"red-dead-redemption\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"No reusable existing article; queued for prose/media repair.\"\n  ]\n}\n",
-      "stderr_tail": ""
+      "stdout_tail": "",
+      "stderr_tail": "red-dead-redemption: canonical corpus, score and regional discovery are already green; deterministic evidence recovery is complete and article repair is deferred to the dedicated rebind/model phases."
     },
     {
       "slug": "call-of-duty",
@@ -1935,13 +1935,13 @@
         "Корпус: 1/5",
         "Оценённые издания: 1/3"
       ],
-      "stdout_tail": "{\n  \"slug\": \"call-of-duty\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 3,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"call-of-duty\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 3,\n  \"scored\": 0,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 0,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"call-of-duty\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 0,\n  \"removed_wrong_version\": 2,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"call-of-duty\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"call-of-duty\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 0,\n  \"score_10\": 8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"call-of-duty\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 1/5\",\n    \"Оценённые издания: 1/3\"\n  ]\n}\n",
+      "stdout_tail": "{\n  \"slug\": \"call-of-duty\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 3,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"call-of-duty\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 3,\n  \"scored\": 1,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 0,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"call-of-duty\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 1,\n  \"removed_wrong_version\": 2,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"call-of-duty\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"call-of-duty\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 0,\n  \"score_10\": 8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"call-of-duty\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 1/5\",\n    \"Оценённые издания: 1/3\"\n  ]\n}\n",
       "stderr_tail": ""
     },
     {
       "slug": "nioh-3",
       "index": 90,
-      "exit_code": 0,
+      "exit_code": 2,
       "signal": null,
       "timed_out": false,
       "green": false,
@@ -1954,8 +1954,8 @@
       "comments": [
         "No reusable existing article; queued for prose/media repair."
       ],
-      "stdout_tail": "{\n  \"slug\": \"nioh-3\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 7,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n{\n  \"slug\": \"nioh-3\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 0,\n  \"fallback_status\": null,\n  \"accepted\": 9,\n  \"scored\": 3,\n  \"critic_index_platform\": \"pc\",\n  \"critic_index_rows\": 3,\n  \"indexed_sources_added\": 2,\n  \"indexed_scores_added\": 1,\n  \"removed_user_generated\": 0,\n  \"status\": \"green\"\n}\n\n{\n  \"slug\": \"nioh-3\",\n  \"status\": \"green\",\n  \"accepted\": 9,\n  \"trusted_scores_preserved\": 3,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"nioh-3\",\n  \"accepted\": 9,\n  \"scored\": 9,\n  \"context_only_versions\": 0,\n  \"updates\": 7,\n  \"preserved\": 2\n}\n\n{\n  \"slug\": \"nioh-3\",\n  \"status\": \"green\",\n  \"scored_sources\": 9,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"nioh-3\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"No reusable existing article; queued for prose/media repair.\"\n  ]\n}\n",
-      "stderr_tail": ""
+      "stdout_tail": "",
+      "stderr_tail": "nioh-3: canonical corpus, score and regional discovery are already green; deterministic evidence recovery is complete and article repair is deferred to the dedicated rebind/model phases."
     },
     {
       "slug": "disco",
@@ -1974,7 +1974,7 @@
         "Корпус: 2/5",
         "Оценённые издания: 2/3"
       ],
-      "stdout_tail": "{\n  \"slug\": \"disco\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 2,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"disco\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 2,\n  \"scored\": 0,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 0,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"disco\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 2,\n  \"trusted_scores_preserved\": 0,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"disco\",\n  \"accepted\": 2,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"updates\": 2,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"disco\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 2,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.3,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"disco\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 2/5\",\n    \"Оценённые издания: 2/3\"\n  ]\n}\n",
+      "stdout_tail": "{\n  \"slug\": \"disco\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 2,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"disco\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 2,\n  \"scored\": 2,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 0,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"disco\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 2,\n  \"trusted_scores_preserved\": 2,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"disco\",\n  \"accepted\": 2,\n  \"scored\": 2,\n  \"context_only_versions\": 0,\n  \"updates\": 2,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"disco\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 2,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.3,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"disco\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 2/5\",\n    \"Оценённые издания: 2/3\"\n  ]\n}\n",
       "stderr_tail": ""
     },
     {
@@ -1994,13 +1994,13 @@
         "Корпус: 1/5",
         "Оценённые издания: 1/3"
       ],
-      "stdout_tail": "{\n  \"slug\": \"the-binding-of-isaac-repentance\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"the-binding-of-isaac-repentance\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 1,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 1,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"the-binding-of-isaac-repentance\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 1,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"the-binding-of-isaac-repentance\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"the-binding-of-isaac-repentance\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 0,\n  \"score_10\": 8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"the-binding-of-isaac-repentance\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 1/5\",\n    \"Оценённые издания: 1/3\"\n  ]\n}\n",
+      "stdout_tail": "{\n  \"slug\": \"the-binding-of-isaac-repentance\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"the-binding-of-isaac-repentance\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 1,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"the-binding-of-isaac-repentance\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 1,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"the-binding-of-isaac-repentance\",\n  \"accepted\": 1,\n  \"scored\": 1,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"the-binding-of-isaac-repentance\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 1,\n  \"excluded_sources\": 0,\n  \"score_10\": 8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"the-binding-of-isaac-repentance\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 1/5\",\n    \"Оценённые издания: 1/3\"\n  ]\n}\n",
       "stderr_tail": ""
     },
     {
       "slug": "arc-raiders",
       "index": 93,
-      "exit_code": 0,
+      "exit_code": 2,
       "signal": null,
       "timed_out": false,
       "green": false,
@@ -2011,9 +2011,188 @@
       "regional_complete": true,
       "article_status": null,
       "comments": [
+        "Обзор ещё не создан.",
+        "arc-raiders: only 6/7 verified game-specific screenshots\n"
+      ],
+      "stdout_tail": "",
+      "stderr_tail": "arc-raiders: canonical corpus, score and regional discovery are already green; deterministic evidence recovery is complete and article repair is deferred to the dedicated rebind/model phases."
+    },
+    {
+      "slug": "human-fall-flat",
+      "index": 94,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 7.5,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
         "No reusable existing article; queued for prose/media repair."
       ],
-      "stdout_tail": "{\n  \"slug\": \"arc-raiders\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 5,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n{\n  \"slug\": \"arc-raiders\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 0,\n  \"fallback_status\": null,\n  \"accepted\": 7,\n  \"scored\": 3,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 3,\n  \"indexed_sources_added\": 2,\n  \"indexed_scores_added\": 1,\n  \"removed_user_generated\": 0,\n  \"status\": \"green\"\n}\n\n{\n  \"slug\": \"arc-raiders\",\n  \"status\": \"green\",\n  \"accepted\": 7,\n  \"trusted_scores_preserved\": 3,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"arc-raiders\",\n  \"accepted\": 7,\n  \"scored\": 7,\n  \"context_only_versions\": 0,\n  \"updates\": 5,\n  \"preserved\": 2\n}\n\n{\n  \"slug\": \"arc-raiders\",\n  \"status\": \"green\",\n  \"scored_sources\": 7,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.9,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"arc-raiders\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"No reusable existing article; queued for prose/media repair.\"\n  ]\n}\n",
+      "stdout_tail": "{\n  \"slug\": \"human-fall-flat\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 2,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"human-fall-flat\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 5,\n  \"scored\": 3,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 3,\n  \"indexed_sources_added\": 3,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"green\"\n}\n\n{\n  \"slug\": \"human-fall-flat\",\n  \"status\": \"green\",\n  \"accepted\": 5,\n  \"trusted_scores_preserved\": 3,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"human-fall-flat\",\n  \"accepted\": 5,\n  \"scored\": 4,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 3\n}\n\n{\n  \"slug\": \"human-fall-flat\",\n  \"status\": \"green\",\n  \"scored_sources\": 4,\n  \"excluded_sources\": 1,\n  \"score_10\": 7.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"human-fall-flat\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"No reusable existing article; queued for prose/media repair.\"\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "slug": "horizon-hunters-gathering",
+      "index": 95,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "red-needs-revision",
+      "score_status": "red-needs-revision",
+      "score": 0,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "Корпус: 0/5",
+        "Оценённые издания: 0/3"
+      ],
+      "stdout_tail": "{\n  \"slug\": \"horizon-hunters-gathering\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"horizon-hunters-gathering\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 0,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"horizon-hunters-gathering\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"horizon-hunters-gathering\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"horizon-hunters-gathering\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"horizon-hunters-gathering\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "slug": "subnautica-2",
+      "index": 96,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "red-needs-revision",
+      "score_status": "red-needs-revision",
+      "score": 0,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "Корпус: 1/5",
+        "Оценённые издания: 0/3"
+      ],
+      "stdout_tail": "{\n  \"slug\": \"subnautica-2\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"subnautica-2\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 0,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"subnautica-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 0,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"subnautica-2\",\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"subnautica-2\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 1,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"subnautica-2\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 1/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "slug": "modify",
+      "index": 97,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "red-needs-revision",
+      "score_status": "red-needs-revision",
+      "score": 0,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "Корпус: 0/5",
+        "Оценённые издания: 0/3"
+      ],
+      "stdout_tail": "{\n  \"slug\": \"modify\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"modify\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 0,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"modify\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"modify\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"modify\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"modify\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "slug": "valheim",
+      "index": 98,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "red-needs-revision",
+      "score_status": "red-needs-revision",
+      "score": 0,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "Корпус: 1/5",
+        "Оценённые издания: 0/3"
+      ],
+      "stdout_tail": "{\n  \"slug\": \"valheim\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"valheim\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 0,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"valheim\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 1,\n  \"trusted_scores_preserved\": 0,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"valheim\",\n  \"accepted\": 1,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"valheim\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 1,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"valheim\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 1/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "slug": "heart-abyss",
+      "index": 99,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "red-needs-revision",
+      "score_status": "red-needs-revision",
+      "score": 0,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "Корпус: 0/5",
+        "Оценённые издания: 0/3"
+      ],
+      "stdout_tail": "{\n  \"slug\": \"heart-abyss\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"heart-abyss\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 0,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"heart-abyss\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"heart-abyss\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"heart-abyss\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"heart-abyss\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "slug": "canceled",
+      "index": 100,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "red-needs-revision",
+      "score_status": "red-needs-revision",
+      "score": 0,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "Корпус: 0/5",
+        "Оценённые издания: 0/3"
+      ],
+      "stdout_tail": "{\n  \"slug\": \"canceled\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"canceled\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 0,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"canceled\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"canceled\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"canceled\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"canceled\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "slug": "game-of-thrones",
+      "index": 101,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 6.5,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"game-of-thrones\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 5,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n{\n  \"slug\": \"game-of-thrones\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 0,\n  \"fallback_status\": null,\n  \"accepted\": 8,\n  \"scored\": 3,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 3,\n  \"indexed_sources_added\": 3,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"green\"\n}\n\n{\n  \"slug\": \"game-of-thrones\",\n  \"status\": \"green\",\n  \"accepted\": 7,\n  \"trusted_scores_preserved\": 3,\n  \"removed_wrong_version\": 1,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"game-of-thrones\",\n  \"accepted\": 7,\n  \"scored\": 6,\n  \"context_only_versions\": 0,\n  \"updates\": 3,\n  \"preserved\": 3\n}\n\n{\n  \"slug\": \"game-of-thrones\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 1,\n  \"score_10\": 6.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"game-of-thrones\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"No reusable existing article; queued for prose/media repair.\"\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "slug": "magic-monsters",
+      "index": 102,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "red-needs-revision",
+      "score_status": "red-needs-revision",
+      "score": 0,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "Корпус: 0/5",
+        "Оценённые издания: 0/3"
+      ],
+      "stdout_tail": "{\n  \"slug\": \"magic-monsters\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"magic-monsters\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 0,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"magic-monsters\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"magic-monsters\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"magic-monsters\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"magic-monsters\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
       "stderr_tail": ""
     }
   ]
