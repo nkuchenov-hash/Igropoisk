@@ -5,9 +5,7 @@ on:
   schedule:
     - cron: '17 4 * * *'
   push:
-    branches:
-      - staging
-      - fix/production-release-cover-fulfillment
+    branches: [staging]
     paths:
       - 'scripts/cache-release-covers.mjs'
       - 'scripts/lib/release-cover-resolver.mjs'
@@ -18,12 +16,11 @@ permissions:
   contents: write
 
 concurrency:
-  group: release-cover-cache-${{ github.ref_name }}
+  group: release-cover-cache-staging
   cancel-in-progress: true
 
 jobs:
-  cache-staging:
-    if: github.ref_name == 'staging'
+  cache:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -32,16 +29,20 @@ jobs:
         with:
           ref: staging
           fetch-depth: 0
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
       - name: Install image validation dependency
         run: npm install --no-save --ignore-scripts image-size@2
+
       - name: Find and verify a quality portrait cover for every visible release
         run: |
           node --check scripts/cache-release-covers.mjs
           node --check scripts/lib/release-cover-resolver.mjs
           node scripts/cache-release-covers.mjs
+
       - name: Commit complete quality-cover snapshot to staging
         run: |
           git config user.name 'github-actions[bot]'
@@ -53,77 +54,5 @@ jobs:
           fi
           git diff --check
           git commit -m 'Fulfill verified release covers in staging'
-          git pull --rebase origin staging
-          git push origin HEAD:staging
-
-  stage-production-blobs:
-    if: github.ref_name == 'fix/production-release-cover-fulfillment'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout production candidate
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-          path: source
-          persist-credentials: false
-          fetch-depth: 1
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Materialize and verify production candidate covers
-        working-directory: source
-        run: |
-          npm install --no-save --ignore-scripts image-size@2
-          node scripts/repair-release-slugs.mjs
-          node scripts/enrich-release-anticipation.mjs
-          node scripts/materialize-release-calendar.mjs
-          node scripts/validate-release-calendar.mjs
-      - name: Checkout staging write target
-        uses: actions/checkout@v4
-        with:
-          ref: staging
-          path: staging
-          fetch-depth: 0
-      - name: Copy verified production snapshot into staging blob cache
-        run: |
-          node - <<'NODE'
-          const fs = require('fs');
-          const path = require('path');
-          const crypto = require('crypto');
-          const sourceRoot = path.resolve('source');
-          const stagingRoot = path.resolve('staging');
-          const publicPath = path.join(sourceRoot, 'data/releases/public.json');
-          const calendar = JSON.parse(fs.readFileSync(publicPath, 'utf8'));
-          const visible = [...(calendar.releases || []), ...(calendar.personalized_releases || [])];
-          if (!visible.length) throw new Error('No visible production releases were materialized.');
-          for (const release of visible) {
-            const image = release.image || {};
-            if (!image.local_url || image.status !== 'downloaded_verified' || image.verified !== true) throw new Error(`Unverified production cover: ${release.id || release.slug}`);
-            const src = path.join(sourceRoot, image.local_url);
-            const bytes = fs.readFileSync(src);
-            const sha256 = crypto.createHash('sha256').update(bytes).digest('hex');
-            if (sha256 !== image.sha256 || bytes.length !== Number(image.bytes || 0)) throw new Error(`Production cover checksum mismatch: ${release.slug}`);
-            const dest = path.join(stagingRoot, image.local_url);
-            fs.mkdirSync(path.dirname(dest), { recursive: true });
-            fs.writeFileSync(dest, bytes);
-          }
-          const snapshot = path.join(stagingRoot, 'tmp/production-release-public-753.json');
-          fs.mkdirSync(path.dirname(snapshot), { recursive: true });
-          fs.copyFileSync(publicPath, snapshot);
-          console.log(`Staged ${visible.length} verified production covers and exact public snapshot.`);
-          NODE
-      - name: Commit verified production blobs to staging only
-        working-directory: staging
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add assets/covers/releases tmp/production-release-public-753.json
-          if git diff --cached --quiet; then
-            echo 'Exact production blobs already exist in staging.'
-            exit 0
-          fi
-          git diff --check
-          git commit -m 'Cache verified production release snapshot blobs in staging'
           git pull --rebase origin staging
           git push origin HEAD:staging

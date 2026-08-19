@@ -111,7 +111,7 @@ jobs:
           console.log(`- Maximum exact global releases in one day: **${s.max_exact_releases_in_one_day || 0}**`);
           for (const day of s.dense_days || []) console.log(`  - ${day.date}: ${day.count}`);
           NODE
-      - name: Upload materialized data and verified covers
+      - name: Upload materialized data
         uses: actions/upload-artifact@v4
         with:
           name: editorial-release-calendar-${{ github.run_id }}
@@ -120,5 +120,4 @@ jobs:
             data/releases/public.json
             data/releases/materialization-report.json
             data/parser-runs/release-anticipation.json
-            assets/covers/releases/**
           retention-days: 14
