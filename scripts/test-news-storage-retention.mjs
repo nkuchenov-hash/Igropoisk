@@ -40,6 +40,21 @@ assert(!plan.retainedVersions.includes(ancient), 'snapshot outside retention sho
 assert(!plan.retainedVersions.includes(incomplete), 'incomplete snapshot should be pruned');
 assert(plan.removedObjects.every(entry => !entry.key.startsWith(`${prefix}/${current}/`)), 'current snapshot objects must never be deleted');
 
+const productionPlan = buildSnapshotRetentionPlan(objects, {
+  snapshotPrefix: prefix,
+  currentVersion: current,
+  keepRecentSnapshots: 3,
+  keepDailySnapshots: 0,
+  deleteIncompleteSnapshots: true
+});
+assert.deepEqual(
+  productionPlan.retainedVersions,
+  [current, recent, previousDay],
+  'production retention must keep exactly the current snapshot plus two rollback snapshots and no daily extras'
+);
+assert(!productionPlan.retainedVersions.includes(olderSameDay));
+assert(!productionPlan.retainedVersions.includes(ancient));
+
 assert.throws(() => buildSnapshotRetentionPlan(objects, {
   snapshotPrefix: prefix,
   currentVersion: 'missing-current',
