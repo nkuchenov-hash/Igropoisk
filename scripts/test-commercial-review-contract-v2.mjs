@@ -19,7 +19,10 @@ for(const workflow of [post,manual])for(const marker of ['LOCAL_TEXT_MODEL: qwen
 assert.ok(post.includes("github.event_name == 'pull_request' && github.event.pull_request.number || 'staging'"),'explicit merged game requests must not share the serialized backlog concurrency lock');
 assert.ok(!post.includes('group: game-post-create-enrichment-v5-staging\n'),'post-create workflow still globally serializes explicit game requests behind backlog work');
 for(const marker of ['build-review-article-corpus-resilient.mjs','synthesize-commercial-review-resilient.mjs','enrich-commercial-review-media-resilient.mjs'])assert.ok(orchestrator.includes(marker),`orchestrator does not use resilient stage: ${marker}`);
-for(const marker of ['provider-free-html-search','wayback','registered_sources_checked','provider_independent:true'])assert.ok(corpus.includes(marker),`provider-independent corpus contract missing: ${marker}`);
+for(const marker of ['provider-free-html-search','wayback','registered_sources_checked','provider_independent:true','historical-pdf','legacy-mirror'])assert.ok(corpus.includes(marker),`provider-independent corpus contract missing: ${marker}`);
+for(const marker of ['SEARCH_TIMEOUT_MS=8000','PAGE_TIMEOUT_MS=10000','ARCHIVE_SNAPSHOT_LIMIT=2','SEARCH_CONCURRENCY=10','VALIDATION_CONCURRENCY=8','OPENAI_ACCELERATOR_TIMEOUT_MS=300000','bounded_network_latency:true'])assert.ok(corpus.includes(marker),`bounded commercial research latency safeguard missing: ${marker}`);
+assert.ok(corpus.includes('await pool(tasks,SEARCH_CONCURRENCY'),'registered/critic discovery is not concurrency-bounded');
+assert.ok(corpus.includes('await pool(validationInput,VALIDATION_CONCURRENCY'),'candidate review validation is not concurrency-bounded');
 assert.ok(!corpus.includes("OPENAI_API_KEY is required"),'provider-independent corpus must not require OpenAI');
 for(const marker of ['local-ollama-fallback','chatJson','LOCAL_EDITORIAL_MODEL'])assert.ok(synthesis.includes(marker),`local full-review fallback missing: ${marker}`);
 for(const marker of ['deterministic-fallback','screenshots_only:true','artwork_in_carousels:false'])assert.ok(carousel.includes(marker),`provider-free carousel fallback missing: ${marker}`);
@@ -28,4 +31,4 @@ const legacy=read('scripts/run-game-post-create-enrichment.mjs');for(const forbi
 const validator=read('scripts/validate-commercial-review-v2.mjs');assert.ok(validator.includes('exhaustive_discovery'),'validator must understand exhaustive below-preferred fallback');assert.ok(!validator.includes("status:'blocked'"),'validator must not emit terminal blocked state');
 const media=read('scripts/enforce-commercial-game-media.mjs');assert.ok(!media.includes("status:'blocked'"),'media enrichment must not emit terminal blocked state');
 const overlay=read('scripts/publish-game-post-create-overlay.mjs');assert.ok(overlay.includes("'data/review-article-corpus'"),'overlay must persist article corpus between retry passes');assert.ok(overlay.includes("'data/review-discovery-audits'"),'overlay must persist discovery audit between retry passes');
-console.log('Commercial review contract v2 static boundary passed, including provider-independent fallback and per-request concurrency.');
+console.log('Commercial review contract v2 static boundary passed, including provider-independent fallback, bounded research latency and per-request concurrency.');
