@@ -21,6 +21,8 @@ on:
         required: true
       YC_S3_BUCKET:
         required: true
+      OPENAI_API_KEY:
+        required: false
   schedule:
     - cron: '23 * * * *'
   push:
@@ -31,6 +33,9 @@ on:
       - 'data/youtube-sources.json'
       - 'data/news-game-aliases.json'
       - 'data/news-game-overrides.json'
+      - 'features/news/content-api/index.js'
+      - 'features/news/shared/index.js'
+      - 'features/news/module.json'
       - 'scripts/fetch-news.mjs'
       - 'scripts/collect-regional-news.mjs'
       - 'scripts/postprocess-industry-news.mjs'
@@ -38,6 +43,7 @@ on:
       - 'scripts/fetch-youtube-signals.mjs'
       - 'scripts/build-news-events.mjs'
       - 'scripts/resolve-news-game-context.mjs'
+      - 'scripts/verify-news-game-identities.mjs'
       - 'scripts/normalize-news-game-hashtags.mjs'
       - 'scripts/hydrate-live-news-history.mjs'
       - 'scripts/audit-news-game-hashtags.mjs'
@@ -45,23 +51,32 @@ on:
       - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
       - 'scripts/prepare-news-game-page-requests.mjs'
+      - 'scripts/ensure-game-page.mjs'
+      - 'scripts/test-game-creator-boundary.mjs'
+      - 'scripts/run-news-game-page-fast.mjs'
+      - 'scripts/materialize-news-game-pages-fast.mjs'
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
       - 'scripts/test-news-pipeline-health.mjs'
       - 'scripts/test-news-content-api.mjs'
       - 'scripts/test-news-storage-content-api.mjs'
+      - 'scripts/test-news-storage-retention.mjs'
+      - 'scripts/test-news-monthly-archive.mjs'
       - 'scripts/test-news-game-linker.mjs'
       - 'scripts/test-news-game-context-resolver.mjs'
       - 'scripts/test-news-primary-game-refiner.mjs'
       - 'scripts/test-news-publication-gate.mjs'
+      - 'scripts/test-news-game-registry-discovery.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/lib/news-game-linker.mjs'
       - 'scripts/lib/news-game-registry-adapter.mjs'
       - 'scripts/lib/news-game-context-resolver.mjs'
       - 'scripts/lib/news-primary-game-refiner.mjs'
       - 'scripts/lib/news-publication-gate.mjs'
+      - 'scripts/lib/news-game-registry-discovery.mjs'
       - 'scripts/lib/news-game-hashtag.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
+      - 'scripts/prune-news-storage.mjs'
       - 'scripts/publish-news-storage.mjs'
       - '.github/workflows/news-game-page-fast.yml'
       - '.github/workflows/news-pipeline.yml'
@@ -78,7 +93,7 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Checkout current staging code and fallback snapshot
         uses: actions/checkout@v4
@@ -93,40 +108,54 @@ jobs:
 
       - name: Verify pipeline and storage code before network work
         run: |
+          node --check features/news/content-api/index.js
+          node --check features/news/shared/index.js
           node --check scripts/run-news-pipeline.mjs
           node --check scripts/build-news-pipeline-health.mjs
           node --check scripts/validate-news-pipeline.mjs
           node --check scripts/resolve-news-game-context.mjs
+          node --check scripts/verify-news-game-identities.mjs
           node --check scripts/normalize-news-game-hashtags.mjs
           node --check scripts/hydrate-live-news-history.mjs
           node --check scripts/audit-news-game-hashtags.mjs
           node --check scripts/prepare-news-game-page-requests.mjs
+          node --check scripts/ensure-game-page.mjs
+          node --check scripts/run-news-game-page-fast.mjs
+          node --check scripts/materialize-news-game-pages-fast.mjs
           node --check scripts/lib/news-game-context-resolver.mjs
           node --check scripts/lib/news-primary-game-refiner.mjs
           node --check scripts/lib/news-publication-gate.mjs
+          node --check scripts/lib/news-game-registry-discovery.mjs
           node --check scripts/lib/news-game-hashtag.mjs
           node --check scripts/lib/yandex-object-storage.mjs
           node --check scripts/prune-news-storage.mjs
           node --check scripts/publish-news-storage.mjs
+          node scripts/test-game-creator-boundary.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
           node scripts/test-news-storage-content-api.mjs
           node scripts/test-news-storage-retention.mjs
+          node scripts/test-news-monthly-archive.mjs
           node scripts/test-news-game-linker.mjs
           node scripts/test-news-game-context-resolver.mjs
           node scripts/test-news-primary-game-refiner.mjs
           node scripts/test-news-publication-gate.mjs
+          node scripts/test-news-game-registry-discovery.mjs
 
       - name: Hydrate complete live historical news archive
         run: node scripts/hydrate-live-news-history.mjs
 
-      - name: Collect validate and prepare one isolated snapshot
+      - name: Collect validate and web-verify every historical game identity
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
+          OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
           PIPELINE_FORCE: ${{ inputs.force || github.event.inputs.force || false }}
           NEWS_PIPELINE_REPORT: tmp/news-pipeline-report.json
           NEWS_GAME_CONTEXT_MAX_LOOKUPS: '1000'
+          NEWS_GAME_VERIFY_BATCH: '8'
         run: |
           args=()
           if [ "$PIPELINE_FORCE" = "true" ]; then
@@ -146,7 +175,7 @@ jobs:
         if: steps.pipeline.outputs.status == 'success'
         run: git fetch origin main:refs/remotes/origin/main --force
 
-      - name: Prepare canonical game-page requests from complete news history
+      - name: Prepare verified canonical game-page requests from complete news history
         if: steps.pipeline.outputs.status == 'success'
         id: game_pages
         env:
@@ -160,7 +189,7 @@ jobs:
           process.stdout.write(`count=${result.count}\nrequests_b64=${result.requests_b64}\n`);
           NODE
 
-      - name: Create every missing game page through the fast structured-data path
+      - name: Create every verified missing game page through the shared Game Creator
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -181,7 +210,7 @@ jobs:
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
         run: node scripts/prune-news-storage.mjs
 
-      - name: Publish immutable news snapshot and switch manifest
+      - name: Publish compact live snapshot and stable monthly archive
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
@@ -205,6 +234,7 @@ jobs:
           path: |
             tmp/news-pipeline-report.json
             tmp/news-history-hydration.json
+            tmp/news-game-identity-verification.json
             tmp/news-game-hashtag-normalization.json
             tmp/news-game-hashtag-audit.json
             tmp/news-game-page-requests.json
