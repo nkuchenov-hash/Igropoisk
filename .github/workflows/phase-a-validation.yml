@@ -28,6 +28,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Protect canonical roadmap and architecture
+        run: node scripts/validate-canonical-project-docs.mjs
+
       - name: Verify immutable source and branch boundaries
         run: |
           node scripts/verify-deployment-source.mjs

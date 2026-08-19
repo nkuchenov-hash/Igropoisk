@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "documents": [
+    {
+      "id": "IGROPOISK_PROJECT_ROADMAP",
+      "path": "docs/PROJECT_ROADMAP.md",
+      "role": "project-roadmap",
+      "requiredText": [
+        "# Игропоиск — канонический ПУТЬ проекта",
+        "LIFE_OS_SYNC",
+        "M1_PRODUCT_COMPLETION",
+        "M4_SERVER_BASELINE",
+        "M7_AI_RUNTIME"
+      ],
+      "minimumBytes": 12000
+    },
+    {
+      "id": "IGROPOISK_SYSTEM_ARCHITECTURE",
+      "path": "docs/SYSTEM_ARCHITECTURE.md",
+      "role": "system-architecture",
+      "requiredText": [
+        "CANONICAL_PROJECT_DOCUMENT: IGROPOISK_SYSTEM_ARCHITECTURE",
+        "PROJECT_ROADMAP.md",
+        "PROJECT_RULES.md",
+        "Game Registry",
+        "AI Gateway",
+        "Architecture change protocol"
+      ],
+      "minimumBytes": 12000
+    }
+  ],
+  "entrypoints": [
+    {
+      "path": "README.md",
+      "requiredText": [
+        "docs/PROJECT_ROADMAP.md",
+        "docs/SYSTEM_ARCHITECTURE.md"
+      ]
+    }
+  ],
+  "protectedSupportFiles": [
+    "config/canonical-project-docs.json",
+    "scripts/validate-canonical-project-docs.mjs"
+  ]
+}

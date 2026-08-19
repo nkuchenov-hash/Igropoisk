@@ -21,6 +21,21 @@ This repository uses branches for different responsibilities. The branches must 
 7. Production promotion is always surgical: start from current `main`, copy the exact validated scope, run the relevant checks, and merge that dedicated PR. Do not use an accumulated staging snapshot as a production payload.
 8. A PR whose base was replaced/reset must be closed and recreated from the current base rather than kept alive with a misleading diff.
 
+## Canonical project documents
+
+Two files are permanent top-level project records:
+
+- `docs/PROJECT_ROADMAP.md` — canonical development path and milestone order;
+- `docs/SYSTEM_ARCHITECTURE.md` — canonical system/module/page/data architecture.
+
+They are registered in `config/canonical-project-docs.json` and validated by `scripts/validate-canonical-project-docs.mjs` inside the required `Staging and production gate`.
+
+Accidental deletion, rename, replacement with a short stub, removal from the root README, duplicate canonical architecture records, or removal of the guard from the required gate is a CI failure.
+
+A deliberate architecture change is allowed only as an explicit Git change. If it changes module ownership, source of truth, storage model, runtime boundaries, AI dependency, or migration order, the relevant canonical document must be updated in the same scoped PR. The previous version remains recoverable through Git history.
+
+Do not create competing roadmap or top-level architecture files. Module-specific documents remain subordinate implementation records and must link back to the canonical architecture when they alter a system boundary.
+
 ## Current recovery point
 
 The pre-cleanup staging history from 2026-08-10 is preserved at:
