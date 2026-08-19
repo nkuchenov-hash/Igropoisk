@@ -5,7 +5,7 @@ const rail=document.querySelector('#reviewsOfDayRail');
 if(!main||!rail)return;
 
 const AUTO_ROTATE_MS=30000;
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 let items=[];
 let activeIndex=0;
 let timer=null;
