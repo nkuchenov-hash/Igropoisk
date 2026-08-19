@@ -33,6 +33,9 @@ on:
       - 'data/youtube-sources.json'
       - 'data/news-game-aliases.json'
       - 'data/news-game-overrides.json'
+      - 'features/news/content-api/index.js'
+      - 'features/news/shared/archive-facade-v2.js'
+      - 'features/news/module.json'
       - 'scripts/fetch-news.mjs'
       - 'scripts/collect-regional-news.mjs'
       - 'scripts/postprocess-industry-news.mjs'
@@ -58,6 +61,7 @@ on:
       - 'scripts/test-news-content-api.mjs'
       - 'scripts/test-news-storage-content-api.mjs'
       - 'scripts/test-news-storage-retention.mjs'
+      - 'scripts/test-news-monthly-archive.mjs'
       - 'scripts/test-news-game-linker.mjs'
       - 'scripts/test-news-game-context-resolver.mjs'
       - 'scripts/test-news-primary-game-refiner.mjs'
@@ -104,6 +108,8 @@ jobs:
 
       - name: Verify pipeline and storage code before network work
         run: |
+          node --check features/news/content-api/index.js
+          node --check features/news/shared/archive-facade-v2.js
           node --check scripts/run-news-pipeline.mjs
           node --check scripts/build-news-pipeline-health.mjs
           node --check scripts/validate-news-pipeline.mjs
@@ -130,6 +136,7 @@ jobs:
           node scripts/test-news-content-api.mjs
           node scripts/test-news-storage-content-api.mjs
           node scripts/test-news-storage-retention.mjs
+          node scripts/test-news-monthly-archive.mjs
           node scripts/test-news-game-linker.mjs
           node scripts/test-news-game-context-resolver.mjs
           node scripts/test-news-primary-game-refiner.mjs
@@ -203,7 +210,7 @@ jobs:
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
         run: node scripts/prune-news-storage.mjs
 
-      - name: Publish immutable news snapshot and switch manifest
+      - name: Publish compact live snapshot and stable monthly archive
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
