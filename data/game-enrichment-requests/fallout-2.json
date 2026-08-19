@@ -6,8 +6,8 @@
   "series": "Fallout",
   "released": true,
   "created_at": "2026-08-17T15:23:19.000Z",
-  "requested_at": "2026-08-19T14:34:00.000Z",
-  "creator_source": "commercial_acceptance_v10_sectioned",
+  "requested_at": "2026-08-19T22:15:00.000Z",
+  "creator_source": "commercial_acceptance_v11_sectioned_meta_hardened",
   "modules": {
     "series": "ready",
     "review": "needs_revision",
@@ -16,7 +16,7 @@
     "dna": "ready",
     "similarity": "ready"
   },
-  "reason": "fallout-2-sectioned-persistent-commercial-review-v10-acceptance",
+  "reason": "fallout-2-sectioned-persistent-commercial-review-v11-meta-schema-acceptance",
   "last_run_at": "2026-08-19T14:44:00.904Z",
   "run_attempts": 3,
   "review_attempts": 3,
@@ -34,7 +34,7 @@
     "terminal": false,
     "retryable": true,
     "stage": "long-review",
-    "last_error": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-openai.mjs:23\nasync function openai(body){const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(300000)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('OpenAI returned no output_text');return JSON.parse(text.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                    ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at openai (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-openai.mjs:23:277)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-openai.mjs:32:13\n\nNode.js v22.23.2\nfallout-2: OpenAI synthesis unavailable or exceeded bounded budget; switching to sectioned local qwen3:4b\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:86\nif(!state.meta||metaErrors(state.meta).length){let errors=[];for(let attempt=1;attempt<=MAX_COMPONENT_ATTEMPTS;attempt++){state.meta=await generateMeta(errors.length?`\\nИсправь: ${errors.join('; ')}.`:'');errors=metaErrors(state.meta);if(!errors.length)break}if(errors.length){persist();throw new Error(`${slug}: sectioned meta gate failed: ${errors.join('; ')}`)}persist()}\n                                                                                                                                                                                                                                                                                                     ^\n\nError: fallout-2: sectioned meta gate failed: title/dek missing; lead 0/120\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:86:294\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n\nNode.js v22.23.2",
-    "updated_at": "2026-08-19T14:44:00.904Z"
+    "last_error": null,
+    "updated_at": "2026-08-19T22:15:00.000Z"
   }
 }
