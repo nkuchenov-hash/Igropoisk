@@ -1,7 +1,7 @@
 {
   "parser": "post-create-game-dna-v5-commercial-quality",
   "status": "needs_revision",
-  "checked_at": "2026-08-19T22:32:49.946Z",
+  "checked_at": "2026-08-19T22:48:21.730Z",
   "targets": 1,
   "from_pending_requests": 55,
   "from_missing_dna_backfill": 25,
@@ -10,15 +10,15 @@
   "publication_policy": "only_valid_commercial_quality_dna_changes_survive_to_checkpoint",
   "ready_slugs": [],
   "invalid_or_missing": [
-    "fallout"
+    "fallout-shelter"
   ],
   "similarity_needs_revision": [],
   "failed": [
     {
-      "slug": "fallout",
+      "slug": "fallout-shelter",
       "step": "validate",
       "exit_code": 2,
-      "stderr": "data/game-dna/fallout.json: targeted post-create DNA is below the commercial enrichment gate (8/16 axes, 4/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+      "stderr": "data/game-dna/fallout-shelter.json: targeted post-create DNA is not similarity-ready (6/16 axes, 2/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/fallout-shelter.json: targeted post-create DNA is below the commercial enrichment gate (6/16 axes, 2/7 core axes); requires >=9 populated axes and >=4 core axes\n"
     }
   ]
 }
