@@ -28,41 +28,41 @@ const featuredBySlug=new Map(featured.map(game=>[game.slug,game]));
 let catalog=[...featured];
 let resultView='list';
 
-const genreMarkup=CORE_GENRES.map(genre=>`<label class="genre-option"><input class="f-genre" type="checkbox" value="${escapeHtml(genre)}"><span>${escapeHtml(genre)}</span><em data-genre-count="${escapeHtml(genre)}">0</em></label>`).join('');
+const genreMarkup=CORE_GENRES.map(genre=>`<label class="genre-option"><input class="ig-input ig-input--check f-genre" type="checkbox" value="${escapeHtml(genre)}"><span>${escapeHtml(genre)}</span><em data-genre-count="${escapeHtml(genre)}">0</em></label>`).join('');
 const markup=`
 <div class="ig-container search-shell">
   <div class="search-layout search-layout--enhanced">
-    <aside class="filters search-filters" id="filters" aria-label="Фильтры каталога">
-      <button class="search-reset" id="resetFilters" type="button"><span aria-hidden="true">↶</span> Сбросить фильтры</button>
+    <aside class="filters search-filters ig-search-filter-panel" id="filters" aria-label="Фильтры каталога">
+      <button class="ig-button search-reset" id="resetFilters" type="button"><span aria-hidden="true">↶</span> Сбросить фильтры</button>
       <section class="filter-section"><h3>Платформа</h3>
-        <label class="filter-option"><span><input class="f-platform" type="checkbox" value="PC"><b class="platform-mark">PC</b> PC</span><em data-platform-count="PC">0</em></label>
-        <label class="filter-option"><span><input class="f-platform" type="checkbox" value="PlayStation"><b class="platform-mark">PS</b> PlayStation</span><em data-platform-count="PlayStation">0</em></label>
-        <label class="filter-option"><span><input class="f-platform" type="checkbox" value="Xbox"><b class="platform-mark">XB</b> Xbox</span><em data-platform-count="Xbox">0</em></label>
-        <label class="filter-option"><span><input class="f-platform" type="checkbox" value="Nintendo Switch"><b class="platform-mark">NS</b> Nintendo Switch</span><em data-platform-count="Nintendo Switch">0</em></label>
+        <label class="filter-option"><span><input class="ig-input ig-input--check f-platform" type="checkbox" value="PC"><b class="platform-mark">PC</b> PC</span><em data-platform-count="PC">0</em></label>
+        <label class="filter-option"><span><input class="ig-input ig-input--check f-platform" type="checkbox" value="PlayStation"><b class="platform-mark">PS</b> PlayStation</span><em data-platform-count="PlayStation">0</em></label>
+        <label class="filter-option"><span><input class="ig-input ig-input--check f-platform" type="checkbox" value="Xbox"><b class="platform-mark">XB</b> Xbox</span><em data-platform-count="Xbox">0</em></label>
+        <label class="filter-option"><span><input class="ig-input ig-input--check f-platform" type="checkbox" value="Nintendo Switch"><b class="platform-mark">NS</b> Nintendo Switch</span><em data-platform-count="Nintendo Switch">0</em></label>
       </section>
       <section class="filter-section"><h3>Жанры</h3><div class="genre-options" id="genreOptions">${genreMarkup}</div></section>
-      <section class="filter-section range-block"><h3>Год выхода</h3><div class="range-values"><span id="yearFromLabel">2000</span><b id="yearToLabel">2026</b></div><div class="dual-range"><input id="yearFrom" type="range" min="2000" max="2026" value="2000" aria-label="Год от"><input id="yearTo" type="range" min="2000" max="2026" value="2026" aria-label="Год до"></div></section>
-      <section class="filter-section range-block"><h3>Рейтинг Игропоиска</h3><div class="range-inputs"><label>от <input id="ratingFromNumber" type="number" min="0" max="10" step=".1" value="0"></label><label>до <input id="ratingToNumber" type="number" min="0" max="10" step=".1" value="10"></label></div><div class="range-values"><span id="ratingFromLabel">0.0</span><b id="ratingToLabel">10.0</b></div><div class="dual-range"><input id="ratingFrom" type="range" min="0" max="10" step=".1" value="0" aria-label="Рейтинг от"><input id="ratingTo" type="range" min="0" max="10" step=".1" value="10" aria-label="Рейтинг до"></div></section>
-      <section class="filter-section range-block"><h3>Оценка пользователей</h3><div class="range-inputs"><label>от <input id="userRatingFromNumber" type="number" min="0" max="10" step=".1" value="0"></label><label>до <input id="userRatingToNumber" type="number" min="0" max="10" step=".1" value="10"></label></div><div class="range-values"><span id="userRatingFromLabel">0.0</span><b id="userRatingToLabel">10.0</b></div><div class="dual-range"><input id="userRatingFrom" type="range" min="0" max="10" step=".1" value="0" aria-label="Оценка пользователей от"><input id="userRatingTo" type="range" min="0" max="10" step=".1" value="10" aria-label="Оценка пользователей до"></div></section>
-      <button class="search-apply" id="applyFilters" type="button">Показать <span id="applyCount">0</span> игр</button>
+      <section class="filter-section range-block"><h3>Год выхода</h3><div class="range-values"><span id="yearFromLabel">2000</span><b id="yearToLabel">2026</b></div><div class="dual-range"><input class="ig-input ig-input--range" id="yearFrom" type="range" min="2000" max="2026" value="2000" aria-label="Год от"><input class="ig-input ig-input--range" id="yearTo" type="range" min="2000" max="2026" value="2026" aria-label="Год до"></div></section>
+      <section class="filter-section range-block"><h3>Рейтинг Игропоиска</h3><div class="range-inputs"><label>от <input class="ig-input ig-input--number" id="ratingFromNumber" type="number" min="0" max="10" step=".1" value="0"></label><label>до <input class="ig-input ig-input--number" id="ratingToNumber" type="number" min="0" max="10" step=".1" value="10"></label></div><div class="range-values"><span id="ratingFromLabel">0.0</span><b id="ratingToLabel">10.0</b></div><div class="dual-range"><input class="ig-input ig-input--range" id="ratingFrom" type="range" min="0" max="10" step=".1" value="0" aria-label="Рейтинг от"><input class="ig-input ig-input--range" id="ratingTo" type="range" min="0" max="10" step=".1" value="10" aria-label="Рейтинг до"></div></section>
+      <section class="filter-section range-block"><h3>Оценка пользователей</h3><div class="range-inputs"><label>от <input class="ig-input ig-input--number" id="userRatingFromNumber" type="number" min="0" max="10" step=".1" value="0"></label><label>до <input class="ig-input ig-input--number" id="userRatingToNumber" type="number" min="0" max="10" step=".1" value="10"></label></div><div class="range-values"><span id="userRatingFromLabel">0.0</span><b id="userRatingToLabel">10.0</b></div><div class="dual-range"><input class="ig-input ig-input--range" id="userRatingFrom" type="range" min="0" max="10" step=".1" value="0" aria-label="Оценка пользователей от"><input class="ig-input ig-input--range" id="userRatingTo" type="range" min="0" max="10" step=".1" value="10" aria-label="Оценка пользователей до"></div></section>
+      <button class="ig-button ig-button--accent search-apply" id="applyFilters" type="button">Показать <span id="applyCount">0</span> игр</button>
     </aside>
     <section class="search-main">
       <header class="search-title-row"><div><h1>Поиск игр</h1><p class="results-count" id="count">Найдено игр: 0</p></div><button class="ig-button filter-toggle" id="filterToggle" type="button">Фильтры</button></header>
       <label class="search-query"><input class="ig-input ig-input--search" id="query" type="search" list="gameSearchSuggestions" autocomplete="off" placeholder="Начните вводить название игры — варианты появятся сразу"><span aria-hidden="true">⌕</span></label>
       <datalist id="gameSearchSuggestions"></datalist>
       <p class="search-help">Живой поиск работает по названию, студии и жанрам.</p>
-      <div class="search-toolbar"><div class="quick-filters" aria-label="Быстрые фильтры">
-        <select id="quickPlatform" aria-label="Платформа"><option value="">Платформа</option><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Nintendo Switch</option></select>
-        <select id="quickGenre" aria-label="Жанр"><option value="">Жанр</option>${CORE_GENRES.map(genre=>`<option>${escapeHtml(genre)}</option>`).join('')}</select>
-        <select id="quickYear" aria-label="Год выхода"><option value="">Год выхода</option><option value="2024">2024+</option><option value="2020">2020+</option><option value="2015">2015+</option></select>
-        <select id="quickRating" aria-label="Оценка"><option value="">Оценка</option><option value="9">9.0+</option><option value="8">8.0+</option><option value="7">7.0+</option></select>
-      </div><div class="search-view-tools"><select id="sort" aria-label="Сортировка"><option value="popularity">Сортировка: По популярности</option><option value="rating">По рейтингу редакции</option><option value="users">По оценке игроков</option><option value="year">По году</option><option value="title">По названию</option></select><div class="view-switch" aria-label="Вид результатов"><button type="button" data-view="grid" aria-label="Плитка">▦</button><button class="active" type="button" data-view="list" aria-label="Список">☷</button></div></div></div>
+      <div class="ig-toolbar search-toolbar"><div class="quick-filters" aria-label="Быстрые фильтры">
+        <select class="ig-input ig-input--select" id="quickPlatform" aria-label="Платформа"><option value="">Платформа</option><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Nintendo Switch</option></select>
+        <select class="ig-input ig-input--select" id="quickGenre" aria-label="Жанр"><option value="">Жанр</option>${CORE_GENRES.map(genre=>`<option>${escapeHtml(genre)}</option>`).join('')}</select>
+        <select class="ig-input ig-input--select" id="quickYear" aria-label="Год выхода"><option value="">Год выхода</option><option value="2024">2024+</option><option value="2020">2020+</option><option value="2015">2015+</option></select>
+        <select class="ig-input ig-input--select" id="quickRating" aria-label="Оценка"><option value="">Оценка</option><option value="9">9.0+</option><option value="8">8.0+</option><option value="7">7.0+</option></select>
+      </div><div class="search-view-tools"><select class="ig-input ig-input--select" id="sort" aria-label="Сортировка"><option value="popularity">Сортировка: По популярности</option><option value="rating">По рейтингу редакции</option><option value="users">По оценке игроков</option><option value="year">По году</option><option value="title">По названию</option></select><div class="view-switch" aria-label="Вид результатов"><button class="ig-icon-button" type="button" data-view="grid" aria-label="Плитка">▦</button><button class="ig-icon-button active" type="button" data-view="list" aria-label="Список">☷</button></div></div></div>
       <div class="search-results" id="results" data-view="list"></div>
     </section>
     <aside class="search-right-rail" aria-label="Подсказки поиска">
-      <section class="search-side-card search-tip-card"><h3>Как искать точнее</h3><p>Используйте фильтры слева, чтобы уточнить результаты по платформе, жанру, году выхода и рейтингу.</p><div class="search-tip-mark" aria-hidden="true">⌁</div></section>
-      <section class="search-side-card"><h3>Подбор без фильтров</h3><p>Не знаете, во что поиграть? Помощник задаст несколько вопросов и подберёт игры по вашим предпочтениям.</p><button class="search-side-action" type="button" data-page="what-to-play">Подобрать игру</button></section>
-      <section class="search-side-card search-factors"><h3>Учитываем</h3><ul><li><span aria-hidden="true">★</span> рейтинг редакции</li><li><span aria-hidden="true">●</span> оценки игроков</li><li><span aria-hidden="true">↗</span> популярность</li><li><span aria-hidden="true">◷</span> свежесть обзоров</li></ul></section>
+      <section class="ig-card ig-search-side-card search-side-card search-tip-card"><h3>Как искать точнее</h3><p>Используйте фильтры слева, чтобы уточнить результаты по платформе, жанру, году выхода и рейтингу.</p><div class="search-tip-mark" aria-hidden="true">⌁</div></section>
+      <section class="ig-card ig-search-side-card search-side-card"><h3>Подбор без фильтров</h3><p>Не знаете, во что поиграть? Помощник задаст несколько вопросов и подберёт игры по вашим предпочтениям.</p><button class="ig-button search-side-action" type="button" data-page="what-to-play">Подобрать игру</button></section>
+      <section class="ig-card ig-search-side-card search-side-card search-factors"><h3>Учитываем</h3><ul><li><span aria-hidden="true">★</span> рейтинг редакции</li><li><span aria-hidden="true">●</span> оценки игроков</li><li><span aria-hidden="true">↗</span> популярность</li><li><span aria-hidden="true">◷</span> свежесть обзоров</li></ul></section>
     </aside>
   </div>
 </div>`;
@@ -115,9 +115,6 @@ function syncRangePair(rangeFrom,rangeTo,numberFrom,numberTo,labelFrom,labelTo){
   const fromInput=$(rangeFrom),toInput=$(rangeTo);const[from,to]=getRange(rangeFrom,rangeTo);fromInput.value=from;toInput.value=to;
   if(numberFrom)$(numberFrom).value=from;if(numberTo)$(numberTo).value=to;
   const decimals=rangeFrom.includes('year')?0:1;$(labelFrom).textContent=Number(from).toFixed(decimals);$(labelTo).textContent=Number(to).toFixed(decimals);
-  const min=finite(fromInput.min),max=finite(fromInput.max),span=Math.max(1,max-min),track=fromInput.parentElement;
-  track.style.setProperty('--range-from',`${Math.max(0,Math.min(100,((from-min)/span)*100))}%`);
-  track.style.setProperty('--range-to',`${Math.max(0,Math.min(100,((to-min)/span)*100))}%`);
 }
 function updateCounts(){
   ['PC','PlayStation','Xbox','Nintendo Switch'].forEach(platform=>{const node=$(`[data-platform-count="${platform}"]`);if(node)node.textContent=catalog.filter(game=>(game.platforms||[]).includes(platform)).length});
@@ -143,15 +140,15 @@ function filteredCatalog(){
 }
 function resultCard(game,index){
   const media=game.cover?`<img src="${escapeHtml(game.cover)}" alt="${escapeHtml(game.title)}" loading="${index<6?'eager':'lazy'}" decoding="async" data-fallback="${escapeHtml(initials(game.title))}">`:`<div class="result-placeholder">${escapeHtml(initials(game.title))}</div>`;
-  const pills=[game.year,...(game.genres||[]).slice(0,2)].filter(Boolean).map(value=>`<span>${escapeHtml(value)}</span>`).join('');
+  const pills=[game.year,...(game.genres||[]).slice(0,2)].filter(Boolean).map(value=>`<span class="ig-chip">${escapeHtml(value)}</span>`).join('');
   const platformMarks=(game.platforms||[]).map(platform=>`<b title="${escapeHtml(platform)}">${escapeHtml(platformCode(platform))}</b>`).join('');
-  return `<article class="search-result-card" data-game="${escapeHtml(game.slug)}"><div class="result-accent" aria-hidden="true"></div><div class="result-media">${media}</div><div class="result-copy"><div class="result-title-line"><h3>${escapeHtml(game.title)}</h3>${game.editorChoice?'<span class="editor-choice">★ выбор редакции</span>':''}</div><div class="result-meta">${pills}</div>${game.desc?`<p>${escapeHtml(game.desc)}</p>`:''}${game.studio?`<small>${escapeHtml(game.studio)}</small>`:''}${platformMarks?`<div class="result-platforms">${platformMarks}</div>`:''}</div><div class="result-scores"><div><small>Игропоиск</small><strong>${visibleScore(game.rating)}</strong>${game.votes?`<span>${formatNumber(game.votes)} оценок</span>`:''}</div><div><small>Оценка игроков</small><strong class="user-score">${visibleScore(game.userRating)}</strong></div></div></article>`;
+  return `<article class="ig-card ig-card--interactive ig-search-result search-result-card" data-game="${escapeHtml(game.slug)}"><div class="result-accent" aria-hidden="true"></div><div class="result-media">${media}</div><div class="result-copy"><div class="result-title-line"><h3>${escapeHtml(game.title)}</h3>${game.editorChoice?'<span class="ig-chip editor-choice">★ выбор редакции</span>':''}</div><div class="result-meta">${pills}</div>${game.desc?`<p>${escapeHtml(game.desc)}</p>`:''}${game.studio?`<small>${escapeHtml(game.studio)}</small>`:''}${platformMarks?`<div class="result-platforms">${platformMarks}</div>`:''}</div><div class="result-scores"><div><small>Игропоиск</small><strong>${visibleScore(game.rating)}</strong>${game.votes?`<span>${formatNumber(game.votes)} оценок</span>`:''}</div><div><small>Оценка игроков</small><strong class="user-score">${visibleScore(game.userRating)}</strong></div></div></article>`;
 }
 function renderResults(){
   syncRangePair('#yearFrom','#yearTo',null,null,'#yearFromLabel','#yearToLabel');
   syncRangePair('#ratingFrom','#ratingTo','#ratingFromNumber','#ratingToNumber','#ratingFromLabel','#ratingToLabel');
   syncRangePair('#userRatingFrom','#userRatingTo','#userRatingFromNumber','#userRatingToNumber','#userRatingFromLabel','#userRatingToLabel');
-  const filtered=filteredCatalog();$('#count').textContent=`Найдено игр: ${filtered.length}`;$('#applyCount').textContent=filtered.length;const target=$('#results');target.dataset.view=resultView;target.innerHTML=filtered.length?filtered.map(resultCard).join(''):'<div class="empty">По выбранным условиям игр нет.</div>';
+  const filtered=filteredCatalog();$('#count').textContent=`Найдено игр: ${filtered.length}`;$('#applyCount').textContent=filtered.length;const target=$('#results');target.dataset.view=resultView;target.innerHTML=filtered.length?filtered.map(resultCard).join(''):'<div class="ig-empty-state empty">По выбранным условиям игр нет.</div>';
 }
 function bindRange(rangeFrom,rangeTo,numberFrom,numberTo){[rangeFrom,rangeTo].forEach(selector=>$(selector).addEventListener('input',renderResults));if(numberFrom)$(numberFrom).addEventListener('input',()=>{$(rangeFrom).value=$(numberFrom).value;renderResults()});if(numberTo)$(numberTo).addEventListener('input',()=>{$(rangeTo).value=$(numberTo).value;renderResults()})}
 function resetFilters(){$$('.f-platform,.f-genre').forEach(input=>{input.checked=false});$('#yearFrom').value=$('#yearFrom').min;$('#yearTo').value=$('#yearTo').max;$('#ratingFrom').value=0;$('#ratingTo').value=10;$('#userRatingFrom').value=0;$('#userRatingTo').value=10;$('#query').value='';['#quickPlatform','#quickGenre','#quickYear','#quickRating'].forEach(selector=>$(selector).value='');$('#sort').value='popularity';updateLiveSuggestions();renderResults()}
@@ -165,7 +162,7 @@ function bind(){
   $('#results').addEventListener('error',event=>{const image=event.target;if(!(image instanceof HTMLImageElement)||!image.closest('.result-media'))return;const fallback=document.createElement('div');fallback.className='result-placeholder';fallback.textContent=image.dataset.fallback||'ИП';image.replaceWith(fallback)},true);
   $$('[data-page="search"]').forEach(trigger=>trigger.addEventListener('click',()=>window.setTimeout(()=>$('#query')?.focus({preventScroll:true}),0)));
 }
-async function loadJson(path){const response=await fetch(`${path}?v=20260819-2`,{cache:'no-store'});if(!response.ok)throw new Error(`${path}: ${response.status}`);return response.json()}
+async function loadJson(path){const response=await fetch(`${path}?v=20260819-3`,{cache:'no-store'});if(!response.ok)throw new Error(`${path}: ${response.status}`);return response.json()}
 async function loadRichMap(){const settled=await Promise.allSettled(CONTENT_SHARDS.map(file=>loadJson(`data/game-content/${file}`)));const map=new Map();settled.forEach(result=>{if(result.status!=='fulfilled')return;Object.entries(result.value?.games||{}).forEach(([slug,data])=>map.set(slug,data))});return map}
 async function enrichMissingFromDrafts(items,richMap){
   const needs=items.filter(item=>{const rich=richMap.get(item.slug);const identity=rich?.identity||{};const classification=rich?.classification||{};return !rich||(!item.cover&&!identity.steam_appid)||!asArray(classification.genres).length});
