@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
 import {strengthenJsonSchema} from './lib/local-editorial-model.mjs';
 const read=path=>fs.readFileSync(path,'utf8');
 const json=path=>JSON.parse(read(path));
@@ -13,13 +14,15 @@ assert.equal(contract.lifecycle?.forbid_attempt_exhaustion_for_released_games,tr
 assert.equal(contract.lifecycle?.forbid_terminal_deferred_for_missing_material,true,'missing material must never become terminal deferred');
 assert.equal(contract.lifecycle?.keep_searching_until_complete,true,'commercial lifecycle must keep searching until complete');
 assert.ok(String(contract.source_corpus?.fallback_rule||'').length>40,'below-preferred exhaustive fallback rule is required');
-const post=read('.github/workflows/game-post-create-enrichment.yml'),manual=read('.github/workflows/review-synthesis.yml'),orchestrator=read('scripts/run-commercial-review-contract.mjs'),corpus=read('scripts/build-review-article-corpus-resilient.mjs'),synthesis=read('scripts/synthesize-commercial-review-resilient.mjs'),carousel=read('scripts/enrich-commercial-review-media-resilient.mjs'),local=read('scripts/lib/local-editorial-model.mjs');
+const post=read('.github/workflows/game-post-create-enrichment.yml'),manual=read('.github/workflows/review-synthesis.yml'),orchestrator=read('scripts/run-commercial-review-contract.mjs'),corpus=read('scripts/build-review-article-corpus-resilient.mjs'),synthesis=read('scripts/synthesize-commercial-review-resilient.mjs'),metaPreflight=read('scripts/prepare-sectioned-review-meta.mjs'),carousel=read('scripts/enrich-commercial-review-media-resilient.mjs'),local=read('scripts/lib/local-editorial-model.mjs');
 assert.ok(post.includes('run-commercial-review-contract.mjs'),'post-create workflow must use unified commercial orchestrator');
 assert.ok(manual.includes('run-commercial-review-contract.mjs'),'manual review workflow must use the same commercial orchestrator');
 for(const workflow of [post,manual])for(const marker of ['LOCAL_TEXT_MODEL: qwen3:4b','Start local commercial fallback model service','Ensure qwen3 4b local commercial fallback'])assert.ok(workflow.includes(marker),`commercial workflow lacks provider-independent fallback: ${marker}`);
 assert.ok(post.includes("github.event_name == 'pull_request' && github.event.pull_request.number || 'staging'"),'explicit merged game requests must not share the serialized backlog concurrency lock');
 assert.ok(!post.includes('group: game-post-create-enrichment-v5-staging\n'),'post-create workflow still globally serializes explicit game requests behind backlog work');
-for(const marker of ['build-review-article-corpus-resilient.mjs','synthesize-commercial-review-resilient.mjs','enrich-commercial-review-media-resilient.mjs'])assert.ok(orchestrator.includes(marker),`orchestrator does not use resilient stage: ${marker}`);
+for(const marker of ['build-review-article-corpus-resilient.mjs','prepare-sectioned-review-meta.mjs','synthesize-commercial-review-resilient.mjs','enrich-commercial-review-media-resilient.mjs'])assert.ok(orchestrator.includes(marker),`orchestrator does not use resilient stage: ${marker}`);
+assert.ok(orchestrator.includes("COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR==='true'"),'OpenAI synthesis must be explicit opt-in');
+assert.ok(orchestrator.includes("{OPENAI_API_KEY:''}"),'default commercial synthesis must suppress paid OpenAI acceleration');
 for(const marker of ['provider-free-html-search','wayback','registered_sources_checked','provider_independent:true','historical-pdf','legacy-mirror'])assert.ok(corpus.includes(marker),`provider-independent corpus contract missing: ${marker}`);
 for(const marker of ['SEARCH_TIMEOUT_MS=8000','PAGE_TIMEOUT_MS=10000','ARCHIVE_SNAPSHOT_LIMIT=2','SEARCH_CONCURRENCY=10','VALIDATION_CONCURRENCY=8','OPENAI_ACCELERATOR_TIMEOUT_MS=300000','bounded_network_latency:true'])assert.ok(corpus.includes(marker),`bounded commercial research latency safeguard missing: ${marker}`);
 assert.ok(corpus.includes('await pool(tasks,SEARCH_CONCURRENCY'),'registered/critic discovery is not concurrency-bounded');
@@ -31,6 +34,8 @@ assert.ok(synthesis.includes('for(let i=0;i<themes.length;i++)await buildSection
 assert.ok(synthesis.includes('persist()'),'sectioned local review does not persist progress between components');
 assert.ok(!synthesis.includes('numPredict:10000'),'monolithic 3000+ word local generation was reintroduced');
 assert.ok(!synthesis.includes('LOCAL_GENERATION_TIMEOUT_MS=900000'),'monolithic 15-minute local generation timeout was reintroduced');
+for(const marker of ["lead:{type:'string',minLength:800}",'expandLead','instruction-placeholder text','leadMinWords','SOURCE DOSSIERS'])assert.ok(metaPreflight.includes(marker),`grounded meta preflight safeguard missing: ${marker}`);
+const metaSyntax=spawnSync(process.execPath,['--check','scripts/prepare-sectioned-review-meta.mjs'],{encoding:'utf8'});assert.equal(metaSyntax.status,0,metaSyntax.stderr||'meta preflight syntax check failed');
 for(const marker of ['deterministic-fallback','screenshots_only:true','artwork_in_carousels:false'])assert.ok(carousel.includes(marker),`provider-free carousel fallback missing: ${marker}`);
 for(const marker of ["'qwen3:4b'",'repeatPenalty=1.18','repeatLastN=1024','strengthenJsonSchema'])assert.ok(local.includes(marker),`local editorial transport contract missing: ${marker}`);
 const sampleSchema={type:'object',required:['title','lead'],properties:{title:{type:'string'},lead:{type:'string'},optional:{type:'string'}}};
@@ -43,4 +48,4 @@ const legacy=read('scripts/run-game-post-create-enrichment.mjs');for(const forbi
 const validator=read('scripts/validate-commercial-review-v2.mjs');assert.ok(validator.includes('exhaustive_discovery'),'validator must understand exhaustive below-preferred fallback');assert.ok(!validator.includes("status:'blocked'"),'validator must not emit terminal blocked state');
 const media=read('scripts/enforce-commercial-game-media.mjs');assert.ok(!media.includes("status:'blocked'"),'media enrichment must not emit terminal blocked state');
 const overlay=read('scripts/publish-game-post-create-overlay.mjs');assert.ok(overlay.includes("'data/review-article-corpus'"),'overlay must persist article corpus between retry passes');assert.ok(overlay.includes("'data/review-discovery-audits'"),'overlay must persist discovery audit between retry passes');assert.ok(overlay.includes("'data/article-drafts'"),'overlay must persist deterministic commercial article drafts between retry passes');assert.ok(overlay.includes("'data/article-section-drafts'"),'overlay must persist completed local review sections between retry passes');
-console.log('Commercial review contract v2 static boundary passed, including provider-independent fallback, bounded research, persistent sectioned synthesis, non-empty structured fields and per-request concurrency.');
+console.log('Commercial review contract v2 static boundary passed, including provider-independent fallback, bounded research, grounded meta preflight, local-first persistent sectioned synthesis, non-empty structured fields and per-request concurrency.');
