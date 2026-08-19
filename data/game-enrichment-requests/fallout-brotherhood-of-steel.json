@@ -10,22 +10,31 @@
   "creator_source": "verified_import",
   "modules": {
     "series": "ready",
-    "review": "needs_revision",
-    "media": "needs_revision",
+    "review": "needs_search",
+    "media": "needs_search",
     "rating": "needs_revision",
     "dna": "needs_revision",
     "similarity": "ready"
   },
   "reason": "post_create_enrichment_must_not_block_base_page",
-  "last_run_at": "2026-08-17T20:31:15.767Z",
-  "run_attempts": 1,
+  "last_run_at": "2026-08-19T14:33:11.981Z",
+  "run_attempts": 2,
   "observed": {
     "series_games": 9,
-    "screenshots": 0,
-    "artwork": 0,
+    "screenshots": 2,
+    "artwork": 2,
     "canonical_score": null,
     "game_dna": false,
-    "similarity": true
+    "similarity": true,
+    "review_stage": null
   },
-  "state": "needs_revision"
+  "state": "needs_search",
+  "review_attempts": 1,
+  "retry": {
+    "terminal": false,
+    "retryable": true,
+    "stage": "commercial-media",
+    "last_error": "commercial-media: fallout-brotherhood-of-steel: commercial media needs_search — 2/15 verified unique screenshots persisted",
+    "updated_at": "2026-08-19T14:33:11.982Z"
+  }
 }
