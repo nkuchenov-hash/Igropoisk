@@ -32,6 +32,10 @@ const persist=()=>{state.updated_at=new Date().toISOString();write(statePath,sta
 const compactText=(v,max=360)=>String(v||'').replace(/\s+/g,' ').trim().slice(0,max);
 const compactList=(v,n=2,max=180)=>Array.isArray(v)?v.slice(0,n).map(x=>compactText(x,max)).filter(Boolean):[];
 const compactEvidence=sourceDigest.slice(0,6).map(s=>({id:s.id,publication:s.publication,summary:compactText(s.dossier?.summary,440),strengths:compactList(s.dossier?.strengths,2),criticisms:compactList(s.dossier?.criticisms,2),systems:compactList(s.dossier?.systems,2),examples:compactList(s.dossier?.specific_examples,2),claims:compactList(s.dossier?.notable_claims,2)}));
+const tokenSet=v=>new Set((String(v||'').toLowerCase().match(/[а-яёa-z0-9]{3,}/gi)||[]).filter(x=>!['fallout','rpg'].includes(x)));
+function nearDuplicate(a,b){const A=tokenSet(a),B=tokenSet(b);if(!A.size||!B.size)return false;let shared=0;for(const token of A)if(B.has(token))shared++;const union=A.size+B.size-shared,jaccard=union?shared/union:0,containment=shared/Math.min(A.size,B.size);return jaccard>=0.62||containment>=0.82}
+const leadParts=v=>String(v||'').split(/\n\s*\n+/).map(x=>x.trim()).filter(Boolean);
+function duplicateLeadPair(parts){for(let i=0;i<parts.length;i++)for(let j=i+1;j<parts.length;j++)if(nearDuplicate(parts[i],parts[j]))return[i,j];return null}
 
 function errors(meta){
   const out=[];
@@ -40,10 +44,11 @@ function errors(meta){
   if(words(dek)<18||dek.length<100)out.push(`dek ${words(dek)}/18`);
   const leadWords=words(lead);if(leadWords<leadMinWords)out.push(`lead ${leadWords}/${leadMinWords}`);if(leadWords>220)out.push(`lead ${leadWords}>220`);
   if(placeholder.test(`${title}\n${dek}\n${lead}`))out.push('instruction-placeholder text');
+  const duplicate=duplicateLeadPair(leadParts(lead));if(duplicate)out.push(`near-duplicate lead paragraphs ${duplicate[0]+1}/${duplicate[1]+1}`);
   const latin=lowerLatin(`${dek} ${lead}`);if(latin.length)out.push(`latin ${[...new Set(latin)].join(',')}`);
   return out;
 }
-function partErrors(text){const out=[],wc=words(text);if(wc<45)out.push(`part ${wc}/45`);if(wc>105)out.push(`part ${wc}>105`);if(placeholder.test(text))out.push('instruction-placeholder text');const latin=lowerLatin(text);if(latin.length)out.push(`latin ${[...new Set(latin)].join(',')}`);return out}
+function partErrors(text,existing=''){const out=[],wc=words(text);if(wc<45)out.push(`part ${wc}/45`);if(wc>105)out.push(`part ${wc}>105`);if(placeholder.test(text))out.push('instruction-placeholder text');if(leadParts(existing).some(part=>nearDuplicate(text,part)))out.push('near-duplicate lead continuation');const latin=lowerLatin(text);if(latin.length)out.push(`latin ${[...new Set(latin)].join(',')}`);return out}
 function dekErrors(dek){const out=[];if(words(dek)<18||String(dek||'').length<100)out.push(`dek ${words(dek)}/18`);if(words(dek)>55)out.push(`dek ${words(dek)}>55`);if(placeholder.test(dek))out.push('instruction-placeholder text');const latin=lowerLatin(dek);if(latin.length)out.push(`latin ${[...new Set(latin)].join(',')}`);return out}
 function joinedLead(){return state.meta_parts.lead.map(x=>String(x||'').trim()).filter(Boolean).join('\n\n').trim()}
 
@@ -59,21 +64,21 @@ function deterministicDek(lead){const sentences=String(lead||'').split(/(?<=[.!?
 state.meta={...(state.meta||{}),title:identity.title};
 const oldLead=String(state.meta.lead||'').trim();
 if(!state.meta_parts.lead.length&&!partErrors(oldLead).length&&words(oldLead)<leadMinWords)state.meta_parts.lead=[oldLead];
-state.meta_parts.lead=state.meta_parts.lead.filter(part=>!partErrors(part).length).slice(0,MAX_LEAD_PARTS);
+const retained=[];for(const part of state.meta_parts.lead){if(partErrors(part).length)continue;if(retained.some(existing=>nearDuplicate(part,existing)))continue;retained.push(part);if(retained.length>=MAX_LEAD_PARTS)break}state.meta_parts.lead=retained;
 let currentLead=joinedLead();
 for(let partIndex=state.meta_parts.lead.length;words(currentLead)<leadMinWords&&partIndex<MAX_LEAD_PARTS;partIndex++){
   const evidence=compactEvidence.slice(partIndex*2,partIndex*2+2).length?compactEvidence.slice(partIndex*2,partIndex*2+2):compactEvidence.slice(0,2);
   let part='',lastError='';
   for(const timeoutMs of [LEAD_PART_TIMEOUT_MS,LEAD_PART_RETRY_TIMEOUT_MS]){
-    try{const result=await generateLeadPart({partIndex,evidence,existing:currentLead,timeoutMs});part=String(result?.paragraph||'').trim();const gate=partErrors(part);if(!gate.length)break;lastError=gate.join('; ');part=''}catch(error){lastError=error.message;part=''}
+    try{const result=await generateLeadPart({partIndex,evidence,existing:currentLead,timeoutMs});part=String(result?.paragraph||'').trim();const gate=partErrors(part,currentLead);if(!gate.length)break;lastError=gate.join('; ');part=''}catch(error){lastError=error.message;part=''}
   }
   if(!part){persist();throw new Error(`${slug}: lead paragraph ${partIndex+1} failed: ${lastError||'no valid paragraph'}`)}
   state.meta_parts.lead.push(part);currentLead=joinedLead();state.meta.lead=currentLead;persist();
 }
 currentLead=joinedLead()||oldLead;state.meta.lead=currentLead;persist();
-const leadWords=words(currentLead);if(leadWords<leadMinWords||leadWords>220||placeholder.test(currentLead)||lowerLatin(currentLead).length){throw new Error(`${slug}: persistent multi-paragraph lead failed: ${leadWords}/${leadMinWords}`)}
+const leadGate=errors({...state.meta,dek:String(state.meta.dek||'').trim()||'Временный редакционный dek достаточной длины для проверки вступления без изменения фактов и содержания обзора.'}).filter(x=>!x.startsWith('dek '));if(leadGate.length){throw new Error(`${slug}: persistent multi-paragraph lead failed: ${leadGate.join('; ')}`)}
 
 let currentDek=String(state.meta.dek||'').trim();if(dekErrors(currentDek).length){try{const result=await generateDek(currentLead);currentDek=String(result?.dek||'').trim()}catch{currentDek=deterministicDek(currentLead)}if(dekErrors(currentDek).length)currentDek=deterministicDek(currentLead);state.meta.dek=currentDek;persist()}
 const finalErrors=errors(state.meta);if(finalErrors.length){persist();throw new Error(`${slug}: meta preflight failed: ${finalErrors.join('; ')}`)}
 persist();
-console.log(JSON.stringify({slug,status:'green',provider:'local-ollama',architecture:'persistent-multi-paragraph-meta-v3',model:LOCAL_EDITORIAL_MODEL,title:state.meta.title,dek_words:words(state.meta.dek),lead_words:words(state.meta.lead),lead_parts:state.meta_parts.lead.length,evidence_sources:compactEvidence.length,placeholder:false,bounded_component_timeouts:true},null,2));
+console.log(JSON.stringify({slug,status:'green',provider:'local-ollama',architecture:'persistent-multi-paragraph-meta-v4-deduped',model:LOCAL_EDITORIAL_MODEL,title:state.meta.title,dek_words:words(state.meta.dek),lead_words:words(state.meta.lead),lead_parts:state.meta_parts.lead.length,evidence_sources:compactEvidence.length,placeholder:false,near_duplicate_lead:false,bounded_component_timeouts:true},null,2));
