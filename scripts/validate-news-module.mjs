@@ -129,14 +129,16 @@ if (!errors.length) {
   if (Number(storage.maximum_snapshot_bytes || 0) <= 0) fail('News storage has no snapshot size guard.');
   if (Number(storage.live_window_days || 0) < 7 || Number(storage.live_window_days || 0) > 60) fail('News live window must stay bounded between 7 and 60 days.');
   const publicFiles = new Set(storage.public_files || []);
-  ['data/news-events.json', 'data/news.json', 'data/publisher-news.json', 'data/news-home-ru.json'].forEach(file => {
+  ['data/news-events.json', 'data/news.json', 'data/publisher-news.json', 'data/news-home-ru.json', 'data/news-pipeline-health.json'].forEach(file => {
     if (!publicFiles.has(file)) fail(`News storage public_files is missing browser data: ${file}`);
   });
-  ['data/youtube-signals.json', 'data/news-game-review.json', 'data/news-game-aliases.json', 'data/news-game-overrides.json', 'data/news-pipeline-health.json'].forEach(file => {
+  ['data/youtube-signals.json', 'data/news-game-review.json', 'data/news-game-aliases.json', 'data/news-game-overrides.json'].forEach(file => {
     if (publicFiles.has(file)) fail(`Internal pipeline file must not be copied into every public snapshot: ${file}`);
   });
   if (Number(storage.retention?.keep_recent_snapshots) !== 3) fail('News storage must retain exactly 3 rollback snapshots.');
   if (Number(storage.retention?.keep_daily_snapshots) !== 0) fail('News storage must not retain redundant daily snapshot copies.');
+  if (storage.retention?.delete_unreferenced_media !== true) fail('News storage must reclaim media that is unreferenced by both current live data and the complete next archive.');
+  if (storage.retention?.preserve_historical_news !== true) fail('News storage must explicitly preserve historical news.');
 
   const workflow = read('.github/workflows/news-pipeline.yml');
   if (!workflow.includes("cron: '23 * * * *'")) fail('Canonical news schedule is missing.');
