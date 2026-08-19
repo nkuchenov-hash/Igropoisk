@@ -57,7 +57,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: game-post-create-enrichment-v5-staging
+  group: game-post-create-enrichment-v5-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'staging' }}
   cancel-in-progress: false
 
 jobs:
