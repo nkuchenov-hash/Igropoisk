@@ -4,12 +4,14 @@ on:
   push:
     branches:
       - staging
+      - main
       - feat/editorial-release-calendar
     paths:
       - "scripts/lib/release-calendar-policy.mjs"
       - "scripts/lib/release-game-registry-adapter.mjs"
       - "scripts/lib/release-audience-relevance.mjs"
       - "scripts/lib/release-notability.mjs"
+      - "scripts/lib/release-cover-resolver.mjs"
       - "scripts/enrich-release-anticipation.mjs"
       - "scripts/repair-release-slugs.mjs"
       - "scripts/materialize-release-calendar.mjs"
@@ -22,13 +24,14 @@ on:
       - "data/release-candidates/editorial.json"
       - ".github/workflows/release-calendar-pipeline.yml"
   pull_request:
-    branches: [staging]
+    branches: [staging, main]
     paths:
       - "scripts/**release-calendar**"
       - "scripts/lib/release-calendar-policy.mjs"
       - "scripts/lib/release-game-registry-adapter.mjs"
       - "scripts/lib/release-audience-relevance.mjs"
       - "scripts/lib/release-notability.mjs"
+      - "scripts/lib/release-cover-resolver.mjs"
       - "scripts/enrich-release-anticipation.mjs"
       - "scripts/repair-release-slugs.mjs"
       - "config/release-calendar.json"
@@ -39,6 +42,7 @@ on:
       - "assets/release-admin.js"
       - "calendar/**"
       - "admin/parsers/releases/**"
+      - ".github/workflows/release-calendar-pipeline.yml"
   workflow_dispatch:
     inputs:
       refresh_discovery:
@@ -68,6 +72,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Install cover validation dependency
+        run: npm install --no-save --ignore-scripts image-size@2
       - name: Policy regression tests
         run: node scripts/test-release-calendar-policy.mjs
       - name: Refresh raw discovery for scheduled/manual validation

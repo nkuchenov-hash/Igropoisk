@@ -58,7 +58,8 @@ const visibleIds=new Set([
   ...candidates.filter(candidate=>candidate.moderation?.status==='published'&&!candidate.moderation?.publication_forbidden).map(candidate=>candidate.id),
   ...personalizedPreview.map(release=>release.id),
 ]);
-const coverResolution=await ensureVisibleReleaseCovers(candidates,{root:ROOT,visibleIds,minimumBytes:4_000,concurrency:6});
+const coverQuality={minimumBytes:40_000,minimumWidth:600,minimumHeight:900,minimumRatio:0.62,maximumRatio:0.72};
+const coverResolution=await ensureVisibleReleaseCovers(candidates,{root:ROOT,visibleIds,...coverQuality,concurrency:6});
 candidates=coverResolution.candidates;
 
 let publicCalendar=buildPublicCalendar(candidates,generatedAt);
@@ -77,7 +78,7 @@ const errors=[
   ...validateCalendar({candidates,publicCalendar,policy}),
   ...validateGlobalNotability({candidates,publicCalendar}),
   ...validatePersonalizedReleases({candidates,publicCalendar,policy}),
-  ...validateVisibleReleaseCovers(publicCalendar),
+  ...validateVisibleReleaseCovers(publicCalendar,coverQuality),
 ];
 
 const validatedCoverById=new Map(
@@ -108,7 +109,7 @@ const report={
     active_discovery:['Steam coming-soon/appdetails (PC only)','Steam Popular Upcoming discovery signal','Steam Popular New discovery signal'],
     release_notability:{model:'broad global OR established niche/franchise global OR strong personalized regional attention',global_requirements:policy.global_notability||{},regional_requirements:policy.regional_notability||{},rule:'Steam/store rank is never sufficient by itself. Regional qualification is based on measured audience attention, never developer/game origin.'},
     steam_editorial_discovery:{discovered_candidates:steamEditorial.discovered,sources:steamEditorial.sources},
-    release_cover_resolution:{strategy:'verified local asset required for every globally or personally visible release',preferred:'Steam library 600x900 cover',fallbacks:['existing official image','Steam capsule','Steam header','Steam background','Steam screenshot'],...coverResolution.statistics,unresolved:coverResolution.unresolved},
+    release_cover_resolution:{strategy:'every globally or personally visible release must keep its place and receive a verified portrait cover before publication',preferred:'Steam library 600x900 cover',fallbacks:['verified existing portrait cover','trusted official store/publisher/developer portrait artwork','identity-verified reference cover'],...coverResolution.statistics,unresolved:coverResolution.unresolved},
     home_release_cover_sync:{strategy:'copy every validated downloaded visible-release cover back into data/releases/current.json before the full home-feed snapshot is published',synchronized:synchronizedHomeFeedCovers},
     audience_relevance:['Canonical game_id first','Audience regions from explicit audience metadata or configured source audience','Topic/location words are not accepted as audience geography','Repeated high-score regional coverage can qualify only the matching user region'],
     optional_auxiliary:['RAWG enrichment when RAWG_API_KEY is configured'],

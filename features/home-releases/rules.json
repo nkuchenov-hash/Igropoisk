@@ -1,5 +1,5 @@
 {
-  "schema_version": 7,
+  "schema_version": 8,
   "id": "home-releases",
   "title": "Новые и ожидаемые релизы на главной",
   "status": "active",
@@ -22,7 +22,8 @@
     "require_event": true,
     "require_public_calendar_entry": true,
     "do_not_apply_second_homepage_gate": true,
-    "require_homepage_quality_cover": true
+    "require_homepage_quality_cover": true,
+    "never_drop_selected_card_due_to_cover": true
   },
   "cover_quality": {
     "required": true,
@@ -34,8 +35,10 @@
     "maximum_aspect_ratio": 0.72,
     "require_verified_primary": true,
     "reject_image_too_small_error": true,
-    "allow_official_steam_library_600x900_fallback": true,
-    "remove_card_if_all_candidates_fail": true
+    "resolve_before_homepage_publication": true,
+    "fail_publication_if_unresolved": true,
+    "never_render_without_cover": true,
+    "search_until_quality_cover_found": true
   },
   "interaction": {
     "horizontal_scroll": true,
@@ -45,8 +48,10 @@
     "calendar_link": "calendar/"
   },
   "image_priority": [
-    "verified_primary_cover_passing_homepage_quality_gate",
-    "steam_library_600x900"
+    "verified_existing_portrait_cover",
+    "official_steam_library_600x900",
+    "trusted_official_store_or_publisher_portrait_artwork",
+    "identity_verified_reference_cover"
   ],
   "editorial_rules": [
     "Главная использует тот же публичный набор релизов, что и календарь, без повторного homepage-only фильтра.",
@@ -55,10 +60,11 @@
     "Лента ограничивается двенадцатью карточками и прокручивается только внутри своего блока.",
     "На десктопе управление прокруткой находится в заголовке блока и не занимает боковые колонки рядом с карточками.",
     "Колесо мыши и тачпад прокручивают релизы по горизонтали, на сенсорных экранах работает нативный swipe.",
-    "Обложка на главной обязательна: запрещены миниатюры, store capsules, header-изображения, растянутые низкокачественные файлы и любые изображения, не прошедшие homepage cover quality gate.",
-    "Основная обложка должна быть проверенной, не меньше 600×900, весить не меньше 40 КБ и иметь портретное соотношение сторон, близкое к 2:3; запись с ошибкой Image too small не считается допустимой.",
-    "Если основная обложка не проходит gate, разрешён только официальный Steam library_600x900 fallback; фактические размеры и пропорции изображения повторно проверяются браузером до показа.",
-    "Если ни одна обложка не проходит проверку, карточка удаляется с главной, а не публикуется с плохой картинкой или пустой заглушкой.",
+    "Каждая выбранная для главной игра обязана остаться в ленте и обязана иметь настоящую качественную обложку; скрывать игру из-за отсутствующей или плохой обложки запрещено.",
+    "Обложка на главной обязательна: запрещены миниатюры, store capsules, header-изображения, screenshots, растянутые низкокачественные файлы и любые изображения, не прошедшие homepage cover quality gate.",
+    "Основная обложка должна быть проверенной по фактическому файлу, не меньше 600×900, весить не меньше 40 КБ и иметь портретное соотношение сторон, близкое к 2:3; записанные в JSON размеры без проверки файла доказательством не являются.",
+    "Если текущая картинка не проходит gate, cover-enrichment обязан продолжать поиск: официальный Steam library poster, затем проверенное портретное изображение официального магазина, издателя или разработчика, затем identity-verified reference cover.",
+    "Публичный homepage snapshot запрещено завершать, пока хотя бы у одной выбранной карточки нет качественной обложки; решение проблемы — найти обложку, а не удалить карточку и не показать заглушку.",
     "Карточка сохраняет нормальную портретную геометрию 2:3; обложку запрещено обрезать ради слишком узкой или неподходящей по формату карточки.",
     "Клик по карточке открывает соответствующий релиз в календаре."
   ]
