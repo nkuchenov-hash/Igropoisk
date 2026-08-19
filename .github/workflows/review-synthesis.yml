@@ -14,7 +14,6 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  models: read
 
 concurrency:
   group: review-staging-${{ github.event_name }}
@@ -23,12 +22,20 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 180
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
+      OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
+      OPENAI_REVIEW_MODEL: ${{ vars.OPENAI_REVIEW_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
+      OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
+      OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: staging
-          fetch-depth: 0
+          fetch-depth: 20
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -43,86 +50,51 @@ jobs:
             BEFORE="${{ github.event.before }}"
             AFTER="${{ github.sha }}"
             REQUEST_FILE="$(git diff --name-only "$BEFORE" "$AFTER" -- 'data/review-build-requests/*.json' | tail -n 1)"
-            if [ -z "$REQUEST_FILE" ]; then
-              REQUEST_FILE="$(git log -1 --format= --name-only "$AFTER" -- 'data/review-build-requests/*.json' | sed '/^$/d' | tail -n 1)"
-            fi
-            if [ -z "$REQUEST_FILE" ] || [ ! -f "$REQUEST_FILE" ]; then
-              echo "Could not resolve review request from triggering commit $AFTER" >&2
-              exit 2
-            fi
+            if [ -z "$REQUEST_FILE" ]; then REQUEST_FILE="$(git log -1 --format= --name-only "$AFTER" -- 'data/review-build-requests/*.json' | sed '/^$/d' | tail -n 1)"; fi
+            if [ -z "$REQUEST_FILE" ] || [ ! -f "$REQUEST_FILE" ]; then echo "Could not resolve review request from triggering commit $AFTER" >&2; exit 2; fi
             SLUG=$(node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));if(!d.slug)process.exit(2);process.stdout.write(d.slug)" "$REQUEST_FILE")
-            echo "Resolved request file: $REQUEST_FILE"
           fi
           echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
-          echo "Building review for $SLUG"
-      - name: Validate JavaScript
+          echo "Building unified commercial review for $SLUG"
+      - name: Validate unified commercial review tooling
         run: |
           node --check scripts/sync-review-policy.mjs
-          node --check scripts/apply-review-supplemental-sources.mjs
-          node --check scripts/prepare-review-research.mjs
-          node --check scripts/discover-review-media.mjs
-          node --check scripts/synthesize-review-github-models.mjs
-          node --check scripts/enrich-review-media-github-models.mjs
-          node --check scripts/validate-review-output.mjs
+          node --check scripts/enforce-commercial-game-media.mjs
+          node --check scripts/build-review-article-corpus.mjs
+          node --check scripts/run-commercial-review-contract.mjs
+          node --check scripts/synthesize-commercial-review-openai.mjs
+          node --check scripts/enrich-commercial-review-media-openai.mjs
+          node --check scripts/validate-commercial-review-v2.mjs
           node --check scripts/render-review-pages.mjs
           node --check scripts/canonicalize-editorial-game-id.mjs
-          node --check scripts/lib/editorial-game-registry-adapter.mjs
-          node --check article/_shared/review-carousel.js
-      - name: Synchronize text, media and layout gates
+          node --check scripts/publish-game-post-create-overlay.mjs
+          node scripts/test-commercial-review-contract-v2.mjs
+      - name: Synchronize legacy policy mirrors from commercial contract
         run: node scripts/sync-review-policy.mjs
-      - name: Apply verified supplemental review sources
-        run: node scripts/apply-review-supplemental-sources.mjs "${{ steps.target.outputs.slug }}"
-      - name: Discover or revalidate professional sources
-        run: node scripts/prepare-review-research.mjs "${{ steps.target.outputs.slug }}"
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
-          OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
-      - name: Bind research to canonical Game Registry identity
-        run: node scripts/canonicalize-editorial-game-id.mjs "${{ steps.target.outputs.slug }}"
-      - name: Verify official game-specific screenshot corpus
-        run: node scripts/discover-review-media.mjs "${{ steps.target.outputs.slug }}"
-      - name: Write game-specific article through GitHub Models
-        run: node scripts/synthesize-review-github-models.mjs "${{ steps.target.outputs.slug }}"
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          GITHUB_REVIEW_MODEL: openai/gpt-4.1
-      - name: Bind synthesized artifacts to canonical Game Registry identity
-        run: node scripts/canonicalize-editorial-game-id.mjs "${{ steps.target.outputs.slug }}"
-      - name: Match unique verified screenshots to article sections
-        run: node scripts/enrich-review-media-github-models.mjs "${{ steps.target.outputs.slug }}"
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          GITHUB_REVIEW_MODEL: openai/gpt-4.1
-          GITHUB_VISION_MODEL: openai/gpt-4.1
-      - name: Enforce article depth, dimensions and zero duplicates
-        run: node scripts/validate-review-output.mjs "${{ steps.target.outputs.slug }}"
-      - name: Re-bind generated media/report artifacts to canonical identity
-        run: node scripts/canonicalize-editorial-game-id.mjs "${{ steps.target.outputs.slug }}"
-      - name: Render static pages for every published review
-        run: node scripts/render-review-pages.mjs
-      - name: Publish audited review through isolated PR
+      - name: Run the one commercial review contract
+        id: commercial
+        continue-on-error: true
+        run: node scripts/run-commercial-review-contract.mjs "${{ steps.target.outputs.slug }}"
+      - name: Persist retryable review research
+        if: steps.commercial.outcome == 'failure'
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: bash
+          POST_CREATE_PUBLISH_PHASE: commercial-retry
+        run: node scripts/publish-game-post-create-overlay.mjs
+      - name: Fail after retry state is safely persisted
+        if: steps.commercial.outcome == 'failure'
         run: |
-          set -euo pipefail
-          slug="${{ steps.target.outputs.slug }}"
-          git add config/parsers/review-synthesis.json data/research data/reviews data/media-candidates data/articles data/article-drafts data/article-media data/parser-runs data/drafts article
-          if git diff --cached --quiet; then
-            echo "No audited review changes to publish."
-            exit 0
-          fi
-          git diff --cached --check
-          branch="automation/review-${slug}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          git config user.name "igropoisk-editor[bot]"
-          git config user.email "igropoisk-editor[bot]@users.noreply.github.com"
-          git checkout -b "$branch"
-          git commit -m "Build audited review for ${slug}"
-          git push origin "$branch"
-          pr_url="$(gh pr create \
-            --base staging \
-            --head "$branch" \
-            --title "Audited review: ${slug}" \
-            --body "Generated only after the configured Review Synthesizer passed source, identity, article-depth, media-deduplication and visual-quality gates for ${slug}. Existing complete professional source packs are revalidated without paid discovery; article text and visual matching use GitHub Models with repository-scoped Actions permissions. The workflow never writes review content directly to staging.")"
-          gh pr merge "$pr_url" --merge --delete-branch
+          echo 'Commercial review is incomplete; persistent needs_search/needs_revision state was written to staging for scheduled retry.' >&2
+          exit 75
+      - name: Publish full commercial review through the shared production path
+        if: steps.commercial.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          POST_CREATE_PUBLISH_PHASE: commercial-review
+        run: node scripts/publish-game-post-create-overlay.mjs
+      - name: Verify commercial review on production Pages
+        if: steps.commercial.outcome == 'success'
+        env:
+          REVIEW_SMOKE_ATTEMPTS: '48'
+          REVIEW_SMOKE_DELAY_MS: '5000'
+        run: node scripts/smoke-published-review-pages.mjs "${{ steps.target.outputs.slug }}"
