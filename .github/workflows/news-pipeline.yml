@@ -106,11 +106,13 @@ jobs:
           node --check scripts/lib/news-publication-gate.mjs
           node --check scripts/lib/news-game-hashtag.mjs
           node --check scripts/lib/yandex-object-storage.mjs
+          node --check scripts/prune-news-storage.mjs
           node --check scripts/publish-news-storage.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
           node scripts/test-news-storage-content-api.mjs
+          node scripts/test-news-storage-retention.mjs
           node scripts/test-news-game-linker.mjs
           node scripts/test-news-game-context-resolver.mjs
           node scripts/test-news-primary-game-refiner.mjs
@@ -169,6 +171,16 @@ jobs:
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
         run: node scripts/audit-news-game-hashtags.mjs --strict --production-ref origin/main
 
+      - name: Reclaim redundant Object Storage snapshots without touching news history
+        if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/prune-news-storage.mjs
+
       - name: Publish immutable news snapshot and switch manifest
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
         env:
@@ -196,6 +208,7 @@ jobs:
             tmp/news-game-hashtag-normalization.json
             tmp/news-game-hashtag-audit.json
             tmp/news-game-page-requests.json
+            tmp/news-storage-prune.json
             data/news-pipeline-health.json
           if-no-files-found: warn
           retention-days: 14
