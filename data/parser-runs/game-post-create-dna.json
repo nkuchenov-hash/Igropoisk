@@ -1,17 +1,24 @@
 {
   "parser": "post-create-game-dna-v5-commercial-quality",
-  "status": "green",
-  "checked_at": "2026-08-19T11:00:54.932Z",
+  "status": "needs_revision",
+  "checked_at": "2026-08-19T14:31:01.157Z",
   "targets": 1,
-  "from_pending_requests": 45,
-  "from_missing_dna_backfill": 15,
-  "dna_ready": 1,
+  "from_pending_requests": 48,
+  "from_missing_dna_backfill": 18,
+  "dna_ready": 0,
   "validation_scope": "per_game_targeted_commercial_quality",
   "publication_policy": "only_valid_commercial_quality_dna_changes_survive_to_checkpoint",
-  "ready_slugs": [
-    "fallout-2"
+  "ready_slugs": [],
+  "invalid_or_missing": [
+    "fallout-brotherhood-of-steel"
   ],
-  "invalid_or_missing": [],
   "similarity_needs_revision": [],
-  "failed": []
+  "failed": [
+    {
+      "slug": "fallout-brotherhood-of-steel",
+      "step": "validate",
+      "exit_code": 2,
+      "stderr": "data/game-dna/fallout-brotherhood-of-steel.json: targeted post-create DNA is not similarity-ready (5/16 axes, 3/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/fallout-brotherhood-of-steel.json: targeted post-create DNA is below the commercial enrichment gate (5/16 axes, 3/7 core axes); requires >=9 populated axes and >=4 core axes\n"
+    }
+  ]
 }
