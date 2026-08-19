@@ -60,9 +60,12 @@ function restartTimer(){
 
 const railButtons=[...document.querySelectorAll('[data-review-rail]')];
 const scrollRail=direction=>{
+  const cards=[...rail.querySelectorAll('[data-review-index]')];
+  if(cards.length<2)return;
   const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
   if(max<=2)return;
-  const step=Math.max(260,rail.clientWidth*.75);
+  const gap=parseFloat(getComputedStyle(rail).columnGap||getComputedStyle(rail).gap||'0')||0;
+  const step=cards[0].getBoundingClientRect().width+gap;
   const atStart=rail.scrollLeft<=2;
   const atEnd=rail.scrollLeft>=max-2;
   const next=direction>0&&atEnd
@@ -75,7 +78,11 @@ const scrollRail=direction=>{
 railButtons.forEach(button=>{
   button.classList.add('ig-icon-button');
   button.disabled=false;
-  button.addEventListener('click',()=>scrollRail(Number(button.dataset.reviewRail)||1));
+  button.addEventListener('click',event=>{
+    event.preventDefault();
+    event.stopPropagation();
+    scrollRail(Number(button.dataset.reviewRail)||1);
+  });
 });
 
 fetch('data/home-widgets/reviews-of-day.json',{cache:'no-store'})
