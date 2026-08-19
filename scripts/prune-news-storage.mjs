@@ -44,22 +44,26 @@ export function buildSnapshotRetentionPlan(objects, {
   const ordered = [...groups.values()].sort((a, b) => b.timestamp - a.timestamp || b.version.localeCompare(a.version));
   const complete = ordered.filter(group => group.complete);
   const keep = new Set(currentVersion ? [currentVersion] : []);
+  const recentLimit = Math.max(1, Number(keepRecentSnapshots) || 12);
 
-  for (const group of complete.slice(0, Math.max(1, Number(keepRecentSnapshots) || 12))) keep.add(group.version);
+  for (const group of complete.slice(0, recentLimit)) keep.add(group.version);
 
-  const representedDays = new Set([...keep].map(version => {
-    const group = groups.get(version);
-    return group ? utcDay(group.timestamp) : '';
-  }).filter(Boolean));
-  let dailyKept = 0;
-  for (const group of complete) {
-    if (keep.has(group.version)) continue;
-    const day = utcDay(group.timestamp);
-    if (!day || representedDays.has(day)) continue;
-    keep.add(group.version);
-    representedDays.add(day);
-    dailyKept += 1;
-    if (dailyKept >= Math.max(0, Number(keepDailySnapshots) || 0)) break;
+  const dailyLimit = Math.max(0, Number(keepDailySnapshots) || 0);
+  if (dailyLimit > 0) {
+    const representedDays = new Set([...keep].map(version => {
+      const group = groups.get(version);
+      return group ? utcDay(group.timestamp) : '';
+    }).filter(Boolean));
+    let dailyKept = 0;
+    for (const group of complete) {
+      if (keep.has(group.version)) continue;
+      const day = utcDay(group.timestamp);
+      if (!day || representedDays.has(day)) continue;
+      keep.add(group.version);
+      representedDays.add(day);
+      dailyKept += 1;
+      if (dailyKept >= dailyLimit) break;
+    }
   }
 
   const remove = ordered.filter(group => {
@@ -115,7 +119,7 @@ export async function pruneNewsStorage({
 
   const currentResponse = await storage.getObject(currentManifestKey);
   const currentManifest = await currentResponse.json();
-  if (currentManifest?.schemaVersion !== 1 || currentManifest?.channel !== 'news' || !currentManifest?.version) {
+  if (![1, 2].includes(Number(currentManifest?.schemaVersion)) || currentManifest?.channel !== 'news' || !currentManifest?.version) {
     throw new Error('Current news manifest is invalid; refusing storage cleanup.');
   }
 
@@ -142,8 +146,9 @@ export async function pruneNewsStorage({
   }
 
   const report = Object.freeze({
-    schema_version: 1,
+    schema_version: 2,
     dry_run: dryRun,
+    current_manifest_schema_version: currentManifest.schemaVersion,
     current_version: currentManifest.version,
     snapshot_versions_before: plan.versions,
     snapshot_versions_retained: plan.retainedVersions.length,
@@ -155,7 +160,7 @@ export async function pruneNewsStorage({
     planned_reclaim_bytes: plan.removedBytes,
     media_objects_preserved: mediaObjects.length,
     media_bytes_preserved: sumBytes(mediaObjects),
-    history_policy: 'Historical news records and news/media are preserved; only redundant immutable snapshot versions are pruned.',
+    history_policy: 'Monthly archive and news/media are preserved; only redundant immutable snapshot versions are pruned.',
     retained_versions: plan.retainedVersions,
     removed_versions: plan.removedVersions
   });
