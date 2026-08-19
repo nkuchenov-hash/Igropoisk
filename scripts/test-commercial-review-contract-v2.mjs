@@ -16,6 +16,8 @@ const post=read('.github/workflows/game-post-create-enrichment.yml'),manual=read
 assert.ok(post.includes('run-commercial-review-contract.mjs'),'post-create workflow must use unified commercial orchestrator');
 assert.ok(manual.includes('run-commercial-review-contract.mjs'),'manual review workflow must use the same commercial orchestrator');
 for(const workflow of [post,manual])for(const marker of ['LOCAL_TEXT_MODEL: qwen3:4b','Start local commercial fallback model service','Ensure qwen3 4b local commercial fallback'])assert.ok(workflow.includes(marker),`commercial workflow lacks provider-independent fallback: ${marker}`);
+assert.ok(post.includes("github.event_name == 'pull_request' && github.event.pull_request.number || 'staging'"),'explicit merged game requests must not share the serialized backlog concurrency lock');
+assert.ok(!post.includes('group: game-post-create-enrichment-v5-staging\n'),'post-create workflow still globally serializes explicit game requests behind backlog work');
 for(const marker of ['build-review-article-corpus-resilient.mjs','synthesize-commercial-review-resilient.mjs','enrich-commercial-review-media-resilient.mjs'])assert.ok(orchestrator.includes(marker),`orchestrator does not use resilient stage: ${marker}`);
 for(const marker of ['provider-free-html-search','wayback','registered_sources_checked','provider_independent:true'])assert.ok(corpus.includes(marker),`provider-independent corpus contract missing: ${marker}`);
 assert.ok(!corpus.includes("OPENAI_API_KEY is required"),'provider-independent corpus must not require OpenAI');
@@ -26,4 +28,4 @@ const legacy=read('scripts/run-game-post-create-enrichment.mjs');for(const forbi
 const validator=read('scripts/validate-commercial-review-v2.mjs');assert.ok(validator.includes('exhaustive_discovery'),'validator must understand exhaustive below-preferred fallback');assert.ok(!validator.includes("status:'blocked'"),'validator must not emit terminal blocked state');
 const media=read('scripts/enforce-commercial-game-media.mjs');assert.ok(!media.includes("status:'blocked'"),'media enrichment must not emit terminal blocked state');
 const overlay=read('scripts/publish-game-post-create-overlay.mjs');assert.ok(overlay.includes("'data/review-article-corpus'"),'overlay must persist article corpus between retry passes');assert.ok(overlay.includes("'data/review-discovery-audits'"),'overlay must persist discovery audit between retry passes');
-console.log('Commercial review contract v2 static boundary passed, including provider-independent fallback.');
+console.log('Commercial review contract v2 static boundary passed, including provider-independent fallback and per-request concurrency.');
