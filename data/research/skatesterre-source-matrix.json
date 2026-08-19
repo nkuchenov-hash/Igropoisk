@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "skatesterre",
-  "generated_at": "2026-08-18T18:33:33.656Z",
+  "generated_at": "2026-08-19T09:57:34.510Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -49,7 +49,7 @@
       "domain": "gamespew.com",
       "validation": {
         "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-18T18:32:09.588Z",
+        "checked_at": "2026-08-19T09:56:10.985Z",
         "method": "registered-direct-publisher-preserved-v8",
         "reason": "HTTP 403"
       },
@@ -60,7 +60,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-18T18:33:36.839Z",
+        "checked_at": "2026-08-19T09:57:37.980Z",
         "url": "https://www.gamespew.com/2026/08/skatesterre-review/",
         "configured_source_id": "game-spew",
         "direct_publisher": true
@@ -68,6 +68,21 @@
     }
   ],
   "rejected": [
+    {
+      "publication": "IGN",
+      "url": "https://in.ign.com/skatesterre",
+      "title": "Skatesterre",
+      "reasons": [
+        "no_review_signal"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/skatesterre-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/skatesterre",
@@ -80,13 +95,6 @@
       "url": "https://www.rpgfan.com/review/skatesterre-2",
       "reasons": [
         "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/skatesterre-review",
-      "reasons": [
-        "HTTP 503"
       ]
     }
   ],

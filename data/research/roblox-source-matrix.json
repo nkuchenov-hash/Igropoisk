@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "roblox",
-  "generated_at": "2026-08-18T18:29:24.393Z",
+  "generated_at": "2026-08-19T09:53:17.571Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -57,10 +57,13 @@
       "mechanics": [],
       "domain": "playground.ru",
       "validation": {
-        "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-18T18:27:51.829Z",
-        "method": "registered-direct-publisher-preserved-v8",
-        "reason": "HTTP 504"
+        "status": "accepted",
+        "checked_at": "2026-08-19T09:52:15.587Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "publisher_rule"
+        }
       },
       "score": null,
       "scale": null,
@@ -96,7 +99,7 @@
       "domain": "stopgame.ru",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-18T18:27:51.829Z",
+        "checked_at": "2026-08-19T09:52:15.587Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -111,6 +114,13 @@
   ],
   "rejected": [
     {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/roblox-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/roblox",
       "reasons": [
@@ -120,13 +130,6 @@
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/roblox-2",
-      "reasons": [
-        "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/roblox-review",
       "reasons": [
         "HTTP 404"
       ]
@@ -256,8 +259,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "unavailable",
-      "notes": "search transport unavailable"
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     },
     {
       "source_id": "ars-technica",
@@ -516,7 +519,7 @@
     "accepted": 2,
     "scored": 0,
     "context_only_versions": 0,
-    "blocked_verified": 1,
+    "blocked_verified": 0,
     "contemporary": 2,
     "green": false,
     "passed": false,

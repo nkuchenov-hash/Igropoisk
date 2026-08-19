@@ -1,12 +1,21 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "avatar-legends-the-fighting-game",
-  "checked_at": "2026-08-18T18:33:40.987Z",
+  "checked_at": "2026-08-19T09:57:58.895Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 4,
   "scored": 4,
   "context_only_versions": 0,
   "updates": [
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 6,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
     {
       "configured_source_id": "the-sixth-axis",
       "publication": "TheSixthAxis",
@@ -22,10 +31,10 @@
       "configured_source_id": "push-square",
       "publication": "Push Square",
       "url": "https://www.pushsquare.com/reviews/ps5/avatar-legends-the-fighting-game",
-      "final_url": "",
-      "status": "http_403",
-      "blocked": true,
-      "preserved_existing_score": true,
+      "final_url": "https://www.pushsquare.com/reviews/ps5/avatar-legends-the-fighting-game",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
       "trusted_editorial_score": true,
       "canonical_score_eligible": true
     },
