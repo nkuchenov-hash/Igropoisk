@@ -74,14 +74,22 @@ searchPage.innerHTML=markup;
 function asArray(value){return Array.isArray(value)?value.filter(Boolean):[]}
 function finite(value){const number=Number(value);return Number.isFinite(number)?number:0}
 function firstString(value){return asArray(value).find(Boolean)||''}
+function envelopeValue(value){return value&&typeof value==='object'&&Object.prototype.hasOwnProperty.call(value,'value')?value.value:value}
+function registryField(entity,key){return envelopeValue(entity?.fields?.[key])}
+function registryIdentity(entity,key){return envelopeValue(entity?.identity?.[key])}
+function mediaUrl(value){if(typeof value==='string')return value;if(Array.isArray(value)){for(const item of value){const url=mediaUrl(item);if(url)return url}return''}return value&&typeof value==='object'?(value.url||value.cover_url||value.src||''):''}
+function russianText(...values){for(const value of values){for(const item of Array.isArray(value)?value:[value]){const text=String(item??'').trim();if(text&&/[А-Яа-яЁё]/u.test(text))return text}}return''}
 function initials(title){return String(title||'').split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase()||'ИП'}
 function platformCode(platform){return({PC:'PC',PlayStation:'PS',Xbox:'XB','Nintendo Switch':'NS','PC VR':'VR'}[platform]||String(platform).slice(0,2).toUpperCase())}
 function visibleScore(value){return finite(value)>0?finite(value).toFixed(1):'—'}
 function steamCover(appid){const id=finite(appid);return id>0?`https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/library_600x900.jpg`:''}
 function extractYear(value,fallback){const match=String(value||'').match(/\b(19|20)\d{2}\b/);return finite(fallback)||finite(match?.[0])||0}
+function registryYear(entity){for(const release of asArray(entity?.releases)){const year=extractYear(envelopeValue(release?.date),0);if(year)return year}return 0}
+function registryPoster(entity){const media=asArray(entity?.media).filter(item=>mediaUrl(item));const preferred=media.find(item=>/(cover|poster|box|portrait|library[_-]?600x900)/i.test(`${item?.kind||''} ${mediaUrl(item)}`));return preferred?mediaUrl(preferred):''}
+function registryAnyMedia(entity){return mediaUrl(asArray(entity?.media).find(item=>mediaUrl(item)))||''}
 function normalizePlatform(platform){const value=String(platform||'').trim();if(/^PlayStation/i.test(value))return'PlayStation';if(/^Xbox/i.test(value))return'Xbox';if(/^Nintendo Switch/i.test(value))return'Nintendo Switch';if(/^PC(\s|$)/i.test(value))return value.toUpperCase().includes('VR')?'PC VR':'PC';return value}
 function normalizeGenre(genre){const value=String(genre||'').trim();const lower=value.toLowerCase();if(lower==='action rpg')return'RPG';if(lower==='horror')return'Хоррор';if(lower==='action')return'Экшен';if(lower==='adventure')return'Приключения';if(lower==='strategy')return'Стратегия';if(lower==='shooter')return'Шутер';if(lower==='racing')return'Гонки';return value}
-function normalizeGame(item,rich={},draft={}){
+function normalizeGame(item,rich={},draft={},registry={}){
   const identity=rich.identity||draft.identity||{};
   const classification=rich.classification||draft.classification||{};
   const requirements=rich.requirements||draft.requirements||{};
@@ -91,23 +99,28 @@ function normalizeGame(item,rich={},draft={}){
   const media=rich.media||draft.media||{};
   const gameMeta=draft.game?.meta||{};
   const fallback=featuredBySlug.get(item.slug)||{};
-  const appid=finite(item.steam_appid||identity.steam_appid||fallback.appid);
-  const genres=[...new Set(asArray(classification.genres).map(normalizeGenre).filter(Boolean))];
-  const platforms=[...new Set(asArray(classification.platforms).concat(asArray(requirements.platforms)).map(normalizePlatform).filter(Boolean))];
+  const appid=finite(item.steam_appid||identity.steam_appid||registry?.externalIds?.steamAppId||fallback.appid);
+  const registryGenres=asArray(registryField(registry,'genres'));
+  const registryPlatforms=asArray(registryField(registry,'platforms'));
+  const genres=[...new Set(asArray(classification.genres).concat(registryGenres).map(normalizeGenre).filter(Boolean))];
+  const platforms=[...new Set(asArray(classification.platforms).concat(asArray(requirements.platforms),registryPlatforms).map(normalizePlatform).filter(Boolean))];
+  const poster=registryPoster(registry);
+  const cover=mediaUrl(item.cover)||mediaUrl(media.cover)||mediaUrl(gameMeta.cover_url)||mediaUrl(draft.cover)||poster||mediaUrl(fallback.cover)||steamCover(appid)||registryAnyMedia(registry);
   return {
     ...item,
-    title:identity.title||item.title||fallback.title||item.slug,
-    year:extractYear(rich.release?.date_text||draft.release?.date_text,item.year||fallback.year),
+    title:identity.title||registryIdentity(registry,'canonicalTitle')||item.title||fallback.title||item.slug,
+    year:extractYear(rich.release?.date_text||draft.release?.date_text,item.year||registryYear(registry)||fallback.year),
     genres:genres.length?genres:asArray(fallback.genres),
     platforms:platforms.length?platforms:asArray(fallback.platforms),
-    studio:firstString(companies.developers)||fallback.studio||'',
+    studio:firstString(companies.developers)||firstString(registryField(registry,'developers'))||fallback.studio||'',
     rating:finite(ratings.igropoisk)||finite(item.rating)||finite(fallback.rating),
     userRating:finite(ratings.users)||finite(item.userRating),
     votes:finite(ratings.user_votes)||finite(item.votes),
-    pop:finite(item.pop)||finite(fallback.pop)||finite(item.year),
-    desc:editorial.short_description||editorial.integrated_description||fallback.desc||'',
+    pop:finite(item.pop)||finite(fallback.pop)||finite(item.year)||registryYear(registry),
+    desc:russianText(editorial.short_description,editorial.integrated_description,registryField(registry,'shortDescription'),registryField(registry,'description'),fallback.desc),
     appid,
-    cover:item.cover||media.cover||gameMeta.cover_url||draft.cover||fallback.cover||steamCover(appid),
+    cover,
+    published:Boolean(item.published||registry?.workflow?.pageStatus==='published'),
     editorChoice:Boolean(item.editorChoice||fallback.editorChoice)
   };
 }
@@ -129,11 +142,13 @@ function filteredCatalog(){
   const quickPlatform=$('#quickPlatform').value,quickGenre=$('#quickGenre').value,quickYear=finite($('#quickYear').value),quickRating=finite($('#quickRating').value);
   const[yearFrom,yearTo]=getRange('#yearFrom','#yearTo'),[ratingFrom,ratingTo]=getRange('#ratingFrom','#ratingTo'),[userFrom,userTo]=getRange('#userRatingFrom','#userRatingTo');
   const ratingActive=ratingFrom>0||ratingTo<10,userActive=userFrom>0||userTo<10;
+  const yearActive=yearFrom>finite($('#yearFrom').min)||yearTo<finite($('#yearTo').max);
   const filtered=catalog.filter(game=>{
     const gamePlatforms=game.platforms||[],gameGenres=game.genres||[],rating=finite(game.rating),userRating=finite(game.userRating),haystack=[game.title,game.studio||'',...gameGenres].join(' ').toLowerCase();
     const platformMatch=!platforms.length||platforms.some(platform=>gamePlatforms.includes(platform));
     const genreMatch=!genres.length||genres.some(genre=>gameGenres.includes(genre));
-    return (!query||haystack.includes(query))&&platformMatch&&genreMatch&&(!quickPlatform||gamePlatforms.includes(quickPlatform))&&(!quickGenre||gameGenres.includes(quickGenre))&&game.year>=yearFrom&&game.year<=yearTo&&(!quickYear||game.year>=quickYear)&&(!ratingActive||(rating>0&&rating>=ratingFrom&&rating<=ratingTo))&&(!userActive||(userRating>0&&userRating>=userFrom&&userRating<=userTo))&&(!quickRating||(rating>0&&rating>=quickRating));
+    const yearMatch=!yearActive||(game.year>0&&game.year>=yearFrom&&game.year<=yearTo);
+    return (!query||haystack.includes(query))&&platformMatch&&genreMatch&&(!quickPlatform||gamePlatforms.includes(quickPlatform))&&(!quickGenre||gameGenres.includes(quickGenre))&&yearMatch&&(!quickYear||(game.year>0&&game.year>=quickYear))&&(!ratingActive||(rating>0&&rating>=ratingFrom&&rating<=ratingTo))&&(!userActive||(userRating>0&&userRating>=userFrom&&userRating<=userTo))&&(!quickRating||(rating>0&&rating>=quickRating));
   });
   const sort=$('#sort').value;
   filtered.sort((a,b)=>sort==='rating'?finite(b.rating)-finite(a.rating):sort==='users'?finite(b.userRating)-finite(a.userRating):sort==='year'?finite(b.year)-finite(a.year):sort==='title'?a.title.localeCompare(b.title,'ru'):finite(b.pop||b.year)-finite(a.pop||a.year));
@@ -143,7 +158,9 @@ function resultCard(game,index){
   const media=game.cover?`<img src="${escapeHtml(game.cover)}" alt="${escapeHtml(game.title)}" loading="${index<6?'eager':'lazy'}" decoding="async" data-fallback="${escapeHtml(initials(game.title))}">`:`<div class="result-placeholder">${escapeHtml(initials(game.title))}</div>`;
   const pills=[game.year,...(game.genres||[]).slice(0,2)].filter(Boolean).map(value=>`<span class="ig-chip">${escapeHtml(value)}</span>`).join('');
   const platformMarks=(game.platforms||[]).map(platform=>`<b title="${escapeHtml(platform)}">${escapeHtml(platformCode(platform))}</b>`).join('');
-  return `<article class="ig-card ig-card--interactive ig-search-result search-result-card" data-game="${escapeHtml(game.slug)}"><div class="result-accent" aria-hidden="true"></div><div class="result-media">${media}</div><div class="result-copy"><div class="result-title-line"><h3>${escapeHtml(game.title)}</h3>${game.editorChoice?'<span class="ig-chip editor-choice">★ выбор редакции</span>':''}</div><div class="result-meta">${pills}</div>${game.desc?`<p>${escapeHtml(game.desc)}</p>`:''}${game.studio?`<small>${escapeHtml(game.studio)}</small>`:''}${platformMarks?`<div class="result-platforms">${platformMarks}</div>`:''}</div><div class="result-scores"><div><small>Игропоиск</small><strong>${visibleScore(game.rating)}</strong>${game.votes?`<span>${formatNumber(game.votes)} оценок</span>`:''}</div><div><small>Оценка игроков</small><strong class="user-score">${visibleScore(game.userRating)}</strong></div></div></article>`;
+  const route=game.published?` data-game="${escapeHtml(game.slug)}"`:'';
+  const stateClass=game.published?' ig-card--interactive':' search-result-card--static';
+  return `<article class="ig-card${stateClass} ig-search-result search-result-card"${route}><div class="result-accent" aria-hidden="true"></div><div class="result-media">${media}</div><div class="result-copy"><div class="result-title-line"><h3>${escapeHtml(game.title)}</h3>${game.editorChoice?'<span class="ig-chip editor-choice">★ выбор редакции</span>':''}</div><div class="result-meta">${pills}</div>${game.desc?`<p>${escapeHtml(game.desc)}</p>`:''}${game.studio?`<small>${escapeHtml(game.studio)}</small>`:''}${platformMarks?`<div class="result-platforms">${platformMarks}</div>`:''}</div><div class="result-scores"><div><small>Игропоиск</small><strong>${visibleScore(game.rating)}</strong>${game.votes?`<span>${formatNumber(game.votes)} оценок</span>`:''}</div><div><small>Оценка игроков</small><strong class="user-score">${visibleScore(game.userRating)}</strong></div></div></article>`;
 }
 function renderResults(){
   syncRangePair('#yearFrom','#yearTo',null,null,'#yearFromLabel','#yearToLabel');
@@ -163,18 +180,40 @@ function bind(){
   $('#results').addEventListener('error',event=>{const image=event.target;if(!(image instanceof HTMLImageElement)||!image.closest('.result-media'))return;const fallback=document.createElement('div');fallback.className='result-placeholder';fallback.textContent=image.dataset.fallback||'ИП';image.replaceWith(fallback)},true);
   $$('[data-page="search"]').forEach(trigger=>trigger.addEventListener('click',()=>window.setTimeout(()=>$('#query')?.focus({preventScroll:true}),0)));
 }
-async function loadJson(path){const response=await fetch(`${path}?v=20260819-4`,{cache:'no-store'});if(!response.ok)throw new Error(`${path}: ${response.status}`);return response.json()}
+async function loadJson(path){const response=await fetch(`${path}?v=20260819-5`,{cache:'no-store'});if(!response.ok)throw new Error(`${path}: ${response.status}`);return response.json()}
 async function loadRichMap(){const settled=await Promise.allSettled(CONTENT_SHARDS.map(file=>loadJson(`data/game-content/${file}`)));const map=new Map();settled.forEach(result=>{if(result.status!=='fulfilled')return;Object.entries(result.value?.games||{}).forEach(([slug,data])=>map.set(slug,data))});return map}
-async function enrichMissingFromDrafts(items,richMap){
-  const needs=items.filter(item=>{const rich=richMap.get(item.slug);const identity=rich?.identity||{};const classification=rich?.classification||{};return !rich||(!item.cover&&!identity.steam_appid)||!asArray(classification.genres).length});
+function buildRegistryBundle(snapshot){
+  const map=new Map();const seeds=[];
+  Object.values(snapshot?.games||{}).forEach(entity=>{
+    if(entity?.workflow?.status==='merged_into_another_game'||entity?.presentation?.standalonePage===false)return;
+    const slug=String(registryIdentity(entity,'slug')||'').trim();if(!slug)return;
+    map.set(slug,entity);
+    seeds.push({game_id:entity.id,slug,title:registryIdentity(entity,'canonicalTitle')||slug,year:registryYear(entity),steam_appid:finite(entity?.externalIds?.steamAppId),published:entity?.workflow?.pageStatus==='published'});
+  });
+  return {map,seeds};
+}
+async function enrichMissingFromDrafts(items,richMap,registryMap,visibleSlugs){
+  const needs=items.filter(item=>{
+    if(!visibleSlugs.has(item.slug))return false;
+    const rich=richMap.get(item.slug)||{};const registry=registryMap.get(item.slug)||{};const identity=rich.identity||{};
+    const appid=finite(item.steam_appid||identity.steam_appid||registry?.externalIds?.steamAppId);
+    const hasCover=Boolean(mediaUrl(rich.media?.cover)||registryPoster(registry)||steamCover(appid));
+    const hasGenres=asArray(rich.classification?.genres).length||asArray(registryField(registry,'genres')).length;
+    return !hasCover||!hasGenres;
+  });
   const queue=[...needs];const drafts=new Map();const workers=Array.from({length:Math.min(8,queue.length)},async()=>{while(queue.length){const item=queue.shift();try{drafts.set(item.slug,await loadJson(`data/drafts/${encodeURIComponent(item.slug)}.json`))}catch(_){/* Some visible entries intentionally have no draft. */}}});
   await Promise.all(workers);return drafts;
 }
 async function loadCatalog(){
   try{
-    const [visible,richMap]=await Promise.all([loadJson('data/catalog-visible.json'),loadRichMap()]);
-    const drafts=await enrichMissingFromDrafts(visible,richMap);
-    catalog=visible.map(item=>normalizeGame(item,richMap.get(item.slug)||{},drafts.get(item.slug)||{})).filter(game=>Boolean(game.cover));
+    const [visible,richMap,registrySnapshot]=await Promise.all([loadJson('data/catalog-visible.json'),loadRichMap(),loadJson('data/game-registry/registry.transition.json')]);
+    const registryBundle=buildRegistryBundle(registrySnapshot);
+    const visibleBySlug=new Map(asArray(visible).map(item=>[item.slug,item]));
+    const visibleSlugs=new Set(visibleBySlug.keys());
+    const baseItems=registryBundle.seeds.length?registryBundle.seeds:asArray(visible).map(item=>({...item,published:true}));
+    const items=baseItems.map(seed=>({...visibleBySlug.get(seed.slug),...seed,published:Boolean(seed.published||visibleSlugs.has(seed.slug))}));
+    const drafts=await enrichMissingFromDrafts(items,richMap,registryBundle.map,visibleSlugs);
+    catalog=items.map(item=>normalizeGame(item,richMap.get(item.slug)||{},drafts.get(item.slug)||{},registryBundle.map.get(item.slug)||{}));
     const years=catalog.map(game=>finite(game.year)).filter(Boolean);const minYear=Math.min(...years,2000),maxYear=Math.max(...years,2026);$('#yearFrom').min=minYear;$('#yearFrom').max=maxYear;$('#yearFrom').value=minYear;$('#yearTo').min=minYear;$('#yearTo').max=maxYear;$('#yearTo').value=maxYear;
   }catch(error){console.warn('Игропоиск: search catalog unavailable',error);catalog=[...featured];}
   updateCounts();updateLiveSuggestions();renderResults();
