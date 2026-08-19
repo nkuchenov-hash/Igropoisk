@@ -9,6 +9,7 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&
 let items=[];
 let activeIndex=0;
 let timer=null;
+let carouselBusy=false;
 
 const scoreMarkup=item=>{
   const score=Number(item.score);
@@ -28,60 +29,111 @@ const miniCard=(item,index)=>{
   return `<button class="ig-button review-day-mini${index===activeIndex?' is-active':''}" type="button" data-review-index="${index}" aria-label="Показать обзор ${esc(gameTitle)}"${index===activeIndex?' aria-current="true"':''}><img src="${esc(item.hero||'')}" alt="" loading="lazy" decoding="async"><span class="review-day-mini__copy"><span class="review-day-mini__title">${esc(gameTitle)}</span></span>${Number.isFinite(score)?`<span class="review-day-mini__score">${score.toFixed(1)}</span>`:''}</button>`;
 };
 
-function revealActiveMini(){
-  const active=rail.querySelector('.is-active');
-  if(!active)return;
-  const left=active.offsetLeft;
-  const right=left+active.offsetWidth;
-  if(left<rail.scrollLeft)rail.scrollTo({left,behavior:'smooth'});
-  else if(right>rail.scrollLeft+rail.clientWidth)rail.scrollTo({left:right-rail.clientWidth,behavior:'smooth'});
-}
-
-function render(){
+function renderMain(){
   const item=items[activeIndex];
   if(!item)return;
   main.innerHTML=mainCard(item);
-  rail.innerHTML=items.map(miniCard).join('');
   main.querySelector('img')?.addEventListener('error',event=>event.currentTarget.closest('.review-day-card__media')?.classList.add('is-broken'),{once:true});
+}
+
+function syncActiveMinis(){
+  rail.querySelectorAll('[data-review-index]').forEach(button=>{
+    const active=Number(button.dataset.reviewIndex)===activeIndex;
+    button.classList.toggle('is-active',active);
+    if(active)button.setAttribute('aria-current','true');
+    else button.removeAttribute('aria-current');
+  });
+}
+
+function selectReview(index,{restart=true}={}){
+  if(!items.length)return;
+  activeIndex=((Number(index)||0)%items.length+items.length)%items.length;
+  renderMain();
+  syncActiveMinis();
+  if(restart)restartTimer();
+}
+
+function bindMiniCards(){
   rail.querySelectorAll('img').forEach(img=>img.addEventListener('error',()=>img.remove(),{once:true}));
   rail.querySelectorAll('[data-review-index]').forEach(button=>button.addEventListener('click',()=>{
-    activeIndex=Number(button.dataset.reviewIndex)||0;
-    render();
-    restartTimer();
+    selectReview(Number(button.dataset.reviewIndex)||0);
   }));
-  requestAnimationFrame(revealActiveMini);
+}
+
+function renderRail(){
+  rail.innerHTML=items.map(miniCard).join('');
+  rail.scrollTo({left:0,behavior:'auto'});
+  bindMiniCards();
 }
 
 function restartTimer(){
   if(timer)clearInterval(timer);
   if(items.length<2||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
-  timer=setInterval(()=>{activeIndex=(activeIndex+1)%items.length;render()},AUTO_ROTATE_MS);
+  timer=setInterval(()=>selectReview(activeIndex+1,{restart:false}),AUTO_ROTATE_MS);
 }
 
-const railButtons=[...document.querySelectorAll('[data-review-rail]')];
-const scrollRail=direction=>{
+const railStep=()=>{
   const cards=[...rail.querySelectorAll('[data-review-index]')];
-  if(cards.length<2)return;
-  const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
-  if(max<=2)return;
+  if(cards.length<2)return 0;
+  const offsetStep=cards[1].offsetLeft-cards[0].offsetLeft;
+  if(offsetStep>0)return offsetStep;
   const gap=parseFloat(getComputedStyle(rail).columnGap||getComputedStyle(rail).gap||'0')||0;
-  const step=cards[0].getBoundingClientRect().width+gap;
-  const atStart=rail.scrollLeft<=2;
-  const atEnd=rail.scrollLeft>=max-2;
-  const next=direction>0&&atEnd
-    ?0
-    :direction<0&&atStart
-      ?max
-      :Math.max(0,Math.min(max,rail.scrollLeft+direction*step));
-  rail.scrollTo({left:next,behavior:'smooth'});
+  return cards[0].getBoundingClientRect().width+gap;
 };
+
+const waitForRailSettle=callback=>{
+  let done=false;
+  let fallback=null;
+  const finish=()=>{
+    if(done)return;
+    done=true;
+    if(fallback)clearTimeout(fallback);
+    rail.removeEventListener('scrollend',finish);
+    callback();
+  };
+  rail.addEventListener('scrollend',finish,{once:true});
+  fallback=setTimeout(finish,460);
+};
+
+const rotateNext=()=>{
+  if(carouselBusy)return;
+  const first=rail.firstElementChild;
+  const step=railStep();
+  if(!first||step<=0)return;
+  carouselBusy=true;
+  rail.scrollTo({left:step,behavior:'smooth'});
+  waitForRailSettle(()=>{
+    rail.append(first);
+    rail.scrollTo({left:0,behavior:'auto'});
+    carouselBusy=false;
+  });
+};
+
+const rotatePrevious=()=>{
+  if(carouselBusy)return;
+  const last=rail.lastElementChild;
+  if(!last)return;
+  carouselBusy=true;
+  rail.prepend(last);
+  const step=railStep();
+  if(step<=0){carouselBusy=false;return}
+  rail.scrollTo({left:step,behavior:'auto'});
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    rail.scrollTo({left:0,behavior:'smooth'});
+    waitForRailSettle(()=>{carouselBusy=false});
+  }));
+};
+
+const railButtons=[...document.querySelectorAll('[data-review-rail]')];
 railButtons.forEach(button=>{
   button.classList.add('ig-icon-button');
   button.disabled=false;
   button.addEventListener('click',event=>{
     event.preventDefault();
     event.stopPropagation();
-    scrollRail(Number(button.dataset.reviewRail)||1);
+    const direction=Number(button.dataset.reviewRail)||1;
+    if(direction>0)rotateNext();
+    else rotatePrevious();
   });
 });
 
@@ -91,7 +143,8 @@ fetch('data/home-widgets/reviews-of-day.json',{cache:'no-store'})
     items=(payload.items||[]).filter(item=>item.publication_status==='published'&&item.source_gate_passed===true&&item.slug&&item.hero);
     if(!items.length)throw new Error('No tool-validated published reviews');
     activeIndex=0;
-    render();
+    renderMain();
+    renderRail();
     restartTimer();
   })
   .catch(error=>{
