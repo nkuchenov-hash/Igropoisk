@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "call-of-duty",
-  "generated_at": "2026-08-19T10:03:56.299Z",
+  "generated_at": "2026-08-19T22:24:59.351Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -35,7 +35,7 @@
       "configured_source_id": "gamesradar",
       "publication": "GamesRadar+",
       "language": "en",
-      "id": "source-2",
+      "id": "source-1",
       "resolved_url": "https://www.gamesradar.com/call-of-duty-modern-warfare-2-review",
       "source_kind": "review",
       "platform": "",
@@ -66,7 +66,7 @@
       "domain": "gamesradar.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-19T10:02:28.836Z",
+        "checked_at": "2026-08-19T22:23:32.737Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -80,7 +80,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-19T10:03:57.931Z",
+        "checked_at": "2026-08-19T22:25:01.442Z",
         "url": "https://www.gamesradar.com/call-of-duty-modern-warfare-2-review/",
         "configured_source_id": "gamesradar",
         "direct_publisher": true
@@ -88,13 +88,6 @@
     }
   ],
   "rejected": [
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/call-of-duty-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    },
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/call-of-duty",
@@ -107,6 +100,13 @@
       "url": "https://www.rpgfan.com/review/call-of-duty-2",
       "reasons": [
         "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/call-of-duty-review",
+      "reasons": [
+        "HTTP 503"
       ]
     },
     {

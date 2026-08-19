@@ -1,0 +1,62 @@
+{
+  "schema_version": 9,
+  "type": "review",
+  "game_slug": "human-fall-flat",
+  "game_id": null,
+  "canonical_title": "Human Fall Flat",
+  "checked_at": "2026-08-19T22:26:24.445Z",
+  "status": "red-needs-revision",
+  "green": false,
+  "comments": [
+    "No reusable existing article; queued for prose/media repair."
+  ],
+  "revision_history": [
+    {
+      "label": "web-discovery-full-registry",
+      "script": "scripts/discover-review-sources-web.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"human-fall-flat\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 2,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"human-fall-flat\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 5,\n  \"scored\": 3,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 3,\n  \"indexed_sources_added\": 3,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"green\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "promote-full-registry-audit",
+      "script": "scripts/promote-review-source-audit.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"human-fall-flat\",\n  \"status\": \"green\",\n  \"accepted\": 5,\n  \"trusted_scores_preserved\": 3,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "explicit-score-enrichment",
+      "script": "scripts/enrich-review-explicit-scores.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"human-fall-flat\",\n  \"accepted\": 5,\n  \"scored\": 4,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 3\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "score-1",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"human-fall-flat\",\n  \"status\": \"green\",\n  \"scored_sources\": 4,\n  \"excluded_sources\": 1,\n  \"score_10\": 7.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n",
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "keep_queued_until_green": true,
+    "deterministic_only": true,
+    "review_score_source": "data/reviews/{slug}.json#review_score",
+    "research_primary": "complete-registered-source-direct-publisher-scan",
+    "research_fallback": "registered-publisher-research-only-if-full-scan-missing",
+    "score_enrichment": "direct-publisher-structured-markup-preserve-verified",
+    "score_aggregation": "all-eligible-explicit-publisher-scores",
+    "article_reuse": "surgical-rebind-before-regeneration",
+    "targeted_hard_repair": "preserve_rebound_prose_and_repair_only_failing_media_or_language",
+    "synthesis_fallback": "github-models-then-local-text",
+    "visual_audit_fallback": "github-models-then-local-multimodal",
+    "language_audit_fallback": "local-lightweight-text",
+    "web_discovery_attempts_per_qc": 0
+  }
+}
