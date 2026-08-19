@@ -1,30 +1,48 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "id": "igropoisk-commercial-review-v2",
   "reference_baseline": "data/articles/mafia-ii.json",
-  "purpose": "Единый обязательный стандарт для любой опубликованной страницы выпущенной игры: обложка, каноническая оценка, длинный публичный обзор и чистый медиакорпус обязательны.",
+  "purpose": "Единый обязательный стандарт для любой страницы выпущенной игры. Игра никогда не отклоняется из-за нехватки найденных материалов: поиск расширяется и повторяется до полного публичного результата.",
+  "lifecycle": {
+    "game_registry_entry_created_immediately": true,
+    "released_game_terminal_state": "complete_public",
+    "missing_material_is_retry_state_only": true,
+    "forbid_terminal_rejected_for_missing_material": true,
+    "forbid_terminal_deferred_for_missing_material": true,
+    "forbid_attempt_exhaustion_for_released_games": true,
+    "keep_searching_until_complete": true,
+    "production_page_requires_complete_materials": true
+  },
   "source_corpus": {
     "score_corpus_separate_from_article_corpus": true,
     "aggregator_index_may_seed_discovery_but_never_satisfy_article_gate": true,
-    "direct_or_archived_full_review_required": true,
+    "direct_or_archived_full_review_preferred": true,
     "target_independent_full_reviews": 20,
     "preferred_minimum_independent_full_reviews": 15,
-    "exhaustive_fallback_minimum_full_reviews": 3,
-    "candidate_target": 40,
+    "candidate_target": 60,
     "minimum_source_body_words": 450,
     "minimum_dossier_claims_per_source": 6,
     "one_source_per_publication": true,
-    "professional_editorial_only": true,
+    "professional_editorial_only_for_opinions": true,
     "user_reviews_forbidden": true,
-    "exhaustive_discovery_required_before_fallback": true,
+    "exhaustive_discovery_required_if_below_preferred_minimum": true,
     "must_check_every_enabled_registered_review_source": true,
     "must_run_generic_web_discovery": true,
     "must_run_historical_web_discovery": true,
     "must_run_regional_web_discovery": true,
     "must_follow_critic_indexes_to_originals": true,
     "must_try_web_archive_for_dead_originals": true,
+    "must_search_magazine_archives_and_pdfs": true,
+    "must_search_legacy_domains_and_mirrors": true,
     "must_persist_discovery_evidence": true,
-    "fallback_rule": "Если после документированного полного поиска найдено меньше 15 полнотекстовых профессиональных рецензий, обзор всё равно обязателен и строится из всех найденных пригодных рецензий. Пониженный source-count допустим только вместе с green exhaustive-discovery audit, показывающим каждый проверенный источник, поисковые проходы, архивные попытки, найденные и отклонённые URL."
+    "supplemental_factual_sources_allowed_after_exhaustive_review_search": [
+      "official_manual",
+      "developer_interview",
+      "publisher_feature",
+      "archival_feature",
+      "official_documentation"
+    ],
+    "fallback_rule": "Если после документированного исчерпывающего поиска реально найдено меньше 15 полнотекстовых профессиональных рецензий, обзор всё равно обязателен. Для редакционных выводов используются все найденные professional reviews; для фактической глубины разрешены только проверенные supplemental factual sources. Discovery audit обязан доказывать, что весь зарегистрированный пул и архивные стратегии были реально проверены."
   },
   "article": {
     "minimum_words": 3000,
@@ -36,9 +54,8 @@
     "minimum_paragraphs_per_section": 3,
     "minimum_words_per_section": 260,
     "preferred_minimum_sources_per_section": 3,
-    "minimum_sources_per_section_under_exhaustive_fallback": 1,
+    "minimum_sources_per_section_after_exhaustive_discovery": 1,
     "preferred_minimum_materially_used_sources": 12,
-    "minimum_materially_used_sources_under_exhaustive_fallback": 3,
     "lead_minimum_words": 120,
     "require_strengths_and_weaknesses": true,
     "require_specific_game_examples": true,
@@ -58,6 +75,7 @@
     "dedupe_by_asset_family": true,
     "dedupe_by_content_hash": true,
     "exhaustive_search_required_below_minimum": true,
+    "missing_screenshots_is_retry_state_only": true,
     "publication_requires_cover": true
   },
   "article_media": {
@@ -76,13 +94,13 @@
     "reuse_across_carousels_forbidden": true
   },
   "publication": {
-    "released_game_must_always_have_public_review": true,
+    "released_game_must_always_end_with_public_review": true,
     "short_bootstrap_is_not_a_published_review": true,
     "full_article_required_for_review_status": true,
-    "full_article_and_media_gate_required_before_pages_publish": true,
     "canonical_score_required": true,
     "cover_required": true,
     "live_pages_smoke_required": true,
-    "missing_online_data_is_a_search_failure_not_a_publishable_state": true
+    "missing_online_data_means_continue_searching": true,
+    "no_public_placeholder_for_released_games": true
   }
 }
