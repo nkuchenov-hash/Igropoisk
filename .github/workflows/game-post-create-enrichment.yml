@@ -5,6 +5,7 @@ on:
   push:
     branches: [staging]
     paths:
+      - 'config/review-commercial-contract.json'
       - 'config/parsers/review-source-registry*.json'
       - 'config/parsers/review-media-policy.json'
       - 'config/game-dna-taxonomy.json'
@@ -15,41 +16,28 @@ on:
       - 'scripts/validate-game-dna.mjs'
       - 'scripts/build-similarity-index.mjs'
       - 'scripts/enrich-game-media-from-sources.mjs'
-      - 'scripts/enrich-review-media.mjs'
-      - 'scripts/enrich-review-media-local.mjs'
+      - 'scripts/enforce-commercial-game-media.mjs'
+      - 'scripts/build-review-article-corpus.mjs'
+      - 'scripts/synthesize-commercial-review-openai.mjs'
+      - 'scripts/enrich-commercial-review-media-openai.mjs'
+      - 'scripts/validate-commercial-review-v2.mjs'
       - 'scripts/render-review-pages.mjs'
-      - 'scripts/promote-review-source-audit.mjs'
-      - 'scripts/lib/review-version-gate.mjs'
-      - 'scripts/discover-review-sources-web.mjs'
-      - 'scripts/discover-review-sources-web-v14.mjs'
-      - 'scripts/discover-review-sources-web-v15.mjs'
-      - 'scripts/prepare-post-create-review-research.mjs'
-      - 'scripts/lib/review-source-registry.mjs'
-      - 'scripts/lib/review-score-extractor.mjs'
-      - 'scripts/build-review-bootstrap-local.mjs'
-      - 'scripts/build-review-bootstrap-commercial.mjs'
-      - 'scripts/build-review-bootstrap-commercial-grounded.mjs'
-      - 'scripts/expand-review-bootstrap-local.mjs'
-      - 'scripts/render-review-bootstrap.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
+      - 'scripts/finalize-commercial-post-create.mjs'
+      - 'scripts/sync-review-policy.mjs'
       - 'scripts/run-game-post-create-enrichment.mjs'
       - 'scripts/resolve-post-create-event-targets.mjs'
-      - 'scripts/verify-post-create-quick-reviews.mjs'
       - 'scripts/smoke-published-review-pages.mjs'
-      - 'scripts/lib/local-editorial-model.mjs'
       - 'scripts/publish-game-post-create-overlay.mjs'
       - 'scripts/publish-post-create-production.mjs'
+      - 'scripts/test-commercial-review-contract-v2.mjs'
       - 'scripts/test-post-create-production-publisher.mjs'
-      - 'scripts/test-game-creator-post-create.mjs'
-      - 'scripts/test-quick-review-text-model-wiring.mjs'
-      - 'scripts/test-commercial-quick-review-depth.mjs'
-      - 'scripts/test-post-create-dna-media-budget.mjs'
-      - 'scripts/test-review-carousel-version-gate.mjs'
       - 'scripts/lib/verified-game-import.mjs'
       - 'article/_shared/review-carousel.js'
       - 'article/_shared/review-shot-card.css'
       - 'game/_shared/game-page-materialized-data.js'
       - '.github/workflows/game-post-create-enrichment.yml'
+      - '.github/workflows/review-synthesis.yml'
   pull_request:
     branches: [staging]
     types: [closed]
@@ -62,21 +50,22 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: game-post-create-enrichment-v2-staging
+  group: game-post-create-enrichment-v3-staging
   cancel-in-progress: true
 
 jobs:
   enrich:
     if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 180
     env:
-      OPENAI_API_KEY: ''
       GITHUB_TOKEN: ${{ github.token }}
-      LOCAL_TEXT_MODEL: qwen3:4b
-      LOCAL_EDITORIAL_MODEL: qwen3:4b
-      LOCAL_VISION_MODEL: qwen3-vl:4b
-      POST_CREATE_REVIEW_BATCH: '3'
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
+      OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
+      OPENAI_REVIEW_MODEL: ${{ vars.OPENAI_REVIEW_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
+      OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
+      OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
       POST_CREATE_MAX_ATTEMPTS: '3'
     steps:
       - uses: actions/checkout@v4
@@ -94,7 +83,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/resolve-post-create-event-targets.mjs
 
-      - name: Validate post-create boundary
+      - name: Validate unified post-create boundary
         run: |
           node --check scripts/ensure-game-page.mjs
           node --check scripts/materialize-known-series.mjs
@@ -103,45 +92,32 @@ jobs:
           node --check scripts/validate-game-dna.mjs
           node --check scripts/build-similarity-index.mjs
           node --check scripts/enrich-game-media-from-sources.mjs
-          node --check scripts/enrich-review-media.mjs
-          node --check scripts/enrich-review-media-local.mjs
+          node --check scripts/enforce-commercial-game-media.mjs
+          node --check scripts/build-review-article-corpus.mjs
+          node --check scripts/synthesize-commercial-review-openai.mjs
+          node --check scripts/enrich-commercial-review-media-openai.mjs
+          node --check scripts/validate-commercial-review-v2.mjs
           node --check scripts/render-review-pages.mjs
-          node --check scripts/promote-review-source-audit.mjs
-          node --check scripts/lib/review-version-gate.mjs
-          node --check scripts/discover-review-sources-web-v14.mjs
-          node --check scripts/discover-review-sources-web-v15.mjs
-          node --check scripts/prepare-post-create-review-research.mjs
-          node --check scripts/lib/review-source-registry.mjs
-          node --check scripts/lib/review-score-extractor.mjs
-          node --check scripts/build-review-bootstrap-local.mjs
-          node --check scripts/build-review-bootstrap-commercial.mjs
-          node --check scripts/build-review-bootstrap-commercial-grounded.mjs
-          node --check scripts/expand-review-bootstrap-local.mjs
-          node --check scripts/render-review-bootstrap.mjs
           node --check scripts/materialize-review-publication-feed.mjs
+          node --check scripts/finalize-commercial-post-create.mjs
+          node --check scripts/sync-review-policy.mjs
           node --check scripts/run-game-post-create-enrichment.mjs
           node --check scripts/resolve-post-create-event-targets.mjs
-          node --check scripts/verify-post-create-quick-reviews.mjs
           node --check scripts/smoke-published-review-pages.mjs
-          node --check scripts/lib/local-editorial-model.mjs
           node --check scripts/publish-game-post-create-overlay.mjs
           node --check scripts/publish-post-create-production.mjs
+          node --check scripts/test-commercial-review-contract-v2.mjs
           node --check scripts/test-post-create-production-publisher.mjs
-          node --check scripts/test-game-creator-post-create.mjs
-          node --check scripts/test-quick-review-text-model-wiring.mjs
-          node --check scripts/test-commercial-quick-review-depth.mjs
-          node --check scripts/test-post-create-dna-media-budget.mjs
-          node --check scripts/test-review-carousel-version-gate.mjs
           node --check scripts/lib/verified-game-import.mjs
           node --check article/_shared/review-carousel.js
           node --check game/_shared/game-page-materialized-data.js
           node scripts/test-game-creator-boundary.mjs
-          node scripts/test-game-creator-post-create.mjs
-          node scripts/test-quick-review-text-model-wiring.mjs
-          node scripts/test-commercial-quick-review-depth.mjs
-          node scripts/test-post-create-dna-media-budget.mjs
+          node scripts/test-commercial-review-contract-v2.mjs
           node scripts/test-post-create-production-publisher.mjs
           node scripts/test-review-carousel-version-gate.mjs
+
+      - name: Synchronize legacy policy mirrors from commercial contract
+        run: node scripts/sync-review-policy.mjs
 
       - name: Materialize Game DNA and similarity immediately after page creation
         env:
@@ -156,7 +132,7 @@ jobs:
           POST_CREATE_PUBLISH_PHASE: dna
         run: node scripts/publish-game-post-create-overlay.mjs
 
-      - name: Bootstrap series, rating and bounded media for event-scoped requested games
+      - name: Bootstrap series rating and source-backed raw media
         env:
           POST_CREATE_PHASE: bootstrap
           POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
@@ -164,99 +140,71 @@ jobs:
           IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
           node scripts/run-game-post-create-enrichment.mjs "${TARGETS[@]}"
 
-      - name: Publish fast module checkpoint
+      - name: Enforce 15-20 real screenshots and separated artwork
+        env:
+          POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
+        run: |
+          IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
+          for slug in "${TARGETS[@]}"; do
+            node scripts/enforce-commercial-game-media.mjs "$slug"
+          done
+
+      - name: Publish cleaned fast module checkpoint
         env:
           GH_TOKEN: ${{ github.token }}
           POST_CREATE_PUBLISH_PHASE: bootstrap
         run: node scripts/publish-game-post-create-overlay.mjs
 
-      - name: Build and verify deterministic grounded quick reviews
+      - name: Read full professional reviews and build article corpora
         env:
           POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
         run: |
-          set -euo pipefail
           IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
           for slug in "${TARGETS[@]}"; do
-            node scripts/build-review-bootstrap-commercial.mjs "$slug"
+            node scripts/build-review-article-corpus.mjs "$slug"
           done
-          node scripts/verify-post-create-quick-reviews.mjs "${TARGETS[@]}"
 
-      - name: Publish quick-review checkpoint before full upgrades
-        env:
-          GH_TOKEN: ${{ github.token }}
-          POST_CREATE_PUBLISH_PHASE: quick-review
-        run: node scripts/publish-game-post-create-overlay.mjs
-
-      - name: Verify published quick reviews on production Pages
+      - name: Write full long-form reviews from source dossiers
         env:
           POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
-          REVIEW_SMOKE_ATTEMPTS: '36'
+        run: |
+          IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
+          for slug in "${TARGETS[@]}"; do
+            node scripts/synthesize-commercial-review-openai.mjs "$slug"
+          done
+
+      - name: Build mandatory screenshot carousels
+        env:
+          POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
+        run: |
+          IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
+          for slug in "${TARGETS[@]}"; do
+            node scripts/enrich-commercial-review-media-openai.mjs "$slug"
+          done
+
+      - name: Validate and render full commercial reviews
+        env:
+          POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
+        run: |
+          IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
+          for slug in "${TARGETS[@]}"; do
+            node scripts/validate-commercial-review-v2.mjs "$slug"
+            node scripts/render-review-pages.mjs "$slug"
+          done
+          node scripts/materialize-review-publication-feed.mjs "${TARGETS[@]}"
+          node scripts/finalize-commercial-post-create.mjs "${TARGETS[@]}"
+
+      - name: Publish full commercial review checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          POST_CREATE_PUBLISH_PHASE: commercial-review
+        run: node scripts/publish-game-post-create-overlay.mjs
+
+      - name: Verify full commercial reviews on production Pages
+        env:
+          POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
+          REVIEW_SMOKE_ATTEMPTS: '48'
           REVIEW_SMOKE_DELAY_MS: '5000'
         run: |
           IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
           node scripts/smoke-published-review-pages.mjs "${TARGETS[@]}"
-
-      - name: Restore local full-review model cache
-        if: vars.POST_CREATE_FULL_UPGRADE == 'true'
-        continue-on-error: true
-        uses: actions/cache@v4
-        with:
-          path: ~/.ollama/models
-          key: ollama-post-create-v2-qwen3-4b
-
-      - name: Start local full-review model service
-        id: full_model_service
-        if: vars.POST_CREATE_FULL_UPGRADE == 'true'
-        continue-on-error: true
-        run: |
-          set -euo pipefail
-          curl -fsSL https://ollama.com/install.sh | sh
-          nohup ollama serve >/tmp/ollama.log 2>&1 &
-          for attempt in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
-            sleep 1
-          done
-          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
-
-      - name: Ensure local text model for optional full upgrade
-        if: vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_model_service.outcome == 'success'
-        run: |
-          set -euo pipefail
-          for attempt in 1 2 3 4 5; do
-            ollama list | grep -Fq "$LOCAL_TEXT_MODEL" && exit 0
-            ollama pull "$LOCAL_TEXT_MODEL" && exit 0
-            sleep $((attempt * 5))
-          done
-          echo "::warning::Optional full-review text model $LOCAL_TEXT_MODEL is unavailable; the published grounded quick review remains valid."
-          exit 0
-
-      - name: Ensure optional local vision model for full upgrades
-        if: vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_model_service.outcome == 'success'
-        run: |
-          set -euo pipefail
-          for attempt in 1 2 3; do
-            ollama list | grep -Fq "$LOCAL_VISION_MODEL" && exit 0
-            ollama pull "$LOCAL_VISION_MODEL" && exit 0
-            sleep $((attempt * 5))
-          done
-          echo "::warning::Optional vision model $LOCAL_VISION_MODEL is unavailable; the published grounded quick review remains valid and visual full-review upgrade stays queued."
-          exit 0
-
-      - name: Run bounded full-review upgrades for event-scoped games
-        id: full_upgrade
-        if: vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_model_service.outcome == 'success'
-        continue-on-error: true
-        env:
-          POST_CREATE_PHASE: full-review
-          POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
-          GITHUB_TOKEN: ''
-        run: |
-          IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
-          node scripts/run-game-post-create-enrichment.mjs "${TARGETS[@]}"
-
-      - name: Publish full-review checkpoint conflict-safely
-        if: vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_upgrade.outcome == 'success'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          POST_CREATE_PUBLISH_PHASE: full-review
-        run: node scripts/publish-game-post-create-overlay.mjs
