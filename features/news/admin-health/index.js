@@ -125,7 +125,7 @@
 
   async function loadRemoteHealth(){
     const manifest=await fetchJson(manifestUrl);
-    if(manifest?.schemaVersion!==1||manifest?.channel!=='news')throw new Error('Некорректный manifest');
+    if(![1,2].includes(Number(manifest?.schemaVersion))||manifest?.channel!=='news')throw new Error('Некорректный manifest');
     const candidate=manifest?.files?.['data/news-pipeline-health.json']?.url;
     if(!candidate)throw new Error('Health snapshot отсутствует в manifest');
     const url=new URL(candidate);

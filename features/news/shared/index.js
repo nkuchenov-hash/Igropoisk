@@ -170,7 +170,9 @@
   }
 
   async function loadAll(lang = language(), { force = false } = {}) {
-    return contentApi.getAll({ lang, force });
+    return contentApi.getArchive
+      ? contentApi.getArchive({ lang, force })
+      : contentApi.getAll({ lang, force });
   }
 
   async function loadHome(lang = language()) {
