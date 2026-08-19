@@ -1,6 +1,6 @@
 {
   "id": "news",
-  "version": 7,
+  "version": 8,
   "enforcement": "strict",
   "roots": {
     "home": "[data-news-module=\"home\"]",
@@ -21,14 +21,15 @@
   ],
   "contentApi": {
     "global": "IgropoiskNewsContent",
-    "version": 1,
+    "version": 2,
     "interface": [
       "getAll",
+      "getArchive",
       "getHome",
       "health",
       "invalidate"
     ],
-    "backend": "yandex-object-storage-with-repository-fallback",
+    "backend": "yandex-object-storage-compact-live-plus-monthly-archive-with-repository-fallback",
     "manifest": "https://storage.yandexcloud.net/igropoisk-content/news/manifests/current.json"
   },
   "pipeline": {
@@ -45,7 +46,7 @@
     "gameLinkTest": "scripts/test-news-game-linker.mjs",
     "healthTest": "scripts/test-news-pipeline-health.mjs",
     "schedule": "hourly-with-per-source-cadence",
-    "publication": "external-immutable-snapshot-with-atomic-manifest"
+    "publication": "compact-live-snapshot-plus-stable-monthly-archive-with-atomic-manifest"
   },
   "content": [
     "data/news-events.json",
