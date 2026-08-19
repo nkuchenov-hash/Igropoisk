@@ -1,16 +1,16 @@
 {
   "orchestrator": "commercial-review-contract-v5",
-  "checked_at": "2026-08-19T23:20:04.653Z",
+  "checked_at": "2026-08-19T23:36:07.327Z",
   "requested": [
-    "luna-abyss"
+    "fallout-2"
   ],
   "completed": [],
   "waiting_release": [],
   "failures": [
     {
-      "slug": "luna-abyss",
+      "slug": "fallout-2",
       "stage": "long-review",
-      "error": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:101\n  throw new Error(`${slug}: section ${id} failed bounded component gate: ${errors.join('; ')}`)\n        ^\n\nError: luna-abyss: section world-and-premise failed bounded component gate: words 159/260\n    at buildSection (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:101:9)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:103:33\n\nNode.js v22.23.2"
+      "error": "node:internal/modules/run_main:123\n    triggerUncaughtException(\n    ^\n\nError: Local editorial model request timed out after 180000ms\n    at ClientRequest.<anonymous> (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:20:54)\n    at Object.onceWrapper (node:events:633:28)\n    at ClientRequest.emit (node:events:519:28)\n    at Socket.emitRequestTimeout (node:_http_client:931:9)\n    at Object.onceWrapper (node:events:633:28)\n    at Socket.emit (node:events:531:35)\n    at Socket._onTimeout (node:net:605:8)\n    at listOnTimeout (node:internal/timers:585:17)\n    at process.processTimers (node:internal/timers:521:7)\n\nNode.js v22.23.2"
     }
   ],
   "status": "needs_search"
