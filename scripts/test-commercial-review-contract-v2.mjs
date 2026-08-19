@@ -7,6 +7,7 @@ const read=path=>fs.readFileSync(path,'utf8');
 const json=path=>JSON.parse(read(path));
 const contract=json('config/review-commercial-contract.json');
 assert.ok(Number(contract.article?.minimum_words)>=3000,'commercial article minimum must be at least 3000 words');
+assert.ok(Number(contract.article?.lead_minimum_words)>=120,'commercial lead minimum must remain at least 120 words');
 assert.ok(Number(contract.game_media?.minimum_unique_screenshots)>=15,'game media minimum must be at least 15 screenshots');
 assert.ok(Number(contract.game_media?.target_unique_screenshots)>=20,'game media target must be at least 20 screenshots');
 assert.equal(contract.game_media?.artwork_must_never_enter_screenshot_pool,true,'artwork must be separate from screenshots');
@@ -34,7 +35,8 @@ assert.ok(synthesis.includes('for(let i=0;i<themes.length;i++)await buildSection
 assert.ok(synthesis.includes('persist()'),'sectioned local review does not persist progress between components');
 assert.ok(!synthesis.includes('numPredict:10000'),'monolithic 3000+ word local generation was reintroduced');
 assert.ok(!synthesis.includes('LOCAL_GENERATION_TIMEOUT_MS=900000'),'monolithic 15-minute local generation timeout was reintroduced');
-for(const marker of ['compactEvidence','slice(0,4)','LEAD_TIMEOUT_MS=180000','LEAD_RETRY_TIMEOUT_MS=120000','DEK_TIMEOUT_MS=60000','numCtx:8192','numPredict:850','generateLead','generateDek','deterministicDek','instruction-placeholder text','leadMinWords','compact-split-meta-v2'])assert.ok(metaPreflight.includes(marker),`compact meta preflight safeguard missing: ${marker}`);
+for(const marker of ['compactEvidence','slice(0,4)','LEAD_TIMEOUT_MS=180000','LEAD_RETRY_TIMEOUT_MS=120000','LEAD_CONTINUATION_TIMEOUT_MS=90000','DEK_TIMEOUT_MS=60000','numCtx:8192','numPredict:850','generateLead','generateLeadContinuation','continuationErrors','generateDek','deterministicDek','instruction-placeholder text','leadMinWords','compact-split-meta-v3','bounded_short_lead_continuation:true'])assert.ok(metaPreflight.includes(marker),`compact meta preflight safeguard missing: ${marker}`);
+assert.ok(metaPreflight.includes("words(currentLead)>=60&&words(currentLead)<leadMinWords"),'short valid lead must have a bounded continuation path before fail-closed');
 assert.ok(!metaPreflight.includes("lead:{type:'string',minLength:800}"),'meta preflight must not use expensive long-string schema constraint');
 assert.ok(!metaPreflight.includes('numCtx:12288'),'meta preflight context regressed to oversized combined prompt');
 assert.ok(!metaPreflight.includes('timeoutMs:360000'),'meta preflight regressed to a six-minute monolithic component');
@@ -51,4 +53,4 @@ const legacy=read('scripts/run-game-post-create-enrichment.mjs');for(const forbi
 const validator=read('scripts/validate-commercial-review-v2.mjs');assert.ok(validator.includes('exhaustive_discovery'),'validator must understand exhaustive below-preferred fallback');assert.ok(!validator.includes("status:'blocked'"),'validator must not emit terminal blocked state');
 const media=read('scripts/enforce-commercial-game-media.mjs');assert.ok(!media.includes("status:'blocked'"),'media enrichment must not emit terminal blocked state');
 const overlay=read('scripts/publish-game-post-create-overlay.mjs');assert.ok(overlay.includes("'data/review-article-corpus'"),'overlay must persist article corpus between retry passes');assert.ok(overlay.includes("'data/review-discovery-audits'"),'overlay must persist discovery audit between retry passes');assert.ok(overlay.includes("'data/article-drafts'"),'overlay must persist deterministic commercial article drafts between retry passes');assert.ok(overlay.includes("'data/article-section-drafts'"),'overlay must persist completed local review sections between retry passes');
-console.log('Commercial review contract v2 static boundary passed, including provider-independent fallback, bounded research, compact split meta preflight, local-first persistent sectioned synthesis, non-empty structured fields and per-request concurrency.');
+console.log('Commercial review contract v2 static boundary passed, including provider-independent fallback, bounded research, compact split meta preflight with bounded short-lead continuation, local-first persistent sectioned synthesis, non-empty structured fields and per-request concurrency.');
