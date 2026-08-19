@@ -20,7 +20,10 @@ const requiredFiles = [
   'scripts/test-news-pipeline-health.mjs',
   'scripts/test-news-content-api.mjs',
   'scripts/test-news-storage-content-api.mjs',
+  'scripts/test-news-storage-retention.mjs',
+  'scripts/test-news-monthly-archive.mjs',
   'scripts/lib/yandex-object-storage.mjs',
+  'scripts/prune-news-storage.mjs',
   'scripts/publish-news-storage.mjs',
   '.github/workflows/news-pipeline.yml',
   '.github/workflows/yandex-storage-connectivity.yml',
@@ -78,12 +81,12 @@ if (!errors.length) {
     previous = position;
   }
 
-  if (module.version < 5) fail('News module manifest must use version 5 or newer.');
+  if (module.version < 8) fail('News module manifest must use version 8 or newer.');
   if (module.contentApi?.global !== 'IgropoiskNewsContent') fail('News module manifest is missing the content API global.');
-  if (module.contentApi?.version !== 1) fail('News Content API version must remain 1.');
-  if (module.contentApi?.backend !== 'yandex-object-storage-with-repository-fallback') fail('News module has an invalid backend declaration.');
+  if (module.contentApi?.version !== 2) fail('News Content API version must be 2 for monthly archive support.');
+  if (module.contentApi?.backend !== 'yandex-object-storage-compact-live-plus-monthly-archive-with-repository-fallback') fail('News module has an invalid backend declaration.');
   if (module.contentApi?.manifest !== 'https://storage.yandexcloud.net/igropoisk-content/news/manifests/current.json') fail('News module has an invalid manifest declaration.');
-  ['getAll', 'getHome', 'health', 'invalidate'].forEach(method => {
+  ['getAll', 'getArchive', 'getHome', 'health', 'invalidate'].forEach(method => {
     if (!module.contentApi?.interface?.includes(method)) fail(`News module is missing Content API method: ${method}`);
   });
 
@@ -96,7 +99,7 @@ if (!errors.length) {
     storageClient: 'scripts/lib/yandex-object-storage.mjs',
     healthBuilder: 'scripts/build-news-pipeline-health.mjs',
     health: 'data/news-pipeline-health.json',
-    publication: 'external-immutable-snapshot-with-atomic-manifest'
+    publication: 'compact-live-snapshot-plus-stable-monthly-archive-with-atomic-manifest'
   };
   for (const [key, value] of Object.entries(expectedPipeline)) {
     if (module.pipeline?.[key] !== value) fail(`News module has invalid pipeline.${key}.`);
@@ -117,18 +120,33 @@ if (!errors.length) {
     provider: 'yandex-object-storage',
     current_manifest: 'news/manifests/current.json',
     snapshot_prefix: 'news/snapshots',
+    archive_prefix: 'news/archive',
     media_prefix: 'news/media'
   };
   for (const [key, value] of Object.entries(expectedStorage)) {
     if (storage[key] !== value) fail(`News storage has invalid ${key}.`);
   }
   if (Number(storage.maximum_snapshot_bytes || 0) <= 0) fail('News storage has no snapshot size guard.');
+  if (Number(storage.live_window_days || 0) < 7 || Number(storage.live_window_days || 0) > 60) fail('News live window must stay bounded between 7 and 60 days.');
+  const publicFiles = new Set(storage.public_files || []);
+  ['data/news-events.json', 'data/news.json', 'data/publisher-news.json', 'data/news-home-ru.json', 'data/news-pipeline-health.json'].forEach(file => {
+    if (!publicFiles.has(file)) fail(`News storage public_files is missing browser data: ${file}`);
+  });
+  ['data/youtube-signals.json', 'data/news-game-review.json', 'data/news-game-aliases.json', 'data/news-game-overrides.json'].forEach(file => {
+    if (publicFiles.has(file)) fail(`Internal pipeline file must not be copied into every public snapshot: ${file}`);
+  });
+  if (Number(storage.retention?.keep_recent_snapshots) !== 3) fail('News storage must retain exactly 3 rollback snapshots.');
+  if (Number(storage.retention?.keep_daily_snapshots) !== 0) fail('News storage must not retain redundant daily snapshot copies.');
+  if (storage.retention?.delete_unreferenced_media !== true) fail('News storage must reclaim media that is unreferenced by both current live data and the complete next archive.');
+  if (storage.retention?.preserve_historical_news !== true) fail('News storage must explicitly preserve historical news.');
 
   const workflow = read('.github/workflows/news-pipeline.yml');
   if (!workflow.includes("cron: '23 * * * *'")) fail('Canonical news schedule is missing.');
   if (!workflow.includes('workflow_call:')) fail('Canonical news workflow is not reusable.');
   if (!workflow.includes('node scripts/run-news-pipeline.mjs')) fail('Canonical news workflow does not run the orchestrator.');
+  if (!workflow.includes('node scripts/prune-news-storage.mjs')) fail('Canonical news workflow does not reclaim redundant snapshots before publication.');
   if (!workflow.includes('node scripts/publish-news-storage.mjs')) fail('Canonical news workflow does not publish Object Storage snapshots.');
+  if (!workflow.includes('node scripts/test-news-monthly-archive.mjs')) fail('Canonical news workflow does not test monthly archive partitioning.');
   if (workflow.includes('contents: write') || /\bgit\s+push\b/.test(workflow)) fail('Canonical news workflow still writes generated content to GitHub.');
   ['YC_S3_ACCESS_KEY_ID', 'YC_S3_SECRET_ACCESS_KEY', 'YC_S3_BUCKET'].forEach(secret => {
     if (!workflow.includes(`secrets.${secret}`)) fail(`Canonical news workflow is missing ${secret}.`);
@@ -144,6 +162,7 @@ if (!errors.length) {
     "const storageOrigin = 'https://storage.yandexcloud.net'",
     "const storageBucketPath = '/igropoisk-content/'",
     'news/manifests/current.json',
+    'news/archive/',
     'object-storage',
     'repository-fallback',
     'window.IgropoiskNewsContent',
@@ -155,9 +174,10 @@ if (!errors.length) {
   requiredContentApiTokens.forEach(token => {
     if (!contentApi.includes(token)) fail(`News Content API is missing contract token: ${token}`);
   });
-  ['getAll', 'getHome', 'health', 'invalidate'].forEach(method => {
+  ['getAll', 'getArchive', 'getHome', 'health', 'invalidate'].forEach(method => {
     if (!contentApi.includes(method)) fail(`News Content API implementation is missing: ${method}`);
   });
+  if (!presentation.includes('contentApi.getArchive')) fail('News archive facade does not consume the monthly archive API.');
 
   ['#popular', '#reviews', '.site-header', '#search', '#calendar', 'assets/auth.js'].forEach(token => {
     if (`${contentApi}\n${presentation}`.includes(token)) fail(`Public news runtime touches a foreign surface: ${token}`);
@@ -211,4 +231,4 @@ if (!errors.length) {
 if (errors.length) {
   throw new Error(`News module validation failed:\n${errors.map(error => `- ${error}`).join('\n')}`);
 }
-console.log('News module Object Storage primary repository fallback and central design-system contract verified.');
+console.log('News module compact live feed, monthly Object Storage archive, repository fallback and central design-system contract verified.');
