@@ -5,7 +5,7 @@ on:
   schedule:
     - cron: '17 4 * * *'
   push:
-    branches: [staging, main]
+    branches: [staging]
     paths:
       - 'scripts/cache-release-covers.mjs'
       - 'scripts/lib/release-cover-resolver.mjs'
@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: release-cover-cache-${{ github.ref_name }}
+  group: release-cover-cache-staging
   cancel-in-progress: true
 
 jobs:
@@ -24,10 +24,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout current branch
+      - name: Checkout staging
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }}
+          ref: staging
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
@@ -43,7 +43,7 @@ jobs:
           node --check scripts/lib/release-cover-resolver.mjs
           node scripts/cache-release-covers.mjs
 
-      - name: Commit complete quality-cover snapshot to current branch
+      - name: Commit complete quality-cover snapshot to staging
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -53,6 +53,6 @@ jobs:
             exit 0
           fi
           git diff --check
-          git commit -m "Fulfill verified release covers in ${GITHUB_REF_NAME}"
-          git pull --rebase origin "${GITHUB_REF_NAME}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git commit -m 'Fulfill verified release covers in staging'
+          git pull --rebase origin staging
+          git push origin HEAD:staging
