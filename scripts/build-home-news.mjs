@@ -43,11 +43,16 @@ function rank(a,b) {
     || new Date(b.publishedAt)-new Date(a.publishedAt);
 }
 
+function publishedTimestamp(item) {
+  const value = Date.parse(item?.publishedAt || '');
+  return Number.isFinite(value) ? value : 0;
+}
+
 const normalized = events.map(normalize).filter(item => item.titleRu && item.primaryUrl && item.image);
 const selected = normalized.filter(item => item.globalEligible).sort(rank);
 const fallback = normalized.filter(item => !item.globalEligible).sort(rank);
 const seen = new Set();
-const items = [...selected, ...fallback]
+const editorialItems = [...selected, ...fallback]
   .filter(item => {
     const key = item.primaryUrl.replace(/[?#].*$/,'');
     if (seen.has(key)) return false;
@@ -55,6 +60,7 @@ const items = [...selected, ...fallback]
     return true;
   })
   .slice(0,12);
+const items = editorialItems.sort((a,b) => publishedTimestamp(b) - publishedTimestamp(a) || rank(a,b));
 
 await fs.writeFile('data/news-home-ru.json', `${JSON.stringify({generatedAt:new Date().toISOString(),model:'editorial-global-feed',items},null,2)}\n`);
-console.log(`[home-news] wrote ${items.length} Russian cards; ${items.filter(item => item.globalEligible).length} passed global editorial selection`);
+console.log(`[home-news] wrote ${items.length} Russian cards in newest-first order; ${items.filter(item => item.globalEligible).length} passed global editorial selection`);
