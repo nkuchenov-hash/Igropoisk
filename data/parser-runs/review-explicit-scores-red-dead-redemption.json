@@ -1,0 +1,95 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "red-dead-redemption",
+  "checked_at": "2026-08-19T10:03:38.689Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 5,
+  "scored": 4,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "score": 9.75,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 6,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "score": 9.4,
+      "scale": 10,
+      "method": "registry:hooked-gamers",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "url": "https://gameinformer.com/games/red_dead_redemption/b/xbox360/archive/2010/05/17/review.aspx",
+      "final_url": "https://gameinformer.com/games/red_dead_redemption/b/xbox360/archive/2010/05/17/review.aspx",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps4/red-dead-redemption",
+      "final_url": "https://www.pushsquare.com/reviews/ps4/red-dead-redemption",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "url": "https://www.hookedgamers.com/ps3/red_dead_redemption/review/article-554.html",
+      "final_url": "https://www.hookedgamers.com/ps3/red_dead_redemption/review/article-554.html",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2011/12/12/weview-verdict-red-dead-redemption",
+      "final_url": "https://www.thesixthaxis.com/2011/12/12/weview-verdict-red-dead-redemption/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "videogamer",
+      "publication": "VideoGamer",
+      "url": "https://www.metacritic.com/game/red-dead-redemption/critic-reviews/",
+      "final_url": "https://www.metacritic.com/game/red-dead-redemption/critic-reviews/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": true,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "marvel-rivals",
-  "generated_at": "2026-08-18T18:29:17.487Z",
+  "generated_at": "2026-08-19T09:53:41.133Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -44,7 +44,7 @@
       },
       "validation": {
         "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-18T18:27:51.910Z",
+        "checked_at": "2026-08-19T09:52:15.582Z",
         "method": "registered-direct-publisher-preserved-v8",
         "reason": "HTTP 403"
       },
@@ -69,7 +69,7 @@
       },
       "validation": {
         "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-18T18:27:51.910Z",
+        "checked_at": "2026-08-19T09:52:15.582Z",
         "method": "registered-direct-publisher-preserved-v8",
         "reason": "HTTP 403"
       },
@@ -116,7 +116,7 @@
       "domain": "gameinformer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-18T18:27:51.910Z",
+        "checked_at": "2026-08-19T09:52:15.582Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -130,39 +130,30 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-18T18:29:17.800Z",
+        "checked_at": "2026-08-19T09:53:41.294Z",
         "url": "https://gameinformer.com/review/marvel-rivals/a-super-shooter",
         "configured_source_id": "game-informer",
         "direct_publisher": true
       }
-    },
-    {
-      "url": "https://www.digitalfoundry.net/articles/digitalfoundry-2024-marvel-rivals-beta-ps5-series-x-s-pc-series-s-again-loses-visual-features-to-hit-60fps",
-      "publication": "Eurogamer",
-      "title": "Marvel Rivals — Eurogamer review reference",
-      "id": "source-4",
-      "configured_source_id": "eurogamer",
-      "resolved_url": "https://www.digitalfoundry.net/articles/digitalfoundry-2024-marvel-rivals-beta-ps5-series-x-s-pc-series-s-again-loses-visual-features-to-hit-60fps",
-      "source_kind": "review",
-      "language": "en",
-      "canonical_score_eligible": true,
-      "version_validation": {
-        "score_eligible": true,
-        "reason": "canonical_version"
-      },
-      "validation": {
-        "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-18T18:27:51.910Z",
-        "method": "registered-direct-publisher-preserved-v8",
-        "reason": "HTTP 403"
-      },
-      "score": null,
-      "scale": null,
-      "grade": "",
-      "score_eligible": false
     }
   ],
   "rejected": [
+    {
+      "publication": "Eurogamer",
+      "url": "https://www.digitalfoundry.net/articles/digitalfoundry-2024-marvel-rivals-beta-ps5-series-x-s-pc-series-s-again-loses-visual-features-to-hit-60fps",
+      "title": "Marvel Rivals pushes Unreal Engine 5 hard - and Series S can",
+      "reasons": [
+        "no_review_signal"
+      ]
+    },
+    {
+      "publication": "Eurogamer",
+      "url": "https://www.digitalfoundry.net/articles/digitalfoundry-2024-marvel-rivals-beta-ps5-series-x-s-pc-series-s-again-loses-visual-features-to-hit-60fps",
+      "title": "Marvel Rivals pushes Unreal Engine 5 hard - and Series S can",
+      "reasons": [
+        "no_review_signal"
+      ]
+    },
     {
       "publication": "GamesRadar+",
       "url": "https://www.gamesradar.com/games/third-person-shooter/marvel-rivals-developer-confirms-layoffs-to-a-us-based-design-team-but-insists-we-are-investing-more-not-less-into-the-evolution-and-growth-of-this-game",
@@ -212,10 +203,11 @@
       ]
     },
     {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/marvel-rivals-review",
+      "publication": "Eurogamer",
+      "url": "https://www.digitalfoundry.net/articles/digitalfoundry-2024-marvel-rivals-beta-ps5-series-x-s-pc-series-s-again-loses-visual-features-to-hit-60fps",
+      "title": "Marvel Rivals pushes Unreal Engine 5 hard - and Series S can",
       "reasons": [
-        "HTTP 403"
+        "no_review_signal"
       ]
     },
     {
@@ -228,6 +220,13 @@
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/marvel-rivals-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/marvel-rivals-review",
       "reasons": [
         "HTTP 404"
       ]
@@ -322,8 +321,8 @@
       "source_id": "eurogamer",
       "name": "Eurogamer",
       "region": "global",
-      "status": "found",
-      "notes": "verified direct review"
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     },
     {
       "source_id": "game-informer",
@@ -357,8 +356,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "unavailable",
-      "notes": "search transport unavailable"
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     },
     {
       "source_id": "ars-technica",
@@ -614,14 +613,14 @@
   "coverage": {
     "registered_editorial": 45,
     "checked": 45,
-    "accepted": 4,
+    "accepted": 3,
     "scored": 1,
     "context_only_versions": 0,
-    "blocked_verified": 3,
-    "contemporary": 4,
+    "blocked_verified": 2,
+    "contemporary": 3,
     "green": false,
     "passed": false,
-    "needs_more": 1,
+    "needs_more": 2,
     "critic_index_rows": 0,
     "critic_index_added": 0,
     "critic_index_scores_added": 0,

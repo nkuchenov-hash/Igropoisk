@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "mistfall-hunter",
-  "generated_at": "2026-08-18T18:29:14.214Z",
+  "generated_at": "2026-08-19T09:53:38.522Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -54,7 +54,7 @@
       "domain": "metacritic.com",
       "validation": {
         "status": "accepted-critic-index",
-        "checked_at": "2026-08-18T18:29:14.214Z",
+        "checked_at": "2026-08-19T09:53:38.522Z",
         "method": "metacritic-critic-attribution-v15.2",
         "index_url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
         "index_platform": "primary",
@@ -63,7 +63,7 @@
       "score_evidence": {
         "method": "critic-index-attribution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-18T18:29:14.214Z",
+        "checked_at": "2026-08-19T09:53:38.522Z",
         "url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
         "configured_source_id": "ign",
         "direct_publisher": false,
@@ -78,6 +78,14 @@
     }
   ],
   "rejected": [
+    {
+      "publication": "IGN",
+      "url": "https://www.ign.com/games/mistfall-hunter",
+      "title": "Mistfall Hunter - IGN",
+      "reasons": [
+        "non_review_path"
+      ]
+    },
     {
       "publication": "IGN",
       "url": "https://www.ign.com/games/mistfall-hunter",
@@ -232,8 +240,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "unavailable",
-      "notes": "search transport unavailable"
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     },
     {
       "source_id": "ars-technica",

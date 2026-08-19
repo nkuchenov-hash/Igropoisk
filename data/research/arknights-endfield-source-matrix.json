@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "arknights-endfield",
-  "generated_at": "2026-08-18T18:36:28.830Z",
+  "generated_at": "2026-08-19T10:00:36.546Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -59,10 +59,13 @@
       "mechanics": [],
       "domain": "pushsquare.com",
       "validation": {
-        "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-18T18:35:05.908Z",
-        "method": "registered-direct-publisher-preserved-v8",
-        "reason": "HTTP 403"
+        "status": "accepted",
+        "checked_at": "2026-08-19T09:59:13.121Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
       },
       "score": 8,
       "scale": 10,
@@ -71,7 +74,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-18T18:07:21.324Z",
+        "checked_at": "2026-08-19T10:00:37.444Z",
         "url": "https://www.pushsquare.com/reviews/ps5/arknights-endfield",
         "configured_source_id": "push-square",
         "direct_publisher": true
@@ -79,13 +82,6 @@
     }
   ],
   "rejected": [
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/arknights-endfield-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    },
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/arknights-endfield",
@@ -98,6 +94,13 @@
       "url": "https://www.rpgfan.com/review/arknights-endfield-2",
       "reasons": [
         "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/arknights-endfield-review",
+      "reasons": [
+        "HTTP 503"
       ]
     }
   ],
@@ -225,8 +228,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "unavailable",
+      "notes": "search transport unavailable"
     },
     {
       "source_id": "ars-technica",
@@ -485,7 +488,7 @@
     "accepted": 1,
     "scored": 1,
     "context_only_versions": 0,
-    "blocked_verified": 1,
+    "blocked_verified": 0,
     "contemporary": 1,
     "green": false,
     "passed": false,

@@ -1,21 +1,31 @@
 {
   "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "kusan-city-of-wolves",
-  "checked_at": "2026-08-18T18:32:10.374Z",
+  "checked_at": "2026-08-19T09:56:15.430Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "accepted": 1,
   "scored": 1,
   "context_only_versions": 0,
-  "updates": [],
+  "updates": [
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "score": 7,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
   "checks": [
     {
       "configured_source_id": "push-square",
       "publication": "Push Square",
       "url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
-      "final_url": "",
-      "status": "http_403",
-      "blocked": true,
-      "preserved_existing_score": true,
+      "final_url": "https://www.pushsquare.com/reviews/ps5/kusan-city-of-wolves",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
       "trusted_editorial_score": true,
       "canonical_score_eligible": true
     }
