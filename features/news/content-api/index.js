@@ -181,6 +181,8 @@
     return Object.freeze({
       id: 'repository-fallback',
       version: '',
+      schemaVersion: 0,
+      archiveIndex: '',
       mediaBase: siteBase,
       files: Object.freeze(Object.fromEntries(requiredStorageFiles.map(file => [file, new URL(file, siteBase).href])))
     });
@@ -193,11 +195,20 @@
     return url.href;
   }
 
+  function validateArchiveMonthUrl(value, month) {
+    if (!/^\d{4}-\d{2}$/.test(String(month || ''))) throw new Error('Invalid archive month.');
+    const [year, monthNumber] = month.split('-');
+    const expectedPath = `${storageBucketPath}news/archive/${year}/${monthNumber}.json`;
+    const url = new URL(value);
+    if (url.origin !== storageOrigin || url.pathname !== expectedPath) throw new Error('Untrusted news archive month URL.');
+    return url.href;
+  }
+
   async function objectStorageBackend({ force = false } = {}) {
     if (!force && backendPromise) return backendPromise;
     backendPromise = (async () => {
       const manifest = await fetchJson(storageManifestUrl, 'news manifest');
-      if (manifest?.schemaVersion !== 1 || manifest?.channel !== 'news' || !/^[\w.-]+$/.test(manifest?.version || '')) {
+      if (![1, 2].includes(Number(manifest?.schemaVersion)) || manifest?.channel !== 'news' || !/^[\w.-]+$/.test(manifest?.version || '')) {
         throw new Error('Invalid news manifest.');
       }
       const files = {};
@@ -206,9 +217,14 @@
         if (!candidate) throw new Error(`News manifest is missing ${file}.`);
         files[file] = validateStorageUrl(candidate, manifest.version);
       }
+      const archiveIndex = manifest.schemaVersion === 2
+        ? validateStorageUrl(manifest.archive?.index?.url || '', manifest.version)
+        : '';
       return Object.freeze({
         id: 'object-storage',
         version: manifest.version,
+        schemaVersion: manifest.schemaVersion,
+        archiveIndex,
         mediaBase: storageManifestUrl,
         files: Object.freeze(files)
       });
@@ -286,6 +302,34 @@
     return Object.freeze(publicEventItems(fallback));
   }
 
+  async function loadArchiveFrom(backend, lang, { fallbackReason = '' } = {}) {
+    if (!backend.archiveIndex) return loadAllFrom(backend, lang, { fallbackReason });
+    const index = await fetchJson(backend.archiveIndex, 'news archive index');
+    if (index?.schemaVersion !== 1 || index?.channel !== 'news-archive' || !Array.isArray(index?.months)) {
+      throw new Error('News archive index is invalid.');
+    }
+    const monthResults = await Promise.all(index.months.map(async entry => {
+      const url = validateArchiveMonthUrl(entry?.url || '', entry?.month || '');
+      const payload = await fetchJson(url, `news archive ${entry.month}`);
+      if (payload?.schemaVersion !== 1 || payload?.channel !== 'news-archive-month' || payload?.month !== entry.month || !Array.isArray(payload?.items)) {
+        throw new Error(`News archive ${entry.month} is invalid.`);
+      }
+      return payload.items
+        .map(item => normalize(item, { official: Boolean(item?.official || item?.type === 'official'), lang, mediaBase: backend.mediaBase }))
+        .filter(item => valid(item, lang));
+    }));
+    const items = publicEventItems(deduplicate(monthResults.flat()));
+    lastHealth = Object.freeze({
+      status: 'ready',
+      backend: backend.id,
+      version: backend.version || '',
+      fallbackReason,
+      checkedAt: new Date().toISOString(),
+      sources: Object.freeze([{ id: 'monthly-archive', path: backend.archiveIndex, status: 'ready', count: items.length, error: '' }])
+    });
+    return Object.freeze(items);
+  }
+
   async function getAll({ lang = language(), force = false } = {}) {
     const cacheKey = `all:${lang}:${userRegion()}`;
     if (!force && cache.has(cacheKey)) return cache.get(cacheKey);
@@ -295,6 +339,27 @@
         return await loadAllFrom(backend, lang, { requireComplete: true });
       } catch (storageError) {
         console.warn('Object Storage news snapshot unavailable; using repository fallback.', storageError);
+        return loadAllFrom(repositoryBackend(), lang, { fallbackReason: String(storageError?.message || storageError) });
+      }
+    })();
+    cache.set(cacheKey, pending);
+    try {
+      return await pending;
+    } catch (error) {
+      cache.delete(cacheKey);
+      throw error;
+    }
+  }
+
+  async function getArchive({ lang = language(), force = false } = {}) {
+    const cacheKey = `archive:${lang}:${userRegion()}`;
+    if (!force && cache.has(cacheKey)) return cache.get(cacheKey);
+    const pending = (async () => {
+      try {
+        const backend = await objectStorageBackend({ force });
+        return await loadArchiveFrom(backend, lang);
+      } catch (storageError) {
+        console.warn('Object Storage monthly news archive unavailable; using repository fallback.', storageError);
         return loadAllFrom(repositoryBackend(), lang, { fallbackReason: String(storageError?.message || storageError) });
       }
     })();
@@ -367,8 +432,9 @@
   }
 
   window.IgropoiskNewsContent = Object.freeze({
-    version: 1,
+    version: 2,
     getAll,
+    getArchive,
     getHome,
     health,
     invalidate,
