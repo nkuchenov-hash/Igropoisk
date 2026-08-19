@@ -79,7 +79,7 @@ async function fetchJson(url) {
   const response = await fetch(url, {
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
     headers: {
-      'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.0',
+      'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.1',
       'accept-language': 'en-US,en;q=0.9'
     }
   });
@@ -91,7 +91,7 @@ async function steamAppIdByTitle(title) {
   try {
     const response = await fetch(`https://store.steampowered.com/search/results/?query&term=${encodeURIComponent(title)}&start=0&count=20&dynamic_data=&force_infinite=1&cc=us&l=english&json=1`, {
       signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
-      headers: { 'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.0' }
+      headers: { 'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.1' }
     });
     if (!response.ok) return null;
     const payload = await response.json();
@@ -153,6 +153,51 @@ function steamHashedPosterCandidates(release) {
   return uniq(candidates);
 }
 
+function steamAssetUrl(format, filename, host) {
+  if (!format || !filename) return null;
+  if (/^https?:\/\//i.test(filename)) return filename;
+  const replaced = clean(format).replace('${FILENAME}', clean(filename)).replace(/^\/+/, '');
+  if (!replaced || replaced.includes('${FILENAME}')) return null;
+  if (/^https?:\/\//i.test(replaced)) return replaced;
+  return `${host.replace(/\/$/, '')}/store_item_assets/${replaced}`;
+}
+
+async function steamBrowsePosterCandidates(appid) {
+  if (!appid) return [];
+  const input = {
+    ids: [{ appid: Number(appid) }],
+    context: { language: 'english', country_code: 'US', steam_realm: 1 },
+    data_request: { include_assets: true }
+  };
+  try {
+    const payload = await fetchJson(`https://api.steampowered.com/IStoreBrowseService/GetItems/v1/?input_json=${encodeURIComponent(JSON.stringify(input))}`);
+    const items = payload?.response?.store_items || [];
+    const item = items.find(entry => Number(entry?.appid) === Number(appid)) || items[0];
+    const assets = item?.assets || {};
+    const format = clean(assets.asset_url_format);
+    const files = uniq([
+      assets.library_capsule_2x,
+      assets.library_capsule,
+      assets.library_capsule_full,
+      assets.library_capsule_image
+    ]);
+    const hosts = [
+      'https://shared.fastly.steamstatic.com',
+      'https://shared.akamai.steamstatic.com'
+    ];
+    const urls = [];
+    for (const filename of files) {
+      for (const host of hosts) {
+        const url = steamAssetUrl(format, filename, host);
+        if (url) urls.push(url);
+      }
+    }
+    return uniq([...urls, ...steamStaticPosterCandidates(appid)]);
+  } catch {
+    return steamStaticPosterCandidates(appid);
+  }
+}
+
 async function steamStorePosterCandidates(appid) {
   if (!appid) return [];
   const urls = [];
@@ -160,7 +205,7 @@ async function steamStorePosterCandidates(appid) {
     const response = await fetch(`https://store.steampowered.com/app/${appid}/?cc=us&l=english`, {
       signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
       headers: {
-        'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.0',
+        'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.1',
         'accept-language': 'en-US,en;q=0.9'
       }
     });
@@ -186,7 +231,7 @@ async function pageArtworkCandidates(url) {
       signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
       redirect: 'follow',
       headers: {
-        'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.0',
+        'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.1',
         'accept-language': 'en-US,en;q=0.9'
       }
     });
@@ -239,7 +284,7 @@ async function downloadImage(url, options) {
   const response = await fetch(url, {
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT),
     redirect: 'follow',
-    headers: { 'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.0' }
+    headers: { 'user-agent': 'Mozilla/5.0 IgropoiskReleaseCoverResolver/2.1' }
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const contentType = String(response.headers.get('content-type') || '').split(';')[0].toLowerCase();
@@ -260,12 +305,14 @@ async function resolveOne(root, release, options) {
   const appid = Number.isFinite(declaredAppid) && declaredAppid > 0
     ? declaredAppid
     : await steamAppIdByTitle(release?.title || '');
-  const [steamPosters, officialArtwork, wikipediaArtwork] = await Promise.all([
+  const [steamBrowsePosters, steamPosters, officialArtwork, wikipediaArtwork] = await Promise.all([
+    steamBrowsePosterCandidates(appid),
     steamStorePosterCandidates(appid),
     officialArtworkCandidates(release),
     wikipediaCoverCandidates(release?.title || '')
   ]);
   const candidates = uniq([
+    ...steamBrowsePosters,
     ...explicitPosterCandidates(release),
     ...steamHashedPosterCandidates(release),
     ...steamPosters,
