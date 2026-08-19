@@ -11,8 +11,10 @@ const read=(r,f=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,r),
 const write=(r,v)=>{const t=path.join(root,r);fs.mkdirSync(path.dirname(t),{recursive:true});fs.writeFileSync(t,`${JSON.stringify(v,null,2)}\n`)};
 const OPENAI_ACCELERATOR_TIMEOUT_MS=300000;
 const LOCAL_COMPONENT_TIMEOUT_MS=360000;
+const LOCAL_SECTION_CONTINUATION_TIMEOUT_MS=180000;
 const LOCAL_AUDIT_TIMEOUT_MS=300000;
 const MAX_COMPONENT_ATTEMPTS=2;
+const MAX_SECTION_CONTINUATIONS=3;
 const MAX_TARGETED_REVISIONS=3;
 
 if(process.env.OPENAI_API_KEY){
@@ -90,12 +92,37 @@ async function generateSection(index,extra=''){
   const theme=themes[index],ids=assignments[index],evidence=ids.map(id=>byId.get(id)).filter(Boolean);
   return chatJson({system:'Ты старший русскоязычный игровой журналист. Пиши самостоятельный журнальный раздел только по данным профессиональных рецензий ниже. Не додумывай факты.',prompt:`Это раздел ${index+1} из ${targetSections} большого обзора ${identity.title}. Фокус: ${theme.focus}. Напиши 3–5 полноценных абзацев, целевой объём 350–420 русских слов, абсолютный минимум ${minSectionWords}. Не повторяй вступление и другие разделы. Сопоставляй свидетельства источников, сохраняй конкретику, показывай достоинства и ограничения там, где они подтверждены. Никакого AI-филлера, кальки и английских слов кроме Fallout/RPG. image_caption — короткое описание подходящего игрового скриншота, не artwork.\nКАНОНИЧЕСКАЯ ИДЕНТИЧНОСТЬ:\n${JSON.stringify(identity)}\nРАЗРЕШЁННЫЕ SOURCE IDS: ${ids.join(', ')}\nДОСЬЕ ДЛЯ ЭТОГО РАЗДЕЛА:\n${JSON.stringify(evidence)}${extra}`,schema:sectionSchema,temperature:0.18,numCtx:16384,numPredict:2200,timeoutMs:LOCAL_COMPONENT_TIMEOUT_MS})
 }
+const sectionContinuationSchema={type:'object',additionalProperties:false,required:['paragraphs'],properties:{paragraphs:{type:'array',minItems:1,maxItems:2,items:{type:'string'}}}};
+async function generateSectionContinuation(index,section,pass,reason=''){
+  const theme=themes[index],ids=assignments[index],evidence=ids.map(id=>byId.get(id)).filter(Boolean);
+  const currentWords=countWords((section?.paragraphs||[]).join(' ')),missing=Math.max(0,minSectionWords-currentWords);
+  return chatJson({system:'Ты старший русскоязычный игровой журналист. Дополняй уже написанный раздел только новыми, подтверждёнными источниками деталями. Не переписывай и не повторяй существующий текст.',prompt:`Раздел ${index+1} обзора ${identity.title} уже написан, но формально короток: ${currentWords}/${minSectionWords} слов. Это bounded continuation ${pass}/${MAX_SECTION_CONTINUATIONS}. Добавь 1–2 новых полноценных русских абзаца примерно по 80–110 слов каждый, пока не будет покрыт недостающий объём ${missing} слов. Продолжение должно углублять фокус «${theme.focus}», не повторять уже сказанное и не добавлять ни одного факта вне разрешённых source dossiers. Не используй английские слова кроме Fallout/RPG.\nТЕКУЩИЙ РАЗДЕЛ:\n${JSON.stringify({heading:section?.heading,paragraphs:section?.paragraphs})}\nРАЗРЕШЁННЫЕ SOURCE IDS: ${ids.join(', ')}\nДОСЬЕ:\n${JSON.stringify(evidence)}${reason?`\nПРИЧИНА ДОПОЛНЕНИЯ: ${reason}`:''}`,schema:sectionContinuationSchema,temperature:0.14,numCtx:12288,numPredict:900,timeoutMs:LOCAL_SECTION_CONTINUATION_TIMEOUT_MS})
+}
 function sectionErrors(section){const errors=[];const wc=countWords((section?.paragraphs||[]).join(' '));if((section?.paragraphs||[]).length<minParagraphs)errors.push(`paragraphs ${(section?.paragraphs||[]).length}/${minParagraphs}`);if(wc<minSectionWords)errors.push(`words ${wc}/${minSectionWords}`);const latin=lowerLatin((section?.paragraphs||[]).join(' '));if(latin.length)errors.push(`latin ${[...new Set(latin)].join(',')}`);return errors}
+async function topUpSection(index,section,{reason=''}={}){
+  const id=themes[index].id;let current=section;
+  for(let pass=1;pass<=MAX_SECTION_CONTINUATIONS;pass++){
+    const errors=sectionErrors(current);if(!errors.length)return current;
+    if(errors.some(x=>x.startsWith('latin ')))return current;
+    const raw=await generateSectionContinuation(index,current,pass,reason);
+    const fresh=(raw?.paragraphs||[]).map(x=>String(x||'').trim()).filter(x=>countWords(x)>=25&&!lowerLatin(x).length);
+    if(!fresh.length)continue;
+    current={...current,paragraphs:[...(current.paragraphs||[]),...fresh].slice(0,7),source_ids:[...assignments[index]],continuation_parts:Number(current.continuation_parts||0)+1};
+    state.sections[id]=current;persist();
+  }
+  return current;
+}
 async function buildSection(index,{force=false,reason=''}={}){
-  const id=themes[index].id;if(!force&&state.sections?.[id]&&!sectionErrors(state.sections[id]).length)return;
+  const id=themes[index].id;
+  if(!force&&state.sections?.[id]){
+    const topped=await topUpSection(index,state.sections[id],{reason:'Сохрани уже валидный материал и добери только недостающую глубину.'});
+    if(!sectionErrors(topped).length)return;
+  }
   let errors=[];for(let attempt=1;attempt<=MAX_COMPONENT_ATTEMPTS;attempt++){
     const raw=await generateSection(index,[reason,errors.length?`Формальный gate предыдущей версии: ${errors.join('; ')}.`:''].filter(Boolean).join('\n'));
-    const section={id,heading:raw.heading,paragraphs:raw.paragraphs,source_ids:[...assignments[index]],image_caption:raw.image_caption};
+    let section={id,heading:raw.heading,paragraphs:raw.paragraphs,source_ids:[...assignments[index]],image_caption:raw.image_caption,continuation_parts:0};
+    state.sections[id]=section;persist();
+    section=await topUpSection(index,section,{reason:reason||'Исходная генерация не достигла неизменного коммерческого объёма раздела.'});
     errors=sectionErrors(section);state.sections[id]=section;persist();if(!errors.length)return;
   }
   throw new Error(`${slug}: section ${id} failed bounded component gate: ${errors.join('; ')}`)
