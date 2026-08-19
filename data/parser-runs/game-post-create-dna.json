@@ -1,24 +1,17 @@
 {
   "parser": "post-create-game-dna-v5-commercial-quality",
-  "status": "needs_revision",
-  "checked_at": "2026-08-19T22:13:32.398Z",
+  "status": "green",
+  "checked_at": "2026-08-19T22:16:04.229Z",
   "targets": 1,
   "from_pending_requests": 55,
   "from_missing_dna_backfill": 25,
-  "dna_ready": 0,
+  "dna_ready": 1,
   "validation_scope": "per_game_targeted_commercial_quality",
   "publication_policy": "only_valid_commercial_quality_dna_changes_survive_to_checkpoint",
-  "ready_slugs": [],
-  "invalid_or_missing": [
-    "fallout-new-vegas"
+  "ready_slugs": [
+    "fallout-2"
   ],
+  "invalid_or_missing": [],
   "similarity_needs_revision": [],
-  "failed": [
-    {
-      "slug": "fallout-new-vegas",
-      "step": "validate",
-      "exit_code": 2,
-      "stderr": "data/game-dna/fallout-new-vegas.json: targeted post-create DNA is not similarity-ready (6/16 axes, 2/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/fallout-new-vegas.json: targeted post-create DNA is below the commercial enrichment gate (6/16 axes, 2/7 core axes); requires >=9 populated axes and >=4 core axes\n"
-    }
-  ]
+  "failed": []
 }
