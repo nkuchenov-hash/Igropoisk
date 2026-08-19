@@ -28,9 +28,9 @@ assert(count(homepage, '<script src="fix.js"></script>') === 1, 'index.html must
 assert(homepage.includes('class="ig-button account-action" data-auth-link'), 'Homepage account action is not materialized.');
 assert(homepage.includes('data-ig-release-nav'), 'Homepage release calendar navigation is missing.');
 assert(homepage.includes('data-ig-home-editorial="section"'), 'Homepage editorial/release section is missing.');
-assert(homepage.includes('assets/reviews-of-day/index.css?v=20260818-3'), 'Reviews-of-day stylesheet is missing.');
+assert(homepage.includes('assets/reviews-of-day/index.css?v=20260819-1'), 'Reviews-of-day stylesheet is missing.');
 assert(homepage.includes('assets/home-releases/index.css?v=20260804-1'), 'Home releases stylesheet is missing.');
-assert(homepage.includes('assets/reviews-of-day/index.js?v=20260818-2'), 'Reviews-of-day script is missing.');
+assert(homepage.includes('assets/reviews-of-day/index.js?v=20260819-1'), 'Reviews-of-day script is missing.');
 assert(homepage.includes('assets/home-releases/index.js?v=20260805-1'), 'Home releases script is missing.');
 assert(homepage.includes('href="reviews/"'), 'Homepage review archive link is missing.');
 assert(!/data-ig-release-home|assets\/release-home\.(?:css|js)/.test(homepage), 'Legacy release-home injection remains in index.html.');
