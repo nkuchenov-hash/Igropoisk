@@ -626,30 +626,43 @@
       }
     },
     "game-of-thrones": {
-      "schema_version": 4,
+      "schema_version": 5,
       "publication": {
-        "status": "needs_revision",
+        "status": "published",
         "gate_passed": true,
-        "public_ready": false,
+        "page_available": true,
+        "public_ready": true,
+        "editorial_ready": false,
         "review_ready": false,
-        "media_green": false,
-        "mode": "structured_sources",
-        "updated_at": "2026-08-13T18:16:19.755Z",
+        "review_required": true,
+        "media_green": true,
+        "mode": "game_creator_structured_sources",
+        "creator_source": "news",
+        "updated_at": "2026-08-19T20:52:31.200Z",
         "gate": {
           "canonical_game_id": "game_dd19a1754372360b380b",
           "title": true,
           "media": true,
           "source_count": 1,
-          "minimum_screenshots": 6,
-          "accepted_screenshots": 11,
           "missing": [],
           "passed": true
         }
+      },
+      "modules": {
+        "page": "ready",
+        "media": "ready",
+        "media_enrichment": "queued",
+        "review": "pending",
+        "series": "not_known",
+        "game_dna": "pending",
+        "similarity": "ready",
+        "guides": "missing"
       },
       "game_id": "game_dd19a1754372360b380b",
       "identity": {
         "slug": "game-of-thrones",
         "title": "Game of Thrones",
+        "series": null,
         "steam_appid": 208730,
         "aliases": [
           "game-of-thrones",
@@ -670,6 +683,8 @@
       },
       "classification": {
         "genres": [
+          "Экшены",
+          "Ролевые игры",
           "Action",
           "RPG"
         ],
@@ -677,6 +692,11 @@
           "windows"
         ],
         "categories": [
+          "Для одного игрока",
+          "Достижения Steam",
+          "Полная поддержка контроллеров",
+          "Remote Play на телевизоре",
+          "Семейный доступ",
           "Single-player",
           "Steam Achievements",
           "Full controller support",
@@ -685,15 +705,18 @@
         ]
       },
       "editorial": {
-        "short_description": "Experience an amazing adventure in one of the most fascinating universes! Amidst conspiracy and betrayal, try to survive the orchestrated machinations around the Iron Throne.",
+        "short_description": "Испытайте невероятное приключение в одной из самых потрясающих вселенных! Среди предательств и заговоров, попытайтесь выжить в организованных интригах вокруг Железного трона.",
         "integrated_description": "Experience an amazing adventure in one of the most fascinating universes! Amidst conspiracy and betrayal, try to survive the orchestrated machinations around the Iron Throne.",
         "campaign": "",
         "features": [
+          "Для одного игрока",
+          "Достижения Steam",
+          "Полная поддержка контроллеров",
+          "Remote Play на телевизоре",
+          "Семейный доступ",
           "Single-player",
           "Steam Achievements",
-          "Full controller support",
-          "Remote Play on TV",
-          "Family Sharing"
+          "Full controller support"
         ]
       },
       "media": {
@@ -712,20 +735,7 @@
           "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/208730/ss_a8ae13c8baf2276c0dae32bf1558cbbaf3e30327.1920x1080.jpg?t=1731590932",
           "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/208730/ss_5e8679751b798b8ea6672e34b876f3a6accacee4.1920x1080.jpg?t=1731590932"
         ],
-        "videos": [
-          {
-            "title": "Game of Thrones Trailer",
-            "url": "",
-            "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/81504/movie.293x165.jpg?t=1447355577",
-            "source_url": "https://store.steampowered.com/app/208730/"
-          },
-          {
-            "title": "Game of Thrones Epic Plot Trailer",
-            "url": "",
-            "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/81534/movie.293x165.jpg?t=1447355656",
-            "source_url": "https://store.steampowered.com/app/208730/"
-          }
-        ],
+        "videos": [],
         "artwork": [
           "https://store.akamai.steamstatic.com/images/storepagebackground/app/208730?t=1731590932"
         ]
@@ -775,7 +785,7 @@
           "checked_at": "2026-08-13T18:16:18.948Z"
         }
       ],
-      "updated_at": "2026-08-13T18:16:19.755Z",
+      "updated_at": "2026-08-19T20:52:31.200Z",
       "relations": {
         "franchise": {
           "name": "",
@@ -813,7 +823,7 @@
           ],
           "semantic_tokens": []
         },
-        "checked_at": "2026-08-13T17:23:21.699Z"
+        "checked_at": "2026-08-13T18:16:26.513Z"
       }
     },
     "fallout": {
