@@ -111,13 +111,46 @@ function steamStaticPosterCandidates(appid) {
   const roots = [
     `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${appid}`,
     `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${appid}`,
+    `https://cdn.akamai.steamstatic.com/steam/apps/${appid}`,
     `https://cdn.cloudflare.steamstatic.com/steam/apps/${appid}`,
-    `https://shared.akamai.steamstatic.com/steam/apps/${appid}`
+    `https://shared.akamai.steamstatic.com/steam/apps/${appid}`,
+    `https://steamcdn-a.akamaihd.net/steam/apps/${appid}`
   ];
   return roots.flatMap(root => [
     `${root}/library_600x900_2x.jpg`,
     `${root}/library_600x900.jpg`
   ]);
+}
+
+function steamHashedPosterCandidates(release) {
+  const sourceUrls = uniq([
+    release?.image?.source_url,
+    ...(release?.image?.candidate_urls || []),
+    ...(release?.image_candidates || [])
+  ]);
+  const candidates = [];
+
+  for (const rawUrl of sourceUrls) {
+    if (!/^https?:\/\//i.test(rawUrl)) continue;
+    const url = rawUrl.replace(/&amp;/g, '&').split(/[?#]/)[0];
+    const match = url.match(/^(https?:\/\/[^/]+\/store_item_assets\/steam\/apps\/(\d+)\/[a-f0-9]{16,}\/)[^/]+$/i);
+    if (!match) continue;
+
+    const base = match[1];
+    const appid = match[2];
+    const bases = uniq([
+      base,
+      base.replace(/^https?:\/\/shared\.akamai\.steamstatic\.com/i, 'https://shared.fastly.steamstatic.com'),
+      base.replace(/^https?:\/\/shared\.fastly\.steamstatic\.com/i, 'https://shared.akamai.steamstatic.com')
+    ]);
+    for (const hashedBase of bases) {
+      candidates.push(`${hashedBase}library_600x900_2x.jpg`);
+      candidates.push(`${hashedBase}library_600x900.jpg`);
+    }
+    candidates.push(...steamStaticPosterCandidates(Number(appid)));
+  }
+
+  return uniq(candidates);
 }
 
 async function steamStorePosterCandidates(appid) {
@@ -234,6 +267,7 @@ async function resolveOne(root, release, options) {
   ]);
   const candidates = uniq([
     ...explicitPosterCandidates(release),
+    ...steamHashedPosterCandidates(release),
     ...steamPosters,
     ...officialArtwork,
     ...wikipediaArtwork
