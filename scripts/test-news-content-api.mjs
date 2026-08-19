@@ -111,7 +111,8 @@ vm.runInContext(apiSource, context, { filename: 'features/news/content-api/index
 
 const api = context.window.IgropoiskNewsContent;
 assert.ok(api, 'Content API must be published.');
-assert.equal(api.version, 1);
+assert.equal(api.version, 2);
+assert.equal(typeof api.getArchive, 'function');
 assert.equal(api.sources.length, 3);
 assert.ok(Object.isFrozen(api));
 assert.ok(Object.isFrozen(api.sources));
@@ -125,6 +126,9 @@ assert.ok(!all.some(entry => entry.primaryUrl.endsWith('/official')), 'Raw publi
 assert.ok(Object.isFrozen(all));
 assert.equal(api.health().status, 'ready');
 assert.equal(api.health().sources.length, 3);
+
+const archive = await api.getArchive({ lang: 'ru' });
+assert.equal(archive.length, 2, 'Repository fallback must remain a valid archive source before schema v2 storage is live.');
 
 const afterFirstLoad = requested.length;
 await api.getAll({ lang: 'ru' });
@@ -148,4 +152,4 @@ api.invalidate();
 await assert.rejects(() => api.getAll({ lang: 'ru', force: true }), /All news sources are unavailable/);
 assert.equal(api.health().status, 'error');
 
-console.log('News Content API editorial-selection contract test passed.');
+console.log('News Content API v2 editorial-selection and archive fallback contract test passed.');
