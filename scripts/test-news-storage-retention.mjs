@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { buildSnapshotRetentionPlan } from './prune-news-storage.mjs';
+import { buildMediaRetentionPlan, buildSnapshotRetentionPlan } from './prune-news-storage.mjs';
 
 const prefix = 'news/snapshots';
 const object = (version, file = 'manifest.json', size = 100) => ({
@@ -55,6 +55,25 @@ assert.deepEqual(
 assert(!productionPlan.retainedVersions.includes(olderSameDay));
 assert(!productionPlan.retainedVersions.includes(ancient));
 
+const media = [
+  { key: 'news/media/current.webp', size: 300 },
+  { key: 'news/media/archive.webp', size: 400 },
+  { key: 'news/media/orphan.webp', size: 500 },
+  { key: 'other-module/untouched.webp', size: 900 }
+];
+const mediaPlan = buildMediaRetentionPlan(media, new Set([
+  'news/media/current.webp',
+  'news/media/archive.webp'
+]));
+assert.deepEqual(mediaPlan.retainedObjects.map(entry => entry.key), [
+  'news/media/current.webp',
+  'news/media/archive.webp'
+]);
+assert.deepEqual(mediaPlan.removedObjects.map(entry => entry.key), ['news/media/orphan.webp']);
+assert.equal(mediaPlan.removedBytes, 500);
+assert.equal(mediaPlan.retainedBytes, 700);
+assert.ok(mediaPlan.removedObjects.every(entry => entry.key.startsWith('news/media/')), 'media GC must never cross the news/media namespace');
+
 assert.throws(() => buildSnapshotRetentionPlan(objects, {
   snapshotPrefix: prefix,
   currentVersion: 'missing-current',
@@ -62,4 +81,4 @@ assert.throws(() => buildSnapshotRetentionPlan(objects, {
   keepDailySnapshots: 1
 }), /was not found/, 'cleanup must fail closed when the current snapshot cannot be found');
 
-console.log('News Object Storage retention safety tests passed.');
+console.log('News Object Storage snapshot and media retention safety tests passed.');
