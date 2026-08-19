@@ -1,16 +1,16 @@
 {
   "orchestrator": "commercial-review-contract-v4",
-  "checked_at": "2026-08-19T09:33:04.359Z",
+  "checked_at": "2026-08-19T09:36:07.563Z",
   "requested": [
-    "balatro"
+    "fallout-2"
   ],
   "completed": [],
   "waiting_release": [],
   "failures": [
     {
-      "slug": "balatro",
+      "slug": "fallout-2",
       "stage": "prerequisites",
-      "error": "article-corpus: file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-article-corpus.mjs:34\nasync function openai(body){const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(240000)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('OpenAI returned no output_text');return JSON.parse(text.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                    ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at openai (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-article-corpus.mjs:34:277)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-article-corpus.mjs:41:593\n\nNode.js v22.23.2\ncommercial-media: balatro: commercial media needs_search — 6/15 verified unique screenshots persisted"
+      "error": "article-corpus: file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-article-corpus.mjs:34\nasync function openai(body){const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(240000)});if(!r.ok)throw new Error(`OpenAI API ${r.status}: ${await r.text()}`);const data=await r.json();const text=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;if(!text)throw new Error('OpenAI returned no output_text');return JSON.parse(text.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                    ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at openai (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-article-corpus.mjs:34:277)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-review-article-corpus.mjs:41:593\n\nNode.js v22.23.2"
     }
   ],
   "status": "needs_search"
