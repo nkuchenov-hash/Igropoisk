@@ -11,7 +11,7 @@ const write=(r,v)=>{const target=path.join(root,r);fs.mkdirSync(path.dirname(tar
 const words=v=>(String(v||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]+/g)||[]).length;
 const lowerLatin=v=>[...String(v||'').matchAll(/\b[a-z][a-z-]{2,}\b/g)].map(x=>x[0]).filter(x=>!['fallout','rpg'].includes(x));
 const placeholder=/(?:^|\b)(?:текст\s+от|краткое\s+описание|напиши(?:те)?|создай(?:те)?|русск(?:их|ими)\s+слов|для\s+обзора|формулирует\s+редакционный\s+тезис|целевой\s+объ[её]м)(?:\b|$)/i;
-const LEAD_TIMEOUT_MS=180000,LEAD_RETRY_TIMEOUT_MS=120000,DEK_TIMEOUT_MS=60000;
+const LEAD_TIMEOUT_MS=180000,LEAD_RETRY_TIMEOUT_MS=120000,LEAD_CONTINUATION_TIMEOUT_MS=90000,DEK_TIMEOUT_MS=60000;
 
 const contract=read('config/review-commercial-contract.json',{}),rules=contract.article||{};
 const game=read(`data/drafts/${slug}.json`),corpus=read(`data/review-article-corpus/${slug}.json`);
@@ -42,11 +42,16 @@ function errors(meta){
   return out;
 }
 function leadErrors(lead){const out=[];const wc=words(lead);if(wc<leadMinWords)out.push(`lead ${wc}/${leadMinWords}`);if(wc>220)out.push(`lead ${wc}>220`);if(placeholder.test(lead))out.push('instruction-placeholder text');const latin=lowerLatin(lead);if(latin.length)out.push(`latin ${[...new Set(latin)].join(',')}`);return out}
+function continuationErrors(text){const out=[];const wc=words(text);if(wc<35)out.push(`continuation ${wc}/35`);if(wc>110)out.push(`continuation ${wc}>110`);if(placeholder.test(text))out.push('instruction-placeholder text');const latin=lowerLatin(text);if(latin.length)out.push(`latin ${[...new Set(latin)].join(',')}`);return out}
 function dekErrors(dek){const out=[];if(words(dek)<18||String(dek||'').length<100)out.push(`dek ${words(dek)}/18`);if(words(dek)>55)out.push(`dek ${words(dek)}>55`);if(placeholder.test(dek))out.push('instruction-placeholder text');const latin=lowerLatin(dek);if(latin.length)out.push(`latin ${[...new Set(latin)].join(',')}`);return out}
 
 const leadSchema={type:'object',additionalProperties:false,required:['lead'],properties:{lead:{type:'string'}}};
 async function generateLead(evidence,timeoutMs,extra=''){
   return chatJson({system:'Ты старший русскоязычный игровой журналист. Верни только готовое вступление в JSON, без шаблонов, инструкций и мета-комментариев. Не добавляй факты вне evidence.',prompt:`Напиши lead большого обзора ${identity.title}: 140–180 русских слов, 2–3 связных абзаца. Сразу сформулируй редакционный тезис, покажи главные сильные стороны и важные ограничения по критическим рецензиям. Никакого пересказа задания и фраз о количестве слов. Английские слова запрещены кроме Fallout/RPG.\nКАНОНИЧЕСКАЯ ИДЕНТИЧНОСТЬ:\n${JSON.stringify(identity)}\nКОМПАКТНОЕ EVIDENCE:\n${JSON.stringify(evidence)}${extra}`,schema:leadSchema,temperature:0.22,numCtx:8192,numPredict:850,timeoutMs})
+}
+const continuationSchema={type:'object',additionalProperties:false,required:['continuation'],properties:{continuation:{type:'string'}}};
+async function generateLeadContinuation(lead,evidence){
+  return chatJson({system:'Ты старший русскоязычный игровой журналист. Верни только естественное продолжение уже написанного вступления в JSON. Не повторяй существующие фразы и не добавляй факты вне evidence.',prompt:`Продолжи вступление обзора ${identity.title} ещё на 55–85 русских слов. Не переписывай и не пересказывай существующий lead: добавь один связный абзац, который углубляет редакционный тезис через конкретные достоинства, ограничения или особенности, подтверждённые evidence. Продолжение должно естественно читаться сразу после исходного текста. Английские слова запрещены кроме Fallout/RPG.\nИСХОДНЫЙ LEAD:\n${lead}\nКОМПАКТНОЕ EVIDENCE:\n${JSON.stringify(evidence)}`,schema:continuationSchema,temperature:0.18,numCtx:6144,numPredict:520,timeoutMs:LEAD_CONTINUATION_TIMEOUT_MS})
 }
 const dekSchema={type:'object',additionalProperties:false,required:['dek'],properties:{dek:{type:'string'}}};
 async function generateDek(lead,extra=''){
@@ -65,6 +70,16 @@ if(leadGate.length){
       currentLead=String(result?.lead||'').trim();state.meta.lead=currentLead;persist();leadGate=leadErrors(currentLead);if(!leadGate.length)break;lastError=leadGate.join('; ');
     }catch(error){lastError=error.message;leadGate=[`generation ${error.message}`]}
   }
+  if(leadGate.length&&words(currentLead)>=60&&words(currentLead)<leadMinWords&&leadGate.every(x=>x.startsWith('lead '))){
+    try{
+      const result=await generateLeadContinuation(currentLead,compactEvidence.slice(0,3));
+      const continuation=String(result?.continuation||'').trim(),fragmentGate=continuationErrors(continuation);
+      if(fragmentGate.length){lastError=fragmentGate.join('; ')}else{
+        const combined=`${currentLead}\n\n${continuation}`.trim(),combinedGate=leadErrors(combined);
+        currentLead=combined;state.meta.lead=currentLead;persist();leadGate=combinedGate;lastError=combinedGate.join('; ');
+      }
+    }catch(error){lastError=error.message}
+  }
   if(leadGate.length){persist();throw new Error(`${slug}: compact lead preflight failed: ${lastError||leadGate.join('; ')}`)}
 }
 
@@ -76,4 +91,4 @@ if(dekGate.length){
 }
 const finalErrors=errors(state.meta);if(finalErrors.length){persist();throw new Error(`${slug}: compact meta preflight failed: ${finalErrors.join('; ')}`)}
 persist();
-console.log(JSON.stringify({slug,status:'green',provider:'local-ollama',architecture:'compact-split-meta-v2',model:LOCAL_EDITORIAL_MODEL,title:state.meta.title,dek_words:words(state.meta.dek),lead_words:words(state.meta.lead),evidence_sources:compactEvidence.length,placeholder:false,bounded_component_timeouts:true},null,2));
+console.log(JSON.stringify({slug,status:'green',provider:'local-ollama',architecture:'compact-split-meta-v3',model:LOCAL_EDITORIAL_MODEL,title:state.meta.title,dek_words:words(state.meta.dek),lead_words:words(state.meta.lead),evidence_sources:compactEvidence.length,placeholder:false,bounded_component_timeouts:true,bounded_short_lead_continuation:true},null,2));
