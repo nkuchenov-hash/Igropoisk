@@ -7,6 +7,8 @@ const read=path=>fs.readFileSync(path,'utf8');
 const json=path=>JSON.parse(read(path));
 const contract=json('config/review-commercial-contract.json');
 assert.ok(Number(contract.article?.minimum_words)>=3000,'commercial article minimum must be at least 3000 words');
+assert.ok(Number(contract.article?.minimum_words_per_section)>=260,'commercial section minimum must remain at least 260 words');
+assert.ok(Number(contract.article?.lead_minimum_words)>=120,'commercial lead minimum must remain at least 120 words');
 assert.ok(Number(contract.game_media?.minimum_unique_screenshots)>=15,'commercial game media minimum must be at least 15 screenshots');
 assert.ok(Number(contract.game_media?.target_unique_screenshots)>=20,'commercial game media target must be at least 20 screenshots');
 assert.equal(contract.game_media?.artwork_must_never_enter_screenshot_pool,true,'artwork must be separate from screenshots');
@@ -38,8 +40,12 @@ assert.ok(synthesis.includes('current={...current,paragraphs:[...(current.paragr
 assert.ok(synthesis.includes('persist()'),'sectioned local review does not persist progress between components');
 assert.ok(!synthesis.includes('numPredict:10000'),'monolithic 3000+ word local generation was reintroduced');
 assert.ok(!synthesis.includes('LOCAL_GENERATION_TIMEOUT_MS=900000'),'monolithic 15-minute local generation timeout was reintroduced');
-for(const marker of ['meta_parts','MAX_LEAD_PARTS=3','LEAD_PART_TIMEOUT_MS=150000','LEAD_PART_RETRY_TIMEOUT_MS=90000','DEK_TIMEOUT_MS=60000','generateLeadPart','partErrors','joinedLead','slice(partIndex*2,partIndex*2+2)','numCtx:6144','numPredict:520','leadMinWords','persistent-multi-paragraph-meta-v3'])assert.ok(metaPreflight.includes(marker),`persistent multi-paragraph meta safeguard missing: ${marker}`);
+for(const marker of ['meta_parts','MAX_LEAD_PARTS=3','LEAD_PART_TIMEOUT_MS=150000','LEAD_PART_RETRY_TIMEOUT_MS=90000','DEK_TIMEOUT_MS=60000','META_QUALITY_TIMEOUT_MS=120000','SECTION_REUSE_AUDIT_TIMEOUT_MS=120000','MAX_META_QUALITY_PASSES=2','generateLeadPart','partErrors','joinedLead','dedupeLeadParts','nearDuplicateText','paragraphDuplicateErrors','auditMeta','auditPersistedSection','quality_reuse_audit','section_quality_rejections','persistent-multi-paragraph-meta-v4-quality-gated'])assert.ok(metaPreflight.includes(marker),`persisted editorial quality safeguard missing: ${marker}`);
 assert.ok(metaPreflight.includes('words(currentLead)<leadMinWords'),'lead generation must keep adding bounded paragraphs until the unchanged commercial word floor is met');
+assert.ok(metaPreflight.includes("state.meta_parts.lead.some(existing=>nearDuplicateText(existing,part))"),'new lead paragraphs must be rejected when they repeat persisted text');
+assert.ok(metaPreflight.includes("delete state.sections[id]"),'persisted sections that fail reuse quality audit must be discarded before synthesis resumes');
+assert.ok(metaPreflight.includes("source_grounding:true")||metaPreflight.includes("source_grounding:{type:'boolean'}"),'persisted section reuse must include an explicit source-grounding criterion');
+assert.ok(metaPreflight.includes('machineRussian'),'obvious machine-Russian output must have a deterministic fail-closed backstop');
 assert.ok(!metaPreflight.includes("lead:{type:'string',minLength:800}"),'meta preflight must not use expensive long-string schema constraint');
 assert.ok(!metaPreflight.includes('numCtx:12288'),'meta preflight regressed to oversized combined prompt');
 assert.ok(!metaPreflight.includes('timeoutMs:360000'),'meta preflight regressed to a six-minute monolithic component');
@@ -57,4 +63,4 @@ const legacy=postRunner;for(const forbidden of ['deferred_to_catalog_lifecycle',
 const validator=read('scripts/validate-commercial-review-v2.mjs');assert.ok(validator.includes('exhaustive_discovery'),'validator must understand exhaustive below-preferred fallback');assert.ok(!validator.includes("status:'blocked'"),'validator must not emit terminal blocked state');
 const media=read('scripts/enforce-commercial-game-media.mjs');assert.ok(!media.includes("status:'blocked'"),'media enrichment must not emit terminal blocked state');
 const overlay=read('scripts/publish-game-post-create-overlay.mjs');assert.ok(overlay.includes("'data/review-article-corpus'"),'overlay must persist article corpus between retry passes');assert.ok(overlay.includes("'data/review-discovery-audits'"),'overlay must persist discovery audit between retry passes');assert.ok(overlay.includes("'data/article-drafts'"),'overlay must persist deterministic commercial article drafts between retry passes');assert.ok(overlay.includes("'data/article-section-drafts'"),'overlay must persist completed local review sections between retry passes');
-console.log('Commercial review contract v2 static boundary passed, including provider-independent fallback, bounded research, persistent multi-paragraph meta, bounded section continuation, local-first persistent sectioned synthesis, non-destructive commercial media bootstrap, non-empty structured fields and per-request concurrency.');
+console.log('Commercial review contract v2 static boundary passed, including provider-independent fallback, bounded research, duplicate-resistant quality-gated persistent meta, persisted-section reuse audit, bounded section continuation, local-first persistent synthesis, non-destructive commercial media bootstrap, non-empty structured fields and per-request concurrency.');
