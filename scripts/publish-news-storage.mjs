@@ -192,8 +192,9 @@ export async function publishNewsSnapshot({
       schemaVersion: 1,
       channel: 'news-archive-month',
       month,
-      generatedAt: now.toISOString(),
       count: items.length,
+      newestPublishedAt: items[0]?.publishedAt || '',
+      oldestPublishedAt: items.at(-1)?.publishedAt || '',
       items
     });
     const digest = sha256(body);
