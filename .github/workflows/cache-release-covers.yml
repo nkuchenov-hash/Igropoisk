@@ -2,6 +2,15 @@ name: Cache release covers locally
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * *'
+  push:
+    branches: [staging]
+    paths:
+      - 'scripts/cache-release-covers.mjs'
+      - 'scripts/lib/release-cover-resolver.mjs'
+      - 'features/home-releases/rules.json'
+      - '.github/workflows/cache-release-covers.yml'
 
 permissions:
   contents: write
@@ -13,6 +22,7 @@ concurrency:
 jobs:
   cache:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout staging
         uses: actions/checkout@v4
@@ -20,20 +30,29 @@ jobs:
           ref: staging
           fetch-depth: 0
 
-      - name: Download and verify official covers
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install image validation dependency
+        run: npm install --no-save --ignore-scripts image-size@2
+
+      - name: Find and verify a quality portrait cover for every visible release
         run: |
           node --check scripts/cache-release-covers.mjs
+          node --check scripts/lib/release-cover-resolver.mjs
           node scripts/cache-release-covers.mjs
 
-      - name: Commit local cover snapshot to staging
+      - name: Commit complete quality-cover snapshot to staging
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add assets/covers/releases data/releases/current.json
+          git add assets/covers/releases data/releases/current.json data/releases/public.json
           if git diff --cached --quiet; then
-            echo 'Release covers are already current.'
+            echo 'Every visible release already has a quality cover.'
             exit 0
           fi
-          git commit -m 'Обновить локальные обложки релизов в staging'
+          git diff --check
+          git commit -m 'Fulfill verified release covers in staging'
           git pull --rebase origin staging
           git push origin HEAD:staging

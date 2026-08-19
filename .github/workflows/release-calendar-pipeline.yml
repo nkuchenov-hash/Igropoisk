@@ -10,6 +10,7 @@ on:
       - "scripts/lib/release-game-registry-adapter.mjs"
       - "scripts/lib/release-audience-relevance.mjs"
       - "scripts/lib/release-notability.mjs"
+      - "scripts/lib/release-cover-resolver.mjs"
       - "scripts/lib/publication-source-registry.mjs"
       - "scripts/lib/official-source-registry.mjs"
       - "scripts/lib/release-publication-discovery.mjs"
@@ -43,6 +44,7 @@ on:
       - "scripts/lib/release-game-registry-adapter.mjs"
       - "scripts/lib/release-audience-relevance.mjs"
       - "scripts/lib/release-notability.mjs"
+      - "scripts/lib/release-cover-resolver.mjs"
       - "scripts/lib/publication-source-registry.mjs"
       - "scripts/lib/official-source-registry.mjs"
       - "scripts/lib/release-publication-discovery.mjs"
@@ -66,6 +68,7 @@ on:
       - "assets/release-admin.js"
       - "calendar/**"
       - "admin/parsers/releases/**"
+      - ".github/workflows/release-calendar-pipeline.yml"
   workflow_dispatch:
     inputs:
       refresh_discovery:
@@ -95,6 +98,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Install cover validation dependency
+        run: npm install --no-save --ignore-scripts image-size@2
       - name: Validate source registry wiring
         run: node scripts/validate-release-source-registries.mjs
       - name: Source registry regression tests
