@@ -47,10 +47,30 @@ export async function imageToBase64(url, {timeoutMs=15000, maxBytes=8_000_000}={
   return buffer.toString('base64');
 }
 
+export function strengthenJsonSchema(schema) {
+  if (!schema || schema === 'json' || typeof schema !== 'object' || Array.isArray(schema)) return schema;
+  const copy = structuredClone(schema);
+  const visit = node => {
+    if (!node || typeof node !== 'object' || Array.isArray(node)) return;
+    if (node.type === 'object' && node.properties && typeof node.properties === 'object') {
+      const required = new Set(Array.isArray(node.required) ? node.required : []);
+      for (const [key, property] of Object.entries(node.properties)) {
+        if (required.has(key) && property?.type === 'string') property.minLength = Math.max(1, Number(property.minLength || 0));
+        visit(property);
+      }
+    }
+    if (node.type === 'array') visit(node.items);
+    for (const key of ['allOf','anyOf','oneOf']) if (Array.isArray(node[key])) for (const child of node[key]) visit(child);
+  };
+  visit(copy);
+  return copy;
+}
+
 export async function chatJson({system='', prompt, schema='json', images=[], temperature=0.2, numCtx=32768, numPredict=12000, timeoutMs=900000, repeatPenalty=1.18, repeatLastN=1024}) {
   if (!prompt) throw new Error('Local editorial prompt is required');
   const ready = await localModelReady();
   if (!ready) throw new Error(`Local editorial model is not ready: ${LOCAL_EDITORIAL_MODEL}`);
+  const format = strengthenJsonSchema(schema);
   const payload=await ollamaJson('/api/chat',{
     method:'POST',
     timeoutMs,
@@ -58,7 +78,7 @@ export async function chatJson({system='', prompt, schema='json', images=[], tem
       model: LOCAL_EDITORIAL_MODEL,
       stream: false,
       think: false,
-      format: schema,
+      format,
       messages: [
         ...(system ? [{role: 'system', content: system}] : []),
         {role: 'user', content: prompt, ...(images.length ? {images} : {})}
