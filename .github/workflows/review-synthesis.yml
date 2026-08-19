@@ -31,6 +31,8 @@ jobs:
       OPENAI_REVIEW_MODEL: ${{ vars.OPENAI_REVIEW_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
       OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
       OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
+      LOCAL_TEXT_MODEL: qwen3:4b
+      LOCAL_EDITORIAL_MODEL: qwen3:4b
     steps:
       - uses: actions/checkout@v4
         with:
@@ -61,16 +63,46 @@ jobs:
           node --check scripts/sync-review-policy.mjs
           node --check scripts/enforce-commercial-game-media.mjs
           node --check scripts/build-review-article-corpus.mjs
+          node --check scripts/build-review-article-corpus-resilient.mjs
           node --check scripts/run-commercial-review-contract.mjs
           node --check scripts/synthesize-commercial-review-openai.mjs
+          node --check scripts/synthesize-commercial-review-resilient.mjs
           node --check scripts/enrich-commercial-review-media-openai.mjs
+          node --check scripts/enrich-commercial-review-media-resilient.mjs
           node --check scripts/validate-commercial-review-v2.mjs
           node --check scripts/render-review-pages.mjs
           node --check scripts/canonicalize-editorial-game-id.mjs
           node --check scripts/publish-game-post-create-overlay.mjs
+          node --check scripts/lib/local-editorial-model.mjs
           node scripts/test-commercial-review-contract-v2.mjs
       - name: Synchronize legacy policy mirrors from commercial contract
         run: node scripts/sync-review-policy.mjs
+      - name: Restore local commercial model cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama/models
+          key: ollama-commercial-qwen3-4b-v1
+      - name: Start local commercial fallback model service
+        run: |
+          set -euo pipefail
+          if ! command -v ollama >/dev/null 2>&1; then curl -fsSL https://ollama.com/install.sh | sh; fi
+          nohup ollama serve >/tmp/ollama-commercial.log 2>&1 &
+          for attempt in $(seq 1 45); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/ollama-commercial.log || true
+          exit 1
+      - name: Ensure qwen3 4b local commercial fallback
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5; do
+            ollama list | grep -Fq "$LOCAL_TEXT_MODEL" && exit 0
+            ollama pull "$LOCAL_TEXT_MODEL" && exit 0
+            sleep $((attempt * 5))
+          done
+          echo "::error::Required provider-independent fallback model $LOCAL_TEXT_MODEL is unavailable."
+          exit 1
       - name: Run the one commercial review contract
         id: commercial
         continue-on-error: true
