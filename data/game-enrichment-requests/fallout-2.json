@@ -17,9 +17,9 @@
     "similarity": "ready"
   },
   "reason": "fallout-2-sectioned-persistent-commercial-review-v11-meta-schema-acceptance",
-  "last_run_at": "2026-08-19T22:41:14.839Z",
-  "run_attempts": 5,
-  "review_attempts": 5,
+  "last_run_at": "2026-08-19T23:00:19.822Z",
+  "run_attempts": 6,
+  "review_attempts": 6,
   "observed": {
     "series_games": 9,
     "screenshots": 20,
@@ -34,7 +34,7 @@
     "terminal": false,
     "retryable": true,
     "stage": "meta-preflight",
-    "last_error": "node:internal/modules/run_main:123\n    triggerUncaughtException(\n    ^\n\nError: Local editorial model request timed out after 360000ms\n    at ClientRequest.<anonymous> (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:20:54)\n    at Object.onceWrapper (node:events:633:28)\n    at ClientRequest.emit (node:events:519:28)\n    at Socket.emitRequestTimeout (node:_http_client:931:9)\n    at Object.onceWrapper (node:events:633:28)\n    at Socket.emit (node:events:531:35)\n    at Socket._onTimeout (node:net:605:8)\n    at listOnTimeout (node:internal/timers:585:17)\n    at process.processTimers (node:internal/timers:521:7)\n\nNode.js v22.23.2",
-    "updated_at": "2026-08-19T22:41:14.839Z"
+    "last_error": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-sectioned-review-meta.mjs:68\n  if(leadGate.length){persist();throw new Error(`${slug}: compact lead preflight failed: ${lastError||leadGate.join('; ')}`)}\n                                      ^\n\nError: fallout-2: compact lead preflight failed: lead 79/120\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-sectioned-review-meta.mjs:68:39\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n\nNode.js v22.23.2",
+    "updated_at": "2026-08-19T23:00:19.823Z"
   }
 }
