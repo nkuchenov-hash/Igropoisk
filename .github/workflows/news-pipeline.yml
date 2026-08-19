@@ -34,7 +34,7 @@ on:
       - 'data/news-game-aliases.json'
       - 'data/news-game-overrides.json'
       - 'features/news/content-api/index.js'
-      - 'features/news/shared/archive-facade-v2.js'
+      - 'features/news/shared/index.js'
       - 'features/news/module.json'
       - 'scripts/fetch-news.mjs'
       - 'scripts/collect-regional-news.mjs'
@@ -109,7 +109,7 @@ jobs:
       - name: Verify pipeline and storage code before network work
         run: |
           node --check features/news/content-api/index.js
-          node --check features/news/shared/archive-facade-v2.js
+          node --check features/news/shared/index.js
           node --check scripts/run-news-pipeline.mjs
           node --check scripts/build-news-pipeline-health.mjs
           node --check scripts/validate-news-pipeline.mjs
