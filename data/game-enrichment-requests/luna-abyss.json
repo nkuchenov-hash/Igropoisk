@@ -10,14 +10,28 @@
   "creator_source": "news",
   "modules": {
     "series": "not_known",
-    "review": "queued",
-    "media": "queued",
+    "review": "needs_revision",
+    "media": "ready",
     "dna": "needs_revision",
     "similarity": "ready"
   },
   "reason": "post_create_enrichment_must_not_block_base_page",
   "observed": {
     "game_dna": false,
-    "similarity": true
+    "similarity": true,
+    "screenshots": 20,
+    "artwork": 4,
+    "review_stage": null
+  },
+  "state": "needs_revision",
+  "last_run_at": "2026-08-19T23:20:04.652Z",
+  "run_attempts": 1,
+  "review_attempts": 1,
+  "retry": {
+    "terminal": false,
+    "retryable": true,
+    "stage": "long-review",
+    "last_error": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:101\n  throw new Error(`${slug}: section ${id} failed bounded component gate: ${errors.join('; ')}`)\n        ^\n\nError: luna-abyss: section world-and-premise failed bounded component gate: words 159/260\n    at buildSection (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:101:9)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:103:33\n\nNode.js v22.23.2",
+    "updated_at": "2026-08-19T23:20:04.653Z"
   }
 }
