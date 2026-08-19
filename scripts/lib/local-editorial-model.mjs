@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import http from 'node:http';
 import https from 'node:https';
 
-export const LOCAL_EDITORIAL_MODEL = process.env.LOCAL_EDITORIAL_MODEL || 'qwen3-vl:4b';
+export const LOCAL_EDITORIAL_MODEL = process.env.LOCAL_EDITORIAL_MODEL || process.env.LOCAL_TEXT_MODEL || 'qwen3:4b';
 export const OLLAMA_HOST = String(process.env.OLLAMA_HOST || 'http://127.0.0.1:11434').replace(/\/$/, '');
 
 function ollamaJson(pathname,{method='GET',body=null,timeoutMs=900000}={}){
@@ -37,7 +37,7 @@ export async function imageToBase64(url, {timeoutMs=15000, maxBytes=8_000_000}={
   const response = await fetch(url, {
     redirect: 'follow',
     signal: AbortSignal.timeout(timeoutMs),
-    headers: {'user-agent': 'IgropoiskLocalEditorial/1.0'}
+    headers: {'user-agent': 'IgropoiskLocalEditorial/2.0'}
   });
   if (!response.ok) throw new Error(`Image HTTP ${response.status}: ${url}`);
   const type = String(response.headers.get('content-type') || '').toLowerCase();
