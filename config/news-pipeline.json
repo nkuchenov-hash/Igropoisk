@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 5,
   "timezone": "UTC",
   "schedule_cron": "23 * * * *",
   "groups": [
@@ -30,7 +30,16 @@
     "node scripts/build-news-events.mjs",
     "node scripts/preserve-news-history.mjs --merge",
     "node scripts/resolve-news-game-context.mjs",
+    "node scripts/verify-news-game-identities.mjs",
+    "node scripts/normalize-news-game-hashtags.mjs",
     "node scripts/build-home-news.mjs"
+  ],
+  "validation_commands": [
+    "node scripts/validate-news-pipeline.mjs --baseline HEAD",
+    "node scripts/test-news-content-api.mjs",
+    "node scripts/validate-news-module.mjs",
+    "node scripts/test-news-game-candidate-safety.mjs",
+    "node scripts/test-game-creator-boundary.mjs"
   ],
   "health": {
     "output_file": "data/news-pipeline-health.json",
@@ -93,10 +102,28 @@
       "provider": "yandex-object-storage",
       "current_manifest": "news/manifests/current.json",
       "snapshot_prefix": "news/snapshots",
+      "archive_prefix": "news/archive",
       "media_prefix": "news/media",
-      "maximum_snapshot_bytes": 25000000,
+      "live_window_days": 30,
+      "public_files": [
+        "data/news.json",
+        "data/publisher-news.json",
+        "data/news-events.json",
+        "data/news-home-ru.json",
+        "data/news-pipeline-health.json"
+      ],
+      "maximum_snapshot_bytes": 8000000,
       "immutable_cache_control": "public, max-age=31536000, immutable",
-      "manifest_cache_control": "no-store, max-age=0"
+      "archive_cache_control": "public, max-age=300, stale-while-revalidate=86400",
+      "manifest_cache_control": "no-store, max-age=0",
+      "retention": {
+        "keep_recent_snapshots": 3,
+        "keep_daily_snapshots": 0,
+        "delete_incomplete_snapshots": true,
+        "delete_unreferenced_media": true,
+        "delete_concurrency": 16,
+        "preserve_historical_news": true
+      }
     }
   }
 }
