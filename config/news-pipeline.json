@@ -105,7 +105,15 @@
       "media_prefix": "news/media",
       "maximum_snapshot_bytes": 25000000,
       "immutable_cache_control": "public, max-age=31536000, immutable",
-      "manifest_cache_control": "no-store, max-age=0"
+      "manifest_cache_control": "no-store, max-age=0",
+      "retention": {
+        "keep_recent_snapshots": 12,
+        "keep_daily_snapshots": 7,
+        "delete_incomplete_snapshots": true,
+        "delete_concurrency": 16,
+        "preserve_media": true,
+        "preserve_historical_news": true
+      }
     }
   }
 }
