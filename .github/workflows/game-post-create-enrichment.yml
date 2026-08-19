@@ -20,9 +20,12 @@ on:
       - 'scripts/enrich-game-media-from-sources.mjs'
       - 'scripts/enforce-commercial-game-media.mjs'
       - 'scripts/build-review-article-corpus.mjs'
+      - 'scripts/build-review-article-corpus-resilient.mjs'
       - 'scripts/run-commercial-review-contract.mjs'
       - 'scripts/synthesize-commercial-review-openai.mjs'
+      - 'scripts/synthesize-commercial-review-resilient.mjs'
       - 'scripts/enrich-commercial-review-media-openai.mjs'
+      - 'scripts/enrich-commercial-review-media-resilient.mjs'
       - 'scripts/validate-commercial-review-v2.mjs'
       - 'scripts/render-review-pages.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
@@ -35,6 +38,7 @@ on:
       - 'scripts/publish-post-create-production.mjs'
       - 'scripts/test-commercial-review-contract-v2.mjs'
       - 'scripts/test-post-create-production-publisher.mjs'
+      - 'scripts/lib/local-editorial-model.mjs'
       - 'scripts/lib/verified-game-import.mjs'
       - 'article/_shared/review-carousel.js'
       - 'article/_shared/review-shot-card.css'
@@ -53,7 +57,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: game-post-create-enrichment-v4-staging
+  group: game-post-create-enrichment-v5-staging
   cancel-in-progress: false
 
 jobs:
@@ -69,6 +73,8 @@ jobs:
       OPENAI_REVIEW_MODEL: ${{ vars.OPENAI_REVIEW_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
       OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
       OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
+      LOCAL_TEXT_MODEL: qwen3:4b
+      LOCAL_EDITORIAL_MODEL: qwen3:4b
       POST_CREATE_BACKLOG_LIMIT: '1'
     steps:
       - uses: actions/checkout@v4
@@ -97,9 +103,12 @@ jobs:
           node --check scripts/enrich-game-media-from-sources.mjs
           node --check scripts/enforce-commercial-game-media.mjs
           node --check scripts/build-review-article-corpus.mjs
+          node --check scripts/build-review-article-corpus-resilient.mjs
           node --check scripts/run-commercial-review-contract.mjs
           node --check scripts/synthesize-commercial-review-openai.mjs
+          node --check scripts/synthesize-commercial-review-resilient.mjs
           node --check scripts/enrich-commercial-review-media-openai.mjs
+          node --check scripts/enrich-commercial-review-media-resilient.mjs
           node --check scripts/validate-commercial-review-v2.mjs
           node --check scripts/render-review-pages.mjs
           node --check scripts/materialize-review-publication-feed.mjs
@@ -112,6 +121,7 @@ jobs:
           node --check scripts/publish-post-create-production.mjs
           node --check scripts/test-commercial-review-contract-v2.mjs
           node --check scripts/test-post-create-production-publisher.mjs
+          node --check scripts/lib/local-editorial-model.mjs
           node --check scripts/lib/verified-game-import.mjs
           node --check article/_shared/review-carousel.js
           node --check game/_shared/game-page-materialized-data.js
@@ -153,6 +163,38 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           POST_CREATE_PUBLISH_PHASE: bootstrap
         run: node scripts/publish-game-post-create-overlay.mjs
+
+      - name: Restore local commercial model cache
+        if: steps.scope.outputs.count != '0'
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama/models
+          key: ollama-commercial-qwen3-4b-v1
+
+      - name: Start local commercial fallback model service
+        if: steps.scope.outputs.count != '0'
+        run: |
+          set -euo pipefail
+          if ! command -v ollama >/dev/null 2>&1; then curl -fsSL https://ollama.com/install.sh | sh; fi
+          nohup ollama serve >/tmp/ollama-commercial.log 2>&1 &
+          for attempt in $(seq 1 45); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/ollama-commercial.log || true
+          exit 1
+
+      - name: Ensure qwen3 4b local commercial fallback
+        if: steps.scope.outputs.count != '0'
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5; do
+            ollama list | grep -Fq "$LOCAL_TEXT_MODEL" && exit 0
+            ollama pull "$LOCAL_TEXT_MODEL" && exit 0
+            sleep $((attempt * 5))
+          done
+          echo "::error::Required provider-independent fallback model $LOCAL_TEXT_MODEL is unavailable."
+          exit 1
 
       - name: Run the one commercial review contract
         id: commercial
