@@ -216,7 +216,7 @@ async function downloadImage(url, options) {
   if (!inspected.valid) {
     throw new Error(`Cover quality rejected: ${inspected.width}x${inspected.height}, ${inspected.bytes} bytes`);
   }
-  return { bytes, contentType, ...inspected };
+  return { ...inspected, contentType, data: bytes };
 }
 
 async function resolveOne(root, release, options) {
@@ -247,7 +247,7 @@ async function resolveOne(root, release, options) {
       const localUrl = `assets/covers/releases/${release.slug}.${ext}`;
       const target = path.join(root, localUrl);
       await fs.mkdir(path.dirname(target), { recursive: true });
-      await fs.writeFile(target, image.bytes);
+      await fs.writeFile(target, image.data);
       return {
         release: {
           ...release,
@@ -263,8 +263,8 @@ async function resolveOne(root, release, options) {
             content_type: image.contentType,
             width: image.width,
             height: image.height,
-            bytes: image.bytes.length,
-            sha256: crypto.createHash('sha256').update(image.bytes).digest('hex'),
+            bytes: image.bytes,
+            sha256: crypto.createHash('sha256').update(image.data).digest('hex'),
             kind: 'verified_portrait_cover',
             error: null,
             verified: true,
