@@ -2,9 +2,9 @@
   "orchestrator": "commercial-review-contract-v5",
   "status": "needs_revision",
   "game_slug": "fallout-2",
-  "checked_at": "2026-08-19T22:41:14.840Z",
+  "checked_at": "2026-08-19T23:00:19.823Z",
   "terminal": false,
   "retryable": true,
   "stage": "meta-preflight",
-  "error": "node:internal/modules/run_main:123\n    triggerUncaughtException(\n    ^\n\nError: Local editorial model request timed out after 360000ms\n    at ClientRequest.<anonymous> (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:20:54)\n    at Object.onceWrapper (node:events:633:28)\n    at ClientRequest.emit (node:events:519:28)\n    at Socket.emitRequestTimeout (node:_http_client:931:9)\n    at Object.onceWrapper (node:events:633:28)\n    at Socket.emit (node:events:531:35)\n    at Socket._onTimeout (node:net:605:8)\n    at listOnTimeout (node:internal/timers:585:17)\n    at process.processTimers (node:internal/timers:521:7)\n\nNode.js v22.23.2"
+  "error": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-sectioned-review-meta.mjs:68\n  if(leadGate.length){persist();throw new Error(`${slug}: compact lead preflight failed: ${lastError||leadGate.join('; ')}`)}\n                                      ^\n\nError: fallout-2: compact lead preflight failed: lead 79/120\n    at file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-sectioned-review-meta.mjs:68:39\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n\nNode.js v22.23.2"
 }
