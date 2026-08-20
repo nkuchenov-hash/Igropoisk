@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+const workflow=fs.readFileSync('.github/workflows/game-post-create-enrichment.yml','utf8');
+const fail=message=>{throw new Error(message)};
+const quick=workflow.indexOf('Verify published quick reviews on production Pages');
+const accelerated=workflow.indexOf('Run accelerated full commercial review upgrade');
+const cache=workflow.indexOf('Restore local full-review model cache');
+const service=workflow.indexOf('Start local full-review model service');
+const local=workflow.indexOf('Run optional full commercial review upgrade');
+const publish=workflow.indexOf('Publish full commercial review checkpoint');
+const smoke=workflow.indexOf('Verify full commercial reviews on production Pages');
+if([quick,accelerated,cache,service,local,publish,smoke].some(x=>x<0))fail('Full-review provider-order workflow stages are incomplete');
+if(!(quick<accelerated&&accelerated<cache&&cache<service&&service<local&&local<publish&&publish<smoke))fail('Full review must be quick-live -> OpenAI accelerator -> local fallback only if needed -> publish -> live smoke');
+const acceleratedBlock=workflow.slice(accelerated,cache);
+if(!acceleratedBlock.includes("COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR: 'true'"))fail('Accelerated full review does not explicitly enable OpenAI synthesis');
+if(!acceleratedBlock.includes('continue-on-error: true')||!acceleratedBlock.includes('id: full_accelerated'))fail('Accelerated full review must expose a non-blocking outcome for fallback');
+const cacheBlock=workflow.slice(cache,service);
+const serviceBlock=workflow.slice(service,workflow.indexOf('Ensure local text model for optional full upgrade'));
+const localBlock=workflow.slice(local,workflow.indexOf('Persist optional full-review retry state'));
+for(const [name,block] of [['cache',cacheBlock],['service',serviceBlock],['local',localBlock]])if(!block.includes("steps.full_accelerated.outcome == 'failure'"))fail(`${name} local fallback can run before accelerator failure`);
+if(!localBlock.includes("COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR: 'false'"))fail('Local fallback does not explicitly suppress another accelerated attempt');
+if(!workflow.includes('Fail required full review if both providers failed'))fail('Required full-review failure is not fail-closed');
+if(!workflow.includes('Verify required full review completed locally'))fail('Required full-review completion gate is missing');
+for(const marker of ['review-commercial-v2-${slug}.json','full review is below 3000 words','final editorial audit is not green'])if(!workflow.includes(marker))fail(`Required full-review proof missing: ${marker}`);
+console.log('Full-review provider order passed: live grounded review first, OpenAI accelerator first for full quality, Ollama only on failure, required 3000+ review fail-closed before publication.');
