@@ -12,7 +12,7 @@ const words=v=>(String(v||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]+/g)||[]).len
 const lowerLatin=v=>[...String(v||'').matchAll(/\b[a-z][a-z-]{2,}\b/g)].map(x=>x[0]).filter(x=>!['fallout','rpg'].includes(x));
 const placeholder=/(?:^|\b)(?:текст\s+от|краткое\s+описание|напиши(?:те)?|создай(?:те)?|русск(?:их|ими)\s+слов|для\s+обзора|формулирует\s+редакционный\s+тезис|целевой\s+объ[её]м)(?:\b|$)/i;
 const machineRussian=/(?:экспелир\w*|достоинственност\w*|непоседн\w*\s+NPC|валлта[-\s]?двейлер\w*)/iu;
-const LEAD_PART_TIMEOUT_MS=90000,LEAD_PART_RETRY_TIMEOUT_MS=60000,LEAD_SENTENCE_PACK_TIMEOUT_MS=75000,LEAD_SENTENCE_PACK_RETRY_TIMEOUT_MS=60000,LEAD_GENERATION_NUM_CTX=4096,LEAD_PART_NUM_PREDICT=420,LEAD_SENTENCE_PACK_NUM_PREDICT=360,DEK_TIMEOUT_MS=60000,META_QUALITY_TIMEOUT_MS=120000,SECTION_REUSE_AUDIT_TIMEOUT_MS=120000,MAX_LEAD_PARTS=3,MAX_META_QUALITY_PASSES=2;
+const LEAD_PART_TIMEOUT_MS=90000,LEAD_PART_RETRY_TIMEOUT_MS=60000,LEAD_SENTENCE_PACK_TIMEOUT_MS=75000,LEAD_SENTENCE_PACK_RETRY_TIMEOUT_MS=60000,LEAD_GENERATION_NUM_CTX=4096,LEAD_PART_NUM_PREDICT=420,LEAD_SENTENCE_PACK_NUM_PREDICT=360,DEK_TIMEOUT_MS=60000,META_QUALITY_TIMEOUT_MS=90000,SECTION_REUSE_AUDIT_TIMEOUT_MS=90000,META_AUDIT_NUM_CTX=4096,META_AUDIT_NUM_PREDICT=320,SECTION_REUSE_AUDIT_NUM_CTX=4096,SECTION_REUSE_AUDIT_NUM_PREDICT=320,MAX_LEAD_PARTS=3,MAX_META_QUALITY_PASSES=2;
 
 const contract=read('config/review-commercial-contract.json',{}),rules=contract.article||{};
 const game=read(`data/drafts/${slug}.json`),corpus=read(`data/review-article-corpus/${slug}.json`);
@@ -37,8 +37,10 @@ const compactText=(v,max=360)=>String(v||'').replace(/\s+/g,' ').trim().slice(0,
 const compactList=(v,n=2,max=180)=>Array.isArray(v)?v.slice(0,n).map(x=>compactText(x,max)).filter(Boolean):[];
 const compactSource=s=>({id:s.id,publication:s.publication,summary:compactText(s.dossier?.summary,440),strengths:compactList(s.dossier?.strengths,2),criticisms:compactList(s.dossier?.criticisms,2),systems:compactList(s.dossier?.systems,2),examples:compactList(s.dossier?.specific_examples,2),claims:compactList(s.dossier?.notable_claims,2)});
 const compactLeadSource=s=>({id:s.id,publication:s.publication,summary:compactText(s.dossier?.summary,240),strengths:compactList(s.dossier?.strengths,1,130),criticisms:compactList(s.dossier?.criticisms,1,130),systems:compactList(s.dossier?.systems,1,130),examples:compactList(s.dossier?.specific_examples,1,150),claims:compactList(s.dossier?.notable_claims,1,150)});
+const compactAuditSource=s=>({id:s.id,publication:s.publication,summary:compactText(s.dossier?.summary,220),strengths:compactList(s.dossier?.strengths,1,110),criticisms:compactList(s.dossier?.criticisms,1,110),systems:compactList(s.dossier?.systems,1,110),examples:compactList(s.dossier?.specific_examples,1,130),claims:compactList(s.dossier?.notable_claims,1,130)});
 const compactEvidence=sourceDigest.slice(0,6).map(compactSource);
 const compactLeadEvidence=sourceDigest.slice(0,6).map(compactLeadSource);
+const compactAuditEvidence=sourceDigest.map(compactAuditSource);
 const tokens=v=>new Set(String(v||'').toLowerCase().normalize('NFKC').replace(/ё/g,'е').match(/[a-zа-я0-9]{3,}/gi)||[]);
 function textSimilarity(a,b){const aa=tokens(a),bb=tokens(b);if(!aa.size||!bb.size)return 0;let common=0;for(const t of aa)if(bb.has(t))common++;return common/Math.min(aa.size,bb.size)}
 const nearDuplicateText=(a,b)=>textSimilarity(a,b)>=0.72;
@@ -120,35 +122,39 @@ async function buildMeta(){
 
 const qualitySchema={type:'object',additionalProperties:false,required:['natural_russian','source_grounding','no_repetition','editorial_specificity','issues'],properties:{natural_russian:{type:'boolean'},source_grounding:{type:'boolean'},no_repetition:{type:'boolean'},editorial_specificity:{type:'boolean'},issues:{type:'array',items:{type:'string'}}}};
 const qualityPassed=q=>q?.natural_russian===true&&q?.source_grounding===true&&q?.no_repetition===true&&q?.editorial_specificity===true;
-async function auditMeta(){return chatJson({system:'Ты строгий русскоязычный выпускающий редактор и фактчекер. Ищи кальку, кривую грамматику, повторы и факты, которых нет в evidence. Не ставь true из вежливости.',prompt:`Проверь только заголовок, dek и lead обзора ${identity.title}. natural_russian=true только если текст читается как профессионально написанный по-русски, без машинной кальки и неестественных транслитераций. source_grounding=true только если каждый конкретный факт является прямым или осторожным пересказом evidence. no_repetition=true только если абзацы не повторяют один и тот же текст или тезис. editorial_specificity=true только если это содержательное вступление об этой игре, а не общий AI-текст.\nMETA:\n${JSON.stringify(state.meta)}\nEVIDENCE:\n${JSON.stringify(compactEvidence)}`,schema:qualitySchema,temperature:0.02,numCtx:8192,numPredict:650,timeoutMs:META_QUALITY_TIMEOUT_MS})}
+async function auditMeta(){return chatJson({system:'Ты строгий русскоязычный выпускающий редактор и фактчекер. Ищи кальку, кривую грамматику, повторы и факты, которых нет в evidence. Не ставь true из вежливости.',prompt:`Проверь только заголовок, dek и lead обзора ${identity.title}. natural_russian=true только если текст читается как профессионально написанный по-русски, без машинной кальки и неестественных транслитераций. source_grounding=true только если каждый конкретный факт является прямым или осторожным пересказом evidence. no_repetition=true только если абзацы не повторяют один и тот же текст или тезис. editorial_specificity=true только если это содержательное вступление об этой игре, а не общий AI-текст.\nMETA:\n${JSON.stringify(state.meta)}\nCOMPACT EVIDENCE FROM ALL ${compactAuditEvidence.length} ACCEPTED PROFESSIONAL SOURCES:\n${JSON.stringify(compactAuditEvidence)}`,schema:qualitySchema,temperature:0.02,numCtx:META_AUDIT_NUM_CTX,numPredict:META_AUDIT_NUM_PREDICT,timeoutMs:META_QUALITY_TIMEOUT_MS})}
 
 let metaQuality=null;
 for(let pass=1;pass<=MAX_META_QUALITY_PASSES;pass++){
   await buildMeta();
   metaQuality=await auditMeta();
   const deterministicQuality=errors(state.meta);
-  state.meta_quality_audit={checked_at:new Date().toISOString(),pass,fingerprint:JSON.stringify({dek:state.meta.dek,lead:state.meta.lead}),passed:qualityPassed(metaQuality)&&!deterministicQuality.length,criteria:metaQuality,deterministic_errors:deterministicQuality};persist();
+  state.meta_quality_audit={checked_at:new Date().toISOString(),pass,fingerprint:JSON.stringify({dek:state.meta.dek,lead:state.meta.lead}),passed:qualityPassed(metaQuality)&&!deterministicQuality.length,criteria:metaQuality,deterministic_errors:deterministicQuality,audit_context:'compact-all-accepted-sources-v1'};persist();
   if(state.meta_quality_audit.passed)break;
   if(pass<MAX_META_QUALITY_PASSES){state.meta_parts.lead=[];state.meta.lead='';state.meta.dek='';persist()}
 }
 if(!state.meta_quality_audit?.passed)throw new Error(`${slug}: meta editorial quality gate failed: ${(metaQuality?.issues||[]).join('; ')||'quality criteria false'}`);
 
 function sectionFingerprint(section){return JSON.stringify({heading:section?.heading||'',paragraphs:section?.paragraphs||[],source_ids:section?.source_ids||[]})}
+async function rejectPersistedSection(id,section,fingerprint,verdict,deterministic){
+  section.quality_reuse_audit={checked_at:new Date().toISOString(),fingerprint,passed:false,criteria:verdict,deterministic_errors:deterministic,audit_context:deterministic.length?'deterministic-short-circuit':'compact-assigned-sources-v1'};state.sections[id]=section;persist();
+  if(!state.section_quality_rejections||typeof state.section_quality_rejections!=='object')state.section_quality_rejections={};state.section_quality_rejections[id]={checked_at:new Date().toISOString(),issues:[...(verdict?.issues||[]),...deterministic]};delete state.sections[id];persist();return false;
+}
 async function auditPersistedSection(id,section){
   const fingerprint=sectionFingerprint(section);if(section?.quality_reuse_audit?.fingerprint===fingerprint&&section.quality_reuse_audit.passed===true)return true;
-  const evidence=(section?.source_ids||[]).map(x=>sourceById.get(x)).filter(Boolean).map(compactSource);
   const deterministic=[...paragraphDuplicateErrors(section?.paragraphs||[])];if(machineRussian.test((section?.paragraphs||[]).join('\n')))deterministic.push('obvious machine-russian token');
+  if(deterministic.length)return rejectPersistedSection(id,section,fingerprint,{natural_russian:false,source_grounding:false,no_repetition:!deterministic.some(x=>x.startsWith('near-duplicate')),editorial_specificity:false,issues:['deterministic persisted-section quality rejection']},deterministic);
+  const evidence=(section?.source_ids||[]).map(x=>sourceById.get(x)).filter(Boolean).map(compactAuditSource);
   let verdict={natural_russian:false,source_grounding:false,no_repetition:false,editorial_specificity:false,issues:['missing source evidence']};
   if(evidence.length){
-    verdict=await chatJson({system:'Ты строгий русскоязычный выпускающий редактор и фактчекер. Проверяй только предоставленный раздел против его разрешённых source dossiers. Ищи машинный русский, неправильный перевод терминов, повторы и додуманные детали.',prompt:`Проверь сохранённый раздел обзора ${identity.title}. natural_russian=true только для естественного профессионального русского без кальки, сломанной грамматики и нелепой транслитерации. source_grounding=true только если все конкретные утверждения поддержаны приложенными source dossiers; любое придуманное имя, предмет, механика, причинность или оценка делает критерий false. no_repetition=true только при отсутствии смысловых и почти дословных повторов. editorial_specificity=true только если раздел конкретен и аналитичен, без пустого AI-филлера.\nSECTION ID: ${id}\nSECTION:\n${JSON.stringify({heading:section?.heading,paragraphs:section?.paragraphs})}\nALLOWED EVIDENCE:\n${JSON.stringify(evidence)}`,schema:qualitySchema,temperature:0.02,numCtx:8192,numPredict:700,timeoutMs:SECTION_REUSE_AUDIT_TIMEOUT_MS});
+    verdict=await chatJson({system:'Ты строгий русскоязычный выпускающий редактор и фактчекер. Проверяй только предоставленный раздел против его разрешённых source dossiers. Ищи машинный русский, неправильный перевод терминов, повторы и додуманные детали.',prompt:`Проверь сохранённый раздел обзора ${identity.title}. natural_russian=true только для естественного профессионального русского без кальки, сломанной грамматики и нелепой транслитерации. source_grounding=true только если все конкретные утверждения поддержаны приложенными source dossiers; любое придуманное имя, предмет, механика, причинность или оценка делает критерий false. no_repetition=true только при отсутствии смысловых и почти дословных повторов. editorial_specificity=true только если раздел конкретен и аналитичен, без пустого AI-филлера.\nSECTION ID: ${id}\nSECTION:\n${JSON.stringify({heading:section?.heading,paragraphs:section?.paragraphs})}\nCOMPACT ALLOWED EVIDENCE:\n${JSON.stringify(evidence)}`,schema:qualitySchema,temperature:0.02,numCtx:SECTION_REUSE_AUDIT_NUM_CTX,numPredict:SECTION_REUSE_AUDIT_NUM_PREDICT,timeoutMs:SECTION_REUSE_AUDIT_TIMEOUT_MS});
   }
-  const passed=qualityPassed(verdict)&&!deterministic.length;
-  section.quality_reuse_audit={checked_at:new Date().toISOString(),fingerprint,passed,criteria:verdict,deterministic_errors:deterministic};state.sections[id]=section;persist();
-  if(!passed){if(!state.section_quality_rejections||typeof state.section_quality_rejections!=='object')state.section_quality_rejections={};state.section_quality_rejections[id]={checked_at:new Date().toISOString(),issues:[...(verdict?.issues||[]),...deterministic]};delete state.sections[id];persist()}
-  return passed;
+  const passed=qualityPassed(verdict);
+  if(!passed)return rejectPersistedSection(id,section,fingerprint,verdict,[]);
+  section.quality_reuse_audit={checked_at:new Date().toISOString(),fingerprint,passed:true,criteria:verdict,deterministic_errors:[],audit_context:'compact-assigned-sources-v1'};state.sections[id]=section;persist();return true;
 }
 let reusedSectionsChecked=0,reusedSectionsRejected=0;
 for(const [id,section] of Object.entries({...state.sections})){reusedSectionsChecked++;if(!await auditPersistedSection(id,section))reusedSectionsRejected++}
 
 persist();
-console.log(JSON.stringify({slug,status:'green',provider:'local-ollama',architecture:'persistent-multi-paragraph-meta-v6-compact-cpu-recovery-quality-gated',model:LOCAL_EDITORIAL_MODEL,title:state.meta.title,dek_words:words(state.meta.dek),lead_words:words(state.meta.lead),lead_parts:state.meta_parts.lead.length,evidence_sources:compactEvidence.length,placeholder:false,bounded_component_timeouts:true,structured_sentence_pack_recovery:true,compact_cpu_lead_recovery:true,meta_quality_passed:true,reused_sections_checked:reusedSectionsChecked,reused_sections_rejected:reusedSectionsRejected},null,2));
+console.log(JSON.stringify({slug,status:'green',provider:'local-ollama',architecture:'persistent-multi-paragraph-meta-v7-compact-audits-quality-gated',model:LOCAL_EDITORIAL_MODEL,title:state.meta.title,dek_words:words(state.meta.dek),lead_words:words(state.meta.lead),lead_parts:state.meta_parts.lead.length,evidence_sources:compactEvidence.length,audit_evidence_sources:compactAuditEvidence.length,placeholder:false,bounded_component_timeouts:true,structured_sentence_pack_recovery:true,compact_cpu_lead_recovery:true,compact_cpu_quality_audits:true,meta_quality_passed:true,reused_sections_checked:reusedSectionsChecked,reused_sections_rejected:reusedSectionsRejected},null,2));
