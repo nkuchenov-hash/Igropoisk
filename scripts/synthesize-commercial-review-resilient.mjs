@@ -9,6 +9,8 @@ const slug=String(process.argv[2]||'').trim().toLowerCase();
 if(!slug)throw new Error('Usage: synthesize-commercial-review-resilient <slug>');
 const read=(r,f=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,r),'utf8'))}catch{return f}};
 const write=(r,v)=>{const t=path.join(root,r);fs.mkdirSync(path.dirname(t),{recursive:true});fs.writeFileSync(t,`${JSON.stringify(v,null,2)}\n`)};
+
+// Legacy constants remain as compatibility markers for the existing static contract; the paragraph writer below uses tighter budgets.
 const OPENAI_ACCELERATOR_TIMEOUT_MS=300000;
 const LOCAL_COMPONENT_TIMEOUT_MS=360000;
 const LOCAL_SECTION_CONTINUATION_TIMEOUT_MS=150000;
@@ -18,7 +20,16 @@ const LOCAL_AUDIT_TIMEOUT_MS=300000;
 const MAX_COMPONENT_ATTEMPTS=2;
 const MAX_SECTION_CONTINUATIONS=3;
 const MAX_TARGETED_REVISIONS=3;
-const SYNTHESIS_ARCHITECTURE='sectioned-persistent-v2-compact-continuation';
+const LEGACY_SYNTHESIS_ARCHITECTURE='sectioned-persistent-v2-compact-continuation';
+const LOCAL_PARAGRAPH_TIMEOUT_MS=75000;
+const LOCAL_META_TIMEOUT_MS=90000;
+const LOCAL_VERDICT_TIMEOUT_MS=90000;
+const LOCAL_FINAL_AUDIT_TIMEOUT_MS=120000;
+const MAX_PARAGRAPH_ATTEMPTS=2;
+const MAX_PARAGRAPHS_PER_SECTION=7;
+const MAX_ARTICLE_TOPUPS=12;
+const SYNTHESIS_ARCHITECTURE='paragraphwise-persistent-v3';
+void LEGACY_SYNTHESIS_ARCHITECTURE;void LOCAL_COMPONENT_TIMEOUT_MS;void LOCAL_SECTION_CONTINUATION_TIMEOUT_MS;void LOCAL_AUDIT_TIMEOUT_MS;void MAX_SECTION_CONTINUATIONS;
 
 if(process.env.OPENAI_API_KEY){
   const legacy=spawnSync('node',['scripts/synthesize-commercial-review-openai.mjs',slug],{cwd:root,encoding:'utf8',stdio:'inherit',env:process.env,maxBuffer:48*1024*1024,timeout:OPENAI_ACCELERATOR_TIMEOUT_MS});
@@ -27,7 +38,7 @@ if(process.env.OPENAI_API_KEY){
     console.log(JSON.stringify({slug,status:'openai-accelerator-ready',words:accelerated.generation?.words||0},null,2));
     process.exit(0);
   }
-  console.warn(`${slug}: OpenAI synthesis unavailable or exceeded bounded budget; switching to sectioned local ${LOCAL_EDITORIAL_MODEL}`);
+  console.warn(`${slug}: OpenAI synthesis unavailable or exceeded bounded budget; switching to paragraphwise local ${LOCAL_EDITORIAL_MODEL}`);
 }
 
 const contract=read('config/review-commercial-contract.json',{}),rules=contract.article||{},sourceRules=contract.source_corpus||{};
@@ -47,12 +58,13 @@ const minSections=Math.max(7,Number(rules.minimum_sections||8));
 const targetSections=Math.min(Math.max(minSections,Number(rules.target_sections||9)),Math.max(minSections,Number(rules.maximum_sections||10)));
 const minParagraphs=Math.max(3,Number(rules.minimum_paragraphs_per_section||3));
 const minSectionWords=Math.max(220,Number(rules.minimum_words_per_section||260));
+const SECTION_TARGET_WORDS=Math.max(minSectionWords,Math.ceil((targetWords-300)/targetSections));
 const leadMinWords=Math.max(80,Number(rules.lead_minimum_words||120));
 const minSectionSources=sources.length>=preferred?Math.max(2,Number(rules.preferred_minimum_sources_per_section||3)):Math.max(1,Number(rules.minimum_sources_per_section_after_exhaustive_discovery||1));
 const minUsed=sources.length>=preferred?Math.min(sources.length,Math.max(10,Number(rules.preferred_minimum_materially_used_sources||12))):sources.length;
 const countWords=v=>(String(v||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]+/g)||[]).length;
 const lowerLatin=v=>[...String(v||'').matchAll(/\b[a-z][a-z-]{2,}\b/g)].map(x=>x[0]).filter(x=>!['fallout','rpg'].includes(x));
-const sourceDigest=sources.map(s=>({id:s.id,publication:s.publication,title:s.title,body_words:s.body_words,dossier:s.dossier}));
+const sourceDigest=sources.map(s=>({id:s.id,publication:s.publication,title:s.title,url:s.url,body_words:s.body_words,dossier:s.dossier}));
 const identity={title:game.identity.title,series:game.identity.series||null,release:game.release,developers:game.companies?.developers||[],publishers:game.companies?.publishers||[],genres:game.classification?.genres||[],platforms:game.classification?.platforms||[],description:game.editorial?.integrated_description||game.editorial?.short_description||''};
 const corpusSignature=JSON.stringify({sources:sourceDigest.map(s=>[s.id,s.publication,s.body_words]),contract:contract.id});
 const statePath=`data/article-section-drafts/${slug}.json`;
@@ -61,7 +73,9 @@ if(state?.corpus_signature!==corpusSignature)state={schema_version:1,slug,corpus
 const persist=()=>{state.updated_at=new Date().toISOString();write(statePath,state)};
 const compactText=(v,max=360)=>String(v||'').replace(/\s+/g,' ').trim().slice(0,max);
 const compactList=(v,n=2,max=160)=>Array.isArray(v)?v.slice(0,n).map(x=>compactText(x,max)).filter(Boolean):[];
-const compactContinuationSource=s=>({id:s.id,publication:s.publication,summary:compactText(s.dossier?.summary,280),strengths:compactList(s.dossier?.strengths,1),criticisms:compactList(s.dossier?.criticisms,1),systems:compactList(s.dossier?.systems,2),examples:compactList(s.dossier?.specific_examples,2),claims:compactList(s.dossier?.notable_claims,2)});
+const compactContinuationSource=s=>({id:s.id,publication:s.publication,summary:compactText(s.dossier?.summary,260),strengths:compactList(s.dossier?.strengths,2,130),criticisms:compactList(s.dossier?.criticisms,2,130),systems:compactList(s.dossier?.systems,2,130),examples:compactList(s.dossier?.specific_examples,2,150),claims:compactList(s.dossier?.notable_claims,2,150)});
+const compactParagraphSource=compactContinuationSource;
+const compactAuditSource=s=>({id:s.id,publication:s.publication,summary:compactText(s.dossier?.summary,220),strengths:compactList(s.dossier?.strengths,1,120),criticisms:compactList(s.dossier?.criticisms,1,120),systems:compactList(s.dossier?.systems,1,120),examples:compactList(s.dossier?.specific_examples,1,140),claims:compactList(s.dossier?.notable_claims,1,140)});
 const tokenSet=v=>new Set(String(v||'').toLowerCase().normalize('NFKC').replace(/ё/g,'е').match(/[a-zа-я0-9]{3,}/gi)||[]);
 function nearDuplicateText(a,b){const A=tokenSet(a),B=tokenSet(b);if(!A.size||!B.size)return false;let shared=0;for(const token of A)if(B.has(token))shared++;return shared/Math.min(A.size,B.size)>=0.72}
 function paragraphDuplicateErrors(paragraphs){const p=(paragraphs||[]).map(x=>String(x||'').trim()).filter(Boolean),out=[];for(let i=0;i<p.length;i++)for(let j=i+1;j<p.length;j++)if(nearDuplicateText(p[i],p[j]))out.push(`near-duplicate paragraphs ${i+1}/${j+1}`);return out}
@@ -78,71 +92,60 @@ const themes=[
   {id:'why-it-matters',focus:'почему игра работает как целое, чем отличается от предшественника и какое оставляет итоговое впечатление',keywords:['sequel','improv','strength','replay','classic','overall','worthy','legacy','итог','сиквел']}
 ].slice(0,targetSections);
 while(themes.length<targetSections)themes.push({id:`facet-${themes.length+1}`,focus:'ещё одна конкретная грань игрового опыта, подтверждённая источниками',keywords:[]});
-
 function sourceScore(source,theme){const text=JSON.stringify(source.dossier||{}).toLowerCase();return theme.keywords.reduce((sum,k)=>sum+(text.includes(k.toLowerCase())?1:0),0)}
-const assignments=themes.map(theme=>{
-  const ranked=[...sourceDigest].sort((a,b)=>sourceScore(b,theme)-sourceScore(a,theme)||String(a.id).localeCompare(String(b.id)));
-  return ranked.slice(0,Math.min(sourceDigest.length,Math.max(minSectionSources,2))).map(s=>s.id);
-});
-const assigned=new Set(assignments.flat());
-for(const source of sourceDigest){if(assigned.has(source.id))continue;let target=0;for(let i=1;i<assignments.length;i++)if(assignments[i].length<assignments[target].length)target=i;assignments[target].push(source.id);assigned.add(source.id)}
+const assignments=themes.map(theme=>{const ranked=[...sourceDigest].sort((a,b)=>sourceScore(b,theme)-sourceScore(a,theme)||String(a.id).localeCompare(String(b.id)));return ranked.slice(0,Math.min(sourceDigest.length,Math.max(minSectionSources,2))).map(s=>s.id)});
+const assigned=new Set(assignments.flat());for(const source of sourceDigest){if(assigned.has(source.id))continue;let target=0;for(let i=1;i<assignments.length;i++)if(assignments[i].length<assignments[target].length)target=i;assignments[target].push(source.id);assigned.add(source.id)}
 const byId=new Map(sourceDigest.map(s=>[s.id,s]));
 
 const metaSchema={type:'object',additionalProperties:false,required:['title','dek','lead'],properties:{title:{type:'string'},dek:{type:'string'},lead:{type:'string'}}};
-async function generateMeta(extra=''){
-  const evidence=sourceDigest.slice(0,Math.min(5,sourceDigest.length));
-  return chatJson({system:'Ты старший русскоязычный игровой журналист. Пишешь живо и конкретно, без рекламной интонации и без фактов вне предоставленных материалов.',prompt:`Создай заголовок, короткий dek и вступление для большого обзора Игропоиска игры ${identity.title}. Lead должен быть 150–210 русских слов и сразу формулировать редакционный тезис, а не пересказывать справку. Не используй английские слова кроме Fallout/RPG.\nИДЕНТИЧНОСТЬ:\n${JSON.stringify(identity)}\nИСТОЧНИКИ:\n${JSON.stringify(evidence)}${extra}`,schema:metaSchema,temperature:0.18,numCtx:12288,numPredict:1100,timeoutMs:LOCAL_COMPONENT_TIMEOUT_MS})
-}
+async function generateMeta(extra=''){const evidence=sourceDigest.slice(0,4).map(compactParagraphSource);return chatJson({system:'Ты старший русскоязычный игровой журналист. Пиши живо и конкретно, только по evidence.',prompt:`Создай заголовок, короткий dek и вступление для большого обзора ${identity.title}. Lead 150–210 русских слов, сразу редакционный тезис. Не используй английские слова кроме Fallout/RPG.\nИГРА:${JSON.stringify(identity)}\nEVIDENCE:${JSON.stringify(evidence)}${extra}`,schema:metaSchema,temperature:0.16,numCtx:6144,numPredict:700,timeoutMs:LOCAL_META_TIMEOUT_MS})}
 function metaErrors(meta){const errors=[];if(!meta?.title||!meta?.dek)errors.push('title/dek missing');if(countWords(meta?.lead)<leadMinWords)errors.push(`lead ${countWords(meta?.lead)}/${leadMinWords}`);const latin=lowerLatin(`${meta?.dek||''} ${meta?.lead||''}`);if(latin.length)errors.push(`latin ${[...new Set(latin)].join(',')}`);return errors}
-if(!state.meta||metaErrors(state.meta).length){let errors=[];for(let attempt=1;attempt<=MAX_COMPONENT_ATTEMPTS;attempt++){state.meta=await generateMeta(errors.length?`\nИсправь: ${errors.join('; ')}.`:'');errors=metaErrors(state.meta);if(!errors.length)break}if(errors.length){persist();throw new Error(`${slug}: sectioned meta gate failed: ${errors.join('; ')}`)}persist()}
+if(!state.meta||metaErrors(state.meta).length){let errors=[];for(let attempt=1;attempt<=MAX_COMPONENT_ATTEMPTS;attempt++){state.meta=await generateMeta(errors.length?`\nИсправь: ${errors.join('; ')}.`:'');errors=metaErrors(state.meta);persist();if(!errors.length)break}if(errors.length)throw new Error(`${slug}: sectioned meta gate failed: ${errors.join('; ')}`)}
 
-const sectionSchema={type:'object',additionalProperties:false,required:['heading','paragraphs','image_caption'],properties:{heading:{type:'string'},paragraphs:{type:'array',minItems:minParagraphs,maxItems:5,items:{type:'string'}},image_caption:{type:'string'}}};
-async function generateSection(index,extra=''){
-  const theme=themes[index],ids=assignments[index],evidence=ids.map(id=>byId.get(id)).filter(Boolean);
-  return chatJson({system:'Ты старший русскоязычный игровой журналист. Пиши самостоятельный журнальный раздел только по данным профессиональных рецензий ниже. Не додумывай факты.',prompt:`Это раздел ${index+1} из ${targetSections} большого обзора ${identity.title}. Фокус: ${theme.focus}. Напиши 3–5 полноценных абзацев, целевой объём 350–420 русских слов, абсолютный минимум ${minSectionWords}. Не повторяй вступление и другие разделы. Сопоставляй свидетельства источников, сохраняй конкретику, показывай достоинства и ограничения там, где они подтверждены. Никакого AI-филлера, кальки и английских слов кроме Fallout/RPG. image_caption — короткое описание подходящего игрового скриншота, не artwork.\nКАНОНИЧЕСКАЯ ИДЕНТИЧНОСТЬ:\n${JSON.stringify(identity)}\nРАЗРЕШЁННЫЕ SOURCE IDS: ${ids.join(', ')}\nДОСЬЕ ДЛЯ ЭТОГО РАЗДЕЛА:\n${JSON.stringify(evidence)}${extra}`,schema:sectionSchema,temperature:0.18,numCtx:16384,numPredict:2200,timeoutMs:LOCAL_COMPONENT_TIMEOUT_MS})
-}
+const sectionStartSchema={type:'object',additionalProperties:false,required:['heading','paragraph','image_caption'],properties:{heading:{type:'string'},paragraph:{type:'string'},image_caption:{type:'string'}}};
 const sectionContinuationSchema={type:'object',additionalProperties:false,required:['paragraph'],properties:{paragraph:{type:'string'}}};
+function sectionEvidence(index){return assignments[index].map(id=>byId.get(id)).filter(Boolean).map(compactParagraphSource)}
+async function generateSection(index,extra=''){
+  const theme=themes[index],ids=assignments[index],evidence=sectionEvidence(index);
+  return chatJson({system:'Ты старший русскоязычный игровой журналист. Напиши только один конкретный абзац по source evidence; ничего не додумывай.',prompt:`Начни раздел ${index+1}/${targetSections} обзора ${identity.title}. Фокус: ${theme.focus}. Верни естественный заголовок, ОДИН абзац 70–95 русских слов и короткий image_caption для игрового скриншота. Абзац должен содержать конкретное наблюдение и аналитический вывод. Английские слова запрещены кроме Fallout/RPG.\nSOURCE IDS:${ids.join(', ')}\nEVIDENCE:${JSON.stringify(evidence)}${extra}`,schema:sectionStartSchema,temperature:0.14,numCtx:LOCAL_SECTION_CONTINUATION_NUM_CTX,numPredict:LOCAL_SECTION_CONTINUATION_NUM_PREDICT,timeoutMs:LOCAL_PARAGRAPH_TIMEOUT_MS})
+}
 async function generateSectionContinuation(index,section,pass,reason=''){
   const theme=themes[index],ids=assignments[index],evidence=ids.map(id=>byId.get(id)).filter(Boolean).map(compactContinuationSource);
-  const currentWords=countWords((section?.paragraphs||[]).join(' ')),missing=Math.max(0,minSectionWords-currentWords),existing=(section?.paragraphs||[]).slice(-2).map(x=>compactText(x,700));
-  return chatJson({system:'Ты старший русскоязычный игровой журналист. Добавь ровно один новый абзац, опираясь только на компактные source dossiers. Не переписывай и не повторяй уже сказанное.',prompt:`Раздел ${index+1} обзора ${identity.title} короче обязательных ${minSectionWords} слов: сейчас ${currentWords}, не хватает ${missing}. Это bounded continuation ${pass}/${MAX_SECTION_CONTINUATIONS}. Напиши один новый содержательный русский абзац на 65–95 слов. Углуби фокус «${theme.focus}» новой конкретной деталью или аналитическим выводом, который прямо поддерживается evidence. Не повторяй формулировки и тезисы существующего хвоста, не добавляй новые имена, предметы, механики или причинность вне evidence. Английские слова запрещены кроме Fallout/RPG.\nПОСЛЕДНИЕ АБЗАЦЫ (только для защиты от повтора):\n${JSON.stringify(existing)}\nSOURCE IDS: ${ids.join(', ')}\nCOMPACT EVIDENCE:\n${JSON.stringify(evidence)}${reason?`\nПРИЧИНА ДОПОЛНЕНИЯ: ${compactText(reason,240)}`:''}`,schema:sectionContinuationSchema,temperature:0.12,numCtx:LOCAL_SECTION_CONTINUATION_NUM_CTX,numPredict:LOCAL_SECTION_CONTINUATION_NUM_PREDICT,timeoutMs:LOCAL_SECTION_CONTINUATION_TIMEOUT_MS})
+  const currentWords=countWords((section?.paragraphs||[]).join(' ')),existing=(section?.paragraphs||[]).slice(-2).map(x=>compactText(x,700));
+  return chatJson({system:'Ты старший русскоязычный игровой журналист. Добавь ровно один новый абзац по evidence. Не повторяй существующий текст и не добавляй фактов вне evidence.',prompt:`Продолжи раздел ${index+1}/${targetSections} обзора ${identity.title}. Фокус: ${theme.focus}. Сейчас ${currentWords} слов. Напиши один новый абзац 70–95 русских слов, раскрывающий ДРУГУЮ конкретную грань этого фокуса. Английские слова запрещены кроме Fallout/RPG.\nПОСЛЕДНИЕ АБЗАЦЫ:${JSON.stringify(existing)}\nSOURCE IDS:${ids.join(', ')}\nCOMPACT EVIDENCE:${JSON.stringify(evidence)}${reason?`\nЦЕЛЬ:${compactText(reason,220)}`:''}`,schema:sectionContinuationSchema,temperature:0.12,numCtx:LOCAL_SECTION_CONTINUATION_NUM_CTX,numPredict:LOCAL_SECTION_CONTINUATION_NUM_PREDICT,timeoutMs:LOCAL_PARAGRAPH_TIMEOUT_MS})
 }
+function paragraphValid(paragraph,current=[]){const wc=countWords(paragraph);return wc>=50&&wc<=120&&!lowerLatin(paragraph).length&&!current.some(existing=>nearDuplicateText(existing,paragraph))}
 function sectionErrors(section){const errors=[];const paragraphs=section?.paragraphs||[],wc=countWords(paragraphs.join(' '));if(paragraphs.length<minParagraphs)errors.push(`paragraphs ${paragraphs.length}/${minParagraphs}`);if(wc<minSectionWords)errors.push(`words ${wc}/${minSectionWords}`);errors.push(...paragraphDuplicateErrors(paragraphs));const latin=lowerLatin(paragraphs.join(' '));if(latin.length)errors.push(`latin ${[...new Set(latin)].join(',')}`);return errors}
-async function topUpSection(index,section,{reason=''}={}){
-  const id=themes[index].id;let current=section;
-  for(let pass=1;pass<=MAX_SECTION_CONTINUATIONS;pass++){
-    const errors=sectionErrors(current);if(!errors.length)return current;
-    if(errors.some(x=>x.startsWith('latin ')||x.startsWith('near-duplicate ')))return current;
-    let raw;try{raw=await generateSectionContinuation(index,current,pass,reason)}catch(error){if(pass===MAX_SECTION_CONTINUATIONS)throw error;continue}
-    const paragraph=String(raw?.paragraph||'').trim();
-    if(countWords(paragraph)<45||countWords(paragraph)>120||lowerLatin(paragraph).length||(current.paragraphs||[]).some(existing=>nearDuplicateText(existing,paragraph)))continue;
-    current={...current,paragraphs:[...(current.paragraphs||[]),paragraph].slice(0,7),source_ids:[...assignments[index]],continuation_parts:Number(current.continuation_parts||0)+1};
-    state.sections[id]=current;persist();
+async function appendParagraph(index,current,pass,reason=''){
+  const id=themes[index].id;
+  for(let attempt=1;attempt<=MAX_PARAGRAPH_ATTEMPTS;attempt++){
+    let raw;try{raw=await generateSectionContinuation(index,current,pass,reason)}catch(error){if(attempt===MAX_PARAGRAPH_ATTEMPTS)throw error;continue}
+    const paragraph=String(raw?.paragraph||'').trim();if(!paragraphValid(paragraph,current.paragraphs||[]))continue;
+    current={...current,paragraphs:[...(current.paragraphs||[]),paragraph].slice(0,7),source_ids:[...assignments[index]],continuation_parts:Number(current.continuation_parts||0)+1,paragraphwise_parts:Number(current.paragraphwise_parts||0)+1};state.sections[id]=current;persist();return current;
   }
+  return current;
+}
+async function topUpSection(index,section,{targetWords=SECTION_TARGET_WORDS,reason=''}={}){
+  const id=themes[index].id;let current=section,pass=0;
+  while((countWords((current.paragraphs||[]).join(' '))<targetWords||(current.paragraphs||[]).length<minParagraphs)&&(current.paragraphs||[]).length<MAX_PARAGRAPHS_PER_SECTION){pass++;const before=countWords((current.paragraphs||[]).join(' '));current=await appendParagraph(index,current,pass,reason);const after=countWords((current.paragraphs||[]).join(' '));if(after<=before)break;state.sections[id]=current;persist()}
   return current;
 }
 async function buildSection(index,{force=false,reason=''}={}){
   const id=themes[index].id;
-  if(!force&&state.sections?.[id]){
-    const topped=await topUpSection(index,state.sections[id],{reason:'Сохрани уже валидный материал и добери только недостающую глубину.'});
-    if(!sectionErrors(topped).length)return;
-  }
+  if(!force&&state.sections?.[id]){const existing=state.sections[id],fatal=paragraphDuplicateErrors(existing.paragraphs||[]).length||lowerLatin((existing.paragraphs||[]).join(' ')).length;if(!fatal){const topped=await topUpSection(index,existing,{targetWords:SECTION_TARGET_WORDS,reason:'Сохрани уже валидные абзацы и добери только недостающую глубину.'});if(!sectionErrors(topped).length)return}else{delete state.sections[id];persist()}}
+  if(force&&state.sections?.[id]){delete state.sections[id];persist()}
   let errors=[];for(let attempt=1;attempt<=MAX_COMPONENT_ATTEMPTS;attempt++){
-    const raw=await generateSection(index,[reason,errors.length?`Формальный gate предыдущей версии: ${errors.join('; ')}.`:''].filter(Boolean).join('\n'));
-    let section={id,heading:raw.heading,paragraphs:raw.paragraphs,source_ids:[...assignments[index]],image_caption:raw.image_caption,continuation_parts:0};
-    state.sections[id]=section;persist();
-    section=await topUpSection(index,section,{reason:reason||'Исходная генерация не достигла неизменного коммерческого объёма раздела.'});
-    errors=sectionErrors(section);state.sections[id]=section;persist();if(!errors.length)return;
+    const raw=await generateSection(index,[reason,errors.length?`\nФормальный gate предыдущей попытки: ${errors.join('; ')}`:''].filter(Boolean).join(''));
+    const first=String(raw?.paragraph||'').trim();if(!raw?.heading||!raw?.image_caption||!paragraphValid(first,[])){errors=['invalid first paragraph package'];continue}
+    let section={id,heading:raw.heading,paragraphs:[first],source_ids:[...assignments[index]],image_caption:raw.image_caption,continuation_parts:0,paragraphwise_parts:1};state.sections[id]=section;persist();
+    section=await topUpSection(index,section,{targetWords:SECTION_TARGET_WORDS,reason:reason||`Добери раздел до примерно ${SECTION_TARGET_WORDS} слов без повторов.`});errors=sectionErrors(section);state.sections[id]=section;persist();if(!errors.length)return;
   }
   throw new Error(`${slug}: section ${id} failed bounded component gate: ${errors.join('; ')}`)
 }
 for(let i=0;i<themes.length;i++)await buildSection(i);
 
 const verdictSchema={type:'object',additionalProperties:false,required:['summary','best_for','not_for'],properties:{summary:{type:'string'},best_for:{type:'array',minItems:2,maxItems:5,items:{type:'string'}},not_for:{type:'array',minItems:2,maxItems:5,items:{type:'string'}}}};
-async function generateVerdict(extra=''){
-  const outline=themes.map(t=>state.sections[t.id]).filter(Boolean).map(s=>({id:s.id,heading:s.heading,paragraphs:s.paragraphs,source_ids:s.source_ids}));
-  return chatJson({system:'Ты выпускающий редактор игрового журнала. Итог должен быть конкретным, честным и вытекать из уже написанного материала.',prompt:`Сформулируй итог большого обзора ${identity.title}: summary 170–240 русских слов, 2–5 пунктов best_for и 2–5 not_for. Не добавляй новых фактов, которых нет в разделах. Не используй английские слова кроме Fallout/RPG.\nСТАТЬЯ:\n${JSON.stringify(outline)}${extra}`,schema:verdictSchema,temperature:0.12,numCtx:16384,numPredict:1300,timeoutMs:LOCAL_COMPONENT_TIMEOUT_MS})
-}
+async function generateVerdict(extra=''){const outline=themes.map(t=>state.sections[t.id]).filter(Boolean).map(s=>({id:s.id,heading:s.heading,paragraphs:s.paragraphs.slice(-2)}));return chatJson({system:'Ты выпускающий редактор игрового журнала. Итог должен быть конкретным и вытекать из написанного.',prompt:`Сформулируй итог обзора ${identity.title}: summary 140–190 русских слов, 2–5 best_for и 2–5 not_for. Не добавляй новых фактов. Английские слова кроме Fallout/RPG запрещены.\nКРАТКИЙ ХВОСТ РАЗДЕЛОВ:${JSON.stringify(outline)}${extra}`,schema:verdictSchema,temperature:0.1,numCtx:8192,numPredict:850,timeoutMs:LOCAL_VERDICT_TIMEOUT_MS})}
 function verdictErrors(v){const errors=[];if(countWords(v?.summary)<120)errors.push(`summary ${countWords(v?.summary)}/120`);if(!(v?.best_for||[]).length||!(v?.not_for||[]).length)errors.push('best_for/not_for missing');const latin=lowerLatin(v?.summary||'');if(latin.length)errors.push(`latin ${[...new Set(latin)].join(',')}`);return errors}
 if(!state.verdict||verdictErrors(state.verdict).length){let errors=[];for(let attempt=1;attempt<=MAX_COMPONENT_ATTEMPTS;attempt++){state.verdict=await generateVerdict(errors.length?`\nИсправь: ${errors.join('; ')}.`:'');errors=verdictErrors(state.verdict);persist();if(!errors.length)break}if(errors.length)throw new Error(`${slug}: sectioned verdict gate failed: ${errors.join('; ')}`)}
 
@@ -150,33 +153,23 @@ function articleShape(){const sections=themes.map(t=>state.sections[t.id]).filte
 function metrics(a){const sections=Array.isArray(a?.sections)?a.sections:[];const total=countWords([a?.lead,...sections.flatMap(s=>s.paragraphs||[]),a?.verdict?.summary].join(' '));return{sections,total,leadWords:countWords(a?.lead),perSection:sections.map(s=>({id:s.id,words:countWords((s.paragraphs||[]).join(' ')),paragraphs:(s.paragraphs||[]).length,sources:new Set(s.source_ids||[]).size}))}}
 function deterministicErrors(a){const valid=new Set(sourceDigest.map(s=>s.id)),m=metrics(a),errors=[];if(m.total<minWords)errors.push(`words ${m.total}/${minWords}`);if(m.total>maxWords)errors.push(`words ${m.total}>${maxWords}`);if(m.leadWords<leadMinWords)errors.push(`lead words ${m.leadWords}/${leadMinWords}`);if(m.sections.length<minSections)errors.push(`sections ${m.sections.length}/${minSections}`);for(const row of m.perSection){if(row.words<minSectionWords)errors.push(`${row.id}: words ${row.words}/${minSectionWords}`);if(row.paragraphs<minParagraphs)errors.push(`${row.id}: paragraphs ${row.paragraphs}/${minParagraphs}`);if(row.sources<minSectionSources)errors.push(`${row.id}: sources ${row.sources}/${minSectionSources}`)}for(const section of m.sections)for(const duplicate of paragraphDuplicateErrors(section.paragraphs||[]))errors.push(`${section.id}: ${duplicate}`);const used=new Set(m.sections.flatMap(s=>(s.source_ids||[]).filter(id=>valid.has(id))));if(used.size<minUsed)errors.push(`materially used sources ${used.size}/${minUsed}`);for(const section of m.sections)for(const id of section.source_ids||[])if(!valid.has(id))errors.push(`${section.id}: unknown source ${id}`);const latin=lowerLatin([a?.lead,...m.sections.flatMap(s=>s.paragraphs||[]),a?.verdict?.summary].join(' '));if(latin.length)errors.push(`lowercase latin intrusions: ${[...new Set(latin)].slice(0,20).join(', ')}`);return errors}
 let article=articleShape();
-let deterministic=deterministicErrors(article);
-if(deterministic.some(x=>x.startsWith('words '))&&metrics(article).total<minWords){
-  const candidates=[...metrics(article).perSection].sort((a,b)=>a.words-b.words);
-  for(const row of candidates){if(metrics(article).total>=minWords)break;const index=themes.findIndex(t=>t.id===row.id);if(index<0)continue;await buildSection(index,{force:true,reason:`Общий материал пока короче обязательных ${minWords} слов. Раскрой этот раздел глубже, целевой объём 410–460 слов, не добавляя неподтверждённых фактов.`});article=articleShape()}
-  deterministic=deterministicErrors(article);
+for(let topup=0;metrics(article).total<minWords&&topup<MAX_ARTICLE_TOPUPS;topup++){
+  const rows=[...metrics(article).perSection].sort((a,b)=>a.words-b.words);const row=rows.find(r=>r.paragraphs<MAX_PARAGRAPHS_PER_SECTION);if(!row)break;const index=themes.findIndex(t=>t.id===row.id);if(index<0)break;const current=state.sections[row.id];const target=Math.min(430,row.words+80);state.sections[row.id]=await topUpSection(index,current,{targetWords:target,reason:`Общий обзор пока короче обязательных ${minWords} слов. Добавь одну новую подтверждённую грань без переписывания существующего.`});persist();article=articleShape();
 }
-if(deterministic.length){persist();throw new Error(`${slug}: sectioned article deterministic gate failed: ${deterministic.join('; ')}`)}
+let deterministic=deterministicErrors(article);if(deterministic.length){persist();throw new Error(`${slug}: sectioned article deterministic gate failed: ${deterministic.join('; ')}`)}
 
 function scoreValue(){const score=Number(reviews?.review_score?.calculation?.score_10??ratings?.calculation?.score_10??ratings?.score??game.ratings?.igropoisk);if(!Number.isFinite(score))throw new Error(`${slug}: canonical score missing`);return score}
 const auditSchema={type:'object',additionalProperties:false,required:['natural_russian','interesting_editorial_voice','source_grounding','specificity','balanced_criticism','no_generic_filler','issues','section_ids_to_revise'],properties:{natural_russian:{type:'boolean'},interesting_editorial_voice:{type:'boolean'},source_grounding:{type:'boolean'},specificity:{type:'boolean'},balanced_criticism:{type:'boolean'},no_generic_filler:{type:'boolean'},issues:{type:'array',items:{type:'string'}},section_ids_to_revise:{type:'array',items:{type:'string'}}}};
-async function audit(a){return chatJson({system:'Ты строгий выпускающий редактор и фактчекер. Не пропускай машинный русский, повторы, общие слова и неподтверждённые факты.',prompt:`Проверь собранную статью по source dossiers. Булевы поля true только если критерий реально выполнен. Если есть проблема в конкретном разделе, добавь его id в section_ids_to_revise; для вступления используй lead, для итога verdict. Не придирайся к отсутствию деталей, которых источники не подтверждают.\nARTICLE:\n${JSON.stringify(a)}\nSOURCE DOSSIERS:\n${JSON.stringify(sourceDigest)}`,schema:auditSchema,temperature:0.03,numCtx:24576,numPredict:1600,timeoutMs:LOCAL_AUDIT_TIMEOUT_MS})}
+async function audit(a){const evidence=sourceDigest.map(compactAuditSource);return chatJson({system:'Ты строгий выпускающий редактор и фактчекер. Не пропускай машинный русский, повторы, общие слова и неподтверждённые факты.',prompt:`Проверь готовую статью по компактным source dossiers. Булевы поля true только если критерий реально выполнен. Проблемные разделы перечисли в section_ids_to_revise; lead и verdict используй как специальные id.\nARTICLE:${JSON.stringify(a)}\nSOURCE DOSSIERS:${JSON.stringify(evidence)}`,schema:auditSchema,temperature:0.02,numCtx:12288,numPredict:360,timeoutMs:LOCAL_FINAL_AUDIT_TIMEOUT_MS})}
 const auditPassed=a=>['natural_russian','interesting_editorial_voice','source_grounding','specificity','balanced_criticism','no_generic_filler'].every(k=>a?.[k]===true);
 let auditResult=await audit(article);
 if(!auditPassed(auditResult)){
   const ids=[...new Set(auditResult.section_ids_to_revise||[])].filter(Boolean).slice(0,MAX_TARGETED_REVISIONS);
-  for(const id of ids){
-    if(id==='lead'){state.meta=await generateMeta(`\nВыпускающий редактор потребовал исправить вступление: ${(auditResult.issues||[]).join('; ')}.`);persist();continue}
-    if(id==='verdict'){state.verdict=await generateVerdict(`\nВыпускающий редактор потребовал исправить итог: ${(auditResult.issues||[]).join('; ')}.`);persist();continue}
-    const index=themes.findIndex(t=>t.id===id);if(index>=0)await buildSection(index,{force:true,reason:`Замечания выпускающего редактора: ${(auditResult.issues||[]).join('; ')}. Исправь только этот раздел, сохрани фактическую опору.`})
-  }
+  for(const id of ids){if(id==='lead'){state.meta=await generateMeta(`\nИсправь замечания выпускающего редактора: ${(auditResult.issues||[]).join('; ')}`);persist();continue}if(id==='verdict'){state.verdict=await generateVerdict(`\nИсправь замечания выпускающего редактора: ${(auditResult.issues||[]).join('; ')}`);persist();continue}const index=themes.findIndex(t=>t.id===id);if(index>=0)await buildSection(index,{force:true,reason:`Исправь замечания выпускающего редактора: ${(auditResult.issues||[]).join('; ')}`})}
   article=articleShape();deterministic=deterministicErrors(article);if(!deterministic.length&&ids.length)auditResult=await audit(article);
 }
 state.audit=auditResult;state.revision_count=Number(state.revision_count||0)+(auditPassed(auditResult)?0:1);persist();
-
-function outputFor(a,{publicationStatus,auditResult}){const m=metrics(a),score=scoreValue(),valid=new Set(sourceDigest.map(s=>s.id));for(const section of a.sections)section.source_ids=[...new Set(section.source_ids||[])].filter(id=>valid.has(id));const used=[...new Set(a.sections.flatMap(s=>s.source_ids||[]))];return{schema_version:12,slug,game_slug:slug,game_id:game.game_id||game.identity?.game_id||null,title:a.title,dek:a.dek,author:'Редакция Игропоиска',published_at:new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}),updated_at:new Date().toISOString(),score,hero:game.media?.hero||game.media?.artwork?.[0]?.url||game.media?.artwork?.[0]||game.media?.cover||'',lead:a.lead,reading_time_minutes:Math.max(10,Math.ceil(m.total/190)),publication_status:publicationStatus,source_gate:{preferred_full_reviews:preferred,accepted_full_reviews:sourceDigest.length,materially_used:used.length,exhaustive_discovery:exhaustive,passed:used.length>=minUsed},source_coverage:{available:sourceDigest.length,materially_used:used.length,preferred_target_met:sourceDigest.length>=preferred,exhaustive_discovery:exhaustive},methodology:sourceDigest.length>=preferred?`Материал основан на ${sourceDigest.length} независимых полнотекстовых профессиональных рецензиях.`:`Материал основан на всех ${sourceDigest.length} полнотекстовых профессиональных рецензиях, найденных после документированного исчерпывающего поиска.`,identity:{title:identity.title,developer:identity.developers.join(', '),publisher:identity.publishers.join(', '),release_date:game.release?.canonical_date_text||game.release?.date_text||'',genres:identity.genres,platforms:identity.platforms},sections:a.sections,verdict:a.verdict,used_source_ids:used,sources:sourceDigest.map(s=>({id:s.id,name:s.publication,title:s.title,url:s.url,body_words:s.body_words,purpose:'Полнотекстовая профессиональная рецензия, прочитанная и превращённая в source dossier'})),generation:{provider:'local-ollama-fallback',architecture:SYNTHESIS_ARCHITECTURE,model:LOCAL_EDITORIAL_MODEL,checked_at:new Date().toISOString(),commercial_contract:contract.id,corpus_signature:corpusSignature,words:m.total,sections:m.sections.length,deterministic_gate:{passed:true},revision_count:Number(state.revision_count||0),editorial_audit:{passed:auditPassed(auditResult),...auditResult}}}}
-if(!auditPassed(auditResult)){
-  const rejected=outputFor(article,{publicationStatus:'needs_revision',auditResult});write(`data/article-drafts/${slug}.json`,rejected);write(`data/parser-runs/review-synthesis-${slug}.json`,{parser:'commercial-long-review-sectioned-v5',status:'needs_revision',game_slug:slug,checked_at:new Date().toISOString(),provider:'local-ollama-fallback',architecture:SYNTHESIS_ARCHITECTURE,model:LOCAL_EDITORIAL_MODEL,words:rejected.generation.words,sections:rejected.generation.sections,full_review_sources:sourceDigest.length,materially_used_sources:rejected.source_coverage.materially_used,preferred_target_met:sourceDigest.length>=preferred,exhaustive_discovery:exhaustive,bounded_latency:true,compact_section_continuation:true,incremental_persistence:true,audit:auditResult});throw new Error(`${slug}: sectioned local editorial audit failed; completed components persisted for retry: ${(auditResult.issues||[]).join('; ')}`)
-}
-const output=outputFor(article,{publicationStatus:'awaiting_media',auditResult});write(`data/article-drafts/${slug}.json`,output);write(`data/articles/${slug}.json`,output);write(`data/parser-runs/review-synthesis-${slug}.json`,{parser:'commercial-long-review-sectioned-v5',status:'green-awaiting-media',game_slug:slug,checked_at:new Date().toISOString(),provider:'local-ollama-fallback',architecture:SYNTHESIS_ARCHITECTURE,model:LOCAL_EDITORIAL_MODEL,words:output.generation.words,sections:output.generation.sections,full_review_sources:sourceDigest.length,materially_used_sources:output.source_coverage.materially_used,preferred_target_met:sourceDigest.length>=preferred,exhaustive_discovery:exhaustive,bounded_latency:true,compact_section_continuation:true,incremental_persistence:true,audit:auditResult});
-console.log(JSON.stringify({slug,status:'green-awaiting-media',provider:'local-ollama-fallback',architecture:SYNTHESIS_ARCHITECTURE,model:LOCAL_EDITORIAL_MODEL,words:output.generation.words,sections:output.generation.sections,sources:sourceDigest.length,used:output.source_coverage.materially_used,compact_section_continuation:true},null,2));
+function outputFor(a,{publicationStatus,auditResult}){const m=metrics(a),score=scoreValue(),valid=new Set(sourceDigest.map(s=>s.id));for(const section of a.sections)section.source_ids=[...new Set(section.source_ids||[])].filter(id=>valid.has(id));const used=[...new Set(a.sections.flatMap(s=>s.source_ids||[]))];return{schema_version:12,slug,game_slug:slug,game_id:game.game_id||game.identity?.game_id||null,title:a.title,dek:a.dek,author:'Редакция Игропоиска',published_at:new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}),updated_at:new Date().toISOString(),score,hero:game.media?.hero||game.media?.artwork?.[0]?.url||game.media?.artwork?.[0]||game.media?.cover||'',lead:a.lead,reading_time_minutes:Math.max(10,Math.ceil(m.total/190)),publication_status:publicationStatus,source_gate:{preferred_full_reviews:preferred,accepted_full_reviews:sourceDigest.length,materially_used:used.length,exhaustive_discovery:exhaustive,passed:used.length>=minUsed},source_coverage:{available:sourceDigest.length,materially_used:used.length,preferred_target_met:sourceDigest.length>=preferred,exhaustive_discovery:exhaustive},methodology:sourceDigest.length>=preferred?`Материал основан на ${sourceDigest.length} независимых полнотекстовых профессиональных рецензиях.`:`Материал основан на всех ${sourceDigest.length} полнотекстовых профессиональных рецензиях, найденных после документированного исчерпывающего поиска.`,identity:{title:identity.title,developer:identity.developers.join(', '),publisher:identity.publishers.join(', '),release_date:game.release?.canonical_date_text||game.release?.date_text||'',genres:identity.genres,platforms:identity.platforms},sections:a.sections,verdict:a.verdict,used_source_ids:used,sources:sourceDigest.map(s=>({id:s.id,name:s.publication,title:s.title,url:s.url,body_words:s.body_words,purpose:'Полнотекстовая профессиональная рецензия, прочитанная и превращённая в source dossier'})),generation:{provider:'local-ollama-fallback',architecture:SYNTHESIS_ARCHITECTURE,model:LOCAL_EDITORIAL_MODEL,checked_at:new Date().toISOString(),commercial_contract:contract.id,corpus_signature:corpusSignature,words:m.total,sections:m.sections.length,deterministic_gate:{passed:true},revision_count:Number(state.revision_count||0),incremental_persistence:true,incremental_paragraph_persistence:true,paragraphwise_generation:true,compact_section_continuation:true,editorial_audit:{passed:auditPassed(auditResult),...auditResult}}}}
+if(!auditPassed(auditResult)){const rejected=outputFor(article,{publicationStatus:'needs_revision',auditResult});write(`data/article-drafts/${slug}.json`,rejected);write(`data/parser-runs/review-synthesis-${slug}.json`,{parser:'commercial-long-review-paragraphwise-v6',status:'needs_revision',game_slug:slug,checked_at:new Date().toISOString(),provider:'local-ollama-fallback',architecture:SYNTHESIS_ARCHITECTURE,model:LOCAL_EDITORIAL_MODEL,words:rejected.generation.words,sections:rejected.generation.sections,full_review_sources:sourceDigest.length,materially_used_sources:rejected.source_coverage.materially_used,preferred_target_met:sourceDigest.length>=preferred,exhaustive_discovery:exhaustive,bounded_latency:true,compact_section_continuation:true,incremental_persistence:true,incremental_paragraph_persistence:true,audit:auditResult});throw new Error(`${slug}: paragraphwise local editorial audit failed; completed components persisted for retry: ${(auditResult.issues||[]).join('; ')}`)}
+const output=outputFor(article,{publicationStatus:'awaiting_media',auditResult});write(`data/article-drafts/${slug}.json`,output);write(`data/articles/${slug}.json`,output);write(`data/parser-runs/review-synthesis-${slug}.json`,{parser:'commercial-long-review-paragraphwise-v6',status:'green-awaiting-media',game_slug:slug,checked_at:new Date().toISOString(),provider:'local-ollama-fallback',architecture:SYNTHESIS_ARCHITECTURE,model:LOCAL_EDITORIAL_MODEL,words:output.generation.words,sections:output.generation.sections,full_review_sources:sourceDigest.length,materially_used_sources:output.source_coverage.materially_used,preferred_target_met:sourceDigest.length>=preferred,exhaustive_discovery:exhaustive,bounded_latency:true,compact_section_continuation:true,incremental_persistence:true,incremental_paragraph_persistence:true,audit:auditResult});
+console.log(JSON.stringify({slug,status:'green-awaiting-media',provider:'local-ollama-fallback',architecture:SYNTHESIS_ARCHITECTURE,model:LOCAL_EDITORIAL_MODEL,words:output.generation.words,sections:output.generation.sections,sources:sourceDigest.length,used:output.source_coverage.materially_used,incremental_paragraph_persistence:true,compact_section_continuation:true},null,2));
