@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "fields-of-mistria",
-  "generated_at": "2026-08-20T00:11:41.632Z",
+  "generated_at": "2026-08-20T22:42:08.599Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -54,7 +54,7 @@
       "domain": "polygon.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-20T00:10:39.551Z",
+        "checked_at": "2026-08-20T22:41:05.213Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -110,7 +110,7 @@
       "domain": "pcgamer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-20T00:10:39.551Z",
+        "checked_at": "2026-08-20T22:41:05.213Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -124,7 +124,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-20T00:11:42.701Z",
+        "checked_at": "2026-08-20T22:42:10.044Z",
         "url": "https://www.pcgamer.com/games/life-sim/fields-of-mistria-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -162,7 +162,7 @@
       "domain": "metacritic.com",
       "validation": {
         "status": "accepted-critic-index",
-        "checked_at": "2026-08-20T00:11:41.632Z",
+        "checked_at": "2026-08-20T22:42:08.599Z",
         "method": "metacritic-critic-attribution-v15.2",
         "index_url": "https://www.metacritic.com/game/fields-of-mistria/critic-reviews/",
         "index_platform": "primary",
@@ -171,7 +171,7 @@
       "score_evidence": {
         "method": "critic-index-attribution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-20T00:11:41.632Z",
+        "checked_at": "2026-08-20T22:42:08.599Z",
         "url": "https://www.metacritic.com/game/fields-of-mistria/critic-reviews/",
         "configured_source_id": "eurogamer",
         "direct_publisher": false,
@@ -195,6 +195,13 @@
       ]
     },
     {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/fields-of-mistria-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/fields-of-mistria",
       "reasons": [
@@ -204,13 +211,6 @@
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/fields-of-mistria-2",
-      "reasons": [
-        "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/fields-of-mistria-review",
       "reasons": [
         "HTTP 404"
       ]
@@ -340,8 +340,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "not_found",
-      "notes": "search completed; no verified direct review"
+      "status": "unavailable",
+      "notes": "search transport unavailable"
     },
     {
       "source_id": "ars-technica",
