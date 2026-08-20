@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 const workflow=fs.readFileSync('.github/workflows/game-post-create-enrichment.yml','utf8');
+const orchestrator=fs.readFileSync('scripts/run-commercial-review-contract.mjs','utf8');
 const fail=message=>{throw new Error(message)};
 const quick=workflow.indexOf('Verify published quick reviews on production Pages');
 const accelerated=workflow.indexOf('Run accelerated full commercial review upgrade');
@@ -19,7 +20,10 @@ const serviceBlock=workflow.slice(service,workflow.indexOf('Ensure local text mo
 const localBlock=workflow.slice(local,workflow.indexOf('Persist optional full-review retry state'));
 for(const [name,block] of [['cache',cacheBlock],['service',serviceBlock],['local',localBlock]])if(!block.includes("steps.full_accelerated.outcome == 'failure'"))fail(`${name} local fallback can run before accelerator failure`);
 if(!localBlock.includes("COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR: 'false'"))fail('Local fallback does not explicitly suppress another accelerated attempt');
+if(!orchestrator.includes("useOpenAIAccelerator=process.env.COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR==='true'"))fail('Commercial orchestrator does not resolve the accelerator mode once');
+if(!orchestrator.includes("if(!useOpenAIAccelerator)stages.push(['meta-preflight'"))fail('OpenAI accelerator still depends on local meta-preflight before synthesis');
+if(!orchestrator.includes("stages.push(['long-review','scripts/synthesize-commercial-review-resilient.mjs',[slug],useOpenAIAccelerator?{}:{OPENAI_API_KEY:''}])"))fail('OpenAI/local synthesis routing is not explicit in the orchestrator');
 if(!workflow.includes('Fail required full review if both providers failed'))fail('Required full-review failure is not fail-closed');
 if(!workflow.includes('Verify required full review completed locally'))fail('Required full-review completion gate is missing');
 for(const marker of ['review-commercial-v2-${slug}.json','full review is below 3000 words','final editorial audit is not green'])if(!workflow.includes(marker))fail(`Required full-review proof missing: ${marker}`);
-console.log('Full-review provider order passed: live grounded review first, OpenAI accelerator first for full quality, Ollama only on failure, required 3000+ review fail-closed before publication.');
+console.log('Full-review provider order passed: live grounded review first, OpenAI synthesis has no hidden local preflight, Ollama only on accelerator failure, required 3000+ review fail-closed before publication.');
