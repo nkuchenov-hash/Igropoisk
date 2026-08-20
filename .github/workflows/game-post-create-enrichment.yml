@@ -210,7 +210,7 @@ jobs:
           node scripts/smoke-published-review-pages.mjs "${TARGETS[@]}"
 
       - name: Restore local full-review model cache
-        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true'
+        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true')
         continue-on-error: true
         uses: actions/cache@v4
         with:
@@ -219,7 +219,7 @@ jobs:
 
       - name: Start local full-review model service
         id: full_model_service
-        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true'
+        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true')
         continue-on-error: true
         run: |
           set -euo pipefail
@@ -233,7 +233,7 @@ jobs:
           exit 1
 
       - name: Ensure local text model for optional full upgrade
-        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_model_service.outcome == 'success'
+        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_model_service.outcome == 'success'
         run: |
           set -euo pipefail
           for attempt in 1 2 3 4 5; do
@@ -246,7 +246,7 @@ jobs:
 
       - name: Run optional full commercial review upgrade
         id: full_upgrade
-        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_model_service.outcome == 'success'
+        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_model_service.outcome == 'success'
         continue-on-error: true
         env:
           POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
@@ -255,7 +255,7 @@ jobs:
           node scripts/run-commercial-review-contract.mjs "${TARGETS[@]}"
 
       - name: Persist optional full-review retry state
-        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_upgrade.outcome == 'failure'
+        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_upgrade.outcome == 'failure'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -263,7 +263,7 @@ jobs:
         run: node scripts/publish-game-post-create-overlay.mjs
 
       - name: Publish full commercial review checkpoint
-        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_upgrade.outcome == 'success'
+        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_upgrade.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           POST_CREATE_PUBLISH_PHASE: commercial-review
@@ -271,7 +271,7 @@ jobs:
 
       - name: Resolve completed full reviews for live smoke
         id: smoke
-        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_upgrade.outcome == 'success'
+        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_upgrade.outcome == 'success'
         shell: bash
         run: |
           SLUGS=$(node -e "const fs=require('fs');const p='data/parser-runs/commercial-review-orchestrator.json';const d=fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):{};process.stdout.write((d.completed||[]).join(','))")
