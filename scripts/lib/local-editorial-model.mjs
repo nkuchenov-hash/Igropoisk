@@ -66,11 +66,27 @@ export function strengthenJsonSchema(schema) {
   return copy;
 }
 
+export function isCompactBooleanAuditSchema(schema) {
+  if (!schema || schema === 'json' || typeof schema !== 'object' || Array.isArray(schema)) return false;
+  const properties = schema.properties && typeof schema.properties === 'object' ? schema.properties : {};
+  const required = Array.isArray(schema.required) ? schema.required : [];
+  const requiredBooleanCount = required.filter(key => properties[key]?.type === 'boolean').length;
+  const hasIssueList = Object.entries(properties).some(([key, value]) => /issues?|problems?/i.test(key) && value?.type === 'array');
+  return schema.type === 'object' && requiredBooleanCount >= 3 && hasIssueList;
+}
+
+export function boundedJsonPredictBudget({schema='json',numPredict=12000,timeoutMs=900000}={}) {
+  const requested = Math.max(1, Number(numPredict || 1));
+  if (timeoutMs <= 120000 && isCompactBooleanAuditSchema(schema)) return Math.min(requested, 256);
+  return requested;
+}
+
 export async function chatJson({system='', prompt, schema='json', images=[], temperature=0.2, numCtx=32768, numPredict=12000, timeoutMs=900000, repeatPenalty=1.18, repeatLastN=1024}) {
   if (!prompt) throw new Error('Local editorial prompt is required');
   const ready = await localModelReady();
   if (!ready) throw new Error(`Local editorial model is not ready: ${LOCAL_EDITORIAL_MODEL}`);
   const format = strengthenJsonSchema(schema);
+  const effectiveNumPredict = boundedJsonPredictBudget({schema: format, numPredict, timeoutMs});
   const payload=await ollamaJson('/api/chat',{
     method:'POST',
     timeoutMs,
@@ -83,7 +99,7 @@ export async function chatJson({system='', prompt, schema='json', images=[], tem
         ...(system ? [{role: 'system', content: system}] : []),
         {role: 'user', content: prompt, ...(images.length ? {images} : {})}
       ],
-      options: {temperature, num_ctx: numCtx, num_predict: numPredict, repeat_penalty: repeatPenalty, repeat_last_n: repeatLastN}
+      options: {temperature, num_ctx: numCtx, num_predict: effectiveNumPredict, repeat_penalty: repeatPenalty, repeat_last_n: repeatLastN}
     }
   });
   const raw = payload?.message?.content;
