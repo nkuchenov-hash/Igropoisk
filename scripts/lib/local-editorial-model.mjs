@@ -24,10 +24,10 @@ function ollamaJson(pathname,{method='GET',body=null,timeoutMs=900000}={}){
   });
 }
 
-export async function localModelReady({timeoutMs=2500}={}) {
+export async function localModelReady({timeoutMs=2500,model=LOCAL_EDITORIAL_MODEL}={}) {
   try {
     const payload=await ollamaJson('/api/tags',{timeoutMs});
-    return (payload.models || []).some(item => String(item.name || item.model || '').startsWith(LOCAL_EDITORIAL_MODEL));
+    return (payload.models || []).some(item => String(item.name || item.model || '').startsWith(model));
   } catch {
     return false;
   }
@@ -81,17 +81,17 @@ export function boundedJsonPredictBudget({schema='json',numPredict=12000,timeout
   return requested;
 }
 
-export async function chatJson({system='', prompt, schema='json', images=[], temperature=0.2, numCtx=32768, numPredict=12000, timeoutMs=900000, repeatPenalty=1.18, repeatLastN=1024}) {
+export async function chatJson({system='', prompt, schema='json', images=[], temperature=0.2, numCtx=32768, numPredict=12000, timeoutMs=900000, repeatPenalty=1.18, repeatLastN=1024, model=LOCAL_EDITORIAL_MODEL}) {
   if (!prompt) throw new Error('Local editorial prompt is required');
-  const ready = await localModelReady();
-  if (!ready) throw new Error(`Local editorial model is not ready: ${LOCAL_EDITORIAL_MODEL}`);
+  const ready = await localModelReady({model});
+  if (!ready) throw new Error(`Local editorial model is not ready: ${model}`);
   const format = strengthenJsonSchema(schema);
   const effectiveNumPredict = boundedJsonPredictBudget({schema: format, numPredict, timeoutMs});
   const payload=await ollamaJson('/api/chat',{
     method:'POST',
     timeoutMs,
     body:{
-      model: LOCAL_EDITORIAL_MODEL,
+      model,
       stream: false,
       think: false,
       format,
