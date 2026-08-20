@@ -5,6 +5,7 @@ import { canonicalGameHashtag, hashtagKey } from './lib/news-game-hashtag.mjs';
 
 const args = process.argv.slice(2);
 const strict = args.includes('--strict');
+const allowMissingPages = args.includes('--allow-missing-pages');
 const refIndex = args.indexOf('--production-ref');
 const productionRef = refIndex >= 0 ? String(args[refIndex + 1] || '').trim() : '';
 const eventsPath = 'data/news-events.json';
@@ -89,12 +90,16 @@ for (const item of items) {
 }
 
 const dedupeBy = (values, key) => [...new Map(values.map(value => [key(value), value])).values()];
+const missingPageFindings = productionRef
+  ? dedupeBy(productionMissingPages, item => item.game_id || item.slug).length
+  : dedupeBy(missingPages, item => item.game_id || item.slug).length;
 const blockingIntegrityFindings = collisions.length + inconsistent.length + duplicateArticleGames.length + unverified.length + temporary.length + badPageUrls.length
-  + (productionRef ? dedupeBy(productionMissingPages, item => item.game_id || item.slug).length : dedupeBy(missingPages, item => item.game_id || item.slug).length);
+  + (allowMissingPages ? 0 : missingPageFindings);
 const report = {
   schema_version: 3,
   generated_at: new Date().toISOString(),
   production_ref: productionRef || null,
+  allow_missing_pages: allowMissingPages,
   articles: items.length,
   articles_with_games: articlesWithGames,
   game_references: gameReferences,
@@ -110,6 +115,7 @@ const report = {
   bad_page_urls: badPageUrls,
   unresolved_explicit_game_context: unresolvedExplicit,
   deferred_context_findings: unresolvedExplicit.length,
+  missing_page_findings: missingPageFindings,
   blocking_integrity_findings: blockingIntegrityFindings
 };
 
