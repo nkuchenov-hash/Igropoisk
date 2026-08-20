@@ -209,17 +209,28 @@ jobs:
           IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
           node scripts/smoke-published-review-pages.mjs "${TARGETS[@]}"
 
-      - name: Restore local full-review model cache
+      - name: Run accelerated full commercial review upgrade
+        id: full_accelerated
         if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true')
+        continue-on-error: true
+        env:
+          POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
+          COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR: 'true'
+        run: |
+          IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
+          node scripts/run-commercial-review-contract.mjs "${TARGETS[@]}"
+
+      - name: Restore local full-review model cache after accelerator failure
+        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_accelerated.outcome == 'failure'
         continue-on-error: true
         uses: actions/cache@v4
         with:
           path: ~/.ollama/models
           key: ollama-commercial-qwen3-4b-v1
 
-      - name: Start local full-review model service
+      - name: Start local full-review fallback service
         id: full_model_service
-        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true')
+        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_accelerated.outcome == 'failure'
         continue-on-error: true
         run: |
           set -euo pipefail
@@ -232,8 +243,8 @@ jobs:
           cat /tmp/ollama-commercial.log || true
           exit 1
 
-      - name: Ensure local text model for optional full upgrade
-        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_model_service.outcome == 'success'
+      - name: Ensure local text model after accelerator failure
+        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_accelerated.outcome == 'failure' && steps.full_model_service.outcome == 'success'
         run: |
           set -euo pipefail
           for attempt in 1 2 3 4 5; do
@@ -241,29 +252,58 @@ jobs:
             ollama pull "$LOCAL_TEXT_MODEL" && exit 0
             sleep $((attempt * 5))
           done
-          echo "::warning::Optional full-review text model $LOCAL_TEXT_MODEL is unavailable; the published grounded quick review remains valid."
+          echo "::warning::Local fallback model $LOCAL_TEXT_MODEL is unavailable; the published grounded review remains valid."
           exit 0
 
-      - name: Run optional full commercial review upgrade
-        id: full_upgrade
-        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_model_service.outcome == 'success'
+      - name: Run local fallback full commercial review upgrade
+        id: full_local
+        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_accelerated.outcome == 'failure' && steps.full_model_service.outcome == 'success'
         continue-on-error: true
         env:
           POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
+          COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR: 'false'
         run: |
           IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
           node scripts/run-commercial-review-contract.mjs "${TARGETS[@]}"
 
-      - name: Persist optional full-review retry state
-        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_upgrade.outcome == 'failure'
+      - name: Persist full-review retry state
+        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_accelerated.outcome != 'success' && steps.full_local.outcome != 'success'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           POST_CREATE_PUBLISH_PHASE: full-review-retry
         run: node scripts/publish-game-post-create-overlay.mjs
 
+      - name: Fail required full review if both providers failed
+        if: steps.scope.outputs.full_upgrade == 'true' && steps.full_accelerated.outcome != 'success' && steps.full_local.outcome != 'success'
+        run: |
+          echo 'Required full review failed on both accelerated and local fallback paths.' >&2
+          exit 75
+
+      - name: Verify required full review completed locally
+        if: steps.scope.outputs.full_upgrade == 'true' && (steps.full_accelerated.outcome == 'success' || steps.full_local.outcome == 'success')
+        env:
+          POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const targets=String(process.env.POST_CREATE_TARGETS||'').split(',').filter(Boolean);
+          const o=JSON.parse(fs.readFileSync('data/parser-runs/commercial-review-orchestrator.json','utf8'));
+          const complete=new Set(o.completed||[]);
+          const missing=targets.filter(slug=>!complete.has(slug));
+          if(missing.length)throw new Error(`Required full review did not complete: ${missing.join(', ')}`);
+          for(const slug of targets){
+            const v=JSON.parse(fs.readFileSync(`data/parser-runs/review-commercial-v2-${slug}.json`,'utf8'));
+            const a=JSON.parse(fs.readFileSync(`data/articles/${slug}.json`,'utf8'));
+            if(v.passed!==true)throw new Error(`${slug}: commercial validator is not green`);
+            if(Number(v.metrics?.article_words||a.generation?.words||0)<3000)throw new Error(`${slug}: full review is below 3000 words`);
+            if(a.generation?.editorial_audit?.passed!==true)throw new Error(`${slug}: final editorial audit is not green`);
+          }
+          console.log(JSON.stringify({status:'required-full-review-green',targets},null,2));
+          NODE
+
       - name: Publish full commercial review checkpoint
-        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_upgrade.outcome == 'success'
+        if: steps.scope.outputs.count != '0' && (steps.full_accelerated.outcome == 'success' || steps.full_local.outcome == 'success')
         env:
           GH_TOKEN: ${{ github.token }}
           POST_CREATE_PUBLISH_PHASE: commercial-review
@@ -271,12 +311,12 @@ jobs:
 
       - name: Resolve completed full reviews for live smoke
         id: smoke
-        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_upgrade.outcome == 'success'
+        if: steps.scope.outputs.count != '0' && (steps.full_accelerated.outcome == 'success' || steps.full_local.outcome == 'success')
         shell: bash
         run: |
           SLUGS=$(node -e "const fs=require('fs');const p='data/parser-runs/commercial-review-orchestrator.json';const d=fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):{};process.stdout.write((d.completed||[]).join(','))")
           echo "slugs=$SLUGS" >> "$GITHUB_OUTPUT"
-          if [ -n "$SLUGS" ]; then echo "completed=$SLUGS"; else echo 'No released full commercial review completed in this optional pass.'; fi
+          if [ -n "$SLUGS" ]; then echo "completed=$SLUGS"; else echo 'No released full commercial review completed in this pass.'; fi
 
       - name: Verify full commercial reviews on production Pages
         if: steps.smoke.outputs.slugs != ''
