@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "roblox",
-  "generated_at": "2026-08-20T00:11:50.751Z",
+  "generated_at": "2026-08-20T22:42:37.299Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -58,7 +58,7 @@
       "domain": "playground.ru",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-20T00:10:39.557Z",
+        "checked_at": "2026-08-20T22:41:05.203Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -98,13 +98,10 @@
       "mechanics": [],
       "domain": "stopgame.ru",
       "validation": {
-        "status": "accepted",
-        "checked_at": "2026-08-20T00:10:39.557Z",
-        "method": "registered-direct-publisher-http-v8",
-        "review_page": {
-          "accepted": true,
-          "reason": "review_path"
-        }
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-20T22:41:05.203Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 504"
       },
       "score": null,
       "scale": null,
@@ -113,13 +110,6 @@
     }
   ],
   "rejected": [
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/roblox-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    },
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/roblox",
@@ -130,6 +120,13 @@
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/roblox-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/roblox-review",
       "reasons": [
         "HTTP 404"
       ]
@@ -519,7 +516,7 @@
     "accepted": 2,
     "scored": 0,
     "context_only_versions": 0,
-    "blocked_verified": 0,
+    "blocked_verified": 1,
     "contemporary": 2,
     "green": false,
     "passed": false,

@@ -1,0 +1,219 @@
+{
+  "schema_version": 12,
+  "game_slug": "surviving-mars-relaunched",
+  "game_id": null,
+  "updated_at": "2026-08-20T22:55:34.075Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "publication_gate": {
+    "minimum": 5,
+    "target": 20,
+    "accepted": 1,
+    "status": "red-needs-revision",
+    "full_registry_scan": true,
+    "checked_registered_sources": 45,
+    "applicable_registered_sources": 45
+  },
+  "regional_discovery": {
+    "region": "ru",
+    "checks": [
+      {
+        "source_id": "igromania",
+        "name": "Игромания",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "stopgame",
+        "name": "StopGame",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "kanobu",
+        "name": "Канобу",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "playground",
+        "name": "PlayGround.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vgtimes",
+        "name": "VGTimes",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "ixbt-games",
+        "name": "iXBT.games",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "gamemag",
+        "name": "GameMAG.ru",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "vk-play",
+        "name": "VK Play Media",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      },
+      {
+        "source_id": "shazoo",
+        "name": "Shazoo",
+        "status": "not_found",
+        "notes": "search completed; no verified direct review"
+      }
+    ],
+    "complete": true,
+    "found_but_not_accepted": []
+  },
+  "reviews": [
+    {
+      "id": "source-1",
+      "configured_source_id": "gamestar",
+      "publication": "GameStar",
+      "title": "Surviving Mars: Relaunched — GameStar review",
+      "url": "https://www.metacritic.com/game/surviving-mars-relaunched/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/surviving-mars-relaunched/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "de",
+      "score": 75,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Surviving Mars: Relaunched attributed by Metacritic to GameStar.",
+      "evidence_points": [
+        "Stylish and slow-paced sci-fi building simulation with different stages and increasing complexity, that still has a few flaws."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-20T22:55:32.876Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/surviving-mars-relaunched/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-20T22:55:32.876Z",
+        "url": "https://www.metacritic.com/game/surviving-mars-relaunched/critic-reviews/",
+        "configured_source_id": "gamestar",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "GameStar",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    }
+  ],
+  "rejected": [
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/surviving-mars-relaunched",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/surviving-mars-relaunched-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/surviving-mars-relaunched-review",
+      "reasons": [
+        "HTTP 503"
+      ]
+    }
+  ],
+  "version_gate": {
+    "canonical_title": "Surviving Mars: Relaunched",
+    "removed_wrong_version": 0
+  },
+  "review_score": {
+    "status": "red-needs-revision",
+    "owner": "review",
+    "method": {
+      "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+      "formula": "sum(normalized_10) / source_count",
+      "minimum_sources": 3,
+      "target_sources": 10,
+      "maximum_sources": null,
+      "use_all_eligible_sources": true,
+      "required_evidence_scope": "editorial_review",
+      "output_scale": 10,
+      "rounding_decimals": 1,
+      "one_vote_per_publication": true,
+      "aggregators_forbidden": true,
+      "invented_scores_forbidden": true,
+      "exact_canonical_version_required": true
+    },
+    "sources": [
+      {
+        "source_id": "source-1",
+        "configured_source_id": "gamestar",
+        "publication": "GameStar",
+        "title": "Surviving Mars: Relaunched — GameStar review",
+        "url": "https://www.metacritic.com/game/surviving-mars-relaunched/critic-reviews/",
+        "original_score": {
+          "score": 75,
+          "scale": 100,
+          "grade": null,
+          "display": "75/100"
+        },
+        "normalized_10": 7.5,
+        "score_evidence": {
+          "method": "critic-index-attribution",
+          "scope": "editorial_review",
+          "checked_at": "2026-08-20T22:55:32.876Z",
+          "url": "https://www.metacritic.com/game/surviving-mars-relaunched/critic-reviews/",
+          "configured_source_id": "gamestar",
+          "direct_publisher": false,
+          "historical": false,
+          "index_source": "metacritic",
+          "index_platform": "primary",
+          "attributed_publication": "GameStar",
+          "aggregate_score_used": false,
+          "user_score_used": false,
+          "original_review_url": ""
+        }
+      }
+    ],
+    "excluded_sources": [],
+    "calculation": {
+      "source_count": 1,
+      "values": [
+        7.5
+      ],
+      "mean_10": 7.5,
+      "score_10": 7.5
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "ark-survival-evolved",
-  "generated_at": "2026-08-20T00:16:03.239Z",
+  "generated_at": "2026-08-20T22:46:27.533Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -66,7 +66,7 @@
       "domain": "pcgamer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-20T00:14:38.664Z",
+        "checked_at": "2026-08-20T22:45:02.939Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -80,7 +80,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-20T00:16:04.642Z",
+        "checked_at": "2026-08-20T22:46:29.100Z",
         "url": "https://www.pcgamer.com/ark-survival-evolved-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -124,7 +124,7 @@
       "domain": "thesixthaxis.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-20T00:14:38.664Z",
+        "checked_at": "2026-08-20T22:45:02.939Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -168,7 +168,7 @@
       "domain": "metacritic.com",
       "validation": {
         "status": "accepted-critic-index",
-        "checked_at": "2026-08-20T00:16:03.239Z",
+        "checked_at": "2026-08-20T22:46:27.533Z",
         "method": "metacritic-critic-attribution-v15.2",
         "index_url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
         "index_platform": "primary",
@@ -177,7 +177,7 @@
       "score_evidence": {
         "method": "critic-index-attribution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-20T00:16:03.239Z",
+        "checked_at": "2026-08-20T22:46:27.533Z",
         "url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
         "configured_source_id": "ign",
         "direct_publisher": false,
@@ -222,7 +222,7 @@
       "domain": "metacritic.com",
       "validation": {
         "status": "accepted-critic-index",
-        "checked_at": "2026-08-20T00:16:03.239Z",
+        "checked_at": "2026-08-20T22:46:27.533Z",
         "method": "metacritic-critic-attribution-v15.2",
         "index_url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
         "index_platform": "primary",
@@ -231,7 +231,7 @@
       "score_evidence": {
         "method": "critic-index-attribution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-20T00:16:03.239Z",
+        "checked_at": "2026-08-20T22:46:27.533Z",
         "url": "https://www.metacritic.com/game/ark-survival-evolved/critic-reviews/",
         "configured_source_id": "gamestar",
         "direct_publisher": false,
@@ -247,6 +247,13 @@
   ],
   "rejected": [
     {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/ark-survival-evolved-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/ark-survival-evolved",
       "reasons": [
@@ -258,13 +265,6 @@
       "url": "https://www.rpgfan.com/review/ark-survival-evolved-2",
       "reasons": [
         "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/ark-survival-evolved-review",
-      "reasons": [
-        "HTTP 503"
       ]
     }
   ],
