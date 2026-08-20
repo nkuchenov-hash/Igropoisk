@@ -2,9 +2,9 @@
   "orchestrator": "commercial-review-contract-v5",
   "status": "needs_revision",
   "game_slug": "fallout-2",
-  "checked_at": "2026-08-20T21:02:27.997Z",
+  "checked_at": "2026-08-20T21:10:12.136Z",
   "terminal": false,
   "retryable": true,
   "stage": "long-review",
-  "error": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:110\n    throw new Error(`Local editorial model returned invalid JSON: ${error.message}`);\n          ^\n\nError: Local editorial model returned invalid JSON: Unterminated string in JSON at position 1681 (line 2 column 1680)\n    at chatJson (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:110:11)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async topUpSection (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:116:21)\n    at async buildSection (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:134:13)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:139:33\n\nNode.js v22.23.2"
+  "error": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:143\n  throw new Error(`${slug}: section ${id} failed bounded component gate: ${errors.join('; ')}`)\n        ^\n\nError: fallout-2: section world-and-premise failed bounded component gate: invalid first paragraph package\n    at buildSection (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:143:9)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:145:33\n\nNode.js v22.23.2"
 }
