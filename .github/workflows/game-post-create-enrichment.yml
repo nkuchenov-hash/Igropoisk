@@ -19,8 +19,13 @@ on:
       - 'scripts/build-similarity-index.mjs'
       - 'scripts/enrich-game-media-from-sources.mjs'
       - 'scripts/enforce-commercial-game-media.mjs'
+      - 'scripts/build-review-bootstrap-commercial.mjs'
+      - 'scripts/build-review-bootstrap-commercial-grounded.mjs'
+      - 'scripts/render-review-bootstrap.mjs'
+      - 'scripts/verify-post-create-quick-reviews.mjs'
       - 'scripts/build-review-article-corpus.mjs'
       - 'scripts/build-review-article-corpus-resilient.mjs'
+      - 'scripts/prepare-sectioned-review-meta.mjs'
       - 'scripts/run-commercial-review-contract.mjs'
       - 'scripts/synthesize-commercial-review-openai.mjs'
       - 'scripts/synthesize-commercial-review-resilient.mjs'
@@ -37,6 +42,8 @@ on:
       - 'scripts/publish-game-post-create-overlay.mjs'
       - 'scripts/publish-post-create-production.mjs'
       - 'scripts/test-commercial-review-contract-v2.mjs'
+      - 'scripts/test-game-creator-post-create.mjs'
+      - 'scripts/test-commercial-quick-review-depth.mjs'
       - 'scripts/test-post-create-production-publisher.mjs'
       - 'scripts/lib/local-editorial-model.mjs'
       - 'scripts/lib/verified-game-import.mjs'
@@ -57,8 +64,8 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: game-post-create-enrichment-v5-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'staging' }}
-  cancel-in-progress: false
+  group: game-post-create-enrichment-v6-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'staging' }}
+  cancel-in-progress: true
 
 jobs:
   enrich:
@@ -102,8 +109,13 @@ jobs:
           node --check scripts/build-similarity-index.mjs
           node --check scripts/enrich-game-media-from-sources.mjs
           node --check scripts/enforce-commercial-game-media.mjs
+          node --check scripts/build-review-bootstrap-commercial.mjs
+          node --check scripts/build-review-bootstrap-commercial-grounded.mjs
+          node --check scripts/render-review-bootstrap.mjs
+          node --check scripts/verify-post-create-quick-reviews.mjs
           node --check scripts/build-review-article-corpus.mjs
           node --check scripts/build-review-article-corpus-resilient.mjs
+          node --check scripts/prepare-sectioned-review-meta.mjs
           node --check scripts/run-commercial-review-contract.mjs
           node --check scripts/synthesize-commercial-review-openai.mjs
           node --check scripts/synthesize-commercial-review-resilient.mjs
@@ -120,6 +132,8 @@ jobs:
           node --check scripts/publish-game-post-create-overlay.mjs
           node --check scripts/publish-post-create-production.mjs
           node --check scripts/test-commercial-review-contract-v2.mjs
+          node --check scripts/test-game-creator-post-create.mjs
+          node --check scripts/test-commercial-quick-review-depth.mjs
           node --check scripts/test-post-create-production-publisher.mjs
           node --check scripts/lib/local-editorial-model.mjs
           node --check scripts/lib/verified-game-import.mjs
@@ -127,6 +141,8 @@ jobs:
           node --check game/_shared/game-page-materialized-data.js
           node scripts/test-game-creator-boundary.mjs
           node scripts/test-commercial-review-contract-v2.mjs
+          node scripts/test-game-creator-post-create.mjs
+          node scripts/test-commercial-quick-review-depth.mjs
           node scripts/test-post-create-production-publisher.mjs
           node scripts/test-review-carousel-version-gate.mjs
 
@@ -164,15 +180,47 @@ jobs:
           POST_CREATE_PUBLISH_PHASE: bootstrap
         run: node scripts/publish-game-post-create-overlay.mjs
 
-      - name: Restore local commercial model cache
+      - name: Build and verify deterministic grounded quick reviews
         if: steps.scope.outputs.count != '0'
+        env:
+          POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
+        run: |
+          set -euo pipefail
+          IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
+          for slug in "${TARGETS[@]}"; do
+            node scripts/build-review-bootstrap-commercial.mjs "$slug"
+          done
+          node scripts/verify-post-create-quick-reviews.mjs "${TARGETS[@]}"
+
+      - name: Publish quick-review checkpoint before full upgrades
+        if: steps.scope.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          POST_CREATE_PUBLISH_PHASE: quick-review
+        run: node scripts/publish-game-post-create-overlay.mjs
+
+      - name: Verify published quick reviews on production Pages
+        if: steps.scope.outputs.count != '0'
+        env:
+          POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
+          REVIEW_SMOKE_ATTEMPTS: '36'
+          REVIEW_SMOKE_DELAY_MS: '5000'
+        run: |
+          IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
+          node scripts/smoke-published-review-pages.mjs "${TARGETS[@]}"
+
+      - name: Restore local full-review model cache
+        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true'
+        continue-on-error: true
         uses: actions/cache@v4
         with:
           path: ~/.ollama/models
           key: ollama-commercial-qwen3-4b-v1
 
-      - name: Start local commercial fallback model service
-        if: steps.scope.outputs.count != '0'
+      - name: Start local full-review model service
+        id: full_model_service
+        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true'
+        continue-on-error: true
         run: |
           set -euo pipefail
           if ! command -v ollama >/dev/null 2>&1; then curl -fsSL https://ollama.com/install.sh | sh; fi
@@ -184,8 +232,8 @@ jobs:
           cat /tmp/ollama-commercial.log || true
           exit 1
 
-      - name: Ensure qwen3 4b local commercial fallback
-        if: steps.scope.outputs.count != '0'
+      - name: Ensure local text model for optional full upgrade
+        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_model_service.outcome == 'success'
         run: |
           set -euo pipefail
           for attempt in 1 2 3 4 5; do
@@ -193,12 +241,12 @@ jobs:
             ollama pull "$LOCAL_TEXT_MODEL" && exit 0
             sleep $((attempt * 5))
           done
-          echo "::error::Required provider-independent fallback model $LOCAL_TEXT_MODEL is unavailable."
-          exit 1
+          echo "::warning::Optional full-review text model $LOCAL_TEXT_MODEL is unavailable; the published grounded quick review remains valid."
+          exit 0
 
-      - name: Run the one commercial review contract
-        id: commercial
-        if: steps.scope.outputs.count != '0'
+      - name: Run optional full commercial review upgrade
+        id: full_upgrade
+        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_model_service.outcome == 'success'
         continue-on-error: true
         env:
           POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
@@ -206,34 +254,29 @@ jobs:
           IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
           node scripts/run-commercial-review-contract.mjs "${TARGETS[@]}"
 
-      - name: Persist retryable research and media state
-        if: steps.scope.outputs.count != '0' && steps.commercial.outcome == 'failure'
+      - name: Persist optional full-review retry state
+        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_upgrade.outcome == 'failure'
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
-          POST_CREATE_PUBLISH_PHASE: commercial-retry
+          POST_CREATE_PUBLISH_PHASE: full-review-retry
         run: node scripts/publish-game-post-create-overlay.mjs
 
-      - name: Fail after retry state is safely persisted
-        if: steps.scope.outputs.count != '0' && steps.commercial.outcome == 'failure'
-        run: |
-          echo 'Commercial contract is incomplete; retryable state was persisted to staging and the scheduled lifecycle will continue it.' >&2
-          exit 75
-
       - name: Publish full commercial review checkpoint
-        if: steps.scope.outputs.count != '0' && steps.commercial.outcome == 'success'
+        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_upgrade.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           POST_CREATE_PUBLISH_PHASE: commercial-review
         run: node scripts/publish-game-post-create-overlay.mjs
 
-      - name: Resolve completed reviews for live smoke
+      - name: Resolve completed full reviews for live smoke
         id: smoke
-        if: steps.scope.outputs.count != '0' && steps.commercial.outcome == 'success'
+        if: steps.scope.outputs.count != '0' && vars.POST_CREATE_FULL_UPGRADE == 'true' && steps.full_upgrade.outcome == 'success'
         shell: bash
         run: |
           SLUGS=$(node -e "const fs=require('fs');const p='data/parser-runs/commercial-review-orchestrator.json';const d=fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):{};process.stdout.write((d.completed||[]).join(','))")
           echo "slugs=$SLUGS" >> "$GITHUB_OUTPUT"
-          if [ -n "$SLUGS" ]; then echo "completed=$SLUGS"; else echo 'No released commercial review completed in this pass.'; fi
+          if [ -n "$SLUGS" ]; then echo "completed=$SLUGS"; else echo 'No released full commercial review completed in this optional pass.'; fi
 
       - name: Verify full commercial reviews on production Pages
         if: steps.smoke.outputs.slugs != ''
