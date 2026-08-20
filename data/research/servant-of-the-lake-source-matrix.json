@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "servant-of-the-lake",
-  "generated_at": "2026-08-19T22:24:55.225Z",
+  "generated_at": "2026-08-20T00:21:53.587Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -54,7 +54,7 @@
       "domain": "metacritic.com",
       "validation": {
         "status": "accepted-critic-index",
-        "checked_at": "2026-08-19T22:24:55.225Z",
+        "checked_at": "2026-08-20T00:21:53.587Z",
         "method": "metacritic-critic-attribution-v15.2",
         "index_url": "https://www.metacritic.com/game/servant-of-the-lake/critic-reviews/",
         "index_platform": "primary",
@@ -63,7 +63,7 @@
       "score_evidence": {
         "method": "critic-index-attribution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-19T22:24:55.225Z",
+        "checked_at": "2026-08-20T00:21:53.587Z",
         "url": "https://www.metacritic.com/game/servant-of-the-lake/critic-reviews/",
         "configured_source_id": "game-spew",
         "direct_publisher": false,
@@ -79,13 +79,6 @@
   ],
   "rejected": [
     {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/servant-of-the-lake-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    },
-    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/servant-of-the-lake",
       "reasons": [
@@ -97,6 +90,13 @@
       "url": "https://www.rpgfan.com/review/servant-of-the-lake-2",
       "reasons": [
         "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/servant-of-the-lake-review",
+      "reasons": [
+        "HTTP 503"
       ]
     }
   ],

@@ -1,14 +1,14 @@
 {
   "schema_version": 3,
   "phase": "deterministic",
-  "started_at": "2026-08-19T22:13:37.842Z",
-  "checked_at": "2026-08-19T22:27:52.022Z",
-  "duration_ms": 854180,
+  "started_at": "2026-08-20T00:10:39.103Z",
+  "checked_at": "2026-08-20T00:24:47.243Z",
+  "duration_ms": 848140,
   "concurrency": 6,
   "timeout_ms": 720000,
-  "selected": 102,
+  "selected": 103,
   "green": 0,
-  "pending": 102,
+  "pending": 103,
   "timed_out": 0,
   "results": [
     {
@@ -2020,7 +2020,7 @@
     {
       "slug": "human-fall-flat",
       "index": 94,
-      "exit_code": 0,
+      "exit_code": 2,
       "signal": null,
       "timed_out": false,
       "green": false,
@@ -2033,8 +2033,8 @@
       "comments": [
         "No reusable existing article; queued for prose/media repair."
       ],
-      "stdout_tail": "{\n  \"slug\": \"human-fall-flat\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 2,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"human-fall-flat\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 5,\n  \"scored\": 3,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 3,\n  \"indexed_sources_added\": 3,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"green\"\n}\n\n{\n  \"slug\": \"human-fall-flat\",\n  \"status\": \"green\",\n  \"accepted\": 5,\n  \"trusted_scores_preserved\": 3,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"human-fall-flat\",\n  \"accepted\": 5,\n  \"scored\": 4,\n  \"context_only_versions\": 0,\n  \"updates\": 1,\n  \"preserved\": 3\n}\n\n{\n  \"slug\": \"human-fall-flat\",\n  \"status\": \"green\",\n  \"scored_sources\": 4,\n  \"excluded_sources\": 1,\n  \"score_10\": 7.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"human-fall-flat\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"No reusable existing article; queued for prose/media repair.\"\n  ]\n}\n",
-      "stderr_tail": ""
+      "stdout_tail": "",
+      "stderr_tail": "human-fall-flat: canonical corpus, score and regional discovery are already green; deterministic evidence recovery is complete and article repair is deferred to the dedicated rebind/model phases."
     },
     {
       "slug": "horizon-hunters-gathering",
@@ -2159,7 +2159,7 @@
     {
       "slug": "game-of-thrones",
       "index": 101,
-      "exit_code": 0,
+      "exit_code": 2,
       "signal": null,
       "timed_out": false,
       "green": false,
@@ -2172,8 +2172,8 @@
       "comments": [
         "No reusable existing article; queued for prose/media repair."
       ],
-      "stdout_tail": "{\n  \"slug\": \"game-of-thrones\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 5,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n{\n  \"slug\": \"game-of-thrones\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 0,\n  \"fallback_status\": null,\n  \"accepted\": 8,\n  \"scored\": 3,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 3,\n  \"indexed_sources_added\": 3,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"green\"\n}\n\n{\n  \"slug\": \"game-of-thrones\",\n  \"status\": \"green\",\n  \"accepted\": 7,\n  \"trusted_scores_preserved\": 3,\n  \"removed_wrong_version\": 1,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"game-of-thrones\",\n  \"accepted\": 7,\n  \"scored\": 6,\n  \"context_only_versions\": 0,\n  \"updates\": 3,\n  \"preserved\": 3\n}\n\n{\n  \"slug\": \"game-of-thrones\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 1,\n  \"score_10\": 6.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"game-of-thrones\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"No reusable existing article; queued for prose/media repair.\"\n  ]\n}\n",
-      "stderr_tail": ""
+      "stdout_tail": "",
+      "stderr_tail": "game-of-thrones: canonical corpus, score and regional discovery are already green; deterministic evidence recovery is complete and article repair is deferred to the dedicated rebind/model phases."
     },
     {
       "slug": "magic-monsters",
@@ -2193,6 +2193,25 @@
         "Оценённые издания: 0/3"
       ],
       "stdout_tail": "{\n  \"slug\": \"magic-monsters\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"red-needs-revision\"\n}\n{\n  \"slug\": \"magic-monsters\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 2,\n  \"fallback_status\": null,\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 0,\n  \"indexed_sources_added\": 0,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"red-needs-revision\"\n}\n\n{\n  \"slug\": \"magic-monsters\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"trusted_scores_preserved\": 0,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"magic-monsters\",\n  \"accepted\": 0,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"updates\": 0,\n  \"preserved\": 0\n}\n\n{\n  \"slug\": \"magic-monsters\",\n  \"status\": \"red-needs-revision\",\n  \"scored_sources\": 0,\n  \"excluded_sources\": 0,\n  \"score_10\": null,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"magic-monsters\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"Корпус: 0/5\",\n    \"Оценённые издания: 0/3\"\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "slug": "carrion",
+      "index": 103,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 7.5,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"carrion\",\n  \"registered_editorial\": 45,\n  \"checked\": 45,\n  \"accepted\": 5,\n  \"scored\": 0,\n  \"context_only_versions\": 0,\n  \"blocked_verified\": 0,\n  \"regional_complete\": true,\n  \"audit_all\": true,\n  \"status\": \"green\"\n}\n{\n  \"slug\": \"carrion\",\n  \"historical\": false,\n  \"released\": true,\n  \"professional_only\": true,\n  \"legacy_status\": 0,\n  \"fallback_status\": null,\n  \"accepted\": 6,\n  \"scored\": 1,\n  \"critic_index_platform\": \"primary\",\n  \"critic_index_rows\": 1,\n  \"indexed_sources_added\": 1,\n  \"indexed_scores_added\": 0,\n  \"removed_user_generated\": 0,\n  \"status\": \"green\"\n}\n\n{\n  \"slug\": \"carrion\",\n  \"status\": \"green\",\n  \"accepted\": 6,\n  \"trusted_scores_preserved\": 1,\n  \"removed_wrong_version\": 0,\n  \"checked\": 45,\n  \"applicable\": 45,\n  \"regional_complete\": true\n}\n\n{\n  \"slug\": \"carrion\",\n  \"accepted\": 6,\n  \"scored\": 6,\n  \"context_only_versions\": 0,\n  \"updates\": 5,\n  \"preserved\": 1\n}\n\n{\n  \"slug\": \"carrion\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"carrion\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": true,\n  \"comments\": [\n    \"No reusable existing article; queued for prose/media repair.\"\n  ]\n}\n",
       "stderr_tail": ""
     }
   ]
