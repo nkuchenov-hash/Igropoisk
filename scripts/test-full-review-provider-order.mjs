@@ -34,8 +34,10 @@ const providerCheck=wrapper.indexOf('let editorialReady=await localModelReady');
 const baseRun=wrapper.indexOf('lastStatus=runBase()');
 if(providerCheck<0||baseRun<0||providerCheck>baseRun)fail('Repair wrapper provider readiness flow is malformed');
 if(!wrapper.includes('if(!editorialReady){')||!wrapper.includes('base synthesis failed and ${LOCAL_EDITORIAL_MODEL} repair is not available in this provider phase'))fail('Repair wrapper does not fail back cleanly when local repair is unavailable');
+for(const marker of ["shortTail?2048:4096","shortTail?128:280","shortTail?120000:150000","paragraph repair attempt ${attempt} failed"]){if(!wrapper.includes(marker))fail(`Bounded short-tail repair contract missing: ${marker}`)}
+if(!wrapper.includes('try{')||!wrapper.includes('}catch(error){'))fail('Repair wrapper can abort the full-review job on one local paragraph timeout');
 if(!wrapper.includes('process.exit(lastStatus||75)'))fail('Repair wrapper can swallow a failed synthesis');
 if(!workflow.includes('Fail required full review if both providers failed'))fail('Required full-review failure is not fail-closed');
 if(!workflow.includes('Verify required full review completed locally'))fail('Required full-review completion gate is missing');
 for(const marker of ['review-commercial-v2-${slug}.json','full review is below 3000 words','final editorial audit is not green'])if(!workflow.includes(marker))fail(`Required full-review proof missing: ${marker}`);
-console.log('Full-review provider order passed: live grounded review first, accelerator remains independent from local availability, local wrapper repairs persisted incomplete sections only after/when 4B is available, required 3000+ review remains fail-closed before publication.');
+console.log('Full-review provider order passed: accelerator remains independent from local availability; CPU 4B repair is compact, bounded and timeout-safe; required 3000+ review remains fail-closed before publication.');
