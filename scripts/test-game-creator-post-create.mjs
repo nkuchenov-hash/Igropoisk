@@ -1,39 +1,106 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
-const read=path=>fs.readFileSync(path,'utf8'),fail=message=>{throw new Error(message)};
-const creator=read('scripts/ensure-game-page.mjs'),verified=read('scripts/lib/verified-game-import.mjs'),series=read('scripts/materialize-known-series.mjs'),runner=read('scripts/run-game-post-create-enrichment.mjs'),publisher=read('scripts/publish-game-post-create-overlay.mjs'),media=read('scripts/enrich-game-media-from-sources.mjs'),reviewDiscovery=read('scripts/discover-review-sources-web.mjs'),criticV15=read('scripts/discover-review-sources-web-v15.mjs'),postCreateResearch=read('scripts/prepare-post-create-review-research.mjs'),reviewRegistry=read('scripts/lib/review-source-registry.mjs'),scoreExtractor=read('scripts/lib/review-score-extractor.mjs'),commercial=read('scripts/build-review-bootstrap-commercial.mjs'),grounded=read('scripts/build-review-bootstrap-commercial-grounded.mjs'),smoke=read('scripts/smoke-published-review-pages.mjs'),quickVerifier=read('scripts/verify-post-create-quick-reviews.mjs'),reviewFeed=read('scripts/materialize-review-publication-feed.mjs'),runtime=read('game/_shared/game-page-materialized-data.js'),verifiedWorkflow=read('.github/workflows/verified-game-import-fast.yml'),newsWorkflow=read('.github/workflows/news-game-page-fast.yml'),workflow=read('.github/workflows/game-post-create-enrichment.yml'),resolver=read('scripts/resolve-post-create-event-targets.mjs');
-if(!creator.includes('series: series || null')||!creator.includes('data/game-enrichment-requests/${slug}.json')||!creator.includes("reason: 'post_create_enrichment_must_not_block_base_page'")||!creator.includes('reviewNeeded = released && !reviewReady'))fail('Game Creator base-page/post-create boundary regressed');
+
+const read=path=>fs.readFileSync(path,'utf8');
+const fail=message=>{throw new Error(message)};
+const requireMarkers=(text,markers,label)=>{for(const marker of markers)if(!text.includes(marker))fail(`${label} missing: ${marker}`)};
+const forbidMarkers=(text,markers,label)=>{for(const marker of markers)if(text.includes(marker))fail(`${label} contains forbidden marker: ${marker}`)};
+
+const creator=read('scripts/ensure-game-page.mjs');
+const verified=read('scripts/lib/verified-game-import.mjs');
+const series=read('scripts/materialize-known-series.mjs');
+const runner=read('scripts/run-game-post-create-enrichment.mjs');
+const publisher=read('scripts/publish-game-post-create-overlay.mjs');
+const media=read('scripts/enrich-game-media-from-sources.mjs');
+const reviewDiscovery=read('scripts/discover-review-sources-web.mjs');
+const criticV15=read('scripts/discover-review-sources-web-v15.mjs');
+const postCreateResearch=read('scripts/prepare-post-create-review-research.mjs');
+const reviewRegistry=read('scripts/lib/review-source-registry.mjs');
+const scoreExtractor=read('scripts/lib/review-score-extractor.mjs');
+const commercial=read('scripts/build-review-bootstrap-commercial.mjs');
+const grounded=read('scripts/build-review-bootstrap-commercial-grounded.mjs');
+const smoke=read('scripts/smoke-published-review-pages.mjs');
+const quickVerifier=read('scripts/verify-post-create-quick-reviews.mjs');
+const reviewFeed=read('scripts/materialize-review-publication-feed.mjs');
+const runtime=read('game/_shared/game-page-materialized-data.js');
+const verifiedWorkflow=read('.github/workflows/verified-game-import-fast.yml');
+const newsWorkflow=read('.github/workflows/news-game-page-fast.yml');
+const workflow=read('.github/workflows/game-post-create-enrichment.yml');
+const continuation=read('.github/workflows/game-post-create-continuation.yml');
+const resolver=read('scripts/resolve-post-create-event-targets.mjs');
+const classifier=read('scripts/classify-review-importance.mjs');
+const importance=read('scripts/lib/review-importance.mjs');
+const orchestrator=read('scripts/run-commercial-review-contract.mjs');
+const wrapper=read('scripts/synthesize-commercial-review-resilient-wrapper.mjs');
+
+requireMarkers(creator,['series: series || null','data/game-enrichment-requests/${slug}.json',"reason: 'post_create_enrichment_must_not_block_base_page'",'reviewNeeded = released && !reviewReady'],'Game Creator base-page/post-create boundary');
 if(!verified.includes('verified_series_attached')||!series.includes('canonical_series_backfilled'))fail('Canonical series preservation/backfill regressed');
-for(const marker of ["'all','bootstrap','review','quick-review','full-review'",'commercialMediaReady',"run('unified-commercial-review','scripts/run-commercial-review-contract.mjs',slugs)"])if(!runner.includes(marker))fail(`Unified post-create runner contract missing: ${marker}`);
-if(!media.includes("provider:'verified-source-page'")||!media.includes('search engines may aid source discovery')||!media.includes('removed_stale_screenshots')||!media.includes('media.url_template'))fail('Verified bounded media provenance contract regressed');
+requireMarkers(runner,["'all','bootstrap','review','quick-review','full-review'",'commercialMediaReady',"run('unified-commercial-review','scripts/run-commercial-review-contract.mjs',slugs)"],'Unified post-create runner contract');
+requireMarkers(media,["provider:'verified-source-page'",'search engines may aid source discovery','removed_stale_screenshots','media.url_template'],'Verified bounded media provenance contract');
 if(!reviewDiscovery.includes('discover-review-sources-web-v15.mjs'))fail('Review discovery no longer routes through critic index');
-for(const marker of ['metacritic','historical-critic-index-attribution','critic-index-attribution','metascore_as_vote:false','user_scores_as_votes:false','professional_only:true'])if(!criticV15.includes(marker))fail(`Professional critic-index policy missing: ${marker}`);
-for(const marker of ['isTrustedEditorialScore','historical_index_preserved','post_create_verified_corpus_preserved','metascore_as_vote:false','user_scores_as_votes:false'])if(!postCreateResearch.includes(marker))fail(`Verified review-corpus preservation missing: ${marker}`);
+requireMarkers(criticV15,['metacritic','historical-critic-index-attribution','critic-index-attribution','metascore_as_vote:false','user_scores_as_votes:false','professional_only:true'],'Professional critic-index policy');
+requireMarkers(postCreateResearch,['isTrustedEditorialScore','historical_index_preserved','post_create_verified_corpus_preserved','metascore_as_vote:false','user_scores_as_votes:false'],'Verified review-corpus preservation');
 if(!reviewRegistry.includes('user_generated_review')||!reviewRegistry.includes('от\\s+пользователя'))fail('User-generated reviews are not excluded');
-for(const marker of ["method==='historical-critic-index-attribution'","method==='critic-index-attribution'","evidence.index_source==='metacritic'",'evidence.aggregate_score_used!==true','evidence.user_score_used!==true'])if(!scoreExtractor.includes(marker))fail(`Critic score evidence contract missing: ${marker}`);
-for(const marker of ['build-review-bootstrap-commercial-grounded.mjs',"provider==='deterministic-evidence-v1'",'grounding_audit?.passed===true','editorial_quality?.passed===true'])if(!commercial.includes(marker))fail(`Deterministic commercial wrapper missing: ${marker}`);
-for(const forbidden of ['build-review-bootstrap-commercial-local.mjs','audit-review-bootstrap-local.mjs'])if(commercial.includes(forbidden))fail(`Commercial quick review still invokes model stage: ${forbidden}`);
-for(const marker of ["source?.canonical_score_eligible!==false","source?.source_kind==='review'",'claimSupport.length!==8','usedPublications.size<3',"provider:'deterministic-evidence-v1'",'claim_support:claimSupport'])if(!grounded.includes(marker))fail(`Grounded semantic review contract missing: ${marker}`);
-for(const marker of ['https://${owner}.github.io/${name}','REVIEW_SMOKE_ATTEMPTS','expectedTitle','expectedScore','data-article='])if(!smoke.includes(marker))fail(`Live review verification missing: ${marker}`);
+requireMarkers(scoreExtractor,["method==='historical-critic-index-attribution'","method==='critic-index-attribution'","evidence.index_source==='metacritic'",'evidence.aggregate_score_used!==true','evidence.user_score_used!==true'],'Critic score evidence contract');
+requireMarkers(commercial,['build-review-bootstrap-commercial-grounded.mjs',"provider==='deterministic-evidence-v1'",'grounding_audit?.passed===true','editorial_quality?.passed===true'],'Deterministic commercial quick-review wrapper');
+forbidMarkers(commercial,['build-review-bootstrap-commercial-local.mjs','audit-review-bootstrap-local.mjs'],'Commercial quick review');
+requireMarkers(grounded,["source?.canonical_score_eligible!==false","source?.source_kind==='review'",'claimSupport.length!==8','usedPublications.size<3',"provider:'deterministic-evidence-v1'",'claim_support:claimSupport'],'Grounded semantic quick-review contract');
+requireMarkers(smoke,['https://${owner}.github.io/${name}','REVIEW_SMOKE_ATTEMPTS','expectedTitle','expectedScore','data-article='],'Live review verification');
 if(!quickVerifier.includes("editorial_quality?.passed===true")||!quickVerifier.includes("grounding_audit?.passed===true")||!quickVerifier.includes('process.exit(2)'))fail('Quick-review verifier is not fail-closed');
-if(!reviewFeed.includes('bootstrapDesired')||!reviewFeed.includes("feed.igropoisk_article.review_stage==='full'"))fail('Full review can erase valid bootstrap review');
+if(!reviewFeed.includes('bootstrapDesired')||!reviewFeed.includes("feed.igropoisk_article.review_stage==='full'"))fail('Full review can erase valid quick factual material');
 if(!publisher.includes("'data/review-bootstrap'")||!publisher.includes('createPrWithRetry'))fail('Conflict-safe quick-review publisher contract regressed');
 if(!runtime.includes('renderEnrichedMedia(draft,title)'))fail('Enriched media is not exposed by game runtime');
 if(!/paths=\([^\n]*data\/game-enrichment-requests/.test(verifiedWorkflow)||!/paths=\([^\n]*data\/game-enrichment-requests/.test(newsWorkflow))fail('Fast creator workflow discards enrichment requests');
-for(const forbidden of ['models: read','GITHUB_REVIEW_MODEL','GITHUB_AUDIT_MODEL','EDITORIAL_PROVIDER','scripts/lib/github-editorial-model.mjs'])if(workflow.includes(forbidden))fail(`Retired text-model dependency remains: ${forbidden}`);
-for(const marker of ['Build and verify deterministic grounded quick reviews','build-review-bootstrap-commercial.mjs','verify-post-create-quick-reviews.mjs','POST_CREATE_PUBLISH_PHASE: quick-review','Verify published quick reviews on production Pages','Restore local full-review model cache','Start local full-review model service','Ensure local text model for optional full upgrade','Run optional full commercial review upgrade','POST_CREATE_PUBLISH_PHASE: commercial-review',"vars.POST_CREATE_FULL_UPGRADE == 'true'"])if(!workflow.includes(marker))fail(`Independent instant-review/full-upgrade checkpoint missing: ${marker}`);
-for(const marker of ['full_review_required===true','full_upgrade=${fullUpgrade}'])if(!resolver.includes(marker))fail(`Per-game explicit full-review opt-in missing: ${marker}`);
-const quickAt=workflow.indexOf('Build and verify deterministic grounded quick reviews'),quickPubAt=workflow.indexOf('POST_CREATE_PUBLISH_PHASE: quick-review'),liveAt=workflow.indexOf('Verify published quick reviews on production Pages'),localAt=workflow.indexOf('Restore local full-review model cache'),fullAt=workflow.indexOf('Run optional full commercial review upgrade');
-if(quickAt<0||quickPubAt<quickAt||liveAt<quickPubAt||localAt<liveAt||fullAt<localAt)fail('Optional model work can still block instant quick-review production/live completion');
-const explicitOptIn="steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true'";
+
+forbidMarkers(workflow,['models: read','GITHUB_REVIEW_MODEL','GITHUB_AUDIT_MODEL','EDITORIAL_PROVIDER','scripts/lib/github-editorial-model.mjs','OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}','Run accelerated full commercial review upgrade',"COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR: 'true'",'POST_CREATE_FULL_UPGRADE'],'Game-page workflow');
+requireMarkers(workflow,[
+  'Build and verify deterministic grounded quick reviews',
+  'build-review-bootstrap-commercial.mjs',
+  'verify-post-create-quick-reviews.mjs',
+  'POST_CREATE_PUBLISH_PHASE: quick-review',
+  'Verify published quick material on production Pages',
+  'Determine whether a full editorial review is required',
+  'classify-review-importance.mjs',
+  'Publish review-importance decision',
+  'Finalize page when a full review is not required',
+  'Restore local full-review model cache',
+  'Start local full-review model service',
+  'Ensure required local review models',
+  'Save local full-review model cache before generation',
+  'Run required local full commercial review upgrade',
+  'Persist incomplete full-review state for automatic continuation',
+  'Record automatic continuation requirement',
+  'POST_CREATE_PUBLISH_PHASE: commercial-review',
+  'Verify full commercial reviews on production Pages'
+],'Importance-gated post-create workflow');
+
+const quickAt=workflow.indexOf('Build and verify deterministic grounded quick reviews');
+const quickPubAt=workflow.indexOf('POST_CREATE_PUBLISH_PHASE: quick-review');
+const liveAt=workflow.indexOf('Verify published quick material on production Pages');
+const importanceAt=workflow.indexOf('Determine whether a full editorial review is required');
+const localAt=workflow.indexOf('Restore local full-review model cache');
+const fullAt=workflow.indexOf('Run required local full commercial review upgrade');
+const publishAt=workflow.indexOf('Publish full commercial review checkpoint');
+if([quickAt,quickPubAt,liveAt,importanceAt,localAt,fullAt,publishAt].some(x=>x<0)||!(quickAt<quickPubAt&&quickPubAt<liveAt&&liveAt<importanceAt&&importanceAt<localAt&&localAt<fullAt&&fullAt<publishAt))fail('Post-create order must be quick factual live -> importance decision -> local full review only when required -> publication');
+
+const importanceCondition="steps.importance.outputs.full_upgrade == 'true'";
 const cacheBlock=workflow.slice(workflow.indexOf('- name: Restore local full-review model cache'),workflow.indexOf('- name: Start local full-review model service'));
-if(!cacheBlock.includes(explicitOptIn))fail('Full-review model cache can start without an explicit global or per-game opt-in');
-const serviceBlock=workflow.slice(workflow.indexOf('- name: Start local full-review model service'),workflow.indexOf('- name: Ensure local text model for optional full upgrade'));
-if(!serviceBlock.includes(explicitOptIn)||!serviceBlock.includes('continue-on-error: true'))fail('Explicit local full-review service can block the successful instant path');
-const fullBlock=workflow.slice(workflow.indexOf('- name: Run optional full commercial review upgrade'),workflow.indexOf('- name: Persist optional full-review retry state'));
-if(!fullBlock.includes(explicitOptIn)||!fullBlock.includes('continue-on-error: true')||!fullBlock.includes('id: full_upgrade'))fail('Full-review is not explicit global/per-game opt-in and non-blocking');
+const serviceBlock=workflow.slice(workflow.indexOf('- name: Start local full-review model service'),workflow.indexOf('- name: Ensure required local review models'));
+const fullBlock=workflow.slice(workflow.indexOf('- name: Run required local full commercial review upgrade'),workflow.indexOf('- name: Persist incomplete full-review state for automatic continuation'));
 const publishFullBlock=workflow.slice(workflow.indexOf('- name: Publish full commercial review checkpoint'),workflow.indexOf('- name: Resolve completed full reviews for live smoke'));
-if(!publishFullBlock.includes(explicitOptIn)||!publishFullBlock.includes("steps.full_upgrade.outcome == 'success'"))fail('Failed/non-opted-in full-review output can still publish as final');
+for(const [name,block] of [['cache',cacheBlock],['service',serviceBlock],['full',fullBlock]])if(!block.includes(importanceCondition))fail(`${name} can start without a required editorial-importance decision`);
+if(!serviceBlock.includes('continue-on-error: true')||!fullBlock.includes('continue-on-error: true')||!fullBlock.includes('id: full_upgrade'))fail('Local full-review worker cycle is not retry-safe');
+if(!publishFullBlock.includes(importanceCondition)||!publishFullBlock.includes("steps.full_upgrade.outcome == 'success'"))fail('Failed/non-required full review can publish as final');
 if(!workflow.includes('cancel-in-progress: true')||workflow.includes('fetch-depth: 0'))fail('Concurrency or bounded-checkout protection regressed');
-if(workflow.indexOf('Build and verify deterministic grounded quick reviews')>workflow.indexOf('Start local full-review model service'))fail('Ollama is again ahead of the publishable quick review');
-console.log('Game Creator post-create contract passed: base page is immediate, grounded canonical-score review publishes and passes live smoke before any explicitly opted-in global/per-game full-review work.');
+
+requireMarkers(resolver,["request?.force_full_review===true||request?.review_importance?.status==='required'||request?.review_importance?.required===true","importancePending(request)","review_selection:'igromania-or-review-volume'",'full_upgrade=${fullUpgrade}','importance_needed=${importanceNeeded}'],'Event target resolver');
+if(resolver.includes('request?.full_review_required===true'))fail('Resolver still treats the legacy full_review_required flag as an editorial decision');
+requireMarkers(classifier,['igromania','secondary_minimum_independent_full_reviews','review_importance','OPENAI_API_KEY:\'\'','COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR:\'false\''],'Review-importance classifier');
+requireMarkers(importance,['igromania','professional_review_volume','exhaustive'],'Review-importance policy');
+
+for(const text of [workflow,orchestrator,wrapper])if(/OPENAI_API_KEY:\s*\$\{\{/.test(text))fail('Paid OpenAI API credential is exposed in the page/review lifecycle');
+requireMarkers(orchestrator,["OPENAI_API_KEY:''","COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR:'false'","provider_policy:'local_only'"],'Local-only commercial orchestrator');
+requireMarkers(wrapper,["OPENAI_API_KEY:''","COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR:'false'"],'Local-only resilient wrapper');
+requireMarkers(continuation,['workflow_run:',"workflows: ['Enrich newly created Игропоиск games']",'Dispatch next worker cycle','gh workflow run game-post-create-enrichment.yml --ref staging'],'Automatic continuation workflow');
+
+console.log('Game Creator post-create contract passed: every released game gets an immediate canonical page and grounded quick factual material; editorial importance is classified from Игромания first and professional-review volume second; only required games start the local-only persistent 3000+ review lifecycle, and incomplete required work continues automatically.');
