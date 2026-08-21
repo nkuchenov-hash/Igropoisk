@@ -8,22 +8,29 @@
   "created_at": "2026-08-17T15:23:19.000Z",
   "requested_at": "2026-08-21T23:15:30.000Z",
   "creator_source": "commercial_acceptance_v35b_importance_local_only",
-  "full_review_required": false,
+  "full_review_required": true,
   "review_importance": {
-    "status": "pending",
-    "required": false,
-    "reason": "acceptance_reclassification_required"
+    "status": "required",
+    "required": true,
+    "checked_at": "2026-08-21T23:22:02.714Z",
+    "primary_reference_source_id": "igromania",
+    "primary_reference_source_name": "Игромания",
+    "primary_reference_review_found": false,
+    "independent_full_reviews": 11,
+    "threshold": 8,
+    "exhaustive_discovery": true,
+    "reason": "professional_review_volume_11_gte_8"
   },
   "modules": {
     "series": "ready",
-    "review": "needs_search",
+    "review": "needs_revision",
     "media": "ready",
     "rating": "ready",
     "dna": "ready",
     "similarity": "ready"
   },
   "reason": "fallout-2-v35b-editorial-importance-local-only-persistent-acceptance",
-  "last_run_at": "2026-08-21T12:09:19.236Z",
+  "last_run_at": "2026-08-21T23:22:02.714Z",
   "run_attempts": 37,
   "review_attempts": 37,
   "observed": {
@@ -35,12 +42,12 @@
     "similarity": true,
     "review_stage": null
   },
-  "state": "needs_search",
+  "state": "needs_revision",
   "retry": {
     "terminal": false,
     "retryable": true,
-    "stage": "review-importance-search",
+    "stage": "full-review-required",
     "last_error": null,
-    "updated_at": "2026-08-21T23:15:30.000Z"
+    "updated_at": "2026-08-21T23:22:02.714Z"
   }
 }
