@@ -25,6 +25,8 @@ on:
       - 'scripts/verify-post-create-quick-reviews.mjs'
       - 'scripts/build-review-article-corpus.mjs'
       - 'scripts/build-review-article-corpus-resilient.mjs'
+      - 'scripts/classify-review-importance.mjs'
+      - 'scripts/lib/review-importance.mjs'
       - 'scripts/prepare-sectioned-review-meta.mjs'
       - 'scripts/run-commercial-review-contract.mjs'
       - 'scripts/synthesize-commercial-review-openai.mjs'
@@ -45,6 +47,7 @@ on:
       - 'scripts/test-commercial-review-contract-v2.mjs'
       - 'scripts/test-game-creator-post-create.mjs'
       - 'scripts/test-commercial-quick-review-depth.mjs'
+      - 'scripts/test-review-importance-gate.mjs'
       - 'scripts/test-full-review-provider-order.mjs'
       - 'scripts/test-post-create-production-publisher.mjs'
       - 'scripts/lib/local-editorial-model.mjs'
@@ -67,7 +70,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: game-post-create-enrichment-v7-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'staging' }}
+  group: game-post-create-enrichment-v8-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'staging' }}
   cancel-in-progress: true
 
 jobs:
@@ -113,6 +116,8 @@ jobs:
           node --check scripts/verify-post-create-quick-reviews.mjs
           node --check scripts/build-review-article-corpus.mjs
           node --check scripts/build-review-article-corpus-resilient.mjs
+          node --check scripts/classify-review-importance.mjs
+          node --check scripts/lib/review-importance.mjs
           node --check scripts/prepare-sectioned-review-meta.mjs
           node --check scripts/run-commercial-review-contract.mjs
           node --check scripts/synthesize-commercial-review-openai.mjs
@@ -133,6 +138,7 @@ jobs:
           node --check scripts/test-commercial-review-contract-v2.mjs
           node --check scripts/test-game-creator-post-create.mjs
           node --check scripts/test-commercial-quick-review-depth.mjs
+          node --check scripts/test-review-importance-gate.mjs
           node --check scripts/test-full-review-provider-order.mjs
           node --check scripts/test-post-create-production-publisher.mjs
           node --check scripts/lib/local-editorial-model.mjs
@@ -143,6 +149,7 @@ jobs:
           node scripts/test-commercial-review-contract-v2.mjs
           node scripts/test-game-creator-post-create.mjs
           node scripts/test-commercial-quick-review-depth.mjs
+          node scripts/test-review-importance-gate.mjs
           node scripts/test-full-review-provider-order.mjs
           node scripts/test-post-create-production-publisher.mjs
           node scripts/test-review-carousel-version-gate.mjs
@@ -193,14 +200,14 @@ jobs:
           done
           node scripts/verify-post-create-quick-reviews.mjs "${TARGETS[@]}"
 
-      - name: Publish quick-review checkpoint before full upgrades
+      - name: Publish quick factual checkpoint before editorial selection
         if: steps.scope.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
           POST_CREATE_PUBLISH_PHASE: quick-review
         run: node scripts/publish-game-post-create-overlay.mjs
 
-      - name: Verify published quick reviews on production Pages
+      - name: Verify published quick material on production Pages
         if: steps.scope.outputs.count != '0'
         env:
           POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
@@ -210,9 +217,46 @@ jobs:
           IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
           node scripts/smoke-published-review-pages.mjs "${TARGETS[@]}"
 
+      - name: Determine whether a full editorial review is required
+        id: importance
+        if: steps.scope.outputs.count != '0'
+        env:
+          POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
+        run: |
+          IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
+          node scripts/classify-review-importance.mjs "${TARGETS[@]}"
+
+      - name: Publish review-importance decision
+        if: steps.scope.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          POST_CREATE_PUBLISH_PHASE: review-importance
+        run: node scripts/publish-game-post-create-overlay.mjs
+
+      - name: Finalize page when a full review is not required
+        id: quick_finalize
+        if: steps.scope.outputs.count != '0' && steps.importance.outputs.full_upgrade != 'true' && steps.importance.outputs.pending != 'true'
+        continue-on-error: true
+        env:
+          POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
+        run: |
+          IFS=',' read -ra TARGETS <<< "$POST_CREATE_TARGETS"
+          node scripts/finalize-commercial-post-create.mjs "${TARGETS[@]}"
+
+      - name: Publish completed non-full-review page state
+        if: steps.quick_finalize.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          POST_CREATE_PUBLISH_PHASE: page-complete
+        run: node scripts/publish-game-post-create-overlay.mjs
+
+      - name: Record unresolved editorial importance for continuation
+        if: steps.importance.outputs.pending == 'true'
+        run: echo 'Editorial importance remains unresolved. The next page worker cycle will continue source discovery; no full review is started yet.'
+
       - name: Restore local full-review model cache
         id: ollama_cache
-        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true')
+        if: steps.scope.outputs.count != '0' && steps.importance.outputs.full_upgrade == 'true'
         continue-on-error: true
         uses: actions/cache/restore@v4
         with:
@@ -223,7 +267,7 @@ jobs:
 
       - name: Start local full-review model service
         id: full_model_service
-        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true')
+        if: steps.scope.outputs.count != '0' && steps.importance.outputs.full_upgrade == 'true'
         continue-on-error: true
         run: |
           set -euo pipefail
@@ -238,7 +282,7 @@ jobs:
 
       - name: Ensure required local review models
         id: local_models
-        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_model_service.outcome == 'success'
+        if: steps.scope.outputs.count != '0' && steps.importance.outputs.full_upgrade == 'true' && steps.full_model_service.outcome == 'success'
         continue-on-error: true
         run: |
           set -euo pipefail
@@ -265,7 +309,7 @@ jobs:
 
       - name: Run required local full commercial review upgrade
         id: full_upgrade
-        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_model_service.outcome == 'success' && steps.local_models.outcome == 'success'
+        if: steps.scope.outputs.count != '0' && steps.importance.outputs.full_upgrade == 'true' && steps.full_model_service.outcome == 'success' && steps.local_models.outcome == 'success'
         continue-on-error: true
         env:
           POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
@@ -274,7 +318,7 @@ jobs:
           node scripts/run-commercial-review-contract.mjs "${TARGETS[@]}"
 
       - name: Persist incomplete full-review state for automatic continuation
-        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_upgrade.outcome != 'success'
+        if: steps.scope.outputs.count != '0' && steps.importance.outputs.full_upgrade == 'true' && steps.full_upgrade.outcome != 'success'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -282,11 +326,11 @@ jobs:
         run: node scripts/publish-game-post-create-overlay.mjs
 
       - name: Record automatic continuation requirement
-        if: steps.scope.outputs.full_upgrade == 'true' && steps.full_upgrade.outcome != 'success'
-        run: echo 'Required full review remains incomplete. Persisted state will be picked up automatically by the continuation workflow.'
+        if: steps.importance.outputs.full_upgrade == 'true' && steps.full_upgrade.outcome != 'success'
+        run: echo 'Editorially required full review remains incomplete. Persisted state will be picked up automatically by the next page worker cycle.'
 
       - name: Verify required full review completed locally
-        if: steps.scope.outputs.full_upgrade == 'true' && steps.full_upgrade.outcome == 'success'
+        if: steps.importance.outputs.full_upgrade == 'true' && steps.full_upgrade.outcome == 'success'
         env:
           POST_CREATE_TARGETS: ${{ steps.scope.outputs.slugs }}
         run: |
@@ -298,17 +342,19 @@ jobs:
           const missing=targets.filter(slug=>!complete.has(slug));
           if(missing.length)throw new Error(`Required full review did not complete: ${missing.join(', ')}`);
           for(const slug of targets){
+            const request=JSON.parse(fs.readFileSync(`data/game-enrichment-requests/${slug}.json`,'utf8'));
+            if(request.review_importance?.status!=='required')throw new Error(`${slug}: full review ran without review_importance=required`);
             const v=JSON.parse(fs.readFileSync(`data/parser-runs/review-commercial-v2-${slug}.json`,'utf8'));
             const a=JSON.parse(fs.readFileSync(`data/articles/${slug}.json`,'utf8'));
             if(v.passed!==true)throw new Error(`${slug}: commercial validator is not green`);
             if(Number(v.metrics?.article_words||a.generation?.words||0)<3000)throw new Error(`${slug}: full review is below 3000 words`);
             if(a.generation?.editorial_audit?.passed!==true)throw new Error(`${slug}: final editorial audit is not green`);
           }
-          console.log(JSON.stringify({status:'required-full-review-green',targets,provider_policy:'local_only'},null,2));
+          console.log(JSON.stringify({status:'required-full-review-green',targets,provider_policy:'local_only',importance_gate:'required'},null,2));
           NODE
 
       - name: Publish full commercial review checkpoint
-        if: steps.scope.outputs.count != '0' && (steps.scope.outputs.full_upgrade == 'true' || vars.POST_CREATE_FULL_UPGRADE == 'true') && steps.full_upgrade.outcome == 'success'
+        if: steps.scope.outputs.count != '0' && steps.importance.outputs.full_upgrade == 'true' && steps.full_upgrade.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           POST_CREATE_PUBLISH_PHASE: commercial-review
@@ -321,7 +367,7 @@ jobs:
         run: |
           SLUGS=$(node -e "const fs=require('fs');const p='data/parser-runs/commercial-review-orchestrator.json';const d=fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):{};process.stdout.write((d.completed||[]).join(','))")
           echo "slugs=$SLUGS" >> "$GITHUB_OUTPUT"
-          if [ -n "$SLUGS" ]; then echo "completed=$SLUGS"; else echo 'No released full commercial review completed in this pass.'; fi
+          if [ -n "$SLUGS" ]; then echo "completed=$SLUGS"; else echo 'No required full commercial review completed in this pass.'; fi
 
       - name: Verify full commercial reviews on production Pages
         if: steps.smoke.outputs.slugs != ''
