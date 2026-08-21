@@ -76,6 +76,13 @@ export function isCompactBooleanAuditSchema(schema) {
   return schema.type === 'object' && requiredBooleanCount >= 3 && hasIssueList;
 }
 
+export function isSingleParagraphSchema(schema){
+  if(!schema||schema==='json'||typeof schema!=='object'||Array.isArray(schema))return false;
+  const properties=schema.properties&&typeof schema.properties==='object'?schema.properties:{};
+  const required=Array.isArray(schema.required)?schema.required:[];
+  return schema.type==='object'&&Object.keys(properties).length===1&&required.length===1&&required[0]==='paragraph'&&properties.paragraph?.type==='string';
+}
+
 export function boundedJsonPredictBudget({schema='json',numPredict=12000,timeoutMs=900000}={}) {
   const requested = Math.max(1, Number(numPredict || 1));
   if (timeoutMs <= 120000 && isCompactBooleanAuditSchema(schema)) return Math.min(requested, 256);
@@ -101,11 +108,54 @@ function generatedReviewInstructionLeaks(value){
   return reasons;
 }
 
+function normalizePlainParagraph(raw){
+  let text=String(raw||'').trim();
+  text=text.replace(/^```(?:text|markdown)?\s*/i,'').replace(/\s*```$/,'').trim();
+  if(text.startsWith('{')){
+    try{const parsed=JSON.parse(text);if(typeof parsed?.paragraph==='string')text=parsed.paragraph.trim()}catch{}
+  }
+  text=text.replace(/^\s*(?:абзац|paragraph)\s*:\s*/i,'').trim();
+  if(text.startsWith('"')&&text.endsWith('"')){
+    try{text=JSON.parse(text)}catch{}
+  }
+  return String(text||'').trim();
+}
+
+export async function chatSingleParagraph({system='',prompt,images=[],temperature=0.2,numCtx=32768,numPredict=512,timeoutMs=900000,repeatPenalty=1.18,repeatLastN=1024,model=LOCAL_EDITORIAL_MODEL}){
+  if(!prompt)throw new Error('Local editorial prompt is required');
+  const ready=await localModelReady({model});
+  if(!ready)throw new Error(`Local editorial model is not ready: ${model}`);
+  const payload=await ollamaJson('/api/chat',{
+    method:'POST',
+    timeoutMs,
+    body:{
+      model,
+      stream:false,
+      think:false,
+      messages:[
+        ...(system?[{role:'system',content:system}]:[]),
+        {role:'user',content:prompt,...(images.length?{images}:{})}
+      ],
+      options:{temperature,num_ctx:numCtx,num_predict:Math.max(512,Number(numPredict||512)),repeat_penalty:repeatPenalty,repeat_last_n:repeatLastN}
+    }
+  });
+  const paragraph=normalizePlainParagraph(payload?.message?.content);
+  if(!paragraph)throw new Error('Local editorial model returned no paragraph content');
+  if(String(payload?.done_reason||'').toLowerCase()==='length')throw new Error('Local editorial paragraph hit the output limit before completion');
+  const leaks=instructionLeakReasons(paragraph);
+  if(leaks.length)throw new Error(`Local editorial model output rejected before persistence: ${leaks.map(reason=>`paragraph:${reason}`).join('; ')}`);
+  return paragraph;
+}
+
 export async function chatJson({system='', prompt, schema='json', images=[], temperature=0.2, numCtx=32768, numPredict=12000, timeoutMs=900000, repeatPenalty=1.18, repeatLastN=1024, model=LOCAL_EDITORIAL_MODEL}) {
   if (!prompt) throw new Error('Local editorial prompt is required');
+  const format = strengthenJsonSchema(schema);
+  if(isSingleParagraphSchema(format)){
+    const paragraph=await chatSingleParagraph({system,prompt,images,temperature,numCtx,numPredict,timeoutMs,repeatPenalty,repeatLastN,model});
+    return{paragraph};
+  }
   const ready = await localModelReady({model});
   if (!ready) throw new Error(`Local editorial model is not ready: ${model}`);
-  const format = strengthenJsonSchema(schema);
   const effectiveNumPredict = boundedJsonPredictBudget({schema: format, numPredict, timeoutMs});
   const payload=await ollamaJson('/api/chat',{
     method:'POST',
