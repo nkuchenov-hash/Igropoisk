@@ -102,7 +102,7 @@ async function add4bParagraph(state,section){
         schema,
         temperature:attempt===1?0.08:0.18,
         numCtx:shortTail?1536:3072,
-        numPredict:shortTail?96:220,
+        numPredict:shortTail?192:360,
         timeoutMs:shortTail?90000:120000,
         repeatLastN:shortTail?128:256
       });
