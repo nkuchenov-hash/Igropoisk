@@ -17,10 +17,10 @@ const LEAD_PACKAGE_RETRY_TIMEOUT_MS=60000;
 const LEAD_GENERATION_NUM_CTX=4096;
 const LEAD_PACKAGE_NUM_PREDICT=760;
 const MAX_LEAD_GENERATION_ATTEMPTS=2;
-const ARCHITECTURE='deterministic-preflight-v1-single-final-editor-audit';
+const ARCHITECTURE='deterministic-preflight-v1-single-final-editor-audit+grounded-bootstrap-failsafe-v2';
 
 const contract=read('config/review-commercial-contract.json',{}),rules=contract.article||{};
-const game=read(`data/drafts/${slug}.json`),corpus=read(`data/review-article-corpus/${slug}.json`);
+const game=read(`data/drafts/${slug}.json`),corpus=read(`data/review-article-corpus/${slug}.json`),bootstrap=read(`data/review-bootstrap/${slug}.json`,{});
 if(!game?.identity?.title||!corpus?.coverage?.passed)throw new Error(`${slug}: canonical game/article corpus missing for deterministic preflight`);
 const sources=(corpus.sources||[]).filter(x=>x?.source_role==='professional_review'||!x?.source_role);
 if(!sources.length)throw new Error(`${slug}: professional review corpus is empty`);
@@ -77,6 +77,27 @@ function deterministicDek(lead){
   if(words(out)<18){out=String(lead||'').replace(/\s+/g,' ').trim().split(' ').slice(0,38).join(' ').replace(/[,:;—-]+$/,'').trim();if(out&&!/[.!?]$/.test(out))out+='.'}
   return out;
 }
+function groundedBootstrapMeta(){
+  if(bootstrap?.publication_status!=='published'||bootstrap?.generation?.grounding_audit?.passed!==true||bootstrap?.generation?.editorial_quality?.passed!==true)return null;
+  const pool=[];
+  const add=value=>{const text=String(value||'').replace(/\s+/g,' ').trim();if(!text||proseErrors(text,{min:24,max:120}).length)return;if(pool.some(existing=>nearDuplicateText(existing,text)))return;pool.push(text)};
+  add(bootstrap.lead);
+  for(const section of bootstrap.sections||[])for(const paragraph of section?.paragraphs||[])add(paragraph);
+  const parts=[];
+  for(const paragraph of pool){
+    const total=words([...parts,paragraph].join(' '));
+    if(total>215&&words(parts.join(' '))>=leadMinWords)continue;
+    parts.push(paragraph);
+    if(words(parts.join(' '))>=Math.max(leadMinWords,130))break;
+  }
+  const lead=parts.join('\n\n');
+  if(words(lead)<leadMinWords||words(lead)>220)return null;
+  const preferredDek=String(bootstrap.dek||'').replace(/\s+/g,' ').trim();
+  const dek=!proseErrors(preferredDek,{min:18,max:55}).length?preferredDek:deterministicDek(lead);
+  const candidate={title:identity.title,dek,lead};
+  if(metaErrors(candidate).length)return null;
+  return{candidate,parts};
+}
 const leadSchema={type:'object',additionalProperties:false,required:['paragraphs'],properties:{paragraphs:{type:'array',minItems:2,maxItems:3,items:{type:'string'}}}};
 async function generateLeadPackage({evidence,timeoutMs,retry=false}){
   return chatJson({
@@ -88,26 +109,35 @@ async function generateLeadPackage({evidence,timeoutMs,retry=false}){
 
 async function ensureMeta(){
   const existing={title:identity.title,dek:String(state.meta?.dek||'').trim(),lead:String(state.meta?.lead||'').trim()};
-  if(!metaErrors(existing).length){state.meta=existing;state.meta_parts.lead=existing.lead.split(/\n\s*\n/).filter(Boolean);return{reused:true,attempts:0}}
-  if(!await localModelReady({timeoutMs:5000}))throw new Error(`${slug}: local ${LOCAL_EDITORIAL_MODEL} is unavailable for review writing`);
+  if(!metaErrors(existing).length){state.meta=existing;state.meta_parts.lead=existing.lead.split(/\n\s*\n/).filter(Boolean);return{reused:true,attempts:0,deterministic_fallback:false}}
   let lastErrors=[];
-  const attempts=[
-    {timeoutMs:LEAD_PACKAGE_TIMEOUT_MS,evidence:compactEvidence,retry:false},
-    {timeoutMs:LEAD_PACKAGE_RETRY_TIMEOUT_MS,evidence:compactEvidence.slice(0,4),retry:true}
-  ];
-  for(let i=0;i<Math.min(MAX_LEAD_GENERATION_ATTEMPTS,attempts.length);i++){
-    try{
-      const result=await generateLeadPackage(attempts[i]);
-      const parts=(result?.paragraphs||[]).map(x=>String(x||'').replace(/\s+/g,' ').trim()).filter(Boolean);
-      lastErrors=leadPackageErrors(parts);
-      if(lastErrors.length)continue;
-      const lead=parts.join('\n\n'),dek=deterministicDek(lead),candidate={title:identity.title,dek,lead};
-      lastErrors=metaErrors(candidate);
-      if(lastErrors.length)continue;
-      state.meta=candidate;state.meta_parts.lead=parts;persist();return{reused:false,attempts:i+1};
-    }catch(error){lastErrors=[error.message]}
+  if(await localModelReady({timeoutMs:5000})){
+    const attempts=[
+      {timeoutMs:LEAD_PACKAGE_TIMEOUT_MS,evidence:compactEvidence,retry:false},
+      {timeoutMs:LEAD_PACKAGE_RETRY_TIMEOUT_MS,evidence:compactEvidence.slice(0,4),retry:true}
+    ];
+    for(let i=0;i<Math.min(MAX_LEAD_GENERATION_ATTEMPTS,attempts.length);i++){
+      try{
+        const result=await generateLeadPackage(attempts[i]);
+        const parts=(result?.paragraphs||[]).map(x=>String(x||'').replace(/\s+/g,' ').trim()).filter(Boolean);
+        lastErrors=leadPackageErrors(parts);
+        if(lastErrors.length)continue;
+        const lead=parts.join('\n\n'),dek=deterministicDek(lead),candidate={title:identity.title,dek,lead};
+        lastErrors=metaErrors(candidate);
+        if(lastErrors.length)continue;
+        state.meta=candidate;state.meta_parts.lead=parts;persist();return{reused:false,attempts:i+1,deterministic_fallback:false};
+      }catch(error){lastErrors=[error.message]}
+    }
+  }else lastErrors=[`local ${LOCAL_EDITORIAL_MODEL} unavailable`];
+  const fallback=groundedBootstrapMeta();
+  if(fallback){
+    state.meta=fallback.candidate;
+    state.meta_parts.lead=fallback.parts;
+    state.meta_generation={provider:'deterministic-grounded-bootstrap-v1',reason:'local_lead_unavailable_or_invalid',model_attempt_errors:lastErrors,checked_at:new Date().toISOString()};
+    persist();
+    return{reused:false,attempts:MAX_LEAD_GENERATION_ATTEMPTS,deterministic_fallback:true};
   }
-  persist();throw new Error(`${slug}: bounded lead generation failed after ${MAX_LEAD_GENERATION_ATTEMPTS} attempts: ${lastErrors.join('; ')||'no valid text'}`);
+  persist();throw new Error(`${slug}: lead generation and grounded bootstrap fallback both failed: ${lastErrors.join('; ')||'no valid text'}`);
 }
 
 function sectionReuseErrors(section){
@@ -146,4 +176,4 @@ for(const [id,section] of Object.entries({...state.sections})){
   }
 }
 persist();
-console.log(JSON.stringify({slug,status:'green',provider:'local-ollama-writing-only',architecture:ARCHITECTURE,model:LOCAL_EDITORIAL_MODEL,title:state.meta.title,dek_words:words(state.meta.dek),lead_words:words(state.meta.lead),lead_parts:state.meta_parts.lead.length,lead_generation_attempts:metaResult.attempts,reused_meta:metaResult.reused,evidence_sources:compactEvidence.length,ai_preflight_audits:0,ai_section_reuse_audits:0,final_editorial_audit:'synthesize-commercial-review-resilient',reused_sections_checked:reusedSectionsChecked,reused_sections_rejected:reusedSectionsRejected},null,2));
+console.log(JSON.stringify({slug,status:'green',provider:'local-ollama-writing-with-grounded-bootstrap-failsafe',architecture:ARCHITECTURE,model:LOCAL_EDITORIAL_MODEL,title:state.meta.title,dek_words:words(state.meta.dek),lead_words:words(state.meta.lead),lead_parts:state.meta_parts.lead.length,lead_generation_attempts:metaResult.attempts,deterministic_lead_fallback:metaResult.deterministic_fallback,reused_meta:metaResult.reused,evidence_sources:compactEvidence.length,ai_preflight_audits:0,ai_section_reuse_audits:0,final_editorial_audit:'synthesize-commercial-review-resilient',reused_sections_checked:reusedSectionsChecked,reused_sections_rejected:reusedSectionsRejected},null,2));
