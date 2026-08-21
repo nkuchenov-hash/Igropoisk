@@ -13,7 +13,8 @@ const countWords=value=>(String(value||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]
 const lowerLatin=value=>[...String(value||'').matchAll(/\b[a-z][a-z-]{2,}\b/g)].map(match=>match[0]).filter(word=>!['fallout','rpg'].includes(word));
 const compact=(value,max=280)=>String(value||'').replace(/\s+/g,' ').trim().slice(0,max);
 const tokenSet=value=>new Set(String(value||'').toLowerCase().normalize('NFKC').replace(/ё/g,'е').match(/[a-zа-я0-9]{3,}/gi)||[]);
-function nearDuplicate(a,b){const A=tokenSet(a),B=tokenSet(b);if(!A.size||!B.size)return false;let shared=0;for(const token of A)if(B.has(token))shared++;return shared/Math.min(A.size,B.size)>=0.72}
+function tokenOverlap(a,b){const A=tokenSet(a),B=tokenSet(b);if(!A.size||!B.size)return 0;let shared=0;for(const token of A)if(B.has(token))shared++;return shared/Math.min(A.size,B.size)}
+function nearDuplicate(a,b){return tokenOverlap(a,b)>=0.72}
 
 const contract=read('config/review-commercial-contract.json',{});
 const minSectionWords=Math.max(260,Number(contract.article?.minimum_words_per_section||260));
@@ -27,19 +28,38 @@ const MAX_WRAPPER_PASSES=6;
 const MAX_4B_REPAIR_PARAGRAPHS=14;
 let repairCalls=0;
 
-function evidenceFor(section,{shortTail=false,attempt=1}={}){
-  const ids=(section?.source_ids||[]).filter(id=>sourceById.has(id));
-  const pool=ids.length?ids.map(id=>sourceById.get(id)):sourceList;
-  const limit=shortTail?(attempt===1?2:1):Math.max(2,5-attempt);
-  return pool.slice(0,limit).map(source=>({
-    id:source.id,
-    publication:source.publication,
-    summary:compact(source.dossier?.summary,shortTail?140:220),
-    strengths:(source.dossier?.strengths||[]).slice(0,shortTail?1:2).map(value=>compact(value,shortTail?90:120)),
-    criticisms:(source.dossier?.criticisms||[]).slice(0,shortTail?1:2).map(value=>compact(value,shortTail?90:120)),
-    examples:(source.dossier?.specific_examples||[]).slice(0,shortTail?1:2).map(value=>compact(value,shortTail?100:140)),
-    claims:(source.dossier?.notable_claims||[]).slice(0,shortTail?1:2).map(value=>compact(value,shortTail?100:140))
-  }));
+function sourceAtoms(source){
+  const dossier=source?.dossier||{};
+  const atoms=[];
+  const add=(kind,value)=>{const text=compact(value,180);if(countWords(text)>=5)atoms.push({id:source.id,publication:source.publication,kind,text})};
+  add('summary',dossier.summary);
+  for(const value of dossier.strengths||[])add('strength',value);
+  for(const value of dossier.criticisms||[])add('criticism',value);
+  for(const value of dossier.systems||[])add('system',value);
+  for(const value of dossier.specific_examples||[])add('example',value);
+  for(const value of dossier.notable_claims||[])add('claim',value);
+  return atoms;
+}
+
+function evidenceForRepair(section,{shortTail=false,attempt=1}={}){
+  const paragraphs=Array.isArray(section?.paragraphs)?section.paragraphs:[];
+  const existing=paragraphs.join(' ');
+  const preferred=new Set((section?.source_ids||[]).filter(id=>sourceById.has(id)));
+  const atoms=sourceList.flatMap(source=>sourceAtoms(source)).map(atom=>({
+    ...atom,
+    overlap:tokenOverlap(atom.text,existing),
+    preferred:preferred.has(atom.id)
+  })).filter(atom=>atom.overlap<0.72);
+  atoms.sort((a,b)=>{
+    const scoreA=(a.preferred?0.18:0)+(1-a.overlap);
+    const scoreB=(b.preferred?0.18:0)+(1-b.overlap);
+    return scoreB-scoreA;
+  });
+  if(!atoms.length)return [];
+  const width=shortTail?2:3;
+  const offset=((attempt-1)*width)%atoms.length;
+  const selected=[...atoms.slice(offset,offset+width),...atoms.slice(0,Math.max(0,offset+width-atoms.length))].slice(0,width);
+  return selected.map(({id,publication,kind,text})=>({id,publication,kind,text}));
 }
 
 function incomplete(section){
@@ -66,44 +86,45 @@ async function add4bParagraph(state,section){
   const remaining=Math.max(0,minSectionWords-words);
   const missingParagraphs=Math.max(0,minParagraphs-paragraphs.length);
   const shortTail=remaining>0&&remaining<45&&missingParagraphs===0;
-  const requested=shortTail?'24–50':'65–110';
-  const minimum=shortTail?18:42;
+  const requested=shortTail?'18–34':'60–95';
+  const minimum=shortTail?12:40;
   let feedback='';
   for(let attempt=1;attempt<=3;attempt++){
-    const evidence=evidenceFor(section,{shortTail,attempt});
+    const evidence=evidenceForRepair(section,{shortTail,attempt});
     if(!evidence.length)return false;
     repairCalls++;
     let result;
     try{
       result=await chatJson({
         model:LOCAL_EDITORIAL_MODEL,
-        system:'Ты строгий русскоязычный игровой редактор. Верни только один новый абзац по evidence. Переводи английские понятия на русский; латиница запрещена полностью, кроме Fallout и RPG. Не называй издания. Не повторяй существующий текст и не добавляй неподтверждённых фактов.',
-        prompt:`Дополни раздел «${section.heading||section.id}» обзора ${slug}. Сейчас ${words} слов и ${paragraphs.length} абзацев; минимум — ${minSectionWords} слов и ${minParagraphs} абзаца. Нужен один source-grounded абзац ${requested} русских слов. Он должен развивать НОВУЮ грань, а не пересказывать последний абзац.${feedback}\nПОСЛЕДНИЙ АБЗАЦ:${JSON.stringify(compact(paragraphs.at(-1)||'',shortTail?320:520))}\nEVIDENCE:${JSON.stringify(evidence)}`,
+        system:'Ты строгий русскоязычный игровой редактор. Верни только один новый абзац. Используй только NEW EVIDENCE и раскрывай новый конкретный аспект раздела, которого ещё нет в тексте. Не пересказывай уже написанное. Переводи английские понятия на русский; латиница запрещена полностью, кроме Fallout и RPG. Не называй издания и не добавляй неподтверждённых фактов.',
+        prompt:`Дополни раздел «${section.heading||section.id}» обзора ${slug}. Сейчас ${words} слов и ${paragraphs.length} абзацев; минимум — ${minSectionWords} слов и ${minParagraphs} абзаца. Нужен один source-grounded абзац ${requested} русских слов. Сосредоточься ТОЛЬКО на новом факте/наблюдении из NEW EVIDENCE.${feedback}\nNEW EVIDENCE:${JSON.stringify(evidence)}`,
         schema,
-        temperature:attempt===1?0.05:0.12,
-        numCtx:shortTail?2048:4096,
-        numPredict:shortTail?128:280,
-        timeoutMs:shortTail?120000:150000,
-        repeatLastN:shortTail?256:512
+        temperature:attempt===1?0.08:0.18,
+        numCtx:shortTail?1536:3072,
+        numPredict:shortTail?96:220,
+        timeoutMs:shortTail?90000:120000,
+        repeatLastN:shortTail?128:256
       });
     }catch(error){
       console.warn(`${slug}: ${LOCAL_EDITORIAL_MODEL} paragraph repair attempt ${attempt} failed for ${section.id}: ${error.message}`);
-      feedback=`\nПРЕДЫДУЩАЯ ПОПЫТКА ТЕХНИЧЕСКИ НЕ ПРОШЛА. Дай новый короткий вариант без латиницы и повторов.`;
+      feedback='\nПРЕДЫДУЩАЯ ПОПЫТКА ТЕХНИЧЕСКИ НЕ ПРОШЛА. Возьми следующий NEW EVIDENCE и дай новый вариант.';
       continue;
     }
     const paragraph=String(result?.paragraph||'').trim();
     const reasons=paragraphRejectionReasons(paragraph,paragraphs,minimum);
     if(reasons.length){
       console.warn(`${slug}: ${LOCAL_EDITORIAL_MODEL} paragraph repair attempt ${attempt} rejected for ${section.id}: ${reasons.join('; ')}`);
-      feedback=`\nПРЕДЫДУЩИЙ ВАРИАНТ ОТКЛОНЁН: ${reasons.join('; ')}. Перепиши его полностью, исправив именно эти причины. Не используй ни одного латинского слова кроме Fallout/RPG и возьми другую формулировку. ОТКЛОНЁННЫЙ ТЕКСТ:${JSON.stringify(compact(paragraph,420))}`;
+      feedback=`\nПРЕДЫДУЩИЙ ВАРИАНТ ОТКЛОНЁН: ${reasons.join('; ')}. Не редактируй его и не перефразируй. Полностью забудь этот вариант и напиши другой абзац по следующему NEW EVIDENCE.`;
       continue;
     }
     section.paragraphs=[...paragraphs,paragraph].slice(0,7);
+    section.source_ids=[...new Set([...(section.source_ids||[]),...evidence.map(item=>item.id)])];
     section.writer_fallback_parts=Number(section.writer_fallback_parts||0)+1;
     state.sections[section.id]=section;
     state.updated_at=new Date().toISOString();
     write(statePath,state);
-    console.log(JSON.stringify({slug,status:'4b-paragraph-repair',section:section.id,short_tail:shortTail,words_before:words,words_after:countWords(section.paragraphs.join(' ')),paragraphs:section.paragraphs.length},null,2));
+    console.log(JSON.stringify({slug,status:'4b-paragraph-repair',section:section.id,short_tail:shortTail,words_before:words,words_after:countWords(section.paragraphs.join(' ')),paragraphs:section.paragraphs.length,evidence_ids:evidence.map(item=>item.id)},null,2));
     return true;
   }
   return false;
