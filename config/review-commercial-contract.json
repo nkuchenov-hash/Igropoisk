@@ -1,17 +1,34 @@
 {
-  "schema_version": 3,
-  "id": "igropoisk-commercial-review-v2",
+  "schema_version": 4,
+  "id": "igropoisk-commercial-review-v3",
   "reference_baseline": "data/articles/mafia-ii.json",
-  "purpose": "Единый обязательный стандарт для любой страницы выпущенной игры. Игра никогда не отклоняется из-за нехватки найденных материалов: поиск расширяется и повторяется до полного публичного результата.",
+  "purpose": "Единый стандарт страницы выпущенной игры. Базовая публичная страница создаётся всегда, а длинный редакционный обзор обязателен только для редакционно значимых игр по отдельному importance gate.",
   "lifecycle": {
     "game_registry_entry_created_immediately": true,
     "released_game_terminal_state": "complete_public",
     "missing_material_is_retry_state_only": true,
     "forbid_terminal_rejected_for_missing_material": true,
     "forbid_terminal_deferred_for_missing_material": true,
-    "forbid_attempt_exhaustion_for_released_games": true,
-    "keep_searching_until_complete": true,
-    "production_page_requires_complete_materials": true
+    "forbid_attempt_exhaustion_for_required_full_reviews": true,
+    "keep_working_until_page_complete": true,
+    "production_page_requires_complete_required_materials": true
+  },
+  "review_importance": {
+    "enabled": true,
+    "primary_reference_source_id": "igromania",
+    "primary_reference_source_name": "Игромания",
+    "primary_reference_full_review_requires_full_article": true,
+    "secondary_minimum_independent_full_reviews": 8,
+    "secondary_rule": "Если отдельного обзора Игромании не найдено, длинный обзор всё равно обязателен, когда исчерпывающий поиск находит не меньше 8 независимых полнотекстовых профессиональных обзоров.",
+    "not_required_only_after_exhaustive_discovery": true,
+    "persist_decision": true,
+    "force_full_review_override_field": "force_full_review",
+    "legacy_full_review_required_field_is_not_a_force_override": true,
+    "states": [
+      "pending",
+      "required",
+      "not_required"
+    ]
   },
   "source_corpus": {
     "score_corpus_separate_from_article_corpus": true,
@@ -42,7 +59,7 @@
       "archival_feature",
       "official_documentation"
     ],
-    "fallback_rule": "Если после документированного исчерпывающего поиска реально найдено меньше 15 полнотекстовых профессиональных рецензий, обзор всё равно обязателен. Для редакционных выводов используются все найденные professional reviews; для фактической глубины разрешены только проверенные supplemental factual sources. Discovery audit обязан доказывать, что весь зарегистрированный пул и архивные стратегии были реально проверены."
+    "fallback_rule": "Если игра прошла review_importance как required, длинный обзор остаётся обязательным даже когда после документированного исчерпывающего поиска найдено меньше 15 полнотекстовых профессиональных рецензий. Для редакционных выводов используются все найденные professional reviews; для фактической глубины разрешены только проверенные supplemental factual sources."
   },
   "article": {
     "minimum_words": 3000,
@@ -94,9 +111,9 @@
     "reuse_across_carousels_forbidden": true
   },
   "publication": {
-    "released_game_must_always_end_with_public_review": true,
-    "short_bootstrap_is_not_a_published_review": true,
-    "full_article_required_for_review_status": true,
+    "released_game_must_always_have_public_page": true,
+    "short_bootstrap_is_public_factual_material_not_full_review": true,
+    "full_article_required_only_when_review_importance_required": true,
     "canonical_score_required": true,
     "cover_required": true,
     "live_pages_smoke_required": true,

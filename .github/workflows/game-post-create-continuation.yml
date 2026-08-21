@@ -10,11 +10,11 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-continuation-v1
+  group: game-post-create-continuation-v2
   cancel-in-progress: false
 
 jobs:
-  continue-required-build:
+  continue-incomplete-page:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Detect incomplete required released game
+      - name: Detect incomplete released game page
         id: pending
         run: |
           node - <<'NODE'
@@ -34,18 +34,18 @@ jobs:
           const path=require('path');
           const dir='data/game-enrichment-requests';
           const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return null}};
-          const required=r=>r?.full_review_required===true||r?.force_full_review===true||(r?.released===true&&String(r?.modules?.review||'').toLowerCase()!=='ready');
+          const priority=r=>r?.review_importance?.status==='required'||r?.force_full_review===true?2:!['required','not_required'].includes(String(r?.review_importance?.status||''))?1:0;
           const rows=fs.existsSync(dir)?fs.readdirSync(dir).filter(f=>f.endsWith('.json')).map(f=>read(path.join(dir,f))).filter(Boolean):[];
-          const pending=rows.filter(r=>r?.slug&&String(r.state||'')!=='complete'&&required(r)).sort((a,b)=>String(a.last_run_at||a.requested_at||'').localeCompare(String(b.last_run_at||b.requested_at||''))||String(a.slug).localeCompare(String(b.slug)));
+          const pending=rows.filter(r=>r?.slug&&r?.released===true&&String(r.state||'')!=='complete').sort((a,b)=>priority(b)-priority(a)||String(a.last_run_at||a.requested_at||'').localeCompare(String(b.last_run_at||b.requested_at||''))||String(a.slug).localeCompare(String(b.slug)));
           const first=pending[0]||null;
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`continue=${first?'true':'false'}\nslug=${first?.slug||''}\n`);
-          console.log(JSON.stringify({status:first?'continuation-required':'idle',slug:first?.slug||null,pending_required:pending.length},null,2));
+          console.log(JSON.stringify({status:first?'continuation-required':'idle',slug:first?.slug||null,pending_pages:pending.length,review_importance:first?.review_importance?.status||'pending'},null,2));
           NODE
 
-      - name: Dispatch next worker cycle
+      - name: Dispatch next page worker cycle
         if: steps.pending.outputs.continue == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          echo "Continuing required game build: ${{ steps.pending.outputs.slug }}"
+          echo "Continuing incomplete game page: ${{ steps.pending.outputs.slug }}"
           gh workflow run game-post-create-enrichment.yml --ref staging

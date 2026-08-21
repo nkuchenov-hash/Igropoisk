@@ -50,10 +50,11 @@ function due(request){
   if(Number.isFinite(date))return date<=Date.now();
   return !/(?:upcoming|announced|tba|coming)/i.test(String(draft?.release?.status||''));
 }
-function required(request){
-  if(request?.full_review_required===true||request?.force_full_review===true)return true;
-  return request?.released===true&&String(request?.modules?.review||'').toLowerCase()!=='ready';
+function fullReviewRequired(request){
+  return request?.force_full_review===true||request?.review_importance?.status==='required'||request?.review_importance?.required===true;
 }
+function importancePending(request){return request?.released===true&&!['required','not_required'].includes(String(request?.review_importance?.status||''))}
+function priority(request){return fullReviewRequired(request)?2:importancePending(request)?1:0}
 
 let files=[];
 if(eventName==='pull_request'&&payload.pull_request?.number)files=await pullFiles(payload.pull_request.number);
@@ -69,7 +70,7 @@ if(!slugs.size){
       .filter(x=>x.endsWith('.json'))
       .map(file=>read(`data/game-enrichment-requests/${file}`,{}))
       .filter(x=>x?.slug&&String(x.state||'')!=='complete'&&due(x))
-      .sort((a,b)=>Number(required(b))-Number(required(a))||String(a.last_run_at||a.requested_at||'').localeCompare(String(b.last_run_at||b.requested_at||''))||String(a.slug).localeCompare(String(b.slug)))
+      .sort((a,b)=>priority(b)-priority(a)||String(a.last_run_at||a.requested_at||'').localeCompare(String(b.last_run_at||b.requested_at||''))||String(a.slug).localeCompare(String(b.slug)))
       .slice(0,limit);
     for(const request of pending)slugs.add(String(request.slug).toLowerCase());
   }
@@ -77,7 +78,8 @@ if(!slugs.size){
 
 const values=[...slugs].sort();
 if(!values.length)mode='idle';
-const fullUpgrade=values.some(slug=>required(read(`data/game-enrichment-requests/${slug}.json`,{})));
-const lines=[`mode=${mode}`,`slugs=${values.join(',')}`,`count=${values.length}`,`full_upgrade=${fullUpgrade}`];
+const fullUpgrade=values.some(slug=>fullReviewRequired(read(`data/game-enrichment-requests/${slug}.json`,{})));
+const importanceNeeded=values.some(slug=>importancePending(read(`data/game-enrichment-requests/${slug}.json`,{})));
+const lines=[`mode=${mode}`,`slugs=${values.join(',')}`,`count=${values.length}`,`full_upgrade=${fullUpgrade}`,`importance_needed=${importanceNeeded}`];
 if(output)fs.appendFileSync(output,`${lines.join('\n')}\n`);
-console.log(JSON.stringify({event:eventName,mode,slugs:values,changed_files:files.length,backlog_limit:Number(process.env.POST_CREATE_BACKLOG_LIMIT||1),full_upgrade:fullUpgrade,required_priority:true,released_incomplete_requires_full_review:true},null,2));
+console.log(JSON.stringify({event:eventName,mode,slugs:values,changed_files:files.length,backlog_limit:Number(process.env.POST_CREATE_BACKLOG_LIMIT||1),full_upgrade:fullUpgrade,importance_needed:importanceNeeded,review_selection:'igromania-or-review-volume'},null,2));
