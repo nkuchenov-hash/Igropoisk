@@ -100,13 +100,25 @@ async function repairIncompleteSections(){
   return changed;
 }
 
-if(!await localModelReady({timeoutMs:5000,model:LOCAL_EDITORIAL_MODEL}))throw new Error(`${slug}: 4b editorial fallback is unavailable: ${LOCAL_EDITORIAL_MODEL}`);
-await repairIncompleteSections();
+function runBase(){
+  const result=spawnSync('node',['scripts/synthesize-commercial-review-resilient.mjs',slug],{cwd:root,encoding:'utf8',stdio:'inherit',env:process.env,maxBuffer:48*1024*1024});
+  return Number(result.status??75);
+}
+
+let editorialReady=await localModelReady({timeoutMs:2500,model:LOCAL_EDITORIAL_MODEL});
+if(editorialReady)await repairIncompleteSections();
 let lastStatus=75;
 for(let pass=1;pass<=MAX_WRAPPER_PASSES;pass++){
-  const result=spawnSync('node',['scripts/synthesize-commercial-review-resilient.mjs',slug],{cwd:root,encoding:'utf8',stdio:'inherit',env:process.env,maxBuffer:48*1024*1024});
-  lastStatus=Number(result.status??75);
-  if(lastStatus===0){console.log(JSON.stringify({slug,status:'resilient-wrapper-green',passes:pass,repair_calls:repairCalls},null,2));process.exit(0)}
+  lastStatus=runBase();
+  if(lastStatus===0){
+    console.log(JSON.stringify({slug,status:'resilient-wrapper-green',passes:pass,repair_calls:repairCalls},null,2));
+    process.exit(0);
+  }
+  if(!editorialReady)editorialReady=await localModelReady({timeoutMs:5000,model:LOCAL_EDITORIAL_MODEL});
+  if(!editorialReady){
+    console.warn(`${slug}: base synthesis failed and ${LOCAL_EDITORIAL_MODEL} repair is not available in this provider phase`);
+    break;
+  }
   const repaired=await repairIncompleteSections();
   if(!repaired)break;
   console.warn(`${slug}: persisted incomplete section repaired with ${LOCAL_EDITORIAL_MODEL}; resuming synthesis in the same run`);
