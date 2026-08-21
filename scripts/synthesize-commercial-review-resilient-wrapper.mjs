@@ -78,6 +78,12 @@ function cleanStateBeforeRepair(){
   return cleaned.state;
 }
 
+function repairPrompt(section,{words,paragraphs,evidence,shortTail}){
+  const facts=evidence.map(item=>`— ${item.text}`).join('\n');
+  const lengthHint=shortTail?'Коротко заверши мысль раздела.':'Развей одну новую грань темы.';
+  return `Продолжи журнальный обзор игры ${slug}, раздел «${section.heading||section.id}». В разделе уже ${words} слов. ${lengthHint}\nМатериал для продолжения:\n${facts}`;
+}
+
 async function add4bParagraph(state,section){
   if(repairCalls>=MAX_4B_REPAIR_PARAGRAPHS)return false;
   const paragraphs=Array.isArray(section.paragraphs)?section.paragraphs:[];
@@ -85,9 +91,7 @@ async function add4bParagraph(state,section){
   const remaining=Math.max(0,minSectionWords-words);
   const missingParagraphs=Math.max(0,minParagraphs-paragraphs.length);
   const shortTail=remaining>0&&remaining<45&&missingParagraphs===0;
-  const requested=shortTail?'18–34':'60–95';
   const minimum=shortTail?12:40;
-  let feedback='';
   for(let attempt=1;attempt<=3;attempt++){
     const evidence=evidenceForRepair(section,{shortTail,attempt});
     if(!evidence.length)return false;
@@ -96,8 +100,8 @@ async function add4bParagraph(state,section){
     try{
       result=await chatJson({
         model:LOCAL_EDITORIAL_MODEL,
-        system:'Ты строгий русскоязычный игровой редактор. Верни только один новый абзац. Используй только NEW EVIDENCE и раскрывай новый конкретный аспект раздела, которого ещё нет в тексте. Не пересказывай уже написанное. Переводи английские понятия на русский; латиница запрещена полностью, кроме Fallout и RPG. Не называй издания и не добавляй неподтверждённых фактов.',
-        prompt:`Дополни раздел «${section.heading||section.id}» обзора ${slug}. Сейчас ${words} слов и ${paragraphs.length} абзацев; минимум — ${minSectionWords} слов и ${minParagraphs} абзаца. Нужен один source-grounded абзац ${requested} русских слов. Сосредоточься ТОЛЬКО на новом факте/наблюдении из NEW EVIDENCE.${feedback}\nNEW EVIDENCE:${JSON.stringify(evidence)}`,
+        system:'Ты русскоязычный игровой журналист. Продолжи готовый журнальный текст одним содержательным абзацем по фактам ниже. Не упоминай процесс написания, требования, редакционную работу или названия изданий. Переводи английские понятия на русский; допустимы только названия Fallout и RPG.',
+        prompt:repairPrompt(section,{words,paragraphs,evidence,shortTail}),
         schema,
         temperature:attempt===1?0.08:0.18,
         numCtx:shortTail?1536:3072,
@@ -107,14 +111,12 @@ async function add4bParagraph(state,section){
       });
     }catch(error){
       console.warn(`${slug}: ${LOCAL_EDITORIAL_MODEL} paragraph repair attempt ${attempt} failed for ${section.id}: ${error.message}`);
-      feedback='\nПРЕДЫДУЩАЯ ПОПЫТКА ТЕХНИЧЕСКИ НЕ ПРОШЛА. Возьми следующий NEW EVIDENCE и дай новый вариант.';
       continue;
     }
     const paragraph=String(result?.paragraph||'').trim();
     const reasons=paragraphRejectionReasons(paragraph,paragraphs,minimum);
     if(reasons.length){
       console.warn(`${slug}: ${LOCAL_EDITORIAL_MODEL} paragraph repair attempt ${attempt} rejected for ${section.id}: ${reasons.join('; ')}`);
-      feedback=`\nПРЕДЫДУЩИЙ ВАРИАНТ ОТКЛОНЁН: ${reasons.join('; ')}. Не редактируй его и не перефразируй. Полностью забудь этот вариант и напиши другой абзац по следующему NEW EVIDENCE.`;
       continue;
     }
     section.paragraphs=[...paragraphs,paragraph].slice(0,7);

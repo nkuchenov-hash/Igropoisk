@@ -122,12 +122,13 @@ function normalizePlainParagraph(raw){
 }
 
 const countPlainWords=value=>(String(value||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]+/g)||[]).length;
+const completedSentences=value=>String(value||'').match(/[^.!?…]+[.!?…]+(?=\s|$)/g)||[];
+
 export function completeParagraphPrefix(raw,{minWords=18,maxWords=135}={}){
   const text=normalizePlainParagraph(raw).replace(/\s+/g,' ').trim();
   if(!text)return'';
-  const sentences=text.match(/[^.!?…]+[.!?…]+(?=\s|$)/g)||[];
   const kept=[];let words=0;
-  for(const sentenceRaw of sentences){
+  for(const sentenceRaw of completedSentences(text)){
     const sentence=sentenceRaw.trim(),sentenceWords=countPlainWords(sentence);
     if(!sentenceWords)continue;
     if(words+sentenceWords>maxWords)break;
@@ -135,6 +136,17 @@ export function completeParagraphPrefix(raw,{minWords=18,maxWords=135}={}){
   }
   if(words<minWords)return'';
   return kept.join(' ').trim();
+}
+
+export function cleanInstructionLeakSentences(raw){
+  const text=normalizePlainParagraph(raw).replace(/\s+/g,' ').trim();
+  if(!text)return'';
+  const sentences=completedSentences(text).map(sentence=>sentence.trim()).filter(Boolean);
+  if(!sentences.length)return'';
+  const kept=sentences.filter(sentence=>instructionLeakReasons(sentence).length===0);
+  const candidate=kept.join(' ').trim();
+  if(!candidate||instructionLeakReasons(candidate).length)return'';
+  return candidate;
 }
 
 export async function chatSingleParagraph({system='',prompt,images=[],temperature=0.2,numCtx=32768,numPredict=512,timeoutMs=900000,repeatPenalty=1.18,repeatLastN=1024,model=LOCAL_EDITORIAL_MODEL}){
@@ -164,7 +176,12 @@ export async function chatSingleParagraph({system='',prompt,images=[],temperatur
     if(!salvaged)throw new Error('Local editorial paragraph hit the output limit without a complete usable prefix');
     paragraph=salvaged;
   }
-  const leaks=instructionLeakReasons(paragraph);
+  let leaks=instructionLeakReasons(paragraph);
+  if(leaks.length){
+    const cleaned=cleanInstructionLeakSentences(paragraph);
+    if(cleaned)paragraph=cleaned;
+    leaks=instructionLeakReasons(paragraph);
+  }
   if(leaks.length)throw new Error(`Local editorial model output rejected before persistence: ${leaks.map(reason=>`paragraph:${reason}`).join('; ')}`);
   return paragraph;
 }
