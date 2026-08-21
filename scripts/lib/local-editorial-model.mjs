@@ -121,10 +121,27 @@ function normalizePlainParagraph(raw){
   return String(text||'').trim();
 }
 
+const countPlainWords=value=>(String(value||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]+/g)||[]).length;
+export function completeParagraphPrefix(raw,{minWords=18,maxWords=135}={}){
+  const text=normalizePlainParagraph(raw).replace(/\s+/g,' ').trim();
+  if(!text)return'';
+  const sentences=text.match(/[^.!?…]+[.!?…]+(?=\s|$)/g)||[];
+  const kept=[];let words=0;
+  for(const sentenceRaw of sentences){
+    const sentence=sentenceRaw.trim(),sentenceWords=countPlainWords(sentence);
+    if(!sentenceWords)continue;
+    if(words+sentenceWords>maxWords)break;
+    kept.push(sentence);words+=sentenceWords;
+  }
+  if(words<minWords)return'';
+  return kept.join(' ').trim();
+}
+
 export async function chatSingleParagraph({system='',prompt,images=[],temperature=0.2,numCtx=32768,numPredict=512,timeoutMs=900000,repeatPenalty=1.18,repeatLastN=1024,model=LOCAL_EDITORIAL_MODEL}){
   if(!prompt)throw new Error('Local editorial prompt is required');
   const ready=await localModelReady({model});
   if(!ready)throw new Error(`Local editorial model is not ready: ${model}`);
+  const effectiveNumPredict=Math.max(96,Math.min(768,Number(numPredict||512)));
   const payload=await ollamaJson('/api/chat',{
     method:'POST',
     timeoutMs,
@@ -136,12 +153,17 @@ export async function chatSingleParagraph({system='',prompt,images=[],temperatur
         ...(system?[{role:'system',content:system}]:[]),
         {role:'user',content:prompt,...(images.length?{images}:{})}
       ],
-      options:{temperature,num_ctx:numCtx,num_predict:Math.max(512,Number(numPredict||512)),repeat_penalty:repeatPenalty,repeat_last_n:repeatLastN}
+      options:{temperature,num_ctx:numCtx,num_predict:effectiveNumPredict,repeat_penalty:repeatPenalty,repeat_last_n:repeatLastN,stop:['\n\n']}
     }
   });
-  const paragraph=normalizePlainParagraph(payload?.message?.content);
+  const raw=payload?.message?.content;
+  let paragraph=normalizePlainParagraph(raw);
   if(!paragraph)throw new Error('Local editorial model returned no paragraph content');
-  if(String(payload?.done_reason||'').toLowerCase()==='length')throw new Error('Local editorial paragraph hit the output limit before completion');
+  if(String(payload?.done_reason||'').toLowerCase()==='length'){
+    const salvaged=completeParagraphPrefix(raw);
+    if(!salvaged)throw new Error('Local editorial paragraph hit the output limit without a complete usable prefix');
+    paragraph=salvaged;
+  }
   const leaks=instructionLeakReasons(paragraph);
   if(leaks.length)throw new Error(`Local editorial model output rejected before persistence: ${leaks.map(reason=>`paragraph:${reason}`).join('; ')}`);
   return paragraph;
