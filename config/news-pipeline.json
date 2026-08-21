@@ -5,7 +5,7 @@
   "groups": [
     {
       "id": "global-media",
-      "interval_minutes": 1440,
+      "interval_minutes": 60,
       "freshness_file": "data/news.json",
       "commands": [
         "node scripts/preserve-news-history.mjs --snapshot",
@@ -46,14 +46,14 @@
     "command": "node scripts/build-news-pipeline-health.mjs",
     "persistent_failure_threshold": 3,
     "warning_age_minutes": {
-      "data/news.json": 2160,
+      "data/news.json": 120,
       "data/publisher-news.json": 120,
       "data/youtube-signals.json": 120,
       "data/news-events.json": 120,
       "data/news-home-ru.json": 120
     },
     "blocking_age_minutes": {
-      "data/news.json": 4320,
+      "data/news.json": 360,
       "data/publisher-news.json": 360,
       "data/youtube-signals.json": 360,
       "data/news-events.json": 360,
