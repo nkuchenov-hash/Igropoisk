@@ -1,12 +1,34 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
+import {instructionLeakReasons,paragraphQualityReasons,sanitizePersistedState,nearDuplicate} from './lib/review-fragment-quality.mjs';
+
 const workflow=fs.readFileSync('.github/workflows/game-post-create-enrichment.yml','utf8');
 const orchestrator=fs.readFileSync('scripts/run-commercial-review-contract.mjs','utf8');
 const wrapperPath='scripts/synthesize-commercial-review-resilient-wrapper.mjs';
+const qualityPath='scripts/lib/review-fragment-quality.mjs';
+const localModelPath='scripts/lib/local-editorial-model.mjs';
+const validatorPath='scripts/validate-commercial-review-v2.mjs';
+const openaiPath='scripts/synthesize-commercial-review-openai.mjs';
 const wrapper=fs.readFileSync(wrapperPath,'utf8');
+const quality=fs.readFileSync(qualityPath,'utf8');
+const localModel=fs.readFileSync(localModelPath,'utf8');
+const validator=fs.readFileSync(validatorPath,'utf8');
+const openai=fs.readFileSync(openaiPath,'utf8');
 const fail=message=>{throw new Error(message)};
-try{execFileSync(process.execPath,['--check',wrapperPath],{stdio:'pipe'})}catch(error){fail(`Review repair wrapper syntax is invalid: ${String(error?.stderr||error?.message||error)}`)}
+for(const file of [wrapperPath,qualityPath,localModelPath,validatorPath,openaiPath]){
+  try{execFileSync(process.execPath,['--check',file],{stdio:'pipe'})}catch(error){fail(`${file} syntax is invalid: ${String(error?.stderr||error?.message||error)}`)}
+}
+
+const leaked='Новый абзац должен быть строго посвящён конкретному аспекту из NEW EVIDENCE без повторения уже существующего текста. Важно использовать только русский язык, латиница запрещена, не добавлять неподтверждённые данные и сохранять объём от 60 до 95 слов для одного абзаца.';
+const good='Система характеристик заставляет заранее выбирать сильные стороны героя: высокий интеллект открывает больше вариантов разговора, а неудачное распределение очков заметно меняет способы решения заданий и темп развития персонажа.';
+if(!instructionLeakReasons(leaked).length)fail('Shared fragment gate does not reject the known persisted instruction leak');
+if(paragraphQualityReasons(good,{minWords:15,maxWords:80}).length)fail('Shared fragment gate rejects valid Russian review prose');
+if(!nearDuplicate(good,good))fail('Shared fragment gate no longer recognizes an exact duplicate');
+if(!paragraphQualityReasons(good,{existing:[good],minWords:15,maxWords:80}).some(reason=>reason.startsWith('near-duplicate:')))fail('Shared pre-save paragraph gate does not reject duplicate prose');
+const cleaned=sanitizePersistedState({sections:{sample:{paragraphs:[good,leaked]}},meta:null,verdict:null});
+if(!cleaned.changed||cleaned.state.sections.sample.paragraphs.length!==1||cleaned.state.sections.sample.paragraphs[0]!==good)fail('Persisted-state cleaner does not remove leaked instructions while preserving valid prose');
+
 const quick=workflow.indexOf('Verify published quick reviews on production Pages');
 const accelerated=workflow.indexOf('Run accelerated full commercial review upgrade');
 const cache=workflow.indexOf('Restore local full-review model cache');
@@ -34,12 +56,15 @@ const providerCheck=wrapper.indexOf('let editorialReady=await localModelReady');
 const baseRun=wrapper.indexOf('lastStatus=runBase()');
 if(providerCheck<0||baseRun<0||providerCheck>baseRun)fail('Repair wrapper provider readiness flow is malformed');
 if(!wrapper.includes('if(!editorialReady){')||!wrapper.includes('base synthesis failed and ${LOCAL_EDITORIAL_MODEL} repair is not available in this provider phase'))fail('Repair wrapper does not fail back cleanly when local repair is unavailable');
-for(const marker of ['function evidenceForRepair','sourceList.flatMap(source=>sourceAtoms(source))','filter(atom=>atom.overlap<0.72)','NEW EVIDENCE','section.source_ids=[...new Set(','shortTail?1536:3072','shortTail?192:360','shortTail?90000:120000'])if(!wrapper.includes(marker))fail(`Novel-evidence bounded repair contract missing: ${marker}`);
+for(const marker of ['function evidenceForRepair','sourceList.flatMap(source=>sourceAtoms(source))','filter(atom=>atom.overlap<0.72)','NEW EVIDENCE','section.source_ids=[...new Set(','shortTail?1536:3072','shortTail?192:360','shortTail?90000:120000','paragraphQualityReasons','sanitizePersistedState','persisted-quality-cleanup','shared-pre-save-v1'])if(!wrapper.includes(marker))fail(`Shared bounded repair contract missing: ${marker}`);
 if(wrapper.includes('ПОСЛЕДНИЙ АБЗАЦ:'))fail('Repair wrapper still primes the model with the paragraph it must not paraphrase');
-if(!wrapper.includes('return tokenOverlap(a,b)>=0.72'))fail('Near-duplicate gate was weakened while fixing repair novelty');
+if(!quality.includes('return tokenOverlap(a,b)>=threshold'))fail('Shared near-duplicate threshold implementation is missing');
+for(const marker of ['generatedReviewInstructionLeaks','instructionLeakReasons','output rejected before persistence'])if(!localModel.includes(marker))fail(`Local model pre-persistence instruction gate missing: ${marker}`);
+for(const marker of ['articleInstructionLeakReasons(article)','nearDuplicate(paras[i],paras[j])','shared-fragment-and-final-v1'])if(!validator.includes(marker))fail(`Final provider-independent quality gate missing: ${marker}`);
+for(const marker of ['articleInstructionLeakReasons(article)','nearDuplicate(paragraphs[i],paragraphs[j])','shared-fragment-and-final-v1'])if(!openai.includes(marker))fail(`Accelerated provider quality gate missing: ${marker}`);
 if(!wrapper.includes('try{')||!wrapper.includes('}catch(error){'))fail('Repair wrapper can abort the full-review job on one local paragraph timeout');
 if(!wrapper.includes('process.exit(lastStatus||75)'))fail('Repair wrapper can swallow a failed synthesis');
 if(!workflow.includes('Fail required full review if both providers failed'))fail('Required full-review failure is not fail-closed');
 if(!workflow.includes('Verify required full review completed locally'))fail('Required full-review completion gate is missing');
 for(const marker of ['review-commercial-v2-${slug}.json','full review is below 3000 words','final editorial audit is not green'])if(!workflow.includes(marker))fail(`Required full-review proof missing: ${marker}`);
-console.log('Full-review provider order passed: accelerator stays independent; local 4B repair selects low-overlap novel evidence with enough structured-output budget, without weakening duplicate or commercial gates; required 3000+ review remains fail-closed before publication.');
+console.log('Full-review quality contract passed: one shared fragment gate rejects prompt leakage and duplicates before persistence, persisted bad fragments are self-cleaned, both providers are guarded, and the final commercial validator repeats the checks before publication.');
