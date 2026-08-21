@@ -12,7 +12,7 @@
   "review_importance": {
     "status": "required",
     "required": true,
-    "checked_at": "2026-08-21T23:22:02.714Z",
+    "checked_at": "2026-08-21T23:35:24.712Z",
     "primary_reference_source_id": "igromania",
     "primary_reference_source_name": "Игромания",
     "primary_reference_review_found": false,
@@ -30,7 +30,7 @@
     "similarity": "ready"
   },
   "reason": "fallout-2-v35b-editorial-importance-local-only-persistent-acceptance",
-  "last_run_at": "2026-08-21T23:25:40.320Z",
+  "last_run_at": "2026-08-21T23:35:24.713Z",
   "run_attempts": 38,
   "review_attempts": 38,
   "observed": {
@@ -46,9 +46,9 @@
   "retry": {
     "terminal": false,
     "retryable": true,
-    "stage": "meta-preflight",
-    "last_error": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-sectioned-review-meta.mjs:110\n  persist();throw new Error(`${slug}: bounded lead generation failed after ${MAX_LEAD_GENERATION_ATTEMPTS} attempts: ${lastErrors.join('; ')||'no valid text'}`);\n                  ^\n\nError: fallout-2: bounded lead generation failed after 2 attempts: Local editorial model request timed out after 60000ms\n    at ensureMeta (file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-sectioned-review-meta.mjs:110:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/prepare-sectioned-review-meta.mjs:124:18\n\nNode.js v22.23.2",
-    "updated_at": "2026-08-21T23:25:40.320Z"
+    "stage": "full-review-required",
+    "last_error": null,
+    "updated_at": "2026-08-21T23:35:24.713Z"
   },
   "provider_policy": "local_only"
 }
