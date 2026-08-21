@@ -50,7 +50,10 @@ function due(request){
   if(Number.isFinite(date))return date<=Date.now();
   return !/(?:upcoming|announced|tba|coming)/i.test(String(draft?.release?.status||''));
 }
-function required(request){return request?.full_review_required===true||request?.force_full_review===true}
+function required(request){
+  if(request?.full_review_required===true||request?.force_full_review===true)return true;
+  return request?.released===true&&String(request?.modules?.review||'').toLowerCase()!=='ready';
+}
 
 let files=[];
 if(eventName==='pull_request'&&payload.pull_request?.number)files=await pullFiles(payload.pull_request.number);
@@ -77,4 +80,4 @@ if(!values.length)mode='idle';
 const fullUpgrade=values.some(slug=>required(read(`data/game-enrichment-requests/${slug}.json`,{})));
 const lines=[`mode=${mode}`,`slugs=${values.join(',')}`,`count=${values.length}`,`full_upgrade=${fullUpgrade}`];
 if(output)fs.appendFileSync(output,`${lines.join('\n')}\n`);
-console.log(JSON.stringify({event:eventName,mode,slugs:values,changed_files:files.length,backlog_limit:Number(process.env.POST_CREATE_BACKLOG_LIMIT||1),full_upgrade:fullUpgrade,required_priority:true},null,2));
+console.log(JSON.stringify({event:eventName,mode,slugs:values,changed_files:files.length,backlog_limit:Number(process.env.POST_CREATE_BACKLOG_LIMIT||1),full_upgrade:fullUpgrade,required_priority:true,released_incomplete_requires_full_review:true},null,2));
