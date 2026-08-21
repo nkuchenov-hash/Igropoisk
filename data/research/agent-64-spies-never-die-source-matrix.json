@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "agent-64-spies-never-die",
-  "generated_at": "2026-08-20T22:57:56.343Z",
+  "generated_at": "2026-08-21T11:15:35.764Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -54,7 +54,7 @@
       "domain": "metacritic.com",
       "validation": {
         "status": "accepted-critic-index",
-        "checked_at": "2026-08-20T22:57:56.343Z",
+        "checked_at": "2026-08-21T11:15:35.764Z",
         "method": "metacritic-critic-attribution-v15.2",
         "index_url": "https://www.metacritic.com/game/agent-64-spies-never-die/critic-reviews/",
         "index_platform": "primary",
@@ -63,7 +63,7 @@
       "score_evidence": {
         "method": "critic-index-attribution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-20T22:57:56.343Z",
+        "checked_at": "2026-08-21T11:15:35.764Z",
         "url": "https://www.metacritic.com/game/agent-64-spies-never-die/critic-reviews/",
         "configured_source_id": "shacknews",
         "direct_publisher": false,
@@ -79,6 +79,13 @@
   ],
   "rejected": [
     {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/agent-64-spies-never-die-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/agent-64-spies-never-die",
       "reasons": [
@@ -90,13 +97,6 @@
       "url": "https://www.rpgfan.com/review/agent-64-spies-never-die-2",
       "reasons": [
         "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/agent-64-spies-never-die-review",
-      "reasons": [
-        "HTTP 503"
       ]
     }
   ],

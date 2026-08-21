@@ -1,0 +1,231 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/code-vein-ii.json#review_score",
+  "game_slug": "code-vein-ii",
+  "checked_at": "2026-08-21T11:16:45.056Z",
+  "status": "green",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Code Vein 2",
+      "url": "https://www.pcgamer.com/games/rpg/code-vein-2-review",
+      "original_score": {
+        "score": 69,
+        "scale": 100,
+        "grade": null,
+        "display": "69/100"
+      },
+      "normalized_10": 6.9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:16:44.461Z",
+        "url": "https://www.pcgamer.com/games/rpg/code-vein-2-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "game-informer",
+      "publication": "Game Informer",
+      "title": "Code Vein II Review: Bloodsucking The Fun Away",
+      "url": "https://gameinformer.com/review/code-vein-ii/bloodsucking-the-fun-away",
+      "original_score": {
+        "score": 5.5,
+        "scale": 10,
+        "grade": null,
+        "display": "5.5/10"
+      },
+      "normalized_10": 5.5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:16:44.461Z",
+        "url": "https://gameinformer.com/review/code-vein-ii/bloodsucking-the-fun-away",
+        "configured_source_id": "game-informer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "This vampire take on Elden Ring almost has me in its spell, but this Soulslike world lacks bite",
+      "url": "https://www.gamesradar.com/games/action-rpg/code-vein-2-review",
+      "original_score": {
+        "score": 2.5,
+        "scale": 5,
+        "grade": null,
+        "display": "2.5/5"
+      },
+      "normalized_10": 5,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:16:44.461Z",
+        "url": "https://www.gamesradar.com/games/action-rpg/code-vein-2-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "title": "Code Vein II Review | RPGFan",
+      "url": "https://www.rpgfan.com/review/code-vein-ii",
+      "original_score": {
+        "score": 83,
+        "scale": 100,
+        "grade": null,
+        "display": "83/100"
+      },
+      "normalized_10": 8.3,
+      "score_evidence": {
+        "method": "semantic-editorial-label",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:16:44.461Z",
+        "url": "https://www.rpgfan.com/review/code-vein-ii/",
+        "configured_source_id": "rpgfan",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-5",
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "title": "Code Vein II PC review - \"Sword Art Offline\" | Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/code_vein_ii/review/article-2699.html",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "score_evidence": {
+        "method": "registry:hooked-gamers",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:16:45.011Z",
+        "url": "https://www.hookedgamers.com/pc/code_vein_ii/review/article-2699.html",
+        "configured_source_id": "hooked-gamers",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-6",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Code Vein II Review | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/01/26/code-vein-2-review",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:16:45.011Z",
+        "url": "https://www.thesixthaxis.com/2026/01/26/code-vein-2-review/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-7",
+      "configured_source_id": "shacknews",
+      "publication": "Shacknews",
+      "title": "CODE VEIN II — Shacknews review",
+      "url": "https://www.metacritic.com/game/code-vein-ii/critic-reviews/",
+      "original_score": {
+        "score": 90,
+        "scale": 100,
+        "grade": null,
+        "display": "90/100"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:16:43.383Z",
+        "url": "https://www.metacritic.com/game/code-vein-ii/critic-reviews/",
+        "configured_source_id": "shacknews",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "Shacknews",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    },
+    {
+      "source_id": "source-8",
+      "configured_source_id": "the-games-machine",
+      "publication": "The Games Machine",
+      "title": "CODE VEIN II — The Games Machine review",
+      "url": "https://www.metacritic.com/game/code-vein-ii/critic-reviews/",
+      "original_score": {
+        "score": 87,
+        "scale": 100,
+        "grade": null,
+        "display": "87/100"
+      },
+      "normalized_10": 8.7,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:16:43.383Z",
+        "url": "https://www.metacritic.com/game/code-vein-ii/critic-reviews/",
+        "configured_source_id": "the-games-machine",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "The Games Machine",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    }
+  ],
+  "excluded_sources": [],
+  "calculation": {
+    "source_count": 8,
+    "values": [
+      6.9,
+      5.5,
+      5,
+      8.3,
+      7,
+      9,
+      9,
+      8.7
+    ],
+    "mean_10": 7.425,
+    "score_10": 7.4
+  }
+}

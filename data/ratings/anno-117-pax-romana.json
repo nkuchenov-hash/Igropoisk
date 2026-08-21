@@ -1,0 +1,132 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/anno-117-pax-romana.json#review_score",
+  "game_slug": "anno-117-pax-romana",
+  "checked_at": "2026-08-21T11:16:52.501Z",
+  "status": "green",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "I",
+      "url": "https://www.gamesradar.com/games/strategy/anno-117-pax-romana-review",
+      "original_score": {
+        "score": 4,
+        "scale": 5,
+        "grade": null,
+        "display": "4/5"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:16:52.457Z",
+        "url": "https://www.gamesradar.com/games/strategy/anno-117-pax-romana-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "title": "Anno 117: Pax Romana PC review - \"A Triumph of Trade and Tranquility\" | Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/anno_117_pax_romana/review/article-2680.html",
+      "original_score": {
+        "score": 8.5,
+        "scale": 10,
+        "grade": null,
+        "display": "8.5/10"
+      },
+      "normalized_10": 8.5,
+      "score_evidence": {
+        "method": "registry:hooked-gamers",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:16:52.457Z",
+        "url": "https://www.hookedgamers.com/pc/anno_117_pax_romana/review/article-2680.html",
+        "configured_source_id": "hooked-gamers",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Anno 117: Pax Romana Review | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2025/11/17/anno-117-pax-romana-review",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:16:52.457Z",
+        "url": "https://www.thesixthaxis.com/2025/11/17/anno-117-pax-romana-review/",
+        "configured_source_id": "the-sixth-axis",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "title": "Anno 117: Pax Romana — IGN review",
+      "url": "https://www.metacritic.com/game/anno-117-pax-romana/critic-reviews/",
+      "original_score": {
+        "score": 90,
+        "scale": 100,
+        "grade": null,
+        "display": "90/100"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:16:51.184Z",
+        "url": "https://www.metacritic.com/game/anno-117-pax-romana/critic-reviews/",
+        "configured_source_id": "ign",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "IGN",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    }
+  ],
+  "excluded_sources": [],
+  "calculation": {
+    "source_count": 4,
+    "values": [
+      8,
+      8.5,
+      8,
+      9
+    ],
+    "mean_10": 8.375,
+    "score_10": 8.4
+  }
+}

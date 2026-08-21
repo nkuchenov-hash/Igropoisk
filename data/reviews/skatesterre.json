@@ -2,7 +2,7 @@
   "schema_version": 12,
   "game_slug": "skatesterre",
   "game_id": null,
-  "updated_at": "2026-08-20T22:46:34.351Z",
+  "updated_at": "2026-08-21T11:05:36.195Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
@@ -101,13 +101,10 @@
       "mechanics": [],
       "domain": "gamespew.com",
       "validation": {
-        "status": "accepted",
-        "checked_at": "2026-08-20T22:45:08.942Z",
-        "method": "registered-direct-publisher-http-v8",
-        "review_page": {
-          "accepted": true,
-          "reason": "review_path"
-        }
+        "status": "accepted-blocked-revalidation",
+        "checked_at": "2026-08-21T11:03:52.214Z",
+        "method": "registered-direct-publisher-preserved-v8",
+        "reason": "HTTP 504"
       },
       "score": 5,
       "scale": 10,
@@ -124,6 +121,14 @@
     }
   ],
   "rejected": [
+    {
+      "publication": "IGN",
+      "url": "https://in.ign.com/skatesterre",
+      "title": "Skatesterre",
+      "reasons": [
+        "no_review_signal"
+      ]
+    },
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/skatesterre",
