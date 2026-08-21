@@ -17,7 +17,7 @@ const LEAD_PACKAGE_RETRY_TIMEOUT_MS=60000;
 const LEAD_GENERATION_NUM_CTX=4096;
 const LEAD_PACKAGE_NUM_PREDICT=760;
 const MAX_LEAD_GENERATION_ATTEMPTS=2;
-const ARCHITECTURE='deterministic-preflight-v2-grounded-bootstrap-failsafe';
+const ARCHITECTURE='deterministic-preflight-v1-single-final-editor-audit+grounded-bootstrap-failsafe-v2';
 
 const contract=read('config/review-commercial-contract.json',{}),rules=contract.article||{};
 const game=read(`data/drafts/${slug}.json`),corpus=read(`data/review-article-corpus/${slug}.json`),bootstrap=read(`data/review-bootstrap/${slug}.json`,{});
