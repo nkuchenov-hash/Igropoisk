@@ -2,15 +2,79 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const root=process.cwd(),eventName=String(process.env.GITHUB_EVENT_NAME||''),eventPath=process.env.GITHUB_EVENT_PATH,repo=process.env.GITHUB_REPOSITORY,token=process.env.GITHUB_TOKEN||process.env.GH_TOKEN||'',output=process.env.GITHUB_OUTPUT;
-const payload=eventPath&&fs.existsSync(eventPath)?JSON.parse(fs.readFileSync(eventPath,'utf8')):{};const slugs=new Set();
-const addFile=file=>{let m=String(file||'').match(/^data\/game-enrichment-requests\/([^/]+)\.json$/);if(m)slugs.add(m[1].toLowerCase());m=String(file||'').match(/^game\/([^/]+)\/index\.html$/);if(m)slugs.add(m[1].toLowerCase())};
-async function githubJson(url){const response=await fetch(url,{headers:{Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(token?{Authorization:`Bearer ${token}`}:{})}});if(!response.ok)throw new Error(`GitHub API ${response.status} for ${url}: ${(await response.text()).slice(0,500)}`);return response.json()}
-async function pullFiles(number){const files=[];for(let page=1;page<=20;page++){const batch=await githubJson(`https://api.github.com/repos/${repo}/pulls/${number}/files?per_page=100&page=${page}`);files.push(...batch.map(x=>x.filename));if(batch.length<100)break}return files}
-async function pushFiles(before,after){if(!before||!after||/^0+$/.test(before))return[];const compare=await githubJson(`https://api.github.com/repos/${repo}/compare/${before}...${after}`);return(compare.files||[]).map(x=>x.filename)}
+const root=process.cwd();
+const eventName=String(process.env.GITHUB_EVENT_NAME||'');
+const eventPath=process.env.GITHUB_EVENT_PATH;
+const repo=process.env.GITHUB_REPOSITORY;
+const token=process.env.GITHUB_TOKEN||process.env.GH_TOKEN||'';
+const output=process.env.GITHUB_OUTPUT;
+const payload=eventPath&&fs.existsSync(eventPath)?JSON.parse(fs.readFileSync(eventPath,'utf8')):{};
+const slugs=new Set();
+
+const addFile=file=>{
+  let m=String(file||'').match(/^data\/game-enrichment-requests\/([^/]+)\.json$/);
+  if(m)slugs.add(m[1].toLowerCase());
+  m=String(file||'').match(/^game\/([^/]+)\/index\.html$/);
+  if(m)slugs.add(m[1].toLowerCase());
+};
+async function githubJson(url){
+  const response=await fetch(url,{headers:{Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(token?{Authorization:`Bearer ${token}`}:{})}});
+  if(!response.ok)throw new Error(`GitHub API ${response.status} for ${url}: ${(await response.text()).slice(0,500)}`);
+  return response.json();
+}
+async function pullFiles(number){
+  const files=[];
+  for(let page=1;page<=20;page++){
+    const batch=await githubJson(`https://api.github.com/repos/${repo}/pulls/${number}/files?per_page=100&page=${page}`);
+    files.push(...batch.map(x=>x.filename));
+    if(batch.length<100)break;
+  }
+  return files;
+}
+async function pushFiles(before,after){
+  if(!before||!after||/^0+$/.test(before))return[];
+  const compare=await githubJson(`https://api.github.com/repos/${repo}/compare/${before}...${after}`);
+  return(compare.files||[]).map(x=>x.filename);
+}
 function read(relative,fallback=null){try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}}
-function due(request){const slug=String(request?.slug||'').toLowerCase(),draft=read(`data/drafts/${slug}.json`,{});if(request?.released===true||String(draft?.release?.status||'').toLowerCase()==='released')return true;if(request?.released===false&&String(draft?.release?.status||'').toLowerCase()!=='released'){const raw=draft?.release?.canonical_date_text||draft?.release?.date_text||draft?.release?.date||'';const date=Date.parse(raw);return Number.isFinite(date)&&date<=Date.now()}const raw=draft?.release?.canonical_date_text||draft?.release?.date_text||draft?.release?.date||'';const date=Date.parse(raw);if(Number.isFinite(date))return date<=Date.now();return !/(?:upcoming|announced|tba|coming)/i.test(String(draft?.release?.status||''))}
-let files=[];if(eventName==='pull_request'&&payload.pull_request?.number)files=await pullFiles(payload.pull_request.number);else if(eventName==='push')files=await pushFiles(payload.before,payload.after);for(const file of files)addFile(file);
+function due(request){
+  const slug=String(request?.slug||'').toLowerCase(),draft=read(`data/drafts/${slug}.json`,{});
+  if(request?.released===true||String(draft?.release?.status||'').toLowerCase()==='released')return true;
+  if(request?.released===false&&String(draft?.release?.status||'').toLowerCase()!=='released'){
+    const raw=draft?.release?.canonical_date_text||draft?.release?.date_text||draft?.release?.date||'';
+    const date=Date.parse(raw);
+    return Number.isFinite(date)&&date<=Date.now();
+  }
+  const raw=draft?.release?.canonical_date_text||draft?.release?.date_text||draft?.release?.date||'';
+  const date=Date.parse(raw);
+  if(Number.isFinite(date))return date<=Date.now();
+  return !/(?:upcoming|announced|tba|coming)/i.test(String(draft?.release?.status||''));
+}
+function required(request){return request?.full_review_required===true||request?.force_full_review===true}
+
+let files=[];
+if(eventName==='pull_request'&&payload.pull_request?.number)files=await pullFiles(payload.pull_request.number);
+else if(eventName==='push')files=await pushFiles(payload.before,payload.after);
+for(const file of files)addFile(file);
+
 let mode=slugs.size?'event':'retry';
-if(!slugs.size){const limit=Math.max(1,Math.min(3,Number(process.env.POST_CREATE_BACKLOG_LIMIT||1))),dir=path.join(root,'data/game-enrichment-requests');if(fs.existsSync(dir)){const pending=fs.readdirSync(dir).filter(x=>x.endsWith('.json')).map(file=>read(`data/game-enrichment-requests/${file}`,{})).filter(x=>x?.slug&&String(x.state||'')!=='complete'&&due(x)).sort((a,b)=>String(a.last_run_at||a.requested_at||'').localeCompare(String(b.last_run_at||b.requested_at||''))||String(a.slug).localeCompare(String(b.slug))).slice(0,limit);for(const request of pending)slugs.add(String(request.slug).toLowerCase())}}
-const values=[...slugs].sort();if(!values.length)mode='idle';const fullUpgrade=values.some(slug=>{const request=read(`data/game-enrichment-requests/${slug}.json`,{});return request?.full_review_required===true||request?.force_full_review===true});const lines=[`mode=${mode}`,`slugs=${values.join(',')}`,`count=${values.length}`,`full_upgrade=${fullUpgrade}`];if(output)fs.appendFileSync(output,`${lines.join('\n')}\n`);console.log(JSON.stringify({event:eventName,mode,slugs:values,changed_files:files.length,backlog_limit:Number(process.env.POST_CREATE_BACKLOG_LIMIT||1),full_upgrade:fullUpgrade},null,2));
+if(!slugs.size){
+  const limit=Math.max(1,Math.min(3,Number(process.env.POST_CREATE_BACKLOG_LIMIT||1)));
+  const dir=path.join(root,'data/game-enrichment-requests');
+  if(fs.existsSync(dir)){
+    const pending=fs.readdirSync(dir)
+      .filter(x=>x.endsWith('.json'))
+      .map(file=>read(`data/game-enrichment-requests/${file}`,{}))
+      .filter(x=>x?.slug&&String(x.state||'')!=='complete'&&due(x))
+      .sort((a,b)=>Number(required(b))-Number(required(a))||String(a.last_run_at||a.requested_at||'').localeCompare(String(b.last_run_at||b.requested_at||''))||String(a.slug).localeCompare(String(b.slug)))
+      .slice(0,limit);
+    for(const request of pending)slugs.add(String(request.slug).toLowerCase());
+  }
+}
+
+const values=[...slugs].sort();
+if(!values.length)mode='idle';
+const fullUpgrade=values.some(slug=>required(read(`data/game-enrichment-requests/${slug}.json`,{})));
+const lines=[`mode=${mode}`,`slugs=${values.join(',')}`,`count=${values.length}`,`full_upgrade=${fullUpgrade}`];
+if(output)fs.appendFileSync(output,`${lines.join('\n')}\n`);
+console.log(JSON.stringify({event:eventName,mode,slugs:values,changed_files:files.length,backlog_limit:Number(process.env.POST_CREATE_BACKLOG_LIMIT||1),full_upgrade:fullUpgrade,required_priority:true},null,2));
