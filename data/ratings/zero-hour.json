@@ -1,0 +1,70 @@
+{
+  "schema_version": 7,
+  "deprecated_adapter": true,
+  "source_of_truth": "data/reviews/zero-hour.json#review_score",
+  "game_slug": "zero-hour",
+  "checked_at": "2026-08-21T11:16:47.706Z",
+  "status": "red-needs-revision",
+  "method": {
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources": 3,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
+    "output_scale": 10,
+    "rounding_decimals": 1,
+    "one_vote_per_publication": true,
+    "aggregators_forbidden": true,
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
+  },
+  "sources": [
+    {
+      "source_id": "source-2",
+      "configured_source_id": "the-games-machine",
+      "publication": "The Games Machine",
+      "title": "Zero Hour — The Games Machine review",
+      "url": "https://www.metacritic.com/game/zero-hour/critic-reviews/",
+      "original_score": {
+        "score": 78,
+        "scale": 100,
+        "grade": null,
+        "display": "78/100"
+      },
+      "normalized_10": 7.8,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:16:46.093Z",
+        "url": "https://www.metacritic.com/game/zero-hour/critic-reviews/",
+        "configured_source_id": "the-games-machine",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "The Games Machine",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    }
+  ],
+  "excluded_sources": [
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2018/09/05/firewall-zero-hour-review",
+      "reason": "canonical_version"
+    }
+  ],
+  "calculation": {
+    "source_count": 1,
+    "values": [
+      7.8
+    ],
+    "mean_10": 7.8,
+    "score_10": 7.8
+  }
+}

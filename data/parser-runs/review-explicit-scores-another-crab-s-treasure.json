@@ -1,0 +1,53 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "another-crab-s-treasure",
+  "checked_at": "2026-08-21T11:16:29.155Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 2,
+  "scored": 2,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 80,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/games/action/another-crabs-treasure-review",
+      "final_url": "https://www.pcgamer.com/games/action/another-crabs-treasure-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2024/04/24/another-crabs-treasure-review-a-crabulous-soulslike",
+      "final_url": "https://www.thesixthaxis.com/2024/04/24/another-crabs-treasure-review-a-crabulous-soulslike/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}

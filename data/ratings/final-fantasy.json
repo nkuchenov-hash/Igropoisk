@@ -3,7 +3,7 @@
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/final-fantasy.json#review_score",
   "game_slug": "final-fantasy",
-  "checked_at": "2026-08-20T22:57:05.977Z",
+  "checked_at": "2026-08-21T11:15:34.880Z",
   "status": "green",
   "method": {
     "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
@@ -37,7 +37,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-20T22:57:05.864Z",
+        "checked_at": "2026-08-21T11:15:34.759Z",
         "url": "https://www.pcgamer.com/final-fantasy-14-endwalker-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -59,7 +59,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-20T22:57:05.864Z",
+        "checked_at": "2026-08-21T11:15:34.759Z",
         "url": "https://www.gamesradar.com/final-fantasy-14-endwalker-review/",
         "configured_source_id": "gamesradar",
         "direct_publisher": true
@@ -81,9 +81,31 @@
       "score_evidence": {
         "method": "semantic-editorial-label",
         "scope": "editorial_review",
-        "checked_at": "2026-08-20T22:57:05.864Z",
+        "checked_at": "2026-08-21T11:15:34.759Z",
         "url": "https://www.rpgfan.com/review/final-fantasy/",
         "configured_source_id": "rpgfan",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-4",
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "title": "Final Fantasy VII Rebirth Switch 2 Review – An unmissable portable RPG | TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2026/06/03/final-fantasy-vii-rebirth-switch-2-review-an-unmissable-portable-rpg",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-21T11:15:34.759Z",
+        "url": "https://www.thesixthaxis.com/2026/06/03/final-fantasy-vii-rebirth-switch-2-review-an-unmissable-portable-rpg/",
+        "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
       }
     },
@@ -103,7 +125,7 @@
       "score_evidence": {
         "method": "critic-index-attribution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-20T22:57:03.842Z",
+        "checked_at": "2026-08-21T11:15:32.880Z",
         "url": "https://www.metacritic.com/game/final-fantasy/critic-reviews/",
         "configured_source_id": "game-informer",
         "direct_publisher": false,
@@ -117,23 +139,17 @@
       }
     }
   ],
-  "excluded_sources": [
-    {
-      "configured_source_id": "the-sixth-axis",
-      "publication": "TheSixthAxis",
-      "url": "https://www.thesixthaxis.com/2026/08/14/final-fantasy-xiv-online-nintendo-switch-2-edition-review",
-      "reason": "variant_or_port:switch_port"
-    }
-  ],
+  "excluded_sources": [],
   "calculation": {
-    "source_count": 4,
+    "source_count": 5,
     "values": [
       8.9,
       9,
       8.1,
+      9,
       7.5
     ],
-    "mean_10": 8.375,
-    "score_10": 8.4
+    "mean_10": 8.5,
+    "score_10": 8.5
   }
 }

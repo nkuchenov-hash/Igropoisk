@@ -1,0 +1,84 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "anno-117-pax-romana",
+  "checked_at": "2026-08-21T11:16:52.458Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 4,
+  "scored": 4,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "score": 4,
+      "scale": 5,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "score": 8.5,
+      "scale": 10,
+      "method": "registry:hooked-gamers",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "score": 8,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/games/strategy/anno-117-pax-romana-review",
+      "final_url": "https://www.gamesradar.com/games/strategy/anno-117-pax-romana-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "hooked-gamers",
+      "publication": "Hooked Gamers",
+      "url": "https://www.hookedgamers.com/pc/anno_117_pax_romana/review/article-2680.html",
+      "final_url": "https://www.hookedgamers.com/pc/anno_117_pax_romana/review/article-2680.html",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2025/11/17/anno-117-pax-romana-review",
+      "final_url": "https://www.thesixthaxis.com/2025/11/17/anno-117-pax-romana-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.metacritic.com/game/anno-117-pax-romana/critic-reviews/",
+      "final_url": "https://www.metacritic.com/game/anno-117-pax-romana/critic-reviews/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": true,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}
