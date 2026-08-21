@@ -21,8 +21,10 @@ const sourceList=(corpus.sources||[]).filter(source=>source?.source_role==='prof
 const sourceById=new Map(sourceList.map(source=>[source.id,source]));
 const schema={type:'object',additionalProperties:false,required:['paragraph'],properties:{paragraph:{type:'string'}}};
 const MAX_WRAPPER_PASSES=6;
-const MAX_4B_REPAIR_PARAGRAPHS=14;
-let repairCalls=0;
+const MAX_REPAIR_ATTEMPTS_PER_SECTION=18;
+const MAX_TOTAL_REPAIR_ATTEMPTS=96;
+let totalRepairCalls=0;
+const repairCallsBySection=new Map();
 
 function sourceAtoms(source){
   const dossier=source?.dossier||{};
@@ -63,6 +65,19 @@ function incomplete(section){
   return countWords(paragraphs.join(' '))<minSectionWords||paragraphs.length<minParagraphs;
 }
 
+function sectionRepairCalls(section){
+  return Number(repairCallsBySection.get(section?.id)||0);
+}
+
+function canRepair(section){
+  return totalRepairCalls<MAX_TOTAL_REPAIR_ATTEMPTS&&sectionRepairCalls(section)<MAX_REPAIR_ATTEMPTS_PER_SECTION;
+}
+
+function registerRepairCall(section){
+  totalRepairCalls++;
+  repairCallsBySection.set(section.id,sectionRepairCalls(section)+1);
+}
+
 function paragraphRejectionReasons(paragraph,paragraphs,minimum){
   return paragraphQualityReasons(paragraph,{existing:paragraphs,minWords:minimum,maxWords:140});
 }
@@ -85,7 +100,7 @@ function repairPrompt(section,{words,paragraphs,evidence,shortTail}){
 }
 
 async function add4bParagraph(state,section){
-  if(repairCalls>=MAX_4B_REPAIR_PARAGRAPHS)return false;
+  if(!canRepair(section))return false;
   const paragraphs=Array.isArray(section.paragraphs)?section.paragraphs:[];
   const words=countWords(paragraphs.join(' '));
   const remaining=Math.max(0,minSectionWords-words);
@@ -93,9 +108,10 @@ async function add4bParagraph(state,section){
   const shortTail=remaining>0&&remaining<45&&missingParagraphs===0;
   const minimum=shortTail?12:40;
   for(let attempt=1;attempt<=3;attempt++){
+    if(!canRepair(section))return false;
     const evidence=evidenceForRepair(section,{shortTail,attempt});
     if(!evidence.length)return false;
-    repairCalls++;
+    registerRepairCall(section);
     let result;
     try{
       result=await chatJson({
@@ -125,19 +141,21 @@ async function add4bParagraph(state,section){
     state.sections[section.id]=section;
     state.updated_at=new Date().toISOString();
     write(statePath,state);
-    console.log(JSON.stringify({slug,status:'4b-paragraph-repair',section:section.id,short_tail:shortTail,words_before:words,words_after:countWords(section.paragraphs.join(' ')),paragraphs:section.paragraphs.length,evidence_ids:evidence.map(item=>item.id),quality_gate:'shared-pre-save-v1'},null,2));
+    console.log(JSON.stringify({slug,status:'4b-paragraph-repair',section:section.id,short_tail:shortTail,words_before:words,words_after:countWords(section.paragraphs.join(' ')),paragraphs:section.paragraphs.length,evidence_ids:evidence.map(item=>item.id),section_repair_calls:sectionRepairCalls(section),total_repair_calls:totalRepairCalls,quality_gate:'shared-pre-save-v1'},null,2));
     return true;
   }
   return false;
 }
 
-async function repairIncompleteSections(){
+async function repairIncompleteSections({includeEmpty=true}={}){
   const state=cleanStateBeforeRepair();
   if(!state?.sections||typeof state.sections!=='object')return false;
   let changed=false;
   for(const section of Object.values(state.sections)){
+    const paragraphs=Array.isArray(section?.paragraphs)?section.paragraphs:[];
+    if(!includeEmpty&&!paragraphs.length)continue;
     let guard=0;
-    while(incomplete(section)&&guard<4&&repairCalls<MAX_4B_REPAIR_PARAGRAPHS){
+    while(incomplete(section)&&guard<4&&canRepair(section)){
       guard++;
       const added=await add4bParagraph(state,section);
       if(!added)break;
@@ -154,12 +172,12 @@ function runBase(){
 
 cleanStateBeforeRepair();
 let editorialReady=await localModelReady({timeoutMs:2500,model:LOCAL_EDITORIAL_MODEL});
-if(editorialReady)await repairIncompleteSections();
+if(editorialReady)await repairIncompleteSections({includeEmpty:false});
 let lastStatus=75;
 for(let pass=1;pass<=MAX_WRAPPER_PASSES;pass++){
   lastStatus=runBase();
   if(lastStatus===0){
-    console.log(JSON.stringify({slug,status:'resilient-wrapper-green',passes:pass,repair_calls:repairCalls,quality_gate:'shared-pre-save-v1'},null,2));
+    console.log(JSON.stringify({slug,status:'resilient-wrapper-green',passes:pass,repair_calls:totalRepairCalls,repair_calls_by_section:Object.fromEntries(repairCallsBySection),quality_gate:'shared-pre-save-v1'},null,2));
     process.exit(0);
   }
   if(!editorialReady)editorialReady=await localModelReady({timeoutMs:5000,model:LOCAL_EDITORIAL_MODEL});
@@ -167,7 +185,7 @@ for(let pass=1;pass<=MAX_WRAPPER_PASSES;pass++){
     console.warn(`${slug}: base synthesis failed and ${LOCAL_EDITORIAL_MODEL} repair is not available in this provider phase`);
     break;
   }
-  const repaired=await repairIncompleteSections();
+  const repaired=await repairIncompleteSections({includeEmpty:true});
   if(!repaired)break;
   console.warn(`${slug}: persisted incomplete section repaired with ${LOCAL_EDITORIAL_MODEL}; resuming synthesis in the same run`);
 }

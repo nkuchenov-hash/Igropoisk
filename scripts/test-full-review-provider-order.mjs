@@ -61,13 +61,17 @@ if(!orchestrator.includes("useOpenAIAccelerator=process.env.COMMERCIAL_REVIEW_US
 if(!orchestrator.includes("if(!useOpenAIAccelerator)stages.push(['meta-preflight'"))fail('OpenAI accelerator still depends on local meta-preflight before synthesis');
 if(!orchestrator.includes("stages.push(['long-review','scripts/synthesize-commercial-review-resilient-wrapper.mjs',[slug],useOpenAIAccelerator?{}:{OPENAI_API_KEY:''}])"))fail('OpenAI/local synthesis routing is not explicit in the orchestrator');
 if(!wrapper.includes("spawnSync('node',['scripts/synthesize-commercial-review-resilient.mjs',slug]"))fail('Repair wrapper does not delegate to canonical resilient synthesis');
-if(!wrapper.includes('repairIncompleteSections()')||!wrapper.includes('LOCAL_EDITORIAL_MODEL'))fail('Repair wrapper does not expose bounded 4B repair');
+if(!wrapper.includes('repairIncompleteSections()')&&!wrapper.includes('repairIncompleteSections({'))fail('Repair wrapper does not expose bounded 4B repair');
+if(!wrapper.includes('LOCAL_EDITORIAL_MODEL'))fail('Repair wrapper lost the local editorial model');
 if(wrapper.includes('4b editorial fallback is unavailable'))fail('Repair wrapper hard-blocks accelerator on local-model availability');
 const providerCheck=wrapper.indexOf('let editorialReady=await localModelReady');
 const baseRun=wrapper.indexOf('lastStatus=runBase()');
 if(providerCheck<0||baseRun<0||providerCheck>baseRun)fail('Repair wrapper provider readiness flow is malformed');
 if(!wrapper.includes('if(!editorialReady){')||!wrapper.includes('base synthesis failed and ${LOCAL_EDITORIAL_MODEL} repair is not available in this provider phase'))fail('Repair wrapper does not fail back cleanly when local repair is unavailable');
 for(const marker of ['function evidenceForRepair','sourceList.flatMap(source=>sourceAtoms(source))','filter(atom=>atom.overlap<0.72)','repairPrompt','evidence.map(item=>`— ${item.text}`)','section.source_ids=[...new Set(','shortTail?1536:3072','shortTail?192:360','shortTail?90000:120000','paragraphQualityReasons','sanitizePersistedState','persisted-quality-cleanup','shared-pre-save-v1'])if(!wrapper.includes(marker))fail(`Shared bounded repair contract missing: ${marker}`);
+for(const marker of ['MAX_REPAIR_ATTEMPTS_PER_SECTION','MAX_TOTAL_REPAIR_ATTEMPTS','repairCallsBySection','canRepair(section)','registerRepairCall(section)','repairIncompleteSections({includeEmpty:false})','repairIncompleteSections({includeEmpty:true})'])if(!wrapper.includes(marker))fail(`Per-section bounded repair contract missing: ${marker}`);
+if(wrapper.includes('MAX_4B_REPAIR_PARAGRAPHS=14'))fail('Full article repair is still capped by the obsolete global 14-call budget');
+if(!wrapper.includes('if(!includeEmpty&&!paragraphs.length)continue'))fail('Repair wrapper still spends editorial calls on untouched empty sections before the base writer runs');
 for(const forbidden of ['NEW EVIDENCE','ПРЕДЫДУЩАЯ ПОПЫТКА','ПРЕДЫДУЩИЙ ВАРИАНТ','source-grounded'])if(wrapper.includes(forbidden))fail(`Repair prompt still contains copyable technical marker: ${forbidden}`);
 if(wrapper.includes('ПОСЛЕДНИЙ АБЗАЦ:'))fail('Repair wrapper still primes the model with the paragraph it must not paraphrase');
 if(!quality.includes('return tokenOverlap(a,b)>=threshold'))fail('Shared near-duplicate threshold implementation is missing');
@@ -81,4 +85,4 @@ if(!wrapper.includes('process.exit(lastStatus||75)'))fail('Repair wrapper can sw
 if(!workflow.includes('Fail required full review if both providers failed'))fail('Required full-review failure is not fail-closed');
 if(!workflow.includes('Verify required full review completed locally'))fail('Required full-review completion gate is missing');
 for(const marker of ['review-commercial-v2-${slug}.json','full review is below 3000 words','final editorial audit is not green'])if(!workflow.includes(marker))fail(`Required full-review proof missing: ${marker}`);
-console.log('Full-review quality contract passed: repair prompts are content-only, mixed leakage is stripped sentence-by-sentence before persistence, single-paragraph generation stays bounded plain text, persisted bad fragments self-clean, both providers are guarded, and final publication remains fail-closed.');
+console.log('Full-review quality contract passed: repair prompts are content-only, repair budgets are bounded per section instead of globally starving later sections, untouched empty sections stay with the base writer first, mixed leakage is stripped sentence-by-sentence, and final publication remains fail-closed.');
