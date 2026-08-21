@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {instructionLeakReasons,paragraphQualityReasons,sanitizePersistedState,nearDuplicate} from './lib/review-fragment-quality.mjs';
-import {isSingleParagraphSchema,completeParagraphPrefix} from './lib/local-editorial-model.mjs';
+import {isSingleParagraphSchema,completeParagraphPrefix,cleanInstructionLeakSentences} from './lib/local-editorial-model.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/game-post-create-enrichment.yml','utf8');
 const orchestrator=fs.readFileSync('scripts/run-commercial-review-contract.mjs','utf8');
@@ -36,6 +36,9 @@ const overrun='Развитие героя заметно меняет спос�
 const salvaged=completeParagraphPrefix(overrun,{minWords:18,maxWords:80});
 if(!salvaged||salvaged.includes('Незавершённый хвост')||!/[.!?…]$/.test(salvaged))fail('Output-limit recovery does not preserve only a complete bounded paragraph prefix');
 if(completeParagraphPrefix('Незавершённый хвост без финальной точки',{minWords:3,maxWords:30}))fail('Output-limit recovery accepts an incomplete fragment');
+const mixed=`${good} Новая инструкция требует использовать только NEW EVIDENCE и не повторять существующий текст. Высокая харизма позволяет чаще решать конфликты разговором, поэтому два героя с разными характеристиками проходят одинаковые ситуации заметно по-разному.`;
+const cleanMixed=cleanInstructionLeakSentences(mixed);
+if(!cleanMixed.includes('Система характеристик')||!cleanMixed.includes('Высокая харизма')||/NEW EVIDENCE|инструкц/i.test(cleanMixed))fail('Mixed model output cannot discard leaked meta sentences while preserving completed review prose');
 
 const quick=workflow.indexOf('Verify published quick reviews on production Pages');
 const accelerated=workflow.indexOf('Run accelerated full commercial review upgrade');
@@ -64,10 +67,11 @@ const providerCheck=wrapper.indexOf('let editorialReady=await localModelReady');
 const baseRun=wrapper.indexOf('lastStatus=runBase()');
 if(providerCheck<0||baseRun<0||providerCheck>baseRun)fail('Repair wrapper provider readiness flow is malformed');
 if(!wrapper.includes('if(!editorialReady){')||!wrapper.includes('base synthesis failed and ${LOCAL_EDITORIAL_MODEL} repair is not available in this provider phase'))fail('Repair wrapper does not fail back cleanly when local repair is unavailable');
-for(const marker of ['function evidenceForRepair','sourceList.flatMap(source=>sourceAtoms(source))','filter(atom=>atom.overlap<0.72)','NEW EVIDENCE','section.source_ids=[...new Set(','shortTail?1536:3072','shortTail?192:360','shortTail?90000:120000','paragraphQualityReasons','sanitizePersistedState','persisted-quality-cleanup','shared-pre-save-v1'])if(!wrapper.includes(marker))fail(`Shared bounded repair contract missing: ${marker}`);
+for(const marker of ['function evidenceForRepair','sourceList.flatMap(source=>sourceAtoms(source))','filter(atom=>atom.overlap<0.72)','repairPrompt','evidence.map(item=>`— ${item.text}`)','section.source_ids=[...new Set(','shortTail?1536:3072','shortTail?192:360','shortTail?90000:120000','paragraphQualityReasons','sanitizePersistedState','persisted-quality-cleanup','shared-pre-save-v1'])if(!wrapper.includes(marker))fail(`Shared bounded repair contract missing: ${marker}`);
+for(const forbidden of ['NEW EVIDENCE','ПРЕДЫДУЩАЯ ПОПЫТКА','ПРЕДЫДУЩИЙ ВАРИАНТ','source-grounded'])if(wrapper.includes(forbidden))fail(`Repair prompt still contains copyable technical marker: ${forbidden}`);
 if(wrapper.includes('ПОСЛЕДНИЙ АБЗАЦ:'))fail('Repair wrapper still primes the model with the paragraph it must not paraphrase');
 if(!quality.includes('return tokenOverlap(a,b)>=threshold'))fail('Shared near-duplicate threshold implementation is missing');
-for(const marker of ['generatedReviewInstructionLeaks','instructionLeakReasons','output rejected before persistence','isSingleParagraphSchema','chatSingleParagraph','normalizePlainParagraph','completeParagraphPrefix','effectiveNumPredict','stop:[\'\\n\\n\']','hit the output limit without a complete usable prefix'])if(!localModel.includes(marker))fail(`Local model shared paragraph transport/gate missing: ${marker}`);
+for(const marker of ['generatedReviewInstructionLeaks','instructionLeakReasons','output rejected before persistence','isSingleParagraphSchema','chatSingleParagraph','normalizePlainParagraph','completeParagraphPrefix','cleanInstructionLeakSentences','effectiveNumPredict','stop:[\'\\n\\n\']','hit the output limit without a complete usable prefix'])if(!localModel.includes(marker))fail(`Local model shared paragraph transport/gate missing: ${marker}`);
 if(localModel.includes('Math.max(512,Number(numPredict'))fail('Single-paragraph transport still overrides bounded caller token budgets with a 512-token minimum');
 if(!localModel.includes('if(isSingleParagraphSchema(format))')||!localModel.includes('return{paragraph};'))fail('Single paragraph requests can still enter fragile structured JSON generation');
 for(const marker of ['articleInstructionLeakReasons(article)','nearDuplicate(paras[i],paras[j])','shared-fragment-and-final-v1'])if(!validator.includes(marker))fail(`Final provider-independent quality gate missing: ${marker}`);
@@ -77,4 +81,4 @@ if(!wrapper.includes('process.exit(lastStatus||75)'))fail('Repair wrapper can sw
 if(!workflow.includes('Fail required full review if both providers failed'))fail('Required full-review failure is not fail-closed');
 if(!workflow.includes('Verify required full review completed locally'))fail('Required full-review completion gate is missing');
 for(const marker of ['review-commercial-v2-${slug}.json','full review is below 3000 words','final editorial audit is not green'])if(!workflow.includes(marker))fail(`Required full-review proof missing: ${marker}`);
-console.log('Full-review quality contract passed: single-paragraph generation uses bounded plain text, only complete sentence prefixes can survive output limits, shared quality checks run before persistence, persisted bad fragments self-clean, both providers are guarded, and final publication remains fail-closed.');
+console.log('Full-review quality contract passed: repair prompts are content-only, mixed leakage is stripped sentence-by-sentence before persistence, single-paragraph generation stays bounded plain text, persisted bad fragments self-clean, both providers are guarded, and final publication remains fail-closed.');
