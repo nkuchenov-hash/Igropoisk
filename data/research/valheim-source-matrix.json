@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "valheim",
-  "generated_at": "2026-08-21T11:12:42.633Z",
+  "generated_at": "2026-08-21T11:44:35.773Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -66,7 +66,7 @@
       "domain": "pcgamer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-21T11:11:19.120Z",
+        "checked_at": "2026-08-21T11:43:11.349Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -81,10 +81,11 @@
   ],
   "rejected": [
     {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/valheim-review",
+      "publication": "Polygon",
+      "url": "https://www.polygon.com/valheim-early-access-full-release-date",
+      "title": "Minecraft&#039;s Biggest Replacement Officially Returns in 3 Weeks",
       "reasons": [
-        "HTTP 403"
+        "no_review_signal"
       ]
     },
     {
@@ -99,6 +100,13 @@
       "url": "https://www.rpgfan.com/review/valheim-2",
       "reasons": [
         "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/valheim-review",
+      "reasons": [
+        "HTTP 503"
       ]
     }
   ],

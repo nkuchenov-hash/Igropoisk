@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "wartales",
-  "generated_at": "2026-08-21T11:15:01.877Z",
+  "generated_at": "2026-08-21T11:46:54.587Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -66,7 +66,7 @@
       "domain": "pcgamer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-21T11:13:36.911Z",
+        "checked_at": "2026-08-21T11:45:29.946Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -80,7 +80,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:15:02.976Z",
+        "checked_at": "2026-08-21T11:46:56.112Z",
         "url": "https://www.pcgamer.com/wartales-review-the-mercenary-life-isnt-flashy-but-it-is-rewarding/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -118,7 +118,7 @@
       "domain": "metacritic.com",
       "validation": {
         "status": "accepted-critic-index",
-        "checked_at": "2026-08-21T11:15:01.877Z",
+        "checked_at": "2026-08-21T11:46:54.587Z",
         "method": "metacritic-critic-attribution-v15.2",
         "index_url": "https://www.metacritic.com/game/wartales/critic-reviews/",
         "index_platform": "primary",
@@ -127,7 +127,7 @@
       "score_evidence": {
         "method": "critic-index-attribution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:15:01.877Z",
+        "checked_at": "2026-08-21T11:46:54.587Z",
         "url": "https://www.metacritic.com/game/wartales/critic-reviews/",
         "configured_source_id": "ign",
         "direct_publisher": false,
@@ -143,6 +143,13 @@
   ],
   "rejected": [
     {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/wartales-review",
+      "reasons": [
+        "HTTP 403"
+      ]
+    },
+    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/wartales",
       "reasons": [
@@ -154,13 +161,6 @@
       "url": "https://www.rpgfan.com/review/wartales-2",
       "reasons": [
         "HTTP 404"
-      ]
-    },
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/wartales-review",
-      "reasons": [
-        "HTTP 503"
       ]
     }
   ],
