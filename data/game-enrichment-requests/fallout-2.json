@@ -18,9 +18,9 @@
     "similarity": "ready"
   },
   "reason": "fallout-2-v24-accelerator-first-inrun-4b-repair-3000-final-audit-production-live-smoke",
-  "last_run_at": "2026-08-20T22:55:40.298Z",
-  "run_attempts": 17,
-  "review_attempts": 17,
+  "last_run_at": "2026-08-21T08:34:44.917Z",
+  "run_attempts": 19,
+  "review_attempts": 19,
   "observed": {
     "series_games": 9,
     "screenshots": 20,
@@ -34,8 +34,8 @@
   "retry": {
     "terminal": false,
     "retryable": true,
-    "stage": "accelerator-first-inrun-4b-repair-v24",
-    "last_error": null,
-    "updated_at": "2026-08-21T08:28:00.000Z"
+    "stage": "long-review",
+    "last_error": "node:internal/modules/run_main:123\n    triggerUncaughtException(\n    ^\n\nError: Local editorial model request timed out after 90000ms\n    at ClientRequest.<anonymous> (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/local-editorial-model.mjs:20:54)\n    at Object.onceWrapper (node:events:633:28)\n    at ClientRequest.emit (node:events:519:28)\n    at Socket.emitRequestTimeout (node:_http_client:931:9)\n    at Object.onceWrapper (node:events:633:28)\n    at Socket.emit (node:events:531:35)\n    at Socket._onTimeout (node:net:605:8)\n    at listOnTimeout (node:internal/timers:585:17)\n    at process.processTimers (node:internal/timers:521:7)\n\nNode.js v22.23.2",
+    "updated_at": "2026-08-21T08:34:44.918Z"
   }
 }
