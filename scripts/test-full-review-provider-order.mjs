@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import {execFileSync} from 'node:child_process';
 const workflow=fs.readFileSync('.github/workflows/game-post-create-enrichment.yml','utf8');
 const orchestrator=fs.readFileSync('scripts/run-commercial-review-contract.mjs','utf8');
+const wrapperPath='scripts/synthesize-commercial-review-resilient-wrapper.mjs';
+const wrapper=fs.readFileSync(wrapperPath,'utf8');
 const fail=message=>{throw new Error(message)};
+try{execFileSync(process.execPath,['--check',wrapperPath],{stdio:'pipe'})}catch(error){fail(`Review repair wrapper syntax is invalid: ${String(error?.stderr||error?.message||error)}`)}
 const quick=workflow.indexOf('Verify published quick reviews on production Pages');
 const accelerated=workflow.indexOf('Run accelerated full commercial review upgrade');
 const cache=workflow.indexOf('Restore local full-review model cache');
@@ -22,8 +26,16 @@ for(const [name,block] of [['cache',cacheBlock],['service',serviceBlock],['local
 if(!localBlock.includes("COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR: 'false'"))fail('Local fallback does not explicitly suppress another accelerated attempt');
 if(!orchestrator.includes("useOpenAIAccelerator=process.env.COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR==='true'"))fail('Commercial orchestrator does not resolve the accelerator mode once');
 if(!orchestrator.includes("if(!useOpenAIAccelerator)stages.push(['meta-preflight'"))fail('OpenAI accelerator still depends on local meta-preflight before synthesis');
-if(!orchestrator.includes("stages.push(['long-review','scripts/synthesize-commercial-review-resilient.mjs',[slug],useOpenAIAccelerator?{}:{OPENAI_API_KEY:''}])"))fail('OpenAI/local synthesis routing is not explicit in the orchestrator');
+if(!orchestrator.includes("stages.push(['long-review','scripts/synthesize-commercial-review-resilient-wrapper.mjs',[slug],useOpenAIAccelerator?{}:{OPENAI_API_KEY:''}])"))fail('OpenAI/local synthesis routing is not explicit in the orchestrator');
+if(!wrapper.includes("spawnSync('node',['scripts/synthesize-commercial-review-resilient.mjs',slug]"))fail('Repair wrapper does not delegate to the canonical resilient synthesis');
+if(!wrapper.includes('repairIncompleteSections()')||!wrapper.includes('LOCAL_EDITORIAL_MODEL'))fail('Repair wrapper does not expose bounded 4B repair for persisted incomplete sections');
+if(wrapper.includes('4b editorial fallback is unavailable'))fail('Repair wrapper hard-blocks the accelerator on local-model availability');
+const providerCheck=wrapper.indexOf('let editorialReady=await localModelReady');
+const baseRun=wrapper.indexOf('lastStatus=runBase()');
+if(providerCheck<0||baseRun<0||providerCheck>baseRun)fail('Repair wrapper provider readiness flow is malformed');
+if(!wrapper.includes('if(!editorialReady){')||!wrapper.includes('base synthesis failed and ${LOCAL_EDITORIAL_MODEL} repair is not available in this provider phase'))fail('Repair wrapper does not fail back cleanly when local repair is unavailable');
+if(!wrapper.includes('process.exit(lastStatus||75)'))fail('Repair wrapper can swallow a failed synthesis');
 if(!workflow.includes('Fail required full review if both providers failed'))fail('Required full-review failure is not fail-closed');
 if(!workflow.includes('Verify required full review completed locally'))fail('Required full-review completion gate is missing');
 for(const marker of ['review-commercial-v2-${slug}.json','full review is below 3000 words','final editorial audit is not green'])if(!workflow.includes(marker))fail(`Required full-review proof missing: ${marker}`);
-console.log('Full-review provider order passed: live grounded review first, OpenAI synthesis has no hidden local preflight, Ollama only on accelerator failure, required 3000+ review fail-closed before publication.');
+console.log('Full-review provider order passed: live grounded review first, accelerator remains independent from local availability, local wrapper repairs persisted incomplete sections only after/when 4B is available, required 3000+ review remains fail-closed before publication.');
