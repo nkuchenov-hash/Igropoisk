@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import http from 'node:http';
 import https from 'node:https';
+import {instructionLeakReasons} from './review-fragment-quality.mjs';
 
 export const LOCAL_EDITORIAL_MODEL = process.env.LOCAL_EDITORIAL_MODEL || process.env.LOCAL_TEXT_MODEL || 'qwen3:4b';
 export const OLLAMA_HOST = String(process.env.OLLAMA_HOST || 'http://127.0.0.1:11434').replace(/\/$/, '');
@@ -81,6 +82,25 @@ export function boundedJsonPredictBudget({schema='json',numPredict=12000,timeout
   return requested;
 }
 
+function generatedReviewInstructionLeaks(value){
+  if(!value||typeof value!=='object'||Array.isArray(value))return[];
+  const texts=[];
+  if(Object.prototype.hasOwnProperty.call(value,'paragraph'))texts.push(['paragraph',value.paragraph]);
+  if(['title','dek','lead'].every(key=>Object.prototype.hasOwnProperty.call(value,key))){
+    texts.push(['title',value.title],['dek',value.dek],['lead',value.lead]);
+  }
+  if(['summary','best_for','not_for'].every(key=>Object.prototype.hasOwnProperty.call(value,key))){
+    texts.push(['summary',value.summary]);
+    for(const [index,item] of (value.best_for||[]).entries())texts.push([`best_for#${index+1}`,item]);
+    for(const [index,item] of (value.not_for||[]).entries())texts.push([`not_for#${index+1}`,item]);
+  }
+  const reasons=[];
+  for(const [label,text] of texts){
+    for(const reason of instructionLeakReasons(text))reasons.push(`${label}:${reason}`);
+  }
+  return reasons;
+}
+
 export async function chatJson({system='', prompt, schema='json', images=[], temperature=0.2, numCtx=32768, numPredict=12000, timeoutMs=900000, repeatPenalty=1.18, repeatLastN=1024, model=LOCAL_EDITORIAL_MODEL}) {
   if (!prompt) throw new Error('Local editorial prompt is required');
   const ready = await localModelReady({model});
@@ -104,11 +124,15 @@ export async function chatJson({system='', prompt, schema='json', images=[], tem
   });
   const raw = payload?.message?.content;
   if (!raw) throw new Error('Local editorial model returned no content');
+  let parsed;
   try {
-    return JSON.parse(String(raw).replace(/^```json\s*|\s*```$/g, ''));
+    parsed=JSON.parse(String(raw).replace(/^```json\s*|\s*```$/g, ''));
   } catch (error) {
     throw new Error(`Local editorial model returned invalid JSON: ${error.message}`);
   }
+  const leaks=generatedReviewInstructionLeaks(parsed);
+  if(leaks.length)throw new Error(`Local editorial model output rejected before persistence: ${leaks.join('; ')}`);
+  return parsed;
 }
 
 export function readJsonFile(path) {
