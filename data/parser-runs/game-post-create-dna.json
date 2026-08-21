@@ -1,24 +1,17 @@
 {
   "parser": "post-create-game-dna-v5-commercial-quality",
-  "status": "needs_revision",
-  "checked_at": "2026-08-21T08:28:21.851Z",
+  "status": "green",
+  "checked_at": "2026-08-21T08:29:22.422Z",
   "targets": 1,
   "from_pending_requests": 71,
   "from_missing_dna_backfill": 41,
-  "dna_ready": 0,
+  "dna_ready": 1,
   "validation_scope": "per_game_targeted_commercial_quality",
   "publication_policy": "only_valid_commercial_quality_dna_changes_survive_to_checkpoint",
-  "ready_slugs": [],
-  "invalid_or_missing": [
-    "tides-of-annihilation"
+  "ready_slugs": [
+    "fallout-2"
   ],
+  "invalid_or_missing": [],
   "similarity_needs_revision": [],
-  "failed": [
-    {
-      "slug": "tides-of-annihilation",
-      "step": "validate",
-      "exit_code": 2,
-      "stderr": "data/game-dna/tides-of-annihilation.json: targeted post-create DNA is not similarity-ready (4/16 axes, 1/7 core axes); requires at least 6 populated axes and 3 core axes\ndata/game-dna/tides-of-annihilation.json: targeted post-create DNA is below the commercial enrichment gate (4/16 axes, 1/7 core axes); requires >=9 populated axes and >=4 core axes\n"
-    }
-  ]
+  "failed": []
 }
