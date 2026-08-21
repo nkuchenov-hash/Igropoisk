@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {instructionLeakReasons,paragraphQualityReasons,sanitizePersistedState,nearDuplicate} from './lib/review-fragment-quality.mjs';
+import {isSingleParagraphSchema} from './lib/local-editorial-model.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/game-post-create-enrichment.yml','utf8');
 const orchestrator=fs.readFileSync('scripts/run-commercial-review-contract.mjs','utf8');
@@ -28,6 +29,9 @@ if(!nearDuplicate(good,good))fail('Shared fragment gate no longer recognizes an 
 if(!paragraphQualityReasons(good,{existing:[good],minWords:15,maxWords:80}).some(reason=>reason.startsWith('near-duplicate:')))fail('Shared pre-save paragraph gate does not reject duplicate prose');
 const cleaned=sanitizePersistedState({sections:{sample:{paragraphs:[good,leaked]}},meta:null,verdict:null});
 if(!cleaned.changed||cleaned.state.sections.sample.paragraphs.length!==1||cleaned.state.sections.sample.paragraphs[0]!==good)fail('Persisted-state cleaner does not remove leaked instructions while preserving valid prose');
+const paragraphSchema={type:'object',additionalProperties:false,required:['paragraph'],properties:{paragraph:{type:'string'}}};
+if(!isSingleParagraphSchema(paragraphSchema))fail('Single-paragraph schema no longer routes to plain text transport');
+if(isSingleParagraphSchema({type:'object',required:['paragraph','source'],properties:{paragraph:{type:'string'},source:{type:'string'}}}))fail('Multi-field JSON schema is incorrectly routed as plain paragraph text');
 
 const quick=workflow.indexOf('Verify published quick reviews on production Pages');
 const accelerated=workflow.indexOf('Run accelerated full commercial review upgrade');
@@ -59,7 +63,8 @@ if(!wrapper.includes('if(!editorialReady){')||!wrapper.includes('base synthesis 
 for(const marker of ['function evidenceForRepair','sourceList.flatMap(source=>sourceAtoms(source))','filter(atom=>atom.overlap<0.72)','NEW EVIDENCE','section.source_ids=[...new Set(','shortTail?1536:3072','shortTail?192:360','shortTail?90000:120000','paragraphQualityReasons','sanitizePersistedState','persisted-quality-cleanup','shared-pre-save-v1'])if(!wrapper.includes(marker))fail(`Shared bounded repair contract missing: ${marker}`);
 if(wrapper.includes('ПОСЛЕДНИЙ АБЗАЦ:'))fail('Repair wrapper still primes the model with the paragraph it must not paraphrase');
 if(!quality.includes('return tokenOverlap(a,b)>=threshold'))fail('Shared near-duplicate threshold implementation is missing');
-for(const marker of ['generatedReviewInstructionLeaks','instructionLeakReasons','output rejected before persistence'])if(!localModel.includes(marker))fail(`Local model pre-persistence instruction gate missing: ${marker}`);
+for(const marker of ['generatedReviewInstructionLeaks','instructionLeakReasons','output rejected before persistence','isSingleParagraphSchema','chatSingleParagraph','normalizePlainParagraph','Math.max(512','done_reason'])if(!localModel.includes(marker))fail(`Local model shared paragraph transport/gate missing: ${marker}`);
+if(!localModel.includes('if(isSingleParagraphSchema(format))')||!localModel.includes('return{paragraph};'))fail('Single paragraph requests can still enter fragile structured JSON generation');
 for(const marker of ['articleInstructionLeakReasons(article)','nearDuplicate(paras[i],paras[j])','shared-fragment-and-final-v1'])if(!validator.includes(marker))fail(`Final provider-independent quality gate missing: ${marker}`);
 for(const marker of ['articleInstructionLeakReasons(article)','nearDuplicate(paragraphs[i],paragraphs[j])','shared-fragment-and-final-v1'])if(!openai.includes(marker))fail(`Accelerated provider quality gate missing: ${marker}`);
 if(!wrapper.includes('try{')||!wrapper.includes('}catch(error){'))fail('Repair wrapper can abort the full-review job on one local paragraph timeout');
@@ -67,4 +72,4 @@ if(!wrapper.includes('process.exit(lastStatus||75)'))fail('Repair wrapper can sw
 if(!workflow.includes('Fail required full review if both providers failed'))fail('Required full-review failure is not fail-closed');
 if(!workflow.includes('Verify required full review completed locally'))fail('Required full-review completion gate is missing');
 for(const marker of ['review-commercial-v2-${slug}.json','full review is below 3000 words','final editorial audit is not green'])if(!workflow.includes(marker))fail(`Required full-review proof missing: ${marker}`);
-console.log('Full-review quality contract passed: one shared fragment gate rejects prompt leakage and duplicates before persistence, persisted bad fragments are self-cleaned, both providers are guarded, and the final commercial validator repeats the checks before publication.');
+console.log('Full-review quality contract passed: single-paragraph generation uses plain text transport instead of fragile JSON, shared quality checks run before persistence, persisted bad fragments self-clean, both providers are guarded, and final publication remains fail-closed.');
