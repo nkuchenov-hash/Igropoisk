@@ -1,15 +1,15 @@
 {
   "schema_version": 3,
   "phase": "model-assisted",
-  "started_at": "2026-08-20T22:59:36.232Z",
-  "checked_at": "2026-08-21T01:49:43.281Z",
-  "duration_ms": 10207049,
+  "started_at": "2026-08-21T11:51:04.073Z",
+  "checked_at": "2026-08-21T14:51:15.211Z",
+  "duration_ms": 10811138,
   "concurrency": 2,
   "timeout_ms": 600000,
-  "selected": 49,
+  "selected": 52,
   "green": 0,
-  "pending": 49,
-  "timed_out": 33,
+  "pending": 52,
+  "timed_out": 36,
   "results": [
     {
       "slug": "bloodborne",
@@ -879,10 +879,10 @@
       "article_status": null,
       "comments": [
         "Обзор ещё не создан.",
-        "fallout-brotherhood-of-steel: only 0/7 verified game-specific screenshots\n"
+        "fallout-brotherhood-of-steel: only 2/7 verified game-specific screenshots\n"
       ],
-      "stdout_tail": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Обзор ещё не создан.\",\n    \"fallout-brotherhood-of-steel: only 0/7 verified game-specific screenshots\\n\"\n  ]\n}\n",
-      "stderr_tail": "fallout-brotherhood-of-steel: only 0/7 verified game-specific screenshots\n\nfallout-brotherhood-of-steel: only 0/7 verified game-specific screenshots\n\nfallout-brotherhood-of-steel: only 0/7 verified game-specific screenshots\n\nfallout-brotherhood-of-steel: only 0/7 verified game-specific screenshots\n\n"
+      "stdout_tail": "{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.6,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"mode\": \"review\",\n  \"slug\": \"fallout-brotherhood-of-steel\",\n  \"status\": \"red-needs-revision\",\n  \"deterministic_only\": false,\n  \"comments\": [\n    \"Обзор ещё не создан.\",\n    \"fallout-brotherhood-of-steel: only 2/7 verified game-specific screenshots\\n\"\n  ]\n}\n",
+      "stderr_tail": "fallout-brotherhood-of-steel: only 2/7 verified game-specific screenshots\n\nfallout-brotherhood-of-steel: only 2/7 verified game-specific screenshots\n\nfallout-brotherhood-of-steel: only 2/7 verified game-specific screenshots\n\nfallout-brotherhood-of-steel: only 2/7 verified game-specific screenshots\n\n"
     },
     {
       "slug": "fallout-3",
@@ -1114,8 +1114,27 @@
       "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
     },
     {
-      "slug": "007-first-light",
+      "slug": "final-fantasy",
       "index": 49,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 8.5,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"final-fantasy\",\n  \"status\": \"green\",\n  \"scored_sources\": 5,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.5,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"final-fantasy\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 10,\n  \"required\": 7\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "slug": "007-first-light",
+      "index": 50,
       "exit_code": null,
       "signal": "SIGTERM",
       "timed_out": true,
@@ -1130,6 +1149,44 @@
         "No reusable existing article; queued for prose/media repair."
       ],
       "stdout_tail": "{\n  \"slug\": \"007-first-light\",\n  \"status\": \"green\",\n  \"scored_sources\": 8,\n  \"excluded_sources\": 0,\n  \"score_10\": 8.3,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"007-first-light\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 14,\n  \"required\": 7\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "slug": "code-vein-ii",
+      "index": 51,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 7.4,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"code-vein-ii\",\n  \"status\": \"green\",\n  \"scored_sources\": 8,\n  \"excluded_sources\": 0,\n  \"score_10\": 7.4,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"code-vein-ii\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 10,\n  \"required\": 7\n}\n\n",
+      "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
+    },
+    {
+      "slug": "south-of-midnight",
+      "index": 52,
+      "exit_code": null,
+      "signal": "SIGTERM",
+      "timed_out": true,
+      "green": false,
+      "control_green": false,
+      "corpus_status": "green",
+      "score_status": "green",
+      "score": 8,
+      "regional_complete": true,
+      "article_status": null,
+      "comments": [
+        "No reusable existing article; queued for prose/media repair."
+      ],
+      "stdout_tail": "{\n  \"slug\": \"south-of-midnight\",\n  \"status\": \"green\",\n  \"scored_sources\": 6,\n  \"excluded_sources\": 1,\n  \"score_10\": 8,\n  \"use_all_eligible_sources\": true,\n  \"required_evidence_scope\": \"editorial_review\"\n}\n\n{\n  \"slug\": \"south-of-midnight\",\n  \"mode\": \"verified_official_media_first\",\n  \"approved\": 17,\n  \"required\": 7\n}\n\n",
       "stderr_tail": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7\nconst model=process.env.GITHUB_REVIEW_MODEL||'openai/gpt-4.1';async function infer(prompt){const response=await fetch('https://models.github.ai/inference/chat/completions',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json','accept':'application/vnd.github+json','x-github-api-version':'2026-03-10'},body:JSON.stringify({model,messages:[{role:'system',content:'Ты старший русскоязычный игровой редактор Игропоиска. Пиши живым, естественным и конкретным русским языком. Не заполняй текст общими словами или канцеляритом. Каждый абзац должен объяснять конкретную особенность именно этой игры.'},{role:'user',content:prompt}],response_format:{type:'json_object'},temperature:.35,max_tokens:12000})});if(!response.ok)throw new Error(`GitHub Models ${response.status}: ${await response.text()}`);const data=await response.json(),raw=data.choices?.[0]?.message?.content;if(!raw)throw new Error('GitHub Models returned no article JSON');return JSON.parse(raw.replace(/^```json\\s*|\\s*```$/g,''))}\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^\n\nError: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n    at infer (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:7:758)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-review-github-models.mjs:10:11\n\nNode.js v22.23.2\n\n"
     }
   ]
