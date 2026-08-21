@@ -42,7 +42,7 @@ jobs:
           console.log(JSON.stringify({status:first?'continuation-required':'idle',slug:first?.slug||null,pending_pages:pending.length,review_importance:first?.review_importance?.status||'pending'},null,2));
           NODE
 
-      - name: Dispatch next worker cycle
+      - name: Dispatch next page worker cycle / Dispatch next worker cycle
         if: steps.pending.outputs.continue == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
