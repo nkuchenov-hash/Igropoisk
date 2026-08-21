@@ -5,20 +5,24 @@ import {instructionLeakReasons,paragraphQualityReasons,sanitizePersistedState,ne
 import {isSingleParagraphSchema,completeParagraphPrefix,cleanInstructionLeakSentences} from './lib/local-editorial-model.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/game-post-create-enrichment.yml','utf8');
-const orchestrator=fs.readFileSync('scripts/run-commercial-review-contract.mjs','utf8');
+const continuation=fs.readFileSync('.github/workflows/game-post-create-continuation.yml','utf8');
+const orchestratorPath='scripts/run-commercial-review-contract.mjs';
+const resolverPath='scripts/resolve-post-create-event-targets.mjs';
 const wrapperPath='scripts/synthesize-commercial-review-resilient-wrapper.mjs';
 const qualityPath='scripts/lib/review-fragment-quality.mjs';
 const localModelPath='scripts/lib/local-editorial-model.mjs';
 const validatorPath='scripts/validate-commercial-review-v2.mjs';
-const openaiPath='scripts/synthesize-commercial-review-openai.mjs';
+const orchestrator=fs.readFileSync(orchestratorPath,'utf8');
+const resolver=fs.readFileSync(resolverPath,'utf8');
 const wrapper=fs.readFileSync(wrapperPath,'utf8');
 const quality=fs.readFileSync(qualityPath,'utf8');
 const localModel=fs.readFileSync(localModelPath,'utf8');
 const validator=fs.readFileSync(validatorPath,'utf8');
-const openai=fs.readFileSync(openaiPath,'utf8');
 const fail=message=>{throw new Error(message)};
-for(const file of [wrapperPath,qualityPath,localModelPath,validatorPath,openaiPath]){
-  try{execFileSync(process.execPath,['--check',file],{stdio:'pipe'})}catch(error){fail(`${file} syntax is invalid: ${String(error?.stderr||error?.message||error)}`)}
+
+for(const file of [orchestratorPath,resolverPath,wrapperPath,qualityPath,localModelPath,validatorPath]){
+  try{execFileSync(process.execPath,['--check',file],{stdio:'pipe'})}
+  catch(error){fail(`${file} syntax is invalid: ${String(error?.stderr||error?.message||error)}`)}
 }
 
 const leaked='Новый абзац должен быть строго посвящён конкретному аспекту из NEW EVIDENCE без повторения уже существующего текста. Важно использовать только русский язык, латиница запрещена, не добавлять неподтверждённые данные и сохранять объём от 60 до 95 слов для одного абзаца.';
@@ -40,36 +44,42 @@ const mixed=`${good} Новая инструкция требует исполь
 const cleanMixed=cleanInstructionLeakSentences(mixed);
 if(!cleanMixed.includes('Система характеристик')||!cleanMixed.includes('Высокая харизма')||/NEW EVIDENCE|инструкц/i.test(cleanMixed))fail('Mixed model output cannot discard leaked meta sentences while preserving completed review prose');
 
+if(/OPENAI_API_KEY:\s*\$\{\{/.test(workflow))fail('Game-page workflow still exposes an OpenAI API key');
+if(workflow.includes('Run accelerated full commercial review upgrade'))fail('Game-page workflow still contains a paid accelerated review stage');
+if(workflow.includes("COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR: 'true'"))fail('Game-page workflow can still enable paid OpenAI synthesis');
+for(const marker of ['LOCAL_TEXT_MODEL: qwen3:4b','LOCAL_EDITORIAL_MODEL: qwen3:4b','LOCAL_WRITER_MODEL: qwen3:0.6b'])if(!workflow.includes(marker))fail(`Required local model declaration missing: ${marker}`);
+
 const quick=workflow.indexOf('Verify published quick reviews on production Pages');
-const accelerated=workflow.indexOf('Run accelerated full commercial review upgrade');
 const cache=workflow.indexOf('Restore local full-review model cache');
 const service=workflow.indexOf('Start local full-review model service');
-const local=workflow.indexOf('Run optional full commercial review upgrade');
+const models=workflow.indexOf('Ensure required local review models');
+const cacheSave=workflow.indexOf('Save local full-review model cache before generation');
+const local=workflow.indexOf('Run required local full commercial review upgrade');
+const persist=workflow.indexOf('Persist incomplete full-review state for automatic continuation');
+const verify=workflow.indexOf('Verify required full review completed locally');
 const publish=workflow.indexOf('Publish full commercial review checkpoint');
 const smoke=workflow.indexOf('Verify full commercial reviews on production Pages');
-if([quick,accelerated,cache,service,local,publish,smoke].some(x=>x<0))fail('Full-review provider-order workflow stages are incomplete');
-if(!(quick<accelerated&&accelerated<cache&&cache<service&&service<local&&local<publish&&publish<smoke))fail('Full review must be quick-live -> OpenAI accelerator -> local fallback only if needed -> publish -> live smoke');
-const acceleratedBlock=workflow.slice(accelerated,cache);
-if(!acceleratedBlock.includes("COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR: 'true'"))fail('Accelerated full review does not explicitly enable OpenAI synthesis');
-if(!acceleratedBlock.includes('continue-on-error: true')||!acceleratedBlock.includes('id: full_accelerated'))fail('Accelerated full review must expose a non-blocking outcome for fallback');
-const cacheBlock=workflow.slice(cache,service);
-const serviceBlock=workflow.slice(service,workflow.indexOf('Ensure local text model for optional full upgrade'));
-const localBlock=workflow.slice(local,workflow.indexOf('Persist optional full-review retry state'));
-for(const [name,block] of [['cache',cacheBlock],['service',serviceBlock],['local',localBlock]])if(!block.includes("steps.full_accelerated.outcome == 'failure'"))fail(`${name} local fallback can run before accelerator failure`);
-if(!localBlock.includes("COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR: 'false'"))fail('Local fallback does not explicitly suppress another accelerated attempt');
-if(!orchestrator.includes("useOpenAIAccelerator=process.env.COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR==='true'"))fail('Commercial orchestrator does not resolve the accelerator mode once');
-if(!orchestrator.includes("if(!useOpenAIAccelerator)stages.push(['meta-preflight'"))fail('OpenAI accelerator still depends on local meta-preflight before synthesis');
-if(!orchestrator.includes("stages.push(['long-review','scripts/synthesize-commercial-review-resilient-wrapper.mjs',[slug],useOpenAIAccelerator?{}:{OPENAI_API_KEY:''}])"))fail('OpenAI/local synthesis routing is not explicit in the orchestrator');
+if([quick,cache,service,models,cacheSave,local,persist,verify,publish,smoke].some(x=>x<0))fail('Local persistent full-review workflow stages are incomplete');
+if(!(quick<cache&&cache<service&&service<models&&models<cacheSave&&cacheSave<local&&local<persist&&persist<verify&&verify<publish&&publish<smoke))fail('Required order is quick-live -> local cache/service/models -> local full review -> persist/verify -> publish -> live smoke');
+if(!workflow.includes('actions/cache/restore@v4')||!workflow.includes('actions/cache/save@v4'))fail('Local models are not persisted before long generation');
+if(!workflow.includes('Record automatic continuation requirement'))fail('Incomplete required review is not explicitly handed to automatic continuation');
+if(workflow.includes('Fail required full review if both providers failed'))fail('A single worker cycle can still terminate the released-game lifecycle');
+
+for(const marker of ["OPENAI_API_KEY:''","COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR:'false'","provider_policy:'local_only'","commercial-review-contract-v6-local-only-persistent"])if(!orchestrator.includes(marker))fail(`Local-only orchestrator guard missing: ${marker}`);
+if(orchestrator.includes('useOpenAIAccelerator='))fail('Commercial orchestrator still has a paid-provider routing mode');
+if(!orchestrator.includes("stages.push(['meta-preflight','scripts/prepare-sectioned-review-meta.mjs'"))fail('Local deterministic preflight is not mandatory before synthesis');
+if(!orchestrator.includes("stages.push(['long-review','scripts/synthesize-commercial-review-resilient-wrapper.mjs'"))fail('Canonical local resilient wrapper is not mandatory');
+
+if(!resolver.includes("request?.released===true&&String(request?.modules?.review||'').toLowerCase()!=='ready'"))fail('Released games with incomplete reviews are not automatically treated as required');
+if(!resolver.includes('Number(required(b))-Number(required(a))'))fail('Required incomplete games do not have retry priority');
+
+for(const marker of ['workflow_run:',"workflows: ['Enrich newly created Игропоиск games']",'actions: write','Detect incomplete required released game','Dispatch next worker cycle','gh workflow run game-post-create-enrichment.yml --ref staging'])if(!continuation.includes(marker))fail(`Automatic continuation workflow missing: ${marker}`);
+if(!continuation.includes("String(r.state||'')!=='complete'&&required(r)"))fail('Continuation workflow can stop while a required released game is incomplete');
+
 if(!wrapper.includes("spawnSync('node',['scripts/synthesize-commercial-review-resilient.mjs',slug]"))fail('Repair wrapper does not delegate to canonical resilient synthesis');
-if(!wrapper.includes('repairIncompleteSections()')&&!wrapper.includes('repairIncompleteSections({'))fail('Repair wrapper does not expose bounded 4B repair');
-if(!wrapper.includes('LOCAL_EDITORIAL_MODEL'))fail('Repair wrapper lost the local editorial model');
-if(wrapper.includes('4b editorial fallback is unavailable'))fail('Repair wrapper hard-blocks accelerator on local-model availability');
-const providerCheck=wrapper.indexOf('let editorialReady=await localModelReady');
-const baseRun=wrapper.indexOf('lastStatus=runBase()');
-if(providerCheck<0||baseRun<0||providerCheck>baseRun)fail('Repair wrapper provider readiness flow is malformed');
-if(!wrapper.includes('if(!editorialReady){')||!wrapper.includes('base synthesis failed and ${LOCAL_EDITORIAL_MODEL} repair is not available in this provider phase'))fail('Repair wrapper does not fail back cleanly when local repair is unavailable');
-for(const marker of ['function evidenceForRepair','sourceList.flatMap(source=>sourceAtoms(source))','filter(atom=>atom.overlap<0.72)','repairPrompt','evidence.map(item=>`— ${item.text}`)','section.source_ids=[...new Set(','shortTail?1536:3072','shortTail?192:360','shortTail?90000:120000','paragraphQualityReasons','sanitizePersistedState','persisted-quality-cleanup','shared-pre-save-v1'])if(!wrapper.includes(marker))fail(`Shared bounded repair contract missing: ${marker}`);
-for(const marker of ['MAX_REPAIR_ATTEMPTS_PER_SECTION','MAX_TOTAL_REPAIR_ATTEMPTS','repairCallsBySection','canRepair(section)','registerRepairCall(section)','repairIncompleteSections({includeEmpty:false})','repairIncompleteSections({includeEmpty:true})'])if(!wrapper.includes(marker))fail(`Per-section bounded repair contract missing: ${marker}`);
+if(!wrapper.includes("OPENAI_API_KEY:''")||!wrapper.includes("COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR:'false'"))fail('Repair wrapper does not independently suppress paid API access');
+for(const marker of ['function evidenceForRepair','sourceList.flatMap(source=>sourceAtoms(source))','const novel=ranked.filter(atom=>atom.overlap<0.72)','repairPrompt','section.repair_cursor=Number(section.repair_cursor||0)+1','repair_attempts_total','repair_rejections_total','while(canRepair(section))','MAX_REPAIR_ATTEMPTS_PER_SECTION_PER_RUN','markContinuation(true','full-review-incomplete','provider_policy:\'local_only\'','sanitizePersistedState','shared-pre-save-v1'])if(!wrapper.includes(marker))fail(`Persistent repair contract missing: ${marker}`);
+if(wrapper.includes('MAX_TOTAL_REPAIR_ATTEMPTS'))fail('Review repair still has a terminal global attempt budget');
 if(wrapper.includes('MAX_4B_REPAIR_PARAGRAPHS=14'))fail('Full article repair is still capped by the obsolete global 14-call budget');
 if(!wrapper.includes('if(!includeEmpty&&!paragraphs.length)continue'))fail('Repair wrapper still spends editorial calls on untouched empty sections before the base writer runs');
 for(const forbidden of ['NEW EVIDENCE','ПРЕДЫДУЩАЯ ПОПЫТКА','ПРЕДЫДУЩИЙ ВАРИАНТ','source-grounded'])if(wrapper.includes(forbidden))fail(`Repair prompt still contains copyable technical marker: ${forbidden}`);
@@ -79,10 +89,7 @@ for(const marker of ['generatedReviewInstructionLeaks','instructionLeakReasons',
 if(localModel.includes('Math.max(512,Number(numPredict'))fail('Single-paragraph transport still overrides bounded caller token budgets with a 512-token minimum');
 if(!localModel.includes('if(isSingleParagraphSchema(format))')||!localModel.includes('return{paragraph};'))fail('Single paragraph requests can still enter fragile structured JSON generation');
 for(const marker of ['articleInstructionLeakReasons(article)','nearDuplicate(paras[i],paras[j])','shared-fragment-and-final-v1'])if(!validator.includes(marker))fail(`Final provider-independent quality gate missing: ${marker}`);
-for(const marker of ['articleInstructionLeakReasons(article)','nearDuplicate(paragraphs[i],paragraphs[j])','shared-fragment-and-final-v1'])if(!openai.includes(marker))fail(`Accelerated provider quality gate missing: ${marker}`);
 if(!wrapper.includes('try{')||!wrapper.includes('}catch(error){'))fail('Repair wrapper can abort the full-review job on one local paragraph timeout');
-if(!wrapper.includes('process.exit(lastStatus||75)'))fail('Repair wrapper can swallow a failed synthesis');
-if(!workflow.includes('Fail required full review if both providers failed'))fail('Required full-review failure is not fail-closed');
-if(!workflow.includes('Verify required full review completed locally'))fail('Required full-review completion gate is missing');
 for(const marker of ['review-commercial-v2-${slug}.json','full review is below 3000 words','final editorial audit is not green'])if(!workflow.includes(marker))fail(`Required full-review proof missing: ${marker}`);
-console.log('Full-review quality contract passed: repair prompts are content-only, repair budgets are bounded per section instead of globally starving later sections, untouched empty sections stay with the base writer first, mixed leakage is stripped sentence-by-sentence, and final publication remains fail-closed.');
+
+console.log('Full-review quality contract passed: game-page creation is local-only, paid OpenAI API access is suppressed at workflow/orchestrator/wrapper boundaries, released incomplete reviews are mandatory, progress and repair cursors persist, worker-cycle safeguards are non-terminal, local model cache is saved before generation, and a continuation workflow re-dispatches work until complete.');
