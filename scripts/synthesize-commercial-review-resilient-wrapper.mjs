@@ -27,18 +27,18 @@ const MAX_WRAPPER_PASSES=6;
 const MAX_4B_REPAIR_PARAGRAPHS=12;
 let repairCalls=0;
 
-function evidenceFor(section){
+function evidenceFor(section,{shortTail=false,attempt=1}={}){
   const ids=(section?.source_ids||[]).filter(id=>sourceById.has(id));
-  const selected=(ids.length?ids.map(id=>sourceById.get(id)):sourceList.slice(0,4)).slice(0,5);
-  return selected.map(source=>({
+  const pool=ids.length?ids.map(id=>sourceById.get(id)):sourceList;
+  const limit=shortTail?(attempt===1?2:1):4;
+  return pool.slice(0,limit).map(source=>({
     id:source.id,
     publication:source.publication,
-    summary:compact(source.dossier?.summary,240),
-    strengths:(source.dossier?.strengths||[]).slice(0,2).map(value=>compact(value,130)),
-    criticisms:(source.dossier?.criticisms||[]).slice(0,2).map(value=>compact(value,130)),
-    systems:(source.dossier?.systems||[]).slice(0,2).map(value=>compact(value,130)),
-    examples:(source.dossier?.specific_examples||[]).slice(0,2).map(value=>compact(value,150)),
-    claims:(source.dossier?.notable_claims||[]).slice(0,2).map(value=>compact(value,150))
+    summary:compact(source.dossier?.summary,shortTail?140:220),
+    strengths:(source.dossier?.strengths||[]).slice(0,shortTail?1:2).map(value=>compact(value,shortTail?90:120)),
+    criticisms:(source.dossier?.criticisms||[]).slice(0,shortTail?1:2).map(value=>compact(value,shortTail?90:120)),
+    examples:(source.dossier?.specific_examples||[]).slice(0,shortTail?1:2).map(value=>compact(value,shortTail?100:140)),
+    claims:(source.dossier?.notable_claims||[]).slice(0,shortTail?1:2).map(value=>compact(value,shortTail?100:140))
   }));
 }
 
@@ -54,31 +54,41 @@ async function add4bParagraph(state,section){
   const remaining=Math.max(0,minSectionWords-words);
   const missingParagraphs=Math.max(0,minParagraphs-paragraphs.length);
   const shortTail=remaining>0&&remaining<45&&missingParagraphs===0;
-  const requested=shortTail?'20–70':'70–125';
-  const minimum=shortTail?18:45;
-  const evidence=evidenceFor(section);
-  if(!evidence.length)return false;
+  const requested=shortTail?'24–50':'65–110';
+  const minimum=shortTail?18:42;
   for(let attempt=1;attempt<=2;attempt++){
+    const evidence=evidenceFor(section,{shortTail,attempt});
+    if(!evidence.length)return false;
     repairCalls++;
-    const result=await chatJson({
-      model:LOCAL_EDITORIAL_MODEL,
-      system:'Ты строгий русскоязычный игровой редактор. Напиши только один новый абзац, опираясь исключительно на evidence. Не повторяй существующий текст и не добавляй неподтверждённых фактов.',
-      prompt:`Дополни раздел «${section.heading||section.id}» обзора ${slug}. Сейчас ${words} слов и ${paragraphs.length} абзацев; коммерческий минимум — ${minSectionWords} слов и ${minParagraphs} абзаца. Напиши один самостоятельный source-grounded абзац ${requested} русских слов. Английские слова запрещены кроме Fallout/RPG.\nПОСЛЕДНИЕ АБЗАЦЫ:${JSON.stringify(paragraphs.slice(-2).map(value=>compact(value,650)))}\nSOURCE EVIDENCE:${JSON.stringify(evidence)}`,
-      schema,
-      temperature:0.08,
-      numCtx:6144,
-      numPredict:420,
-      timeoutMs:90000
-    });
+    let result;
+    try{
+      result=await chatJson({
+        model:LOCAL_EDITORIAL_MODEL,
+        system:'Ты строгий русскоязычный игровой редактор. Верни только один новый абзац по evidence. Не повторяй существующий текст и не добавляй неподтверждённых фактов.',
+        prompt:`Дополни раздел «${section.heading||section.id}» обзора ${slug}. Сейчас ${words} слов и ${paragraphs.length} абзацев; минимум — ${minSectionWords} слов и ${minParagraphs} абзаца. Нужен один source-grounded абзац ${requested} русских слов. Английские слова запрещены кроме Fallout/RPG.\nПОСЛЕДНИЙ АБЗАЦ:${JSON.stringify(compact(paragraphs.at(-1)||'',shortTail?320:520))}\nEVIDENCE:${JSON.stringify(evidence)}`,
+        schema,
+        temperature:0.05,
+        numCtx:shortTail?2048:4096,
+        numPredict:shortTail?128:280,
+        timeoutMs:shortTail?120000:150000,
+        repeatLastN:shortTail?256:512
+      });
+    }catch(error){
+      console.warn(`${slug}: ${LOCAL_EDITORIAL_MODEL} paragraph repair attempt ${attempt} failed for ${section.id}: ${error.message}`);
+      continue;
+    }
     const paragraph=String(result?.paragraph||'').trim();
     const wc=countWords(paragraph);
-    if(wc<minimum||wc>160||lowerLatin(paragraph).length||paragraphs.some(existing=>nearDuplicate(existing,paragraph)))continue;
+    if(wc<minimum||wc>140||lowerLatin(paragraph).length||paragraphs.some(existing=>nearDuplicate(existing,paragraph))){
+      console.warn(`${slug}: ${LOCAL_EDITORIAL_MODEL} paragraph repair attempt ${attempt} rejected for ${section.id}: words=${wc}`);
+      continue;
+    }
     section.paragraphs=[...paragraphs,paragraph].slice(0,7);
     section.writer_fallback_parts=Number(section.writer_fallback_parts||0)+1;
     state.sections[section.id]=section;
     state.updated_at=new Date().toISOString();
     write(statePath,state);
-    console.log(JSON.stringify({slug,status:'4b-paragraph-repair',section:section.id,words_before:words,words_after:countWords(section.paragraphs.join(' ')),paragraphs:section.paragraphs.length},null,2));
+    console.log(JSON.stringify({slug,status:'4b-paragraph-repair',section:section.id,short_tail:shortTail,words_before:words,words_after:countWords(section.paragraphs.join(' ')),paragraphs:section.paragraphs.length},null,2));
     return true;
   }
   return false;
