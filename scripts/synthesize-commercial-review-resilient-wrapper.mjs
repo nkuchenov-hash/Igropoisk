@@ -3,18 +3,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {chatJson,localModelReady,LOCAL_EDITORIAL_MODEL} from './lib/local-editorial-model.mjs';
+import {countWords,tokenOverlap,paragraphQualityReasons,sanitizePersistedState} from './lib/review-fragment-quality.mjs';
 
 const root=process.cwd();
 const slug=String(process.argv[2]||'').trim().toLowerCase();
 if(!slug)throw new Error('Usage: synthesize-commercial-review-resilient-wrapper <slug>');
 const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
 const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,`${JSON.stringify(value,null,2)}\n`)};
-const countWords=value=>(String(value||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]+/g)||[]).length;
-const lowerLatin=value=>[...String(value||'').matchAll(/\b[a-z][a-z-]{2,}\b/g)].map(match=>match[0]).filter(word=>!['fallout','rpg'].includes(word));
 const compact=(value,max=280)=>String(value||'').replace(/\s+/g,' ').trim().slice(0,max);
-const tokenSet=value=>new Set(String(value||'').toLowerCase().normalize('NFKC').replace(/ё/g,'е').match(/[a-zа-я0-9]{3,}/gi)||[]);
-function tokenOverlap(a,b){const A=tokenSet(a),B=tokenSet(b);if(!A.size||!B.size)return 0;let shared=0;for(const token of A)if(B.has(token))shared++;return shared/Math.min(A.size,B.size)}
-function nearDuplicate(a,b){return tokenOverlap(a,b)>=0.72}
 
 const contract=read('config/review-commercial-contract.json',{});
 const minSectionWords=Math.max(260,Number(contract.article?.minimum_words_per_section||260));
@@ -68,15 +64,18 @@ function incomplete(section){
 }
 
 function paragraphRejectionReasons(paragraph,paragraphs,minimum){
-  const reasons=[];
-  const wc=countWords(paragraph);
-  if(wc<minimum)reasons.push(`слишком коротко: ${wc}/${minimum}`);
-  if(wc>140)reasons.push(`слишком длинно: ${wc}/140`);
-  const latin=[...new Set(lowerLatin(paragraph))];
-  if(latin.length)reasons.push(`запрещённая латиница: ${latin.slice(0,12).join(', ')}`);
-  const duplicateIndex=paragraphs.findIndex(existing=>nearDuplicate(existing,paragraph));
-  if(duplicateIndex>=0)reasons.push(`слишком близкий повтор абзаца ${duplicateIndex+1}`);
-  return reasons;
+  return paragraphQualityReasons(paragraph,{existing:paragraphs,minWords:minimum,maxWords:140});
+}
+
+function cleanStateBeforeRepair(){
+  const current=read(statePath,{});
+  const cleaned=sanitizePersistedState(current);
+  if(cleaned.changed){
+    write(statePath,cleaned.state);
+    console.warn(`${slug}: removed ${cleaned.removed.length} invalid persisted review fragment(s) before repair`);
+    console.log(JSON.stringify({slug,status:'persisted-quality-cleanup',removed:cleaned.removed},null,2));
+  }
+  return cleaned.state;
 }
 
 async function add4bParagraph(state,section){
@@ -124,14 +123,14 @@ async function add4bParagraph(state,section){
     state.sections[section.id]=section;
     state.updated_at=new Date().toISOString();
     write(statePath,state);
-    console.log(JSON.stringify({slug,status:'4b-paragraph-repair',section:section.id,short_tail:shortTail,words_before:words,words_after:countWords(section.paragraphs.join(' ')),paragraphs:section.paragraphs.length,evidence_ids:evidence.map(item=>item.id)},null,2));
+    console.log(JSON.stringify({slug,status:'4b-paragraph-repair',section:section.id,short_tail:shortTail,words_before:words,words_after:countWords(section.paragraphs.join(' ')),paragraphs:section.paragraphs.length,evidence_ids:evidence.map(item=>item.id),quality_gate:'shared-pre-save-v1'},null,2));
     return true;
   }
   return false;
 }
 
 async function repairIncompleteSections(){
-  const state=read(statePath,{});
+  const state=cleanStateBeforeRepair();
   if(!state?.sections||typeof state.sections!=='object')return false;
   let changed=false;
   for(const section of Object.values(state.sections)){
@@ -151,13 +150,14 @@ function runBase(){
   return Number(result.status??75);
 }
 
+cleanStateBeforeRepair();
 let editorialReady=await localModelReady({timeoutMs:2500,model:LOCAL_EDITORIAL_MODEL});
 if(editorialReady)await repairIncompleteSections();
 let lastStatus=75;
 for(let pass=1;pass<=MAX_WRAPPER_PASSES;pass++){
   lastStatus=runBase();
   if(lastStatus===0){
-    console.log(JSON.stringify({slug,status:'resilient-wrapper-green',passes:pass,repair_calls:repairCalls},null,2));
+    console.log(JSON.stringify({slug,status:'resilient-wrapper-green',passes:pass,repair_calls:repairCalls,quality_gate:'shared-pre-save-v1'},null,2));
     process.exit(0);
   }
   if(!editorialReady)editorialReady=await localModelReady({timeoutMs:5000,model:LOCAL_EDITORIAL_MODEL});
