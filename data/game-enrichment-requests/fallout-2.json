@@ -18,9 +18,9 @@
     "similarity": "ready"
   },
   "reason": "fallout-2-v32-content-only-prompts-3000-final-audit-production-live-smoke",
-  "last_run_at": "2026-08-21T11:26:36.990Z",
-  "run_attempts": 33,
-  "review_attempts": 33,
+  "last_run_at": "2026-08-21T11:43:01.988Z",
+  "run_attempts": 35,
+  "review_attempts": 35,
   "observed": {
     "series_games": 9,
     "screenshots": 20,
@@ -28,14 +28,14 @@
     "canonical_score": 9.1,
     "game_dna": true,
     "similarity": true,
-    "review_stage": "content-only-paragraph-prompts-v32"
+    "review_stage": null
   },
   "state": "needs_revision",
   "retry": {
     "terminal": false,
     "retryable": true,
-    "stage": "content-only-paragraph-prompts-v32",
-    "last_error": null,
-    "updated_at": "2026-08-21T11:31:00.000Z"
+    "stage": "long-review",
+    "last_error": "\nNode.js v22.23.2\nfallout-2: qwen3:4b paragraph repair attempt 1 rejected for combat-and-tactics: too-short:13/40; near-duplicate:1\nfallout-2: qwen3:4b paragraph repair attempt 2 rejected for combat-and-tactics: too-short:26/40\nfallout-2: qwen3:4b paragraph repair attempt 3 rejected for combat-and-tactics: too-short:23/40\nfallout-2: persisted incomplete section repaired with qwen3:4b; resuming synthesis in the same run\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:143\n    if(!fatal&&!force){const topped=await topUpSection(index,existing,{targetWords:SECTION_TARGET_WORDS,reason:'Сохрани уже валидные абзацы и добери только недостающую глубину.'});state.sections[id]=topped;persist();if(!sectionErrors(topped).length)return;throw new Error(`${slug}: section ${id} persisted but remains incomplete: ${sectionErrors(topped).join('; ')}`)}\n                                                                                                                                                                                                                                                                      ^\n\nError: fallout-2: section combat-and-tactics persisted but remains incomplete: paragraphs 1/3; words 51/260\n    at buildSection (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:143:263)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:149:33\n\nNode.js v22.23.2\nfallout-2: qwen3:4b paragraph repair attempt 1 rejected for combat-and-tactics: too-short:34/40\nfallout-2: qwen3:4b paragraph repair attempt 1 rejected for combat-and-tactics: too-short:13/40; near-duplicate:1\nfallout-2: qwen3:4b paragraph repair attempt 2 rejected for combat-and-tactics: too-short:13/40; near-duplicate:1\nfallout-2: qwen3:4b paragraph repair attempt 3 rejected for combat-and-tactics: too-short:36/40; latin:reliably\nfallout-2: persisted incomplete section repaired with qwen3:4b; resuming synthesis in the same run\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:143\n    if(!fatal&&!force){const topped=await topUpSection(index,existing,{targetWords:SECTION_TARGET_WORDS,reason:'Сохрани уже валидные абзацы и добери только недостающую глубину.'});state.sections[id]=topped;persist();if(!sectionErrors(topped).length)return;throw new Error(`${slug}: section ${id} persisted but remains incomplete: ${sectionErrors(topped).join('; ')}`)}\n                                                                                                                                                                                                                                                                      ^\n\nError: fallout-2: section combat-and-tactics persisted but remains incomplete: paragraphs 2/3; words 95/260\n    at buildSection (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:143:263)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:149:33\n\nNode.js v22.23.2\nfallout-2: qwen3:4b paragraph repair attempt 1 rejected for combat-and-tactics: too-short:13/40; near-duplicate:1\nfallout-2: qwen3:4b paragraph repair attempt 1 rejected for combat-and-tactics: too-short:34/40\nfallout-2: qwen3:4b paragraph repair attempt 2 rejected for combat-and-tactics: near-duplicate:3\nfallout-2: qwen3:4b paragraph repair attempt 3 rejected for combat-and-tactics: near-duplicate:3\nfallout-2: persisted incomplete section repaired with qwen3:4b; resuming synthesis in the same run\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:143\n    if(!fatal&&!force){const topped=await topUpSection(index,existing,{targetWords:SECTION_TARGET_WORDS,reason:'Сохрани уже валидные абзацы и добери только недостающую глубину.'});state.sections[id]=topped;persist();if(!sectionErrors(topped).length)return;throw new Error(`${slug}: section ${id} persisted but remains incomplete: ${sectionErrors(topped).join('; ')}`)}\n                                                                                                                                                                                                                                                                      ^\n\nError: fallout-2: section combat-and-tactics persisted but remains incomplete: words 144/260\n    at buildSection (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:143:263)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:149:33\n\nNode.js v22.23.2",
+    "updated_at": "2026-08-21T11:43:01.989Z"
   }
 }
