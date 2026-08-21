@@ -48,11 +48,15 @@ function publishedTimestamp(item) {
   return Number.isFinite(value) ? value : 0;
 }
 
+function newestFirst(a,b) {
+  return publishedTimestamp(b) - publishedTimestamp(a) || rank(a,b);
+}
+
 const normalized = events.map(normalize).filter(item => item.titleRu && item.primaryUrl && item.image);
-const selected = normalized.filter(item => item.globalEligible).sort(rank);
-const fallback = normalized.filter(item => !item.globalEligible).sort(rank);
+const selected = normalized.filter(item => item.publicEligible).sort(newestFirst);
+const fallback = normalized.filter(item => !item.publicEligible).sort(newestFirst);
 const seen = new Set();
-const editorialItems = [...selected, ...fallback]
+const items = [...selected, ...fallback]
   .filter(item => {
     const key = item.primaryUrl.replace(/[?#].*$/,'');
     if (seen.has(key)) return false;
@@ -60,7 +64,6 @@ const editorialItems = [...selected, ...fallback]
     return true;
   })
   .slice(0,12);
-const items = editorialItems.sort((a,b) => publishedTimestamp(b) - publishedTimestamp(a) || rank(a,b));
 
 await fs.writeFile('data/news-home-ru.json', `${JSON.stringify({generatedAt:new Date().toISOString(),model:'editorial-global-feed',items},null,2)}\n`);
-console.log(`[home-news] wrote ${items.length} Russian cards in newest-first order; ${items.filter(item => item.globalEligible).length} passed global editorial selection`);
+console.log(`[home-news] wrote ${items.length} Russian cards selected newest-first; ${items.filter(item => item.publicEligible).length} passed public editorial selection`);
