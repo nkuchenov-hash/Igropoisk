@@ -10,7 +10,7 @@ const read=(r,f=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,r),
 const write=(r,v)=>{const t=path.join(root,r);fs.mkdirSync(path.dirname(t),{recursive:true});fs.writeFileSync(t,`${JSON.stringify(v,null,2)}\n`)};
 const exists=r=>fs.existsSync(path.join(root,r));
 const now=()=>new Date().toISOString();
-const ORCHESTRATOR='commercial-review-contract-v6-local-only-persistent';
+const ORCHESTRATOR='commercial-review-contract-v7-importance-gated-local-only';
 
 function requestPath(slug){
   const direct=`data/game-enrichment-requests/${slug}.json`;
@@ -31,10 +31,11 @@ function isReleased(slug,request,draft){
 function ensureRequest(slug,draft){
   const relative=requestPath(slug);
   if(exists(relative))return read(relative,{});
-  const base={schema_version:3,slug,game_id:draft?.game_id||draft?.identity?.game_id||null,requested_at:now(),last_run_at:null,run_attempts:0,review_attempts:0,released:isReleased(slug,{},draft),state:'needs_search',modules:{review:'needs_search',media:'needs_search',rating:'needs_revision',dna:'needs_revision',similarity:'needs_revision'},origin:'unified-commercial-review-contract',provider_policy:'local_only'};
+  const base={schema_version:3,slug,game_id:draft?.game_id||draft?.identity?.game_id||null,requested_at:now(),last_run_at:null,run_attempts:0,review_attempts:0,released:isReleased(slug,{},draft),state:'needs_search',modules:{review:'needs_search',media:'needs_search',rating:'needs_revision',dna:'needs_revision',similarity:'needs_revision'},origin:'unified-commercial-review-contract',provider_policy:'local_only',review_importance:{status:'pending',required:false}};
   write(relative,base);
   return base;
 }
+function fullReviewRequired(request){return request?.force_full_review===true||request?.review_importance?.status==='required'||request?.review_importance?.required===true}
 function run(label,script,args=[],envOverrides={}){
   const env={...process.env,...envOverrides,OPENAI_API_KEY:'',COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR:'false'};
   const result=spawnSync('node',[script,...args],{cwd:root,encoding:'utf8',stdio:'pipe',env,maxBuffer:48*1024*1024});
@@ -78,6 +79,12 @@ for(const slug of slugs){
     waiting.push(slug);
     updateRequest(slug,'waiting_release',{attemptedReview:false,stage:'release',reviewModule:'waiting_release',mediaModule:mediaReady(slug)?'ready':'needs_search'});
     write(`data/parser-runs/commercial-review-orchestrator-${slug}.json`,{orchestrator:ORCHESTRATOR,status:'waiting_release',game_slug:slug,checked_at:now(),terminal:false,retryable:true,provider_policy:'local_only'});
+    continue;
+  }
+  if(!fullReviewRequired(request)){
+    const error='full commercial review invoked without review_importance=required or force_full_review=true';
+    write(`data/parser-runs/commercial-review-orchestrator-${slug}.json`,{orchestrator:ORCHESTRATOR,status:'blocked_by_importance_gate',game_slug:slug,checked_at:now(),terminal:false,retryable:false,provider_policy:'local_only',error});
+    failures.push({slug,stage:'review-importance',error});
     continue;
   }
 
