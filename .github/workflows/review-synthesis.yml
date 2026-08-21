@@ -25,22 +25,19 @@ jobs:
     timeout-minutes: 180
     env:
       GITHUB_TOKEN: ${{ github.token }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
-      OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
-      OPENAI_REVIEW_MODEL: ${{ vars.OPENAI_REVIEW_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
-      OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
-      OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || vars.OPENAI_MODEL || 'gpt-5' }}
       LOCAL_TEXT_MODEL: qwen3:4b
       LOCAL_EDITORIAL_MODEL: qwen3:4b
+      LOCAL_WRITER_MODEL: qwen3:0.6b
     steps:
       - uses: actions/checkout@v4
         with:
           ref: staging
           fetch-depth: 20
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
       - name: Resolve requested game slug
         id: target
         shell: bash
@@ -57,32 +54,57 @@ jobs:
             SLUG=$(node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));if(!d.slug)process.exit(2);process.stdout.write(d.slug)" "$REQUEST_FILE")
           fi
           echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
-          echo "Building unified commercial review for $SLUG"
+          echo "Checking editorial review requirement for $SLUG"
+
       - name: Validate unified commercial review tooling
         run: |
           node --check scripts/sync-review-policy.mjs
           node --check scripts/enforce-commercial-game-media.mjs
           node --check scripts/build-review-article-corpus.mjs
           node --check scripts/build-review-article-corpus-resilient.mjs
+          node --check scripts/classify-review-importance.mjs
+          node --check scripts/lib/review-importance.mjs
           node --check scripts/run-commercial-review-contract.mjs
-          node --check scripts/synthesize-commercial-review-openai.mjs
           node --check scripts/synthesize-commercial-review-resilient.mjs
-          node --check scripts/enrich-commercial-review-media-openai.mjs
+          node --check scripts/synthesize-commercial-review-resilient-wrapper.mjs
           node --check scripts/enrich-commercial-review-media-resilient.mjs
           node --check scripts/validate-commercial-review-v2.mjs
           node --check scripts/render-review-pages.mjs
           node --check scripts/canonicalize-editorial-game-id.mjs
           node --check scripts/publish-game-post-create-overlay.mjs
           node --check scripts/lib/local-editorial-model.mjs
+          node scripts/test-review-importance-gate.mjs
           node scripts/test-commercial-review-contract-v2.mjs
+
       - name: Synchronize legacy policy mirrors from commercial contract
         run: node scripts/sync-review-policy.mjs
+
+      - name: Determine whether the full editorial review is required
+        id: importance
+        run: node scripts/classify-review-importance.mjs "${{ steps.target.outputs.slug }}"
+
+      - name: Publish review-importance decision
+        env:
+          GH_TOKEN: ${{ github.token }}
+          POST_CREATE_PUBLISH_PHASE: review-importance
+        run: node scripts/publish-game-post-create-overlay.mjs
+
+      - name: Stop cleanly when a full review is not required
+        if: steps.importance.outputs.full_upgrade != 'true'
+        run: echo 'This game does not meet the editorial full-review gate. No long review will be generated unless force_full_review=true is explicitly recorded.'
+
       - name: Restore local commercial model cache
-        uses: actions/cache@v4
+        id: ollama_cache
+        if: steps.importance.outputs.full_upgrade == 'true'
+        uses: actions/cache/restore@v4
         with:
           path: ~/.ollama/models
-          key: ollama-commercial-qwen3-4b-v1
-      - name: Start local commercial fallback model service
+          key: ollama-commercial-local-v2-${{ runner.os }}
+          restore-keys: |
+            ollama-commercial-local-v2-
+
+      - name: Start local commercial model service
+        if: steps.importance.outputs.full_upgrade == 'true'
         run: |
           set -euo pipefail
           if ! command -v ollama >/dev/null 2>&1; then curl -fsSL https://ollama.com/install.sh | sh; fi
@@ -93,39 +115,61 @@ jobs:
           done
           cat /tmp/ollama-commercial.log || true
           exit 1
-      - name: Ensure qwen3 4b local commercial fallback
+
+      - name: Ensure required local commercial models
+        id: local_models
+        if: steps.importance.outputs.full_upgrade == 'true'
         run: |
           set -euo pipefail
-          for attempt in 1 2 3 4 5; do
-            ollama list | grep -Fq "$LOCAL_TEXT_MODEL" && exit 0
-            ollama pull "$LOCAL_TEXT_MODEL" && exit 0
-            sleep $((attempt * 5))
+          for MODEL in "$LOCAL_TEXT_MODEL" "$LOCAL_WRITER_MODEL"; do
+            READY=false
+            for attempt in 1 2 3 4 5; do
+              if ollama list | grep -Fq "$MODEL"; then READY=true; break; fi
+              if ollama pull "$MODEL"; then READY=true; break; fi
+              sleep $((attempt * 5))
+            done
+            if [ "$READY" != true ]; then
+              echo "::error::Required local model $MODEL is unavailable in this worker cycle."
+              exit 75
+            fi
           done
-          echo "::error::Required provider-independent fallback model $LOCAL_TEXT_MODEL is unavailable."
-          exit 1
-      - name: Run the one commercial review contract
+
+      - name: Save local commercial model cache before generation
+        if: steps.importance.outputs.full_upgrade == 'true' && steps.ollama_cache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.ollama/models
+          key: ollama-commercial-local-v2-${{ runner.os }}
+
+      - name: Run the one local commercial review contract
         id: commercial
+        if: steps.importance.outputs.full_upgrade == 'true'
         continue-on-error: true
         run: node scripts/run-commercial-review-contract.mjs "${{ steps.target.outputs.slug }}"
+
       - name: Persist retryable review research
-        if: steps.commercial.outcome == 'failure'
+        if: steps.importance.outputs.full_upgrade == 'true' && steps.commercial.outcome == 'failure'
         env:
           GH_TOKEN: ${{ github.token }}
           POST_CREATE_PUBLISH_PHASE: commercial-retry
         run: node scripts/publish-game-post-create-overlay.mjs
+
       - name: Fail after retry state is safely persisted
-        if: steps.commercial.outcome == 'failure'
+        if: steps.importance.outputs.full_upgrade == 'true' && steps.commercial.outcome == 'failure'
         run: |
-          echo 'Commercial review is incomplete; persistent needs_search/needs_revision state was written to staging for scheduled retry.' >&2
+          echo 'Required commercial review is incomplete; persistent needs_search/needs_revision state was written to staging for automatic page-worker continuation.' >&2
           exit 75
+
       - name: Publish full commercial review through the shared production path
-        if: steps.commercial.outcome == 'success'
+        if: steps.importance.outputs.full_upgrade == 'true' && steps.commercial.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           POST_CREATE_PUBLISH_PHASE: commercial-review
         run: node scripts/publish-game-post-create-overlay.mjs
+
       - name: Verify commercial review on production Pages
-        if: steps.commercial.outcome == 'success'
+        if: steps.importance.outputs.full_upgrade == 'true' && steps.commercial.outcome == 'success'
         env:
           REVIEW_SMOKE_ATTEMPTS: '48'
           REVIEW_SMOKE_DELAY_MS: '5000'
