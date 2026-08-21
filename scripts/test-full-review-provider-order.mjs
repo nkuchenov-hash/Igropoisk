@@ -34,7 +34,7 @@ const providerCheck=wrapper.indexOf('let editorialReady=await localModelReady');
 const baseRun=wrapper.indexOf('lastStatus=runBase()');
 if(providerCheck<0||baseRun<0||providerCheck>baseRun)fail('Repair wrapper provider readiness flow is malformed');
 if(!wrapper.includes('if(!editorialReady){')||!wrapper.includes('base synthesis failed and ${LOCAL_EDITORIAL_MODEL} repair is not available in this provider phase'))fail('Repair wrapper does not fail back cleanly when local repair is unavailable');
-for(const marker of ['function evidenceForRepair','sourceList.flatMap(source=>sourceAtoms(source))','filter(atom=>atom.overlap<0.72)','NEW EVIDENCE','section.source_ids=[...new Set(','shortTail?1536:3072','shortTail?96:220','shortTail?90000:120000'])if(!wrapper.includes(marker))fail(`Novel-evidence bounded repair contract missing: ${marker}`);
+for(const marker of ['function evidenceForRepair','sourceList.flatMap(source=>sourceAtoms(source))','filter(atom=>atom.overlap<0.72)','NEW EVIDENCE','section.source_ids=[...new Set(','shortTail?1536:3072','shortTail?192:360','shortTail?90000:120000'])if(!wrapper.includes(marker))fail(`Novel-evidence bounded repair contract missing: ${marker}`);
 if(wrapper.includes('ПОСЛЕДНИЙ АБЗАЦ:'))fail('Repair wrapper still primes the model with the paragraph it must not paraphrase');
 if(!wrapper.includes('return tokenOverlap(a,b)>=0.72'))fail('Near-duplicate gate was weakened while fixing repair novelty');
 if(!wrapper.includes('try{')||!wrapper.includes('}catch(error){'))fail('Repair wrapper can abort the full-review job on one local paragraph timeout');
@@ -42,4 +42,4 @@ if(!wrapper.includes('process.exit(lastStatus||75)'))fail('Repair wrapper can sw
 if(!workflow.includes('Fail required full review if both providers failed'))fail('Required full-review failure is not fail-closed');
 if(!workflow.includes('Verify required full review completed locally'))fail('Required full-review completion gate is missing');
 for(const marker of ['review-commercial-v2-${slug}.json','full review is below 3000 words','final editorial audit is not green'])if(!workflow.includes(marker))fail(`Required full-review proof missing: ${marker}`);
-console.log('Full-review provider order passed: accelerator stays independent; local 4B repair selects low-overlap novel evidence without weakening duplicate or commercial gates; required 3000+ review remains fail-closed before publication.');
+console.log('Full-review provider order passed: accelerator stays independent; local 4B repair selects low-overlap novel evidence with enough structured-output budget, without weakening duplicate or commercial gates; required 3000+ review remains fail-closed before publication.');
