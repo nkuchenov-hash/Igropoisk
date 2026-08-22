@@ -116,6 +116,19 @@ function repairPrompt(section,{words,evidence,shortTail}){
   return `Продолжи журнальный обзор игры ${slug}, раздел «${section.heading||section.id}». В разделе уже ${words} слов. ${lengthHint}\nУже раскрытые мысли, которые нельзя пересказывать:\n${covered||'— пока нет'}\nНовые факты из разных профессиональных источников:\n${facts}`;
 }
 
+function persistAcceptedParagraph(state,section,{paragraph,paragraphs,evidenceIds,words,shortTail,cursor,status='4b-paragraph-repair'}){
+  section.paragraphs=[...paragraphs,paragraph].slice(0,7);
+  section.source_ids=[...new Set([...(section.source_ids||[]),...evidenceIds])];
+  section.writer_fallback_parts=Number(section.writer_fallback_parts||0)+1;
+  section.last_repair_rejection=null;
+  section.last_repair_evidence=[...new Set(evidenceIds)];
+  state.sections[section.id]=section;
+  state.updated_at=new Date().toISOString();
+  write(statePath,state);
+  console.log(JSON.stringify({slug,status,section:section.id,short_tail:shortTail,words_before:words,words_after:countWords(section.paragraphs.join(' ')),paragraphs:section.paragraphs.length,evidence_ids:evidenceIds,distinct_evidence_sources:new Set(evidenceIds).size,repair_cursor:cursor,section_repair_calls_this_run:sectionRepairCalls(section),repair_attempts_total:section.repair_attempts_total,quality_gate:'shared-pre-save-v1'},null,2));
+  return true;
+}
+
 async function add4bParagraph(state,section){
   if(!canRepair(section))return false;
   const paragraphs=Array.isArray(section.paragraphs)?section.paragraphs:[];
@@ -124,6 +137,8 @@ async function add4bParagraph(state,section){
   const missingParagraphs=Math.max(0,minParagraphs-paragraphs.length);
   const shortTail=remaining>0&&remaining<45&&missingParagraphs===0;
   const minimum=shortTail?12:40;
+  const shortPieces=[];
+  const shortEvidenceIds=new Set();
 
   while(canRepair(section)){
     const cursor=Number(section.repair_cursor||0)+1;
@@ -153,21 +168,30 @@ async function add4bParagraph(state,section){
     }
     const paragraph=String(result?.paragraph||'').trim();
     const reasons=paragraphRejectionReasons(paragraph,paragraphs,minimum);
-    if(reasons.length){
-      registerRepairRejection(state,section,reasons);
-      console.warn(`${slug}: ${LOCAL_EDITORIAL_MODEL} paragraph repair cursor ${cursor} rejected for ${section.id}: ${reasons.join('; ')}`);
+    if(!reasons.length){
+      return persistAcceptedParagraph(state,section,{paragraph,paragraphs,evidenceIds:evidence.map(item=>item.id),words,shortTail,cursor});
+    }
+
+    const fragmentWords=countWords(paragraph);
+    const fragmentReasons=paragraphQualityReasons(paragraph,{existing:[...paragraphs,...shortPieces],minWords:8,maxWords:39});
+    if(!shortTail&&fragmentWords<40&&!fragmentReasons.length){
+      shortPieces.push(paragraph);
+      for(const item of evidence)shortEvidenceIds.add(item.id);
+      const combined=shortPieces.join(' ').replace(/\s+/g,' ').trim();
+      const combinedReasons=paragraphRejectionReasons(combined,paragraphs,minimum);
+      console.log(JSON.stringify({slug,status:'clean-short-repair-fragment',section:section.id,fragment_words:fragmentWords,combined_words:countWords(combined),fragments:shortPieces.length,evidence_ids:[...shortEvidenceIds],repair_cursor:cursor},null,2));
+      if(!combinedReasons.length){
+        return persistAcceptedParagraph(state,section,{paragraph:combined,paragraphs,evidenceIds:[...shortEvidenceIds],words,shortTail,cursor,status:'aggregated-grounded-paragraph-repair'});
+      }
+      if(countWords(combined)>120){
+        shortPieces.splice(0,Math.max(1,shortPieces.length-2));
+        shortEvidenceIds.clear();
+      }
       continue;
     }
-    section.paragraphs=[...paragraphs,paragraph].slice(0,7);
-    section.source_ids=[...new Set([...(section.source_ids||[]),...evidence.map(item=>item.id)])];
-    section.writer_fallback_parts=Number(section.writer_fallback_parts||0)+1;
-    section.last_repair_rejection=null;
-    section.last_repair_evidence=[...new Set(evidence.map(item=>item.id))];
-    state.sections[section.id]=section;
-    state.updated_at=new Date().toISOString();
-    write(statePath,state);
-    console.log(JSON.stringify({slug,status:'4b-paragraph-repair',section:section.id,short_tail:shortTail,words_before:words,words_after:countWords(section.paragraphs.join(' ')),paragraphs:section.paragraphs.length,evidence_ids:evidence.map(item=>item.id),distinct_evidence_sources:new Set(evidence.map(item=>item.id)).size,repair_cursor:section.repair_cursor,section_repair_calls_this_run:sectionRepairCalls(section),repair_attempts_total:section.repair_attempts_total,quality_gate:'shared-pre-save-v1'},null,2));
-    return true;
+
+    registerRepairRejection(state,section,reasons);
+    console.warn(`${slug}: ${LOCAL_EDITORIAL_MODEL} paragraph repair cursor ${cursor} rejected for ${section.id}: ${reasons.join('; ')}`);
   }
   return false;
 }
