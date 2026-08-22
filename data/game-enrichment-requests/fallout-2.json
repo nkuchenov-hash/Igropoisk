@@ -12,7 +12,7 @@
   "review_importance": {
     "status": "required",
     "required": true,
-    "checked_at": "2026-08-21T23:51:04.791Z",
+    "checked_at": "2026-08-22T00:57:38.670Z",
     "primary_reference_source_id": "igromania",
     "primary_reference_source_name": "Игромания",
     "primary_reference_review_found": false,
@@ -30,7 +30,7 @@
     "similarity": "ready"
   },
   "reason": "fallout-2-v35b-editorial-importance-local-only-persistent-acceptance",
-  "last_run_at": "2026-08-21T23:57:58.102Z",
+  "last_run_at": "2026-08-22T00:57:38.670Z",
   "run_attempts": 40,
   "review_attempts": 40,
   "observed": {
@@ -46,9 +46,9 @@
   "retry": {
     "terminal": false,
     "retryable": true,
-    "stage": "long-review",
-    "last_error": "fallout-2: qwen3:4b paragraph repair cursor 25 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 26 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 27 rejected for world-and-premise: too-short:15/40; near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 28 rejected for world-and-premise: too-short:14/40; near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 29 rejected for world-and-premise: too-short:14/40; near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 30 rejected for world-and-premise: too-short:14/40; near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 31 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 32 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 33 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 34 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 35 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 36 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 37 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 38 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 39 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 40 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 41 rejected for world-and-premise: too-short:14/40; near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 42 rejected for world-and-premise: too-short:13/40; near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 43 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 44 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 45 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 46 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 47 rejected for world-and-premise: near-duplicate:2\nfallout-2: qwen3:4b paragraph repair cursor 48 rejected for world-and-premise: near-duplicate:2\nfile:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:143\n    if(!fatal&&!force){const topped=await topUpSection(index,existing,{targetWords:SECTION_TARGET_WORDS,reason:'Сохрани уже валидные абзацы и добери только недостающую глубину.'});state.sections[id]=topped;persist();if(!sectionErrors(topped).length)return;throw new Error(`${slug}: section ${id} persisted but remains incomplete: ${sectionErrors(topped).join('; ')}`)}\n                                                                                                                                                                                                                                                                      ^\n\nError: fallout-2: section world-and-premise persisted but remains incomplete: paragraphs 2/3; words 127/260\n    at buildSection (file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:143:263)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/synthesize-commercial-review-resilient.mjs:149:33\n\nNode.js v22.23.2\nfallout-2: current worker cycle ended before the full review was complete; persisted state requires automatic continuation",
-    "updated_at": "2026-08-21T23:57:58.103Z"
+    "stage": "full-review-required",
+    "last_error": null,
+    "updated_at": "2026-08-22T00:57:38.670Z"
   },
   "provider_policy": "local_only"
 }
