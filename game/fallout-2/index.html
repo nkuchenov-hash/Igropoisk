@@ -1,7 +1,24 @@
 <!doctype html><html lang="ru" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fallout 2 — Игропоиск</title><link rel="stylesheet" href="../_shared/game-page.css">
   <link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">
   <link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">
-</head><body data-title="Fallout 2" data-year="1998" data-slug="fallout-2" data-game-id="game_2278b9106a76e8359871" data-draft="fallout-2"><script src="../_shared/game-shell.js"></script>
+</head><body data-title="Fallout 2" data-year="1998" data-slug="fallout-2" data-game-id="game_2278b9106a76e8359871" data-draft="fallout-2"><script src="../_shared/game-shell.js?v=20260822-7"></script>
   <script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>
   <script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>
+  <script>
+  (()=>{
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const score=r=>{const s=Number(r?.score),k=Number(r?.scale);return Number.isFinite(s)&&Number.isFinite(k)&&k>0?`${s}/${k}`:(r?.grade||'—')};
+    const render=async()=>{
+      let data;try{const r=await fetch('../../data/reviews/fallout-2.json?v=20260822-7',{cache:'no-store'});if(!r.ok)return;data=await r.json()}catch{return}
+      const reviews=Array.isArray(data?.reviews)?data.reviews.filter(x=>x?.url):[];
+      if(!reviews.length)return;
+      for(let i=0;i<120&&!document.querySelector('#reviewGrid');i++)await new Promise(r=>setTimeout(r,100));
+      const grid=document.querySelector('#reviewGrid');if(!grid)return;
+      grid.classList.add('quality-review-table');
+      grid.innerHTML=reviews.map(r=>`<a class="quality-review-row" href="${esc(r.resolved_url||r.url)}" target="_blank" rel="noopener noreferrer"><span class="quality-review-source">${esc(r.publication||r.source||r.domain||'Издание')}</span><b>${esc(r.title||'Обзор Fallout 2')}</b><strong>${esc(score(r))}</strong><span aria-hidden="true">↗</span></a>`).join('');
+      const count=document.querySelector('#externalReviewCount');if(count)count.textContent=`${reviews.length} источников`;
+    };
+    render();setTimeout(render,1500);setTimeout(render,3500);
+  })();
+  </script>
 </body></html>
