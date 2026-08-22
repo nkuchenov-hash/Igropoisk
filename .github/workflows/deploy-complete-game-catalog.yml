@@ -5,6 +5,16 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/deploy-complete-game-catalog.yml'
+      - 'game/**'
+      - 'data/reviews/**'
+      - 'data/ratings/**'
+      - 'data/articles/**'
+      - 'data/drafts/**'
+      - 'data/game-content/**'
+      - 'assets/**'
+      - 'scripts/**'
+      - 'config/**'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,8 +24,6 @@ permissions:
 concurrency:
   group: github-pages-production
   cancel-in-progress: false
-
-# Production deploy trigger: Fallout 2 review-source visibility refresh 2026-08-22.
 
 jobs:
   verify-game-catalog:
