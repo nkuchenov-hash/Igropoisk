@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
 const root=process.cwd();
 const slug=process.argv[2];
@@ -47,6 +48,19 @@ const game={schema_version:4,publication,...result,updated_at:checkedAt};if(regi
 writeJSON(`data/drafts/${slug}.json`,game);
 writeJSON(`data/parser-runs/game-page-${slug}.json`,{parser:'game-page-builder',status:passed?'green':'needs_revision',game_slug:slug,checked_at:checkedAt,gate:publication.gate,output:passed?'data/game-content':`data/drafts/${slug}.json`,comments:passed?[]:missing.map(item=>`Нужно доработать: ${item}`)});
 if(!passed){console.log(JSON.stringify({slug,status:'needs_revision',missing},null,2));process.exit(0)}
+
+// Review-source collection is a mandatory part of creating a game page.
+// The page may exist only after the central editorial source registry has been checked
+// and the resulting direct review URLs/scores have been persisted for this exact game.
+const reviewRun=spawnSync(process.execPath,[path.join(root,'scripts/prepare-review-research.mjs'),slug],{cwd:root,env:process.env,encoding:'utf8',stdio:['ignore','pipe','pipe']});
+if(reviewRun.status!==0){console.error(reviewRun.stderr||reviewRun.stdout||`Review-source collection failed for ${slug}`);process.exit(reviewRun.status||3)}
+const reviewData=readJSON(`data/reviews/${slug}.json`,null);
+const reviewAccepted=Number(reviewData?.publication_gate?.accepted||reviewData?.reviews?.length||0);
+const reviewMinimum=Number(reviewData?.publication_gate?.minimum||10);
+if(!reviewData||reviewAccepted<reviewMinimum){console.error(`Game page blocked: review-source corpus for ${slug} has ${reviewAccepted}/${reviewMinimum} accepted reviews`);process.exit(3)}
+game.review_sources={file:`data/reviews/${slug}.json`,accepted:reviewAccepted,minimum:reviewMinimum,status:reviewData.publication_gate?.status||'green'};
+writeJSON(`data/drafts/${slug}.json`,game);
+
 const year=Number(String(result.release.date||result.release.date_text).match(/(?:19|20)\d{2}/)?.[0]||new Date().getUTCFullYear());
 const chunk=year<=2015?'2002-2015':year<=2017?'2016-2017':year<=2019?'2018-2019':year===2020?'2020':year<=2022?'2021-2022':'2023-2025';
 const chunkPath=`data/game-content/${chunk}.json`;
@@ -64,4 +78,4 @@ const safeTitle=String(result.identity.title).replace(/[&<>"']/g,'');
 const gameIdAttr=registryId?` data-game-id="${registryId}"`:'';
 const html=`<!doctype html><html lang="ru" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safeTitle} — Игропоиск</title><link rel="stylesheet" href="../_shared/game-page.css"></head><body data-title="${safeTitle}" data-year="${year}" data-slug="${slug}" data-draft="${slug}"${gameIdAttr}><script src="../_shared/game-shell.js"></script></body></html>`;
 const pagePath=path.join(root,'game',slug,'index.html');fs.mkdirSync(path.dirname(pagePath),{recursive:true});fs.writeFileSync(pagePath,html+'\n');
-console.log(JSON.stringify({slug,status:'green',year,chunk,sources:result.sources.length,screenshots:result.media.screenshots.length},null,2));
+console.log(JSON.stringify({slug,status:'green',year,chunk,sources:result.sources.length,review_sources:reviewAccepted,screenshots:result.media.screenshots.length},null,2));
