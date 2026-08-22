@@ -41,22 +41,37 @@ function evidenceForRepair(section,{shortTail=false,cursor=1}={}){
   const paragraphs=Array.isArray(section?.paragraphs)?section.paragraphs:[];
   const existing=paragraphs.join(' ');
   const preferred=new Set((section?.source_ids||[]).filter(id=>sourceById.has(id)));
-  const ranked=sourceList.flatMap(source=>sourceAtoms(source)).map(atom=>({
-    ...atom,
-    overlap:tokenOverlap(atom.text,existing),
-    preferred:preferred.has(atom.id)
-  }));
+  const sourceCycle=Math.floor((Math.max(1,cursor)-1)/Math.max(1,sourceList.length));
+  const ranked=sourceList.flatMap(source=>{
+    const sourceRanked=sourceAtoms(source).map(atom=>({
+      ...atom,
+      overlap:tokenOverlap(atom.text,existing),
+      preferred:preferred.has(atom.id)
+    })).sort((a,b)=>a.overlap-b.overlap||String(a.kind).localeCompare(String(b.kind))||String(a.text).localeCompare(String(b.text)));
+    const novel=sourceRanked.filter(atom=>atom.overlap<0.72);
+    const pool=novel.length?novel:sourceRanked;
+    if(!pool.length)return[];
+    const picked=pool[sourceCycle%pool.length];
+    return[picked];
+  });
   ranked.sort((a,b)=>{
     const scoreA=(a.preferred?0.18:0)+(1-a.overlap);
     const scoreB=(b.preferred?0.18:0)+(1-b.overlap);
-    return scoreB-scoreA;
+    return scoreB-scoreA||String(a.id).localeCompare(String(b.id));
   });
   const novel=ranked.filter(atom=>atom.overlap<0.72);
   const atoms=novel.length?novel:ranked;
   if(!atoms.length)return [];
-  const width=shortTail?2:3;
-  const offset=((Math.max(1,cursor)-1)*width)%atoms.length;
-  const selected=[...atoms.slice(offset,offset+width),...atoms.slice(0,Math.max(0,offset+width-atoms.length))].slice(0,width);
+  const width=Math.min(shortTail?2:3,atoms.length);
+  const offset=(Math.max(1,cursor)-1)%atoms.length;
+  const selected=[];
+  const seen=new Set();
+  for(let step=0;step<atoms.length&&selected.length<width;step++){
+    const atom=atoms[(offset+step)%atoms.length];
+    if(seen.has(atom.id))continue;
+    seen.add(atom.id);
+    selected.push(atom);
+  }
   return selected.map(({id,publication,kind,text})=>({id,publication,kind,text}));
 }
 
@@ -96,8 +111,9 @@ function cleanStateBeforeRepair(){
 }
 function repairPrompt(section,{words,evidence,shortTail}){
   const facts=evidence.map(item=>`— ${item.text}`).join('\n');
+  const covered=(section.paragraphs||[]).slice(-2).map(paragraph=>`— ${compact(paragraph,520)}`).join('\n');
   const lengthHint=shortTail?'Коротко заверши мысль раздела.':'Развей одну новую грань темы.';
-  return `Продолжи журнальный обзор игры ${slug}, раздел «${section.heading||section.id}». В разделе уже ${words} слов. ${lengthHint}\nМатериал для продолжения:\n${facts}`;
+  return `Продолжи журнальный обзор игры ${slug}, раздел «${section.heading||section.id}». В разделе уже ${words} слов. ${lengthHint}\nУже раскрытые мысли, которые нельзя пересказывать:\n${covered||'— пока нет'}\nНовые факты из разных профессиональных источников:\n${facts}`;
 }
 
 async function add4bParagraph(state,section){
@@ -146,10 +162,11 @@ async function add4bParagraph(state,section){
     section.source_ids=[...new Set([...(section.source_ids||[]),...evidence.map(item=>item.id)])];
     section.writer_fallback_parts=Number(section.writer_fallback_parts||0)+1;
     section.last_repair_rejection=null;
+    section.last_repair_evidence=[...new Set(evidence.map(item=>item.id))];
     state.sections[section.id]=section;
     state.updated_at=new Date().toISOString();
     write(statePath,state);
-    console.log(JSON.stringify({slug,status:'4b-paragraph-repair',section:section.id,short_tail:shortTail,words_before:words,words_after:countWords(section.paragraphs.join(' ')),paragraphs:section.paragraphs.length,evidence_ids:evidence.map(item=>item.id),repair_cursor:section.repair_cursor,section_repair_calls_this_run:sectionRepairCalls(section),repair_attempts_total:section.repair_attempts_total,quality_gate:'shared-pre-save-v1'},null,2));
+    console.log(JSON.stringify({slug,status:'4b-paragraph-repair',section:section.id,short_tail:shortTail,words_before:words,words_after:countWords(section.paragraphs.join(' ')),paragraphs:section.paragraphs.length,evidence_ids:evidence.map(item=>item.id),distinct_evidence_sources:new Set(evidence.map(item=>item.id)).size,repair_cursor:section.repair_cursor,section_repair_calls_this_run:sectionRepairCalls(section),repair_attempts_total:section.repair_attempts_total,quality_gate:'shared-pre-save-v1'},null,2));
     return true;
   }
   return false;
