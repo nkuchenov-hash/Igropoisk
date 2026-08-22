@@ -4,7 +4,7 @@
 const slug=document.body.dataset.slug||decodeURIComponent(location.pathname.split('/').filter(Boolean).at(-1)||'');
 if(!slug)return;
 
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
 const arr=value=>Array.isArray(value)?value:[];
 const scoreText=review=>{
   const score=Number(review?.score),scale=Number(review?.scale);
@@ -36,30 +36,6 @@ async function fetchReviews(){
   }
 }
 
-function row(review){
-  const url=reviewUrl(review);
-  const name=reviewName(review);
-  const score=scoreText(review);
-  const direct=review?.score_evidence?.direct_publisher===true;
-  const historical=review?.score_evidence?.historical===true;
-  const note=direct?'прямая рецензия':historical?'историческая оценка через индекс':'рецензия';
-  return `<div class="review-source-row" data-review-source="${esc(review?.configured_source_id||'')}"><a href="${esc(url)}" target="_blank" rel="noopener noreferrer"><b>${esc(name)}</b><span>${esc(review?.title||'')}</span></a><span><strong>${esc(score)}</strong><small>${esc(note)}</small></span></div>`;
-}
-
-function installOverviewBlock(reviews,data){
-  const overview=document.querySelector('#overview');
-  if(!overview||overview.querySelector('[data-review-source-summary]'))return;
-  const scored=reviews.filter(item=>Number.isFinite(Number(item?.score))).length;
-  const gate=data?.publication_gate||{};
-  const section=document.createElement('section');
-  section.className='game-panel';
-  section.dataset.reviewSourceSummary='true';
-  section.innerHTML=`<div class="reviews-heading"><h2>Обзоры и оценки источников</h2><span class="ig-muted">${reviews.length} обзоров · ${scored} с оценкой</span></div><div class="source-list" data-review-source-list>${reviews.map(row).join('')}</div>${gate.checked_registered_sources?`<p class="ig-muted">Проверено изданий в базе: ${esc(gate.checked_registered_sources)}. Принято источников: ${esc(gate.accepted??reviews.length)}.</p>`:''}`;
-  const grid=overview.querySelector('.overview-grid');
-  if(grid)overview.insertBefore(section,grid);
-  else overview.prepend(section);
-}
-
 function mergeIntoSourcesTab(reviews){
   const list=document.querySelector('#sources');
   if(!list)return;
@@ -70,13 +46,12 @@ function mergeIntoSourcesTab(reviews){
     if(!url)return;
     let absolute=url;
     try{absolute=new URL(url,location.href).href}catch{}
-    const key=`${absolute}|${review?.configured_source_id||reviewName(review)}`;
-    if(existingUrls.has(key))return;
+    if(existingUrls.has(absolute))return;
     const wrapper=document.createElement('div');
     wrapper.dataset.reviewSource=String(review?.configured_source_id||'');
     wrapper.innerHTML=`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(reviewName(review))}</a><span>${esc(scoreText(review))}</span>`;
     fragment.appendChild(wrapper);
-    existingUrls.add(key);
+    existingUrls.add(absolute);
   });
   list.prepend(fragment);
   const count=document.querySelector('#sourceCount');
@@ -96,11 +71,10 @@ async function install(){
   const reviews=uniqueByUrl(arr(data?.reviews));
   if(!reviews.length)return;
   for(let attempt=0;attempt<80;attempt++){
-    if(document.querySelector('#overview')&&document.querySelector('#sources'))break;
+    if(document.querySelector('#reviews')&&document.querySelector('#sources'))break;
     await new Promise(resolve=>setTimeout(resolve,100));
   }
-  if(!document.querySelector('#overview'))return;
-  installOverviewBlock(reviews,data);
+  if(!document.querySelector('#reviews'))return;
   mergeIntoSourcesTab(reviews);
   updateReviewHeading(reviews);
 }
