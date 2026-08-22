@@ -7,7 +7,7 @@
   qualityStyle.href='../_shared/game-page-quality.css?v=20260812-2';
   document.head.appendChild(qualityStyle);
   const quality=document.createElement('script');
-  quality.src='../_shared/game-page-quality.js?v=20260812-2';
+  quality.src='../_shared/game-page-quality.js?v=20260822-3';
   quality.defer=true;
   document.head.appendChild(quality);
   const similarity=document.createElement('script');
