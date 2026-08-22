@@ -33,12 +33,14 @@ try{execFileSync(process.execPath,['scripts/test-review-importance-gate.mjs'],{s
 catch(error){fail(`review importance behavior test failed: ${String(error?.stderr||error?.message||error)}`)}
 
 const leaked='Новый абзац должен быть строго посвящён конкретному аспекту из NEW EVIDENCE без повторения уже существующего текста. Важно использовать только русский язык, латиница запрещена, не добавлять неподтверждённые данные и сохранять объём от 60 до 95 слов для одного абзаца.';
+const selfReferentialLeak='Хорошо, мне нужно продолжить обзор игры Fallout 2 в разделе Мир и исходная ситуация. Уже есть 82 слова, так что добавлю новый абзац без упоминания процесса написания или названий изданий. Нужно перевести английские термины на русский, но можно использовать названия Fallout и RPG как есть.';
 const good='Система характеристик заставляет заранее выбирать сильные стороны героя: высокий интеллект открывает больше вариантов разговора, а неудачное распределение очков заметно меняет способы решения заданий и темп развития персонажа.';
 if(!instructionLeakReasons(leaked).length)fail('Shared fragment gate does not reject the known persisted instruction leak');
+if(!instructionLeakReasons(selfReferentialLeak).length)fail('Shared fragment gate does not reject self-referential review-writing leakage');
 if(paragraphQualityReasons(good,{minWords:15,maxWords:80}).length)fail('Shared fragment gate rejects valid Russian review prose');
 if(!nearDuplicate(good,good))fail('Shared fragment gate no longer recognizes an exact duplicate');
 if(!paragraphQualityReasons(good,{existing:[good],minWords:15,maxWords:80}).some(reason=>reason.startsWith('near-duplicate:')))fail('Shared pre-save paragraph gate does not reject duplicate prose');
-const cleaned=sanitizePersistedState({sections:{sample:{paragraphs:[good,leaked]}},meta:null,verdict:null});
+const cleaned=sanitizePersistedState({sections:{sample:{paragraphs:[good,leaked,selfReferentialLeak]}},meta:null,verdict:null});
 if(!cleaned.changed||cleaned.state.sections.sample.paragraphs.length!==1||cleaned.state.sections.sample.paragraphs[0]!==good)fail('Persisted-state cleaner does not remove leaked instructions while preserving valid prose');
 const paragraphSchema={type:'object',additionalProperties:false,required:['paragraph'],properties:{paragraph:{type:'string'}}};
 if(!isSingleParagraphSchema(paragraphSchema))fail('Single-paragraph schema no longer routes to plain text transport');
@@ -95,7 +97,7 @@ if(continuation.includes("String(r?.modules?.review||'').toLowerCase()!=='ready'
 
 if(!wrapper.includes("spawnSync('node',['scripts/synthesize-commercial-review-resilient.mjs',slug]"))fail('Repair wrapper does not delegate to canonical resilient synthesis');
 if(!wrapper.includes("OPENAI_API_KEY:''")||!wrapper.includes("COMMERCIAL_REVIEW_USE_OPENAI_ACCELERATOR:'false'"))fail('Repair wrapper does not independently suppress paid API access');
-for(const marker of ['function evidenceForRepair','sourceList.flatMap(source=>sourceAtoms(source))','const novel=ranked.filter(atom=>atom.overlap<0.72)','repairPrompt','section.repair_cursor=Number(section.repair_cursor||0)+1','repair_attempts_total','repair_rejections_total','while(canRepair(section))','MAX_REPAIR_ATTEMPTS_PER_SECTION_PER_RUN','markContinuation(true','full-review-incomplete','provider_policy:\'local_only\'','sanitizePersistedState','shared-pre-save-v1'])if(!wrapper.includes(marker))fail(`Persistent repair contract missing: ${marker}`);
+for(const marker of ['function evidenceForRepair','const sourceCycle=','const seen=new Set()','if(seen.has(atom.id))continue','distinct_evidence_sources','const novel=ranked.filter(atom=>atom.overlap<0.72)','repairPrompt','section.repair_cursor=Number(section.repair_cursor||0)+1','repair_attempts_total','repair_rejections_total','while(canRepair(section))','MAX_REPAIR_ATTEMPTS_PER_SECTION_PER_RUN','markContinuation(true','full-review-incomplete','provider_policy:\'local_only\'','sanitizePersistedState','shared-pre-save-v1'])if(!wrapper.includes(marker))fail(`Persistent repair contract missing: ${marker}`);
 if(wrapper.includes('MAX_TOTAL_REPAIR_ATTEMPTS'))fail('Review repair still has a terminal global attempt budget');
 if(wrapper.includes('MAX_4B_REPAIR_PARAGRAPHS=14'))fail('Full article repair is still capped by the obsolete global 14-call budget');
 if(!wrapper.includes('if(!includeEmpty&&!paragraphs.length)continue'))fail('Repair wrapper still spends editorial calls on untouched empty sections before the base writer runs');
