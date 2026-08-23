@@ -40,10 +40,10 @@
       "image_caption": "Мир и первые шаги героя",
       "continuation_parts": 0,
       "paragraphwise_parts": 0,
-      "repair_cursor": 24,
-      "repair_attempts_total": 24,
-      "repair_rejections_total": 16,
-      "last_repair_rejection": "model-error:Local editorial model output rejected before persistence: paragraph:instruction-leak:мне\\s+нужно\\s+(?:продолжить|написать|добавить|сформулировать)\\s+(?:обзор|текст|абзац|раздел)",
+      "repair_cursor": 48,
+      "repair_attempts_total": 48,
+      "repair_rejections_total": 38,
+      "last_repair_rejection": "too-short:13/40; near-duplicate:2",
       "writer_fallback_parts": 3,
       "last_repair_evidence": [
         "article-source-9",
@@ -53,13 +53,25 @@
         "article-source-4",
         "article-source-5",
         "article-source-2"
-      ]
+      ],
+      "quality_reuse_audit": {
+        "checked_at": "2026-08-23T09:18:03.583Z",
+        "fingerprint": "{\"heading\":\"Мир и исходная ситуация\",\"paragraphs\":[\"Хорошо, мне нужно продолжить журнальный обзор игры Fallout 2 в разделе \\\"Мир и исходная ситуация\\\". Нужно развеять новую грань темы, не упоминая процесс написания, требования или названия изданий. Перевести английские понятия на русский, допустимы только названия Fallout и RPG. Нужно развеять новую грань темы, не повторяя уже открытые мысли (которые указаны как \\\"пока нет\\\").\",\"Хм, пользователь просит продолжить журнальный обзор игры Fallout 2 в разделе «Мир и исходная ситуация». Важно не упоминать процесс написания, требования или названия изданий. Перевод английских понятий на русский, допустимо только Fallout и RPG. Важно перевести английские термины на русский, но можно использовать только названия Fallout и RPG.\",\"Нужно развеять новую грань темы, используя перевод английских понятий на русский (допустимы только Fallout и RPG). Нужно развеять новую грань темы, то есть дать что-то оригинальное, не повторяющее уже открытые мысли. Нужно развеять новую грань темы без повторения уже открытых мыслей.\"],\"source_ids\":[\"article-source-3\",\"article-source-2\",\"article-source-9\",\"article-source-10\",\"article-source-4\",\"article-source-5\",\"article-source-1\",\"article-source-6\",\"article-source-7\",\"article-source-8\"]}",
+        "passed": true,
+        "architecture": "deterministic-preflight-v1-single-final-editor-audit+grounded-bootstrap-failsafe-v2",
+        "criteria": {
+          "deterministic": true,
+          "source_ids_valid": true,
+          "semantic_source_grounding": "deferred_to_final_article_audit"
+        },
+        "deterministic_errors": []
+      }
     }
   },
   "verdict": null,
   "audit": null,
   "revision_count": 0,
-  "updated_at": "2026-08-23T09:15:18.575Z",
+  "updated_at": "2026-08-23T09:22:49.853Z",
   "meta_generation": {
     "provider": "deterministic-grounded-bootstrap-v1",
     "reason": "local_lead_unavailable_or_invalid",
@@ -69,7 +81,7 @@
     "checked_at": "2026-08-23T09:08:25.359Z"
   },
   "meta_quality_audit": {
-    "checked_at": "2026-08-23T09:08:25.360Z",
+    "checked_at": "2026-08-23T09:18:03.583Z",
     "architecture": "deterministic-preflight-v1-single-final-editor-audit+grounded-bootstrap-failsafe-v2",
     "passed": true,
     "criteria": {
@@ -87,7 +99,7 @@
   "continuation": {
     "required": true,
     "provider_policy": "local_only",
-    "updated_at": "2026-08-23T09:15:18.575Z",
+    "updated_at": "2026-08-23T09:22:49.853Z",
     "reason": "full-review-incomplete",
     "last_status": 1,
     "repair_calls_by_section": {
