@@ -19,7 +19,7 @@
   reviewControl.defer=true;
   document.head.appendChild(reviewControl);
   const reviewSources=document.createElement('script');
-  reviewSources.src='../_shared/game-page-review-sources.js?v=20260823-2';
+  reviewSources.src='../_shared/game-page-review-sources.js?v=20260823-3';
   reviewSources.defer=true;
   document.head.appendChild(reviewSources);
   const materialized=document.createElement('script');
