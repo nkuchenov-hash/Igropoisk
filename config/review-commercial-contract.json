@@ -1,6 +1,6 @@
 {
-  "schema_version": 4,
-  "id": "igropoisk-commercial-review-v3",
+  "schema_version": 5,
+  "id": "igropoisk-commercial-review-v4",
   "reference_baseline": "data/articles/mafia-ii.json",
   "purpose": "Единый стандарт страницы выпущенной игры. Базовая публичная страница создаётся всегда, а длинный редакционный обзор обязателен только для редакционно значимых игр по отдельному importance gate.",
   "lifecycle": {
@@ -34,9 +34,11 @@
     "score_corpus_separate_from_article_corpus": true,
     "aggregator_index_may_seed_discovery_but_never_satisfy_article_gate": true,
     "direct_or_archived_full_review_preferred": true,
-    "target_independent_full_reviews": 20,
+    "collect_all_discovered_independent_full_reviews": true,
+    "full_text_download_required_before_article_acceptance": true,
+    "target_independent_full_reviews": 500,
     "preferred_minimum_independent_full_reviews": 15,
-    "candidate_target": 60,
+    "candidate_target": 5000,
     "minimum_source_body_words": 450,
     "minimum_dossier_claims_per_source": 6,
     "one_source_per_publication": true,
@@ -52,6 +54,7 @@
     "must_search_magazine_archives_and_pdfs": true,
     "must_search_legacy_domains_and_mirrors": true,
     "must_persist_discovery_evidence": true,
+    "safety_caps_are_not_editorial_targets": true,
     "supplemental_factual_sources_allowed_after_exhaustive_review_search": [
       "official_manual",
       "developer_interview",
