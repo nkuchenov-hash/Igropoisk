@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "anno-117-pax-romana",
-  "generated_at": "2026-08-21T11:48:29.327Z",
+  "generated_at": "2026-08-23T09:22:54.732Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -66,7 +66,7 @@
       "domain": "gamesradar.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-21T11:47:04.661Z",
+        "checked_at": "2026-08-23T09:21:30.667Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -80,7 +80,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:48:31.735Z",
+        "checked_at": "2026-08-23T09:22:56.561Z",
         "url": "https://www.gamesradar.com/games/strategy/anno-117-pax-romana-review/",
         "configured_source_id": "gamesradar",
         "direct_publisher": true
@@ -106,14 +106,16 @@
         "reason": "canonical_version"
       },
       "identity_evidence": "Direct registered professional publisher review verified for Anno 117: Pax Romana.",
-      "evidence_points": [],
+      "evidence_points": [
+        "Hooked Gamers chat with Expert Game Designer Matt Higgins and Associate Art Director Chris Neely about the upcoming Story Pack 2"
+      ],
       "praise": [],
       "criticism": [],
       "mechanics": [],
       "domain": "hookedgamers.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-21T11:47:04.661Z",
+        "checked_at": "2026-08-23T09:21:30.667Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -127,7 +129,7 @@
       "score_evidence": {
         "method": "registry:hooked-gamers",
         "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:48:31.736Z",
+        "checked_at": "2026-08-23T09:22:56.561Z",
         "url": "https://www.hookedgamers.com/pc/anno_117_pax_romana/review/article-2680.html",
         "configured_source_id": "hooked-gamers",
         "direct_publisher": true
@@ -171,7 +173,7 @@
       "domain": "thesixthaxis.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-21T11:47:04.661Z",
+        "checked_at": "2026-08-23T09:21:30.667Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -185,7 +187,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:48:31.736Z",
+        "checked_at": "2026-08-23T09:22:56.561Z",
         "url": "https://www.thesixthaxis.com/2025/11/17/anno-117-pax-romana-review/",
         "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
@@ -223,7 +225,7 @@
       "domain": "metacritic.com",
       "validation": {
         "status": "accepted-critic-index",
-        "checked_at": "2026-08-21T11:48:29.327Z",
+        "checked_at": "2026-08-23T09:22:54.732Z",
         "method": "metacritic-critic-attribution-v15.2",
         "index_url": "https://www.metacritic.com/game/anno-117-pax-romana/critic-reviews/",
         "index_platform": "primary",
@@ -232,7 +234,7 @@
       "score_evidence": {
         "method": "critic-index-attribution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:48:29.327Z",
+        "checked_at": "2026-08-23T09:22:54.732Z",
         "url": "https://www.metacritic.com/game/anno-117-pax-romana/critic-reviews/",
         "configured_source_id": "ign",
         "direct_publisher": false,
@@ -248,13 +250,6 @@
   ],
   "rejected": [
     {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/anno-117-pax-romana-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    },
-    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/anno-117-pax-romana",
       "reasons": [
@@ -266,6 +261,13 @@
       "url": "https://www.rpgfan.com/review/anno-117-pax-romana-2",
       "reasons": [
         "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/anno-117-pax-romana-review",
+      "reasons": [
+        "HTTP 503"
       ]
     }
   ],

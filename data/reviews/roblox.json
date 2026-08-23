@@ -1,7 +1,7 @@
 {
-  "schema_version": 12,
+  "schema_version": 16,
   "game_slug": "roblox",
-  "updated_at": "2026-08-21T11:33:00.557Z",
+  "updated_at": "2026-08-23T09:07:14.764Z",
   "publication_gate": {
     "minimum": 5,
     "target": 20,
@@ -48,7 +48,7 @@
       "domain": "playground.ru",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-21T11:31:28.776Z",
+        "checked_at": "2026-08-23T09:06:02.763Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -88,10 +88,13 @@
       "mechanics": [],
       "domain": "stopgame.ru",
       "validation": {
-        "status": "accepted-blocked-revalidation",
-        "checked_at": "2026-08-21T11:31:28.776Z",
-        "method": "registered-direct-publisher-preserved-v8",
-        "reason": "HTTP 504"
+        "status": "accepted",
+        "checked_at": "2026-08-23T09:06:02.763Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
       },
       "score": null,
       "scale": null,
@@ -229,5 +232,13 @@
   "version_gate": {
     "canonical_title": "roblox",
     "removed_wrong_version": 0
+  },
+  "discovery_contract": {
+    "mode": "exhaustive_registered_review_and_score_discovery_v16",
+    "audit_all": true,
+    "all_registered_sources_checked": true,
+    "checked_sources": 45,
+    "accepted_sources": 2,
+    "generated_at": "2026-08-23T09:07:13.758Z"
   }
 }

@@ -1,19 +1,550 @@
 {
-  "schema_version": 7,
+  "schema_version": 13,
   "game_slug": "escape-from-tarkov",
-  "generated_at": "2026-08-14T08:10:19.780Z",
+  "generated_at": "2026-08-23T09:25:55.935Z",
+  "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
     "target_sources": 20,
-    "desired_sources_per_pass": 10,
     "maximum_sources": 20,
     "historical": false,
-    "min_contemporary": 5,
     "regional_discovery_required": true,
-    "discovery_provider": "direct-publisher-web-v3-bounded"
+    "discovery_provider": "registered-direct-publisher-web-v8",
+    "audit_all": true,
+    "canonical_score_requires_exact_version": true,
+    "score_extraction_separate": true,
+    "search_title_variants": true,
+    "review_hub_following": true,
+    "critic_index": "metacritic",
+    "critic_index_scope": "released_fallback",
+    "metascore_as_vote": false,
+    "user_scores_as_votes": false,
+    "professional_only": true
   },
-  "accepted": [],
-  "rejected": [],
+  "accepted": [
+    {
+      "url": "https://www.pcgamer.com/games/fps/escape-from-tarkov-review",
+      "title": "Escape from Tarkov review: Singularly unforgiving, dizzyingly complex, and like no other FPS out there",
+      "sitemap_rank": 80,
+      "sitemap_match": {
+        "matched": 3,
+        "coverage": 1,
+        "extras": 2
+      },
+      "discovery_method": "publisher_sitemap",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "language": "en",
+      "id": "source-1",
+      "resolved_url": "https://www.pcgamer.com/games/fps/escape-from-tarkov-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Escape from Tarkov.",
+      "evidence_points": [
+        "Join the club for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
+        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
+        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
+        "Singularly unforgiving, dizzyingly complex, and like no other FPS out there: the extraction shooter's extraction shooter.",
+        "PC Gamer's got your back Our experienced team dedicates many hours to every review, to really get to the heart of what matters most to you. Find out more about how we evaluate games and hardware.",
+        "Every time I make a kill in Escape from Tarkov, it's over in a flash. This is not down to skill. Sometimes in Tarkov you'll be sitting there minding your own business when two players blithely walk by, no idea you're there, and even with a pop gun it will be the easiest double kill you'll ever score. Death is almost always instantaneous in Tarkov, and it's everywhere.",
+        "What is it? A hardcore shooter with heavy sim elements that makes you work (very) hard to get the best out of it. Expect to pay: $50 / &pound;44 Developer: Battlestate Games Publisher: Battlestate Games Reviewed on: Windows 11, Intel i5-12400, RTX 4060, 16GB RAM Multiplayer? Yes Steam Deck? Unsupported Link: Official site",
+        "The last thing you do after a kill is loot the corpse. Nearby players will have heard the shots, and scavs in particular will swarm to the area. You might as well have sent up a flare. Start sorting through those pockets and you're dead meat. I bravely hide in a nearby corner, watching the corpse, and mentally run through my next steps. Give it 30 seconds, give it a minute, and more often than not comes the pitter-patter of scav steps towards your loot pinata. Snap, crack, bushwhacked. Tie another one to the racks, baby.",
+        "I hear Michael Stipe's voice in the distance when I die, too. Escape from Tarkov is, a lot of the time, pure punishment. I've been rubbish at a lot of shooters, but so rarely does one rub it in your face with such unadulterated glee before crowing: \"get better.\" The biggest tribute you can pay to Tarkov, probably, is that you want to get better.",
+        "That's worth pausing on right at the start, because so much of what I'm about to say of Tarkov will make this game sound like an exercise in masochism. And it can be. But Tarkov also offers a kind of high-stakes precision to PvP that doesn't exist elsewhere outside of the most hardcore milsims, and does it within an RPG-lite wrapping of incomplete information and outright obfuscation."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "pcgamer.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-23T09:24:32.393Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 90,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-23T09:25:56.668Z",
+        "url": "https://www.pcgamer.com/games/fps/escape-from-tarkov-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "url": "https://www.gamesradar.com/games/fps/escape-from-tarkov-review",
+      "title": "Escape from Tarkov review: \"An extraction shooter that will make you truly miserable if you let it, but can offer dizzying highs you won",
+      "sitemap_rank": 80,
+      "sitemap_match": {
+        "matched": 3,
+        "coverage": 1,
+        "extras": 2
+      },
+      "discovery_method": "publisher_sitemap",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "language": "en",
+      "id": "source-2",
+      "resolved_url": "https://www.gamesradar.com/games/fps/escape-from-tarkov-review",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Direct registered professional publisher review verified for Escape from Tarkov.",
+      "evidence_points": [
+        "Join the GamesRadar community for quick access. Enter your email below and we'll send confirmation, and sign you up to our newsletter.",
+        "By submitting your information, you confirm you are aged 16 or over, have read our Privacy Policy and agree to the Terms & Conditions . Geographical rules apply.",
+        "When you purchase through links on our site, we may earn an affiliate commission. Here&rsquo;s how it works .",
+        "The prototypical extraction shooter, Escape from Tarkov is a shooter I've been playing for the past decade and will be playing for years more. Sublime firefights and just-complicated-enough mechanics make this a great game to lose yourself in, but the immersion only lasts until you need to check the Wiki, which is constantly when you're just starting out.",
+        "Why you can trust GamesRadar+ Our experts review games, movies and tech over countless hours, so you can choose the best for you. Find out more about our reviews policy.",
+        "Escape from Tarkov set the standard for extraction shooters. If you've played Arc Raiders or one of the other success stories in the genre, this FPS might feel familiar: you go into a dangerous map filled with a combination of AI and real-life opponents, fill your bags with loot, and hustle towards an exit. Extract and you get all your loot, which can be used or flogged off to traders and other players. Die, and you lose everything.",
+        "I hate it. I love it. But the key thing is that while it's a deeply clunky game, Escape from Tarkov's shootouts are perhaps the best in video games, and the feeling of limping into an extraction point with empty mags and a bag full of loot is something that's kept me coming back for the last decade. With 5000 hours already spent in Tarkov, I'm having a fresh start to see how the game's long-awaited 1.0 release holds up.",
+        "Release date: 15 November 2025 Platform(s): PC Developer: Battlestate Games Publisher: Battlestate Games",
+        "If you're listening to this and salivating, congratulations. Escape from Tarkov is for you. Still, there's a learning curve that's near-vertical in your first 100 hours of play. The reward for this time and perseverance is phenomenal moment to moment gunplay and deep progression that rivals most MMOs.",
+        "Huge realistic maps make firefights feel more real, as you'll push through building sites, abandoned city blocks and even lumber yards in pursuit of loot. These environments make sniping and longer-distance combat feel more interesting than nearly any other live game that I've seen, while being peppered with submachine gun fire in derelict shopping mall Interchange offers close-quarters intensity that few games truly capture. The brilliance comes from pairing low time-to-kill with deep mechanical complexity &ndash; bandaging a wound mid firefight, or having to desperately feed bullets into a magazine your life is about to depend on."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "gamesradar.com",
+      "validation": {
+        "status": "accepted",
+        "checked_at": "2026-08-23T09:24:32.393Z",
+        "method": "registered-direct-publisher-http-v8",
+        "review_page": {
+          "accepted": true,
+          "reason": "review_path"
+        }
+      },
+      "score": 4,
+      "scale": 5,
+      "grade": "",
+      "score_eligible": true,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-23T09:25:56.668Z",
+        "url": "https://www.gamesradar.com/games/fps/escape-from-tarkov-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    },
+    {
+      "id": "source-3",
+      "configured_source_id": "the-games-machine",
+      "publication": "The Games Machine",
+      "title": "Escape from Tarkov — The Games Machine review",
+      "url": "https://www.metacritic.com/game/escape-from-tarkov/critic-reviews/",
+      "resolved_url": "https://www.metacritic.com/game/escape-from-tarkov/critic-reviews/",
+      "source_kind": "review",
+      "platform": "primary",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "language": "it",
+      "score": 85,
+      "scale": 100,
+      "grade": "",
+      "score_eligible": true,
+      "canonical_score_eligible": true,
+      "version_validation": {
+        "score_eligible": true,
+        "reason": "canonical_version"
+      },
+      "identity_evidence": "Critic review for Escape from Tarkov attributed by Metacritic to The Games Machine.",
+      "evidence_points": [
+        "Escape from Tarkov is a solid extraction shooter born in 2017. Despite its technical limitations and uneven balance, version 1.0 confirms it as a unique, intense, and persistently engaging hardcore tactical FPS. It's not for everyone, but that's precisely what makes it special."
+      ],
+      "praise": [],
+      "criticism": [],
+      "mechanics": [],
+      "domain": "metacritic.com",
+      "validation": {
+        "status": "accepted-critic-index",
+        "checked_at": "2026-08-23T09:25:55.935Z",
+        "method": "metacritic-critic-attribution-v15.2",
+        "index_url": "https://www.metacritic.com/game/escape-from-tarkov/critic-reviews/",
+        "index_platform": "primary",
+        "original_review_url": ""
+      },
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-23T09:25:55.935Z",
+        "url": "https://www.metacritic.com/game/escape-from-tarkov/critic-reviews/",
+        "configured_source_id": "the-games-machine",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "The Games Machine",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    }
+  ],
+  "rejected": [
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/escape-from-tarkov",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/escape-from-tarkov-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/escape-from-tarkov-review",
+      "reasons": [
+        "HTTP 503"
+      ]
+    }
+  ],
+  "source_checks": [
+    {
+      "source_id": "igromania",
+      "name": "Игромания",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "stopgame",
+      "name": "StopGame",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "kanobu",
+      "name": "Канобу",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "playground",
+      "name": "PlayGround.ru",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "vgtimes",
+      "name": "VGTimes",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ixbt-games",
+      "name": "iXBT.games",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamemag",
+      "name": "GameMAG.ru",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "vk-play",
+      "name": "VK Play Media",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "shazoo",
+      "name": "Shazoo",
+      "region": "ru",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pc-gamer",
+      "name": "PC Gamer",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "gamespot",
+      "name": "GameSpot",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "ign",
+      "name": "IGN",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "eurogamer",
+      "name": "Eurogamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-informer",
+      "name": "Game Informer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamesradar",
+      "name": "GamesRadar+",
+      "region": "global",
+      "status": "found",
+      "notes": "verified direct review"
+    },
+    {
+      "source_id": "polygon",
+      "name": "Polygon",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rock-paper-shotgun",
+      "name": "Rock Paper Shotgun",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-revolution",
+      "name": "GameRevolution",
+      "region": "global",
+      "status": "unavailable",
+      "notes": "search transport unavailable"
+    },
+    {
+      "source_id": "ars-technica",
+      "name": "Ars Technica",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezone",
+      "name": "GameZone",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamepressure",
+      "name": "Gamepressure",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gry-online",
+      "name": "GRYOnline",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "worthplaying",
+      "name": "WorthPlaying",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rpgfan",
+      "name": "RPGFan",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "rpgamer",
+      "name": "RPGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "destructoid",
+      "name": "Destructoid",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "shacknews",
+      "name": "Shacknews",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pcworld",
+      "name": "PCWorld",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "guardian-games",
+      "name": "The Guardian",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "push-square",
+      "name": "Push Square",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "nintendo-life",
+      "name": "Nintendo Life",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "digital-trends",
+      "name": "Digital Trends",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "wired",
+      "name": "WIRED",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "egm",
+      "name": "EGM",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamebanshee",
+      "name": "GameBanshee",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "den-of-geek",
+      "name": "Den of Geek",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "videogamer",
+      "name": "VideoGamer",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-sixth-axis",
+      "name": "TheSixthAxis",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "pc-invasion",
+      "name": "PC Invasion",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "game-spew",
+      "name": "GameSpew",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "hooked-gamers",
+      "name": "Hooked Gamers",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamestar",
+      "name": "GameStar",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "the-games-machine",
+      "name": "The Games Machine",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "cd-action",
+      "name": "CD-Action",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    },
+    {
+      "source_id": "gamezebo",
+      "name": "Gamezebo",
+      "region": "global",
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
+    }
+  ],
   "regional_discovery": {
     "region": "ru",
     "checks": [
@@ -76,11 +607,20 @@
     "found_but_not_accepted": []
   },
   "coverage": {
-    "accepted": 0,
-    "scored": 0,
-    "contemporary": 0,
+    "registered_editorial": 45,
+    "checked": 45,
+    "accepted": 3,
+    "scored": 3,
+    "context_only_versions": 0,
+    "blocked_verified": 0,
+    "contemporary": 3,
     "green": false,
     "passed": false,
-    "needs_more": 5
+    "needs_more": 2,
+    "critic_index_rows": 3,
+    "critic_index_added": 1,
+    "critic_index_scores_added": 2,
+    "critic_index_platform": "primary",
+    "removed_user_generated": 0
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "mistfall-hunter",
-  "generated_at": "2026-08-21T11:33:21.065Z",
+  "generated_at": "2026-08-23T09:07:23.058Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -21,62 +21,7 @@
     "user_scores_as_votes": false,
     "professional_only": true
   },
-  "accepted": [
-    {
-      "id": "source-1",
-      "configured_source_id": "ign",
-      "publication": "IGN",
-      "title": "mistfall-hunter — IGN review",
-      "url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
-      "resolved_url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
-      "source_kind": "review",
-      "platform": "primary",
-      "version_context": "",
-      "published_at": "",
-      "author": "",
-      "language": "en",
-      "score": 60,
-      "scale": 100,
-      "grade": "",
-      "score_eligible": true,
-      "canonical_score_eligible": true,
-      "version_validation": {
-        "score_eligible": true,
-        "reason": "canonical_version"
-      },
-      "identity_evidence": "Critic review for mistfall-hunter attributed by Metacritic to IGN.",
-      "evidence_points": [
-        "Adria Mistfall Hunter isn’t a revolutionary game, but it wins players over with its atmosphere, diverse classes, and tense matches. However, its weak solo experience, lack of a dedicated PvE mode, and monetization are likely to turn many players away. With a bit of luck, it’s a game that will only improve over time."
-      ],
-      "praise": [],
-      "criticism": [],
-      "mechanics": [],
-      "domain": "metacritic.com",
-      "validation": {
-        "status": "accepted-critic-index",
-        "checked_at": "2026-08-21T11:33:21.065Z",
-        "method": "metacritic-critic-attribution-v15.2",
-        "index_url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
-        "index_platform": "primary",
-        "original_review_url": ""
-      },
-      "score_evidence": {
-        "method": "critic-index-attribution",
-        "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:33:21.065Z",
-        "url": "https://www.metacritic.com/game/mistfall-hunter/critic-reviews/",
-        "configured_source_id": "ign",
-        "direct_publisher": false,
-        "historical": false,
-        "index_source": "metacritic",
-        "index_platform": "primary",
-        "attributed_publication": "IGN",
-        "aggregate_score_used": false,
-        "user_score_used": false,
-        "original_review_url": ""
-      }
-    }
-  ],
+  "accepted": [],
   "rejected": [
     {
       "publication": "IGN",
@@ -89,22 +34,49 @@
     {
       "publication": "StopGame",
       "url": "https://stopgame.ru/game/mistfall_hunter",
+      "title": "Mistfall Hunter игра | StopGame.ru",
       "reasons": [
-        "HTTP 504"
+        "non_review_path"
       ]
     },
     {
       "publication": "StopGame",
       "url": "https://stopgame.ru/game/mistfall_hunter/reviews",
+      "title": "Mistfall Hunter - пользовательские отзывы об игре | StopGame.ru",
       "reasons": [
-        "HTTP 504"
+        "review_hub_not_article"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/mistfall_hunter/reviews?section=middle",
+      "title": "Mistfall Hunter - пользовательские отзывы об игре | StopGame.ru",
+      "reasons": [
+        "review_hub_not_article"
       ]
     },
     {
       "publication": "StopGame",
       "url": "https://stopgame.ru/game/mistfall_hunter/review/39560",
+      "title": "Отзыв об игре Mistfall Hunter от пользователя Иван Менский | StopGame.ru",
       "reasons": [
-        "HTTP 504"
+        "user_generated_review"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/mistfall_hunter/reviews",
+      "title": "Mistfall Hunter - пользовательские отзывы об игре | StopGame.ru",
+      "reasons": [
+        "review_hub_not_article"
+      ]
+    },
+    {
+      "publication": "StopGame",
+      "url": "https://stopgame.ru/game/mistfall_hunter/review/39560",
+      "title": "Отзыв об игре Mistfall Hunter от пользователя Иван Менский | StopGame.ru",
+      "reasons": [
+        "user_generated_review"
       ]
     },
     {
@@ -124,13 +96,6 @@
       ]
     },
     {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/mistfall-hunter-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    },
-    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/mistfall-hunter",
       "reasons": [
@@ -140,6 +105,13 @@
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/mistfall-hunter-2",
+      "reasons": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/mistfall-hunter-review",
       "reasons": [
         "HTTP 404"
       ]
@@ -269,8 +241,8 @@
       "source_id": "game-revolution",
       "name": "GameRevolution",
       "region": "global",
-      "status": "unavailable",
-      "notes": "search transport unavailable"
+      "status": "not_found",
+      "notes": "search completed; no verified direct review"
     },
     {
       "source_id": "ars-technica",
@@ -526,16 +498,16 @@
   "coverage": {
     "registered_editorial": 45,
     "checked": 45,
-    "accepted": 1,
-    "scored": 1,
+    "accepted": 0,
+    "scored": 0,
     "context_only_versions": 0,
     "blocked_verified": 0,
-    "contemporary": 1,
+    "contemporary": 0,
     "green": false,
     "passed": false,
-    "needs_more": 4,
-    "critic_index_rows": 1,
-    "critic_index_added": 1,
+    "needs_more": 5,
+    "critic_index_rows": 0,
+    "critic_index_added": 0,
     "critic_index_scores_added": 0,
     "critic_index_platform": "primary",
     "removed_user_generated": 0

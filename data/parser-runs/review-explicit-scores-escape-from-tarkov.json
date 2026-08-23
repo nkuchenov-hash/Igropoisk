@@ -1,8 +1,64 @@
 {
-  "parser": "review-explicit-score-enrichment",
+  "parser": "review-explicit-editorial-score-enrichment-v5",
   "game_slug": "escape-from-tarkov",
-  "checked_at": "2026-08-14T08:11:18.305Z",
-  "accepted": 0,
-  "scored": 0,
-  "updates": []
+  "checked_at": "2026-08-23T09:25:56.668Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 3,
+  "scored": 3,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "score": 90,
+      "scale": 100,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "score": 4,
+      "scale": 5,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "url": "https://www.pcgamer.com/games/fps/escape-from-tarkov-review",
+      "final_url": "https://www.pcgamer.com/games/fps/escape-from-tarkov-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "url": "https://www.gamesradar.com/games/fps/escape-from-tarkov-review",
+      "final_url": "https://www.gamesradar.com/games/fps/escape-from-tarkov-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-games-machine",
+      "publication": "The Games Machine",
+      "url": "https://www.metacritic.com/game/escape-from-tarkov/critic-reviews/",
+      "final_url": "https://www.metacritic.com/game/escape-from-tarkov/critic-reviews/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": true,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
 }

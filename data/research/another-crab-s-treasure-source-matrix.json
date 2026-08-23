@@ -1,7 +1,7 @@
 {
   "schema_version": 13,
   "game_slug": "another-crab-s-treasure",
-  "generated_at": "2026-08-21T11:47:42.032Z",
+  "generated_at": "2026-08-23T09:21:46.222Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "policy": {
     "minimum_sources": 5,
@@ -66,7 +66,7 @@
       "domain": "pcgamer.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-21T11:46:17.784Z",
+        "checked_at": "2026-08-23T09:20:21.856Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -80,7 +80,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:47:44.543Z",
+        "checked_at": "2026-08-23T09:21:47.431Z",
         "url": "https://www.pcgamer.com/games/action/another-crabs-treasure-review/",
         "configured_source_id": "pc-gamer",
         "direct_publisher": true
@@ -123,7 +123,7 @@
       "domain": "thesixthaxis.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-21T11:46:17.784Z",
+        "checked_at": "2026-08-23T09:20:21.856Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -137,7 +137,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:47:44.543Z",
+        "checked_at": "2026-08-23T09:21:47.431Z",
         "url": "https://www.thesixthaxis.com/2024/04/24/another-crabs-treasure-review-a-crabulous-soulslike/",
         "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
@@ -145,13 +145,6 @@
     }
   ],
   "rejected": [
-    {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/another-crab-s-treasure-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    },
     {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/another-crab-s-treasure",
@@ -164,6 +157,13 @@
       "url": "https://www.rpgfan.com/review/another-crab-s-treasure-2",
       "reasons": [
         "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/another-crab-s-treasure-review",
+      "reasons": [
+        "HTTP 503"
       ]
     }
   ],

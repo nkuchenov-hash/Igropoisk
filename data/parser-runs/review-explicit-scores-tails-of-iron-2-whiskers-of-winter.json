@@ -1,0 +1,75 @@
+{
+  "parser": "review-explicit-editorial-score-enrichment-v5",
+  "game_slug": "tails-of-iron-2-whiskers-of-winter",
+  "checked_at": "2026-08-23T09:25:33.997Z",
+  "source_registry": "config/parsers/review-source-registry.json",
+  "accepted": 4,
+  "scored": 3,
+  "context_only_versions": 0,
+  "updates": [
+    {
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "score": 89,
+      "scale": 100,
+      "method": "semantic-editorial-label",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "score": 7,
+      "scale": 10,
+      "method": "jsonld.reviewRating",
+      "scope": "editorial_review",
+      "canonical_score_eligible": true
+    }
+  ],
+  "checks": [
+    {
+      "configured_source_id": "rpgfan",
+      "publication": "RPGFan",
+      "url": "https://www.rpgfan.com/review/tails-of-iron-2-whiskers-of-winter",
+      "final_url": "https://www.rpgfan.com/review/tails-of-iron-2-whiskers-of-winter/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "push-square",
+      "publication": "Push Square",
+      "url": "https://www.pushsquare.com/reviews/ps5/tails-of-iron-2-whiskers-of-winter",
+      "final_url": "",
+      "status": "http_403",
+      "blocked": true,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": false,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "the-sixth-axis",
+      "publication": "TheSixthAxis",
+      "url": "https://www.thesixthaxis.com/2025/01/27/tails-of-iron-2-whiskers-of-winter-review",
+      "final_url": "https://www.thesixthaxis.com/2025/01/27/tails-of-iron-2-whiskers-of-winter-review/",
+      "status": "explicit_editorial_score_found",
+      "blocked": false,
+      "preserved_existing_score": false,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    },
+    {
+      "configured_source_id": "ign",
+      "publication": "IGN",
+      "url": "https://www.metacritic.com/game/tails-of-iron-2-whiskers-of-winter/critic-reviews/",
+      "final_url": "https://www.metacritic.com/game/tails-of-iron-2-whiskers-of-winter/critic-reviews/",
+      "status": "no_explicit_editorial_score",
+      "blocked": false,
+      "preserved_existing_score": true,
+      "trusted_editorial_score": true,
+      "canonical_score_eligible": true
+    }
+  ]
+}

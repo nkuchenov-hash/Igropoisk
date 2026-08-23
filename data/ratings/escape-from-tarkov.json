@@ -1,27 +1,109 @@
 {
-  "schema_version": 4,
+  "schema_version": 7,
   "deprecated_adapter": true,
   "source_of_truth": "data/reviews/escape-from-tarkov.json#review_score",
   "game_slug": "escape-from-tarkov",
-  "checked_at": "2026-08-14T08:11:18.977Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-23T09:25:56.704Z",
+  "status": "green",
   "method": {
-    "name": "Среднее оценок независимых профессиональных изданий",
+    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
     "formula": "sum(normalized_10) / source_count",
     "minimum_sources": 3,
     "target_sources": 10,
-    "maximum_sources": 20,
+    "maximum_sources": null,
+    "use_all_eligible_sources": true,
+    "required_evidence_scope": "editorial_review",
     "output_scale": 10,
     "rounding_decimals": 1,
     "one_vote_per_publication": true,
     "aggregators_forbidden": true,
-    "invented_scores_forbidden": true
+    "invented_scores_forbidden": true,
+    "exact_canonical_version_required": true
   },
-  "sources": [],
+  "sources": [
+    {
+      "source_id": "source-1",
+      "configured_source_id": "pc-gamer",
+      "publication": "PC Gamer",
+      "title": "Escape from Tarkov review: Singularly unforgiving, dizzyingly complex, and like no other FPS out there",
+      "url": "https://www.pcgamer.com/games/fps/escape-from-tarkov-review",
+      "original_score": {
+        "score": 90,
+        "scale": 100,
+        "grade": null,
+        "display": "90/100"
+      },
+      "normalized_10": 9,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-23T09:25:56.668Z",
+        "url": "https://www.pcgamer.com/games/fps/escape-from-tarkov-review/",
+        "configured_source_id": "pc-gamer",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-2",
+      "configured_source_id": "gamesradar",
+      "publication": "GamesRadar+",
+      "title": "Escape from Tarkov review: \"An extraction shooter that will make you truly miserable if you let it, but can offer dizzying highs you won",
+      "url": "https://www.gamesradar.com/games/fps/escape-from-tarkov-review",
+      "original_score": {
+        "score": 4,
+        "scale": 5,
+        "grade": null,
+        "display": "4/5"
+      },
+      "normalized_10": 8,
+      "score_evidence": {
+        "method": "jsonld.reviewRating",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-23T09:25:56.668Z",
+        "url": "https://www.gamesradar.com/games/fps/escape-from-tarkov-review/",
+        "configured_source_id": "gamesradar",
+        "direct_publisher": true
+      }
+    },
+    {
+      "source_id": "source-3",
+      "configured_source_id": "the-games-machine",
+      "publication": "The Games Machine",
+      "title": "Escape from Tarkov — The Games Machine review",
+      "url": "https://www.metacritic.com/game/escape-from-tarkov/critic-reviews/",
+      "original_score": {
+        "score": 85,
+        "scale": 100,
+        "grade": null,
+        "display": "85/100"
+      },
+      "normalized_10": 8.5,
+      "score_evidence": {
+        "method": "critic-index-attribution",
+        "scope": "editorial_review",
+        "checked_at": "2026-08-23T09:25:55.935Z",
+        "url": "https://www.metacritic.com/game/escape-from-tarkov/critic-reviews/",
+        "configured_source_id": "the-games-machine",
+        "direct_publisher": false,
+        "historical": false,
+        "index_source": "metacritic",
+        "index_platform": "primary",
+        "attributed_publication": "The Games Machine",
+        "aggregate_score_used": false,
+        "user_score_used": false,
+        "original_review_url": ""
+      }
+    }
+  ],
+  "excluded_sources": [],
   "calculation": {
-    "source_count": 0,
-    "values": [],
-    "mean_10": null,
-    "score_10": null
+    "source_count": 3,
+    "values": [
+      9,
+      8,
+      8.5
+    ],
+    "mean_10": 8.5,
+    "score_10": 8.5
   }
 }

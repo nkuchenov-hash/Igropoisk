@@ -1,8 +1,8 @@
 {
-  "schema_version": 12,
+  "schema_version": 16,
   "game_slug": "luna-abyss",
   "game_id": "game_9ccc26e386bcdb714fa7",
-  "updated_at": "2026-08-21T11:39:59.469Z",
+  "updated_at": "2026-08-23T09:14:27.729Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
@@ -116,7 +116,7 @@
       "domain": "pushsquare.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-21T11:38:32.626Z",
+        "checked_at": "2026-08-23T09:13:01.340Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -126,7 +126,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:39:59.438Z",
+        "checked_at": "2026-08-23T09:14:27.694Z",
         "url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
         "configured_source_id": "push-square",
         "direct_publisher": true
@@ -172,7 +172,7 @@
       "domain": "thesixthaxis.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-21T11:38:32.626Z",
+        "checked_at": "2026-08-23T09:13:01.340Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -182,7 +182,7 @@
       "score_evidence": {
         "method": "jsonld.reviewRating",
         "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:39:59.438Z",
+        "checked_at": "2026-08-23T09:14:27.695Z",
         "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review/",
         "configured_source_id": "the-sixth-axis",
         "direct_publisher": true
@@ -220,7 +220,7 @@
       "domain": "metacritic.com",
       "validation": {
         "status": "accepted-critic-index",
-        "checked_at": "2026-08-21T11:39:57.355Z",
+        "checked_at": "2026-08-23T09:14:26.122Z",
         "method": "metacritic-critic-attribution-v15.2",
         "index_url": "https://www.metacritic.com/game/luna-abyss/critic-reviews/",
         "index_platform": "primary",
@@ -229,7 +229,7 @@
       "score_evidence": {
         "method": "critic-index-attribution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:39:57.355Z",
+        "checked_at": "2026-08-23T09:14:26.122Z",
         "url": "https://www.metacritic.com/game/luna-abyss/critic-reviews/",
         "configured_source_id": "game-spew",
         "direct_publisher": false,
@@ -245,13 +245,6 @@
   ],
   "rejected": [
     {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/luna-abyss-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    },
-    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/luna-abyss",
       "reasons": [
@@ -263,6 +256,13 @@
       "url": "https://www.rpgfan.com/review/luna-abyss-2",
       "reasons": [
         "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/luna-abyss-review",
+      "reasons": [
+        "HTTP 503"
       ]
     }
   ],
@@ -302,7 +302,7 @@
         "score_evidence": {
           "method": "jsonld.reviewRating",
           "scope": "editorial_review",
-          "checked_at": "2026-08-21T11:39:59.438Z",
+          "checked_at": "2026-08-23T09:14:27.694Z",
           "url": "https://www.pushsquare.com/reviews/ps5/luna-abyss",
           "configured_source_id": "push-square",
           "direct_publisher": true
@@ -324,7 +324,7 @@
         "score_evidence": {
           "method": "jsonld.reviewRating",
           "scope": "editorial_review",
-          "checked_at": "2026-08-21T11:39:59.438Z",
+          "checked_at": "2026-08-23T09:14:27.695Z",
           "url": "https://www.thesixthaxis.com/2026/05/20/luna-abyss-review/",
           "configured_source_id": "the-sixth-axis",
           "direct_publisher": true
@@ -346,7 +346,7 @@
         "score_evidence": {
           "method": "critic-index-attribution",
           "scope": "editorial_review",
-          "checked_at": "2026-08-21T11:39:57.355Z",
+          "checked_at": "2026-08-23T09:14:26.122Z",
           "url": "https://www.metacritic.com/game/luna-abyss/critic-reviews/",
           "configured_source_id": "game-spew",
           "direct_publisher": false,
@@ -375,5 +375,13 @@
   "version_gate": {
     "canonical_title": "Luna Abyss",
     "removed_wrong_version": 0
+  },
+  "discovery_contract": {
+    "mode": "exhaustive_registered_review_and_score_discovery_v16",
+    "audit_all": true,
+    "all_registered_sources_checked": true,
+    "checked_sources": 45,
+    "accepted_sources": 3,
+    "generated_at": "2026-08-23T09:14:27.048Z"
   }
 }

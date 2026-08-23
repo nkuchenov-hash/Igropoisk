@@ -1,8 +1,8 @@
 {
-  "schema_version": 12,
+  "schema_version": 16,
   "game_slug": "entropy",
   "game_id": null,
-  "updated_at": "2026-08-21T11:43:04.742Z",
+  "updated_at": "2026-08-23T09:17:17.850Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
@@ -77,13 +77,6 @@
   "reviews": [],
   "rejected": [
     {
-      "publication": "RPGamer",
-      "url": "https://rpgamer.com/review/entropy-review",
-      "reasons": [
-        "HTTP 403"
-      ]
-    },
-    {
       "publication": "RPGFan",
       "url": "https://www.rpgfan.com/review/entropy",
       "reasons": [
@@ -95,6 +88,13 @@
       "url": "https://www.rpgfan.com/review/entropy-2",
       "reasons": [
         "HTTP 404"
+      ]
+    },
+    {
+      "publication": "RPGamer",
+      "url": "https://rpgamer.com/review/entropy-review",
+      "reasons": [
+        "HTTP 503"
       ]
     }
   ],
@@ -128,5 +128,13 @@
       "mean_10": null,
       "score_10": null
     }
+  },
+  "discovery_contract": {
+    "mode": "exhaustive_registered_review_and_score_discovery_v16",
+    "audit_all": true,
+    "all_registered_sources_checked": true,
+    "checked_sources": 45,
+    "accepted_sources": 0,
+    "generated_at": "2026-08-23T09:17:17.743Z"
   }
 }

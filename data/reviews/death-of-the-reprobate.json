@@ -1,8 +1,8 @@
 {
-  "schema_version": 12,
+  "schema_version": 16,
   "game_slug": "death-of-the-reprobate",
   "game_id": "game_1b6c415929d3887ac5df",
-  "updated_at": "2026-08-21T11:35:48.478Z",
+  "updated_at": "2026-08-23T09:10:07.886Z",
   "source_registry": "config/parsers/review-source-registry.json",
   "publication_gate": {
     "minimum": 5,
@@ -113,7 +113,7 @@
       "domain": "rpgfan.com",
       "validation": {
         "status": "accepted",
-        "checked_at": "2026-08-21T11:34:20.669Z",
+        "checked_at": "2026-08-23T09:08:40.600Z",
         "method": "registered-direct-publisher-http-v8",
         "review_page": {
           "accepted": true,
@@ -127,7 +127,7 @@
       "score_evidence": {
         "method": "semantic-editorial-label",
         "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:35:48.443Z",
+        "checked_at": "2026-08-23T09:10:07.851Z",
         "url": "https://www.rpgfan.com/review/death-of-the-reprobate/",
         "configured_source_id": "rpgfan",
         "direct_publisher": true
@@ -165,7 +165,7 @@
       "domain": "metacritic.com",
       "validation": {
         "status": "accepted-critic-index",
-        "checked_at": "2026-08-21T11:35:46.013Z",
+        "checked_at": "2026-08-23T09:10:06.184Z",
         "method": "metacritic-critic-attribution-v15.2",
         "index_url": "https://www.metacritic.com/game/death-of-the-reprobate/critic-reviews/",
         "index_platform": "primary",
@@ -174,7 +174,7 @@
       "score_evidence": {
         "method": "critic-index-attribution",
         "scope": "editorial_review",
-        "checked_at": "2026-08-21T11:35:46.013Z",
+        "checked_at": "2026-08-23T09:10:06.184Z",
         "url": "https://www.metacritic.com/game/death-of-the-reprobate/critic-reviews/",
         "configured_source_id": "eurogamer",
         "direct_publisher": false,
@@ -193,7 +193,7 @@
       "publication": "RPGamer",
       "url": "https://rpgamer.com/review/death-of-the-reprobate-review",
       "reasons": [
-        "HTTP 403"
+        "HTTP 503"
       ]
     }
   ],
@@ -232,7 +232,7 @@
         "score_evidence": {
           "method": "semantic-editorial-label",
           "scope": "editorial_review",
-          "checked_at": "2026-08-21T11:35:48.443Z",
+          "checked_at": "2026-08-23T09:10:07.851Z",
           "url": "https://www.rpgfan.com/review/death-of-the-reprobate/",
           "configured_source_id": "rpgfan",
           "direct_publisher": true
@@ -254,7 +254,7 @@
         "score_evidence": {
           "method": "critic-index-attribution",
           "scope": "editorial_review",
-          "checked_at": "2026-08-21T11:35:46.013Z",
+          "checked_at": "2026-08-23T09:10:06.184Z",
           "url": "https://www.metacritic.com/game/death-of-the-reprobate/critic-reviews/",
           "configured_source_id": "eurogamer",
           "direct_publisher": false,
@@ -282,5 +282,13 @@
   "version_gate": {
     "canonical_title": "Death of the Reprobate",
     "removed_wrong_version": 0
+  },
+  "discovery_contract": {
+    "mode": "exhaustive_registered_review_and_score_discovery_v16",
+    "audit_all": true,
+    "all_registered_sources_checked": true,
+    "checked_sources": 45,
+    "accepted_sources": 2,
+    "generated_at": "2026-08-23T09:10:07.091Z"
   }
 }
