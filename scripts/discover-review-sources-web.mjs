@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-import './discover-review-sources-web-v15.mjs';
+import './discover-review-sources-web-v16.mjs';
