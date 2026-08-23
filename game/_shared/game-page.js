@@ -4,7 +4,7 @@
   document.head.appendChild(script);
   const qualityStyle=document.createElement('link');
   qualityStyle.rel='stylesheet';
-  qualityStyle.href='../_shared/game-page-quality.css?v=20260812-2';
+  qualityStyle.href='../_shared/game-page-quality.css?v=20260823-5';
   document.head.appendChild(qualityStyle);
   const quality=document.createElement('script');
   quality.src='../_shared/game-page-quality.js?v=20260822-3';
@@ -19,7 +19,7 @@
   reviewControl.defer=true;
   document.head.appendChild(reviewControl);
   const reviewSources=document.createElement('script');
-  reviewSources.src='../_shared/game-page-review-sources.js?v=20260823-4';
+  reviewSources.src='../_shared/game-page-review-sources.js?v=20260823-5';
   reviewSources.defer=true;
   document.head.appendChild(reviewSources);
   const materialized=document.createElement('script');
