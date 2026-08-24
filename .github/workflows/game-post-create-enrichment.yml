@@ -1,0 +1,73 @@
+name: Enrich newly created Игропоиск games
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [game-post-create-enrichment]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: game-post-create-enrichment-v3
+  cancel-in-progress: false
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout staging snapshot
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify enrichment runtime
+        run: |
+          node --check scripts/orchestrate-content.mjs
+          node --check scripts/run-content-pipeline.mjs
+          node --check scripts/quality-control-loop.mjs
+          node --check game/_shared/game-page-review-sources.js
+
+      - name: Refresh execution plan
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          EDITORIAL_AI_ENABLED: 'true'
+        run: node scripts/orchestrate-content.mjs --finalize
+
+      - name: Run one complete page/review enrichment cycle
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          EDITORIAL_AI_ENABLED: 'true'
+        run: node scripts/run-content-pipeline.mjs
+
+      - name: Validate generated game shells and review publication
+        run: |
+          node scripts/validate-game-shells.mjs
+          node scripts/audit-review-publication.mjs
+          git diff --check
+
+      - name: Publish enrichment snapshot to staging
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No enrichment changes produced."
+            exit 0
+          fi
+          git config user.name "igropoisk-content-bot"
+          git config user.email "igropoisk-content-bot@users.noreply.github.com"
+          BRANCH="automation/post-create-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git checkout -b "$BRANCH"
+          git add -A
+          git commit -m "Continue game page enrichment ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
+          git push origin "$BRANCH"
+          PR="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated post-create page/review enrichment cycle." --json number --jq '.number')"
+          gh pr merge "$PR" --merge --delete-branch
