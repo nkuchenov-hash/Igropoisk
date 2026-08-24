@@ -1,7 +1,7 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "game_slug": "fallout-2",
-  "checked_at": "2026-08-24T12:12:32.112Z",
+  "checked_at": "2026-08-24T12:28:38.942Z",
   "status": "insufficient-scores",
   "method": {
     "name": "Среднее всех найденных подтверждённых независимых профессиональных оценок",
@@ -9,6 +9,7 @@
     "minimum_sources_for_confident_rating": 10,
     "maximum_sources": null,
     "use_all_discovered_scores": true,
+    "persistent_discovery_seeds": true,
     "output_scale": 10,
     "letter_grade_map": {
       "A+": 10,
@@ -39,16 +40,30 @@
         "display": "84/100"
       },
       "normalized_10": 8.4,
-      "checked_at": "2026-08-24T12:12:32.112Z"
+      "checked_at": "2026-08-24T12:28:38.942Z"
+    },
+    {
+      "publication": "Game Over Online",
+      "title": "Fallout 2",
+      "url": "https://www.game-over.net/reviews.php?id=66&page=reviews",
+      "original_score": {
+        "score": 96,
+        "scale": 100,
+        "grade": null,
+        "display": "96/100"
+      },
+      "normalized_10": 9.6,
+      "checked_at": "2026-08-24T12:28:38.942Z"
     }
   ],
   "calculation": {
-    "source_count": 1,
+    "source_count": 2,
     "values": [
-      8.4
+      8.4,
+      9.6
     ],
-    "mean_10": 8.4,
-    "score_10": 8.4,
+    "mean_10": 9,
+    "score_10": 9,
     "status": "insufficient-scores"
   }
 }
