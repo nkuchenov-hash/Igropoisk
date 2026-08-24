@@ -26,7 +26,7 @@ on:
   schedule:
     - cron: '23 * * * *'
   push:
-    branches: [staging]
+    branches: [main, staging]
     paths:
       - 'config/news-pipeline.json'
       - 'data/news-sources.json'
