@@ -1,29 +1,34 @@
 {
-  "schema_version": 7,
-  "deprecated_adapter": true,
-  "source_of_truth": "data/reviews/arknights-endfield.json#review_score",
+  "schema_version": 4,
   "game_slug": "arknights-endfield",
-  "checked_at": "2026-08-18T18:07:21.423Z",
-  "status": "red-needs-revision",
+  "checked_at": "2026-08-24T12:13:19.373Z",
+  "status": "insufficient-scores",
   "method": {
-    "name": "Среднее всех подтверждённых явных оценок независимых профессиональных изданий",
+    "name": "Среднее всех найденных подтверждённых независимых профессиональных оценок",
     "formula": "sum(normalized_10) / source_count",
-    "minimum_sources": 3,
-    "target_sources": 10,
+    "minimum_sources_for_confident_rating": 10,
     "maximum_sources": null,
-    "use_all_eligible_sources": true,
-    "required_evidence_scope": "editorial_review",
+    "use_all_discovered_scores": true,
     "output_scale": 10,
-    "rounding_decimals": 1,
-    "one_vote_per_publication": true,
-    "aggregators_forbidden": true,
-    "invented_scores_forbidden": true,
-    "exact_canonical_version_required": true
+    "letter_grade_map": {
+      "A+": 10,
+      "A": 9.5,
+      "A-": 9,
+      "B+": 8.5,
+      "B": 8,
+      "B-": 7.5,
+      "C+": 7,
+      "C": 6.5,
+      "C-": 6,
+      "D+": 5.5,
+      "D": 5,
+      "D-": 4.5,
+      "F": 2.5
+    },
+    "rounding_decimals": 1
   },
   "sources": [
     {
-      "source_id": "source-1",
-      "configured_source_id": "push-square",
       "publication": "Push Square",
       "title": "Review: Arknights: Endfield (PS5) - Automation Turns Busywork into Bliss",
       "url": "https://www.pushsquare.com/reviews/ps5/arknights-endfield",
@@ -34,23 +39,58 @@
         "display": "8/10"
       },
       "normalized_10": 8,
-      "score_evidence": {
-        "method": "jsonld.reviewRating",
-        "scope": "editorial_review",
-        "checked_at": "2026-08-18T18:07:21.324Z",
-        "url": "https://www.pushsquare.com/reviews/ps5/arknights-endfield",
-        "configured_source_id": "push-square",
-        "direct_publisher": true
-      }
+      "checked_at": "2026-08-24T12:13:19.373Z"
+    },
+    {
+      "publication": "IGN",
+      "title": "Arknights: Endfield Review - IGN",
+      "url": "https://www.ign.com/articles/arknights-endfield-review",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "checked_at": "2026-08-24T12:13:19.373Z"
+    },
+    {
+      "publication": "rigpod.com",
+      "title": "Is Arknights Endfield worth playing? Honest review after 60 hours",
+      "url": "https://rigpod.com/arknights-endfield-review-worth-playing",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "checked_at": "2026-08-24T12:13:19.373Z"
+    },
+    {
+      "publication": "hardcoregamer.com",
+      "title": "Review: Arknights: Endfield is One of the Best Examples of Gacha Gaming",
+      "url": "https://hardcoregamer.com/review-arknights-endfield",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "checked_at": "2026-08-24T12:13:19.373Z"
     }
   ],
-  "excluded_sources": [],
   "calculation": {
-    "source_count": 1,
+    "source_count": 4,
     "values": [
+      8,
+      7,
+      8,
       8
     ],
-    "mean_10": 8,
-    "score_10": 8
+    "mean_10": 7.75,
+    "score_10": 7.8,
+    "status": "insufficient-scores"
   }
 }

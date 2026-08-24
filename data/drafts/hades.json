@@ -1,9 +1,10 @@
 {
-  "game_id": "game_b30414fb4947dc9df5bf",
+  "schema_version": 3,
   "identity": {
     "slug": "hades",
     "title": "Hades",
-    "steam_appid": 1145360
+    "steam_appid": 1145360,
+    "game_id": "game_b30414fb4947dc9df5bf"
   },
   "release": {
     "date_text": "Sep 17, 2020",
@@ -23,9 +24,21 @@
       "Indie",
       "RPG"
     ],
+    "categories": [
+      "Single-player",
+      "Steam Achievements",
+      "Full controller support",
+      "Steam Trading Cards",
+      "Captions available",
+      "Steam Cloud",
+      "Remote Play on Phone",
+      "Remote Play on Tablet",
+      "Remote Play on TV",
+      "Family Sharing"
+    ],
     "platforms": [
-      "Windows",
-      "macOS"
+      "windows",
+      "mac"
     ]
   },
   "editorial": {
@@ -37,27 +50,6 @@
       "Быстрые бои",
       "Яркие персонажи"
     ]
-  },
-  "ratings": {
-    "igropoisk": 9.3,
-    "users": null,
-    "user_votes": 0
-  },
-  "requirements": {
-    "platforms": [
-      "Windows",
-      "macOS"
-    ]
-  },
-  "links": {
-    "store": "https://store.steampowered.com/app/1145360/"
-  },
-  "schema_version": 3,
-  "publication": {
-    "status": "published",
-    "gate_passed": true,
-    "mode": "structured_sources",
-    "checked_at": "2026-08-23T10:38:22.611Z"
   },
   "media": {
     "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/1145360/library_600x900.jpg",
@@ -119,6 +111,23 @@
         "source_url": "https://store.steampowered.com/app/1145360/"
       }
     ],
+    "videos": [
+      {
+        "title": "Hades - v1.0 Launch Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256801252/movie.293x165.jpg?t=1600353465"
+      },
+      {
+        "title": "Hades - v1.0 Gameplay Showcase",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256801288/movie.293x165.jpg?t=1600353474"
+      },
+      {
+        "title": "Hades - Early Access Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256759357/movie.293x165.jpg?t=1593023745"
+      }
+    ],
     "artwork": [
       {
         "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1145360/page_bg_raw.jpg?t=1758127023",
@@ -135,8 +144,41 @@
         "caption": "Официальный арт",
         "source_url": "https://store.steampowered.com/app/1145360/"
       }
-    ],
-    "videos": []
+    ]
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li><strong>OS *:</strong> Windows 7 SP1<br></li><li><strong>Processor:</strong> Dual Core 2.4 GHz<br></li><li><strong>Memory:</strong> 4 GB RAM<br></li><li><strong>Graphics:</strong> 1GB VRAM / DirectX 10+ support<br></li><li><strong>Storage:</strong> 15 GB available space</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li><strong>OS *:</strong> Windows 7 SP1<br></li><li><strong>Processor:</strong> Dual Core 3.0 GHz+<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> 2GB VRAM / DirectX 10+ support<br></li><li><strong>Storage:</strong> 20 GB available space</li></ul>"
+      }
+    },
+    "platforms": [
+      "Windows",
+      "macOS"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/1145360/"
+  },
+  "source": {
+    "name": "Steam Store API",
+    "url": "https://store.steampowered.com/api/appdetails?appids=1145360&l=english&cc=us",
+    "checked_at": "2026-08-24T12:10:24.638Z"
+  },
+  "game_id": "game_b30414fb4947dc9df5bf",
+  "ratings": {
+    "igropoisk": 9.3,
+    "users": null,
+    "user_votes": 0
+  },
+  "publication": {
+    "status": "published",
+    "gate_passed": true,
+    "mode": "structured_sources",
+    "checked_at": "2026-08-23T10:38:22.611Z"
   },
   "sources": [
     {
@@ -144,6 +186,18 @@
       "url": "https://store.steampowered.com/app/1145360/",
       "type": "store",
       "checked_at": "2026-08-23T10:38:22.611Z"
+    },
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=1145360&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:10:24.638Z"
     }
-  ]
+  ],
+  "materials": {
+    "reviews": [],
+    "news": [],
+    "guides": []
+  }
 }

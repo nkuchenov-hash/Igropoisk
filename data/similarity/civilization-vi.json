@@ -1,19 +1,23 @@
 {
   "schema_version": 3,
   "game_slug": "civilization-vi",
-  "generated_at": "2026-08-13T10:14:03.233Z",
+  "generated_at": "2026-08-24T12:10:45.408Z",
   "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
   "profile_quality": {
-    "populated_axes": 5,
+    "populated_axes": 9,
     "total_axes": 13,
     "populated": [
       "genres",
+      "subgenres",
       "gameplay_type",
       "world_structure",
+      "party_mode",
       "progression",
-      "setting"
+      "setting",
+      "multiplayer",
+      "mechanics"
     ],
     "needs_enrichment": false
   },
@@ -21,7 +25,37 @@
     "genres": [
       "strategy"
     ],
-    "subgenres": [],
+    "subgenres": [
+      "single",
+      "player",
+      "multi",
+      "pvp",
+      "online",
+      "lan",
+      "shared",
+      "split",
+      "screen",
+      "cross",
+      "platform",
+      "multiplayer",
+      "steam",
+      "achievements",
+      "trading",
+      "cards",
+      "workshop",
+      "in",
+      "app",
+      "purchases",
+      "turn",
+      "notifications",
+      "remote",
+      "play",
+      "on",
+      "tablet",
+      "together",
+      "family",
+      "sharing"
+    ],
     "gameplay_type": [
       "strategy",
       "action"
@@ -31,7 +65,9 @@
     "world_structure": [
       "hub"
     ],
-    "party_mode": [],
+    "party_mode": [
+      "solo"
+    ],
     "narrative": [],
     "progression": [
       "rpg",
@@ -42,8 +78,24 @@
       "historical"
     ],
     "tone": [],
-    "multiplayer": [],
-    "mechanics": [],
+    "multiplayer": [
+      "competitive",
+      "singleplayer"
+    ],
+    "mechanics": [
+      "single",
+      "player",
+      "multi",
+      "pvp",
+      "online",
+      "lan",
+      "shared",
+      "split",
+      "screen",
+      "cross",
+      "platform",
+      "multiplayer"
+    ],
     "semantic_tokens": [
       "expand",
       "empire",
@@ -148,5 +200,492 @@
     ],
     "franchise": ""
   },
-  "recommendations": []
+  "recommendations": [
+    {
+      "slug": "baldurs-gate-3",
+      "title": "Baldur’s Gate 3",
+      "year": 2023,
+      "score": 0.5243,
+      "base_score": 0.5243,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "divinity-original-sin-ii",
+      "title": "Divinity: Original Sin 2 - Definitive Edition",
+      "year": 2017,
+      "score": 0.5067,
+      "base_score": 0.5067,
+      "reasons": [
+        "жанр",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.69
+        }
+      ]
+    },
+    {
+      "slug": "anno-117-pax-romana",
+      "title": "Anno 117: Pax Romana",
+      "year": 2025,
+      "score": 0.4724,
+      "base_score": 0.4724,
+      "reasons": [
+        "жанр",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.643
+        }
+      ]
+    },
+    {
+      "slug": "feed-the-scorchpot",
+      "title": "Feed the Scorchpot",
+      "year": 2026,
+      "score": 0.4315,
+      "base_score": 0.4315,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "hexplorando",
+      "title": "Hexplorando",
+      "year": 2027,
+      "score": 0.4249,
+      "base_score": 0.4249,
+      "reasons": [
+        "жанр",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер",
+        "тип геймплея"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 0.5
+        }
+      ]
+    },
+    {
+      "slug": "stardew-valley",
+      "title": "Stardew Valley",
+      "year": 2016,
+      "score": 0.4236,
+      "base_score": 0.4236,
+      "reasons": [
+        "структура мира",
+        "партия/соло",
+        "прогрессия",
+        "сеттинг",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "world_structure",
+          "label": "структура мира",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "setting",
+          "label": "сеттинг",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "mythmon-mythic-monsters",
+      "title": "Mythmon: Mythic Monsters",
+      "year": 2026,
+      "score": 0.399,
+      "base_score": 0.399,
+      "reasons": [
+        "жанр",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер",
+        "тип геймплея"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 0.5
+        }
+      ]
+    },
+    {
+      "slug": "fallout-tactics-brotherhood-of-steel",
+      "title": "Fallout Tactics: Brotherhood of Steel",
+      "year": 2001,
+      "score": 0.396,
+      "base_score": 0.396,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.4
+        }
+      ]
+    },
+    {
+      "slug": "repterra",
+      "title": "Repterra",
+      "year": 2026,
+      "score": 0.3941,
+      "base_score": 0.3941,
+      "reasons": [
+        "жанр",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер",
+        "тип геймплея"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 0.5
+        }
+      ]
+    },
+    {
+      "slug": "burn-with-me",
+      "title": "Burn With Me",
+      "year": 2026,
+      "score": 0.3933,
+      "base_score": 0.3933,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.4
+        }
+      ]
+    },
+    {
+      "slug": "rinthine",
+      "title": "Rinthine",
+      "year": 0,
+      "score": 0.3917,
+      "base_score": 0.3917,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.517
+        }
+      ]
+    },
+    {
+      "slug": "zero-hour",
+      "title": "Zero Hour",
+      "year": 2024,
+      "score": 0.371,
+      "base_score": 0.371,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    }
+  ]
 }

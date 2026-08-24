@@ -1,82 +1,596 @@
 {
-  "schema_version": 4,
+  "schema_version": 3,
   "game_slug": "fallout-2",
-  "game_id": "game_2278b9106a76e8359871",
-  "generated_at": "2026-08-23T09:04:00.413Z",
-  "algorithm": "game-dna-weighted-v1",
+  "generated_at": "2026-08-24T12:10:49.661Z",
+  "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
-  "source_dna": {
-    "status": "auto",
-    "revision": 68,
-    "quality": {
-      "populated_axes": 10,
-      "total_axes": 16,
-      "core_axes": 4,
-      "total_core_axes": 7,
-      "populated": [
-        "genres",
-        "core_loop",
-        "combat_style",
-        "mission_structure",
-        "progression",
-        "player_agency",
-        "narrative",
-        "setting",
-        "multiplayer",
-        "mechanics"
-      ],
-      "populated_core": [
-        "core_loop",
-        "combat_style",
-        "mission_structure",
-        "progression"
-      ],
-      "ready_for_similarity": true,
-      "needs_enrichment": false
-    },
-    "ref": "../game-dna/fallout-2.json"
+  "profile_quality": {
+    "populated_axes": 6,
+    "total_axes": 13,
+    "populated": [
+      "genres",
+      "subgenres",
+      "gameplay_type",
+      "party_mode",
+      "multiplayer",
+      "mechanics"
+    ],
+    "needs_enrichment": false
   },
   "profile": {
     "genres": [
-      "ролевые_игры",
+      "ролевые",
+      "игры",
       "rpg"
     ],
-    "subgenres": [],
-    "core_loop": [
-      "combat"
+    "subgenres": [
+      "для",
+      "одного",
+      "игрока",
+      "steam",
+      "cloud",
+      "семеи",
+      "ныи",
+      "доступ",
+      "single",
+      "player",
+      "family",
+      "sharing"
     ],
-    "combat_style": [
-      "ranged",
-      "turn_based"
+    "gameplay_type": [
+      "rpg"
     ],
-    "traversal": [],
-    "world_structure": [],
-    "mission_structure": [
-      "story_plus_side_content"
-    ],
-    "progression": [
-      "stats_builds"
-    ],
+    "combat": [],
     "perspective": [],
-    "player_agency": [
-      "character_creation"
+    "world_structure": [],
+    "party_mode": [
+      "solo"
     ],
-    "pacing": [],
-    "narrative": [
-      "story_heavy"
-    ],
-    "setting": [
-      "post_apocalyptic"
-    ],
+    "narrative": [],
+    "progression": [],
+    "setting": [],
     "tone": [],
     "multiplayer": [
       "singleplayer"
     ],
     "mechanics": [
-      "companions"
+      "для",
+      "одного",
+      "игрока",
+      "steam",
+      "cloud",
+      "семеи",
+      "ныи",
+      "доступ",
+      "single",
+      "player",
+      "family",
+      "sharing"
+    ],
+    "semantic_tokens": [
+      "fallout",
+      "продолжение",
+      "признаннои",
+      "всеми",
+      "которая",
+      "вытащила",
+      "подземелии",
+      "поместила",
+      "динамичное",
+      "апокалиптическое",
+      "ретро",
+      "будущее",
+      "прошло",
+      "предки",
+      "пересекли",
+      "пустоши",
+      "одного",
+      "игрока",
+      "steam",
+      "cloud",
+      "семеи",
+      "доступ",
+      "single",
+      "player",
+      "family",
+      "sharing",
+      "ролевые"
     ],
     "franchise": "fallout"
   },
-  "recommendations": []
+  "recommendations": [
+    {
+      "slug": "fallout",
+      "title": "Fallout",
+      "year": 1997,
+      "score": 0.5967,
+      "base_score": 0.5467,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "fallout-shelter",
+      "title": "Fallout Shelter",
+      "year": 2015,
+      "score": 0.5335,
+      "base_score": 0.4835,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "provoron",
+      "title": "Provoron",
+      "year": 2026,
+      "score": 0.5317,
+      "base_score": 0.5317,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "fallout-3",
+      "title": "Fallout 3",
+      "year": 2008,
+      "score": 0.5315,
+      "base_score": 0.4815,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "wartales",
+      "title": "Wartales",
+      "year": 2023,
+      "score": 0.4956,
+      "base_score": 0.4956,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "magic-monsters",
+      "title": "MAGIC & MONSTERS",
+      "year": 2026,
+      "score": 0.4946,
+      "base_score": 0.4946,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "echoes-of-elysium",
+      "title": "Echoes of Elysium",
+      "year": 2026,
+      "score": 0.4845,
+      "base_score": 0.4845,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.833
+        }
+      ]
+    },
+    {
+      "slug": "code-vein-ii",
+      "title": "CODE VEIN II",
+      "year": 2026,
+      "score": 0.4835,
+      "base_score": 0.4835,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "after-the-end",
+      "title": "After the End",
+      "year": 0,
+      "score": 0.4822,
+      "base_score": 0.4822,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.833
+        }
+      ]
+    },
+    {
+      "slug": "ark-survival-evolved",
+      "title": "ARK: Survival Evolved",
+      "year": 2017,
+      "score": 0.4815,
+      "base_score": 0.4815,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "hope-01",
+      "title": "HOPE 01",
+      "year": 2026,
+      "score": 0.48,
+      "base_score": 0.48,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.917
+        }
+      ]
+    },
+    {
+      "slug": "the-binding-of-isaac-repentance",
+      "title": "The Binding of Isaac: Repentance",
+      "year": 2021,
+      "score": 0.4765,
+      "base_score": 0.4765,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    }
+  ]
 }

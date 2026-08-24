@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "game_slug": "stardew-valley",
-  "generated_at": "2026-08-13T10:14:03.261Z",
+  "generated_at": "2026-08-24T12:10:45.453Z",
   "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
@@ -201,13 +201,54 @@
   },
   "recommendations": [
     {
-      "slug": "fallout-4",
-      "title": "Fallout 4",
-      "year": 2015,
-      "score": 0.456,
-      "base_score": 0.456,
+      "slug": "fields-of-mistria",
+      "title": "Fields of Mistria",
+      "year": 2026,
+      "score": 0.4958,
+      "base_score": 0.4958,
       "reasons": [
         "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "ritual-of-raven",
+      "title": "Ritual of Raven",
+      "year": 2025,
+      "score": 0.4424,
+      "base_score": 0.4424,
+      "reasons": [
+        "тип геймплея",
         "партия/соло",
         "прогрессия",
         "мультиплеер",
@@ -215,8 +256,8 @@
       ],
       "signals": [
         {
-          "field": "genres",
-          "label": "жанр",
+          "field": "gameplay_type",
+          "label": "тип геймплея",
           "overlap": 1
         },
         {
@@ -237,7 +278,48 @@
         {
           "field": "subgenres",
           "label": "поджанр",
-          "overlap": 0.6
+          "overlap": 0.833
+        }
+      ]
+    },
+    {
+      "slug": "anno-117-pax-romana",
+      "title": "Anno 117: Pax Romana",
+      "year": 2025,
+      "score": 0.4402,
+      "base_score": 0.4402,
+      "reasons": [
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер",
+        "поджанр",
+        "ключевые механики"
+      ],
+      "signals": [
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.929
+        },
+        {
+          "field": "mechanics",
+          "label": "ключевые механики",
+          "overlap": 0.667
         }
       ]
     },
@@ -283,6 +365,88 @@
       ]
     },
     {
+      "slug": "divinity-original-sin-ii",
+      "title": "Divinity: Original Sin 2 - Definitive Edition",
+      "year": 2017,
+      "score": 0.4244,
+      "base_score": 0.4244,
+      "reasons": [
+        "партия/соло",
+        "прогрессия",
+        "мультиплеер",
+        "поджанр",
+        "ключевые механики"
+      ],
+      "signals": [
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.923
+        },
+        {
+          "field": "mechanics",
+          "label": "ключевые механики",
+          "overlap": 0.75
+        }
+      ]
+    },
+    {
+      "slug": "civilization-vi",
+      "title": "Sid Meier’s Civilization® VI",
+      "year": 2016,
+      "score": 0.4236,
+      "base_score": 0.4236,
+      "reasons": [
+        "структура мира",
+        "партия/соло",
+        "прогрессия",
+        "сеттинг",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "world_structure",
+          "label": "структура мира",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "progression",
+          "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "setting",
+          "label": "сеттинг",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
       "slug": "the-witcher-3-wild-hunt",
       "title": "The Witcher 3: Wild Hunt",
       "year": 2015,
@@ -324,17 +488,58 @@
       ]
     },
     {
-      "slug": "kingdom-come-deliverance",
-      "title": "Kingdom Come: Deliverance",
-      "year": 2018,
-      "score": 0.3795,
-      "base_score": 0.3795,
+      "slug": "fallout-3",
+      "title": "Fallout 3",
+      "year": 2008,
+      "score": 0.4165,
+      "base_score": 0.4165,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "партия/соло",
+        "мультиплеер",
+        "тип геймплея"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 0.5
+        }
+      ]
+    },
+    {
+      "slug": "human-fall-flat",
+      "title": "Human Fall Flat",
+      "year": 2016,
+      "score": 0.4133,
+      "base_score": 0.4133,
       "reasons": [
         "партия/соло",
         "прогрессия",
         "мультиплеер",
         "поджанр",
-        "тип геймплея"
+        "жанр"
       ],
       "signals": [
         {
@@ -355,32 +560,37 @@
         {
           "field": "subgenres",
           "label": "поджанр",
-          "overlap": 0.938
+          "overlap": 0.885
         },
         {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 0.5
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 0.667
         }
       ]
     },
     {
-      "slug": "cyberpunk-2077",
-      "title": "Cyberpunk 2077",
-      "year": 2020,
-      "score": 0.3638,
-      "base_score": 0.3638,
+      "slug": "echoes-of-elysium",
+      "title": "Echoes of Elysium",
+      "year": 2026,
+      "score": 0.4087,
+      "base_score": 0.4087,
       "reasons": [
         "жанр",
+        "тип геймплея",
         "партия/соло",
         "мультиплеер",
-        "тип геймплея",
         "поджанр"
       ],
       "signals": [
         {
           "field": "genres",
           "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
           "overlap": 1
         },
         {
@@ -394,9 +604,45 @@
           "overlap": 1
         },
         {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.421
+        }
+      ]
+    },
+    {
+      "slug": "final-fantasy-resonance",
+      "title": "FINAL FANTASY RESONANCE",
+      "year": 2026,
+      "score": 0.4017,
+      "base_score": 0.4017,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
           "field": "gameplay_type",
           "label": "тип геймплея",
-          "overlap": 0.5
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
         },
         {
           "field": "subgenres",
@@ -406,51 +652,17 @@
       ]
     },
     {
-      "slug": "mount-and-blade-ii-bannerlord",
-      "title": "mount-and-blade-ii-bannerlord",
-      "year": 2020,
-      "score": 0.3588,
-      "base_score": 0.3588,
-      "reasons": [
-        "жанр",
-        "тип геймплея",
-        "прогрессия",
-        "мультиплеер"
-      ],
-      "signals": [
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 1
-        },
-        {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 1
-        },
-        {
-          "field": "progression",
-          "label": "прогрессия",
-          "overlap": 1
-        },
-        {
-          "field": "multiplayer",
-          "label": "мультиплеер",
-          "overlap": 1
-        }
-      ]
-    },
-    {
-      "slug": "hollow-knight",
-      "title": "Hollow Knight",
-      "year": 2017,
-      "score": 0.3434,
-      "base_score": 0.3434,
+      "slug": "baldurs-gate-3",
+      "title": "Baldur’s Gate 3",
+      "year": 2023,
+      "score": 0.3985,
+      "base_score": 0.3985,
       "reasons": [
         "партия/соло",
         "прогрессия",
         "мультиплеер",
-        "поджанр"
+        "поджанр",
+        "ключевые механики"
       ],
       "signals": [
         {
@@ -471,7 +683,12 @@
         {
           "field": "subgenres",
           "label": "поджанр",
-          "overlap": 0.944
+          "overlap": 0.808
+        },
+        {
+          "field": "mechanics",
+          "label": "ключевые механики",
+          "overlap": 0.6
         }
       ]
     }
