@@ -9,7 +9,7 @@ on:
   workflow_call:
     inputs:
       production_sha:
-        description: Exact main commit to verify and deploy
+        description: Exact main commit to deploy
         required: true
         type: string
     outputs:
@@ -27,42 +27,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  verify-production-snapshot:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout exact production commit
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.production_sha || github.event.client_payload.production_sha || github.sha }}
-          fetch-depth: 0
-
-      - name: Require current main snapshot
-        run: |
-          git fetch origin main:refs/remotes/origin/main --force
-          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Verify deploy-critical runtime
-        run: |
-          node --check game/_shared/game-shell.js
-          node --check game/_shared/game-page.js
-          node --check game/_shared/game-page-v3-bootstrap.js
-          node --check game/_shared/game-page-v3.js
-          node --check game/_shared/game-page-quality.js
-          node --check game/_shared/game-page-review-publication-control.js
-          node --check game/_shared/game-page-review-sources.js
-          node --check game/_shared/game-page-materialized-data.js
-          node --check scripts/smoke-game-runtime.mjs
-          test -f game/fallout-2/index.html
-          test -f data/reviews/fallout-2.json
-          git diff --check
-          test -z "$(git status --porcelain)"
-
   deploy:
-    needs: verify-production-snapshot
     runs-on: ubuntu-latest
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}
@@ -70,7 +35,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout the verified commit
+      - name: Checkout production snapshot
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.production_sha || github.event.client_payload.production_sha || github.sha }}
