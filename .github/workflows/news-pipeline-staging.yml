@@ -37,6 +37,21 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Restore local Russian translator runtime and model
+        id: news_translator_cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /tmp/igropoisk-news-translator-runtime
+            /tmp/igropoisk-news-translation-models
+          key: news-translator-${{ runner.os }}-node22-hf-4.2.0-opus-en-ru-q8-v1
+
+      - name: Install local Russian translator runtime
+        if: steps.news_translator_cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/igropoisk-news-translator-runtime
+          npm install --prefix /tmp/igropoisk-news-translator-runtime --no-save --no-audit --no-fund @huggingface/transformers@4.2.0
+
       - name: Run contract tests
         run: |
           node scripts/test-news-pipeline.mjs
@@ -52,6 +67,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           NEWS_PIPELINE_REPORT: tmp/news-pipeline-staging-report.json
+          NEWS_LOCAL_TRANSLATION_RUNTIME: /tmp/igropoisk-news-translator-runtime
+          NEWS_LOCAL_TRANSLATION_CACHE: /tmp/igropoisk-news-translation-models
         run: |
           node scripts/run-news-pipeline.mjs --force
           git diff --check

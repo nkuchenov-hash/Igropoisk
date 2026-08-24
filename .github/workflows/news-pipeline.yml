@@ -106,6 +106,21 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Restore local Russian translator runtime and model
+        id: news_translator_cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /tmp/igropoisk-news-translator-runtime
+            /tmp/igropoisk-news-translation-models
+          key: news-translator-${{ runner.os }}-node22-hf-4.2.0-opus-en-ru-q8-v1
+
+      - name: Install local Russian translator runtime
+        if: steps.news_translator_cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/igropoisk-news-translator-runtime
+          npm install --prefix /tmp/igropoisk-news-translator-runtime --no-save --no-audit --no-fund @huggingface/transformers@4.2.0
+
       - name: Verify pipeline and storage code before network work
         run: |
           node --check features/news/content-api/index.js
@@ -156,6 +171,8 @@ jobs:
           NEWS_PIPELINE_REPORT: tmp/news-pipeline-report.json
           NEWS_GAME_CONTEXT_MAX_LOOKUPS: '1000'
           NEWS_GAME_VERIFY_BATCH: '8'
+          NEWS_LOCAL_TRANSLATION_RUNTIME: /tmp/igropoisk-news-translator-runtime
+          NEWS_LOCAL_TRANSLATION_CACHE: /tmp/igropoisk-news-translation-models
         run: |
           args=()
           if [ "$PIPELINE_FORCE" = "true" ]; then
