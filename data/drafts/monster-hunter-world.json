@@ -1,18 +1,10 @@
 {
-  "publication": {
-    "status": "review",
-    "gate_passed": false,
-    "errors": [
-      "only 1 sources; minimum 10",
-      "fewer than 3 editorial sources"
-    ],
-    "checked_at": "2026-08-02T23:58:50.402901+00:00"
-  },
+  "schema_version": 3,
   "identity": {
     "slug": "monster-hunter-world",
     "title": "Monster Hunter: World",
-    "seed_title": "Monster Hunter: World",
     "steam_appid": 582010,
+    "seed_title": "Monster Hunter: World",
     "game_id": "game_bfafe163ca6b078afd0c"
   },
   "release": {
@@ -51,7 +43,7 @@
       "Family Sharing"
     ],
     "platforms": [
-      "Windows"
+      "windows"
     ]
   },
   "editorial": {
@@ -81,17 +73,80 @@
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/ss_6d26868b45c20bf4dd5f75f31264aca08ce17217.1920x1080.jpg?t=1773328926",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/ss_669f9008f708c19fe3c41d647516f7a73bf26d24.1920x1080.jpg?t=1773328926"
     ],
-    "videos": [],
+    "videos": [
+      {
+        "title": "191128_防衛隊派生武器_English_US_STEAM版",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256769024/movie.293x165.jpg?t=1578591085"
+      },
+      {
+        "title": "191128_防具_防衛隊αシリーズ_English_US_STEAM版",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256769016/movie.293x165.jpg?t=1578591094"
+      },
+      {
+        "title": "191024_New_MHW_ICEBORNE_SteamPV_English_US_1080_60p_ESRB Teen.mp4",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256765447/movie.293x165.jpg?t=1578591271"
+      },
+      {
+        "title": "190318_MHW_steamPV_TW3_English(US).mp4",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256747421/movie.293x165.jpg?t=1578591395"
+      },
+      {
+        "title": "190318_MHW_steamPV_AC_English(US).mp4",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256746431/movie.293x165.jpg?t=1578591504"
+      },
+      {
+        "title": "181128_01_MHW_steamPV_U5_English(US).mp4",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256737507/movie.293x165.jpg?t=1578591604"
+      },
+      {
+        "title": "MH–WORLD_PCPV1_US_Multi_1080p_2997.mp4",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256721439/movie.293x165.jpg?t=1578591641"
+      }
+    ],
     "artwork": []
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> WINDOWS® 10 (64-bit required)<br></li><li><strong>Processor:</strong> Intel® Core™ i5 4460 or Core™ i3 9100F or AMD FX™-6300 or Ryzen™ 3 3200G<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA®GeForce®GTX 760 or GTX1050 or AMD Radeon™ R7 260x or RX 560<br></li><li><strong>DirectX:</strong> Version 11<br></li><li><strong>Network:</strong> Broadband Internet connection<br></li><li><strong>Storage:</strong> 52 GB available space<br></li><li><strong>Sound Card:</strong> DirectSound (DirectX® 9.0c or later)<br></li><li><strong>Additional Notes:</strong> - These specs allow for the game to be played in 1080p/30fps with graphics settings at &quot;Low&quot;. - 64-bit processor and operating system are required.</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> WINDOWS® 10 (64-bit required)<br></li><li><strong>Processor:</strong> Intel® Core™ i7 3770 or Core™ i3 8350 or Core™ i3 9350F / AMD Ryzen™ 5 1500X or Ryzen™ 5 3400G<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA® GeForce® GTX 1060 (VRAM 3GB) or GTX 1650 / AMD Radeon™ RX 480 or RX 570<br></li><li><strong>DirectX:</strong> Version 11<br></li><li><strong>Network:</strong> Broadband Internet connection<br></li><li><strong>Storage:</strong> 52 GB available space<br></li><li><strong>Sound Card:</strong> DirectSound (DirectX® 9.0c or later)<br></li><li><strong>Additional Notes:</strong> - These specs allow for the game to be played in 1080p/30fps with graphics settings at &quot;High&quot;. - 64-bit processor and operating system are required. - Windows 10 (Version 1809 or later) and a 4GB VRAM GPU (graphics board or video card) are required for DirectX 12 API.</li></ul>"
+      }
+    },
+    "platforms": [
+      "windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/582010/",
+    "official": "http://www.monsterhunterworld.com/"
+  },
+  "source": {
+    "name": "Steam Store API",
+    "url": "https://store.steampowered.com/api/appdetails?appids=582010&l=english&cc=us",
+    "checked_at": "2026-08-24T12:46:24.073Z"
+  },
+  "publication": {
+    "status": "review",
+    "gate_passed": false,
+    "errors": [
+      "only 1 sources; minimum 10",
+      "fewer than 3 editorial sources"
+    ],
+    "checked_at": "2026-08-02T23:58:50.402901+00:00"
   },
   "ratings": {
     "igropoisk": 8.8,
     "users": null,
     "user_votes": 0
-  },
-  "links": {
-    "official": "http://www.monsterhunterworld.com/",
-    "store": "https://store.steampowered.com/app/582010/"
   },
   "materials": {
     "reviews": [],
@@ -118,14 +173,13 @@
       ],
       "fingerprint": "dff1d1223725073f",
       "match_score": 100
-    }
-  ],
-  "schema_version": 3,
-  "requirements": {
-    "pc": {
-      "minimum": {},
-      "recommended": {}
     },
-    "platforms": []
-  }
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=582010&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:46:24.073Z"
+    }
+  ]
 }

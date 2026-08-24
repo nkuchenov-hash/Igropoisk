@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "game_slug": "fields-of-mistria",
-  "generated_at": "2026-08-24T12:10:47.675Z",
+  "generated_at": "2026-08-24T12:46:54.221Z",
   "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
@@ -127,6 +127,47 @@
           "field": "multiplayer",
           "label": "мультиплеер",
           "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "restory-chill-electronics-repairs",
+      "title": "ReStory: Chill Electronics Repairs",
+      "year": 2026,
+      "score": 0.4576,
+      "base_score": 0.4576,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер",
+        "поджанр"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.909
         }
       ]
     },
@@ -537,47 +578,6 @@
           "field": "subgenres",
           "label": "поджанр",
           "overlap": 0.364
-        }
-      ]
-    },
-    {
-      "slug": "mythmon-mythic-monsters",
-      "title": "Mythmon: Mythic Monsters",
-      "year": 2026,
-      "score": 0.3862,
-      "base_score": 0.3862,
-      "reasons": [
-        "партия/соло",
-        "прогрессия",
-        "мультиплеер",
-        "жанр",
-        "поджанр"
-      ],
-      "signals": [
-        {
-          "field": "party_mode",
-          "label": "партия/соло",
-          "overlap": 1
-        },
-        {
-          "field": "progression",
-          "label": "прогрессия",
-          "overlap": 1
-        },
-        {
-          "field": "multiplayer",
-          "label": "мультиплеер",
-          "overlap": 1
-        },
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 0.667
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.545
         }
       ]
     }

@@ -1,5 +1,5 @@
 {
-  "game_id": null,
+  "schema_version": 3,
   "identity": {
     "slug": "the-witcher-3-wild-hunt",
     "title": "The Witcher 3: Wild Hunt",
@@ -23,9 +23,6 @@
     "genres": [
       "RPG"
     ],
-    "platforms": [
-      "Windows"
-    ],
     "categories": [
       "Single-player",
       "Steam Achievements",
@@ -46,6 +43,9 @@
       "Remote Play on TV",
       "HDR available",
       "Family Sharing"
+    ],
+    "platforms": [
+      "windows"
     ]
   },
   "editorial": {
@@ -61,34 +61,6 @@
       "Color Alternatives",
       "Custom Volume Controls"
     ]
-  },
-  "ratings": {
-    "igropoisk": 9.3,
-    "users": null,
-    "user_votes": 0
-  },
-  "requirements": {
-    "platforms": [
-      "Windows"
-    ],
-    "pc": {
-      "minimum": {},
-      "recommended": {}
-    }
-  },
-  "links": {
-    "official": "https://www.thewitcher.com/witcher3",
-    "store": "https://store.steampowered.com/app/292030/"
-  },
-  "publication": {
-    "status": "review",
-    "gate_passed": false,
-    "errors": [
-      "only 2 sources; minimum 10",
-      "fewer than 3 editorial sources"
-    ],
-    "checked_at": "2026-08-23T10:38:20.418Z",
-    "mode": "structured_sources"
   },
   "media": {
     "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/library_600x900.jpg",
@@ -185,7 +157,28 @@
         "source_url": "https://store.steampowered.com/app/292030/"
       }
     ],
-    "videos": [],
+    "videos": [
+      {
+        "title": "W3NG ESRB The Witcher 3: Wild Hunt - Geralt and Ciri",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256927229/movie.293x165.jpg?t=1674829921"
+      },
+      {
+        "title": "W3NG ESRB The Witcher 3: Wild Hunt - Reveal",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256920684/movie.293x165.jpg?t=1670976373"
+      },
+      {
+        "title": "ESRB The Witcher 3: Wild Hunt - Epic Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256658589/movie.293x165.jpg?t=1674829932"
+      },
+      {
+        "title": "ESRB The Witcher 3: Wild Hunt - Launch Cinematic",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2039385/movie.293x165.jpg?t=1447374875"
+      }
+    ],
     "artwork": [
       {
         "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/94a3c7f9db82538b752312f6e17f912f0899ca30/page_bg_raw.jpg?t=1768303991",
@@ -203,6 +196,44 @@
         "source_url": "https://store.steampowered.com/app/292030/"
       }
     ]
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li><strong>OS *:</strong> 64-bit Windows 7, 64-bit Windows 8 (8.1)<br></li><li><strong>Processor:</strong> Intel CPU Core i5-2500K 3.3GHz / AMD A10-5800K APU (3.8GHz)<br></li><li><strong>Memory:</strong> 6 GB RAM<br></li><li><strong>Graphics:</strong> Nvidia GPU GeForce GTX 660 / AMD GPU Radeon HD 7870<br></li><li><strong>DirectX:</strong> Version 11<br></li><li><strong>Storage:</strong> 50 GB available space</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li><strong>OS:</strong> 64-bit Windows 10/11<br></li><li><strong>Processor:</strong> Intel Core i5-7400 / Ryzen 5 1600<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> Nvidia GTX 1070 / Radeon RX 480<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Storage:</strong> 50 GB available space</li></ul>"
+      }
+    },
+    "platforms": [
+      "Windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/292030/",
+    "official": "https://www.thewitcher.com/witcher3"
+  },
+  "source": {
+    "name": "Steam Store API",
+    "url": "https://store.steampowered.com/api/appdetails?appids=292030&l=english&cc=us",
+    "checked_at": "2026-08-24T12:46:27.343Z"
+  },
+  "game_id": null,
+  "ratings": {
+    "igropoisk": 9.3,
+    "users": null,
+    "user_votes": 0
+  },
+  "publication": {
+    "status": "review",
+    "gate_passed": false,
+    "errors": [
+      "only 2 sources; minimum 10",
+      "fewer than 3 editorial sources"
+    ],
+    "checked_at": "2026-08-23T10:38:20.418Z",
+    "mode": "structured_sources"
   },
   "materials": {
     "reviews": [],
@@ -232,7 +263,13 @@
       "url": "https://store.steampowered.com/app/292030/",
       "type": "store",
       "checked_at": "2026-08-23T10:38:20.418Z"
+    },
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=292030&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:46:27.343Z"
     }
-  ],
-  "schema_version": 3
+  ]
 }

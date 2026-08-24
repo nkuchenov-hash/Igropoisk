@@ -1,19 +1,10 @@
 {
   "schema_version": 3,
-  "publication": {
-    "status": "baseline",
-    "gate_passed": false,
-    "errors": [
-      "editorial_research_pending"
-    ],
-    "checked_at": "2026-08-23T10:38:25.688Z",
-    "mode": "structured_sources"
-  },
   "identity": {
     "slug": "wuthering-waves",
     "title": "wuthering-waves",
-    "seed_title": "wuthering-waves",
     "steam_appid": 3513350,
+    "seed_title": "wuthering-waves",
     "game_id": "game_0f74c8751ecbcdac3530"
   },
   "release": {
@@ -35,9 +26,17 @@
       "RPG",
       "Free To Play"
     ],
-    "categories": [],
+    "categories": [
+      "Single-player",
+      "In-App Purchases",
+      "DualShock Controller Support",
+      "DualSense Controller Support",
+      "DualSense Controller Support",
+      "Partial Controller Support",
+      "Family Sharing"
+    ],
     "platforms": [
-      "Windows"
+      "windows"
     ]
   },
   "editorial": {
@@ -100,7 +99,18 @@
         "source_url": "https://store.steampowered.com/app/3513350/"
       }
     ],
-    "videos": [],
+    "videos": [
+      {
+        "title": "Version 3.6 Official Trailer | Lamplight in Mirage, Sword's Resolve in Heart",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257208519/f0bd4ab2409d69da9d2de794babe98ed8ddc5956/movie_600x337.jpg?t=1787182287"
+      },
+      {
+        "title": "Wuthering Waves | Back-to-School Day",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257110899/f2bb24afbdeb822fc4f59b1638c1fca04757bc6e/movie_600x337.jpg?t=1766608582"
+      }
+    ],
     "artwork": [
       {
         "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/7db8945b8777be8caf66b7cdcb97173fdcd7d11a/page_bg_raw.jpg?t=1787182292",
@@ -120,28 +130,45 @@
     ],
     "official_video_exists": false
   },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows10 64-bit<br></li><li><strong>Processor:</strong> Intel Core i5 (9th Gen) / Ryzen 2700<br></li><li><strong>Memory:</strong> 16 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA GeForce GTX 1060/AMD Radeon RX 570/Intel ARC A380<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Network:</strong> Broadband Internet connection<br></li><li><strong>Storage:</strong> 150 GB available space<br></li><li><strong>Sound Card:</strong> Windows Compatible Audio Device<br></li><li><strong>Additional Notes:</strong> HDD Supported, SSD Recommended.</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows10 64-bit<br></li><li><strong>Processor:</strong> Intel Core i7 (9th Gen) / Ryzen 3700<br></li><li><strong>Memory:</strong> 32 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA GeForce RTX 2060/AMD Radeon RX 5700XT/intel ARC A750<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Network:</strong> Broadband Internet connection<br></li><li><strong>Storage:</strong> 150 GB available space<br></li><li><strong>Sound Card:</strong> Windows Compatible Audio Device<br></li><li><strong>Additional Notes:</strong> SSD Required.</li></ul>"
+      }
+    },
+    "platforms": [
+      "Windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/3513350/",
+    "official": ""
+  },
+  "source": {
+    "type": "canonical-game-registry",
+    "game_id": "game_0f74c8751ecbcdac3530"
+  },
+  "publication": {
+    "status": "baseline",
+    "gate_passed": false,
+    "errors": [
+      "editorial_research_pending"
+    ],
+    "checked_at": "2026-08-23T10:38:25.688Z",
+    "mode": "structured_sources"
+  },
   "ratings": {
     "igropoisk": null,
     "users": null,
     "user_votes": 0
   },
-  "links": {
-    "official": "",
-    "store": "https://store.steampowered.com/app/3513350/"
-  },
   "materials": {
     "reviews": [],
     "news": [],
     "guides": []
-  },
-  "requirements": {
-    "platforms": [
-      "Windows"
-    ],
-    "pc": {
-      "minimum": {},
-      "recommended": {}
-    }
   },
   "sources": [
     {
@@ -149,10 +176,13 @@
       "url": "https://store.steampowered.com/app/3513350/",
       "type": "store",
       "checked_at": "2026-08-23T10:38:25.688Z"
+    },
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=3513350&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:46:28.193Z"
     }
-  ],
-  "source": {
-    "type": "canonical-game-registry",
-    "game_id": "game_0f74c8751ecbcdac3530"
-  }
+  ]
 }

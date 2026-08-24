@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "game_slug": "pax-autocratica",
-  "generated_at": "2026-08-24T12:26:57.287Z",
+  "generated_at": "2026-08-24T13:02:55.000Z",
   "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
@@ -590,17 +590,17 @@
       ]
     },
     {
-      "slug": "titanfall-2",
-      "title": "Titanfall 2",
-      "year": 2016,
-      "score": 0.4307,
-      "base_score": 0.4307,
+      "slug": "restory-chill-electronics-repairs",
+      "title": "ReStory: Chill Electronics Repairs",
+      "year": 2026,
+      "score": 0.431,
+      "base_score": 0.431,
       "reasons": [
         "жанр",
+        "тип геймплея",
         "партия/соло",
-        "прогрессия",
         "мультиплеер",
-        "тип геймплея"
+        "поджанр"
       ],
       "signals": [
         {
@@ -609,13 +609,13 @@
           "overlap": 1
         },
         {
-          "field": "party_mode",
-          "label": "партия/соло",
+          "field": "gameplay_type",
+          "label": "тип геймплея",
           "overlap": 1
         },
         {
-          "field": "progression",
-          "label": "прогрессия",
+          "field": "party_mode",
+          "label": "партия/соло",
           "overlap": 1
         },
         {
@@ -624,9 +624,9 @@
           "overlap": 1
         },
         {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 0.5
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.714
         }
       ]
     }

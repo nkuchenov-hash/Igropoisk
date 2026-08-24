@@ -1,19 +1,10 @@
 {
-  "publication": {
-    "status": "review",
-    "gate_passed": false,
-    "errors": [
-      "only 1 sources; minimum 10",
-      "fewer than 3 editorial sources",
-      "fewer than 6 screenshots"
-    ],
-    "checked_at": "2026-08-02T23:59:01.854063+00:00"
-  },
+  "schema_version": 3,
   "identity": {
     "slug": "outer-wilds",
     "title": "Outer Wilds",
-    "seed_title": "Outer Wilds",
     "steam_appid": 753640,
+    "seed_title": "Outer Wilds",
     "game_id": "game_410d464b02d8cca9ead4"
   },
   "release": {
@@ -57,7 +48,7 @@
       "Family Sharing"
     ],
     "platforms": [
-      "Windows"
+      "windows"
     ]
   },
   "editorial": {
@@ -84,17 +75,56 @@
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/753640/ss_8683942f8d09eec32daeebe94867287424968f97.1920x1080.jpg?t=1785424341",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/753640/ss_fe4a6504c49efa6e7cb9ecda7aeddb6f7451a2cc.1920x1080.jpg?t=1785424341"
     ],
-    "videos": [],
+    "videos": [
+      {
+        "title": "Outer Wilds | Accolades Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256778920/movie.293x165.jpg?t=1585255228"
+      },
+      {
+        "title": "Outer Wilds | Reveal Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256711433/movie.293x165.jpg?t=1521129497"
+      }
+    ],
     "artwork": []
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10<br></li><li><strong>Processor:</strong> Intel Core i5-2300 | AMD FX-4350<br></li><li><strong>Memory:</strong> 6 GB RAM<br></li><li><strong>Graphics:</strong> Nvidia GeForce GTX 660, 2 GB | AMD Radeon HD 7870, 2 GB<br></li><li><strong>Storage:</strong> 8 GB available space<br></li><li><strong>Additional Notes:</strong> Gamepad or Controller Recommended (Xbox and PS4 Natively Supported)</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10<br></li><li><strong>Processor:</strong> Intel Core i5-8400 | AMD Ryzen 5 2600X<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> Nvidia GeForce GTX 1060 | AMD Radeon RX 580<br></li><li><strong>Storage:</strong> 8 GB available space<br></li><li><strong>Additional Notes:</strong> Gamepad or Controller Recommended (Xbox and PS4 Natively Supported)</li></ul>"
+      }
+    },
+    "platforms": [
+      "windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/753640/",
+    "official": null
+  },
+  "source": {
+    "name": "Steam Store API",
+    "url": "https://store.steampowered.com/api/appdetails?appids=753640&l=english&cc=us",
+    "checked_at": "2026-08-24T12:46:24.604Z"
+  },
+  "publication": {
+    "status": "review",
+    "gate_passed": false,
+    "errors": [
+      "only 1 sources; minimum 10",
+      "fewer than 3 editorial sources",
+      "fewer than 6 screenshots"
+    ],
+    "checked_at": "2026-08-02T23:59:01.854063+00:00"
   },
   "ratings": {
     "igropoisk": 8.5,
     "users": null,
     "user_votes": 0
-  },
-  "links": {
-    "official": null,
-    "store": "https://store.steampowered.com/app/753640/"
   },
   "materials": {
     "reviews": [],
@@ -121,14 +151,13 @@
       ],
       "fingerprint": "e9487dfc4d29d73a",
       "match_score": 100
-    }
-  ],
-  "schema_version": 3,
-  "requirements": {
-    "pc": {
-      "minimum": {},
-      "recommended": {}
     },
-    "platforms": []
-  }
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=753640&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:46:24.604Z"
+    }
+  ]
 }

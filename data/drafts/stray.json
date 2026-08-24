@@ -1,18 +1,10 @@
 {
-  "publication": {
-    "status": "review",
-    "gate_passed": false,
-    "errors": [
-      "only 2 sources; minimum 10",
-      "fewer than 3 editorial sources"
-    ],
-    "checked_at": "2026-08-02T23:59:42.991591+00:00"
-  },
+  "schema_version": 3,
   "identity": {
     "slug": "stray",
     "title": "Stray",
-    "seed_title": "Stray",
     "steam_appid": 1332010,
+    "seed_title": "Stray",
     "game_id": "game_6f2299b2ef2c947a378f"
   },
   "release": {
@@ -41,8 +33,8 @@
       "Family Sharing"
     ],
     "platforms": [
-      "Windows",
-      "Mac"
+      "windows",
+      "mac"
     ]
   },
   "editorial": {
@@ -71,17 +63,66 @@
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1332010/ss_f6f6ba009971ff21867d5d8f96a3feb503f787b8.1920x1080.jpg?t=1785424330",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1332010/ss_95ead64e0d31147f47f27ce828e8d5f52939dcf6.1920x1080.jpg?t=1785424330"
     ],
-    "videos": [],
+    "videos": [
+      {
+        "title": "STRAY | Launch Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256896952/movie.293x165.jpg?t=1658250380"
+      },
+      {
+        "title": "STRAY | Gameplay Walkthrough",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256844882/movie.293x165.jpg?t=1627683959"
+      },
+      {
+        "title": "STRAY | Teaser Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256786641/movie.293x165.jpg?t=1591910393"
+      },
+      {
+        "title": "STRAY | Release Date Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256889643/movie.293x165.jpg?t=1654392393"
+      }
+    ],
     "artwork": []
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10<br></li><li><strong>Processor:</strong> Intel Core i5-2300 | AMD FX-6350<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA GeForce GTX 650 Ti, 2 GB | AMD Radeon R7 360, 2 GB<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Storage:</strong> 10 GB available space</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10<br></li><li><strong>Processor:</strong> Intel Core i5-8400 | AMD Ryzen 5 2600<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA GeForce GTX 780, 3 GB | AMD Radeon R9 290X, 4 GB<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Storage:</strong> 10 GB available space</li></ul>"
+      }
+    },
+    "platforms": [
+      "windows",
+      "mac"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/1332010/",
+    "official": "https://stray.game"
+  },
+  "source": {
+    "name": "Steam Store API",
+    "url": "https://store.steampowered.com/api/appdetails?appids=1332010&l=english&cc=us",
+    "checked_at": "2026-08-24T12:46:27.073Z"
+  },
+  "publication": {
+    "status": "review",
+    "gate_passed": false,
+    "errors": [
+      "only 2 sources; minimum 10",
+      "fewer than 3 editorial sources"
+    ],
+    "checked_at": "2026-08-02T23:59:42.991591+00:00"
   },
   "ratings": {
     "igropoisk": 8.2,
     "users": null,
     "user_votes": 0
-  },
-  "links": {
-    "official": "https://stray.game",
-    "store": "https://store.steampowered.com/app/1332010/"
   },
   "materials": {
     "reviews": [],
@@ -125,14 +166,13 @@
       ],
       "fingerprint": "f2e6d93808838eb5",
       "match_score": 100
-    }
-  ],
-  "schema_version": 3,
-  "requirements": {
-    "pc": {
-      "minimum": {},
-      "recommended": {}
     },
-    "platforms": []
-  }
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=1332010&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:46:27.073Z"
+    }
+  ]
 }

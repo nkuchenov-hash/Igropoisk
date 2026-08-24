@@ -1,0 +1,111 @@
+{
+  "schema_version": 5,
+  "game_slug": "007-first-light",
+  "checked_at": "2026-08-24T12:49:02.306Z",
+  "status": "insufficient-scores",
+  "method": {
+    "name": "Среднее всех найденных подтверждённых независимых профессиональных оценок",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources_for_confident_rating": 10,
+    "maximum_sources": null,
+    "use_all_discovered_scores": true,
+    "persistent_discovery_seeds": true,
+    "output_scale": 10,
+    "letter_grade_map": {
+      "A+": 10,
+      "A": 9.5,
+      "A-": 9,
+      "B+": 8.5,
+      "B": 8,
+      "B-": 7.5,
+      "C+": 7,
+      "C": 6.5,
+      "C-": 6,
+      "D+": 5.5,
+      "D": 5,
+      "D-": 4.5,
+      "F": 2.5
+    },
+    "rounding_decimals": 1
+  },
+  "sources": [
+    {
+      "publication": "PC Gamer",
+      "title": "007 First Light review - PC Gamer",
+      "url": "https://www.pcgamer.com/games/action/007-first-light-review",
+      "original_score": {
+        "score": 65,
+        "scale": 100,
+        "grade": null,
+        "display": "65/100"
+      },
+      "normalized_10": 6.5,
+      "checked_at": "2026-08-24T12:49:02.306Z"
+    },
+    {
+      "publication": "IGN",
+      "title": "007 First Light Review - IGN",
+      "url": "https://www.ign.com/articles/007-first-light-review",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "checked_at": "2026-08-24T12:49:02.306Z"
+    },
+    {
+      "publication": "GamesRadar+",
+      "title": "007 First Light review: \"Bond's greatest game to date, this ...",
+      "url": "https://www.gamesradar.com/games/action/007-first-light-review",
+      "original_score": {
+        "score": 4,
+        "scale": 5,
+        "grade": null,
+        "display": "4/5"
+      },
+      "normalized_10": 8,
+      "checked_at": "2026-08-24T12:49:02.306Z"
+    },
+    {
+      "publication": "techradar.com",
+      "title": "007 First Light review: a stunning stealth action game fit ...",
+      "url": "https://www.techradar.com/gaming/007-first-light-review",
+      "original_score": {
+        "score": 4,
+        "scale": 5,
+        "grade": null,
+        "display": "4/5"
+      },
+      "normalized_10": 8,
+      "checked_at": "2026-08-24T12:49:02.306Z"
+    },
+    {
+      "publication": "eneba.com",
+      "title": "007 First Light Review: A Bond Masterpiece Worth the Wait - ENEBA",
+      "url": "https://www.eneba.com/hub/game-reviews/007-first-light-review",
+      "original_score": {
+        "score": 4.2,
+        "scale": 5,
+        "grade": null,
+        "display": "4.2/5"
+      },
+      "normalized_10": 8.4,
+      "checked_at": "2026-08-24T12:49:02.306Z"
+    }
+  ],
+  "calculation": {
+    "source_count": 5,
+    "values": [
+      6.5,
+      9,
+      8,
+      8,
+      8.4
+    ],
+    "mean_10": 7.98,
+    "score_10": 8,
+    "status": "insufficient-scores"
+  }
+}

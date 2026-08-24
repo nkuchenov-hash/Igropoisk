@@ -1,18 +1,10 @@
 {
-  "publication": {
-    "status": "review",
-    "gate_passed": false,
-    "errors": [
-      "only 1 sources; minimum 10",
-      "fewer than 3 editorial sources"
-    ],
-    "checked_at": "2026-08-02T23:59:26.392255+00:00"
-  },
+  "schema_version": 3,
   "identity": {
     "slug": "resident-evil-village",
     "title": "Resident Evil Village",
-    "seed_title": "Resident Evil Village",
     "steam_appid": 1196590,
+    "seed_title": "Resident Evil Village",
     "game_id": "game_452a31614c43a81e6639"
   },
   "release": {
@@ -40,7 +32,7 @@
       "Family Sharing"
     ],
     "platforms": [
-      "Windows"
+      "windows"
     ]
   },
   "editorial": {
@@ -71,17 +63,65 @@
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1196590/ss_7579d4a7916fb16607eae522844b307a74bd95ec.1920x1080.jpg?t=1776927117",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1196590/ss_5cba45b96c65e0209c269e8d1d8865537927af33.1920x1080.jpg?t=1776927117"
     ],
-    "videos": [],
+    "videos": [
+      {
+        "title": "Village_PV3_Multi_01_ESRB-EN_NoSub_FullHD.mp4",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256825272/movie.293x165.jpg?t=1615523902"
+      },
+      {
+        "title": "Village_2ndTrailer_Multi_01_ESRB_NoSub_EN_FullHD.mp4",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256825258/movie.293x165.jpg?t=1615524000"
+      },
+      {
+        "title": "Village-SpecialDevMessage_NonSubs_ESRB_1080p.mp4",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256789700/movie.293x165.jpg?t=1592542835"
+      },
+      {
+        "title": "Village_AnnounceTrailer_Multi_01_ESRB_EN_FullHD.mp4",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256788758/movie.293x165.jpg?t=1591953125"
+      }
+    ],
     "artwork": []
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10 (64 bit)<br></li><li><strong>Processor:</strong> AMD Ryzen 3 1200  ／ Intel Core i5-7500<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> AMD Radeon RX 560 with 4GB VRAM ／ NVIDIA GeForce GTX 1050 Ti with 4GB VRAM<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Additional Notes:</strong> Estimated performance (when set to Prioritize Performance): 1080p/60fps. ・Framerate might drop in graphics-intensive scenes. ・AMD Radeon RX 6700 XT or NVIDIA GeForce RTX 2060 required to support ray tracing.</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10 (64 bit)/Windows 11 (64 bit)<br></li><li><strong>Processor:</strong> AMD Ryzen 5 3600 ／ Intel Core i7 8700<br></li><li><strong>Memory:</strong> 16 GB RAM<br></li><li><strong>Graphics:</strong> AMD Radeon RX 5700 ／ NVIDIA GeForce GTX 1070<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Additional Notes:</strong> Estimated performance: 1080p/60fps ・Framerate might drop in graphics-intensive scenes. ・AMD Radeon RX 6700 XT or NVIDIA GeForce RTX 2070 required to support ray tracing.</li></ul>"
+      }
+    },
+    "platforms": [
+      "windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/1196590/",
+    "official": "https://www.residentevil.com/village/"
+  },
+  "source": {
+    "name": "Steam Store API",
+    "url": "https://store.steampowered.com/api/appdetails?appids=1196590&l=english&cc=us",
+    "checked_at": "2026-08-24T12:46:25.971Z"
+  },
+  "publication": {
+    "status": "review",
+    "gate_passed": false,
+    "errors": [
+      "only 1 sources; minimum 10",
+      "fewer than 3 editorial sources"
+    ],
+    "checked_at": "2026-08-02T23:59:26.392255+00:00"
   },
   "ratings": {
     "igropoisk": 8.3,
     "users": null,
     "user_votes": 0
-  },
-  "links": {
-    "official": "https://www.residentevil.com/village/",
-    "store": "https://store.steampowered.com/app/1196590/"
   },
   "materials": {
     "reviews": [],
@@ -108,14 +148,13 @@
       ],
       "fingerprint": "91ceabb7333bc9eb",
       "match_score": 100
-    }
-  ],
-  "schema_version": 3,
-  "requirements": {
-    "pc": {
-      "minimum": {},
-      "recommended": {}
     },
-    "platforms": []
-  }
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=1196590&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:46:25.971Z"
+    }
+  ]
 }
