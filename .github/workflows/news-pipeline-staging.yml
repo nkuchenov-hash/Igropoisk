@@ -78,14 +78,14 @@ jobs:
           git fetch origin main:refs/remotes/origin/main --force
           node scripts/audit-news-game-hashtags.mjs --strict --allow-missing-pages --production-ref origin/main
 
-      - name: Prepare the resulting external snapshot without switching the manifest
+      - name: Publish the verified snapshot and switch the live manifest
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
           YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
           YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
           YC_S3_REGION: ru-central1
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
-        run: node scripts/publish-news-storage.mjs --dry-run
+        run: node scripts/publish-news-storage.mjs
 
       - name: Verify generated paths are isolated
         run: |
