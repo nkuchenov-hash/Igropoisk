@@ -1,17 +1,6 @@
-name: Emergency Pages publish
+name: Emergency Pages publish (manual only)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/emergency-pages-publish.yml'
-      - 'game/**'
-      - 'data/reviews/**'
-      - 'data/ratings/**'
-      - 'data/articles/**'
-      - 'data/drafts/**'
-      - 'data/game-content/**'
-      - 'assets/**'
   workflow_dispatch:
 
 permissions:
