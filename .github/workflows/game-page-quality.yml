@@ -44,6 +44,7 @@ on:
       - 'scripts/smoke-game-page-quality-v2.mjs'
       - 'scripts/smoke-game-page-visible-data-v3.mjs'
       - 'scripts/smoke-doom-game-page-v4.mjs'
+      - 'scripts/smoke-game-runtime.mjs'
       - '.github/workflows/game-page-quality.yml'
 
 permissions:
@@ -66,6 +67,7 @@ jobs:
           node --check game/_shared/game-page-quality.js
           node --check game/_shared/game-page-similarity.js
           node --check game/_shared/game-page-review-publication-control.js
+          node --check game/_shared/game-page-review-sources.js
           node --check game/_shared/game-page-materialized-data.js
           node --check game/_shared/game-media-recovery.js
           node --check article/_shared/review-carousel.js
@@ -84,7 +86,6 @@ jobs:
           node --check scripts/materialize-catalog-game-data.mjs
           node --check scripts/run-game-catalog-enrichment.mjs
           node --check scripts/prepare-guide-research.mjs
-          node --check scripts/prepare-review-research.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/synthesize-review-adaptive.mjs
           node --check scripts/quality-control-loop.mjs
@@ -94,6 +95,7 @@ jobs:
           node --check scripts/smoke-game-page-quality-v2.mjs
           node --check scripts/smoke-game-page-visible-data-v3.mjs
           node --check scripts/smoke-doom-game-page-v4.mjs
+          node --check scripts/smoke-game-runtime.mjs
       - name: Exercise canonical catalog materialization
         run: node scripts/materialize-catalog-game-data.mjs
       - name: Exercise verified Steam media repair
