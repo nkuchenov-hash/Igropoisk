@@ -15,20 +15,23 @@ const draft=read(`data/drafts/${slug}.json`,{});
 const title=String(draft.identity?.title||slug);
 const titleTokens=normalize(title).split(' ').filter(Boolean);
 const exactIdentity=value=>{const hay=` ${normalize(value)} `;return titleTokens.every(token=>hay.includes(` ${token} `))};
-async function liveUrl(url){try{const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(12000),headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskMaterialVerifier/2.0)','accept-language':'en-US,en;q=.9,ru;q=.8'}});return r.ok?{ok:true,status:r.status,url:canonical(r.url||url)}:{ok:false,status:r.status,url:canonical(r.url||url)}}catch(error){return{ok:false,status:0,url:canonical(url),error:error.message}}}
+async function liveUrl(url){try{const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(12000),headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskMaterialVerifier/2.1)','accept-language':'en-US,en;q=.9,ru;q=.8'}});return r.ok?{ok:true,status:r.status,url:canonical(r.url||url)}:{ok:false,status:r.status,url:canonical(r.url||url)}}catch(error){return{ok:false,status:0,url:canonical(url),error:error.message}}}
 
 const merged=[];
 const seenUrls=new Set();
-const pushUnique=item=>{const url=canonical(item?.resolved_url||item?.url);const key=url?url.toLowerCase():`${normalize(item?.publication||item?.source)}|${normalize(item?.title)}`;if(!key||seenUrls.has(key))return;seenUrls.add(key);merged.push({...item,url:canonical(item?.url||url),resolved_url:canonical(item?.resolved_url||url)})};
+const pushUnique=item=>{const url=canonical(item?.resolved_url||item?.url);const key=url?`${url.toLowerCase()}|${normalize(item?.publication||item?.source)}`:`${normalize(item?.publication||item?.source)}|${normalize(item?.title)}`;if(!key||seenUrls.has(key))return;seenUrls.add(key);merged.push({...item,url:canonical(item?.url||url),resolved_url:canonical(item?.resolved_url||url)})};
 for(const item of input.reviews||[])pushUnique(item);
 const seedRejected=[];
 for(const item of discoverySeeds.reviews||[]){
   const url=canonical(item?.resolved_url||item?.url);
-  if(!url||seenUrls.has(url.toLowerCase()))continue;
+  const duplicateKey=`${url.toLowerCase()}|${normalize(item?.publication||item?.source)}`;
+  if(!url||seenUrls.has(duplicateKey))continue;
   if(!exactIdentity(`${item.title||''} ${url}`)){seedRejected.push({publication:item.publication||'',title:item.title||'',url,reason:'game identity mismatch'});continue}
+  const score=Number(item.score),scale=Number(item.scale),historicalIndex=['metacritic.com','opencritic.com'].includes(host(url))&&Number.isFinite(score)&&Number.isFinite(scale)&&scale>0;
+  if(historicalIndex){pushUnique({...item,resolved_url:url,domain:host(url),source_kind:item.source_kind||'score_index',validation:{status:'accepted-historical-score-evidence',checked_at:new Date().toISOString(),http_status:null,method:'persistent-verified-historical-index-v1'}});continue}
   const live=await liveUrl(url);
   if(!live.ok){seedRejected.push({publication:item.publication||'',title:item.title||'',url,reason:`unavailable URL: ${live.status||live.error||'network error'}`});continue}
-  pushUnique({...item,resolved_url:live.url,domain:host(live.url),validation:{status:'accepted-readable-link',checked_at:new Date().toISOString(),http_status:live.status,method:'persistent-discovery-seed-live-http-v2'}});
+  pushUnique({...item,resolved_url:live.url,domain:host(live.url),validation:{status:'accepted-readable-link',checked_at:new Date().toISOString(),http_status:live.status,method:'persistent-discovery-seed-live-http-v2.1'}});
 }
 input.reviews=merged;
 input.rejected=[...(Array.isArray(input.rejected)?input.rejected:[]),...seedRejected];
