@@ -55,7 +55,7 @@ jobs:
           console.log(JSON.stringify({reviews:reviews.reviews.length,registered_sources:reviews.source_registry_scan?.registered_sources||0,score_sources:reviews.score_sources?.length||0,rating_sources:ratings.sources?.length||0,screenshots:draft.media.screenshots.length,artwork:draft.media.artwork?.length||0},null,2));
           NODE
           git diff --check
-      - name: Commit verified output through staging PR
+      - name: Commit verified output through conflict-safe staging PR
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -66,6 +66,25 @@ jobs:
           git checkout -b "$BRANCH"
           git add data/reviews/fallout-2.json data/research/fallout-2-source-matrix.json data/ratings/fallout-2.json data/drafts/fallout-2.json data/media-candidates/fallout-2.json data/parser-runs
           git commit -m 'Rebuild Fallout 2 page materials with uncapped discovery'
+
+          # Staging may move while discovery runs. Pull the newest staging into
+          # the result branch before opening the PR. Generated Fallout 2 output
+          # wins only on overlapping conflicts; unrelated staging work is kept.
+          git fetch origin staging
+          git merge --no-edit -X ours origin/staging
+
           git push origin "$BRANCH"
-          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title 'Rebuild Fallout 2 page materials' --body 'Focused verification of the normal page-material enrichment tool: existing Reviews and Media structure only, mandatory registry scan, broad external search, native publisher discovery, uncapped material/score collection.')"
-          gh pr merge "$PR_URL" --merge --delete-branch
+          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title 'Rebuild Fallout 2 page materials' --body 'Focused verification of the normal page-material enrichment tool: existing Reviews and Media structure only, mandatory registry scan, broad external search, native publisher discovery, uncapped material/score collection. Result branch is synchronized with the latest staging before merge.')"
+
+          for attempt in 1 2 3; do
+            if gh pr merge "$PR_URL" --merge --delete-branch; then
+              exit 0
+            fi
+            echo "Merge attempt $attempt failed; refreshing from staging and retrying"
+            git fetch origin staging
+            git merge --no-edit -X ours origin/staging || true
+            git push origin "$BRANCH"
+            sleep $((attempt * 5))
+          done
+          echo 'Unable to merge verified Fallout 2 output after conflict recovery attempts.' >&2
+          exit 1
