@@ -1,19 +1,6 @@
-name: Deploy complete game catalog
+name: Deploy complete game catalog (legacy manual)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/deploy-complete-game-catalog.yml'
-      - 'game/**'
-      - 'data/reviews/**'
-      - 'data/ratings/**'
-      - 'data/articles/**'
-      - 'data/drafts/**'
-      - 'data/game-content/**'
-      - 'assets/**'
-      - 'scripts/**'
-      - 'config/**'
   workflow_dispatch:
 
 permissions:
@@ -45,6 +32,7 @@ jobs:
           find assets scripts features -type f \( -name '*.js' -o -name '*.mjs' \) -print0 | xargs -0 -n1 node --check
           node --check game/_shared/game-shell.js
           node --check game/_shared/game-page.js
+          node --check game/_shared/game-page-review-sources.js
           python3 - <<'PY'
           import json
           from pathlib import Path
