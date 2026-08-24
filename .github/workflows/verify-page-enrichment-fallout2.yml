@@ -5,6 +5,10 @@ on:
     branches: [staging]
     paths:
       - '.github/workflows/verify-page-enrichment-fallout2.yml'
+      - 'scripts/prepare-review-research.mjs'
+      - 'scripts/enrich-review-native-sources.mjs'
+      - 'scripts/calculate-ratings-from-research.mjs'
+      - 'scripts/discover-review-media.mjs'
   pull_request:
     branches: [staging]
     paths:
@@ -67,9 +71,6 @@ jobs:
           git add data/reviews/fallout-2.json data/research/fallout-2-source-matrix.json data/ratings/fallout-2.json data/drafts/fallout-2.json data/media-candidates/fallout-2.json data/parser-runs
           git commit -m 'Rebuild Fallout 2 page materials with uncapped discovery'
 
-          # Staging may move while discovery runs. Pull the newest staging into
-          # the result branch before opening the PR. Generated Fallout 2 output
-          # wins only on overlapping conflicts; unrelated staging work is kept.
           git fetch origin staging
           git merge --no-edit -X ours origin/staging
 
