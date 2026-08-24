@@ -43,7 +43,7 @@ for (const name of fs.readdirSync(WORKFLOWS).filter(file => /\.ya?ml$/i.test(fil
   const relative = `.github/workflows/${name}`;
   const content = read(relative);
   const lines = content.split('\n');
-  const isolatedAutomationPrWriter = /branch="automation\/[^"\n]*\$\{GITHUB_RUN_ID\}[^"\n]*"/.test(content)
+  const isolatedAutomationPrWriter = /(?:BRANCH|branch)="automation\/[^"\n]*\$\{GITHUB_RUN_ID\}[^"\n]*"/.test(content)
     && /gh\s+pr\s+create[\s\S]*--base\s+staging/.test(content);
 
   for (const [index, line] of lines.entries()) {
@@ -51,7 +51,7 @@ for (const name of fs.readdirSync(WORKFLOWS).filter(file => /\.ya?ml$/i.test(fil
       fail(`${relative}:${index + 1} dispatches production deployment outside a main merge.`);
     }
     if (/\bgit\s+push\b/.test(line) && !/staging/.test(line)) {
-      const pushesIsolatedPrBranch = isolatedAutomationPrWriter && /git\s+push\s+origin\s+"?\$branch"?/.test(line);
+      const pushesIsolatedPrBranch = isolatedAutomationPrWriter && /git\s+push\s+origin\s+"?\$(?:BRANCH|branch)"?/.test(line);
       if (!pushesIsolatedPrBranch) fail(`${relative}:${index + 1} pushes without an explicit staging target or approved isolated PR branch.`);
     }
     if (/\bgit\s+pull\b/.test(line) && /origin\s+main/.test(line)) {

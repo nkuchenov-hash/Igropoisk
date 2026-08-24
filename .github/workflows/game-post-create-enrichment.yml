@@ -7,6 +7,15 @@ on:
   workflow_run:
     workflows: ['Fast news game page creation']
     types: [completed]
+  push:
+    branches: [staging]
+    paths:
+      - 'scripts/prepare-review-research.mjs'
+      - 'scripts/calculate-ratings-from-research.mjs'
+      - 'scripts/discover-review-media.mjs'
+      - 'scripts/quality-control-loop.mjs'
+      - 'data/content-pipeline/execution-plan.json'
+      - '.github/workflows/game-post-create-enrichment.yml'
 
 permissions:
   contents: write
@@ -14,58 +23,52 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-enrichment-v4
+  group: game-post-create-enrichment-v5
   cancel-in-progress: false
 
 jobs:
   enrich:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
       - name: Checkout staging snapshot
         uses: actions/checkout@v4
         with:
           ref: staging
           fetch-depth: 0
-
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
       - name: Verify enrichment runtime
         run: |
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/quality-control-loop.mjs
+          node --check scripts/prepare-review-research.mjs
+          node --check scripts/calculate-ratings-from-research.mjs
+          node --check scripts/discover-review-media.mjs
           node --check game/_shared/game-page-review-sources.js
-
       - name: Refresh execution plan
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           EDITORIAL_AI_ENABLED: 'true'
         run: node scripts/orchestrate-content.mjs --finalize
-
-      - name: Run one complete page/review enrichment cycle
+      - name: Run complete page enrichment cycle
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           EDITORIAL_AI_ENABLED: 'true'
         run: node scripts/run-content-pipeline.mjs
-
-      - name: Validate generated game shells and review publication
+      - name: Validate generated game shells and material feeds
         run: |
           node scripts/validate-game-shells.mjs
-          node scripts/audit-review-publication.mjs
           git diff --check
-
       - name: Publish enrichment snapshot to staging
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -z "$(git status --porcelain)" ]; then
-            echo "No enrichment changes produced."
-            exit 0
-          fi
+          if [ -z "$(git status --porcelain)" ]; then echo "No enrichment changes produced."; exit 0; fi
           git config user.name "igropoisk-content-bot"
           git config user.email "igropoisk-content-bot@users.noreply.github.com"
           BRANCH="automation/post-create-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
@@ -73,5 +76,5 @@ jobs:
           git add -A
           git commit -m "Continue game page enrichment ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
           git push origin "$BRANCH"
-          PR="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated post-create page/review enrichment cycle." --json number --jq '.number')"
+          PR="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated page enrichment: data, existing Media, all discovered review/review-source links and ratings. Игропоиск article synthesis is not a page readiness requirement." --json number --jq '.number')"
           gh pr merge "$PR" --merge --delete-branch
