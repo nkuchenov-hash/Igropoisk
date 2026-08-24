@@ -1,3 +1,4 @@
+// News pipeline publication trigger: 2026-08-24T11:01Z
 function compact(value = '') {
   return String(value || '')
     .normalize('NFKC')
