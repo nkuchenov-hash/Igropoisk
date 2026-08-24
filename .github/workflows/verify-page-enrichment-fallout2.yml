@@ -1,0 +1,66 @@
+name: Verify page enrichment on Fallout 2
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - '.github/workflows/verify-page-enrichment-fallout2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate tool syntax
+        run: |
+          node --check scripts/prepare-review-research.mjs
+          node --check scripts/calculate-ratings-from-research.mjs
+          node --check scripts/discover-review-media.mjs
+      - name: Run normal material enrichment for Fallout 2
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
+        run: |
+          node scripts/prepare-review-research.mjs fallout-2
+          node scripts/calculate-ratings-from-research.mjs fallout-2
+          node scripts/discover-review-media.mjs fallout-2
+      - name: Validate Fallout 2 outputs
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const reviews=JSON.parse(fs.readFileSync('data/reviews/fallout-2.json','utf8'));
+          const ratings=JSON.parse(fs.readFileSync('data/ratings/fallout-2.json','utf8'));
+          const draft=JSON.parse(fs.readFileSync('data/drafts/fallout-2.json','utf8'));
+          if(!Array.isArray(reviews.reviews)||!reviews.reviews.length) throw new Error('No review/material links collected');
+          if(reviews.publication_gate?.maximum!==null) throw new Error('Review corpus is still capped');
+          if(ratings.method?.maximum_sources!==null) throw new Error('Ratings are still capped');
+          if(!Array.isArray(draft.media?.screenshots)||draft.media.screenshots.length<7) throw new Error('Media corpus incomplete');
+          console.log(JSON.stringify({reviews:reviews.reviews.length,score_sources:reviews.score_sources?.length||0,rating_sources:ratings.sources?.length||0,screenshots:draft.media.screenshots.length,artwork:draft.media.artwork?.length||0},null,2));
+          NODE
+          git diff --check
+      - name: Commit verified output through staging PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then echo 'No changes'; exit 0; fi
+          git config user.name 'igropoisk-content-bot'
+          git config user.email 'igropoisk-content-bot@users.noreply.github.com'
+          BRANCH="automation/fallout2-materials-${GITHUB_RUN_ID}"
+          git checkout -b "$BRANCH"
+          git add data/reviews/fallout-2.json data/research/fallout-2-source-matrix.json data/ratings/fallout-2.json data/drafts/fallout-2.json data/media-candidates/fallout-2.json data/parser-runs
+          git commit -m 'Rebuild Fallout 2 page materials with uncapped discovery'
+          git push origin "$BRANCH"
+          PR="$(gh pr create --base staging --head "$BRANCH" --title 'Rebuild Fallout 2 page materials' --body 'Focused verification of the normal page-material enrichment tool: existing Reviews and Media structure only, uncapped material/score collection.' --json number --jq '.number')"
+          gh pr merge "$PR" --merge --delete-branch
