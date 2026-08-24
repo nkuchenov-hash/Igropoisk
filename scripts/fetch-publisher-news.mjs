@@ -1,15 +1,26 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
 
 const registryPath = path.resolve('data/news-sources.json');
 const outputPath = path.resolve('data/publisher-news.json');
 const imageDirectory = path.resolve('assets/publisher-news');
-const userAgent = 'IgropoiskOfficialSourceBot/2.1 (+https://github.com/nkuchenov-hash/Igropoisk)';
+const userAgent = 'IgropoiskOfficialSourceBot/3.0 (+https://github.com/nkuchenov-hash/Igropoisk)';
 const maxItems = 180;
 const maxAgeDays = 14;
+const localModel = process.env.NEWS_LOCAL_TRANSLATION_MODEL || 'Xenova/opus-mt-en-ru';
+const localCacheDir = process.env.NEWS_LOCAL_TRANSLATION_CACHE || '/tmp/igropoisk-news-translation-models';
+const localRuntimeDir = process.env.NEWS_LOCAL_TRANSLATION_RUNTIME || '/tmp/igropoisk-news-translator-runtime';
 let googleUnavailable = false;
 let memoryUnavailable = false;
+let localTranslatorPromise = null;
+let localTranslatorUnavailable = false;
+let localTranslatedItems = 0;
+let remoteTranslatedItems = 0;
+let sourceRussianItems = 0;
+let untranslatedDroppedItems = 0;
 
 function decode(value = '') {
   return value.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
@@ -20,6 +31,7 @@ function strip(value = '') { return decode(value).replace(/<script[\s\S]*?<\/scr
 function tag(block, names) { for (const name of names) { const match = block.match(new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${name}>`, 'i')); if (match) return decode(match[1]).trim(); } return ''; }
 function attr(text, name) { const match = text.match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']+)["']`, 'i')); return match ? decode(match[1]).trim() : ''; }
 function absolute(value, base) { try { const url = new URL(value, base); return /^https?:$/.test(url.protocol) ? url.href : ''; } catch { return ''; } }
+function hasCyrillic(value = '') { return /[А-Яа-яЁё]/.test(value); }
 
 async function fetchText(url, timeout = 20000, accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8') {
   const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), timeout);
@@ -69,6 +81,51 @@ function parseFeed(xml, source, feedUrl) {
   }).filter(item => item.title && item.url && Date.now() - new Date(item.publishedAt).getTime() <= maxAgeDays * 864e5);
 }
 
+function translatedText(result) {
+  const first = Array.isArray(result) ? result[0] : result;
+  return String(first?.translation_text || first?.generated_text || '').trim();
+}
+
+async function loadTransformersRuntime() {
+  try {
+    return await import('@huggingface/transformers');
+  } catch {
+    const requireFromRuntime = createRequire(`${localRuntimeDir}/package.json`);
+    const modulePath = requireFromRuntime.resolve('@huggingface/transformers');
+    return import(pathToFileURL(modulePath).href);
+  }
+}
+
+async function getLocalTranslator() {
+  if (localTranslatorUnavailable) return null;
+  if (!localTranslatorPromise) {
+    localTranslatorPromise = (async () => {
+      const { env, pipeline } = await loadTransformersRuntime();
+      env.cacheDir = localCacheDir;
+      env.allowLocalModels = true;
+      env.useFSCache = true;
+      return pipeline('translation', localModel, { dtype: 'q8' });
+    })().catch(error => {
+      localTranslatorUnavailable = true;
+      console.error(`[official/translate/local] unavailable: ${error.message}`);
+      return null;
+    });
+  }
+  return localTranslatorPromise;
+}
+
+async function translateLocalEnRu(text) {
+  if (!text) return '';
+  const translator = await getLocalTranslator();
+  if (!translator) return '';
+  try {
+    return translatedText(await translator(text));
+  } catch (error) {
+    console.error(`[official/translate/local] ${error.message}`);
+    return '';
+  }
+}
+
 async function translateGoogle(text, target) {
   if (googleUnavailable || !text) return '';
   try {
@@ -104,9 +161,15 @@ async function translateMyMemory(text, source, target) {
   }
 }
 
-async function translate(text, source, target) {
-  if (!text || source === target) return text || '';
-  return await translateGoogle(text, target) || await translateMyMemory(text, source, target) || '';
+async function translateEnRu(text) {
+  if (!text) return { text: '', provider: 'none' };
+  const local = await translateLocalEnRu(text);
+  if (local && hasCyrillic(local)) return { text: local, provider: 'local-opus' };
+  const google = await translateGoogle(text, 'ru');
+  if (google && hasCyrillic(google)) return { text: google, provider: 'google-fallback' };
+  const memory = await translateMyMemory(text, 'en', 'ru');
+  if (memory && hasCyrillic(memory)) return { text: memory, provider: 'mymemory-fallback' };
+  return { text: '', provider: 'unavailable' };
 }
 
 function extractImage(html, articleUrl) {
@@ -139,21 +202,35 @@ async function hydrate(item) {
     const { text: html, finalUrl } = await fetchText(item.url);
     const imageUrl = extractImage(html, finalUrl); if (!imageUrl) throw new Error('no original image');
     const baseSummary = item.summary || item.title;
-    const sourceIsRussian = item.sourceLanguage === 'ru' || /[А-Яа-яЁё]/.test(item.title || '');
-    const sourceLanguage = sourceIsRussian ? 'ru' : 'en';
+    const sourceIsRussian = item.sourceLanguage === 'ru' || hasCyrillic(item.title || '');
     const downloaded = await downloadImage(imageUrl, item.id, finalUrl);
-    const translatedTitleRu = sourceIsRussian ? item.title : await translate(item.title, sourceLanguage, 'ru');
-    const translatedSummaryRu = sourceIsRussian ? baseSummary : await translate(baseSummary, sourceLanguage, 'ru');
-    const titleRu = translatedTitleRu || item.title;
-    const summaryRu = translatedSummaryRu || baseSummary;
-    const titleEn = sourceIsRussian ? (await translate(item.title, 'ru', 'en') || item.title) : item.title;
-    const summaryEn = sourceIsRussian ? (await translate(baseSummary, 'ru', 'en') || baseSummary) : baseSummary;
+
+    let titleRu;
+    let summaryRu;
+    let localizationStatus;
+
+    if (sourceIsRussian) {
+      titleRu = item.title;
+      summaryRu = baseSummary;
+      localizationStatus = 'source-ru';
+      sourceRussianItems += 1;
+    } else {
+      const titleTranslation = await translateEnRu(item.title);
+      const summaryTranslation = await translateEnRu(baseSummary);
+      titleRu = titleTranslation.text;
+      summaryRu = summaryTranslation.text || titleRu;
+      localizationStatus = titleTranslation.provider;
+      if (!titleRu || !hasCyrillic(titleRu)) {
+        untranslatedDroppedItems += 1;
+        throw new Error('Russian translation unavailable; English fallback is forbidden on the Russian site');
+      }
+      if (localizationStatus === 'local-opus') localTranslatedItems += 1;
+      else remoteTranslatedItems += 1;
+    }
+
+    const titleEn = sourceIsRussian ? item.title : item.title;
+    const summaryEn = sourceIsRussian ? baseSummary : baseSummary;
     if (!titleRu || !titleEn) throw new Error('usable title unavailable');
-    const localizationStatus = sourceIsRussian
-      ? 'source-ru'
-      : /[А-Яа-яЁё]/.test(translatedTitleRu || '')
-        ? 'translated-ru'
-        : 'source-language-fallback';
     return {
       ...item, url: finalUrl, type: 'official', official: true,
       titleRu, titleEn, summaryRu, summaryEn, localizationStatus, ...downloaded,
@@ -190,6 +267,12 @@ for (const file of await fs.readdir(imageDirectory).catch(() => [])) if (!used.h
 await fs.writeFile(outputPath, `${JSON.stringify({
   generatedAt: new Date().toISOString(), updateFrequency: 'hourly', sourceCount: sources.length,
   successfulSourceCount: sourceReport.filter(item => item.status === 'ok').length,
+  localTranslatedItemCount: localTranslatedItems,
+  remoteTranslatedItemCount: remoteTranslatedItems,
+  sourceRussianItemCount: sourceRussianItems,
+  untranslatedDroppedItemCount: untranslatedDroppedItems,
+  sourceLanguageFallbackItemCount: 0,
+  localTranslationModel: localModel,
   sourceReport, items
 }, null, 2)}\n`);
-console.log(`[official] wrote ${items.length} items from ${sourceReport.filter(item => item.status === 'ok').length}/${sources.length} sources; source-language-fallback=${items.filter(item => item.localizationStatus === 'source-language-fallback').length}`);
+console.log(`[official] wrote ${items.length} Russian-ready items from ${sourceReport.filter(item => item.status === 'ok').length}/${sources.length} sources; local=${localTranslatedItems}; remote=${remoteTranslatedItems}; source-ru=${sourceRussianItems}; untranslated-dropped=${untranslatedDroppedItems}; source-language-fallback=0`);
