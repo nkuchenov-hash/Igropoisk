@@ -1,3 +1,4 @@
+// Canonical hashtag identity helper used by news normalization and audit stages.
 function compact(value = '') {
   return String(value || '')
     .normalize('NFKC')
