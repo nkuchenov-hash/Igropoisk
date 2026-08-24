@@ -56,6 +56,11 @@ jobs:
           node scripts/run-news-pipeline.mjs --force
           git diff --check
 
+      - name: Require production-equivalent news integrity
+        run: |
+          git fetch origin main:refs/remotes/origin/main --force
+          node scripts/audit-news-game-hashtags.mjs --strict --allow-missing-pages --production-ref origin/main
+
       - name: Prepare the resulting external snapshot without switching the manifest
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
@@ -71,9 +76,15 @@ jobs:
           const { execFileSync } = require('node:child_process');
           const config = require('./config/news-pipeline.json');
           const allowed = config.publication.commit_paths;
+          const allowedTmp = new Set([
+            'tmp/news-pipeline-staging-report.json',
+            'tmp/news-game-identity-verification.json',
+            'tmp/news-game-hashtag-normalization.json',
+            'tmp/news-game-hashtag-audit.json'
+          ]);
           const changed = execFileSync('git', ['status', '--porcelain', '--untracked-files=all'], { encoding: 'utf8' })
             .split('\n').filter(Boolean).map(line => line.slice(3));
-          const foreign = changed.filter(file => file !== 'tmp/news-pipeline-staging-report.json'
+          const foreign = changed.filter(file => !allowedTmp.has(file)
             && !allowed.some(prefix => file === prefix || file.startsWith(`${prefix}/`)));
           if (foreign.length) throw new Error(`Pipeline changed foreign paths:\n${foreign.join('\n')}`);
           console.log(`Pipeline changed only approved paths: ${changed.length}.`);
@@ -86,6 +97,9 @@ jobs:
           name: news-pipeline-staging-${{ github.sha }}
           path: |
             tmp/news-pipeline-staging-report.json
+            tmp/news-game-identity-verification.json
+            tmp/news-game-hashtag-normalization.json
+            tmp/news-game-hashtag-audit.json
             data/news.json
             data/publisher-news.json
             data/youtube-signals.json
