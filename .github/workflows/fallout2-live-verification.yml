@@ -1,0 +1,60 @@
+name: Verify Fallout 2 live deployment
+
+on:
+  workflow_run:
+    workflows: ['Deploy Igropoisk to GitHub Pages']
+    types: [completed]
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  verify-live:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify Fallout 2 page and review runtime are live
+        id: live
+        env:
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          base='https://nkuchenov-hash.github.io/Igropoisk'
+          ok=false
+          for attempt in $(seq 1 60); do
+            page_code="$(curl -L -sS -o /tmp/fallout2.html -w '%{http_code}' "$base/game/fallout-2/?verify=$SHA" || true)"
+            js_code="$(curl -L -sS -o /tmp/reviews.js -w '%{http_code}' "$base/game/_shared/game-page-review-sources.js?verify=$SHA" || true)"
+            data_code="$(curl -L -sS -o /tmp/reviews.json -w '%{http_code}' "$base/data/reviews/fallout-2.json?verify=$SHA" || true)"
+            if [ "$page_code" = 200 ] && [ "$js_code" = 200 ] && [ "$data_code" = 200 ] \
+              && grep -q 'data-slug="fallout-2"' /tmp/fallout2.html \
+              && grep -q 'function unifiedReviews' /tmp/reviews.js \
+              && grep -q '"reviews"' /tmp/reviews.json; then
+              ok=true
+              break
+            fi
+            sleep 5
+          done
+          test "$ok" = true
+
+      - name: Publish success status on deployed commit
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$SHA" \
+            -f state=success \
+            -f context='production/fallout-2-live' \
+            -f description='Fallout 2 page, review runtime and data are live'
+
+      - name: Publish failure status on deployed commit
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$SHA" \
+            -f state=failure \
+            -f context='production/fallout-2-live' \
+            -f description='Fallout 2 live verification failed'
