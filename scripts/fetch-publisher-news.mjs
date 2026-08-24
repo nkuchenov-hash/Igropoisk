@@ -5,9 +5,11 @@ import { createHash } from 'node:crypto';
 const registryPath = path.resolve('data/news-sources.json');
 const outputPath = path.resolve('data/publisher-news.json');
 const imageDirectory = path.resolve('assets/publisher-news');
-const userAgent = 'IgropoiskOfficialSourceBot/2.0 (+https://github.com/nkuchenov-hash/Igropoisk)';
+const userAgent = 'IgropoiskOfficialSourceBot/2.1 (+https://github.com/nkuchenov-hash/Igropoisk)';
 const maxItems = 180;
 const maxAgeDays = 14;
+let googleUnavailable = false;
+let memoryUnavailable = false;
 
 function decode(value = '') {
   return value.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
@@ -23,7 +25,11 @@ async function fetchText(url, timeout = 20000, accept = 'text/html,application/x
   const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), timeout);
   try {
     const response = await fetch(url, { redirect: 'follow', signal: controller.signal, headers: { 'user-agent': userAgent, accept } });
-    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+    if (!response.ok) {
+      const error = new Error(`${response.status} ${response.statusText}`);
+      error.status = response.status;
+      throw error;
+    }
     return { text: await response.text(), finalUrl: response.url || url, contentType: response.headers.get('content-type') || '' };
   } finally { clearTimeout(timer); }
 }
@@ -63,12 +69,44 @@ function parseFeed(xml, source, feedUrl) {
   }).filter(item => item.title && item.url && Date.now() - new Date(item.publishedAt).getTime() <= maxAgeDays * 864e5);
 }
 
-async function translate(text, target) {
-  if (!text) return '';
-  const endpoint = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${target}&dt=t&q=${encodeURIComponent(text)}`;
-  const { text: body } = await fetchText(endpoint, 15000, 'application/json');
-  const payload = JSON.parse(body);
-  return (payload?.[0] || []).map(part => part?.[0] || '').join('').trim();
+async function translateGoogle(text, target) {
+  if (googleUnavailable || !text) return '';
+  try {
+    const endpoint = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${target}&dt=t&q=${encodeURIComponent(text)}`;
+    const { text: body } = await fetchText(endpoint, 15000, 'application/json');
+    const payload = JSON.parse(body);
+    return (payload?.[0] || []).map(part => part?.[0] || '').join('').trim();
+  } catch (error) {
+    if ([403, 429].includes(Number(error.status))) googleUnavailable = true;
+    console.error(`[official/translate/google] ${error.message}`);
+    return '';
+  }
+}
+
+async function translateMyMemory(text, source, target) {
+  if (memoryUnavailable || !text || !['en', 'ru'].includes(source) || source === target) return '';
+  try {
+    const endpoint = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}%7C${target}`;
+    const { text: body } = await fetchText(endpoint, 15000, 'application/json');
+    const payload = JSON.parse(body);
+    const translated = String(payload?.responseData?.translatedText || '').trim();
+    const status = Number(payload?.responseStatus || 200);
+    if (status >= 400) {
+      const error = new Error(`MyMemory ${status}`);
+      error.status = status;
+      throw error;
+    }
+    return translated;
+  } catch (error) {
+    if ([403, 429].includes(Number(error.status))) memoryUnavailable = true;
+    console.error(`[official/translate/mymemory] ${error.message}`);
+    return '';
+  }
+}
+
+async function translate(text, source, target) {
+  if (!text || source === target) return text || '';
+  return await translateGoogle(text, target) || await translateMyMemory(text, source, target) || '';
 }
 
 function extractImage(html, articleUrl) {
@@ -101,13 +139,24 @@ async function hydrate(item) {
     const { text: html, finalUrl } = await fetchText(item.url);
     const imageUrl = extractImage(html, finalUrl); if (!imageUrl) throw new Error('no original image');
     const baseSummary = item.summary || item.title;
-    const [titleRu, titleEn, summaryRu, summaryEn, downloaded] = await Promise.all([
-      translate(item.title, 'ru'), translate(item.title, 'en'), translate(baseSummary, 'ru'), translate(baseSummary, 'en'), downloadImage(imageUrl, item.id, finalUrl)
-    ]);
-    if (!titleRu || !titleEn) throw new Error('translation unavailable');
+    const sourceIsRussian = item.sourceLanguage === 'ru' || /[А-Яа-яЁё]/.test(item.title || '');
+    const sourceLanguage = sourceIsRussian ? 'ru' : 'en';
+    const downloaded = await downloadImage(imageUrl, item.id, finalUrl);
+    const translatedTitleRu = sourceIsRussian ? item.title : await translate(item.title, sourceLanguage, 'ru');
+    const translatedSummaryRu = sourceIsRussian ? baseSummary : await translate(baseSummary, sourceLanguage, 'ru');
+    const titleRu = translatedTitleRu || item.title;
+    const summaryRu = translatedSummaryRu || baseSummary;
+    const titleEn = sourceIsRussian ? (await translate(item.title, 'ru', 'en') || item.title) : item.title;
+    const summaryEn = sourceIsRussian ? (await translate(baseSummary, 'ru', 'en') || baseSummary) : baseSummary;
+    if (!titleRu || !titleEn) throw new Error('usable title unavailable');
+    const localizationStatus = sourceIsRussian
+      ? 'source-ru'
+      : /[А-Яа-яЁё]/.test(translatedTitleRu || '')
+        ? 'translated-ru'
+        : 'source-language-fallback';
     return {
       ...item, url: finalUrl, type: 'official', official: true,
-      titleRu, titleEn, summaryRu, summaryEn, ...downloaded,
+      titleRu, titleEn, summaryRu, summaryEn, localizationStatus, ...downloaded,
       homeUntil: new Date(new Date(item.publishedAt).getTime() + 36 * 3600e3).toISOString()
     };
   } catch (error) { console.error(`[official/article] ${item.url}: ${error.message}`); return null; }
@@ -143,4 +192,4 @@ await fs.writeFile(outputPath, `${JSON.stringify({
   successfulSourceCount: sourceReport.filter(item => item.status === 'ok').length,
   sourceReport, items
 }, null, 2)}\n`);
-console.log(`[official] wrote ${items.length} items from ${sourceReport.filter(item => item.status === 'ok').length}/${sources.length} sources`);
+console.log(`[official] wrote ${items.length} items from ${sourceReport.filter(item => item.status === 'ok').length}/${sources.length} sources; source-language-fallback=${items.filter(item => item.localizationStatus === 'source-language-fallback').length}`);
