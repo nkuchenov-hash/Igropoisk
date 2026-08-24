@@ -33,9 +33,6 @@ jobs:
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/discover-review-media.mjs
       - name: Run normal material enrichment for Fallout 2
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
         run: |
           node scripts/prepare-review-research.mjs fallout-2
           node scripts/calculate-ratings-from-research.mjs fallout-2
@@ -50,6 +47,7 @@ jobs:
           if(!Array.isArray(reviews.reviews)||!reviews.reviews.length) throw new Error('No review/material links collected');
           if(reviews.publication_gate?.maximum!==null) throw new Error('Review corpus is still capped');
           if(reviews.source_registry_scan?.complete!==true) throw new Error('Mandatory source registry scan incomplete');
+          if(reviews.external_search?.complete!==true) throw new Error('Broad external search incomplete');
           if(ratings.method?.maximum_sources!==null) throw new Error('Ratings are still capped');
           if(!Array.isArray(draft.media?.screenshots)||draft.media.screenshots.length<7) throw new Error('Media corpus incomplete');
           console.log(JSON.stringify({reviews:reviews.reviews.length,registered_sources:reviews.source_registry_scan?.registered_sources||0,score_sources:reviews.score_sources?.length||0,rating_sources:ratings.sources?.length||0,screenshots:draft.media.screenshots.length,artwork:draft.media.artwork?.length||0},null,2));
@@ -67,5 +65,5 @@ jobs:
           git add data/reviews/fallout-2.json data/research/fallout-2-source-matrix.json data/ratings/fallout-2.json data/drafts/fallout-2.json data/media-candidates/fallout-2.json data/parser-runs
           git commit -m 'Rebuild Fallout 2 page materials with uncapped discovery'
           git push origin "$BRANCH"
-          PR="$(gh pr create --base staging --head "$BRANCH" --title 'Rebuild Fallout 2 page materials' --body 'Focused verification of the normal page-material enrichment tool: existing Reviews and Media structure only, mandatory registry scan, uncapped material/score collection.' --json number --jq '.number')"
-          gh pr merge "$PR" --merge --delete-branch
+          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title 'Rebuild Fallout 2 page materials' --body 'Focused verification of the normal page-material enrichment tool: existing Reviews and Media structure only, mandatory registry scan, broad external search, uncapped material/score collection.')"
+          gh pr merge "$PR_URL" --merge --delete-branch
