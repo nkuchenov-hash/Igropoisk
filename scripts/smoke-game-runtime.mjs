@@ -25,7 +25,12 @@ const checks = [
   {
     path: 'game/_shared/game-page.js',
     type: /javascript/i,
-    markers: ['game-page-v3-bootstrap.js'],
+    markers: ['game-page-v3-bootstrap.js', 'game-page-review-sources.js'],
+  },
+  {
+    path: 'game/_shared/game-page-review-sources.js',
+    type: /javascript/i,
+    markers: ['function unifiedReviews(', 'function renderReviewsTab(', 'quality-review-row'],
   },
   {
     path: 'game/the-witcher-3-wild-hunt/',
@@ -40,6 +45,16 @@ const checks = [
     path: 'game/elden-ring/',
     type: /html/i,
     markers: ['data-slug="elden-ring"', '../_shared/game-shell.js'],
+  },
+  {
+    path: 'game/fallout-2/',
+    type: /html/i,
+    markers: ['data-slug="fallout-2"', '../_shared/game-shell.js'],
+  },
+  {
+    path: 'data/reviews/fallout-2.json',
+    type: /json|text\/plain|octet-stream/i,
+    markers: ['"reviews"'],
   },
 ];
 
