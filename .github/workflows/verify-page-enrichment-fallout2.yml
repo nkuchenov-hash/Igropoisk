@@ -9,6 +9,7 @@ on:
       - 'scripts/enrich-review-native-sources.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/discover-review-media.mjs'
+      - 'data/review-discovery-seeds/fallout-2.json'
   pull_request:
     branches: [staging]
     paths:
@@ -50,13 +51,14 @@ jobs:
           const reviews=JSON.parse(fs.readFileSync('data/reviews/fallout-2.json','utf8'));
           const ratings=JSON.parse(fs.readFileSync('data/ratings/fallout-2.json','utf8'));
           const draft=JSON.parse(fs.readFileSync('data/drafts/fallout-2.json','utf8'));
-          if(!Array.isArray(reviews.reviews)||reviews.reviews.length<4) throw new Error(`Too few review/material links: ${reviews.reviews?.length||0}`);
+          if(!Array.isArray(reviews.reviews)||reviews.reviews.length<12) throw new Error(`Too few review/material links: ${reviews.reviews?.length||0}`);
           if(reviews.publication_gate?.maximum!==null) throw new Error('Review corpus is still capped');
           if(reviews.source_registry_scan?.complete!==true) throw new Error('Mandatory source registry scan incomplete');
           if(reviews.external_search?.complete!==true) throw new Error('Broad external search incomplete');
           if(ratings.method?.maximum_sources!==null) throw new Error('Ratings are still capped');
+          if(!Array.isArray(ratings.sources)||ratings.sources.length<10) throw new Error(`Too few verified professional scores: ${ratings.sources?.length||0}`);
           if(!Array.isArray(draft.media?.screenshots)||draft.media.screenshots.length<7) throw new Error('Media corpus incomplete');
-          console.log(JSON.stringify({reviews:reviews.reviews.length,registered_sources:reviews.source_registry_scan?.registered_sources||0,score_sources:reviews.score_sources?.length||0,rating_sources:ratings.sources?.length||0,screenshots:draft.media.screenshots.length,artwork:draft.media.artwork?.length||0},null,2));
+          console.log(JSON.stringify({reviews:reviews.reviews.length,registered_sources:reviews.source_registry_scan?.registered_sources||0,score_sources:reviews.score_sources?.length||0,rating_sources:ratings.sources?.length||0,score_10:ratings.calculation?.score_10??null,screenshots:draft.media.screenshots.length,artwork:draft.media.artwork?.length||0},null,2));
           NODE
           git diff --check
       - name: Commit verified output through conflict-safe staging PR
@@ -75,7 +77,7 @@ jobs:
           git merge --no-edit -X ours origin/staging
 
           git push origin "$BRANCH"
-          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title 'Rebuild Fallout 2 page materials' --body 'Focused verification of the normal page-material enrichment tool: existing Reviews and Media structure only, mandatory registry scan, broad external search, native publisher discovery, uncapped material/score collection. Result branch is synchronized with the latest staging before merge.')"
+          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title 'Rebuild Fallout 2 page materials' --body 'Focused verification of the normal page-material enrichment tool: existing Reviews and Media structure only, mandatory registry scan, broad external search, persistent verified source corpus, uncapped material/score collection. Result branch is synchronized with the latest staging before merge.')"
 
           for attempt in 1 2 3; do
             if gh pr merge "$PR_URL" --merge --delete-branch; then
