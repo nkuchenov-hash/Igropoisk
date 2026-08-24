@@ -1,18 +1,11 @@
 {
-  "publication": {
-    "status": "review",
-    "gate_passed": false,
-    "errors": [
-      "only 3 sources; minimum 10",
-      "fewer than 3 editorial sources"
-    ],
-    "checked_at": "2026-08-08T16:04:57.081403+00:00"
-  },
+  "schema_version": 3,
   "identity": {
     "slug": "forza-horizon-5",
     "title": "Forza Horizon 5",
+    "steam_appid": 1551360,
     "seed_title": "Forza Horizon 5",
-    "steam_appid": 1551360
+    "game_id": "game_a05b1fa611ca048f1bbd"
   },
   "release": {
     "date_text": "Nov 8, 2021"
@@ -49,7 +42,7 @@
       "Family Sharing"
     ],
     "platforms": [
-      "Windows"
+      "windows"
     ]
   },
   "editorial": {
@@ -87,16 +80,55 @@
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1551360/ss_d26239d188301bb6f2475c6d323ae007195b7542.1920x1080.jpg?t=1746471508",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1551360/ss_16be1ecc46e7c0a3aa68e646af904c66ea8e1c81.1920x1080.jpg?t=1746471508"
     ],
-    "videos": []
+    "videos": [
+      {
+        "title": "Forza Horizon 5 Accolades Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256875134/movie.293x165.jpg?t=1647525311"
+      },
+      {
+        "title": "Forza Horizon 5 Launch Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256859757/movie.293x165.jpg?t=1636489104"
+      }
+    ],
+    "artwork": []
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10 version 18362.0 or higher<br></li><li><strong>Processor:</strong> Intel i5-4460 or AMD Ryzen 3 1200<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> NVidia GTX 970, AMD RX 470, OR Intel Arc A380<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Network:</strong> Broadband Internet connection<br></li><li><strong>Storage:</strong> 110 GB available space</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10 version 18362.0 or higher<br></li><li><strong>Processor:</strong> Intel i5-8400 or AMD Ryzen 5 1500X<br></li><li><strong>Memory:</strong> 16 GB RAM<br></li><li><strong>Graphics:</strong> NVidia GTX 1070, AMD RX 590, OR Intel Arc A750<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Network:</strong> Broadband Internet connection<br></li><li><strong>Storage:</strong> 110 GB available space</li></ul>"
+      }
+    },
+    "platforms": [
+      "windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/1551360/",
+    "official": "http://www.forzamotorsport.net"
+  },
+  "source": {
+    "name": "Steam Store API",
+    "url": "https://store.steampowered.com/api/appdetails?appids=1551360&l=english&cc=us",
+    "checked_at": "2026-08-24T12:10:23.841Z"
+  },
+  "publication": {
+    "status": "review",
+    "gate_passed": false,
+    "errors": [
+      "only 3 sources; minimum 10",
+      "fewer than 3 editorial sources"
+    ],
+    "checked_at": "2026-08-08T16:04:57.081403+00:00"
   },
   "ratings": {
     "igropoisk": null,
     "users": null,
     "user_votes": 0
-  },
-  "links": {
-    "official": "http://www.forzamotorsport.net",
-    "store": "https://store.steampowered.com/app/1551360/"
   },
   "materials": {
     "reviews": [],
@@ -113,7 +145,7 @@
       "published_at": "",
       "checked_at": "2026-08-08T16:04:47.830917+00:00",
       "type": "official",
-      "trust": 1.0,
+      "trust": 1,
       "supports": [
         "identity",
         "editorial_reference"
@@ -157,7 +189,14 @@
         "context"
       ],
       "fingerprint": "826b133b2ac0908b",
-      "match_score": 100.0
+      "match_score": 100
+    },
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=1551360&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:10:23.841Z"
     }
   ]
 }

@@ -1,18 +1,11 @@
 {
-  "publication": {
-    "status": "review",
-    "gate_passed": false,
-    "errors": [
-      "only 2 sources; minimum 10",
-      "fewer than 3 editorial sources"
-    ],
-    "checked_at": "2026-08-02T23:58:40.473220+00:00"
-  },
+  "schema_version": 3,
   "identity": {
     "slug": "god-of-war",
     "title": "God of War",
+    "steam_appid": 1593500,
     "seed_title": "God of War",
-    "steam_appid": 1593500
+    "game_id": "game_90225a1fe58c805c0710"
   },
   "release": {
     "date_text": "Jan 14, 2022"
@@ -57,7 +50,7 @@
       "Family Sharing"
     ],
     "platforms": [
-      "Windows"
+      "windows"
     ]
   },
   "editorial": {
@@ -89,16 +82,55 @@
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_190a972a5bd3144d8944dcdfd7759bb1149017c0.1920x1080.jpg?t=1763059412",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1593500/ss_e0edce62c590bc063a90a1296184392d0a9521da.1920x1080.jpg?t=1763059412"
     ],
-    "videos": []
+    "videos": [
+      {
+        "title": "Features Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256864004/movie.293x165.jpg?t=1639001817"
+      },
+      {
+        "title": "Announce Trailer EN",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256852991/movie.293x165.jpg?t=1634742079"
+      }
+    ],
+    "artwork": []
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10<br></li><li><strong>Processor:</strong> Intel i5-2500k (4 core 3.3 GHz) or AMD Ryzen 3 1200 (4 core 3.1 GHz)<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA GTX 960 (4 GB) or AMD R9 290X (4 GB)<br></li><li><strong>DirectX:</strong> Version 11<br></li><li><strong>Storage:</strong> 70 GB available space<br></li><li><strong>Additional Notes:</strong> DirectX feature level 11_1 required</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10<br></li><li><strong>Processor:</strong> Intel i5-6600k (4 core 3.5 GHz) or AMD Ryzen 5 2400 G (4 core 3.6 GHz)<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA GTX 1060 (6 GB) or AMD RX 570 (4 GB)<br></li><li><strong>DirectX:</strong> Version 11<br></li><li><strong>Storage:</strong> 70 GB available space<br></li><li><strong>Additional Notes:</strong> DirectX feature level 11_1 required</li></ul>"
+      }
+    },
+    "platforms": [
+      "windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/1593500/",
+    "official": "https://www.playstation.com/god-of-war/"
+  },
+  "source": {
+    "name": "Steam Store API",
+    "url": "https://store.steampowered.com/api/appdetails?appids=1593500&l=english&cc=us",
+    "checked_at": "2026-08-24T12:10:24.368Z"
+  },
+  "publication": {
+    "status": "review",
+    "gate_passed": false,
+    "errors": [
+      "only 2 sources; minimum 10",
+      "fewer than 3 editorial sources"
+    ],
+    "checked_at": "2026-08-02T23:58:40.473220+00:00"
   },
   "ratings": {
     "igropoisk": 9.3,
     "users": null,
     "user_votes": 0
-  },
-  "links": {
-    "official": "https://www.playstation.com/god-of-war/",
-    "store": "https://store.steampowered.com/app/1593500/"
   },
   "materials": {
     "reviews": [],
@@ -115,13 +147,13 @@
       "published_at": "",
       "checked_at": "2026-08-02T23:58:32.594813+00:00",
       "type": "official",
-      "trust": 1.0,
+      "trust": 1,
       "supports": [
         "identity",
         "editorial_reference"
       ],
       "fingerprint": "7527a76b7fc2040a",
-      "match_score": 100.0
+      "match_score": 100
     },
     {
       "url": "https://store.steampowered.com/app/1593500/",
@@ -142,6 +174,13 @@
       ],
       "fingerprint": "e53a1f711543e704",
       "match_score": 100
+    },
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=1593500&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:10:24.368Z"
     }
   ]
 }

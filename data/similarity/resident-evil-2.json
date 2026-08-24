@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "game_slug": "resident-evil-2",
-  "generated_at": "2026-08-13T10:14:03.727Z",
+  "generated_at": "2026-08-24T12:10:46.236Z",
   "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
@@ -200,7 +200,7 @@
   "recommendations": [
     {
       "slug": "titanfall-2",
-      "title": "Titanfall® 2",
+      "title": "Titanfall 2",
       "year": 2016,
       "score": 0.6122,
       "base_score": 0.6122,
@@ -241,7 +241,7 @@
     },
     {
       "slug": "resident-evil-7-biohazard",
-      "title": "Resident Evil 7 Biohazard",
+      "title": "Resident Evil 7: Biohazard",
       "year": 2017,
       "score": 0.5969,
       "base_score": 0.5969,
@@ -445,6 +445,129 @@
       ]
     },
     {
+      "slug": "the-sinking-city-2",
+      "title": "The Sinking City 2",
+      "year": 2026,
+      "score": 0.4887,
+      "base_score": 0.4887,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "тон",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "tone",
+          "label": "тон",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "red-dead-redemption",
+      "title": "Red Dead Redemption",
+      "year": 2024,
+      "score": 0.4848,
+      "base_score": 0.4848,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "control",
+      "title": "Control",
+      "year": 2019,
+      "score": 0.4808,
+      "base_score": 0.4808,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "партия/соло",
+        "нарратив",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "narrative",
+          "label": "нарратив",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
       "slug": "forza-horizon-5",
       "title": "Forza Horizon 5",
       "year": 2021,
@@ -486,17 +609,17 @@
       ]
     },
     {
-      "slug": "doom",
-      "title": "DOOM",
-      "year": 2016,
-      "score": 0.4708,
-      "base_score": 0.4708,
+      "slug": "tomb-raider-legacy-of-atlantis",
+      "title": "Tomb Raider: Legacy of Atlantis",
+      "year": 2027,
+      "score": 0.4757,
+      "base_score": 0.4757,
       "reasons": [
         "жанр",
-        "тип геймплея",
-        "боевая система",
         "партия/соло",
-        "тон"
+        "сеттинг",
+        "мультиплеер",
+        "поджанр"
       ],
       "signals": [
         {
@@ -505,78 +628,37 @@
           "overlap": 1
         },
         {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 1
-        },
-        {
-          "field": "combat",
-          "label": "боевая система",
-          "overlap": 1
-        },
-        {
           "field": "party_mode",
           "label": "партия/соло",
           "overlap": 1
         },
         {
-          "field": "tone",
-          "label": "тон",
+          "field": "setting",
+          "label": "сеттинг",
           "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.786
         }
       ]
     },
     {
-      "slug": "half-life-alyx",
-      "title": "Half-Life: Alyx",
+      "slug": "hades",
+      "title": "Hades",
       "year": 2020,
-      "score": 0.4691,
-      "base_score": 0.4691,
-      "reasons": [
-        "жанр",
-        "тип геймплея",
-        "партия/соло",
-        "тон",
-        "мультиплеер"
-      ],
-      "signals": [
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 1
-        },
-        {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 1
-        },
-        {
-          "field": "party_mode",
-          "label": "партия/соло",
-          "overlap": 1
-        },
-        {
-          "field": "tone",
-          "label": "тон",
-          "overlap": 1
-        },
-        {
-          "field": "multiplayer",
-          "label": "мультиплеер",
-          "overlap": 1
-        }
-      ]
-    },
-    {
-      "slug": "outer-wilds",
-      "title": "Outer Wilds",
-      "year": 2019,
-      "score": 0.469,
-      "base_score": 0.469,
+      "score": 0.4755,
+      "base_score": 0.4755,
       "reasons": [
         "жанр",
         "партия/соло",
-        "тон",
+        "нарратив",
         "мультиплеер",
         "поджанр"
       ],
@@ -592,8 +674,8 @@
           "overlap": 1
         },
         {
-          "field": "tone",
-          "label": "тон",
+          "field": "narrative",
+          "label": "нарратив",
           "overlap": 1
         },
         {
@@ -604,89 +686,7 @@
         {
           "field": "subgenres",
           "label": "поджанр",
-          "overlap": 0.895
-        }
-      ]
-    },
-    {
-      "slug": "monster-hunter-world",
-      "title": "Monster Hunter: World",
-      "year": 2018,
-      "score": 0.4625,
-      "base_score": 0.4625,
-      "reasons": [
-        "жанр",
-        "тип геймплея",
-        "партия/соло",
-        "мультиплеер",
-        "поджанр"
-      ],
-      "signals": [
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 1
-        },
-        {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 1
-        },
-        {
-          "field": "party_mode",
-          "label": "партия/соло",
-          "overlap": 1
-        },
-        {
-          "field": "multiplayer",
-          "label": "мультиплеер",
-          "overlap": 1
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.895
-        }
-      ]
-    },
-    {
-      "slug": "god-of-war",
-      "title": "God of War",
-      "year": 2018,
-      "score": 0.4536,
-      "base_score": 0.4536,
-      "reasons": [
-        "жанр",
-        "партия/соло",
-        "тон",
-        "мультиплеер",
-        "поджанр"
-      ],
-      "signals": [
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 1
-        },
-        {
-          "field": "party_mode",
-          "label": "партия/соло",
-          "overlap": 1
-        },
-        {
-          "field": "tone",
-          "label": "тон",
-          "overlap": 1
-        },
-        {
-          "field": "multiplayer",
-          "label": "мультиплеер",
-          "overlap": 1
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.737
+          "overlap": 0.947
         }
       ]
     }

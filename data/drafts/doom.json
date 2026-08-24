@@ -1,9 +1,10 @@
 {
-  "game_id": null,
+  "schema_version": 3,
   "identity": {
     "slug": "doom",
     "title": "DOOM",
-    "steam_appid": 379720
+    "steam_appid": 379720,
+    "game_id": "game_d6b909e33a10648a95d3"
   },
   "release": {
     "date_text": "May 12, 2016",
@@ -21,8 +22,19 @@
     "genres": [
       "Action"
     ],
+    "subgenres": [
+      "Arena shooter",
+      "Fast-paced shooter"
+    ],
+    "categories": [
+      "Single-player",
+      "Multi-player",
+      "Steam Achievements",
+      "Full controller support",
+      "Steam Cloud"
+    ],
     "platforms": [
-      "Windows"
+      "windows"
     ]
   },
   "editorial": {
@@ -35,25 +47,63 @@
       "Тяжёлый саундтрек"
     ]
   },
-  "ratings": {
-    "igropoisk": 9,
-    "users": null,
-    "user_votes": 0
-  },
-  "requirements": {
-    "platforms": [
-      "Windows"
-    ]
-  },
-  "links": {
-    "store": "https://store.steampowered.com/app/379720/"
-  },
-  "schema_version": 3,
-  "publication": {
-    "status": "published",
-    "gate_passed": true,
-    "mode": "structured_sources",
-    "checked_at": "2026-08-23T10:38:21.159Z"
+  "relations": {
+    "franchise": {
+      "name": "DOOM"
+    },
+    "similarity_profile": {
+      "genres": [
+        "Action",
+        "First-person shooter"
+      ],
+      "subgenres": [
+        "Arena shooter",
+        "Fast-paced shooter"
+      ],
+      "gameplay_type": [
+        "action"
+      ],
+      "combat": [
+        "shooter",
+        "realtime"
+      ],
+      "perspective": [
+        "first person"
+      ],
+      "world_structure": [
+        "level based"
+      ],
+      "party_mode": [
+        "solo"
+      ],
+      "narrative": [
+        "campaign"
+      ],
+      "progression": [
+        "weapon upgrades"
+      ],
+      "setting": [
+        "science fiction",
+        "mars",
+        "hell"
+      ],
+      "tone": [
+        "horror",
+        "dark",
+        "violent"
+      ],
+      "multiplayer": [
+        "singleplayer",
+        "competitive"
+      ],
+      "mechanics": [
+        "arena combat",
+        "glory kills",
+        "weapon switching",
+        "vertical movement",
+        "secrets"
+      ]
+    }
   },
   "media": {
     "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/379720/library_600x900.jpg",
@@ -115,6 +165,7 @@
         "source_url": "https://store.steampowered.com/app/379720/"
       }
     ],
+    "videos": [],
     "artwork": [
       {
         "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/379720/page_bg_raw.jpg?t=1750784856",
@@ -131,8 +182,40 @@
         "caption": "Официальный арт",
         "source_url": "https://store.steampowered.com/app/379720/"
       }
-    ],
-    "videos": []
+    ]
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul><li><strong>OS:</strong> Windows 7/8.1/10 (64-bit versions)</li><li><strong>Processor:</strong> Intel Core i5-2400 / AMD FX-8320 or better</li><li><strong>Memory:</strong> 8 GB RAM</li><li><strong>Graphics:</strong> NVIDIA GTX 670 2GB / AMD Radeon HD 7870 2GB or better</li><li><strong>Storage:</strong> 55 GB available space</li><li><strong>Additional Notes:</strong> Requires Steam activation and broadband internet connection for Multiplayer and SnapMap</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul><li><strong>OS:</strong> Windows 7/8.1/10 (64-bit versions)</li><li><strong>Processor:</strong> Intel Core i7-3770 / AMD FX-8350 or better</li><li><strong>Memory:</strong> 8 GB RAM</li><li><strong>Graphics:</strong> NVIDIA GTX 970 4GB / AMD Radeon R9 290 4GB or better</li><li><strong>Storage:</strong> 55 GB available space</li><li><strong>Additional Notes:</strong> Requires Steam activation and broadband internet connection for Multiplayer and SnapMap</li></ul>"
+      }
+    },
+    "platforms": [
+      "Windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/379720/"
+  },
+  "source": {
+    "name": "Steam Store",
+    "url": "https://store.steampowered.com/app/379720/DOOM/",
+    "checked_at": "2026-08-13T10:05:00.000Z"
+  },
+  "game_id": null,
+  "ratings": {
+    "igropoisk": 9,
+    "users": null,
+    "user_votes": 0
+  },
+  "publication": {
+    "status": "published",
+    "gate_passed": true,
+    "mode": "structured_sources",
+    "checked_at": "2026-08-23T10:38:21.159Z"
   },
   "sources": [
     {
@@ -140,6 +223,18 @@
       "url": "https://store.steampowered.com/app/379720/",
       "type": "store",
       "checked_at": "2026-08-23T10:38:21.159Z"
+    },
+    {
+      "title": "Steam Store",
+      "source_name": "Steam Store",
+      "url": "https://store.steampowered.com/app/379720/DOOM/",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-13T10:05:00.000Z"
     }
-  ]
+  ],
+  "materials": {
+    "reviews": [],
+    "news": [],
+    "guides": []
+  }
 }

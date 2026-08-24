@@ -1,19 +1,11 @@
 {
   "schema_version": 3,
-  "publication": {
-    "status": "baseline",
-    "gate_passed": false,
-    "errors": [
-      "editorial_research_pending"
-    ],
-    "checked_at": "2026-08-23T10:38:24.094Z",
-    "mode": "structured_sources"
-  },
   "identity": {
     "slug": "gears-of-war-e-day",
-    "title": "Gears of War: E-Day",
+    "title": "gears-of-war-e-day",
+    "steam_appid": 3010850,
     "seed_title": "gears-of-war-e-day",
-    "steam_appid": 3010850
+    "game_id": "game_33f5e6ca790810309305"
   },
   "release": {
     "date_text": "Oct 6, 2026",
@@ -32,9 +24,23 @@
       "Action",
       "Adventure"
     ],
-    "categories": [],
+    "categories": [
+      "Single-player",
+      "Multi-player",
+      "PvP",
+      "Online PvP",
+      "Co-op",
+      "Online Co-op",
+      "Cross-Platform Multiplayer",
+      "Steam Achievements",
+      "Full controller support",
+      "In-App Purchases",
+      "DualSense Controller Support",
+      "HDR available",
+      "Family Sharing"
+    ],
     "platforms": [
-      "Windows"
+      "windows"
     ]
   },
   "editorial": {
@@ -87,7 +93,28 @@
         "source_url": "https://store.steampowered.com/app/3010850/"
       }
     ],
-    "videos": [],
+    "videos": [
+      {
+        "title": "Gameplay 2",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257404320/0e65fac4a0fafbb75ebacdc3b76e18de2e3094a8/movie_600x337.jpg?t=1787254320"
+      },
+      {
+        "title": "Multiplayer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257388486/533877a3fe799a566e8996a86e02f242ecc88692/movie_600x337.jpg?t=1785424104"
+      },
+      {
+        "title": "Gameplay",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257353899/31daf12e0437fd981e9c67e57dd98a46ca631b03/movie_600x337.jpg?t=1780961337"
+      },
+      {
+        "title": "Announce",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257028399/movie.293x165.jpg?t=1717957122"
+      }
+    ],
     "artwork": [
       {
         "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3010850/3ab525f8c362fa205da31db35102a11f05511202/page_bg_raw.jpg?t=1787254321",
@@ -107,24 +134,45 @@
     ],
     "official_video_exists": false
   },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10 64-bit 22H 19045.7291<br></li><li><strong>Processor:</strong> AMD Ryzen 5 2600X / Intel i7‑6850K / i5‑10400<br></li><li><strong>Memory:</strong> 12 GB RAM<br></li><li><strong>Graphics:</strong> Hardware Ray Tracing capable GPU is required. NVIDIA GeForce RTX 5050 / NVIDIA GeForce RTX 2060 / AMD Radeon RX 6600 / Radeon RX 9060<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Network:</strong> Broadband Internet connection<br></li><li><strong>Storage:</strong> 130 GB available space<br></li><li><strong>Sound Card:</strong> Windows compatible audio device<br></li><li><strong>Additional Notes:</strong> Storage: SSD required (solid-state drive)</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 11 64bit (25H2) or newer<br></li><li><strong>Processor:</strong> AMD Ryzen 5 5600 / Intel i5-11600K<br></li><li><strong>Memory:</strong> 16 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA GeForce RTX 5060 / NVIDIA GeForce RTX 3060ti / AMD Radeon RX 6700 XT / Radeon RX 9060 XT<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Network:</strong> Broadband Internet connection<br></li><li><strong>Storage:</strong> 130 GB available space<br></li><li><strong>Sound Card:</strong> Windows compatible audio device<br></li><li><strong>Additional Notes:</strong> Storage: SSD required (solid-state drive)</li></ul>"
+      }
+    },
+    "platforms": [
+      "Windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/3010850/",
+    "official": ""
+  },
+  "source": {
+    "type": "canonical-game-registry",
+    "game_id": "game_33f5e6ca790810309305"
+  },
+  "publication": {
+    "status": "baseline",
+    "gate_passed": false,
+    "errors": [
+      "editorial_research_pending"
+    ],
+    "checked_at": "2026-08-23T10:38:24.094Z",
+    "mode": "structured_sources"
+  },
   "ratings": {
     "igropoisk": null,
     "users": null,
     "user_votes": 0
   },
-  "links": {
-    "official": "",
-    "store": "https://store.steampowered.com/app/3010850/"
-  },
   "materials": {
     "reviews": [],
     "news": [],
     "guides": []
-  },
-  "requirements": {
-    "platforms": [
-      "Windows"
-    ]
   },
   "sources": [
     {
@@ -132,10 +180,13 @@
       "url": "https://store.steampowered.com/app/3010850/",
       "type": "store",
       "checked_at": "2026-08-23T10:38:24.094Z"
+    },
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=3010850&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:10:24.135Z"
     }
-  ],
-  "source": {
-    "type": "canonical-game-registry",
-    "game_id": "game_33f5e6ca790810309305"
-  }
+  ]
 }

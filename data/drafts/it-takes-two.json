@@ -1,18 +1,11 @@
 {
-  "publication": {
-    "status": "review",
-    "gate_passed": false,
-    "errors": [
-      "only 2 sources; minimum 10",
-      "fewer than 3 editorial sources"
-    ],
-    "checked_at": "2026-08-02T23:59:18.716689+00:00"
-  },
+  "schema_version": 3,
   "identity": {
     "slug": "it-takes-two",
     "title": "It Takes Two",
+    "steam_appid": 1426210,
     "seed_title": "It Takes Two",
-    "steam_appid": 1426210
+    "game_id": "game_66d0e07177afba766d86"
   },
   "release": {
     "date_text": "Mar 25, 2021"
@@ -47,7 +40,7 @@
       "Remote Play Together"
     ],
     "platforms": [
-      "Windows"
+      "windows"
     ]
   },
   "editorial": {
@@ -77,16 +70,65 @@
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1426210/ss_6f7b65b8613afbcb2616bff8ed0283d0629b6572.1920x1080.jpg?t=1777395376",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1426210/ss_6ce2d50261a94284c72164e2d6d3721fe2f00013.1920x1080.jpg?t=1777395376"
     ],
-    "videos": []
+    "videos": [
+      {
+        "title": "Official Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256827093/movie.293x165.jpg?t=1616514535"
+      },
+      {
+        "title": "#5",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256825938/movie.293x165.jpg?t=1615809022"
+      },
+      {
+        "title": "Friends Pass",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256813190/movie.293x165.jpg?t=1607655633"
+      },
+      {
+        "title": "Reveal",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256813189/movie.293x165.jpg?t=1607655625"
+      }
+    ],
+    "artwork": []
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS *:</strong> Windows 8.1 64-bit or Windows 10 64-bit<br></li><li><strong>Processor:</strong> Intel Core i3-2100T or AMD FX 6100<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> Nvidia GeForce GTX 660 or AMD R7 260x<br></li><li><strong>DirectX:</strong> Version 11<br></li><li><strong>Network:</strong> Broadband Internet connection<br></li><li><strong>Storage:</strong> 50 GB available space</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS *:</strong> Windows 8.1 64-bit or Windows 10 64-bit<br></li><li><strong>Processor:</strong> Intel Core i5 3570K or AMD Ryzen 3 1300x<br></li><li><strong>Memory:</strong> 16 GB RAM<br></li><li><strong>Graphics:</strong> Nvidia GeForce GTX 980 or AMD R9 290X<br></li><li><strong>DirectX:</strong> Version 11<br></li><li><strong>Network:</strong> Broadband Internet connection<br></li><li><strong>Storage:</strong> 50 GB available space</li></ul>"
+      }
+    },
+    "platforms": [
+      "windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/1426210/",
+    "official": "https://www.ea.com/games/it-takes-two"
+  },
+  "source": {
+    "name": "Steam Store API",
+    "url": "https://store.steampowered.com/api/appdetails?appids=1426210&l=english&cc=us",
+    "checked_at": "2026-08-24T12:10:25.930Z"
+  },
+  "publication": {
+    "status": "review",
+    "gate_passed": false,
+    "errors": [
+      "only 2 sources; minimum 10",
+      "fewer than 3 editorial sources"
+    ],
+    "checked_at": "2026-08-02T23:59:18.716689+00:00"
   },
   "ratings": {
     "igropoisk": 8.9,
     "users": null,
     "user_votes": 0
-  },
-  "links": {
-    "official": "https://www.ea.com/games/it-takes-two",
-    "store": "https://store.steampowered.com/app/1426210/"
   },
   "materials": {
     "reviews": [],
@@ -103,13 +145,13 @@
       "published_at": "",
       "checked_at": "2026-08-02T23:59:11.226648+00:00",
       "type": "official",
-      "trust": 1.0,
+      "trust": 1,
       "supports": [
         "identity",
         "editorial_reference"
       ],
       "fingerprint": "e83262d934cdc4da",
-      "match_score": 100.0
+      "match_score": 100
     },
     {
       "url": "https://store.steampowered.com/app/1426210/",
@@ -130,6 +172,13 @@
       ],
       "fingerprint": "c6358338aaefc44c",
       "match_score": 100
+    },
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=1426210&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:10:25.930Z"
     }
   ]
 }
