@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: staging
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -35,12 +35,12 @@ jobs:
         run: test -n "$OPENAI_API_KEY"
       - name: Run broad Fallout 2 review discovery
         run: node scripts/run-review-discovery-with-seeds.mjs fallout-2
-      - name: Commit regenerated review corpus
+      - name: Commit regenerated review corpus to staging
         run: |
           git config user.name "igropoisk-review-bot"
           git config user.email "actions@users.noreply.github.com"
           git add data/reviews/fallout-2.json data/research/fallout-2-source-matrix.json data/parser-runs/review-research-fallout-2.json
           git diff --cached --quiet && exit 0
           git commit -m "Regenerate Fallout 2 review discovery"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git pull --rebase origin staging
+          git push origin HEAD:staging
