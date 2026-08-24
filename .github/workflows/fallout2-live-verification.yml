@@ -13,7 +13,17 @@ jobs:
   verify-live:
     runs-on: ubuntu-latest
     steps:
-      - name: Fail when Pages deployment failed
+      - name: Publish Pages deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+        run: |
+          if [ "$CONCLUSION" = success ]; then state=success; desc='GitHub Pages deployment completed'; else state=failure; desc="GitHub Pages deployment: $CONCLUSION"; fi
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$SHA" \
+            -f state="$state" -f context='production/pages-deploy' -f description="$desc"
+
+      - name: Stop when Pages deployment failed
         if: github.event.workflow_run.conclusion != 'success'
         run: exit 1
 
@@ -27,10 +37,15 @@ jobs:
           ok=false
           for attempt in $(seq 1 60); do
             page_code="$(curl -L -sS -o /tmp/fallout2.html -w '%{http_code}' "$base/game/fallout-2/?verify=$SHA" || true)"
-            js_code="$(curl -L -sS -o /tmp/reviews.js -w '%{http_code}' "$base/game/_shared/game-page-review-sources.js?verify=$SHA" || true)"
+            shell_code="$(curl -L -sS -o /tmp/shell.js -w '%{http_code}' "$base/game/_shared/game-shell.js?verify=$SHA" || true)"
+            pagejs_code="$(curl -L -sS -o /tmp/page.js -w '%{http_code}' "$base/game/_shared/game-page.js?verify=$SHA" || true)"
+            reviewsjs_code="$(curl -L -sS -o /tmp/reviews.js -w '%{http_code}' "$base/game/_shared/game-page-review-sources.js?verify=$SHA" || true)"
             data_code="$(curl -L -sS -o /tmp/reviews.json -w '%{http_code}' "$base/data/reviews/fallout-2.json?verify=$SHA" || true)"
-            if [ "$page_code" = 200 ] && [ "$js_code" = 200 ] && [ "$data_code" = 200 ] \
+            echo "attempt=$attempt page=$page_code shell=$shell_code pagejs=$pagejs_code reviewsjs=$reviewsjs_code data=$data_code"
+            if [ "$page_code" = 200 ] && [ "$shell_code" = 200 ] && [ "$pagejs_code" = 200 ] && [ "$reviewsjs_code" = 200 ] && [ "$data_code" = 200 ] \
               && grep -q 'data-slug="fallout-2"' /tmp/fallout2.html \
+              && grep -q 'game-page.js' /tmp/shell.js \
+              && grep -q 'game-page-review-sources.js' /tmp/page.js \
               && grep -q 'function unifiedReviews' /tmp/reviews.js \
               && grep -q '"reviews"' /tmp/reviews.json; then
               ok=true
@@ -40,24 +55,20 @@ jobs:
           done
           test "$ok" = true
 
-      - name: Publish success status on deployed commit
+      - name: Publish Fallout 2 live success status
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$SHA" \
-            -f state=success \
-            -f context='production/fallout-2-live' \
-            -f description='Fallout 2 page, review runtime and data are live'
+            -f state=success -f context='production/fallout-2-live' -f description='Fallout 2 page and review runtime are live'
 
-      - name: Publish failure status on deployed commit
+      - name: Publish Fallout 2 live failure status
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$SHA" \
-            -f state=failure \
-            -f context='production/fallout-2-live' \
-            -f description='Pages deployment or Fallout 2 live verification failed'
+            -f state=failure -f context='production/fallout-2-live' -f description='Fallout 2 live asset verification failed'
