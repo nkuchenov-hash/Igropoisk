@@ -1,19 +1,10 @@
 {
-  "publication": {
-    "status": "review",
-    "gate_passed": false,
-    "errors": [
-      "only 2 sources; minimum 10",
-      "fewer than 3 editorial sources",
-      "fewer than 6 screenshots"
-    ],
-    "checked_at": "2026-08-02T23:58:45.499510+00:00"
-  },
+  "schema_version": 3,
   "identity": {
     "slug": "red-dead-redemption-2",
     "title": "Red Dead Redemption 2",
-    "seed_title": "Red Dead Redemption 2",
     "steam_appid": 1174180,
+    "seed_title": "Red Dead Redemption 2",
     "game_id": "game_7f02167dcca9e6237268"
   },
   "release": {
@@ -46,7 +37,7 @@
       "Remote Play on Tablet"
     ],
     "platforms": [
-      "Windows"
+      "windows"
     ]
   },
   "editorial": {
@@ -73,17 +64,56 @@
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_4ce07ae360b166f0f650e9a895a3b4b7bf15e34f.1920x1080.jpg?t=1759502961",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/ss_d1a8f5a69155c3186c65d1da90491fcfd43663d9.1920x1080.jpg?t=1759502961"
     ],
-    "videos": [],
+    "videos": [
+      {
+        "title": "RDR2 Launch Trailer (US)",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256767979/movie.293x165.jpg?t=1574881964"
+      },
+      {
+        "title": "RDR2 60 FPS Trailer (US)",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256767971/movie.293x165.jpg?t=1574881973"
+      }
+    ],
     "artwork": []
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10 - 64-bit<br></li><li><strong>Processor:</strong> Intel® Core™ i5-2500K / AMD FX-6300<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> Nvidia GeForce GTX 770 2GB / AMD Radeon R9 280 3GB<br></li><li><strong>Network:</strong> Broadband Internet connection<br></li><li><strong>Storage:</strong> 150 GB available space<br></li><li><strong>Sound Card:</strong> Direct X Compatible</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10 - 64-bit<br></li><li><strong>Processor:</strong> Intel® Core™ i7-4770K / AMD Ryzen 5 1500X<br></li><li><strong>Memory:</strong> 12 GB RAM<br></li><li><strong>Graphics:</strong> Nvidia GeForce GTX 1060 6GB / AMD Radeon RX 480 4GB<br></li><li><strong>Network:</strong> Broadband Internet connection<br></li><li><strong>Storage:</strong> 150 GB available space<br></li><li><strong>Sound Card:</strong> Direct X Compatible</li></ul>"
+      }
+    },
+    "platforms": [
+      "windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/1174180/",
+    "official": "https://www.rockstargames.com/reddeadredemption2/"
+  },
+  "source": {
+    "name": "Steam Store API",
+    "url": "https://store.steampowered.com/api/appdetails?appids=1174180&l=english&cc=us",
+    "checked_at": "2026-08-24T12:46:25.145Z"
+  },
+  "publication": {
+    "status": "review",
+    "gate_passed": false,
+    "errors": [
+      "only 2 sources; minimum 10",
+      "fewer than 3 editorial sources",
+      "fewer than 6 screenshots"
+    ],
+    "checked_at": "2026-08-02T23:58:45.499510+00:00"
   },
   "ratings": {
     "igropoisk": 9.3,
     "users": null,
     "user_votes": 0
-  },
-  "links": {
-    "official": "https://www.rockstargames.com/reddeadredemption2/",
-    "store": "https://store.steampowered.com/app/1174180/"
   },
   "materials": {
     "reviews": [],
@@ -127,14 +157,13 @@
       ],
       "fingerprint": "bbf3a1050f008ae8",
       "match_score": 100
-    }
-  ],
-  "schema_version": 3,
-  "requirements": {
-    "pc": {
-      "minimum": {},
-      "recommended": {}
     },
-    "platforms": []
-  }
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=1174180&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:46:25.145Z"
+    }
+  ]
 }

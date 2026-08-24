@@ -1,19 +1,10 @@
 {
-  "publication": {
-    "status": "review",
-    "gate_passed": false,
-    "errors": [
-      "only 1 sources; minimum 10",
-      "fewer than 3 editorial sources",
-      "fewer than 6 screenshots"
-    ],
-    "checked_at": "2026-08-02T23:58:10.673313+00:00"
-  },
+  "schema_version": 3,
   "identity": {
     "slug": "titanfall-2",
     "title": "Titanfall 2",
-    "seed_title": "Titanfall 2",
     "steam_appid": 1237970,
+    "seed_title": "Titanfall 2",
     "game_id": "game_c27fc627a038e155d764"
   },
   "release": {
@@ -44,7 +35,7 @@
       "Remote Play on TV"
     ],
     "platforms": [
-      "Windows"
+      "windows"
     ]
   },
   "editorial": {
@@ -71,17 +62,76 @@
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1237970/ss_9e89b335e17df4e5049ffd30a558ddf50a8e36af.1920x1080.jpg?t=1779987598",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1237970/ss_18550193debe4e3461e9f5daac9eb4e399dcebab.1920x1080.jpg?t=1779987598"
     ],
-    "videos": [],
+    "videos": [
+      {
+        "title": "Ultimate Edition Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256789141/movie.293x165.jpg?t=1592506505"
+      },
+      {
+        "title": "Multiplayer Gameplay",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256789725/movie.293x165.jpg?t=1592506485"
+      },
+      {
+        "title": "Single Player Gameplay Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256789445/movie.293x165.jpg?t=1592506495"
+      },
+      {
+        "title": "Frontier Shield Gameplay",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256789812/movie.293x165.jpg?t=1592510686"
+      },
+      {
+        "title": "Single Player Cinematic",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256789135/movie.293x165.jpg?t=1592506514"
+      },
+      {
+        "title": "Titanfall 2 Trailer 1",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256787686/movie.293x165.jpg?t=1592506523"
+      }
+    ],
     "artwork": []
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS *:</strong> Win 7/8/8.1/10 64bit<br></li><li><strong>Processor:</strong> Intel Core i3-6300t or equivalent [4 or more hardware threads]<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA Geforce GTX 660 2GB or AMD Radeon HD 7850 2GB<br></li><li><strong>DirectX:</strong> Version 11<br></li><li><strong>Storage:</strong> 45 GB available space</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS *:</strong> Win 7/8/8.1/10 64bit<br></li><li><strong>Processor:</strong> Intel Core i5-6600 or equivalent<br></li><li><strong>Memory:</strong> 16 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA Geforce GTX 1060 6GB or AMD Radeon RX 480 8GB<br></li><li><strong>DirectX:</strong> Version 11<br></li><li><strong>Storage:</strong> 45 GB available space</li></ul>"
+      }
+    },
+    "platforms": [
+      "windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/1237970/",
+    "official": "https://www.ea.com/games/titanfall/titanfall-2"
+  },
+  "source": {
+    "name": "Steam Store API",
+    "url": "https://store.steampowered.com/api/appdetails?appids=1237970&l=english&cc=us",
+    "checked_at": "2026-08-24T12:46:27.633Z"
+  },
+  "publication": {
+    "status": "review",
+    "gate_passed": false,
+    "errors": [
+      "only 1 sources; minimum 10",
+      "fewer than 3 editorial sources",
+      "fewer than 6 screenshots"
+    ],
+    "checked_at": "2026-08-02T23:58:10.673313+00:00"
   },
   "ratings": {
     "igropoisk": 8.6,
     "users": null,
     "user_votes": 0
-  },
-  "links": {
-    "official": "https://www.ea.com/games/titanfall/titanfall-2",
-    "store": "https://store.steampowered.com/app/1237970/"
   },
   "materials": {
     "reviews": [],
@@ -108,14 +158,13 @@
       ],
       "fingerprint": "dbb5045b61ddff62",
       "match_score": 100
-    }
-  ],
-  "schema_version": 3,
-  "requirements": {
-    "pc": {
-      "minimum": {},
-      "recommended": {}
     },
-    "platforms": []
-  }
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=1237970&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:46:27.633Z"
+    }
+  ]
 }

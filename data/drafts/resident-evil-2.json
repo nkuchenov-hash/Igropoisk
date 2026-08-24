@@ -1,18 +1,10 @@
 {
-  "publication": {
-    "status": "review",
-    "gate_passed": false,
-    "errors": [
-      "only 1 sources; minimum 10",
-      "fewer than 3 editorial sources"
-    ],
-    "checked_at": "2026-08-02T23:59:04.022862+00:00"
-  },
+  "schema_version": 3,
   "identity": {
     "slug": "resident-evil-2",
     "title": "Resident Evil 2",
-    "seed_title": "Resident Evil 2",
     "steam_appid": 883710,
+    "seed_title": "Resident Evil 2",
     "game_id": "game_f5ec18b2f0b1f5bb1f7b"
   },
   "release": {
@@ -42,7 +34,7 @@
       "Family Sharing"
     ],
     "platforms": [
-      "Windows"
+      "windows"
     ]
   },
   "editorial": {
@@ -74,18 +66,51 @@
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/883710/ss_12fb940f490e3ec565fd41417156969632260d5a.1920x1080.jpg?t=1779433152",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/883710/ss_90cc41d4c52d56f5ab26ad64223922a93b60eba6.1920x1080.jpg?t=1779433152"
     ],
-    "videos": [],
-    "official_video_exists": false,
-    "artwork": []
+    "videos": [
+      {
+        "title": "01-RE2_LaunchTrailer_Steam_ESRB",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256741826/movie.293x165.jpg?t=1548921091"
+      }
+    ],
+    "artwork": [],
+    "official_video_exists": false
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> WINDOWS® 10 (64-BIT Required)<br></li><li><strong>Processor:</strong> Intel® Core™ i5-4460 or AMD FX™-6300 or better<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA® GeForce® GTX 960 or AMD Radeon™ RX 460<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Storage:</strong> 26 GB available space<br></li><li><strong>Additional Notes:</strong> This game is expected to run at 1080p/30 FPS. If you have don't have enough graphics memory to run the game at your selected texture quality, you must go to Options &gt; Graphics and lower the texture quality or shadow quality, or decrease the resolution. An internet connection is required for product activation. (Network connectivity uses Steam® developed by Valve® Corporation.)</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> WINDOWS® 10 (64-BIT Required)<br></li><li><strong>Processor:</strong> Intel® Core™ i7-3770 or AMD FX™-9590 or better<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA® GeForce® GTX 1060 or AMD Radeon™ RX 480  with 3GB VRAM<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Storage:</strong> 26 GB available space<br></li><li><strong>Additional Notes:</strong> This game is expected to run at 1080p/60 FPS. An internet connection is required for product activation. (Network connectivity uses Steam® developed by Valve® Corporation.)</li></ul>"
+      }
+    },
+    "platforms": [
+      "windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/883710/",
+    "official": "http://www.residentevil2.com/"
+  },
+  "source": {
+    "name": "Steam Store API",
+    "url": "https://store.steampowered.com/api/appdetails?appids=883710&l=english&cc=us",
+    "checked_at": "2026-08-24T12:46:25.403Z"
+  },
+  "publication": {
+    "status": "review",
+    "gate_passed": false,
+    "errors": [
+      "only 1 sources; minimum 10",
+      "fewer than 3 editorial sources"
+    ],
+    "checked_at": "2026-08-02T23:59:04.022862+00:00"
   },
   "ratings": {
     "igropoisk": 8.9,
     "users": null,
     "user_votes": 0
-  },
-  "links": {
-    "official": "http://www.residentevil2.com/",
-    "store": "https://store.steampowered.com/app/883710/"
   },
   "materials": {
     "reviews": [],
@@ -112,14 +137,13 @@
       ],
       "fingerprint": "6ea07598f0b721c7",
       "match_score": 100
-    }
-  ],
-  "schema_version": 3,
-  "requirements": {
-    "pc": {
-      "minimum": {},
-      "recommended": {}
     },
-    "platforms": []
-  }
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=883710&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:46:25.403Z"
+    }
+  ]
 }

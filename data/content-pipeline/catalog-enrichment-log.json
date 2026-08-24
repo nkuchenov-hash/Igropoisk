@@ -1,167 +1,132 @@
 {
   "schema_version": 3,
-  "started_at": "2026-08-24T12:10:22.129Z",
-  "finished_at": "2026-08-24T12:23:11.188Z",
+  "started_at": "2026-08-24T12:46:23.852Z",
+  "finished_at": "2026-08-24T12:58:36.059Z",
   "results": [
     {
       "label": "canonical-materialization-before-tech",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"catalog_games\": 215,\n  \"canonical_drafts_written\": 215,\n  \"draft_aliases_recovered\": 5,\n  \"requirements_recovered\": 7\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:black-myth-wukong",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"black-myth-wukong\",\n  \"checked_at\": \"2026-08-24T12:10:22.277Z\",\n  \"duration_ms\": 259,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2358720&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Black Myth: Wukong\",\n    \"developers\": [\n      \"Game Science\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 6,\n    \"videos\": 5\n  },\n  \"output\": \"data/parser-output/black-myth-wukong.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:celeste",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"celeste\",\n  \"checked_at\": \"2026-08-24T12:10:22.560Z\",\n  \"duration_ms\": 242,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=504230&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Celeste\",\n    \"developers\": [\n      \"Maddy Makes Games Inc.\",\n      \"Extremely OK Games, Ltd.\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\",\n      \"linux\"\n    ],\n    \"screenshots\": 12,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/celeste.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:control",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"control\",\n  \"checked_at\": \"2026-08-24T12:10:22.829Z\",\n  \"duration_ms\": 193,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=870780&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"CONTROL Ultimate Edition\",\n    \"developers\": [\n      \"Remedy Entertainment\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\"\n    ],\n    \"screenshots\": 8,\n    \"videos\": 2\n  },\n  \"output\": \"data/parser-output/control.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:cyberpunk-2077",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"cyberpunk-2077\",\n  \"checked_at\": \"2026-08-24T12:10:23.048Z\",\n  \"duration_ms\": 218,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1091500&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Cyberpunk 2077\",\n    \"developers\": [\n      \"CD PROJEKT RED\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\"\n    ],\n    \"screenshots\": 22,\n    \"videos\": 12\n  },\n  \"output\": \"data/parser-output/cyberpunk-2077.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:elden-ring",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"elden-ring\",\n  \"checked_at\": \"2026-08-24T12:10:23.293Z\",\n  \"duration_ms\": 298,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1245620&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"ELDEN RING\",\n    \"developers\": [\n      \"FromSoftware, Inc.\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 10,\n    \"videos\": 10\n  },\n  \"output\": \"data/parser-output/elden-ring.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:fields-of-mistria",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fields-of-mistria\",\n  \"checked_at\": \"2026-08-24T12:10:23.613Z\",\n  \"duration_ms\": 203,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2142790&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fields of Mistria\",\n    \"developers\": [\n      \"NPC Studio\"\n    ],\n    \"genres\": [\n      \"Indie\",\n      \"RPG\",\n      \"Simulation\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"linux\"\n    ],\n    \"screenshots\": 20,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/fields-of-mistria.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:forza-horizon-5",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"forza-horizon-5\",\n  \"checked_at\": \"2026-08-24T12:10:23.841Z\",\n  \"duration_ms\": 270,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1551360&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Forza Horizon 5\",\n    \"developers\": [\n      \"Playground Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"Racing\",\n      \"Simulation\",\n      \"Sports\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 16,\n    \"videos\": 2\n  },\n  \"output\": \"data/parser-output/forza-horizon-5.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:gears-of-war-e-day",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"gears-of-war-e-day\",\n  \"checked_at\": \"2026-08-24T12:10:24.135Z\",\n  \"duration_ms\": 209,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3010850&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Gears of War: E-Day\",\n    \"developers\": [\n      \"The Coalition\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 8,\n    \"videos\": 4\n  },\n  \"output\": \"data/parser-output/gears-of-war-e-day.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:god-of-war",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"god-of-war\",\n  \"checked_at\": \"2026-08-24T12:10:24.368Z\",\n  \"duration_ms\": 245,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1593500&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"God of War\",\n    \"developers\": [\n      \"Santa Monica Studio\",\n      \"Jetpack Interactive\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 10,\n    \"videos\": 2\n  },\n  \"output\": \"data/parser-output/god-of-war.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:hades",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"hades\",\n  \"checked_at\": \"2026-08-24T12:10:24.638Z\",\n  \"duration_ms\": 271,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1145360&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Hades\",\n    \"developers\": [\n      \"Supergiant Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\"\n    ],\n    \"screenshots\": 11,\n    \"videos\": 3\n  },\n  \"output\": \"data/parser-output/hades.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:half-life-alyx",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"half-life-alyx\",\n  \"checked_at\": \"2026-08-24T12:10:24.935Z\",\n  \"duration_ms\": 203,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=546560&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Half-Life: Alyx\",\n    \"developers\": [\n      \"Valve\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 12,\n    \"videos\": 4\n  },\n  \"output\": \"data/parser-output/half-life-alyx.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:hogwarts-legacy",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"hogwarts-legacy\",\n  \"checked_at\": \"2026-08-24T12:10:25.162Z\",\n  \"duration_ms\": 242,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=990080&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Hogwarts Legacy\",\n    \"developers\": [\n      \"Avalanche Software\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 2\n  },\n  \"output\": \"data/parser-output/hogwarts-legacy.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:hollow-knight",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"hollow-knight\",\n  \"checked_at\": \"2026-08-24T12:10:25.429Z\",\n  \"duration_ms\": 239,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=367520&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Hollow Knight\",\n    \"developers\": [\n      \"Team Cherry\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\",\n      \"linux\"\n    ],\n    \"screenshots\": 15,\n    \"videos\": 5\n  },\n  \"output\": \"data/parser-output/hollow-knight.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:iron-nest-heavy-turret-simulator",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"iron-nest-heavy-turret-simulator\",\n  \"checked_at\": \"2026-08-24T12:10:25.691Z\",\n  \"duration_ms\": 216,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2950790&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"IRON NEST: Heavy Turret Simulator\",\n    \"developers\": [\n      \"Nick Nieuwoudt\",\n      \"Dominik Latos\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\",\n      \"Simulation\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 17,\n    \"videos\": 2\n  },\n  \"output\": \"data/parser-output/iron-nest-heavy-turret-simulator.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:it-takes-two",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"it-takes-two\",\n  \"checked_at\": \"2026-08-24T12:10:25.930Z\",\n  \"duration_ms\": 243,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1426210&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"It Takes Two\",\n    \"developers\": [\n      \"Hazelight Studios\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 8,\n    \"videos\": 4\n  },\n  \"output\": \"data/parser-output/it-takes-two.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:kingdom-come-deliverance",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"kingdom-come-deliverance\",\n  \"checked_at\": \"2026-08-24T12:10:26.198Z\",\n  \"duration_ms\": 284,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=379430&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Kingdom Come: Deliverance\",\n    \"developers\": [\n      \"Warhorse Studios\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 23,\n    \"videos\": 8\n  },\n  \"output\": \"data/parser-output/kingdom-come-deliverance.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:mafia",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"mafia\",\n  \"checked_at\": \"2026-08-24T12:10:26.507Z\",\n  \"duration_ms\": 255,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=40990&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Mafia\",\n    \"developers\": [\n      \"Illusion Softworks\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 11,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/mafia.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:marvel-to-kon-fighting-souls",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"marvel-to-kon-fighting-souls\",\n  \"checked_at\": \"2026-08-24T12:10:26.786Z\",\n  \"duration_ms\": 169,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3787240&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"MARVEL Tōkon: Fighting Souls\",\n    \"developers\": [\n      \"ARC SYSTEM WORKS CO., LTD\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Casual\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 10,\n    \"videos\": 7\n  },\n  \"output\": \"data/parser-output/marvel-to-kon-fighting-souls.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:metal-gear-solid-v-the-phantom-pain",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"metal-gear-solid-v-the-phantom-pain\",\n  \"checked_at\": \"2026-08-24T12:10:26.979Z\",\n  \"duration_ms\": 177,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=287700&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"METAL GEAR SOLID V: THE PHANTOM PAIN\",\n    \"developers\": [\n      \"KONAMI\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 28,\n    \"videos\": 2\n  },\n  \"output\": \"data/parser-output/metal-gear-solid-v-the-phantom-pain.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "technical:mistfall-hunter",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"mistfall-hunter\",\n  \"checked_at\": \"2026-08-24T12:10:27.180Z\",\n  \"duration_ms\": 154,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3282300&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Mistfall Hunter\",\n    \"developers\": [\n      \"Bellring Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 11,\n    \"videos\": 8\n  },\n  \"output\": \"data/parser-output/mistfall-hunter.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "canonical-materialization-after-tech",
       "status": "completed",
       "exit_code": 0,
       "stdout": "{\n  \"catalog_games\": 215,\n  \"canonical_drafts_written\": 215,\n  \"draft_aliases_recovered\": 0,\n  \"requirements_recovered\": 27\n}\n",
       "stderr": ""
     },
     {
+      "label": "technical:monster-hunter-world",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"monster-hunter-world\",\n  \"checked_at\": \"2026-08-24T12:46:24.073Z\",\n  \"duration_ms\": 495,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=582010&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Monster Hunter: World\",\n    \"developers\": [\n      \"CAPCOM Co., Ltd.\"\n    ],\n    \"genres\": [\n      \"Action\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 8,\n    \"videos\": 7\n  },\n  \"output\": \"data/parser-output/monster-hunter-world.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:outer-wilds",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"outer-wilds\",\n  \"checked_at\": \"2026-08-24T12:46:24.604Z\",\n  \"duration_ms\": 245,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=753640&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Outer Wilds\",\n    \"developers\": [\n      \"Mobius Digital\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 2\n  },\n  \"output\": \"data/parser-output/outer-wilds.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:overwatch",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"overwatch\",\n  \"checked_at\": \"2026-08-24T12:46:24.882Z\",\n  \"duration_ms\": 231,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=2357570&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Overwatch®\",\n    \"developers\": [\n      \"Blizzard Entertainment, Inc.\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Free To Play\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 10,\n    \"videos\": 6\n  },\n  \"output\": \"data/parser-output/overwatch.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:red-dead-redemption-2",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"red-dead-redemption-2\",\n  \"checked_at\": \"2026-08-24T12:46:25.145Z\",\n  \"duration_ms\": 223,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1174180&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Red Dead Redemption 2\",\n    \"developers\": [\n      \"Rockstar Games\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 2\n  },\n  \"output\": \"data/parser-output/red-dead-redemption-2.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:resident-evil-2",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"resident-evil-2\",\n  \"checked_at\": \"2026-08-24T12:46:25.403Z\",\n  \"duration_ms\": 254,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=883710&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Resident Evil 2\",\n    \"developers\": [\n      \"CAPCOM Co., Ltd.\"\n    ],\n    \"genres\": [\n      \"Action\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 10,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/resident-evil-2.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:resident-evil-7-biohazard",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"resident-evil-7-biohazard\",\n  \"checked_at\": \"2026-08-24T12:46:25.693Z\",\n  \"duration_ms\": 241,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=418370&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Resident Evil 7 Biohazard\",\n    \"developers\": [\n      \"CAPCOM Co., Ltd.\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 6,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/resident-evil-7-biohazard.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:resident-evil-village",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"resident-evil-village\",\n  \"checked_at\": \"2026-08-24T12:46:25.971Z\",\n  \"duration_ms\": 250,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1196590&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Resident Evil Village\",\n    \"developers\": [\n      \"CAPCOM Co., Ltd.\"\n    ],\n    \"genres\": [\n      \"Action\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 10,\n    \"videos\": 4\n  },\n  \"output\": \"data/parser-output/resident-evil-village.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:restory-chill-electronics-repairs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"restory-chill-electronics-repairs\",\n  \"checked_at\": \"2026-08-24T12:46:26.254Z\",\n  \"duration_ms\": 221,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3812600&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"ReStory: Chill Electronics Repairs\",\n    \"developers\": [\n      \"Mandragora\"\n    ],\n    \"genres\": [\n      \"Indie\",\n      \"Simulation\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\"\n    ],\n    \"screenshots\": 20,\n    \"videos\": 4\n  },\n  \"output\": \"data/parser-output/restory-chill-electronics-repairs.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:rust",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"rust\",\n  \"checked_at\": \"2026-08-24T12:46:26.510Z\",\n  \"duration_ms\": 273,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=252490&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Rust\",\n    \"developers\": [\n      \"Facepunch Studios\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"Indie\",\n      \"Massively Multiplayer\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\"\n    ],\n    \"screenshots\": 33,\n    \"videos\": 4\n  },\n  \"output\": \"data/parser-output/rust.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:stardew-valley",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"stardew-valley\",\n  \"checked_at\": \"2026-08-24T12:46:26.818Z\",\n  \"duration_ms\": 221,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=413150&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Stardew Valley\",\n    \"developers\": [\n      \"ConcernedApe\"\n    ],\n    \"genres\": [\n      \"Indie\",\n      \"RPG\",\n      \"Simulation\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\",\n      \"linux\"\n    ],\n    \"screenshots\": 16,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/stardew-valley.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:stray",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"stray\",\n  \"checked_at\": \"2026-08-24T12:46:27.073Z\",\n  \"duration_ms\": 235,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1332010&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Stray\",\n    \"developers\": [\n      \"BlueTwelve Studio\"\n    ],\n    \"genres\": [\n      \"Adventure\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\"\n    ],\n    \"screenshots\": 8,\n    \"videos\": 4\n  },\n  \"output\": \"data/parser-output/stray.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:the-witcher-3-wild-hunt",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"the-witcher-3-wild-hunt\",\n  \"checked_at\": \"2026-08-24T12:46:27.343Z\",\n  \"duration_ms\": 257,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=292030&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"The Witcher 3: Wild Hunt\",\n    \"developers\": [\n      \"CD PROJEKT RED\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 18,\n    \"videos\": 4\n  },\n  \"output\": \"data/parser-output/the-witcher-3-wild-hunt.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:titanfall-2",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"titanfall-2\",\n  \"checked_at\": \"2026-08-24T12:46:27.633Z\",\n  \"duration_ms\": 269,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1237970&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Titanfall® 2\",\n    \"developers\": [\n      \"Respawn Entertainment\"\n    ],\n    \"genres\": [\n      \"Action\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 6\n  },\n  \"output\": \"data/parser-output/titanfall-2.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:undertale",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"undertale\",\n  \"checked_at\": \"2026-08-24T12:46:27.933Z\",\n  \"duration_ms\": 226,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=391540&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Undertale\",\n    \"developers\": [\n      \"tobyfox\"\n    ],\n    \"genres\": [\n      \"Indie\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\",\n      \"linux\"\n    ],\n    \"screenshots\": 7,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/undertale.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "technical:wuthering-waves",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"wuthering-waves\",\n  \"checked_at\": \"2026-08-24T12:46:28.193Z\",\n  \"duration_ms\": 237,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=3513350&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Wuthering Waves\",\n    \"developers\": [\n      \"KURO GAMES\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Adventure\",\n      \"RPG\",\n      \"Free To Play\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 10,\n    \"videos\": 2\n  },\n  \"output\": \"data/parser-output/wuthering-waves.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "canonical-materialization-after-tech",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 215,\n  \"canonical_drafts_written\": 215,\n  \"draft_aliases_recovered\": 0,\n  \"requirements_recovered\": 42\n}\n",
+      "stderr": ""
+    },
+    {
       "label": "similarity-all-before-ai",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"catalog_games\": 215,\n  \"profiles\": 219,\n  \"similarity_files_written\": 215,\n  \"profiles_needing_enrichment\": 81,\n  \"games_without_recommendations\": 77,\n  \"year_proximity_used\": false\n}\n",
+      "stdout": "{\n  \"catalog_games\": 215,\n  \"profiles\": 220,\n  \"similarity_files_written\": 215,\n  \"profiles_needing_enrichment\": 79,\n  \"games_without_recommendations\": 74,\n  \"year_proximity_used\": false\n}\n",
       "stderr": ""
     },
     {
@@ -176,20 +141,6 @@
       "status": "completed",
       "exit_code": 0,
       "stdout": "{\n  \"slug\": \"doom\",\n  \"status\": \"needs_revision\",\n  \"preserved_existing\": true,\n  \"reason\": \"Relation research unavailable: OpenAI API 429. Existing data was not replaced.\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "relations:the-lantern-of-the-laughless-saint",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"the-lantern-of-the-laughless-saint\",\n  \"status\": \"needs_revision\",\n  \"preserved_existing\": true,\n  \"reason\": \"Relation research unavailable: OpenAI API 429. Existing data was not replaced.\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "relations:total-war-warhammer-iii",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"total-war-warhammer-iii\",\n  \"status\": \"needs_revision\",\n  \"preserved_existing\": true,\n  \"reason\": \"Relation research unavailable: OpenAI API 429. Existing data was not replaced.\"\n}\n",
       "stderr": ""
     },
     {
@@ -221,101 +172,66 @@
       "stderr": ""
     },
     {
+      "label": "relations:bloodborne",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"bloodborne\",\n  \"status\": \"needs_revision\",\n  \"preserved_existing\": true,\n  \"reason\": \"Relation research unavailable: OpenAI API 429. Existing data was not replaced.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "relations:canceled",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"canceled\",\n  \"status\": \"needs_revision\",\n  \"preserved_existing\": true,\n  \"reason\": \"Relation research unavailable: OpenAI API 429. Existing data was not replaced.\"\n}\n",
+      "stderr": ""
+    },
+    {
       "label": "similarity-all-after-relations",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"catalog_games\": 215,\n  \"profiles\": 219,\n  \"similarity_files_written\": 215,\n  \"profiles_needing_enrichment\": 81,\n  \"games_without_recommendations\": 77,\n  \"year_proximity_used\": false\n}\n",
+      "stdout": "{\n  \"catalog_games\": 215,\n  \"profiles\": 220,\n  \"similarity_files_written\": 215,\n  \"profiles_needing_enrichment\": 79,\n  \"games_without_recommendations\": 74,\n  \"year_proximity_used\": false\n}\n",
       "stderr": ""
     },
     {
-      "label": "review:arknights-endfield",
+      "label": "review:007-first-light",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"arknights-endfield\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 7.\",\n    \"Рейтинг: 4.\"\n  ]\n}\n",
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"007-first-light\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 6.\",\n    \"Рейтинг: 5.\"\n  ]\n}\n",
       "stderr": ""
     },
     {
-      "label": "review:beastlink",
+      "label": "review:1666-amsterdam",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"beastlink\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 0.\",\n    \"Рейтинг: 0.\"\n  ]\n}\n",
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"1666-amsterdam\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 1.\",\n    \"Рейтинг: 0.\"\n  ]\n}\n",
       "stderr": ""
     },
     {
-      "label": "review:gunz-the-duel",
+      "label": "review:after-the-end",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"gunz-the-duel\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 0.\",\n    \"Рейтинг: 0.\"\n  ]\n}\n",
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"after-the-end\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 0.\",\n    \"Рейтинг: 0.\"\n  ]\n}\n",
       "stderr": ""
     },
     {
-      "label": "review:order-of-the-sinking-star",
+      "label": "review:agent-64-spies-never-die",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"order-of-the-sinking-star\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 0.\",\n    \"Рейтинг: 0.\"\n  ]\n}\n",
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"agent-64-spies-never-die\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 0.\",\n    \"Рейтинг: 0.\"\n  ]\n}\n",
       "stderr": ""
     },
     {
-      "label": "review:ritual-of-raven",
+      "label": "review:alien-isolation-2",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"ritual-of-raven\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 0.\",\n    \"Рейтинг: 0.\"\n  ]\n}\n",
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"alien-isolation-2\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 0.\",\n    \"Рейтинг: 0.\"\n  ]\n}\n",
       "stderr": ""
     },
     {
-      "label": "review:sarco",
+      "label": "review:aliens-fireteam-elite-2",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"sarco\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 0.\",\n    \"Рейтинг: 0.\"\n  ]\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "guides:stars-reach",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"stars-reach\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "guides:the-lantern-of-the-laughless-saint",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"the-lantern-of-the-laughless-saint\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "guides:tides-of-annihilation",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"tides-of-annihilation\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "guides:time-to-wake-up",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"time-to-wake-up\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "guides:total-war-warhammer-iii",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"total-war-warhammer-iii\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "guides:twisted-tower",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"twisted-tower\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "guides:vapor-world-over-the-mind",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"vapor-world-over-the-mind\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"aliens-fireteam-elite-2\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 0.\",\n    \"Рейтинг: 0.\"\n  ]\n}\n",
       "stderr": ""
     },
     {
@@ -323,6 +239,55 @@
       "status": "completed",
       "exit_code": 0,
       "stdout": "{\n  \"slug\": \"007-first-light\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "guides:1666-amsterdam",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"1666-amsterdam\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "guides:3-japan-stigmatized-property",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"3-japan-stigmatized-property\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "guides:after-the-end",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"after-the-end\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "guides:agent-64-spies-never-die",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"agent-64-spies-never-die\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "guides:alan-wake-2",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"alan-wake-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "guides:alien-isolation-2",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"alien-isolation-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "guides:aliens-fireteam-elite-2",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"aliens-fireteam-elite-2\",\n  \"status\": \"red-needs-revision\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"error\": \"OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\"\n}\n",
       "stderr": ""
     }
   ]

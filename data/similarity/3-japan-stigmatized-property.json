@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "game_slug": "3-japan-stigmatized-property",
-  "generated_at": "2026-08-24T12:10:48.507Z",
+  "generated_at": "2026-08-24T12:46:55.408Z",
   "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
@@ -321,6 +321,41 @@
       ]
     },
     {
+      "slug": "restory-chill-electronics-repairs",
+      "title": "ReStory: Chill Electronics Repairs",
+      "year": 2026,
+      "score": 0.3692,
+      "base_score": 0.3692,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
       "slug": "ritual-of-raven",
       "title": "Ritual of Raven",
       "year": 2025,
@@ -544,47 +579,6 @@
         {
           "field": "genres",
           "label": "жанр",
-          "overlap": 0.5
-        }
-      ]
-    },
-    {
-      "slug": "provoron",
-      "title": "Provoron",
-      "year": 2026,
-      "score": 0.3406,
-      "base_score": 0.3406,
-      "reasons": [
-        "партия/соло",
-        "мультиплеер",
-        "жанр",
-        "поджанр",
-        "тип геймплея"
-      ],
-      "signals": [
-        {
-          "field": "party_mode",
-          "label": "партия/соло",
-          "overlap": 1
-        },
-        {
-          "field": "multiplayer",
-          "label": "мультиплеер",
-          "overlap": 1
-        },
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 0.75
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.667
-        },
-        {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
           "overlap": 0.5
         }
       ]

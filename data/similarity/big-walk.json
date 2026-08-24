@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "game_slug": "big-walk",
-  "generated_at": "2026-08-24T12:10:47.586Z",
+  "generated_at": "2026-08-24T12:46:54.091Z",
   "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
@@ -295,6 +295,47 @@
       ]
     },
     {
+      "slug": "rust",
+      "title": "Rust",
+      "year": 2018,
+      "score": 0.372,
+      "base_score": 0.372,
+      "reasons": [
+        "жанр",
+        "тип геймплея",
+        "мультиплеер",
+        "поджанр",
+        "смысловое сходство"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 0.563
+        },
+        {
+          "field": "semantic_tokens",
+          "label": "смысловое сходство",
+          "overlap": 0.447
+        }
+      ]
+    },
+    {
       "slug": "minecraft-dungeons-ii",
       "title": "Minecraft Dungeons II",
       "year": 2026,
@@ -507,41 +548,6 @@
           "field": "subgenres",
           "label": "поджанр",
           "overlap": 0.625
-        }
-      ]
-    },
-    {
-      "slug": "forza-horizon-5",
-      "title": "Forza Horizon 5",
-      "year": 2021,
-      "score": 0.3567,
-      "base_score": 0.3567,
-      "reasons": [
-        "жанр",
-        "тип геймплея",
-        "мультиплеер",
-        "поджанр"
-      ],
-      "signals": [
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 1
-        },
-        {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 1
-        },
-        {
-          "field": "multiplayer",
-          "label": "мультиплеер",
-          "overlap": 1
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.727
         }
       ]
     }
