@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   repository_dispatch:
     types: [game-post-create-enrichment]
+  workflow_run:
+    workflows: ['Fast news game page creation']
+    types: [completed]
 
 permissions:
   contents: write
@@ -11,11 +14,12 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-enrichment-v3
+  group: game-post-create-enrichment-v4
   cancel-in-progress: false
 
 jobs:
   enrich:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout staging snapshot
