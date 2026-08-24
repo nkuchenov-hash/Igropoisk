@@ -1,17 +1,15 @@
 {
-  "schema_version": 16,
+  "schema_version": 7,
   "game_slug": "fallout-2",
-  "game_id": "game_2278b9106a76e8359871",
-  "updated_at": "2026-08-24T11:21:04.376Z",
-  "publication_gate": {
-    "minimum": 0,
-    "target": null,
-    "maximum": null,
-    "accepted": 1,
-    "status": "green",
-    "criterion": "mandatory_registry_plus_broad_web_scan_complete",
-    "full_registry_scan": true,
-    "checked_registered_sources": 33
+  "generated_at": "2026-08-24T11:21:04.376Z",
+  "policy": {
+    "maximum_readable_articles": null,
+    "collect_all_discovered": true,
+    "mandatory_registry_scan": true,
+    "broad_web_discovery": true,
+    "ai_required": false,
+    "minimum_for_future_article": 10,
+    "target_for_future_article": 20
   },
   "source_registry_scan": {
     "registered_sources": 33,
@@ -223,7 +221,7 @@
     "provider": "Bing RSS",
     "queries": 8
   },
-  "reviews": [
+  "accepted": [
     {
       "publication": "RPGFan",
       "configured_source_id": "rpgfan",
@@ -250,6 +248,7 @@
       }
     }
   ],
+  "rejected": [],
   "score_sources": [
     {
       "publication": "RPGFan",
@@ -342,5 +341,9 @@
       "source_kind": "review"
     }
   ],
-  "rejected": []
+  "coverage": {
+    "accepted_readable_articles": 1,
+    "scored_sources": 10,
+    "page_material_scan_complete": true
+  }
 }
