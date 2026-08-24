@@ -1,9 +1,12 @@
 import fs from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
 
 const file = 'data/news.json';
 const userAgent = 'IgropoiskNewsLocalizer/2.0 (+https://github.com/nkuchenov-hash/Igropoisk)';
 const localModel = process.env.NEWS_LOCAL_TRANSLATION_MODEL || 'Xenova/opus-mt-en-ru';
-const localCacheDir = process.env.NEWS_LOCAL_TRANSLATION_CACHE || '.cache/news-translation-models';
+const localCacheDir = process.env.NEWS_LOCAL_TRANSLATION_CACHE || '/tmp/igropoisk-news-translation-models';
+const localRuntimeDir = process.env.NEWS_LOCAL_TRANSLATION_RUNTIME || '/tmp/igropoisk-news-translator-runtime';
 let googleUnavailable = false;
 let memoryUnavailable = false;
 let localTranslatorPromise = null;
@@ -30,11 +33,21 @@ function translatedText(result) {
   return String(first?.translation_text || first?.generated_text || '').trim();
 }
 
+async function loadTransformersRuntime() {
+  try {
+    return await import('@huggingface/transformers');
+  } catch {
+    const requireFromRuntime = createRequire(`${localRuntimeDir}/package.json`);
+    const modulePath = requireFromRuntime.resolve('@huggingface/transformers');
+    return import(pathToFileURL(modulePath).href);
+  }
+}
+
 async function getLocalTranslator() {
   if (localTranslatorUnavailable) return null;
   if (!localTranslatorPromise) {
     localTranslatorPromise = (async () => {
-      const { env, pipeline } = await import('@huggingface/transformers');
+      const { env, pipeline } = await loadTransformersRuntime();
       env.cacheDir = localCacheDir;
       env.allowLocalModels = true;
       env.useFSCache = true;
