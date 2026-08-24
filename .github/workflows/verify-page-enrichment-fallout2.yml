@@ -5,6 +5,10 @@ on:
     branches: [staging]
     paths:
       - '.github/workflows/verify-page-enrichment-fallout2.yml'
+  pull_request:
+    branches: [staging]
+    paths:
+      - 'data/verification/fallout2-materials-trigger.txt'
   workflow_dispatch:
 
 permissions:
@@ -45,9 +49,10 @@ jobs:
           const draft=JSON.parse(fs.readFileSync('data/drafts/fallout-2.json','utf8'));
           if(!Array.isArray(reviews.reviews)||!reviews.reviews.length) throw new Error('No review/material links collected');
           if(reviews.publication_gate?.maximum!==null) throw new Error('Review corpus is still capped');
+          if(reviews.source_registry_scan?.complete!==true) throw new Error('Mandatory source registry scan incomplete');
           if(ratings.method?.maximum_sources!==null) throw new Error('Ratings are still capped');
           if(!Array.isArray(draft.media?.screenshots)||draft.media.screenshots.length<7) throw new Error('Media corpus incomplete');
-          console.log(JSON.stringify({reviews:reviews.reviews.length,score_sources:reviews.score_sources?.length||0,rating_sources:ratings.sources?.length||0,screenshots:draft.media.screenshots.length,artwork:draft.media.artwork?.length||0},null,2));
+          console.log(JSON.stringify({reviews:reviews.reviews.length,registered_sources:reviews.source_registry_scan?.registered_sources||0,score_sources:reviews.score_sources?.length||0,rating_sources:ratings.sources?.length||0,screenshots:draft.media.screenshots.length,artwork:draft.media.artwork?.length||0},null,2));
           NODE
           git diff --check
       - name: Commit verified output through staging PR
@@ -62,5 +67,5 @@ jobs:
           git add data/reviews/fallout-2.json data/research/fallout-2-source-matrix.json data/ratings/fallout-2.json data/drafts/fallout-2.json data/media-candidates/fallout-2.json data/parser-runs
           git commit -m 'Rebuild Fallout 2 page materials with uncapped discovery'
           git push origin "$BRANCH"
-          PR="$(gh pr create --base staging --head "$BRANCH" --title 'Rebuild Fallout 2 page materials' --body 'Focused verification of the normal page-material enrichment tool: existing Reviews and Media structure only, uncapped material/score collection.' --json number --jq '.number')"
+          PR="$(gh pr create --base staging --head "$BRANCH" --title 'Rebuild Fallout 2 page materials' --body 'Focused verification of the normal page-material enrichment tool: existing Reviews and Media structure only, mandatory registry scan, uncapped material/score collection.' --json number --jq '.number')"
           gh pr merge "$PR" --merge --delete-branch
