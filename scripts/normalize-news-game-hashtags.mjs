@@ -15,6 +15,7 @@ const collisions = [];
 let gameReferences = 0;
 let canonicalReferences = 0;
 let temporaryReferences = 0;
+let deferredTemporaryReferences = 0;
 let duplicateReferencesRemoved = 0;
 
 function canonicalizeGame(raw = {}) {
@@ -42,8 +43,13 @@ const normalizedItems = items.map(item => {
     if (!raw || typeof raw !== 'object') continue;
     gameReferences += 1;
     const { game, canonical } = canonicalizeGame(raw);
+    const temporary = !canonical && String(game.gameId || '').startsWith('news_game_');
     if (canonical) canonicalReferences += 1;
-    else if (String(game.gameId || '').startsWith('news_game_')) temporaryReferences += 1;
+    if (temporary) {
+      temporaryReferences += 1;
+      deferredTemporaryReferences += 1;
+      continue;
+    }
     const identity = String(game.gameId || game.slug || game.hashtag || '').trim();
     if (!identity || seen.has(identity)) {
       duplicateReferencesRemoved += 1;
@@ -75,12 +81,13 @@ const normalizedItems = items.map(item => {
 });
 
 const report = {
-  schema_version: 1,
+  schema_version: 2,
   generated_at: new Date().toISOString(),
   articles: normalizedItems.length,
   game_references: gameReferences,
   canonical_references: canonicalReferences,
   temporary_references: temporaryReferences,
+  deferred_temporary_references: deferredTemporaryReferences,
   unique_canonical_hashtags: hashtagOwners.size,
   duplicate_references_removed: duplicateReferencesRemoved,
   collisions
@@ -90,4 +97,4 @@ await fs.mkdir('tmp', { recursive: true });
 await fs.writeFile(eventsPath, `${JSON.stringify(Array.isArray(payload) ? normalizedItems : { ...payload, items: normalizedItems }, null, 2)}\n`, 'utf8');
 await fs.writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
 if (collisions.length) throw new Error(`Canonical news hashtag collision detected: ${collisions.map(item => item.hashtag).join(', ')}`);
-console.log(`[news/hashtags] ${normalizedItems.length} articles; ${hashtagOwners.size} unique canonical game hashtags; ${temporaryReferences} temporary game references; ${duplicateReferencesRemoved} duplicates removed.`);
+console.log(`[news/hashtags] ${normalizedItems.length} articles; ${hashtagOwners.size} unique canonical game hashtags; ${temporaryReferences} temporary game references deferred; ${duplicateReferencesRemoved} duplicates removed.`);
