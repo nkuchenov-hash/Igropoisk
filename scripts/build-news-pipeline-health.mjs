@@ -157,7 +157,7 @@ export function buildNewsPipelineHealth({
   if (persistentFailures.length) warnings.push(`Систематически не работают источники: ${persistentFailures.map(source => source.id).join(', ')}.`);
 
   const images = collectImages(root, payloads, config);
-  if (images.missing) blocking.push(`Отсутствуют ${images.missing} изображений, на которые ссылаются новости.`);
+  if (images.missing) warnings.push(`Недоступны ${images.missing} изображений новостей; публикация продолжена с фирменной заглушкой.`);
 
   const status = blocking.length ? 'error' : warnings.length ? 'degraded' : 'healthy';
   const health = {
