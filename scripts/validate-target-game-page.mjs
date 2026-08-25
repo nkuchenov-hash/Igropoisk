@@ -47,15 +47,18 @@ if(draft){
  const shots=Array.isArray(draft.media?.screenshots)?draft.media.screenshots:[];
  const art=Array.isArray(draft.media?.artwork)?draft.media.artwork:[];
  const videos=Array.isArray(draft.media?.videos)?draft.media.videos:[];
+ const videoReviews=videos.filter(v=>String(v?.kind||'')==='review');
  if(shots.length<Number(min.screenshots||1))errors.push(`screenshots ${shots.length} < ${Number(min.screenshots||1)}`);
  if(art.length<Number(min.artwork||1))errors.push(`artwork ${art.length} < ${Number(min.artwork||1)}`);
  if(videos.length<Number(min.videos||1))errors.push(`videos ${videos.length} < ${Number(min.videos||1)}`);
+ if(videoReviews.length<Number(min.video_reviews||0))errors.push(`video reviews ${videoReviews.length} < ${Number(min.video_reviews||0)}`);
  for(const [i,m] of [...shots,...art].entries()){
   if(!String(m?.url||'').startsWith('http'))errors.push(`media ${i+1} missing URL`);
   if(!String(m?.source_url||'').startsWith('http'))errors.push(`media ${i+1} missing source_url`);
  }
  for(const [i,v] of videos.entries()){
-  if(!String(v?.url||'').startsWith('http'))errors.push(`video ${i+1} missing usable URL`);
+  const url=String(v?.url||'');
+  if(!/^https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|rutube\.ru\/video\/|vk(?:video)?\.ru\/.*video|vk\.com\/.*video)/i.test(url))errors.push(`video ${i+1} is not a direct supported video URL`);
   if(!String(v?.source_url||v?.url||'').startsWith('http'))errors.push(`video ${i+1} missing source provenance`);
  }
 }
