@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { buildLiveEventsPayload, buildMonthlyArchive } from './publish-news-storage.mjs';
+import { buildLiveEventsPayload, buildMonthlyArchive, sanitizeImageReferences } from './publish-news-storage.mjs';
 
 const items = [
   { id: 'new-a', publishedAt: '2026-08-19T08:00:00.000Z' },
@@ -33,4 +33,20 @@ const fallbackLive = buildLiveEventsPayload(
 assert.equal(fallbackLive.items.length, 4, 'A sparse or stale archive must not publish an empty live feed.');
 assert.equal(fallbackLive.items[0].id, 'new-a');
 
-console.log('News monthly archive partition and compact live-window tests passed.');
+const storage = {
+  publicUrl(key) { return `https://storage.yandexcloud.net/igropoisk-content/${key}`; }
+};
+const local = 'assets/news/1111111111111111.jpg';
+const firstParty = 'https://storage.yandexcloud.net/igropoisk-content/news/media/abc.webp';
+const sanitized = sanitizeImageReferences({ items: [
+  { id: 'local', image: local },
+  { id: 'first-party', image: firstParty },
+  { id: 'third-party', image: 'https://images.example.com/news.jpg' },
+  { id: 'missing', image: '' }
+] }, new Map([[local, '']]), { storage, mediaPrefix: 'news/media' });
+assert.equal(sanitized.items[0].image, '', 'A local cache miss must become fallback media instead of blocking publication.');
+assert.equal(sanitized.items[1].image, firstParty, 'Existing first-party cache URLs remain valid until retention expires them.');
+assert.equal(sanitized.items[2].image, '', 'Third-party hotlinks must never leak into the public news snapshot.');
+assert.equal(sanitized.items[3].image, '', 'Explicitly missing media remains a normal fallback state.');
+
+console.log('News monthly archive partition, compact live-window, and media sanitization tests passed.');
