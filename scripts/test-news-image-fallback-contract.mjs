@@ -9,7 +9,7 @@ const publisher = fs.readFileSync('scripts/publish-news-storage.mjs', 'utf8');
 const mediaGc = fs.readFileSync('scripts/prune-news-media-cache.mjs', 'utf8');
 
 assert.match(globalFetcher, /continuing from feed data without cached image/, 'Global news must survive article/image retrieval failure.');
-assert.match(globalFetcher, /imageCacheStatus:\s*'fallback'/, 'Global news must expose fallback image state.');
+assert.match(globalFetcher, /imageCacheStatus\s*=\s*'fallback'/, 'Global news must expose fallback image state.');
 assert.match(officialFetcher, /continuing without cached image/, 'Official news must survive article/image retrieval failure.');
 assert.match(officialFetcher, /imageFallbackItemCount/, 'Official source diagnostics must count image fallbacks.');
 assert.doesNotMatch(validator, /references a missing image|image outside approved roots/, 'Publication validation must not block on image availability.');
