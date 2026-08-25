@@ -37,7 +37,9 @@ const config = {
       'data/news-events.json': 1,
       'data/news-home-ru.json': 1
     },
-    minimum_official_source_success_ratio: 0.15
+    minimum_official_source_success_ratio: 0.15,
+    image_roots: ['assets/news/', 'assets/publisher-news/'],
+    storage: { media_prefix: 'news/media' }
   }
 };
 fs.writeFileSync(path.join(root, 'config/news-pipeline.json'), JSON.stringify(config));
@@ -93,6 +95,21 @@ assert.equal(health.sources.persistent_failures.length, 1);
 assert.equal(health.sources.persistent_failures[0].consecutive_failures, 3);
 assert.equal(health.last_successful_run_at, '2026-08-05T09:29:00.000Z');
 
+const hydratedEvents = JSON.parse(fs.readFileSync(path.join(root, 'data/news-events.json'), 'utf8'));
+hydratedEvents.items[0].image = 'https://storage.yandexcloud.net/igropoisk-content/news/media/abc123.jpg';
+fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify(hydratedEvents));
+const hydratedHealth = buildNewsPipelineHealth({ root, now, dueGroups: ['global-media'] });
+assert.equal(hydratedHealth.images.missing, 0, 'Published Object Storage history media must remain valid after hydration.');
+
+const unsafeEvents = JSON.parse(fs.readFileSync(path.join(root, 'data/news-events.json'), 'utf8'));
+unsafeEvents.items[0].image = 'https://example.com/news/media/abc123.jpg';
+fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify(unsafeEvents));
+const unsafeRemote = buildNewsPipelineHealth({ root, now, dueGroups: ['global-media'] });
+assert.equal(unsafeRemote.status, 'error');
+assert.equal(unsafeRemote.images.missing, 1);
+
+unsafeEvents.items[0].image = events[0].image;
+fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify(unsafeEvents));
 fs.rmSync(path.join(root, home[0].image));
 const missingImage = buildNewsPipelineHealth({ root, now, dueGroups: ['global-media'] });
 assert.equal(missingImage.status, 'error');
