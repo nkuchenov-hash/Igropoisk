@@ -14,6 +14,7 @@ on:
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/discover-review-media.mjs'
       - 'scripts/discover-game-videos.mjs'
+      - 'scripts/discover-game-videos-strict.mjs'
       - 'scripts/quality-control-loop.mjs'
       - 'scripts/validate-target-game-page.mjs'
       - 'data/content-pipeline/execution-plan.json'
@@ -53,6 +54,7 @@ jobs:
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/discover-review-media.mjs
           node --check scripts/discover-game-videos.mjs
+          node --check scripts/discover-game-videos-strict.mjs
           node --check scripts/validate-target-game-page.mjs
           node --check game/_shared/game-page-review-sources.js
       - name: Resolve run mode
@@ -97,7 +99,7 @@ jobs:
           if [ -f scripts/enrich-review-native-sources.mjs ]; then node scripts/enrich-review-native-sources.mjs "$SLUG"; fi
           node scripts/calculate-ratings-from-research.mjs "$SLUG"
           node scripts/discover-review-media.mjs "$SLUG"
-          node scripts/discover-game-videos.mjs "$SLUG"
+          node scripts/discover-game-videos-strict.mjs "$SLUG"
           node scripts/validate-target-game-page.mjs data/content-pipeline/target-page.json
       - name: Validate generated game shells and material feeds
         if: steps.mode.outputs.target != 'true'
