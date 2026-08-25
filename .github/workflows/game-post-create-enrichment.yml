@@ -13,6 +13,7 @@ on:
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/discover-review-media.mjs'
+      - 'scripts/discover-game-videos.mjs'
       - 'scripts/quality-control-loop.mjs'
       - 'data/content-pipeline/execution-plan.json'
       - '.github/workflows/game-post-create-enrichment.yml'
@@ -49,6 +50,7 @@ jobs:
           node --check scripts/prepare-review-research.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/discover-review-media.mjs
+          node --check scripts/discover-game-videos.mjs
           node --check game/_shared/game-page-review-sources.js
       - name: Refresh execution plan
         env:
@@ -76,5 +78,5 @@ jobs:
           git add -A
           git commit -m "Continue game page enrichment ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
           git push origin "$BRANCH"
-          PR="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated page enrichment: data, existing Media, all discovered review/review-source links and ratings. Игропоиск article synthesis is not a page readiness requirement." --json number --jq '.number')"
+          PR="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated page enrichment: data, existing Media including videos, all discovered review/review-source links and ratings. Игропоиск article synthesis is not a page readiness requirement." --json number --jq '.number')"
           gh pr merge "$PR" --merge --delete-branch
