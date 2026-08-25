@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import { classifyNewsImage } from './lib/news-media-policy.mjs';
 
 const feedFiles = [
   'data/news.json',
@@ -68,11 +69,12 @@ function validateFeed(root, file, payload, config, errors) {
 
     if (file !== 'data/youtube-signals.json') {
       const image = String(item.image || '').trim();
-      if (!config.publication.image_roots.some(rootPrefix => image.startsWith(rootPrefix))) {
+      const classification = classifyNewsImage(image, { root, config });
+      if (!classification.approved) {
         errors.push(`${prefix} has an image outside approved roots: ${image || '(empty)'}.`);
-      } else if (!/^[\w./-]+$/.test(image) || image.includes('..')) {
+      } else if (classification.kind === 'local' && !classification.safe) {
         errors.push(`${prefix} has an unsafe image path: ${image}.`);
-      } else if (!fs.existsSync(path.join(root, image))) {
+      } else if (!classification.exists) {
         errors.push(`${prefix} references a missing image: ${image}.`);
       }
     }

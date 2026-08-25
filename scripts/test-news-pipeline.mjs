@@ -93,7 +93,8 @@ const publicationConfig = {
     minimum_retained_fraction: 0.25,
     homepage_exact_items: 12,
     minimum_official_source_success_ratio: 0.15,
-    image_roots: ['assets/news/', 'assets/publisher-news/']
+    image_roots: ['assets/news/', 'assets/publisher-news/'],
+    storage: { media_prefix: 'news/media' }
   }
 };
 fs.writeFileSync(path.join(root, 'config/news-pipeline.json'), JSON.stringify(publicationConfig));
@@ -154,6 +155,20 @@ const valid = validateNewsPipeline({ root });
 assert.equal(valid.ok, true, valid.errors.join('\n'));
 assert.equal(valid.health, 'healthy');
 
+const eventPayload = JSON.parse(fs.readFileSync(path.join(root, 'data/news-events.json'), 'utf8'));
+eventPayload.items[0].image = 'https://storage.yandexcloud.net/igropoisk-content/news/media/abc123.jpg';
+fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify(eventPayload));
+const hydratedRemote = validateNewsPipeline({ root });
+assert.equal(hydratedRemote.ok, true, hydratedRemote.errors.join('\n'));
+
+eventPayload.items[0].image = 'https://example.com/news/media/abc123.jpg';
+fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify(eventPayload));
+const foreignRemote = validateNewsPipeline({ root });
+assert.equal(foreignRemote.ok, false);
+assert.ok(foreignRemote.errors.some(error => error.includes('outside approved roots')));
+
+eventPayload.items[0].image = events[0].image;
+fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify(eventPayload));
 fs.writeFileSync(path.join(root, 'data/youtube-signals.json'), JSON.stringify({
   generatedAt,
   items: [youtubeSignals[0], { ...youtubeSignals[1], url: 'https://youtube.com/watch?v=first&utm_source=duplicate' }]
