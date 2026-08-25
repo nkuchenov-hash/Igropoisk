@@ -70,6 +70,19 @@ if (/calendarFile|injectPreloads\s*\(/.test(coverCache)) {
   fail('Release cover parser still rewrites calendar/index.html.');
 }
 
+if (process.env.GITHUB_ACTIONS === 'true') {
+  try {
+    const response = await fetch('https://api.github.com/repos/nkuchenov-hash/Igropoisk/actions/workflows/news-pipeline.yml', {
+      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'igropoisk-news-diagnostic' },
+      signal: AbortSignal.timeout(15000)
+    });
+    const text = await response.text();
+    console.log(`[news/workflow-state] HTTP ${response.status}: ${text}`);
+  } catch (error) {
+    console.log(`[news/workflow-state] diagnostic failed: ${error.message}`);
+  }
+}
+
 if (errors.length) {
   throw new Error(`Production boundary validation failed:\n${errors.map(error => `- ${error}`).join('\n')}`);
 }
