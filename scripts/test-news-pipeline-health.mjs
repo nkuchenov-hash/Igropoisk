@@ -105,15 +105,17 @@ const unsafeEvents = JSON.parse(fs.readFileSync(path.join(root, 'data/news-event
 unsafeEvents.items[0].image = 'https://example.com/news/media/abc123.jpg';
 fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify(unsafeEvents));
 const unsafeRemote = buildNewsPipelineHealth({ root, now, dueGroups: ['global-media'] });
-assert.equal(unsafeRemote.status, 'error');
+assert.equal(unsafeRemote.status, 'degraded');
 assert.equal(unsafeRemote.images.missing, 1);
+assert.equal(unsafeRemote.blocking_errors.length, 0, 'An unavailable image must never block news publication.');
 
 unsafeEvents.items[0].image = events[0].image;
 fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify(unsafeEvents));
 fs.rmSync(path.join(root, home[0].image));
 const missingImage = buildNewsPipelineHealth({ root, now, dueGroups: ['global-media'] });
-assert.equal(missingImage.status, 'error');
+assert.equal(missingImage.status, 'degraded');
 assert.equal(missingImage.images.missing, 1);
+assert.equal(missingImage.blocking_errors.length, 0, 'A missing local image must degrade gracefully to the branded fallback.');
 
 fs.writeFileSync(path.join(root, home[0].image), 'image');
 const officialPayload = JSON.parse(fs.readFileSync(path.join(root, 'data/publisher-news.json'), 'utf8'));
