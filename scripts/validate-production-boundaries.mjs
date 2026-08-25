@@ -94,7 +94,8 @@ if (process.env.GITHUB_ACTIONS === 'true') {
         updated_at: run.updated_at,
         head_branch: run.head_branch,
         head_sha: run.head_sha,
-        run_number: run.run_number
+        run_number: run.run_number,
+        run_attempt: run.run_attempt
       }));
       console.log(`[news/workflow-runs] HTTP ${runsResponse.status}: ${JSON.stringify(summary)}`);
     }
