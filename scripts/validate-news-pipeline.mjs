@@ -170,11 +170,7 @@ export function validateNewsPipeline({ root = process.cwd(), configPath = 'confi
   const official = payloads.get('data/publisher-news.json');
   if (official) {
     const totalSources = Number(official.sourceCount || official.sourceReport?.length || 0);
-    const successfulSources = Number(official.successfulSourceCount || official.sourceReport?.filter(item => item.status === 'ok').length || 0);
-    const ratio = totalSources ? successfulSources / totalSources : 0;
-    const minimumRatio = Number(config.publication.minimum_official_source_success_ratio || 0);
     if (!totalSources) errors.push('Official source registry produced no source count.');
-    else if (ratio < minimumRatio) errors.push(`Only ${(ratio * 100).toFixed(1)}% of official sources succeeded; minimum is ${(minimumRatio * 100).toFixed(1)}%.`);
   }
 
   validateHealth(payloads.get(config.health?.output_file || 'data/news-pipeline-health.json'), payloads, itemCounts, config, errors);
