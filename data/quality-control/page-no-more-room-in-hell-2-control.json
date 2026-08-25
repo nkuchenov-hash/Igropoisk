@@ -1,10 +1,10 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "type": "page",
   "game_slug": "no-more-room-in-hell-2",
   "game_id": "game_f5db7308be84c62ed593",
   "canonical_title": "No More Room in Hell 2",
-  "checked_at": "2026-08-25T07:40:29.002Z",
+  "checked_at": "2026-08-25T11:00:08.534Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
@@ -37,7 +37,7 @@
       "script": "scripts/prepare-review-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 6,\n  \"scored_sources\": 1,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 6,\n  \"scored_sources\": 1,\n  \"rejected\": 1,\n  \"ai_required\": false\n}\n",
       "stderr": ""
     },
     {
@@ -69,6 +69,15 @@
     },
     {
       "attempt": 7,
+      "label": "page-video-discovery-1",
+      "script": "scripts/discover-game-videos.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 0,\n  \"rejected\": 6,\n  \"video_reviews\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 8,
       "label": "media-validation-1",
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
@@ -77,7 +86,7 @@
       "stderr": ""
     },
     {
-      "attempt": 8,
+      "attempt": 9,
       "label": "page-revision-1",
       "script": "scripts/build-game-page.mjs",
       "status": "revision-required",
@@ -86,7 +95,7 @@
       "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:24:14\n\nNode.js v22.23.2\n"
     },
     {
-      "attempt": 9,
+      "attempt": 10,
       "label": "relations-2",
       "script": "scripts/enrich-game-relations.mjs",
       "status": "completed",
@@ -95,7 +104,7 @@
       "stderr": ""
     },
     {
-      "attempt": 10,
+      "attempt": 11,
       "label": "similarity-2",
       "script": "scripts/build-similarity-index.mjs",
       "status": "completed",
@@ -104,16 +113,16 @@
       "stderr": ""
     },
     {
-      "attempt": 11,
+      "attempt": 12,
       "label": "page-materials-research-2",
       "script": "scripts/prepare-review-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 6,\n  \"scored_sources\": 1,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 6,\n  \"scored_sources\": 1,\n  \"rejected\": 1,\n  \"ai_required\": false\n}\n",
       "stderr": ""
     },
     {
-      "attempt": 12,
+      "attempt": 13,
       "label": "page-native-review-sources-2",
       "script": "scripts/enrich-review-native-sources.mjs",
       "status": "completed",
@@ -122,7 +131,7 @@
       "stderr": ""
     },
     {
-      "attempt": 13,
+      "attempt": 14,
       "label": "page-ratings-2",
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",
@@ -131,7 +140,7 @@
       "stderr": ""
     },
     {
-      "attempt": 14,
+      "attempt": 15,
       "label": "page-media-discovery-2",
       "script": "scripts/discover-review-media.mjs",
       "status": "completed",
@@ -140,7 +149,16 @@
       "stderr": ""
     },
     {
-      "attempt": 15,
+      "attempt": 16,
+      "label": "page-video-discovery-2",
+      "script": "scripts/discover-game-videos.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"video_reviews\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 17,
       "label": "media-validation-2",
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
@@ -149,7 +167,7 @@
       "stderr": ""
     },
     {
-      "attempt": 16,
+      "attempt": 18,
       "label": "page-revision-2",
       "script": "scripts/build-game-page.mjs",
       "status": "revision-required",
@@ -158,7 +176,7 @@
       "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:24:14\n\nNode.js v22.23.2\n"
     },
     {
-      "attempt": 17,
+      "attempt": 19,
       "label": "relations-3",
       "script": "scripts/enrich-game-relations.mjs",
       "status": "completed",
@@ -167,7 +185,7 @@
       "stderr": ""
     },
     {
-      "attempt": 18,
+      "attempt": 20,
       "label": "similarity-3",
       "script": "scripts/build-similarity-index.mjs",
       "status": "completed",
@@ -176,16 +194,16 @@
       "stderr": ""
     },
     {
-      "attempt": 19,
+      "attempt": 21,
       "label": "page-materials-research-3",
       "script": "scripts/prepare-review-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 6,\n  \"scored_sources\": 1,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 6,\n  \"scored_sources\": 1,\n  \"rejected\": 1,\n  \"ai_required\": false\n}\n",
       "stderr": ""
     },
     {
-      "attempt": 20,
+      "attempt": 22,
       "label": "page-native-review-sources-3",
       "script": "scripts/enrich-review-native-sources.mjs",
       "status": "completed",
@@ -194,7 +212,7 @@
       "stderr": ""
     },
     {
-      "attempt": 21,
+      "attempt": 23,
       "label": "page-ratings-3",
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",
@@ -203,7 +221,7 @@
       "stderr": ""
     },
     {
-      "attempt": 22,
+      "attempt": 24,
       "label": "page-media-discovery-3",
       "script": "scripts/discover-review-media.mjs",
       "status": "completed",
@@ -212,7 +230,16 @@
       "stderr": ""
     },
     {
-      "attempt": 23,
+      "attempt": 25,
+      "label": "page-video-discovery-3",
+      "script": "scripts/discover-game-videos.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"video_reviews\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 26,
       "label": "media-validation-3",
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
@@ -221,7 +248,7 @@
       "stderr": ""
     },
     {
-      "attempt": 24,
+      "attempt": 27,
       "label": "page-revision-3",
       "script": "scripts/build-game-page.mjs",
       "status": "revision-required",
@@ -230,7 +257,7 @@
       "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:24:14\n\nNode.js v22.23.2\n"
     },
     {
-      "attempt": 25,
+      "attempt": 28,
       "label": "relations-4",
       "script": "scripts/enrich-game-relations.mjs",
       "status": "completed",
@@ -239,7 +266,7 @@
       "stderr": ""
     },
     {
-      "attempt": 26,
+      "attempt": 29,
       "label": "similarity-4",
       "script": "scripts/build-similarity-index.mjs",
       "status": "completed",
@@ -248,16 +275,16 @@
       "stderr": ""
     },
     {
-      "attempt": 27,
+      "attempt": 30,
       "label": "page-materials-research-4",
       "script": "scripts/prepare-review-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 6,\n  \"scored_sources\": 1,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 6,\n  \"scored_sources\": 1,\n  \"rejected\": 1,\n  \"ai_required\": false\n}\n",
       "stderr": ""
     },
     {
-      "attempt": 28,
+      "attempt": 31,
       "label": "page-native-review-sources-4",
       "script": "scripts/enrich-review-native-sources.mjs",
       "status": "completed",
@@ -266,7 +293,7 @@
       "stderr": ""
     },
     {
-      "attempt": 29,
+      "attempt": 32,
       "label": "page-ratings-4",
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",
@@ -275,7 +302,7 @@
       "stderr": ""
     },
     {
-      "attempt": 30,
+      "attempt": 33,
       "label": "page-media-discovery-4",
       "script": "scripts/discover-review-media.mjs",
       "status": "completed",
@@ -284,7 +311,16 @@
       "stderr": ""
     },
     {
-      "attempt": 31,
+      "attempt": 34,
+      "label": "page-video-discovery-4",
+      "script": "scripts/discover-game-videos.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 0,\n  \"rejected\": 0,\n  \"video_reviews\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 35,
       "label": "media-validation-4",
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
@@ -293,7 +329,7 @@
       "stderr": ""
     },
     {
-      "attempt": 32,
+      "attempt": 36,
       "label": "page-revision-4",
       "script": "scripts/build-game-page.mjs",
       "status": "revision-required",
@@ -306,6 +342,7 @@
     "page_ready_requires_source_scan": true,
     "page_ready_requires_native_publisher_scan": true,
     "page_ready_requires_media_validation": true,
+    "page_ready_requires_video_discovery": true,
     "page_source_scan_ai_independent": true,
     "review_article_not_required_for_page": true,
     "quality_never_terminally_blocks": true,
