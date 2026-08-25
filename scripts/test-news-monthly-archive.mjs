@@ -38,15 +38,19 @@ const storage = {
 };
 const local = 'assets/news/1111111111111111.jpg';
 const firstParty = 'https://storage.yandexcloud.net/igropoisk-content/news/media/abc.webp';
+const fallbackUrl = 'https://storage.yandexcloud.net/igropoisk-content/news/media/fallback.svg';
+const now = Date.parse('2026-08-25T12:00:00.000Z');
 const sanitized = sanitizeImageReferences({ items: [
-  { id: 'local', image: local },
-  { id: 'first-party', image: firstParty },
-  { id: 'third-party', image: 'https://images.example.com/news.jpg' },
-  { id: 'missing', image: '' }
-] }, new Map([[local, '']]), { storage, mediaPrefix: 'news/media' });
-assert.equal(sanitized.items[0].image, '', 'A local cache miss must become fallback media instead of blocking publication.');
-assert.equal(sanitized.items[1].image, firstParty, 'Existing first-party cache URLs remain valid until retention expires them.');
-assert.equal(sanitized.items[2].image, '', 'Third-party hotlinks must never leak into the public news snapshot.');
-assert.equal(sanitized.items[3].image, '', 'Explicitly missing media remains a normal fallback state.');
+  { id: 'local', publishedAt: '2026-08-25T10:00:00.000Z', image: local },
+  { id: 'first-party', publishedAt: '2026-08-25T09:00:00.000Z', image: firstParty },
+  { id: 'third-party', publishedAt: '2026-08-25T08:00:00.000Z', image: 'https://images.example.com/news.jpg' },
+  { id: 'missing', publishedAt: '2026-08-25T07:00:00.000Z', image: '' },
+  { id: 'expired', publishedAt: '2026-08-10T07:00:00.000Z', image: firstParty }
+] }, new Map([[local, '']]), { storage, mediaPrefix: 'news/media', now, mediaCacheDays: 7, fallbackUrl });
+assert.equal(sanitized.items[0].image, fallbackUrl, 'A local cache miss must become first-party fallback media instead of blocking publication.');
+assert.equal(sanitized.items[1].image, firstParty, 'Fresh first-party cache URLs remain valid during the seven-day window.');
+assert.equal(sanitized.items[2].image, fallbackUrl, 'Third-party hotlinks must never leak into the public news snapshot.');
+assert.equal(sanitized.items[3].image, fallbackUrl, 'Explicitly missing media becomes the permanent first-party fallback.');
+assert.equal(sanitized.items[4].image, fallbackUrl, 'News older than seven days must stop referencing disposable cached media.');
 
 console.log('News monthly archive partition, compact live-window, and media sanitization tests passed.');
