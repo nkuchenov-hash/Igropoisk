@@ -1,46 +1,163 @@
 import fs from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
 
 const file = 'data/news.json';
-const userAgent = 'IgropoiskNewsLocalizer/1.2 (+https://github.com/nkuchenov-hash/Igropoisk)';
+const userAgent = 'IgropoiskNewsLocalizer/2.0 (+https://github.com/nkuchenov-hash/Igropoisk)';
+const localModel = process.env.NEWS_LOCAL_TRANSLATION_MODEL || 'Xenova/opus-mt-en-ru';
+const localCacheDir = process.env.NEWS_LOCAL_TRANSLATION_CACHE || '/tmp/igropoisk-news-translation-models';
+const localRuntimeDir = process.env.NEWS_LOCAL_TRANSLATION_RUNTIME || '/tmp/igropoisk-news-translator-runtime';
+let googleUnavailable = false;
+let memoryUnavailable = false;
+let localTranslatorPromise = null;
+let localTranslatorUnavailable = false;
 
 async function fetchText(url, timeout = 20000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
   try {
     const response = await fetch(url, { signal: controller.signal, headers: { 'user-agent': userAgent } });
-    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+    if (!response.ok) {
+      const error = new Error(`${response.status} ${response.statusText}`);
+      error.status = response.status;
+      throw error;
+    }
     return response.text();
-  } finally { clearTimeout(timer); }
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
-async function translate(text, target, attempts = 3) {
-  if (!text) return '';
-  for (let attempt = 1; attempt <= attempts; attempt += 1) {
-    try {
-      const endpoint = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${target}&dt=t&q=${encodeURIComponent(text)}`;
-      const payload = JSON.parse(await fetchText(endpoint));
-      const translated = (payload?.[0] || []).map(part => part?.[0] || '').join('').trim();
-      if (translated) return translated;
-    } catch (error) {
-      if (attempt === attempts) throw error;
-      await new Promise(resolve => setTimeout(resolve, attempt * 1000));
-    }
+function translatedText(result) {
+  const first = Array.isArray(result) ? result[0] : result;
+  return String(first?.translation_text || first?.generated_text || '').trim();
+}
+
+async function loadTransformersRuntime() {
+  try {
+    return await import('@huggingface/transformers');
+  } catch {
+    const requireFromRuntime = createRequire(`${localRuntimeDir}/package.json`);
+    const modulePath = requireFromRuntime.resolve('@huggingface/transformers');
+    return import(pathToFileURL(modulePath).href);
   }
-  return '';
+}
+
+async function getLocalTranslator() {
+  if (localTranslatorUnavailable) return null;
+  if (!localTranslatorPromise) {
+    localTranslatorPromise = (async () => {
+      const { env, pipeline } = await loadTransformersRuntime();
+      env.cacheDir = localCacheDir;
+      env.allowLocalModels = true;
+      env.useFSCache = true;
+      return pipeline('translation', localModel, { dtype: 'q8' });
+    })().catch(error => {
+      localTranslatorUnavailable = true;
+      console.error(`[industry/localize/local] unavailable: ${error.message}`);
+      return null;
+    });
+  }
+  return localTranslatorPromise;
+}
+
+async function translateLocalEnRu(text) {
+  if (!text) return '';
+  const translator = await getLocalTranslator();
+  if (!translator) return '';
+  try {
+    return translatedText(await translator(text));
+  } catch (error) {
+    console.error(`[industry/localize/local] ${error.message}`);
+    return '';
+  }
+}
+
+async function translateGoogle(text, target) {
+  if (!text || googleUnavailable) return '';
+  try {
+    const endpoint = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${target}&dt=t&q=${encodeURIComponent(text)}`;
+    const payload = JSON.parse(await fetchText(endpoint));
+    return (payload?.[0] || []).map(part => part?.[0] || '').join('').trim();
+  } catch (error) {
+    if ([403, 429].includes(Number(error.status))) googleUnavailable = true;
+    console.error(`[industry/localize/google] ${error.message}`);
+    return '';
+  }
+}
+
+async function translateMyMemory(text, source, target) {
+  if (!text || memoryUnavailable || !['en', 'ru'].includes(source) || source === target) return '';
+  try {
+    const endpoint = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}%7C${target}`;
+    const payload = JSON.parse(await fetchText(endpoint));
+    const translated = String(payload?.responseData?.translatedText || '').trim();
+    const status = Number(payload?.responseStatus || 200);
+    if (status >= 400) {
+      const error = new Error(`MyMemory ${status}`);
+      error.status = status;
+      throw error;
+    }
+    return translated;
+  } catch (error) {
+    if ([403, 429].includes(Number(error.status))) memoryUnavailable = true;
+    console.error(`[industry/localize/mymemory] ${error.message}`);
+    return '';
+  }
+}
+
+async function translateEnRu(text) {
+  if (!text) return { text: '', provider: 'none' };
+
+  const local = await translateLocalEnRu(text);
+  if (local) return { text: local, provider: 'local-opus' };
+
+  const google = await translateGoogle(text, 'ru');
+  if (google) return { text: google, provider: 'google-fallback' };
+
+  const memory = await translateMyMemory(text, 'en', 'ru');
+  if (memory) return { text: memory, provider: 'mymemory-fallback' };
+
+  return { text: '', provider: 'unavailable' };
 }
 
 const payload = JSON.parse(await fs.readFile(file, 'utf8'));
 const now = Date.now();
 const processed = [];
+let localTranslatedItems = 0;
+let remoteTranslatedItems = 0;
+let sourceRussianItems = 0;
 
 for (const item of payload.items || []) {
   try {
     const sourceIsRussian = item.language === 'ru' || /[А-Яа-яЁё]/.test(item.title || '');
-    const titleRu = sourceIsRussian ? item.title : await translate(item.title, 'ru');
-    const summaryRu = sourceIsRussian ? (item.summary || item.title) : await translate(item.summary || item.title, 'ru');
-    const titleEn = sourceIsRussian ? await translate(item.title, 'en') : item.title;
-    const summaryEn = sourceIsRussian ? await translate(item.summary || item.title, 'en') : (item.summary || item.title);
-    if (!titleRu || !/[А-Яа-яЁё]/.test(titleRu) || !titleEn) throw new Error('complete bilingual translation unavailable');
+    const baseSummary = item.summary || item.title || '';
+
+    let titleRu;
+    let summaryRu;
+    let localizationStatus;
+
+    if (sourceIsRussian) {
+      titleRu = item.title || '';
+      summaryRu = baseSummary;
+      localizationStatus = 'source-ru';
+      sourceRussianItems += 1;
+    } else {
+      const titleTranslation = await translateEnRu(item.title || '');
+      const summaryTranslation = await translateEnRu(baseSummary);
+      titleRu = titleTranslation.text;
+      summaryRu = summaryTranslation.text || titleRu;
+      localizationStatus = titleTranslation.provider;
+      if (!titleRu || !/[А-Яа-яЁё]/.test(titleRu)) {
+        throw new Error('Russian translation unavailable; refusing English fallback on Russian site');
+      }
+      if (titleTranslation.provider === 'local-opus') localTranslatedItems += 1;
+      else remoteTranslatedItems += 1;
+    }
+
+    const titleEn = item.title || titleRu;
+    const summaryEn = baseSummary || titleEn;
+    if (!titleRu || !titleEn) throw new Error('usable bilingual metadata unavailable');
 
     const sourceCount = Number(item.sourceCount || item.mediaSourceCount || 1);
     const discussionMentions = Number(item.discussionMentions || 0);
@@ -48,7 +165,6 @@ for (const item of payload.items || []) {
     const regions = Array.isArray(item.regions) ? [...new Set(item.regions.filter(Boolean))] : [];
     const ageHours = Math.max(0, (now - new Date(item.publishedAt).getTime()) / 36e5);
 
-    // A global event needs several independent confirmations. Two publications alone are not enough.
     const globalEligible = Boolean(item.globalEligible)
       || sourceCount >= 3
       || discussionMentions >= 3
@@ -68,6 +184,7 @@ for (const item of payload.items || []) {
       titleEn,
       summaryRu,
       summaryEn,
+      localizationStatus,
       regions,
       globalEligible,
       regionalEligible,
@@ -83,7 +200,7 @@ for (const item of payload.items || []) {
 }
 
 if (processed.length < Math.min(12, (payload.items || []).length)) {
-  throw new Error(`Only ${processed.length} localized items produced; refusing to publish an undersized Russian feed`);
+  throw new Error(`Only ${processed.length} Russian-ready items produced; refusing to publish an undersized feed`);
 }
 
 await fs.writeFile(file, `${JSON.stringify({
@@ -94,6 +211,11 @@ await fs.writeFile(file, `${JSON.stringify({
   rankingModel: 'Global significance plus additive user-region relevance',
   globalMinimumIndependentSources: 3,
   localizedItemCount: processed.length,
+  localTranslatedItemCount: localTranslatedItems,
+  remoteTranslatedItemCount: remoteTranslatedItems,
+  sourceRussianItemCount: sourceRussianItems,
+  localTranslationModel: localModel,
   items: processed
 }, null, 2)}\n`);
-console.log(`[industry/localize] wrote ${processed.length} bilingual globally and regionally ranked items`);
+
+console.log(`[industry/localize] wrote ${processed.length} Russian-ready items; local=${localTranslatedItems}; remote=${remoteTranslatedItems}; source-ru=${sourceRussianItems}`);
