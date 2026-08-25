@@ -105,6 +105,7 @@ export async function pruneNewsMediaCache({
   const currentManifestKey = storageConfig.current_manifest || 'news/manifests/current.json';
   const snapshotPrefix = storageConfig.snapshot_prefix || 'news/snapshots';
   const mediaPrefix = storageConfig.media_prefix || 'news/media';
+  const fallbackKey = `${mediaPrefix.replace(/\/$/, '')}/fallback.svg`;
   const maxAgeDays = Number(retention.media_cache_days || 7);
   const deleteConcurrency = Number(retention.delete_concurrency || 16);
 
@@ -123,6 +124,7 @@ export async function pruneNewsMediaCache({
       now
     })
   ]);
+  protectedKeys.add(fallbackKey);
 
   const plan = buildMediaCacheRetentionPlan(mediaObjects, protectedKeys, { mediaPrefix, maxAgeDays, now });
   const deleted = dryRun ? 0 : await deleteObjects(storage, plan.removedObjects, deleteConcurrency);
@@ -138,13 +140,14 @@ export async function pruneNewsMediaCache({
     media_cache_days: maxAgeDays,
     cutoff: plan.cutoff,
     media_objects_before: mediaObjects.length,
-    media_objects_protected_by_fresh_news: protectedKeys.size,
+    media_objects_protected_by_fresh_news: Math.max(0, protectedKeys.size - 1),
     media_objects_retained: plan.retainedObjects.length,
     media_objects_removed: dryRun ? 0 : deleted,
     media_bytes_before: plan.totalBytes,
     media_bytes_retained: plan.retainedBytes,
     media_bytes_reclaimed: dryRun ? 0 : plan.removedBytes,
-    policy: 'News images are a short-lived acceleration cache. Fresh stories keep cached media; older media may be deleted and the UI must fall back without blocking news publication.'
+    fallback_key: fallbackKey,
+    policy: 'News images are a seven-day acceleration cache. Fresh stories keep cached media; older media is deleted after snapshots switch to the permanent first-party fallback.'
   });
 
   fs.mkdirSync('tmp', { recursive: true });
