@@ -1,0 +1,65 @@
+name: Targeted game page control
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - '.github/workflows/targeted-game-page-control.yml'
+      - 'scripts/prepare-review-research.mjs'
+      - 'scripts/calculate-ratings-from-research.mjs'
+      - 'scripts/discover-review-media.mjs'
+      - 'scripts/discover-game-videos.mjs'
+      - 'scripts/discover-game-videos-strict.mjs'
+      - 'scripts/validate-target-game-page.mjs'
+      - 'data/content-pipeline/target-page.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: targeted-game-page-control
+  cancel-in-progress: false
+
+jobs:
+  control:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run isolated page-material pipeline
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          EDITORIAL_AI_ENABLED: 'false'
+        run: |
+          SLUG="$(node -p "require('./data/content-pipeline/target-page.json').slug")"
+          node scripts/prepare-review-research.mjs "$SLUG"
+          if [ -f scripts/enrich-review-native-sources.mjs ]; then node scripts/enrich-review-native-sources.mjs "$SLUG"; fi
+          node scripts/calculate-ratings-from-research.mjs "$SLUG"
+          node scripts/discover-review-media.mjs "$SLUG"
+          node scripts/discover-game-videos-strict.mjs "$SLUG"
+          node scripts/validate-target-game-page.mjs data/content-pipeline/target-page.json
+          git diff --check
+      - name: Publish isolated result to staging
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then echo "No target changes."; exit 0; fi
+          git config user.name "igropoisk-content-bot"
+          git config user.email "igropoisk-content-bot@users.noreply.github.com"
+          BRANCH="automation/targeted-page-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git checkout -b "$BRANCH"
+          git add -A
+          git commit -m "Publish isolated target page ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
+          git push origin "$BRANCH"
+          gh pr create --base staging --head "$BRANCH" --title "Publish isolated target page" --body "Target-only page material enrichment."
+          PR="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?head=${GITHUB_REPOSITORY_OWNER}:${BRANCH}&base=staging&state=open" --jq '.[0].number')"
+          test -n "$PR"
+          gh pr merge "$PR" --merge --delete-branch
