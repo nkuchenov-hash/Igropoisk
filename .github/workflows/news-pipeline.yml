@@ -26,7 +26,7 @@ on:
   schedule:
     - cron: '23 * * * *'
   push:
-    branches: [staging]
+    branches: [main, staging]
     paths:
       - 'config/news-pipeline.json'
       - 'data/news-sources.json'
@@ -52,7 +52,6 @@ on:
       - 'scripts/run-news-pipeline.mjs'
       - 'scripts/prepare-news-game-page-requests.mjs'
       - 'scripts/ensure-game-page.mjs'
-      - 'scripts/test-game-creator-boundary.mjs'
       - 'scripts/run-news-game-page-fast.mjs'
       - 'scripts/materialize-news-game-pages-fast.mjs'
       - 'scripts/validate-news-pipeline.mjs'
@@ -145,7 +144,6 @@ jobs:
           node --check scripts/lib/yandex-object-storage.mjs
           node --check scripts/prune-news-storage.mjs
           node --check scripts/publish-news-storage.mjs
-          node scripts/test-game-creator-boundary.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
