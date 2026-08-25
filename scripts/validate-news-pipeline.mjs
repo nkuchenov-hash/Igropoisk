@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
-import { classifyNewsImage } from './lib/news-media-policy.mjs';
 
 const feedFiles = [
   'data/news.json',
@@ -66,18 +65,6 @@ function validateFeed(root, file, payload, config, errors) {
     if (url) seenUrls.add(canonicalUrl);
     if (!validDate(item.publishedAt)) errors.push(`${prefix} has no valid publishedAt.`);
     if (!String(item.titleRu || item.titleEn || item.title || '').trim()) errors.push(`${prefix} has no title.`);
-
-    if (file !== 'data/youtube-signals.json') {
-      const image = String(item.image || '').trim();
-      const classification = classifyNewsImage(image, { root, config });
-      if (!classification.approved) {
-        errors.push(`${prefix} has an image outside approved roots: ${image || '(empty)'}.`);
-      } else if (classification.kind === 'local' && !classification.safe) {
-        errors.push(`${prefix} has an unsafe image path: ${image}.`);
-      } else if (!classification.exists) {
-        errors.push(`${prefix} references a missing image: ${image}.`);
-      }
-    }
   });
 
   return items;
@@ -133,7 +120,6 @@ function validateHealth(health, payloads, itemCounts, config, errors) {
   if (Number(health.sources?.successful) !== successfulSources) errors.push(`${healthFile} official source success count is inconsistent.`);
   if (!Array.isArray(health.sources?.history)) errors.push(`${healthFile} has no source history.`);
   if (!Array.isArray(health.sources?.persistent_failures)) errors.push(`${healthFile} has no persistent failure list.`);
-  if (Number(health.images?.missing || 0) !== 0) errors.push(`${healthFile} reports missing images.`);
   if (!Array.isArray(health.warnings) || !Array.isArray(health.blocking_errors)) errors.push(`${healthFile} has invalid diagnostic lists.`);
   if (health.blocking_errors?.length) errors.push(`${healthFile} contains blocking errors.`);
 }

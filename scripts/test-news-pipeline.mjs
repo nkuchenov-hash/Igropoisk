@@ -164,8 +164,7 @@ assert.equal(hydratedRemote.ok, true, hydratedRemote.errors.join('\n'));
 eventPayload.items[0].image = 'https://example.com/news/media/abc123.jpg';
 fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify(eventPayload));
 const foreignRemote = validateNewsPipeline({ root });
-assert.equal(foreignRemote.ok, false);
-assert.ok(foreignRemote.errors.some(error => error.includes('outside approved roots')));
+assert.equal(foreignRemote.ok, true, 'A third-party image reference must not block the news feed; publication sanitizes it to fallback media.');
 
 eventPayload.items[0].image = events[0].image;
 fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify(eventPayload));
@@ -179,9 +178,8 @@ assert.ok(duplicate.errors.some(error => error.includes('duplicates a source URL
 
 fs.writeFileSync(path.join(root, 'data/youtube-signals.json'), JSON.stringify({ generatedAt, items: youtubeSignals }));
 fs.rmSync(path.join(root, home[0].image));
-const invalid = validateNewsPipeline({ root });
-assert.equal(invalid.ok, false);
-assert.ok(invalid.errors.some(error => error.includes('missing image')));
+const missingImage = validateNewsPipeline({ root });
+assert.equal(missingImage.ok, true, 'A missing image must never block otherwise valid news publication.');
 
 fs.rmSync(temp, { recursive: true, force: true });
 console.log('Autonomous news pipeline self-test passed.');

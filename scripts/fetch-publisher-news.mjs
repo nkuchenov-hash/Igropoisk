@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url';
 const registryPath = path.resolve('data/news-sources.json');
 const outputPath = path.resolve('data/publisher-news.json');
 const imageDirectory = path.resolve('assets/publisher-news');
-const userAgent = 'IgropoiskOfficialSourceBot/3.0 (+https://github.com/nkuchenov-hash/Igropoisk)';
+const userAgent = 'IgropoiskOfficialSourceBot/3.1 (+https://github.com/nkuchenov-hash/Igropoisk)';
 const maxItems = 180;
 const maxAgeDays = 14;
 const localModel = process.env.NEWS_LOCAL_TRANSLATION_MODEL || 'Xenova/opus-mt-en-ru';
@@ -21,6 +21,7 @@ let localTranslatedItems = 0;
 let remoteTranslatedItems = 0;
 let sourceRussianItems = 0;
 let untranslatedDroppedItems = 0;
+let imageFallbackItems = 0;
 
 function decode(value = '') {
   return value.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
@@ -194,17 +195,35 @@ async function downloadImage(url, id, referer) {
   const ext = extension(response.headers.get('content-type'), response.url || url); if (!ext) throw new Error('unsupported image');
   const bytes = Buffer.from(await response.arrayBuffer()); if (bytes.length < 1024 || bytes.length > 20 * 1024 * 1024) throw new Error('invalid image size');
   const filename = `${id}${ext}`; await fs.writeFile(path.join(imageDirectory, filename), bytes);
-  return { image: `assets/publisher-news/${filename}`, imageSourceUrl: response.url || url };
+  return { image: `assets/publisher-news/${filename}`, imageSourceUrl: response.url || url, imageCacheStatus: 'cached' };
 }
 
 async function hydrate(item) {
+  let finalUrl = item.url;
+  let downloaded = { image: '', imageSourceUrl: '', imageCacheStatus: 'fallback' };
   try {
-    const { text: html, finalUrl } = await fetchText(item.url);
-    const imageUrl = extractImage(html, finalUrl); if (!imageUrl) throw new Error('no original image');
+    const { text: html, finalUrl: resolvedUrl } = await fetchText(item.url);
+    finalUrl = resolvedUrl;
+    const imageUrl = extractImage(html, finalUrl);
+    if (imageUrl) {
+      try {
+        downloaded = await downloadImage(imageUrl, item.id, finalUrl);
+      } catch (error) {
+        imageFallbackItems += 1;
+        console.error(`[official/image] ${item.url}: ${error.message}; using branded fallback`);
+      }
+    } else {
+      imageFallbackItems += 1;
+      console.error(`[official/image] ${item.url}: no original image; using branded fallback`);
+    }
+  } catch (error) {
+    imageFallbackItems += 1;
+    console.error(`[official/article] ${item.url}: ${error.message}; continuing without cached image`);
+  }
+
+  try {
     const baseSummary = item.summary || item.title;
     const sourceIsRussian = item.sourceLanguage === 'ru' || hasCyrillic(item.title || '');
-    const downloaded = await downloadImage(imageUrl, item.id, finalUrl);
-
     let titleRu;
     let summaryRu;
     let localizationStatus;
@@ -228,15 +247,18 @@ async function hydrate(item) {
       else remoteTranslatedItems += 1;
     }
 
-    const titleEn = sourceIsRussian ? item.title : item.title;
-    const summaryEn = sourceIsRussian ? baseSummary : baseSummary;
+    const titleEn = item.title;
+    const summaryEn = baseSummary;
     if (!titleRu || !titleEn) throw new Error('usable title unavailable');
     return {
       ...item, url: finalUrl, type: 'official', official: true,
       titleRu, titleEn, summaryRu, summaryEn, localizationStatus, ...downloaded,
       homeUntil: new Date(new Date(item.publishedAt).getTime() + 36 * 3600e3).toISOString()
     };
-  } catch (error) { console.error(`[official/article] ${item.url}: ${error.message}`); return null; }
+  } catch (error) {
+    console.error(`[official/localization] ${item.url}: ${error.message}`);
+    return null;
+  }
 }
 
 await fs.mkdir(path.dirname(outputPath), { recursive: true });
@@ -262,7 +284,7 @@ for (const source of sources) {
 const unique = [...new Map(raw.map(item => [item.url, item])).values()].sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)).slice(0, maxItems);
 const items = [];
 for (const item of unique) { const hydrated = await hydrate(item); if (hydrated) items.push(hydrated); }
-const used = new Set(items.map(item => path.basename(item.image)));
+const used = new Set(items.map(item => path.basename(item.image || '')).filter(Boolean));
 for (const file of await fs.readdir(imageDirectory).catch(() => [])) if (!used.has(file)) await fs.rm(path.join(imageDirectory, file), { force: true });
 await fs.writeFile(outputPath, `${JSON.stringify({
   generatedAt: new Date().toISOString(), updateFrequency: 'hourly', sourceCount: sources.length,
@@ -271,8 +293,9 @@ await fs.writeFile(outputPath, `${JSON.stringify({
   remoteTranslatedItemCount: remoteTranslatedItems,
   sourceRussianItemCount: sourceRussianItems,
   untranslatedDroppedItemCount: untranslatedDroppedItems,
+  imageFallbackItemCount: imageFallbackItems,
   sourceLanguageFallbackItemCount: 0,
   localTranslationModel: localModel,
   sourceReport, items
 }, null, 2)}\n`);
-console.log(`[official] wrote ${items.length} Russian-ready items from ${sourceReport.filter(item => item.status === 'ok').length}/${sources.length} sources; local=${localTranslatedItems}; remote=${remoteTranslatedItems}; source-ru=${sourceRussianItems}; untranslated-dropped=${untranslatedDroppedItems}; source-language-fallback=0`);
+console.log(`[official] wrote ${items.length} Russian-ready items from ${sourceReport.filter(item => item.status === 'ok').length}/${sources.length} sources; local=${localTranslatedItems}; remote=${remoteTranslatedItems}; source-ru=${sourceRussianItems}; image-fallback=${imageFallbackItems}; untranslated-dropped=${untranslatedDroppedItems}; source-language-fallback=0`);

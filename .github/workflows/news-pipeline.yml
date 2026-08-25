@@ -35,6 +35,8 @@ on:
       - 'data/news-game-overrides.json'
       - 'features/news/content-api/index.js'
       - 'features/news/shared/index.js'
+      - 'features/news/shared/image-fallback.js'
+      - 'features/news/styles/index.css'
       - 'features/news/module.json'
       - 'scripts/fetch-news.mjs'
       - 'scripts/collect-regional-news.mjs'
@@ -60,6 +62,7 @@ on:
       - 'scripts/test-news-content-api.mjs'
       - 'scripts/test-news-storage-content-api.mjs'
       - 'scripts/test-news-storage-retention.mjs'
+      - 'scripts/test-news-media-cache-retention.mjs'
       - 'scripts/test-news-monthly-archive.mjs'
       - 'scripts/test-news-game-linker.mjs'
       - 'scripts/test-news-game-context-resolver.mjs'
@@ -77,6 +80,7 @@ on:
       - 'scripts/lib/news-media-policy.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/prune-news-storage.mjs'
+      - 'scripts/prune-news-media-cache.mjs'
       - 'scripts/publish-news-storage.mjs'
       - '.github/workflows/news-game-page-fast.yml'
       - '.github/workflows/news-pipeline.yml'
@@ -125,6 +129,7 @@ jobs:
         run: |
           node --check features/news/content-api/index.js
           node --check features/news/shared/index.js
+          node --check features/news/shared/image-fallback.js
           node --check scripts/run-news-pipeline.mjs
           node --check scripts/build-news-pipeline-health.mjs
           node --check scripts/validate-news-pipeline.mjs
@@ -145,12 +150,14 @@ jobs:
           node --check scripts/lib/news-media-policy.mjs
           node --check scripts/lib/yandex-object-storage.mjs
           node --check scripts/prune-news-storage.mjs
+          node --check scripts/prune-news-media-cache.mjs
           node --check scripts/publish-news-storage.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
           node scripts/test-news-storage-content-api.mjs
           node scripts/test-news-storage-retention.mjs
+          node scripts/test-news-media-cache-retention.mjs
           node scripts/test-news-monthly-archive.mjs
           node scripts/test-news-game-linker.mjs
           node scripts/test-news-game-context-resolver.mjs
@@ -217,8 +224,9 @@ jobs:
         if: steps.pipeline.outputs.status == 'success'
         run: node scripts/audit-news-game-hashtags.mjs --strict --allow-missing-pages --production-ref origin/main
 
-      - name: Reclaim redundant Object Storage snapshots without touching news history
+      - name: Reclaim redundant Object Storage snapshots
         if: steps.pipeline.outputs.status == 'success'
+        continue-on-error: true
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
           YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
@@ -236,6 +244,17 @@ jobs:
           YC_S3_REGION: ru-central1
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
         run: node scripts/publish-news-storage.mjs
+
+      - name: Expire news image cache older than seven days
+        if: steps.pipeline.outputs.status == 'success'
+        continue-on-error: true
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/prune-news-media-cache.mjs
 
       - name: Prove that the pipeline did not write to GitHub
         if: always()
@@ -256,6 +275,7 @@ jobs:
             tmp/news-game-hashtag-audit.json
             tmp/news-game-page-requests.json
             tmp/news-storage-prune.json
+            tmp/news-media-cache-prune.json
             data/news-pipeline-health.json
           if-no-files-found: warn
           retention-days: 14
