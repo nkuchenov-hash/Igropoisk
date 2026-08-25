@@ -1,6 +1,6 @@
 {
   "id": "news",
-  "version": 8,
+  "version": 9,
   "enforcement": "strict",
   "roots": {
     "home": "[data-news-module=\"home\"]",
@@ -12,6 +12,7 @@
     "features/news/shared/translations-ru.js",
     "features/news/content-api/index.js",
     "features/news/shared/index.js",
+    "features/news/shared/image-fallback.js",
     "features/news/home-widget/index.js",
     "features/news/archive-page/model.js",
     "features/news/archive-page/index.js",
@@ -46,7 +47,7 @@
     "gameLinkTest": "scripts/test-news-game-linker.mjs",
     "healthTest": "scripts/test-news-pipeline-health.mjs",
     "schedule": "hourly-with-per-source-cadence",
-    "publication": "compact-live-snapshot-plus-stable-monthly-archive-with-atomic-manifest"
+    "publication": "compact-live-snapshot-plus-stable-monthly-archive-with-atomic-manifest-and-short-lived-media-cache"
   },
   "content": [
     "data/news-events.json",
