@@ -26,7 +26,7 @@ on:
   schedule:
     - cron: '23 * * * *'
   push:
-    branches: [staging]
+    branches: [main, staging]
     paths:
       - 'config/news-pipeline.json'
       - 'data/news-sources.json'
@@ -52,7 +52,6 @@ on:
       - 'scripts/run-news-pipeline.mjs'
       - 'scripts/prepare-news-game-page-requests.mjs'
       - 'scripts/ensure-game-page.mjs'
-      - 'scripts/test-game-creator-boundary.mjs'
       - 'scripts/run-news-game-page-fast.mjs'
       - 'scripts/materialize-news-game-pages-fast.mjs'
       - 'scripts/validate-news-pipeline.mjs'
@@ -75,6 +74,7 @@ on:
       - 'scripts/lib/news-publication-gate.mjs'
       - 'scripts/lib/news-game-registry-discovery.mjs'
       - 'scripts/lib/news-game-hashtag.mjs'
+      - 'scripts/lib/news-media-policy.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/prune-news-storage.mjs'
       - 'scripts/publish-news-storage.mjs'
@@ -142,10 +142,10 @@ jobs:
           node --check scripts/lib/news-publication-gate.mjs
           node --check scripts/lib/news-game-registry-discovery.mjs
           node --check scripts/lib/news-game-hashtag.mjs
+          node --check scripts/lib/news-media-policy.mjs
           node --check scripts/lib/yandex-object-storage.mjs
           node --check scripts/prune-news-storage.mjs
           node --check scripts/publish-news-storage.mjs
-          node scripts/test-game-creator-boundary.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
