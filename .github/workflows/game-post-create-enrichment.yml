@@ -15,7 +15,9 @@ on:
       - 'scripts/discover-review-media.mjs'
       - 'scripts/discover-game-videos.mjs'
       - 'scripts/quality-control-loop.mjs'
+      - 'scripts/validate-target-game-page.mjs'
       - 'data/content-pipeline/execution-plan.json'
+      - 'data/content-pipeline/target-page.json'
       - '.github/workflows/game-post-create-enrichment.yml'
 
 permissions:
@@ -24,7 +26,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-enrichment-v5
+  group: game-post-create-enrichment-v6
   cancel-in-progress: false
 
 jobs:
@@ -51,20 +53,61 @@ jobs:
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/discover-review-media.mjs
           node --check scripts/discover-game-videos.mjs
+          node --check scripts/validate-target-game-page.mjs
           node --check game/_shared/game-page-review-sources.js
+      - name: Resolve run mode
+        id: mode
+        shell: bash
+        run: |
+          TARGET=false
+          if [ "${{ github.event_name }}" = "push" ] && [[ "${{ github.event.head_commit.message }}" == Run\ targeted\ page:* ]] && [ -f data/content-pipeline/target-page.json ]; then
+            TARGET=true
+          fi
+          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
+          if [ "$TARGET" = true ]; then
+            SLUG="$(node -p "require('./data/content-pipeline/target-page.json').slug")"
+            GAME_ID="$(node -p "require('./data/content-pipeline/target-page.json').game_id")"
+            echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+            echo "game_id=$GAME_ID" >> "$GITHUB_OUTPUT"
+            echo "Targeted page control: $SLUG ($GAME_ID)"
+          else
+            echo "Normal autonomous enrichment mode"
+          fi
       - name: Refresh execution plan
+        if: steps.mode.outputs.target != 'true'
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           EDITORIAL_AI_ENABLED: 'true'
         run: node scripts/orchestrate-content.mjs --finalize
-      - name: Run complete page enrichment cycle
+      - name: Run complete autonomous page enrichment cycle
+        if: steps.mode.outputs.target != 'true'
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           EDITORIAL_AI_ENABLED: 'true'
         run: node scripts/run-content-pipeline.mjs
+      - name: Run isolated target page enrichment
+        if: steps.mode.outputs.target == 'true'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          EDITORIAL_AI_ENABLED: 'false'
+        run: |
+          SLUG="${{ steps.mode.outputs.slug }}"
+          GAME_ID="${{ steps.mode.outputs.game_id }}"
+          node scripts/prepare-review-research.mjs "$SLUG"
+          if [ -f scripts/enrich-review-native-sources.mjs ]; then node scripts/enrich-review-native-sources.mjs "$SLUG"; fi
+          node scripts/calculate-ratings-from-research.mjs "$SLUG"
+          node scripts/discover-review-media.mjs "$SLUG"
+          node scripts/discover-game-videos.mjs "$SLUG"
+          node scripts/validate-target-game-page.mjs data/content-pipeline/target-page.json
       - name: Validate generated game shells and material feeds
+        if: steps.mode.outputs.target != 'true'
         run: |
           node scripts/validate-game-shells.mjs
+          git diff --check
+      - name: Validate isolated target only
+        if: steps.mode.outputs.target == 'true'
+        run: |
+          node scripts/validate-target-game-page.mjs data/content-pipeline/target-page.json
           git diff --check
       - name: Publish enrichment snapshot to staging
         env:
