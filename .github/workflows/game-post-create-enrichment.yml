@@ -121,5 +121,7 @@ jobs:
           git add -A
           git commit -m "Continue game page enrichment ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
           git push origin "$BRANCH"
-          PR="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated page enrichment: data, existing Media including videos, all discovered review/review-source links and ratings. Игропоиск article synthesis is not a page readiness requirement." --json number --jq '.number')"
+          gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated page enrichment: data, existing Media including videos, all discovered review/review-source links and ratings. Игропоиск article synthesis is not a page readiness requirement."
+          PR="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?head=${GITHUB_REPOSITORY_OWNER}:${BRANCH}&base=staging&state=open" --jq '.[0].number')"
+          test -n "$PR"
           gh pr merge "$PR" --merge --delete-branch
