@@ -8,6 +8,7 @@ const sha256 = value => crypto.createHash('sha256').update(value).digest('hex');
 const readJson = file => JSON.parse(fs.readFileSync(file, 'utf8'));
 const jsonBuffer = value => Buffer.from(`${JSON.stringify(value, null, 2)}\n`, 'utf8');
 const safeImage = value => /^(assets\/(?:news|publisher-news)\/[a-f0-9]{16}\.(?:jpg|jpeg|png|webp|avif|gif))$/i.test(String(value || ''));
+const fallbackSvg = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Игропоиск — новости"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#17181f"/><stop offset="1" stop-color="#292735"/></linearGradient><radialGradient id="glow" cx="75%" cy="25%" r="70%"><stop stop-color="#7c6cff" stop-opacity=".34"/><stop offset="1" stop-color="#7c6cff" stop-opacity="0"/></radialGradient></defs><rect width="1200" height="675" fill="url(#bg)"/><rect width="1200" height="675" fill="url(#glow)"/><g fill="none" stroke="#b7ff55" stroke-opacity=".22"><circle cx="880" cy="320" r="190" stroke-width="2"/><circle cx="880" cy="320" r="130"/><path d="M690 320h380M880 130v380"/></g><text x="74" y="520" fill="#f4f4f7" font-family="Arial,Helvetica,sans-serif" font-size="76" font-weight="700">ИГРОПОИСК</text><text x="80" y="585" fill="#b7ff55" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="700" letter-spacing="9">НОВОСТИ</text></svg>`, 'utf8');
 
 function contentType(file) {
   const extension = path.extname(file).toLowerCase();
@@ -18,7 +19,8 @@ function contentType(file) {
     '.png': 'image/png',
     '.webp': 'image/webp',
     '.avif': 'image/avif',
-    '.gif': 'image/gif'
+    '.gif': 'image/gif',
+    '.svg': 'image/svg+xml; charset=utf-8'
   })[extension] || 'application/octet-stream';
 }
 
@@ -45,17 +47,30 @@ function isFirstPartyMediaUrl(value, storage, mediaPrefix) {
   }
 }
 
-export function sanitizeImageReferences(value, replacements, { storage, mediaPrefix = 'news/media' }) {
-  if (Array.isArray(value)) return value.map(item => sanitizeImageReferences(item, replacements, { storage, mediaPrefix }));
+export function sanitizeImageReferences(value, replacements, {
+  storage,
+  mediaPrefix = 'news/media',
+  now = Date.now(),
+  mediaCacheDays = 7,
+  fallbackUrl = storage.publicUrl(`${mediaPrefix.replace(/\/$/, '')}/fallback.svg`)
+}) {
+  if (Array.isArray(value)) {
+    return value.map(item => sanitizeImageReferences(item, replacements, { storage, mediaPrefix, now, mediaCacheDays, fallbackUrl }));
+  }
   if (!value || typeof value !== 'object') return value;
+
+  const publishedAt = Date.parse(value.publishedAt || '');
+  const cutoff = Number(now) - Math.max(1, Number(mediaCacheDays) || 7) * 86400e3;
+  const expired = Number.isFinite(publishedAt) && publishedAt < cutoff;
+
   return Object.fromEntries(Object.entries(value).map(([key, child]) => {
     if (key === 'image' && typeof child === 'string') {
-      if (!child) return [key, ''];
-      if (replacements.has(child)) return [key, replacements.get(child) || ''];
+      if (expired || !child) return [key, fallbackUrl];
+      if (replacements.has(child)) return [key, replacements.get(child) || fallbackUrl];
       if (isFirstPartyMediaUrl(child, storage, mediaPrefix)) return [key, child];
-      return [key, ''];
+      return [key, fallbackUrl];
     }
-    return [key, sanitizeImageReferences(child, replacements, { storage, mediaPrefix })];
+    return [key, sanitizeImageReferences(child, replacements, { storage, mediaPrefix, now, mediaCacheDays, fallbackUrl })];
   }));
 }
 
@@ -157,6 +172,8 @@ export async function publishNewsSnapshot({
   const mediaCacheDays = Number(storageConfig.retention?.media_cache_days || 7);
   const version = versionId(now);
   const snapshotRoot = `${snapshotPrefix}/${version}`;
+  const fallbackKey = `${mediaPrefix.replace(/\/$/, '')}/fallback.svg`;
+  const fallbackUrl = storage.publicUrl(fallbackKey);
 
   const payloads = new Map();
   for (const relative of requiredFiles) {
@@ -169,6 +186,11 @@ export async function publishNewsSnapshot({
   }
   const fullEvents = payloads.get('data/news-events.json');
   if (!fullEvents || !payloadItems(fullEvents).length) throw new Error('Complete news event archive is empty.');
+
+  if (!dryRun && !(await exists(storage, fallbackKey))) {
+    await storage.putObject(fallbackKey, fallbackSvg, { contentType: 'image/svg+xml; charset=utf-8', cacheControl: immutableCache });
+    await storage.headObject(fallbackKey);
+  }
 
   const imagePaths = new Set();
   for (const relative of publicFiles) collectImagePaths(payloads.get(relative), imagePaths);
@@ -205,7 +227,8 @@ export async function publishNewsSnapshot({
     }
   }
 
-  const transformedFullEvents = sanitizeImageReferences(fullEvents, imageUrls, { storage, mediaPrefix });
+  const imageOptions = { storage, mediaPrefix, now: now.getTime(), mediaCacheDays, fallbackUrl };
+  const transformedFullEvents = sanitizeImageReferences(fullEvents, imageUrls, imageOptions);
   const monthly = buildMonthlyArchive(transformedFullEvents);
   const previousIndex = dryRun ? null : await currentArchiveIndex(storage, currentManifestKey);
   const previousMonths = new Map((previousIndex?.months || []).map(entry => [entry.month, entry]));
@@ -266,7 +289,7 @@ export async function publishNewsSnapshot({
     const original = payloads.get(relative);
     const transformed = relative === 'data/news-events.json'
       ? buildLiveEventsPayload(transformedFullEvents, now, liveWindowDays, Number(config.publication?.minimum_items?.[relative] || 12))
-      : sanitizeImageReferences(original, imageUrls, { storage, mediaPrefix });
+      : sanitizeImageReferences(original, imageUrls, imageOptions);
     const body = jsonBuffer(transformed);
     const key = `${snapshotRoot}/${relative}`;
     const digest = sha256(body);
@@ -306,7 +329,8 @@ export async function publishNewsSnapshot({
       count: media.length,
       bytes: media.reduce((sum, item) => sum + item.bytes, 0),
       cacheDays: mediaCacheDays,
-      fallbackCount: mediaFallbackCount
+      fallbackCount: mediaFallbackCount,
+      fallbackUrl
     },
     snapshot: { bytes: snapshotBytes },
     repositoryFallback: true
