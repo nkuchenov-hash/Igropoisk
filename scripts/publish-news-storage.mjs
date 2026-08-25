@@ -35,15 +35,28 @@ function collectImagePaths(value, output = new Set()) {
   return output;
 }
 
-function replaceImagePaths(value, replacements) {
-  if (Array.isArray(value)) return value.map(item => replaceImagePaths(item, replacements));
+function isFirstPartyMediaUrl(value, storage, mediaPrefix) {
+  if (typeof value !== 'string' || !value) return false;
+  try {
+    const mediaBase = storage.publicUrl(`${mediaPrefix.replace(/\/$/, '')}/`);
+    return value.startsWith(mediaBase);
+  } catch {
+    return false;
+  }
+}
+
+export function sanitizeImageReferences(value, replacements, { storage, mediaPrefix = 'news/media' }) {
+  if (Array.isArray(value)) return value.map(item => sanitizeImageReferences(item, replacements, { storage, mediaPrefix }));
   if (!value || typeof value !== 'object') return value;
-  return Object.fromEntries(Object.entries(value).map(([key, child]) => [
-    key,
-    key === 'image' && typeof child === 'string' && replacements.has(child)
-      ? replacements.get(child)
-      : replaceImagePaths(child, replacements)
-  ]));
+  return Object.fromEntries(Object.entries(value).map(([key, child]) => {
+    if (key === 'image' && typeof child === 'string') {
+      if (!child) return [key, ''];
+      if (replacements.has(child)) return [key, replacements.get(child) || ''];
+      if (isFirstPartyMediaUrl(child, storage, mediaPrefix)) return [key, child];
+      return [key, ''];
+    }
+    return [key, sanitizeImageReferences(child, replacements, { storage, mediaPrefix })];
+  }));
 }
 
 function versionId(now = new Date()) {
@@ -137,9 +150,11 @@ export async function publishNewsSnapshot({
   const mediaPrefix = storageConfig.media_prefix || 'news/media';
   const currentManifestKey = storageConfig.current_manifest || 'news/manifests/current.json';
   const immutableCache = storageConfig.immutable_cache_control || 'public, max-age=31536000, immutable';
+  const mediaCache = storageConfig.media_cache_control || 'public, max-age=604800, immutable';
   const archiveCache = storageConfig.archive_cache_control || 'public, max-age=300, stale-while-revalidate=86400';
   const manifestCache = storageConfig.manifest_cache_control || 'no-store, max-age=0';
   const liveWindowDays = Number(storageConfig.live_window_days || 30);
+  const mediaCacheDays = Number(storageConfig.retention?.media_cache_days || 7);
   const version = versionId(now);
   const snapshotRoot = `${snapshotPrefix}/${version}`;
 
@@ -160,24 +175,37 @@ export async function publishNewsSnapshot({
   collectImagePaths(fullEvents, imagePaths);
   const imageUrls = new Map();
   const media = [];
+  let mediaFallbackCount = 0;
 
   for (const relative of [...imagePaths].sort()) {
     const absolute = path.join(root, relative);
-    if (!fs.existsSync(absolute)) throw new Error(`News image is missing: ${relative}`);
-    const body = fs.readFileSync(absolute);
-    const digest = sha256(body);
-    const extension = path.extname(relative).toLowerCase();
-    const key = `${mediaPrefix}/${digest}${extension}`;
-    const publicUrl = storage.publicUrl(key);
-    imageUrls.set(relative, publicUrl);
-    media.push({ source: relative, key, url: publicUrl, sha256: digest, bytes: body.length });
-    if (!dryRun && !(await exists(storage, key))) {
-      await storage.putObject(key, body, { contentType: contentType(relative), cacheControl: immutableCache });
-      await storage.headObject(key);
+    if (!fs.existsSync(absolute)) {
+      imageUrls.set(relative, '');
+      mediaFallbackCount += 1;
+      console.warn(`[news/media] ${relative} is missing; publishing branded fallback instead.`);
+      continue;
+    }
+
+    try {
+      const body = fs.readFileSync(absolute);
+      const digest = sha256(body);
+      const extension = path.extname(relative).toLowerCase();
+      const key = `${mediaPrefix}/${digest}${extension}`;
+      const publicUrl = storage.publicUrl(key);
+      if (!dryRun && !(await exists(storage, key))) {
+        await storage.putObject(key, body, { contentType: contentType(relative), cacheControl: mediaCache });
+        await storage.headObject(key);
+      }
+      imageUrls.set(relative, publicUrl);
+      media.push({ source: relative, key, url: publicUrl, sha256: digest, bytes: body.length });
+    } catch (error) {
+      imageUrls.set(relative, '');
+      mediaFallbackCount += 1;
+      console.warn(`[news/media] ${relative} could not be cached (${error.message}); publication continues with fallback.`);
     }
   }
 
-  const transformedFullEvents = replaceImagePaths(fullEvents, imageUrls);
+  const transformedFullEvents = sanitizeImageReferences(fullEvents, imageUrls, { storage, mediaPrefix });
   const monthly = buildMonthlyArchive(transformedFullEvents);
   const previousIndex = dryRun ? null : await currentArchiveIndex(storage, currentManifestKey);
   const previousMonths = new Map((previousIndex?.months || []).map(entry => [entry.month, entry]));
@@ -238,7 +266,7 @@ export async function publishNewsSnapshot({
     const original = payloads.get(relative);
     const transformed = relative === 'data/news-events.json'
       ? buildLiveEventsPayload(transformedFullEvents, now, liveWindowDays, Number(config.publication?.minimum_items?.[relative] || 12))
-      : replaceImagePaths(original, imageUrls);
+      : sanitizeImageReferences(original, imageUrls, { storage, mediaPrefix });
     const body = jsonBuffer(transformed);
     const key = `${snapshotRoot}/${relative}`;
     const digest = sha256(body);
@@ -274,7 +302,12 @@ export async function publishNewsSnapshot({
       months: archiveMonths.length,
       totalItems: archiveIndexPayload.totalItems
     },
-    media: { count: media.length, bytes: media.reduce((sum, item) => sum + item.bytes, 0) },
+    media: {
+      count: media.length,
+      bytes: media.reduce((sum, item) => sum + item.bytes, 0),
+      cacheDays: mediaCacheDays,
+      fallbackCount: mediaFallbackCount
+    },
     snapshot: { bytes: snapshotBytes },
     repositoryFallback: true
   };
@@ -331,5 +364,5 @@ function parseArguments(argv) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const result = await publishNewsSnapshot(parseArguments(process.argv.slice(2)));
-  console.log(`${result.dryRun ? 'Prepared' : 'Published'} news snapshot ${result.manifest.version}: ${Object.keys(result.manifest.files).length} compact JSON files, ${result.archive.months} archive months (${result.archive.monthsWritten} rewritten), ${result.media.length} new-run media references.`);
+  console.log(`${result.dryRun ? 'Prepared' : 'Published'} news snapshot ${result.manifest.version}: ${Object.keys(result.manifest.files).length} compact JSON files, ${result.archive.months} archive months (${result.archive.monthsWritten} rewritten), ${result.media.length} cached media references, ${result.manifest.media.fallbackCount} media fallbacks.`);
 }
