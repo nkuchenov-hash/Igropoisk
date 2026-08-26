@@ -1,7 +1,7 @@
 {
   "schema_version": 8,
   "game_slug": "no-more-room-in-hell-2",
-  "generated_at": "2026-08-26T13:55:52.889Z",
+  "generated_at": "2026-08-26T21:26:53.578Z",
   "policy": {
     "maximum_readable_articles": null,
     "collect_all_discovered": true,
@@ -26,8 +26,8 @@
       {
         "source_id": "gamespot",
         "source_name": "GameSpot",
-        "status": "not_found",
-        "notes": "search completed; no matching direct editorial material"
+        "status": "found",
+        "notes": "1 candidate(s) discovered"
       },
       {
         "source_id": "ign",
@@ -243,7 +243,7 @@
       "score_eligible": false,
       "validation": {
         "status": "accepted-readable-link",
-        "checked_at": "2026-08-26T13:55:52.889Z",
+        "checked_at": "2026-08-26T21:26:53.578Z",
         "http_status": 200,
         "method": "registered-search-plus-live-http-v6.1"
       }
@@ -268,7 +268,7 @@
       "score_eligible": false,
       "validation": {
         "status": "accepted-readable-link",
-        "checked_at": "2026-08-26T13:55:52.889Z",
+        "checked_at": "2026-08-26T21:26:53.578Z",
         "http_status": 200,
         "method": "registered-search-plus-live-http-v6.1"
       }
@@ -293,7 +293,7 @@
       "score_eligible": false,
       "validation": {
         "status": "accepted-readable-link",
-        "checked_at": "2026-08-26T13:55:52.889Z",
+        "checked_at": "2026-08-26T21:26:53.578Z",
         "http_status": 200,
         "method": "registered-search-plus-live-http-v6.1"
       }
@@ -318,7 +318,7 @@
       "score_eligible": true,
       "validation": {
         "status": "accepted-readable-link",
-        "checked_at": "2026-08-26T13:55:52.889Z",
+        "checked_at": "2026-08-26T21:26:53.578Z",
         "http_status": 200,
         "method": "registered-search-plus-live-http-v6.1"
       }
@@ -343,7 +343,7 @@
       "score_eligible": false,
       "validation": {
         "status": "accepted-readable-link",
-        "checked_at": "2026-08-26T13:55:52.889Z",
+        "checked_at": "2026-08-26T21:26:53.578Z",
         "http_status": 200,
         "method": "registered-search-plus-live-http-v6.1"
       }
@@ -368,13 +368,72 @@
       "score_eligible": false,
       "validation": {
         "status": "accepted-readable-link",
-        "checked_at": "2026-08-26T13:55:52.889Z",
+        "checked_at": "2026-08-26T21:26:53.578Z",
+        "http_status": 200,
+        "method": "registered-search-plus-live-http-v6.1"
+      }
+    },
+    {
+      "publication": "IGN",
+      "configured_source_id": "ign",
+      "title": "No More Room in Hell 2 Early Access Review - IGN",
+      "url": "https://www.ign.com/articles/no-more-room-in-hell-2-review-early-access",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "score": 5,
+      "scale": 10,
+      "grade": "",
+      "identity_evidence": "Discovered by existing verified corpus",
+      "id": "source-7",
+      "resolved_url": "https://www.ign.com/articles/no-more-room-in-hell-2-review-early-access",
+      "domain": "ign.com",
+      "score_eligible": true,
+      "validation": {
+        "status": "accepted-readable-link",
+        "checked_at": "2026-08-26T21:26:53.578Z",
+        "http_status": 200,
+        "method": "registered-search-plus-live-http-v6.1"
+      }
+    },
+    {
+      "publication": "m.youtube.com",
+      "configured_source_id": "",
+      "title": "No More Room in Hell 2 | Worth Your Time and Money (Overview)",
+      "url": "https://m.youtube.com/watch?v=AdgDtTxMzbg",
+      "source_kind": "review",
+      "platform": "",
+      "version_context": "",
+      "published_at": "",
+      "author": "",
+      "score": null,
+      "scale": null,
+      "grade": "",
+      "identity_evidence": "Discovered by broad web search: \"No More Room in Hell 2\" review",
+      "id": "source-8",
+      "resolved_url": "https://www.youtube.com/watch?app=desktop&v=AdgDtTxMzbg",
+      "domain": "youtube.com",
+      "score_eligible": false,
+      "validation": {
+        "status": "accepted-readable-link",
+        "checked_at": "2026-08-26T21:26:53.578Z",
         "http_status": 200,
         "method": "registered-search-plus-live-http-v6.1"
       }
     }
   ],
-  "rejected": [],
+  "rejected": [
+    {
+      "publication": "GameSpot",
+      "title": "No More Room In Hell 2 Review - GameSpot",
+      "url": "https://www.gamespot.com/reviews/ive-played-almost-every-zombie-game-and-this-new-one-still-feels-excitingly-fresh",
+      "reasons": [
+        "URL unavailable to verifier: 403"
+      ]
+    }
+  ],
   "score_sources": [
     {
       "publication": "insider-gaming.com",
@@ -384,11 +443,20 @@
       "scale": 10,
       "grade": "",
       "source_kind": "review"
+    },
+    {
+      "publication": "IGN",
+      "title": "No More Room in Hell 2 Early Access Review - IGN",
+      "url": "https://www.ign.com/articles/no-more-room-in-hell-2-review-early-access",
+      "score": 5,
+      "scale": 10,
+      "grade": "",
+      "source_kind": "review"
     }
   ],
   "coverage": {
-    "accepted_readable_articles": 6,
-    "scored_sources": 1,
+    "accepted_readable_articles": 8,
+    "scored_sources": 2,
     "page_material_scan_complete": true
   }
 }
