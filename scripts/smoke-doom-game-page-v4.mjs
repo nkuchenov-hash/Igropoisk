@@ -50,7 +50,7 @@ try{
   if(!/Windows/i.test(state.platforms))errors.push(`Windows platform missing: ${state.platforms}`);
   if(state.similar<1||state.similarReasons.length!==state.similar)errors.push(`Similarity missing/reasons incomplete: ${state.similar}/${state.similarReasons.length}`);
   if(state.reviewRows<10||state.reviewScores.length<10)errors.push(`Scored professional reviews incomplete: ${state.reviewRows}/${state.reviewScores.length}`);
-  if(state.featuredScore!=='8.7/10')errors.push(`Calculated DOOM rating is wrong: ${state.featuredScore}`);
+  if(Number(state.featuredScore)!==8.7)errors.push(`Calculated DOOM rating is wrong: ${state.featuredScore}`);
   if(state.guides<6)errors.push(`DOOM guides incomplete: ${state.guides}`);
   if(state.franchise<2)errors.push(`DOOM franchise card incomplete: ${state.franchise}`);
   if(/Страница готовится/i.test(state.body))errors.push('Forbidden “page preparing” note is visible.');
