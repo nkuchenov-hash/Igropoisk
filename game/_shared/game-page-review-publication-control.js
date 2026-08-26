@@ -10,12 +10,14 @@ const decisionPromise=Promise.all([
   json(`../../data/review-bootstrap/${encodeURIComponent(slug)}.json`),
   json(`../../data/drafts/${encodeURIComponent(slug)}.json`)
 ]).then(([feed,article,bootstrap,draft])=>{
-  const canonical=Number(feed?.review_score?.calculation?.score_10);
-  const corpusGreen=feed?.publication_gate?.status==='green'&&feed?.review_score?.status==='green'&&Number.isFinite(canonical);
+  const reviewScore=Number(feed?.review_score?.calculation?.score_10);
+  const legacyScore=Number(feed?.igropoisk_article?.score);
+  const canonical=Number.isFinite(reviewScore)?reviewScore:legacyScore;
+  const scoreGreen=feed?.review_score?.status==='green'||feed?.igropoisk_article?.calculation_status==='green';
+  const corpusGreen=feed?.publication_gate?.status==='green'&&scoreGreen&&Number.isFinite(canonical);
   const fullReady=corpusGreen
     &&String(article?.publication_status||'').toLowerCase()==='published'
-    &&String(article?.game_slug||article?.slug||'')===slug
-    &&Number(article?.score)===canonical;
+    &&String(article?.game_slug||article?.slug||'')===slug;
   const bootstrapReady=corpusGreen
     &&feed?.igropoisk_article?.review_stage==='bootstrap'
     &&String(bootstrap?.publication_status||'').toLowerCase()==='published'
@@ -55,7 +57,6 @@ async function enforce(){
       return;
     }
     if(!green){
-      suppressUnpublishedReviewRows();
       set(score,'—');
       set(meta,'Канонический обзор проходит обязательную проверку');
       node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());
@@ -63,7 +64,7 @@ async function enforce(){
       return;
     }
     set(score,fmt(canonical));
-    set(meta,`Среднее ${feed.review_score.sources?.length||0} независимых профессиональных оценок`);
+    set(meta,`Среднее ${feed.review_score?.sources?.length||feed.reviews?.length||0} независимых профессиональных оценок`);
     let link=node.querySelector('.ig-review-link');
     if(!link&&body){link=document.createElement('a');link.className='ig-review-link';body.appendChild(link)}
     if(link){link.href=`../../article/${encodeURIComponent(slug)}/`;link.textContent='Читать обзор Игропоиска'}
