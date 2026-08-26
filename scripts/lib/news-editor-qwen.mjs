@@ -130,14 +130,14 @@ function canonicalName(value = '') {
 }
 
 const brandRepairs = [
-  [/\b(?:Убисофт|Убикс)\b/giu, 'Ubisoft'],
-  [/\b(?:Электроник Артс|ЕА)\b/giu, 'EA'],
-  [/\bСтим\b/giu, 'Steam'],
-  [/\bИксбокс\b/giu, 'Xbox'],
-  [/\bПлейстейшн\b/giu, 'PlayStation'],
-  [/\bНинтендо\b/giu, 'Nintendo'],
-  [/\bЭнвидиа\b/giu, 'NVIDIA'],
-  [/\bАМД\b/giu, 'AMD']
+  [/(?<![\p{L}\p{N}])(?:Убисофт|Убикс)(?![\p{L}\p{N}])/giu, 'Ubisoft'],
+  [/(?<![\p{L}\p{N}])(?:Электроник Артс|ЕА)(?![\p{L}\p{N}])/giu, 'EA'],
+  [/(?<![\p{L}\p{N}])Стим(?![\p{L}\p{N}])/giu, 'Steam'],
+  [/(?<![\p{L}\p{N}])Иксбокс(?![\p{L}\p{N}])/giu, 'Xbox'],
+  [/(?<![\p{L}\p{N}])Плейстейшн(?![\p{L}\p{N}])/giu, 'PlayStation'],
+  [/(?<![\p{L}\p{N}])Нинтендо(?![\p{L}\p{N}])/giu, 'Nintendo'],
+  [/(?<![\p{L}\p{N}])Энвидиа(?![\p{L}\p{N}])/giu, 'NVIDIA'],
+  [/(?<![\p{L}\p{N}])АМД(?![\p{L}\p{N}])/giu, 'AMD']
 ];
 
 export function normalizeEditorialNames(value = '') {
@@ -206,10 +206,10 @@ export function validateEditedNews(value, input = {}) {
   if (titleRu.length < 25 || titleRu.length > 180) reasons.push(`title length ${titleRu.length}`);
   if (briefRu.length < 150 || briefRu.length > 700) reasons.push(`brief length ${briefRu.length}`);
   if ((briefRu.match(/[.!?](?:\s|$)/g) || []).length < 2) reasons.push('brief has fewer than 2 sentences');
-  if (/\b(?:я как ии|искусственный интеллект|как модель|перевод статьи|в статье говорится|по данным материала)\b/i.test(briefRu)) reasons.push('meta language');
+  if (/(?:я как ии|искусственный интеллект|как модель|перевод статьи|в статье говорится|по данным материала)/i.test(briefRu)) reasons.push('meta language');
   if (boilerplatePattern.test(briefRu)) reasons.push('site boilerplate leaked into brief');
-  if (/\bспустя\b(?:\s+\S+){0,7}\s+спустя\b/iu.test(titleRu) || /\bпосле\b(?:\s+\S+){0,7}\s+после\b/iu.test(titleRu)) reasons.push('repeated connector in title');
-  if (/\b(?:переоснащ(?:ен|ена|ение)|исключен(?:а|о)? из списка)\b/iu.test(`${titleRu} ${briefRu}`)) reasons.push('literal machine translation');
+  if (/(?:^|\s)спустя(?:\s+\S+){0,7}\s+спустя(?:\s|$)/iu.test(titleRu) || /(?:^|\s)после(?:\s+\S+){0,7}\s+после(?:\s|$)/iu.test(titleRu)) reasons.push('repeated connector in title');
+  if (/(?:переоснащ(?:ен|ена|ение)|исключен(?:а|о)? из списка)/iu.test(`${titleRu} ${briefRu}`)) reasons.push('literal machine translation');
   const sentences = normalizedSentences(briefRu);
   if (sentences.length >= 2 && new Set(sentences).size !== sentences.length) reasons.push('duplicate sentence');
   const combined = canonicalName(`${titleRu} ${briefRu}`);
