@@ -154,9 +154,15 @@ function parseEditorText(text = '') {
     .replace(/```$/i, '')
     .trim();
   const titleMatch = cleaned.match(/(?:^|\n)ЗАГОЛОВ(?:О|А)К:\s*(.+?)(?=\n|$)/i);
-  const briefMatch = cleaned.match(/(?:^|\n)ТЕКСТ:\s*\n?([\s\S]+)$/i);
-  if (!titleMatch || !briefMatch) throw new Error(`editor output missing markers: ${cleaned.slice(0, 260)}`);
-  return { titleRu: titleMatch[1].trim(), briefRu: briefMatch[1].trim() };
+  if (!titleMatch) throw new Error(`editor output missing headline: ${cleaned.slice(0, 260)}`);
+  const explicitBrief = cleaned.match(/(?:^|\n)ТЕКСТ:\s*\n?([\s\S]+)$/i)?.[1]?.trim() || '';
+  const titleLineEnd = cleaned.indexOf('\n', titleMatch.index + titleMatch[0].length);
+  const fallbackBrief = titleLineEnd >= 0
+    ? cleaned.slice(titleLineEnd + 1).replace(/^\s*(?:ТЕКСТ\s*:?\s*)?/i, '').trim()
+    : '';
+  const briefRu = explicitBrief || fallbackBrief;
+  if (!briefRu) throw new Error(`editor output missing body: ${cleaned.slice(0, 320)}`);
+  return { titleRu: titleMatch[1].trim(), briefRu };
 }
 
 function normalizedSentences(value = '') {
@@ -191,7 +197,7 @@ export async function editNewsToRussian(input, options = {}) {
   const prompt = qwenPrompt(input);
   const startedAt = Date.now();
   const result = await generator(prompt, {
-    max_new_tokens: Number(options.maxNewTokens || 240),
+    max_new_tokens: Number(options.maxNewTokens || 320),
     do_sample: false,
     repetition_penalty: 1.1
   });
