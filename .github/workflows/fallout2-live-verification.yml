@@ -47,8 +47,9 @@ jobs:
               && grep -q 'data-slug="fallout-2"' /tmp/fallout2.html \
               && grep -q 'game-page.js' /tmp/shell.js \
               && grep -q 'game-page-review-sources.js' /tmp/page.js \
-              && grep -q 'function allReviews' /tmp/reviews.js \
-              && grep -q 'function render(' /tmp/reviews.js \
+              && grep -q 'function unifiedReviews' /tmp/reviews.js \
+              && grep -q 'function renderReviewsTab' /tmp/reviews.js \
+              && grep -q 'quality-review-row' /tmp/reviews.js \
               && grep -q '"reviews"' /tmp/reviews.json; then
               ok=true
               break
