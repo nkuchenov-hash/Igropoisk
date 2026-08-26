@@ -30,7 +30,7 @@ const checks = [
   {
     path: 'game/_shared/game-page-review-sources.js',
     type: /javascript/i,
-    markers: ['function allReviews(', 'function render(', 'quality-review-row'],
+    markers: ['function unifiedReviews(', 'function renderReviewsTab(', 'quality-review-row'],
   },
   {
     path: 'game/the-witcher-3-wild-hunt/',
