@@ -37,15 +37,13 @@ for (const item of candidates) {
 
   console.log(`\n[news/editor/qwen] ${results.length + 1}/${limit}: ${title}`);
   console.log(`[news/editor/qwen] article characters: ${articleText.length}${articleFetchError ? `; fallback because ${articleFetchError}` : ''}`);
-  if (draftTitleRu) console.log(`[news/editor/qwen] machine draft: ${draftTitleRu}`);
+  if (draftTitleRu) console.log(`[news/editor/qwen] legacy machine draft (NOT passed to editor): ${draftTitleRu}`);
 
   try {
     const edited = await editNewsToRussian({
       title,
       summary,
       articleText,
-      draftTitleRu,
-      draftSummaryRu,
       source: item.primarySource || item.source || item.publisher || ''
     });
     const record = {
@@ -54,8 +52,8 @@ for (const item of candidates) {
       source: item.primarySource || item.source || '',
       titleEn: title,
       summaryEn: summary,
-      draftTitleRu,
-      draftSummaryRu,
+      legacyDraftTitleRu: draftTitleRu,
+      legacyDraftSummaryRu: draftSummaryRu,
       articleCharacters: articleText.length,
       articleFetchError,
       titleRu: edited.titleRu,
@@ -77,8 +75,8 @@ for (const item of candidates) {
       source: item.primarySource || item.source || '',
       titleEn: title,
       summaryEn: summary,
-      draftTitleRu,
-      draftSummaryRu,
+      legacyDraftTitleRu: draftTitleRu,
+      legacyDraftSummaryRu: draftSummaryRu,
       articleCharacters: articleText.length,
       articleFetchError,
       valid: false,
