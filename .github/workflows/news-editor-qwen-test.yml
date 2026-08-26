@@ -58,7 +58,7 @@ jobs:
           NEWS_EDITOR_DTYPE: q4
           NEWS_EDITOR_RUNTIME: /tmp/igropoisk-news-editor-runtime
           NEWS_EDITOR_CACHE: /tmp/igropoisk-news-editor-models
-          NEWS_EDITOR_BENCHMARK_LIMIT: '1'
+          NEWS_EDITOR_BENCHMARK_LIMIT: '3'
         run: node scripts/test-news-editor-qwen-live.mjs
 
       - name: Upload editorial benchmark
