@@ -1,7 +1,7 @@
 {
   "schema_version": 8,
-  "started_at": "2026-08-26T07:39:52.528Z",
-  "finished_at": "2026-08-26T07:46:18.139Z",
+  "started_at": "2026-08-26T13:53:09.227Z",
+  "finished_at": "2026-08-26T14:02:13.010Z",
   "summary": {
     "completed": 10,
     "needs_revision": 4,
@@ -16,7 +16,7 @@
       "command": "node scripts/enrich-game-relations.mjs the-witcher-3-wild-hunt",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 513,
+      "duration_ms": 1663,
       "stdout": "{\n  \"slug\": \"the-witcher-3-wild-hunt\",\n  \"status\": \"needs_revision\",\n  \"preserved_existing\": true,\n  \"reason\": \"Relation research unavailable: OpenAI API 429. Existing data was not replaced.\"\n}\n",
       "stderr": ""
     },
@@ -25,7 +25,7 @@
       "command": "node scripts/build-similarity-index.mjs the-witcher-3-wild-hunt",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 163,
+      "duration_ms": 169,
       "stdout": "{\n  \"catalog_games\": 215,\n  \"profiles\": 220,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"year_proximity_used\": false\n}\n",
       "stderr": ""
     },
@@ -34,8 +34,8 @@
       "command": "node scripts/parse-game-data.mjs baldurs-gate-enhanced-edition 228280 Baldur's Gate: Enhanced Edition",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 224,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"baldurs-gate-enhanced-edition\",\n  \"checked_at\": \"2026-08-26T07:39:53.234Z\",\n  \"duration_ms\": 190,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=228280&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Baldur's Gate: Enhanced Edition\",\n    \"developers\": [\n      \"Beamdog\"\n    ],\n    \"genres\": [\n      \"Adventure\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\",\n      \"linux\"\n    ],\n    \"screenshots\": 8,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/baldurs-gate-enhanced-edition.json\"\n}\n",
+      "duration_ms": 300,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"baldurs-gate-enhanced-edition\",\n  \"checked_at\": \"2026-08-26T13:53:11.089Z\",\n  \"duration_ms\": 269,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=228280&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Baldur's Gate: Enhanced Edition\",\n    \"developers\": [\n      \"Beamdog\"\n    ],\n    \"genres\": [\n      \"Adventure\",\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\",\n      \"mac\",\n      \"linux\"\n    ],\n    \"screenshots\": 8,\n    \"videos\": 1\n  },\n  \"output\": \"data/parser-output/baldurs-gate-enhanced-edition.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -43,7 +43,7 @@
       "command": "node scripts/build-game-page.mjs baldurs-gate-enhanced-edition",
       "status": "revision_required",
       "exit_code": 1,
-      "duration_ms": 711,
+      "duration_ms": 947,
       "stdout": "",
       "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:24:14\n\nNode.js v22.23.2\n"
     },
@@ -52,8 +52,8 @@
       "command": "node scripts/parse-game-data.mjs no-more-room-in-hell-2 292000 No More Room in Hell 2",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 173,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"no-more-room-in-hell-2\",\n  \"checked_at\": \"2026-08-26T07:39:54.168Z\",\n  \"duration_ms\": 141,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=292000&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"No More Room in Hell 2\",\n    \"developers\": [\n      \"Torn Banner Studios\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 9,\n    \"videos\": 6\n  },\n  \"output\": \"data/parser-output/no-more-room-in-hell-2.json\"\n}\n",
+      "duration_ms": 507,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"no-more-room-in-hell-2\",\n  \"checked_at\": \"2026-08-26T13:53:12.338Z\",\n  \"duration_ms\": 475,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=292000&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"No More Room in Hell 2\",\n    \"developers\": [\n      \"Torn Banner Studios\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 9,\n    \"videos\": 6\n  },\n  \"output\": \"data/parser-output/no-more-room-in-hell-2.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -61,7 +61,7 @@
       "command": "node scripts/build-game-page-basic.mjs game_f5db7308be84c62ed593",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 102,
+      "duration_ms": 109,
       "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"game_id\": \"game_f5db7308be84c62ed593\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 18,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"next\": \"review/rating quality loop\"\n}\n",
       "stderr": ""
     },
@@ -70,7 +70,7 @@
       "command": "node scripts/quality-control-loop.mjs page no-more-room-in-hell-2 game_f5db7308be84c62ed593",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 143546,
+      "duration_ms": 195931,
       "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 36,\n  \"comments\": [\n    \"hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_hero.jpg\",\n    \"cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900.jpg\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:24:14\\n\\nNode.js v22.23.2\\n\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -88,8 +88,8 @@
       "command": "node scripts/parse-game-data.mjs pax-autocratica 1067360 Pax Autocratica",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 218,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"pax-autocratica\",\n  \"checked_at\": \"2026-08-26T07:42:17.990Z\",\n  \"duration_ms\": 185,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1067360&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Pax Autocratica\",\n    \"developers\": [\n      \"Multiverse\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\",\n      \"Simulation\",\n      \"Early Access\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 29,\n    \"videos\": 3\n  },\n  \"output\": \"data/parser-output/pax-autocratica.json\"\n}\n",
+      "duration_ms": 271,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"pax-autocratica\",\n  \"checked_at\": \"2026-08-26T13:56:28.883Z\",\n  \"duration_ms\": 242,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1067360&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Pax Autocratica\",\n    \"developers\": [\n      \"Multiverse\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\",\n      \"Simulation\",\n      \"Early Access\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 29,\n    \"videos\": 3\n  },\n  \"output\": \"data/parser-output/pax-autocratica.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -97,7 +97,7 @@
       "command": "node scripts/build-game-page-basic.mjs game_2a7ceb637cbcf1a28770",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 102,
+      "duration_ms": 101,
       "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"game_id\": \"game_2a7ceb637cbcf1a28770\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 106,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"next\": \"review/rating quality loop\"\n}\n",
       "stderr": ""
     },
@@ -106,7 +106,7 @@
       "command": "node scripts/quality-control-loop.mjs page pax-autocratica game_2a7ceb637cbcf1a28770",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 145156,
+      "duration_ms": 228827,
       "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 36,\n  \"comments\": [\n    \"cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900.jpg\",\n    \"file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20\\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\\n                                                                                                                                                                                                                                                             ^\\n\\nError: OpenAI API 429: {\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\\\",\\n    \\\"type\\\": \\\"insufficient_quota\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"insufficient_quota\\\"\\n  }\\n}\\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20:254)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:24:14\\n\\nNode.js v22.23.2\\n\"\n  ]\n}\n",
       "stderr": ""
     },
@@ -123,15 +123,15 @@
       "command": "node scripts/quality-control-loop.mjs review call-of-duty-modern-warfare-4 game_6a5f09228060b79fa863",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 94698,
-      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"call-of-duty-modern-warfare-4\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 1.\",\n    \"Рейтинг: 0.\"\n  ]\n}\n",
+      "duration_ms": 114952,
+      "stdout": "{\n  \"mode\": \"review\",\n  \"slug\": \"call-of-duty-modern-warfare-4\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 12,\n  \"comments\": [\n    \"Корпус рецензий: 0.\",\n    \"Рейтинг: 0.\"\n  ]\n}\n",
       "stderr": ""
     },
     {
       "label": "review-qc-state:call-of-duty-modern-warfare-4",
       "status": "needs_revision",
       "comments": [
-        "Корпус рецензий: 1.",
+        "Корпус рецензий: 0.",
         "Рейтинг: 0."
       ]
     }
