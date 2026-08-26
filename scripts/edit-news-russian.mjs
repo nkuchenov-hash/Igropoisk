@@ -4,7 +4,7 @@ import { editNewsToRussian, fetchArticleText, warmNewsEditor } from './lib/news-
 
 const eventsPath = 'data/news-events.json';
 const reportPath = process.env.NEWS_EDITOR_REPORT || 'tmp/news-editor-report.json';
-const editorialVersion = 1;
+const editorialVersion = 2;
 const maxItems = Math.max(1, Number(process.env.NEWS_EDITOR_MAX_ITEMS || 14));
 const minimumPublicItems = Math.max(12, Number(process.env.NEWS_EDITOR_MIN_PUBLIC || 12));
 
@@ -126,9 +126,7 @@ for (const item of candidates.slice(0, maxItems)) {
       title,
       summary,
       articleText,
-      source: item.primarySource || item.source || '',
-      draftTitleRu: item.titleRu || '',
-      draftSummaryRu: item.summaryRu || ''
+      source: item.primarySource || item.source || ''
     }, { maxAttempts: 2 });
 
     if (!edited.ok) {
