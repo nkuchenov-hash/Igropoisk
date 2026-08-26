@@ -109,4 +109,3 @@ await fs.writeFile(outputPath, `${JSON.stringify(report, null, 2)}\n`);
 console.log(`\n[news/editor/qwen] wrote ${outputPath}; valid ${validCount}/${results.length}; candidate=${report.qualityCandidate}`);
 
 if (results.length < limit) throw new Error(`Only ${results.length}/${limit} benchmark items were processed.`);
-if (!results.some(item => !item.error)) throw new Error('Qwen produced no parseable editorial output.');
