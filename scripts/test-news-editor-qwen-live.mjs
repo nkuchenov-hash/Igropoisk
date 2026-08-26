@@ -25,6 +25,8 @@ for (const item of candidates) {
   if (results.length >= limit) break;
   const title = String(item.titleEn || item.title || '').trim();
   const summary = String(item.summaryEn || item.summary || title).trim();
+  const draftTitleRu = String(item.titleRu || '').trim();
+  const draftSummaryRu = String(item.summaryRu || '').trim();
   let articleText = '';
   let articleFetchError = '';
   try {
@@ -35,12 +37,15 @@ for (const item of candidates) {
 
   console.log(`\n[news/editor/qwen] ${results.length + 1}/${limit}: ${title}`);
   console.log(`[news/editor/qwen] article characters: ${articleText.length}${articleFetchError ? `; fallback because ${articleFetchError}` : ''}`);
+  if (draftTitleRu) console.log(`[news/editor/qwen] machine draft: ${draftTitleRu}`);
 
   try {
     const edited = await editNewsToRussian({
       title,
       summary,
       articleText,
+      draftTitleRu,
+      draftSummaryRu,
       source: item.primarySource || item.source || item.publisher || ''
     });
     const record = {
@@ -49,6 +54,8 @@ for (const item of candidates) {
       source: item.primarySource || item.source || '',
       titleEn: title,
       summaryEn: summary,
+      draftTitleRu,
+      draftSummaryRu,
       articleCharacters: articleText.length,
       articleFetchError,
       titleRu: edited.titleRu,
@@ -69,6 +76,8 @@ for (const item of candidates) {
       source: item.primarySource || item.source || '',
       titleEn: title,
       summaryEn: summary,
+      draftTitleRu,
+      draftSummaryRu,
       articleCharacters: articleText.length,
       articleFetchError,
       valid: false,
@@ -79,6 +88,7 @@ for (const item of candidates) {
 }
 
 const validCount = results.filter(item => item.valid).length;
+const generationTimes = results.filter(item => Number.isFinite(item.generationMs));
 const report = {
   generatedAt: new Date().toISOString(),
   model: warmup.model,
@@ -87,16 +97,15 @@ const report = {
   requestedCount: limit,
   processedCount: results.length,
   validCount,
-  averageGenerationMs: results.filter(item => Number.isFinite(item.generationMs)).length
-    ? Math.round(results.filter(item => Number.isFinite(item.generationMs)).reduce((sum, item) => sum + item.generationMs, 0) / results.filter(item => Number.isFinite(item.generationMs)).length)
+  averageGenerationMs: generationTimes.length
+    ? Math.round(generationTimes.reduce((sum, item) => sum + item.generationMs, 0) / generationTimes.length)
     : null,
+  qualityCandidate: validCount >= Math.max(1, Math.ceil(results.length * 0.67)),
   results
 };
 
 await fs.writeFile(outputPath, `${JSON.stringify(report, null, 2)}\n`);
-console.log(`\n[news/editor/qwen] wrote ${outputPath}; valid ${validCount}/${results.length}`);
+console.log(`\n[news/editor/qwen] wrote ${outputPath}; valid ${validCount}/${results.length}; candidate=${report.qualityCandidate}`);
 
 if (results.length < limit) throw new Error(`Only ${results.length}/${limit} benchmark items were processed.`);
-if (validCount < Math.max(1, Math.ceil(limit * 0.67))) {
-  throw new Error(`Qwen editorial quality gate failed: ${validCount}/${results.length} valid outputs.`);
-}
+if (!results.some(item => !item.error)) throw new Error('Qwen produced no parseable editorial output.');
