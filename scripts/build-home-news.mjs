@@ -53,10 +53,10 @@ function newestFirst(a,b) {
 }
 
 const normalized = events.map(normalize).filter(item => item.titleRu && item.primaryUrl && item.image);
-const selected = normalized.filter(item => item.publicEligible).sort(newestFirst);
-const fallback = normalized.filter(item => !item.publicEligible).sort(newestFirst);
 const seen = new Set();
-const items = [...selected, ...fallback]
+const items = normalized
+  .filter(item => item.publicEligible)
+  .sort(newestFirst)
   .filter(item => {
     const key = item.primaryUrl.replace(/[?#].*$/,'');
     if (seen.has(key)) return false;
@@ -65,5 +65,9 @@ const items = [...selected, ...fallback]
   })
   .slice(0,12);
 
+if (items.length !== 12) {
+  throw new Error(`Homepage requires 12 editorially approved news cards, got ${items.length}. Rejected/non-public copy will never be used as fallback.`);
+}
+
 await fs.writeFile('data/news-home-ru.json', `${JSON.stringify({generatedAt:new Date().toISOString(),model:'editorial-global-feed',items},null,2)}\n`);
-console.log(`[home-news] wrote ${items.length} Russian cards selected newest-first; ${items.filter(item => item.publicEligible).length} passed public editorial selection`);
+console.log(`[home-news] wrote ${items.length} Russian cards selected newest-first; ${items.length} passed public editorial selection`);
