@@ -16,7 +16,7 @@ const candidates = (payload.items || [])
 
 if (!candidates.length) throw new Error('No English news candidates available for Qwen benchmark.');
 
-console.log(`[news/editor/qwen] warming ${process.env.NEWS_EDITOR_MODEL || 'onnx-community/Qwen2.5-1.5B-Instruct'}...`);
+console.log(`[news/editor/qwen] warming ${process.env.NEWS_EDITOR_MODEL || 'onnx-community/Qwen3-4B-Instruct-2507-ONNX'}...`);
 const warmup = await warmNewsEditor();
 console.log(`[news/editor/qwen] model ready in ${(warmup.elapsedMs / 1000).toFixed(1)}s`);
 
@@ -30,7 +30,7 @@ for (const item of candidates) {
   let articleText = '';
   let articleFetchError = '';
   try {
-    articleText = await fetchArticleText(item.primaryUrl || item.url || '');
+    articleText = await fetchArticleText(item.primaryUrl || item.url || '', 18000, `${title}\n${summary}`);
   } catch (error) {
     articleFetchError = error.message;
   }
@@ -69,6 +69,7 @@ for (const item of candidates) {
     console.log(`[news/editor/qwen] generated in ${(edited.elapsedMs / 1000).toFixed(1)}s; valid=${edited.ok}`);
     console.log(`[news/editor/qwen] TITLE: ${edited.titleRu}`);
     console.log(`[news/editor/qwen] BRIEF: ${edited.briefRu}`);
+    if (!edited.ok) console.log(`[news/editor/qwen] REJECT: ${edited.reasons.join(' | ')}`);
   } catch (error) {
     results.push({
       id: item.id,
