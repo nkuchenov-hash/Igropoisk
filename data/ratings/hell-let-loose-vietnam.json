@@ -1,0 +1,83 @@
+{
+  "schema_version": 5,
+  "game_slug": "hell-let-loose-vietnam",
+  "checked_at": "2026-08-26T02:23:40.781Z",
+  "status": "insufficient-scores",
+  "method": {
+    "name": "Среднее всех найденных подтверждённых независимых профессиональных оценок",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources_for_confident_rating": 10,
+    "maximum_sources": null,
+    "use_all_discovered_scores": true,
+    "persistent_discovery_seeds": true,
+    "output_scale": 10,
+    "letter_grade_map": {
+      "A+": 10,
+      "A": 9.5,
+      "A-": 9,
+      "B+": 8.5,
+      "B": 8,
+      "B-": 7.5,
+      "C+": 7,
+      "C": 6.5,
+      "C-": 6,
+      "D+": 5.5,
+      "D": 5,
+      "D-": 4.5,
+      "F": 2.5
+    },
+    "rounding_decimals": 1
+  },
+  "sources": [
+    {
+      "publication": "GamesRadar+",
+      "title": "Hell Let Loose: Vietnam review: \"Often frustrating but always involving ...",
+      "url": "https://www.gamesradar.com/games/fps/hell-let-loose-vietnam-review",
+      "original_score": {
+        "score": 4,
+        "scale": 5,
+        "grade": null,
+        "display": "4/5"
+      },
+      "normalized_10": 8,
+      "checked_at": "2026-08-26T02:23:40.781Z"
+    },
+    {
+      "publication": "pcgamesn.com",
+      "title": "Hell Let Loose: Vietnam review - a rewarding, brutal challenge",
+      "url": "https://www.pcgamesn.com/hell-let-loose-vietnam/review",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "checked_at": "2026-08-26T02:23:40.781Z"
+    },
+    {
+      "publication": "dualshockers.com",
+      "title": "Hell Let Loose Vietnam Review: War-a-Go-Go - DualShockers",
+      "url": "https://www.dualshockers.com/hell-let-loose-vietnam-review",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "checked_at": "2026-08-26T02:23:40.781Z"
+    }
+  ],
+  "calculation": {
+    "source_count": 3,
+    "values": [
+      8,
+      8,
+      8
+    ],
+    "mean_10": 8,
+    "score_10": 8,
+    "status": "insufficient-scores"
+  }
+}
