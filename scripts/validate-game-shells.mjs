@@ -4,8 +4,11 @@ import path from 'node:path';
 
 const root=process.cwd();
 const catalog=JSON.parse(fs.readFileSync(path.join(root,'data/catalog-visible.json'),'utf8'));
-const errors=[];let checked=0;
-for(const game of catalog){
+const requested=new Set(process.argv.slice(2).map(value=>String(value||'').trim()).filter(Boolean));
+const games=requested.size?catalog.filter(game=>requested.has(String(game?.slug||'').trim())):catalog;
+const missing=[...requested].filter(slug=>!catalog.some(game=>String(game?.slug||'').trim()===slug));
+const errors=missing.map(slug=>`${slug}: not present in visible catalog`);let checked=0;
+for(const game of games){
   const slug=String(game?.slug||'').trim();if(!slug)continue;
   const relative=`game/${slug}/index.html`;const target=path.join(root,relative);
   if(!fs.existsSync(target)){errors.push(`${slug}: public game page missing`);continue}
@@ -19,6 +22,6 @@ for(const game of catalog){
   if(attr('data-draft')!==slug)errors.push(`${slug}: data-draft is ${attr('data-draft')||'missing'}`);
   if(game?.game_id&&attr('data-game-id')!==String(game.game_id))errors.push(`${slug}: data-game-id mismatch`);
 }
-const report={catalog_games:catalog.length,checked_pages:checked,errors};
+const report={catalog_games:catalog.length,scope:requested.size?[...requested]:['*'],checked_pages:checked,errors};
 console.log(JSON.stringify(report,null,2));
 if(errors.length)process.exit(2);
