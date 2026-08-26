@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 
-const defaultModel = process.env.NEWS_EDITOR_MODEL || 'onnx-community/Qwen2.5-1.5B-Instruct';
+const defaultModel = process.env.NEWS_EDITOR_MODEL || 'onnx-community/Qwen3-1.7B-ONNX';
 const defaultDtype = process.env.NEWS_EDITOR_DTYPE || 'q4';
 const cacheDir = process.env.NEWS_EDITOR_CACHE || '/tmp/igropoisk-news-editor-models';
 const runtimeDir = process.env.NEWS_EDITOR_RUNTIME || '/tmp/igropoisk-news-editor-runtime';
@@ -51,10 +51,12 @@ function cleanText(value = '') {
     .trim();
 }
 
+const boilerplatePattern = /cookie|newsletter|subscribe|sign up|privacy policy|when you (?:purchase|buy) through links|we may (?:earn|receive) (?:an )?(?:affiliate )?commission|affiliate commission|here(?:'s| is) how (?:it|this) works|support us|terms (?:of|and) conditions|all rights reserved/i;
+
 function paragraphText(html = '') {
   return (String(html).match(/<p\b[^>]*>[\s\S]*?<\/p>/gi) || [])
     .map(cleanText)
-    .filter(text => text.length >= 40 && !/cookie|newsletter|subscribe|sign up|privacy policy/i.test(text));
+    .filter(text => text.length >= 40 && !boilerplatePattern.test(text));
 }
 
 export function extractArticleText(html = '') {
@@ -93,8 +95,8 @@ function protectedNames(title = '') {
 function qwenPrompt({ title, summary, articleText, source, draftTitleRu, draftSummaryRu }) {
   const material = (articleText || summary || title || '').slice(0, 5000);
   const names = protectedNames(title);
-  const system = `Ты русский редактор игрового издания «Игропоиск». Пиши как живой редактор, а не как машинный переводчик. Нельзя додумывать факты. Нельзя менять смысл. Названия игр, компаний, сервисов, мероприятий и имена собственные из оригинала сохраняй точно; если нет общеупотребительного русского варианта, оставляй латиницей.`;
-  const user = `Сделай короткую русскую новость по материалу ниже.\n\nИсточник: ${source || 'не указан'}\nОригинальный заголовок: ${title || ''}\nОригинальный лид: ${summary || ''}\n${draftTitleRu ? `Черновой машинный заголовок на русском: ${draftTitleRu}\n` : ''}${draftSummaryRu ? `Черновой машинный текст на русском: ${draftSummaryRu}\n` : ''}${names.length ? `Имена и названия, которые нельзя искажать: ${names.join(' | ')}\n` : ''}\nФактический материал:\n${material}\n\nТребования:\n1. Заголовок — естественный русский, 45–130 знаков. Не переводи названия игр и брендов буквально.\n2. Текст — 2–4 нормальных предложения, 320–700 знаков, можно разделить на два абзаца. Первое предложение сразу сообщает главное. Далее только важные детали и контекст.\n3. Не пиши «в статье говорится», «по данным материала», «как ИИ» и подобное.\n4. Не добавляй платформы, даты, должности, причины или последствия, которых нет в исходном материале.\n5. Черновой машинный перевод — только подсказка; исправь его полностью, если он звучит плохо.\n\nОтвет строго в таком виде, без JSON и без Markdown:\nЗАГОЛОВОК: <заголовок>\nТЕКСТ:\n<мини-новость>`;
+  const system = `Ты русский редактор игрового издания «Игропоиск». Пиши как живой редактор, а не как машинный переводчик. Нельзя додумывать факты. Нельзя менять смысл. Названия игр, компаний, сервисов, мероприятий и имена собственные из оригинала сохраняй точно; если нет общеупотребительного русского варианта, оставляй латиницей. Игнорируй рекламные, партнерские, навигационные и подписочные фразы сайта.`;
+  const user = `/no_think\nСделай короткую русскую новость по материалу ниже.\n\nИсточник: ${source || 'не указан'}\nОригинальный заголовок: ${title || ''}\nОригинальный лид: ${summary || ''}\n${draftTitleRu ? `Черновой машинный заголовок на русском: ${draftTitleRu}\n` : ''}${draftSummaryRu ? `Черновой машинный текст на русском: ${draftSummaryRu}\n` : ''}${names.length ? `Имена и названия, которые нельзя искажать: ${names.join(' | ')}\n` : ''}\nФактический материал:\n${material}\n\nТребования:\n1. Заголовок — естественный русский, 45–130 знаков. Не переводи названия игр и брендов буквально.\n2. Текст — 2–4 нормальных предложения, 320–700 знаков, можно разделить на два абзаца. Первое предложение сразу сообщает главное. Далее только важные детали и контекст.\n3. Не пиши «в статье говорится», «по данным материала», «как ИИ» и подобное.\n4. Не добавляй платформы, даты, должности, причины или последствия, которых нет в исходном материале.\n5. Не повторяй одно и то же предложение или факт.\n6. Не включай партнерские ссылки, комиссии магазина, подписки и служебный текст сайта.\n7. Черновой машинный перевод — только подсказка; исправь его полностью, если он звучит плохо.\n\nОтвет строго в таком виде, без JSON и без Markdown:\nЗАГОЛОВОК: <заголовок>\nТЕКСТ:\n<мини-новость>`;
   return `<|im_start|>system\n${system}<|im_end|>\n<|im_start|>user\n${user}<|im_end|>\n<|im_start|>assistant\n`;
 }
 
@@ -109,11 +111,22 @@ function generatedText(result) {
 }
 
 function parseEditorText(text = '') {
-  const cleaned = String(text).replace(/^```(?:text)?/i, '').replace(/```$/i, '').trim();
+  const cleaned = String(text)
+    .replace(/<think>[\s\S]*?<\/think>/gi, '')
+    .replace(/^```(?:text)?/i, '')
+    .replace(/```$/i, '')
+    .trim();
   const titleMatch = cleaned.match(/(?:^|\n)ЗАГОЛОВОК:\s*(.+?)(?=\n|$)/i);
   const briefMatch = cleaned.match(/(?:^|\n)ТЕКСТ:\s*\n?([\s\S]+)$/i);
   if (!titleMatch || !briefMatch) throw new Error(`editor output missing markers: ${cleaned.slice(0, 260)}`);
   return { titleRu: titleMatch[1].trim(), briefRu: briefMatch[1].trim() };
+}
+
+function normalizedSentences(value = '') {
+  return String(value)
+    .split(/(?<=[.!?])\s+/)
+    .map(sentence => sentence.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').replace(/\s+/g, ' ').trim())
+    .filter(sentence => sentence.length >= 20);
 }
 
 export function validateEditedNews(value) {
@@ -126,6 +139,9 @@ export function validateEditedNews(value) {
   if (briefRu.length < 260 || briefRu.length > 1000) reasons.push(`brief length ${briefRu.length}`);
   if ((briefRu.match(/[.!?](?:\s|$)/g) || []).length < 2) reasons.push('brief has fewer than 2 sentences');
   if (/\b(?:я как ии|искусственный интеллект|как модель|перевод статьи|в статье говорится|по данным материала)\b/i.test(briefRu)) reasons.push('meta language');
+  if (boilerplatePattern.test(briefRu)) reasons.push('site boilerplate leaked into brief');
+  const sentences = normalizedSentences(briefRu);
+  if (sentences.length >= 2 && new Set(sentences).size !== sentences.length) reasons.push('duplicate sentence');
   return { ok: reasons.length === 0, reasons, titleRu, briefRu };
 }
 
@@ -136,7 +152,7 @@ export async function editNewsToRussian(input, options = {}) {
   const result = await generator(prompt, {
     max_new_tokens: Number(options.maxNewTokens || 300),
     do_sample: false,
-    repetition_penalty: 1.08,
+    repetition_penalty: 1.12,
     return_full_text: false
   });
   const raw = generatedText(result);
