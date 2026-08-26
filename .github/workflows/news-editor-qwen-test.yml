@@ -39,7 +39,7 @@ jobs:
           path: |
             /tmp/igropoisk-news-editor-runtime
             /tmp/igropoisk-news-editor-models
-          key: news-editor-${{ runner.os }}-node22-hf-4.2.0-qwen2.5-1.5b-instruct-q4-v2
+          key: news-editor-${{ runner.os }}-node22-hf-4.2.0-qwen3-1.7b-q4-v1
 
       - name: Install Transformers.js runtime
         if: steps.qwen_cache.outputs.cache-hit != 'true'
@@ -54,7 +54,7 @@ jobs:
 
       - name: Run Qwen editorial benchmark on real news
         env:
-          NEWS_EDITOR_MODEL: onnx-community/Qwen2.5-1.5B-Instruct
+          NEWS_EDITOR_MODEL: onnx-community/Qwen3-1.7B-ONNX
           NEWS_EDITOR_DTYPE: q4
           NEWS_EDITOR_RUNTIME: /tmp/igropoisk-news-editor-runtime
           NEWS_EDITOR_CACHE: /tmp/igropoisk-news-editor-models
