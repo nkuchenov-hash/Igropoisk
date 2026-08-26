@@ -2,7 +2,7 @@ import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 
 const defaultModel = process.env.NEWS_EDITOR_MODEL || 'onnx-community/Qwen2.5-1.5B-Instruct';
-const defaultDtype = process.env.NEWS_EDITOR_DTYPE || 'q4f16';
+const defaultDtype = process.env.NEWS_EDITOR_DTYPE || 'q4';
 const cacheDir = process.env.NEWS_EDITOR_CACHE || '/tmp/igropoisk-news-editor-models';
 const runtimeDir = process.env.NEWS_EDITOR_RUNTIME || '/tmp/igropoisk-news-editor-runtime';
 
