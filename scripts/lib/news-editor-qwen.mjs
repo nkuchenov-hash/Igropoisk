@@ -208,7 +208,7 @@ export function validateEditedNews(value, input = {}) {
   if ((briefRu.match(/[.!?](?:\s|$)/g) || []).length < 2) reasons.push('brief has fewer than 2 sentences');
   if (/\b(?:я как ии|искусственный интеллект|как модель|перевод статьи|в статье говорится|по данным материала)\b/i.test(briefRu)) reasons.push('meta language');
   if (boilerplatePattern.test(briefRu)) reasons.push('site boilerplate leaked into brief');
-  if (/\b(?:спустя|после)\b(?:\s+\S+){0,7}\s+\b\1\b/iu.test(titleRu)) reasons.push('repeated connector in title');
+  if (/\bспустя\b(?:\s+\S+){0,7}\s+спустя\b/iu.test(titleRu) || /\bпосле\b(?:\s+\S+){0,7}\s+после\b/iu.test(titleRu)) reasons.push('repeated connector in title');
   if (/\b(?:переоснащ(?:ен|ена|ение)|исключен(?:а|о)? из списка)\b/iu.test(`${titleRu} ${briefRu}`)) reasons.push('literal machine translation');
   const sentences = normalizedSentences(briefRu);
   if (sentences.length >= 2 && new Set(sentences).size !== sentences.length) reasons.push('duplicate sentence');
