@@ -89,8 +89,7 @@ export function extractArticleText(html = '', context = '') {
   const main = String(html).match(/<main\b[^>]*>([\s\S]*?)<\/main>/i)?.[1] || '';
   const candidates = [paragraphText(article), paragraphText(main), paragraphText(html)];
   const paragraphs = candidates.find(items => items.length >= 3) || candidates.find(items => items.length) || [];
-  const unique = [...new Set(paragraphs)];
-  return rankParagraphs(unique, context).join('\n\n').slice(0, 4300).trim();
+  return rankParagraphs([...new Set(paragraphs)], context).join('\n\n').slice(0, 4300).trim();
 }
 
 export async function fetchArticleText(url, timeoutMs = 18000, context = '') {
@@ -102,7 +101,7 @@ export async function fetchArticleText(url, timeoutMs = 18000, context = '') {
       redirect: 'follow',
       signal: controller.signal,
       headers: {
-        'user-agent': 'IgropoiskNewsEditorExperiment/1.0 (+https://github.com/nkuchenov-hash/Igropoisk)',
+        'user-agent': 'IgropoiskNewsEditor/1.0 (+https://github.com/nkuchenov-hash/Igropoisk)',
         accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.5'
       }
     });
@@ -122,28 +121,51 @@ function protectedNames(title = '') {
 function criticalNames(title = '') {
   return protectedNames(title).filter(value => {
     if (/^(?:FPS|CEO|RPG|PC)$/i.test(value)) return false;
-    return /\d/.test(value) || /['’]/.test(value) || /\s/.test(value) || /^[A-Z]{2,}$/.test(value) || /^(?:Ubisoft|Steam|QuakeCon|Wolfenstein|PlayStation|Xbox|Nintendo|EA)$/i.test(value);
+    return /\d/.test(value) || /['’]/.test(value) || /\s/.test(value) || /^[A-Z]{2,}$/.test(value) || /^(?:Ubisoft|Steam|QuakeCon|Wolfenstein|PlayStation|Xbox|Nintendo|EA|NVIDIA|AMD)$/i.test(value);
   });
 }
 
 function canonicalName(value = '') {
-  return String(value)
-    .normalize('NFKC')
-    .replace(/[’‘`´]/g, "'")
-    .replace(/\s+/g, ' ')
-    .trim()
-    .toLowerCase();
+  return String(value).normalize('NFKC').replace(/[’‘`´]/g, "'").replace(/\s+/g, ' ').trim().toLowerCase();
 }
 
-function qwenPrompt({ title, summary, articleText, source, draftTitleRu, draftSummaryRu }) {
-  const material = (articleText || summary || title || '').slice(0, 4300);
+const brandRepairs = [
+  [/\b(?:Убисофт|Убикс)\b/giu, 'Ubisoft'],
+  [/\b(?:Электроник Артс|ЕА)\b/giu, 'EA'],
+  [/\bСтим\b/giu, 'Steam'],
+  [/\bИксбокс\b/giu, 'Xbox'],
+  [/\bПлейстейшн\b/giu, 'PlayStation'],
+  [/\bНинтендо\b/giu, 'Nintendo'],
+  [/\bЭнвидиа\b/giu, 'NVIDIA'],
+  [/\bАМД\b/giu, 'AMD']
+];
+
+export function normalizeEditorialNames(value = '') {
+  let output = String(value);
+  for (const [pattern, replacement] of brandRepairs) output = output.replace(pattern, replacement);
+  return output.replace(/[ \t]+/g, ' ').trim();
+}
+
+function baseSystem() {
+  return `Ты редактор русского игрового издания «Игропоиск». Пиши коротко, естественно и точно, как русскоязычный редактор, а не машинный переводчик. Ничего не выдумывай и не усиливай причинность. Не меняй должности, цифры, даты, степень уверенности и причинно-следственные связи. Латинские названия игр, компаний, сервисов и мероприятий не переводи и не транслитерируй: Ubisoft нельзя превращать в «Убисофт» или «Убикс», Assassin's Creed нельзя переводить. Игнорируй рекламу, партнерские вставки, подписки, навигацию и служебный текст сайта.`;
+}
+
+function materialBlock({ title, summary, articleText, source, draftTitleRu, draftSummaryRu }) {
   const names = protectedNames(title);
   const mustKeep = criticalNames(title);
-  const system = `Ты редактор русского игрового издания «Игропоиск». Пиши коротко, естественно и точно, как русскоязычный редактор, а не машинный переводчик. Ничего не выдумывай и не усиливай причинность. Не меняй должности, цифры, даты, степень уверенности и причинно-следственные связи. Латинские названия игр, компаний, сервисов и мероприятий не переводи и не транслитерируй: Ubisoft нельзя превращать в «Убисофт» или «Убикс», Assassin's Creed нельзя переводить. Игнорируй рекламу, партнерские вставки, подписки, навигацию и служебный текст сайта.`;
-  const user = `Источник: ${source || 'не указан'}\nОригинальный заголовок: ${title || ''}\nОригинальный лид: ${summary || ''}\n${draftTitleRu ? `Черновой машинный заголовок: ${draftTitleRu}\n` : ''}${draftSummaryRu ? `Черновой машинный лид: ${draftSummaryRu}\n` : ''}${names.length ? `Имена и названия из оригинала: ${names.join(' | ')}\n` : ''}${mustKeep.length ? `MUST_KEEP — эти написания обязательно должны остаться в результате латиницей, без перевода и транслитерации (типографский апостроф допустим): ${mustKeep.join(' | ')}\n` : ''}\nОтобранные абзацы исходного материала:\n${material}\n\nВерни только:\nЗАГОЛОВОК: <естественный русский заголовок 45–130 знаков>\nТЕКСТ:\n<2–3 предложения, примерно 180–500 знаков>\n\nПеред ответом молча проверь: нет ли повторов вроде «спустя ... спустя»; сохранены ли MUST_KEEP; если исходник говорит «может», «предполагают», «по слухам» — не превращай это в подтвержденный факт. Первое предложение сообщает главное, второе — важную конкретику или контекст. Не повторяй факты и не вставляй рекламу или служебный текст.`;
+  const material = (articleText || summary || title || '').slice(0, 4300);
+  return `Источник: ${source || 'не указан'}\nОригинальный заголовок: ${title || ''}\nОригинальный лид: ${summary || ''}\n${draftTitleRu ? `Черновой машинный заголовок: ${draftTitleRu}\n` : ''}${draftSummaryRu ? `Черновой машинный лид: ${draftSummaryRu}\n` : ''}${names.length ? `Имена и названия из оригинала: ${names.join(' | ')}\n` : ''}${mustKeep.length ? `MUST_KEEP — эти написания обязательно должны остаться в результате латиницей, без перевода и транслитерации: ${mustKeep.join(' | ')}\n` : ''}\nОтобранные абзацы исходного материала:\n${material}`;
+}
+
+function qwenPrompt(input) {
+  const user = `${materialBlock(input)}\n\nВерни только:\nЗАГОЛОВОК: <естественный русский заголовок 45–130 знаков>\nТЕКСТ:\n<2–3 предложения, примерно 180–500 знаков>\n\nПравила: первое предложение сообщает главное, второе даёт важную конкретику или контекст. Не повторяй связки вроде «после ... после» или «спустя ... спустя». Delisted в контексте магазина — «снята с продажи» или «удалена из магазина», не «исключена из списка». Remaster — «ремастер», не «переоснащение». Если исходник говорит «может», «предполагают», «по слухам» — не превращай это в подтвержденный факт. Не повторяй факты и не вставляй рекламу.`;
+  return [{ role: 'system', content: baseSystem() }, { role: 'user', content: user }];
+}
+
+function repairPrompt(input, previous, reasons) {
   return [
-    { role: 'system', content: system },
-    { role: 'user', content: user }
+    { role: 'system', content: baseSystem() },
+    { role: 'user', content: `${materialBlock(input)}\n\nПредыдущий вариант:\n${previous}\n\nОн забракован редакционным контролем по причинам: ${reasons.join('; ') || 'формат или качество'}. Исправь только эти проблемы, сохрани факты исходника и MUST_KEEP. Убери буквальный машинный перевод и повторы. Верни строго:\nЗАГОЛОВОК: <заголовок>\nТЕКСТ:\n<2–3 предложения>` }
   ];
 }
 
@@ -158,42 +180,36 @@ function generatedText(result) {
 }
 
 function parseEditorText(text = '') {
-  const cleaned = String(text)
-    .replace(/<think>[\s\S]*?<\/think>/gi, '')
-    .replace(/^```(?:text)?/i, '')
-    .replace(/```$/i, '')
-    .trim();
+  const cleaned = String(text).replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/^```(?:text)?/i, '').replace(/```$/i, '').trim();
   const titleMatch = cleaned.match(/(?:^|\n)ЗАГОЛОВ(?:О|А)К:\s*(.+?)(?=\n|$)/i);
   if (!titleMatch) throw new Error(`editor output missing headline: ${cleaned.slice(0, 260)}`);
   const explicitBrief = cleaned.match(/(?:^|\n)ТЕКСТ:\s*\n?([\s\S]+)$/i)?.[1]?.trim() || '';
   const titleLineEnd = cleaned.indexOf('\n', titleMatch.index + titleMatch[0].length);
-  const fallbackBrief = titleLineEnd >= 0
-    ? cleaned.slice(titleLineEnd + 1).replace(/^\s*(?:ТЕКСТ\s*:?\s*)?/i, '').trim()
-    : '';
+  const fallbackBrief = titleLineEnd >= 0 ? cleaned.slice(titleLineEnd + 1).replace(/^\s*(?:ТЕКСТ\s*:?\s*)?/i, '').trim() : '';
   const briefRu = explicitBrief || fallbackBrief;
   if (!briefRu) throw new Error(`editor output missing body: ${cleaned.slice(0, 320)}`);
-  return { titleRu: titleMatch[1].trim(), briefRu };
+  return { titleRu: normalizeEditorialNames(titleMatch[1].trim()), briefRu: normalizeEditorialNames(briefRu) };
 }
 
 function normalizedSentences(value = '') {
-  return String(value)
-    .split(/(?<=[.!?])\s+/)
+  return String(value).split(/(?<=[.!?])\s+/)
     .map(sentence => sentence.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').replace(/\s+/g, ' ').trim())
     .filter(sentence => sentence.length >= 20);
 }
 
 export function validateEditedNews(value, input = {}) {
-  const titleRu = String(value?.titleRu || '').replace(/\s+/g, ' ').trim();
-  const briefRu = String(value?.briefRu || '').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+  const titleRu = normalizeEditorialNames(value?.titleRu || '').replace(/\s+/g, ' ').trim();
+  const briefRu = normalizeEditorialNames(value?.briefRu || '').replace(/\n{3,}/g, '\n\n').trim();
   const reasons = [];
   if (!/[А-Яа-яЁё]/.test(titleRu)) reasons.push('title has no Cyrillic');
   if (!/[А-Яа-яЁё]/.test(briefRu)) reasons.push('brief has no Cyrillic');
   if (titleRu.length < 25 || titleRu.length > 180) reasons.push(`title length ${titleRu.length}`);
-  if (briefRu.length < 160 || briefRu.length > 700) reasons.push(`brief length ${briefRu.length}`);
+  if (briefRu.length < 150 || briefRu.length > 700) reasons.push(`brief length ${briefRu.length}`);
   if ((briefRu.match(/[.!?](?:\s|$)/g) || []).length < 2) reasons.push('brief has fewer than 2 sentences');
   if (/\b(?:я как ии|искусственный интеллект|как модель|перевод статьи|в статье говорится|по данным материала)\b/i.test(briefRu)) reasons.push('meta language');
   if (boilerplatePattern.test(briefRu)) reasons.push('site boilerplate leaked into brief');
-  if (/\bспустя\b(?:\s+\S+){0,5}\s+\bспустя\b/i.test(titleRu)) reasons.push('repeated connector in title');
+  if (/\b(?:спустя|после)\b(?:\s+\S+){0,7}\s+\b\1\b/iu.test(titleRu)) reasons.push('repeated connector in title');
+  if (/\b(?:переоснащ(?:ен|ена|ение)|исключен(?:а|о)? из списка)\b/iu.test(`${titleRu} ${briefRu}`)) reasons.push('literal machine translation');
   const sentences = normalizedSentences(briefRu);
   if (sentences.length >= 2 && new Set(sentences).size !== sentences.length) reasons.push('duplicate sentence');
   const combined = canonicalName(`${titleRu} ${briefRu}`);
@@ -203,25 +219,37 @@ export function validateEditedNews(value, input = {}) {
   return { ok: reasons.length === 0, reasons, titleRu, briefRu };
 }
 
+async function generate(generator, prompt, maxNewTokens) {
+  return generator(prompt, { max_new_tokens: maxNewTokens, do_sample: false, repetition_penalty: 1.1 });
+}
+
 export async function editNewsToRussian(input, options = {}) {
   const generator = await getGenerator();
-  const prompt = qwenPrompt(input);
   const startedAt = Date.now();
-  const result = await generator(prompt, {
-    max_new_tokens: Number(options.maxNewTokens || 320),
-    do_sample: false,
-    repetition_penalty: 1.1
-  });
-  const raw = generatedText(result);
-  const parsed = parseEditorText(raw);
-  const validation = validateEditedNews(parsed, input);
-  return {
-    ...validation,
-    raw,
-    elapsedMs: Date.now() - startedAt,
-    model: defaultModel,
-    dtype: defaultDtype
-  };
+  const maxNewTokens = Number(options.maxNewTokens || 240);
+  const maxAttempts = Math.max(1, Math.min(2, Number(options.maxAttempts || 2)));
+  let raw = '';
+  let validation = null;
+  let parseError = '';
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const prompt = attempt === 1 ? qwenPrompt(input) : repairPrompt(input, raw, validation?.reasons || [parseError || 'invalid output']);
+    const result = await generate(generator, prompt, maxNewTokens);
+    raw = generatedText(result);
+    try {
+      const parsed = parseEditorText(raw);
+      validation = validateEditedNews(parsed, input);
+      parseError = '';
+      if (validation.ok) {
+        return { ...validation, raw, elapsedMs: Date.now() - startedAt, attempts: attempt, model: defaultModel, dtype: defaultDtype };
+      }
+    } catch (error) {
+      parseError = error.message;
+      validation = { ok: false, reasons: [parseError], titleRu: '', briefRu: '' };
+    }
+  }
+
+  return { ...validation, raw, elapsedMs: Date.now() - startedAt, attempts: maxAttempts, model: defaultModel, dtype: defaultDtype };
 }
 
 export async function warmNewsEditor() {
