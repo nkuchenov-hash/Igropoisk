@@ -8,6 +8,13 @@ on:
       - 'scripts/lib/news-editor-qwen.mjs'
       - 'scripts/test-news-editor-qwen-live.mjs'
       - '.github/workflows/news-editor-qwen-test.yml'
+  push:
+    branches:
+      - experiment/news-qwen-editor-20260826
+    paths:
+      - 'scripts/lib/news-editor-qwen.mjs'
+      - 'scripts/test-news-editor-qwen-live.mjs'
+      - '.github/workflows/news-editor-qwen-test.yml'
 
 permissions:
   contents: read
