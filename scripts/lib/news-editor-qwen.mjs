@@ -126,11 +126,21 @@ function criticalNames(title = '') {
   });
 }
 
+function canonicalName(value = '') {
+  return String(value)
+    .normalize('NFKC')
+    .replace(/[’‘`´]/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
 function qwenPrompt({ title, summary, articleText, source, draftTitleRu, draftSummaryRu }) {
   const material = (articleText || summary || title || '').slice(0, 4300);
   const names = protectedNames(title);
-  const system = `Ты редактор русского игрового издания «Игропоиск». Твоя задача — не переводить дословно, а написать короткую, точную и естественную новость на русском по предоставленным фактам. Ничего не выдумывай. Не меняй должности, цифры, даты и причинно-следственные связи. Названия игр, компаний, сервисов, мероприятий и имена собственные сохраняй точно; без общеупотребительного русского варианта оставляй латиницей. Игнорируй рекламу, партнерские вставки, подписки, навигацию и служебный текст сайта.`;
-  const user = `Источник: ${source || 'не указан'}\nОригинальный заголовок: ${title || ''}\nОригинальный лид: ${summary || ''}\n${draftTitleRu ? `Черновой машинный заголовок: ${draftTitleRu}\n` : ''}${draftSummaryRu ? `Черновой машинный лид: ${draftSummaryRu}\n` : ''}${names.length ? `Названия и имена, которые нельзя искажать: ${names.join(' | ')}\n` : ''}\nОтобранные абзацы исходного материала:\n${material}\n\nНапиши результат строго так:\nЗАГОЛОВОК: <естественный русский заголовок 45–130 знаков>\nТЕКСТ:\n<2–3 предложения, примерно 180–500 знаков>\n\nПравила: первое предложение сообщает главное; второе дает важную конкретику или контекст. Не повторяй факты. Не вставляй рекламу, комиссии, призывы купить/подписаться и фразы вроде «в статье говорится». Не переводи названия игр и брендов буквально. Если факт есть только как предположение или слух, сохрани эту неопределенность.`;
+  const mustKeep = criticalNames(title);
+  const system = `Ты редактор русского игрового издания «Игропоиск». Пиши коротко, естественно и точно, как русскоязычный редактор, а не машинный переводчик. Ничего не выдумывай и не усиливай причинность. Не меняй должности, цифры, даты, степень уверенности и причинно-следственные связи. Латинские названия игр, компаний, сервисов и мероприятий не переводи и не транслитерируй: Ubisoft нельзя превращать в «Убисофт» или «Убикс», Assassin's Creed нельзя переводить. Игнорируй рекламу, партнерские вставки, подписки, навигацию и служебный текст сайта.`;
+  const user = `Источник: ${source || 'не указан'}\nОригинальный заголовок: ${title || ''}\nОригинальный лид: ${summary || ''}\n${draftTitleRu ? `Черновой машинный заголовок: ${draftTitleRu}\n` : ''}${draftSummaryRu ? `Черновой машинный лид: ${draftSummaryRu}\n` : ''}${names.length ? `Имена и названия из оригинала: ${names.join(' | ')}\n` : ''}${mustKeep.length ? `MUST_KEEP — эти написания обязательно должны остаться в результате латиницей, без перевода и транслитерации (типографский апостроф допустим): ${mustKeep.join(' | ')}\n` : ''}\nОтобранные абзацы исходного материала:\n${material}\n\nВерни только:\nЗАГОЛОВОК: <естественный русский заголовок 45–130 знаков>\nТЕКСТ:\n<2–3 предложения, примерно 180–500 знаков>\n\nПеред ответом молча проверь: нет ли повторов вроде «спустя ... спустя»; сохранены ли MUST_KEEP; если исходник говорит «может», «предполагают», «по слухам» — не превращай это в подтвержденный факт. Первое предложение сообщает главное, второе — важную конкретику или контекст. Не повторяй факты и не вставляй рекламу или служебный текст.`;
   return [
     { role: 'system', content: system },
     { role: 'user', content: user }
@@ -183,11 +193,12 @@ export function validateEditedNews(value, input = {}) {
   if ((briefRu.match(/[.!?](?:\s|$)/g) || []).length < 2) reasons.push('brief has fewer than 2 sentences');
   if (/\b(?:я как ии|искусственный интеллект|как модель|перевод статьи|в статье говорится|по данным материала)\b/i.test(briefRu)) reasons.push('meta language');
   if (boilerplatePattern.test(briefRu)) reasons.push('site boilerplate leaked into brief');
+  if (/\bспустя\b(?:\s+\S+){0,5}\s+\bспустя\b/i.test(titleRu)) reasons.push('repeated connector in title');
   const sentences = normalizedSentences(briefRu);
   if (sentences.length >= 2 && new Set(sentences).size !== sentences.length) reasons.push('duplicate sentence');
-  const combined = `${titleRu} ${briefRu}`.toLowerCase();
+  const combined = canonicalName(`${titleRu} ${briefRu}`);
   for (const name of criticalNames(input.title || '')) {
-    if (!combined.includes(name.toLowerCase())) reasons.push(`critical name missing: ${name}`);
+    if (!combined.includes(canonicalName(name))) reasons.push(`critical name missing: ${name}`);
   }
   return { ok: reasons.length === 0, reasons, titleRu, briefRu };
 }
