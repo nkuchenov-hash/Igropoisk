@@ -62,7 +62,7 @@ export function extractArticleText(html = '') {
   const main = String(html).match(/<main\b[^>]*>([\s\S]*?)<\/main>/i)?.[1] || '';
   const candidates = [paragraphText(article), paragraphText(main), paragraphText(html)];
   const paragraphs = candidates.find(items => items.length >= 3) || candidates.find(items => items.length) || [];
-  return [...new Set(paragraphs)].join('\n\n').slice(0, 8000).trim();
+  return [...new Set(paragraphs)].join('\n\n').slice(0, 5000).trim();
 }
 
 export async function fetchArticleText(url, timeoutMs = 18000) {
@@ -85,10 +85,16 @@ export async function fetchArticleText(url, timeoutMs = 18000) {
   }
 }
 
-function qwenPrompt({ title, summary, articleText, source }) {
-  const material = (articleText || summary || title || '').slice(0, 8000);
-  const system = `Ты редактор русскоязычного игрового издания «Игропоиск». Твоя задача — не переводить дословно, а написать естественную короткую новость по фактам исходного материала. Ничего не выдумывай. Сохраняй официальные названия игр, компаний, персонажей, устройств, числа и даты. Пиши современным живым русским языком, без канцелярита и машинных оборотов.`;
-  const user = `Источник: ${source || 'не указан'}\nИсходный заголовок: ${title || ''}\nКраткое описание: ${summary || ''}\n\nМатериал:\n${material}\n\nВерни ТОЛЬКО валидный JSON без Markdown в формате {"titleRu":"...","briefRu":"..."}.\ntitleRu: естественный русский новостной заголовок, примерно 45–120 знаков.\nbriefRu: самостоятельная мини-новость из 1–2 абзацев, примерно 450–900 знаков. Сначала сообщи главное событие, затем важные детали и контекст. Не упоминай, что ты переводишь или пересказываешь статью.`;
+function protectedNames(title = '') {
+  const matches = String(title).match(/\b(?:[A-Z]{2,}|[A-Z][A-Za-z0-9'’.-]+)(?:\s+(?:[A-Z]{2,}|[A-Z][A-Za-z0-9'’.-]+|\d{2,4})){0,3}\b/g) || [];
+  return [...new Set(matches.filter(value => value.length >= 2))].slice(0, 12);
+}
+
+function qwenPrompt({ title, summary, articleText, source, draftTitleRu, draftSummaryRu }) {
+  const material = (articleText || summary || title || '').slice(0, 5000);
+  const names = protectedNames(title);
+  const system = `Ты русский редактор игрового издания «Игропоиск». Пиши как живой редактор, а не как машинный переводчик. Нельзя додумывать факты. Нельзя менять смысл. Названия игр, компаний, сервисов, мероприятий и имена собственные из оригинала сохраняй точно; если нет общеупотребительного русского варианта, оставляй латиницей.`;
+  const user = `Сделай короткую русскую новость по материалу ниже.\n\nИсточник: ${source || 'не указан'}\nОригинальный заголовок: ${title || ''}\nОригинальный лид: ${summary || ''}\n${draftTitleRu ? `Черновой машинный заголовок на русском: ${draftTitleRu}\n` : ''}${draftSummaryRu ? `Черновой машинный текст на русском: ${draftSummaryRu}\n` : ''}${names.length ? `Имена и названия, которые нельзя искажать: ${names.join(' | ')}\n` : ''}\nФактический материал:\n${material}\n\nТребования:\n1. Заголовок — естественный русский, 45–130 знаков. Не переводи названия игр и брендов буквально.\n2. Текст — 2–4 нормальных предложения, 320–700 знаков, можно разделить на два абзаца. Первое предложение сразу сообщает главное. Далее только важные детали и контекст.\n3. Не пиши «в статье говорится», «по данным материала», «как ИИ» и подобное.\n4. Не добавляй платформы, даты, должности, причины или последствия, которых нет в исходном материале.\n5. Черновой машинный перевод — только подсказка; исправь его полностью, если он звучит плохо.\n\nОтвет строго в таком виде, без JSON и без Markdown:\nЗАГОЛОВОК: <заголовок>\nТЕКСТ:\n<мини-новость>`;
   return `<|im_start|>system\n${system}<|im_end|>\n<|im_start|>user\n${user}<|im_end|>\n<|im_start|>assistant\n`;
 }
 
@@ -102,15 +108,12 @@ function generatedText(result) {
   return String(value || '').trim();
 }
 
-function parseEditorJson(text = '') {
-  const cleaned = String(text).replace(/^```(?:json)?/i, '').replace(/```$/i, '').trim();
-  try {
-    return JSON.parse(cleaned);
-  } catch {}
-  const start = cleaned.indexOf('{');
-  const end = cleaned.lastIndexOf('}');
-  if (start >= 0 && end > start) return JSON.parse(cleaned.slice(start, end + 1));
-  throw new Error(`editor output is not JSON: ${cleaned.slice(0, 240)}`);
+function parseEditorText(text = '') {
+  const cleaned = String(text).replace(/^```(?:text)?/i, '').replace(/```$/i, '').trim();
+  const titleMatch = cleaned.match(/(?:^|\n)ЗАГОЛОВОК:\s*(.+?)(?=\n|$)/i);
+  const briefMatch = cleaned.match(/(?:^|\n)ТЕКСТ:\s*\n?([\s\S]+)$/i);
+  if (!titleMatch || !briefMatch) throw new Error(`editor output missing markers: ${cleaned.slice(0, 260)}`);
+  return { titleRu: titleMatch[1].trim(), briefRu: briefMatch[1].trim() };
 }
 
 export function validateEditedNews(value) {
@@ -120,9 +123,9 @@ export function validateEditedNews(value) {
   if (!/[А-Яа-яЁё]/.test(titleRu)) reasons.push('title has no Cyrillic');
   if (!/[А-Яа-яЁё]/.test(briefRu)) reasons.push('brief has no Cyrillic');
   if (titleRu.length < 25 || titleRu.length > 180) reasons.push(`title length ${titleRu.length}`);
-  if (briefRu.length < 280 || briefRu.length > 1400) reasons.push(`brief length ${briefRu.length}`);
+  if (briefRu.length < 260 || briefRu.length > 1000) reasons.push(`brief length ${briefRu.length}`);
   if ((briefRu.match(/[.!?](?:\s|$)/g) || []).length < 2) reasons.push('brief has fewer than 2 sentences');
-  if (/\b(?:я как ии|искусственный интеллект|как модель|перевод статьи)\b/i.test(briefRu)) reasons.push('meta language');
+  if (/\b(?:я как ии|искусственный интеллект|как модель|перевод статьи|в статье говорится|по данным материала)\b/i.test(briefRu)) reasons.push('meta language');
   return { ok: reasons.length === 0, reasons, titleRu, briefRu };
 }
 
@@ -131,13 +134,13 @@ export async function editNewsToRussian(input, options = {}) {
   const prompt = qwenPrompt(input);
   const startedAt = Date.now();
   const result = await generator(prompt, {
-    max_new_tokens: Number(options.maxNewTokens || 360),
+    max_new_tokens: Number(options.maxNewTokens || 300),
     do_sample: false,
     repetition_penalty: 1.08,
     return_full_text: false
   });
   const raw = generatedText(result);
-  const parsed = parseEditorJson(raw);
+  const parsed = parseEditorText(raw);
   const validation = validateEditedNews(parsed);
   return {
     ...validation,
