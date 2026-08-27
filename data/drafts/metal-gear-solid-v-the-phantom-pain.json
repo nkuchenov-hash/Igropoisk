@@ -1,18 +1,11 @@
 {
-  "publication": {
-    "status": "review",
-    "gate_passed": false,
-    "errors": [
-      "only 3 sources; minimum 10",
-      "fewer than 3 editorial sources"
-    ],
-    "checked_at": "2026-08-27T12:49:47.668865+00:00"
-  },
+  "schema_version": 3,
   "identity": {
     "slug": "metal-gear-solid-v-the-phantom-pain",
-    "title": "METAL GEAR SOLID V: THE PHANTOM PAIN",
+    "title": "Metal Gear Solid V: The Phantom Pain",
+    "steam_appid": 287700,
     "seed_title": "Metal Gear Solid V: The Phantom Pain",
-    "steam_appid": 287700
+    "game_id": "game_8a842743f0b021a8a57c"
   },
   "release": {
     "date_text": "Sep 1, 2015"
@@ -46,7 +39,7 @@
       "Family Sharing"
     ],
     "platforms": [
-      "Windows"
+      "windows"
     ]
   },
   "editorial": {
@@ -96,16 +89,55 @@
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/287700/ss_01482dcddff4bb9d39650cd92e416d6263dccaf1.1920x1080.jpg?t=1778872866",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/287700/ss_ace8bfa527de8621b71fa4a035ecda5b9381ed0f.1920x1080.jpg?t=1778872866"
     ],
-    "videos": []
+    "videos": [
+      {
+        "title": "MGSV: TDE Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/256672448/movie.293x165.jpg?t=1476313044"
+      },
+      {
+        "title": "TPP Trailer",
+        "url": "",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2033954/movie.293x165.jpg?t=1447363200"
+      }
+    ],
+    "artwork": []
+  },
+  "requirements": {
+    "pc": {
+      "minimum": {
+        "raw": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li><strong>OS:</strong> Windows 7x64, Windows 8x64, Windows 10x64 (64-bit OS Required)<br></li><li><strong>Processor:</strong> Intel Core i5-4460 (3.40 GHz) or better; Quad-core or better<br></li><li><strong>Memory:</strong> 4 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA GeForce GTX 650 (2GB) or better (DirectX 11 card Required)<br></li><li><strong>DirectX:</strong> Version 11<br></li><li><strong>Storage:</strong> 28 GB available space<br></li><li><strong>Sound Card:</strong> DirectX 9.0c compatible sound card</li></ul>"
+      },
+      "recommended": {
+        "raw": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li><strong>OS:</strong> Windows 7x64, Windows 8x64, Windows 10x64 (64-bit OS Required)<br></li><li><strong>Processor:</strong> Intel Core i7-4790 (3.60GHz) or better; Quad-core or better<br></li><li><strong>Memory:</strong> 8 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA GeForce GTX 760 (DirectX 11 graphic card required)<br></li><li><strong>DirectX:</strong> Version 11<br></li><li><strong>Storage:</strong> 28 GB available space<br></li><li><strong>Sound Card:</strong> DirectX 9.0c compatible sound card (Surround Sound 5.1)</li></ul>"
+      }
+    },
+    "platforms": [
+      "windows"
+    ]
+  },
+  "links": {
+    "store": "https://store.steampowered.com/app/287700/",
+    "official": "http://www.metalgearsolid.com"
+  },
+  "source": {
+    "name": "Steam Store API",
+    "url": "https://store.steampowered.com/api/appdetails?appids=287700&l=english&cc=us",
+    "checked_at": "2026-08-24T12:10:26.979Z"
+  },
+  "publication": {
+    "status": "review",
+    "gate_passed": false,
+    "errors": [
+      "only 3 sources; minimum 10",
+      "fewer than 3 editorial sources"
+    ],
+    "checked_at": "2026-08-27T12:49:47.668865+00:00"
   },
   "ratings": {
     "igropoisk": 9.1,
     "users": null,
     "user_votes": 0
-  },
-  "links": {
-    "official": "http://www.metalgearsolid.com",
-    "store": "https://store.steampowered.com/app/287700/"
   },
   "materials": {
     "reviews": [],
@@ -122,13 +154,13 @@
       "published_at": "",
       "checked_at": "2026-08-27T12:49:39.103997+00:00",
       "type": "official",
-      "trust": 1.0,
+      "trust": 1,
       "supports": [
         "identity",
         "editorial_reference"
       ],
       "fingerprint": "3467f6fe0d97458d",
-      "match_score": 100.0
+      "match_score": 100
     },
     {
       "url": "https://store.steampowered.com/app/287700/",
@@ -166,7 +198,14 @@
         "context"
       ],
       "fingerprint": "f73cb980c958cdd9",
-      "match_score": 100.0
+      "match_score": 100
+    },
+    {
+      "title": "Steam Store API",
+      "source_name": "Steam Store API",
+      "url": "https://store.steampowered.com/api/appdetails?appids=287700&l=english&cc=us",
+      "domain": "store.steampowered.com",
+      "checked_at": "2026-08-24T12:10:26.979Z"
     }
   ]
 }
