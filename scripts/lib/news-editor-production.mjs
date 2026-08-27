@@ -14,6 +14,7 @@ const literalMachinePattern = /(?:переоснащ(?:ен|ена|ение)|и�
 const awkwardRussianPattern = /(?:\bлеверед\b|бай[- ]?аут|крупн\w* купл[ие]-продаж|факт подтверждает (?:лишь )?теори|вызвал[аи]? спрос на возможн|оста[её]тся вероятн\w+ налич|\bудал[её]нн(?:ая|ую|ой) игр[ау]\b|микроперекуп|генеративн\w+\s+(?:аи|AI)\b|\bцелый другой мир\b|не будут единственн\w+ в насилии|\bмать в хаосе\b|действие на PS5 начн[её]тся|полувещ|полувозмож|инфицированност|демоническ\w+ инфицир|\bпродемонстрировал[аи]? \d+[\s\S]{0,30}копи[йи] продано\b)/iu;
 const metaPattern = /(?:я как ии|искусственный интеллект|как модель|перевод статьи|в статье говорится|по данным материала)/iu;
 const authorCommentPattern = /\b(?:i think|i'm|i am|we think|we're|my bet|i bet|i'm just glad)\b/i;
+const truncatedBriefPattern = /(?:\.\.\.|…)/u;
 
 const stableEntities = [
   'Ubisoft', 'EA', 'Electronic Arts', 'Steam', 'Xbox', 'PlayStation', 'Nintendo', 'NVIDIA', 'AMD',
@@ -113,6 +114,7 @@ export function validateProductionNews(value, input = {}) {
   if (titleRu.length < 25 || titleRu.length > 180) reasons.push(`title length ${titleRu.length}`);
   if (briefRu.length < 135 || briefRu.length > 720) reasons.push(`brief length ${briefRu.length}`);
   if ((briefRu.match(/[.!?](?:\s|$)/g) || []).length < 2) reasons.push('brief has fewer than 2 sentences');
+  if (truncatedBriefPattern.test(briefRu)) reasons.push('brief looks truncated');
 
   if (titleLat > 28 && titleLat > titleCyr * 2.4) reasons.push('title is dominated by untranslated English');
   if (briefLat > 45 && briefLat > briefCyr * 0.65) reasons.push('brief is dominated by untranslated English');
