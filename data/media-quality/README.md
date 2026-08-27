@@ -1,0 +1,1 @@
+Invalid media assets are blocked here when they are generic/non-game images that passed basic file probes but are not useful game media. The cleanup script removes them from screenshots, artwork, hero, cover, and the combined media items list before publication.

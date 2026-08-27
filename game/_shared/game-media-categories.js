@@ -2,6 +2,15 @@
 'use strict';
 const labels={trailer:'Трейлеры',gameplay:'Геймплей',review:'Видеообзоры',interview:'Интервью и дневники',other:'Другое видео'};
 const order=['trailer','gameplay','review','interview','other'];
+const blockedMedia=['landing-pages.gog-statics.com/assets/images/hero-image.png'];
+const purgeBlockedMedia=()=>{
+  document.querySelectorAll('img').forEach(img=>{
+    const src=String(img.currentSrc||img.src||'');
+    if(!blockedMedia.some(pattern=>src.includes(pattern)))return;
+    const card=img.closest('.ig-media-card');
+    if(card)card.remove();else img.remove();
+  });
+};
 const classify=text=>{
   const value=String(text||'').toLowerCase();
   if(/трейлер|trailer|teaser|анонс|launch trailer|cinematic/.test(value))return'trailer';
@@ -11,6 +20,7 @@ const classify=text=>{
   return'other';
 };
 const regroup=()=>{
+  purgeBlockedMedia();
   const group=document.querySelector('#videoGroup');
   const grid=document.querySelector('#mediaVideos');
   if(!group||!grid||grid.dataset.categorized==='1'||!grid.children.length)return false;
@@ -36,9 +46,9 @@ const regroup=()=>{
   const mainHead=group.querySelector(':scope > .ig-media-group__head h2');if(mainHead)mainHead.textContent='Видео';
   return true;
 };
-if(!regroup()){
-  const observer=new MutationObserver(()=>{if(regroup())observer.disconnect()});
-  observer.observe(document.documentElement,{childList:true,subtree:true});
-  setTimeout(()=>observer.disconnect(),15000);
-}
+purgeBlockedMedia();
+const observer=new MutationObserver(()=>{purgeBlockedMedia();regroup();});
+observer.observe(document.documentElement,{childList:true,subtree:true});
+regroup();
+setTimeout(()=>observer.disconnect(),15000);
 })();
