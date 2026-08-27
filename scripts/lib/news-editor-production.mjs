@@ -8,9 +8,10 @@ import {
 export { fetchArticleText, warmNewsEditor };
 
 const boilerplatePattern = /cookie|newsletter|subscribe|sign up|privacy policy|when you (?:purchase|buy) through links|we may (?:earn|receive) (?:an )?(?:affiliate )?commission|affiliate commission|here(?:'s| is) how (?:it|this) works|support us|terms (?:of|and) conditions|all rights reserved|recommended by|shopping links|buying guide|follow us|more about|contact me with news/i;
-const nonNewsPattern = /(?:\bhow to\b|\bwalkthrough\b|\bbeginner(?:'|’)?s guide\b|\bachievement guide\b|\bwhere to (?:find|get|catch|buy|unlock|open)\b|\bbest .{0,90}\bof all time\b|^\s*(?:the\s+)?\d+\s+best\b|\b(?:all|every) .{0,65}\b(?:locations?|collectibles?)\b|\b(?:tips?|guide) to help you\b)/i;
+const nonNewsPattern = /(?:\bhow to\b|\bwalkthrough\b|\bbeginner(?:'|’)?s guide\b|\bachievement guide\b|\bwhere to (?:find|get|catch|buy|unlock|open)\b|\bbest .{0,90}\bof all time\b|^\s*(?:the\s+)?\d+\s+best\b|\b(?:all|every) .{0,65}\b(?:locations?|collectibles?)\b|\b(?:tips?|guide) to help you\b|\b(?:best|top) (?:skills?|abilities|builds?|weapons?|armor|classes)\b|\b(?:gameplay )?tips?\b|\btips? and tricks?\b|\bwhat you need to know\b)/i;
+const nonNewsUrlPattern = /\/(?:guides?|walkthroughs?|tips)(?:\/|[-_])/i;
 const literalMachinePattern = /(?:переоснащ(?:ен|ена|ение)|исключ(?:ен(?:а|о)?|ени[ея]) из списка)/iu;
-const awkwardRussianPattern = /(?:\bлеверед\b|бай[- ]?аут|крупн\w* купл[ие]-продаж|факт подтверждает (?:лишь )?теори|вызвал[аи]? спрос на возможн|оста[её]тся вероятн\w+ налич|\bудал[её]нн(?:ая|ую|ой) игр[ау]\b)/iu;
+const awkwardRussianPattern = /(?:\bлеверед\b|бай[- ]?аут|крупн\w* купл[ие]-продаж|факт подтверждает (?:лишь )?теори|вызвал[аи]? спрос на возможн|оста[её]тся вероятн\w+ налич|\bудал[её]нн(?:ая|ую|ой) игр[ау]\b|микроперекуп|генеративн\w+\s+(?:аи|AI)\b|\bцелый другой мир\b|не будут единственн\w+ в насилии|\bмать в хаосе\b|действие на PS5 начн[её]тся|полувещ|полувозмож|инфицированност|демоническ\w+ инфицир|\bпродемонстрировал[аи]? \d+[\s\S]{0,30}копи[йи] продано\b)/iu;
 const metaPattern = /(?:я как ии|искусственный интеллект|как модель|перевод статьи|в статье говорится|по данным материала)/iu;
 const authorCommentPattern = /\b(?:i think|i'm|i am|we think|we're|my bet|i bet|i'm just glad)\b/i;
 
@@ -73,10 +74,9 @@ function unsupportedNumbers(value = '', input = {}) {
 }
 
 function requiredStableEntities(input = {}) {
-  // Only the feed headline and lead define entities that must survive editing.
-  // Full article extraction may contain navigation, related-story cards or site chrome
-  // mentioning unrelated brands; those must never become mandatory for this story.
-  const source = `${input.title || ''} ${input.summary || ''}`;
+  // Only the source headline is authoritative enough to make a brand mandatory.
+  // Feed leads and full pages frequently contain related-story/site-chrome brands.
+  const source = String(input.title || '');
   return stableEntities.filter(entity => containsEntity(source, entity));
 }
 
@@ -95,8 +95,9 @@ function looksLikeUntranslatedClause(value = '') {
 
 export function isLikelyNewsSource(input = {}) {
   const title = String(input?.title || input?.titleEn || '').replace(/\s+/g, ' ').trim();
-  if (!title) return true;
-  return !nonNewsPattern.test(title);
+  const url = String(input?.url || input?.primaryUrl || '').trim();
+  if (!title && !url) return true;
+  return !nonNewsPattern.test(title) && !nonNewsUrlPattern.test(url);
 }
 
 export function validateProductionNews(value, input = {}) {
@@ -114,6 +115,7 @@ export function validateProductionNews(value, input = {}) {
   if (titleRu.length < 25 || titleRu.length > 180) reasons.push(`title length ${titleRu.length}`);
   if (briefRu.length < 135 || briefRu.length > 720) reasons.push(`brief length ${briefRu.length}`);
   if ((briefRu.match(/[.!?](?:\s|$)/g) || []).length < 2) reasons.push('brief has fewer than 2 sentences');
+  if (/\.\.\.|…/.test(briefRu)) reasons.push('brief looks truncated');
 
   // Latin names are normal in games journalism. Reject only when English starts to dominate Russian copy.
   if (titleLat > 28 && titleLat > titleCyr * 2.4) reasons.push('title is dominated by untranslated English');
@@ -146,8 +148,6 @@ export function validateProductionNews(value, input = {}) {
 
 export async function editNewsToRussian(input, options = {}) {
   // One deterministic pass keeps a full hourly run inside the GitHub runner budget.
-  // The production validator below is intentionally separate from the model's conservative experimental validator:
-  // it rejects actual English/mixed-script garbage without treating headline prose as a mandatory proper name.
   const maxNewTokens = Math.max(120, Math.min(165, Number(options.maxNewTokens || 150)));
   const generated = await generateRussianDraft(input, { maxAttempts: 1, maxNewTokens });
   const validation = validateProductionNews(generated, input);
