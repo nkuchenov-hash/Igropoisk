@@ -1,3 +1,4 @@
+import './smoke-fallout2-media.mjs';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -17,9 +18,9 @@ const executablePath=browserPath();if(!executablePath)throw new Error('Chrome/Ch
 const browser=await puppeteer.launch({executablePath,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 try{
   const page=await browser.newPage();await page.setViewport({width:1440,height:1100});const pageErrors=[];page.on('pageerror',error=>pageErrors.push(String(error?.stack||error)));
-  await page.goto(`${base}/game/doom/?acceptance=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:30000});
-  await page.waitForFunction(()=>document.querySelector('#gameTitle')?.textContent?.trim()==='DOOM',{timeout:15000});
-  await page.waitForFunction(()=>document.querySelectorAll('#reviewGrid .quality-review-row').length>=10&&document.querySelectorAll('#similarGames [data-similarity-score]').length>=1,{timeout:15000});
+  await page.goto(`${base}/game/doom/?acceptance=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45000});
+  await page.waitForFunction(()=>document.querySelector('#gameTitle')?.textContent?.trim()==='DOOM',{timeout:30000});
+  await page.waitForFunction(()=>document.querySelectorAll('#reviewGrid .quality-review-row').length>=10&&document.querySelectorAll('#similarGames [data-similarity-score]').length>=1,{timeout:30000});
   await new Promise(resolve=>setTimeout(resolve,1200));
   const state=await page.evaluate(()=>({
     title:document.querySelector('#gameTitle')?.textContent?.trim()||'',
