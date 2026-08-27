@@ -4,12 +4,13 @@
   "game_slug": "no-more-room-in-hell-2",
   "game_id": "game_f5db7308be84c62ed593",
   "canonical_title": "No More Room in Hell 2",
-  "checked_at": "2026-08-27T10:41:06.648Z",
+  "checked_at": "2026-08-27T12:44:32.183Z",
   "status": "red-needs-revision",
   "green": false,
   "comments": [
     "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_hero.jpg",
     "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900.jpg",
+    "Не завершён поиск и проверка видеоматериалов.",
     "file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20\nasync function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}\n                                                                                                                                                                                                                                                             ^\n\nError: OpenAI API 429: {\n  \"error\": {\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n    \"type\": \"insufficient_quota\",\n    \"param\": null,\n    \"code\": \"insufficient_quota\"\n  }\n}\n    at call (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:20:254)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:24:14\n\nNode.js v22.23.2\n"
   ],
   "revision_history": [
@@ -37,7 +38,7 @@
       "script": "scripts/prepare-review-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 8,\n  \"scored_sources\": 2,\n  \"rejected\": 1,\n  \"ai_required\": false\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 7,\n  \"scored_sources\": 2,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
       "stderr": ""
     },
     {
@@ -46,7 +47,7 @@
       "script": "scripts/enrich-review-native-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"native_added\": 0,\n  \"total_reviews\": 8,\n  \"total_score_sources\": 2,\n  \"rejected\": 3\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"native_added\": 0,\n  \"total_reviews\": 7,\n  \"total_score_sources\": 2,\n  \"rejected\": 3\n}\n",
       "stderr": ""
     },
     {
@@ -55,7 +56,7 @@
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"completed\",\n  \"material_links\": 8,\n  \"seed_rejected\": 0,\n  \"sources\": 2,\n  \"score_10\": 6.5,\n  \"use_all_discovered_scores\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"completed\",\n  \"material_links\": 7,\n  \"seed_rejected\": 0,\n  \"sources\": 2,\n  \"score_10\": 6.5,\n  \"use_all_discovered_scores\": true\n}\n",
       "stderr": ""
     },
     {
@@ -71,9 +72,9 @@
       "attempt": 7,
       "label": "page-video-discovery-1",
       "script": "scripts/discover-game-videos.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 74,\n  \"rejected\": 90,\n  \"video_reviews\": 48,\n  \"trailers\": 15,\n  \"gameplay\": 11,\n  \"provider_independent_search\": true\n}\n",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 0,\n  \"rejected\": 33,\n  \"video_reviews\": 0,\n  \"trailers\": 0,\n  \"gameplay\": 0,\n  \"provider_independent_search\": true\n}\n",
       "stderr": ""
     },
     {
@@ -118,7 +119,7 @@
       "script": "scripts/prepare-review-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 8,\n  \"scored_sources\": 2,\n  \"rejected\": 1,\n  \"ai_required\": false\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 7,\n  \"scored_sources\": 2,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
       "stderr": ""
     },
     {
@@ -127,7 +128,7 @@
       "script": "scripts/enrich-review-native-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"native_added\": 0,\n  \"total_reviews\": 8,\n  \"total_score_sources\": 2,\n  \"rejected\": 3\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"native_added\": 0,\n  \"total_reviews\": 7,\n  \"total_score_sources\": 2,\n  \"rejected\": 3\n}\n",
       "stderr": ""
     },
     {
@@ -136,7 +137,7 @@
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"completed\",\n  \"material_links\": 8,\n  \"seed_rejected\": 0,\n  \"sources\": 2,\n  \"score_10\": 6.5,\n  \"use_all_discovered_scores\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"completed\",\n  \"material_links\": 7,\n  \"seed_rejected\": 0,\n  \"sources\": 2,\n  \"score_10\": 6.5,\n  \"use_all_discovered_scores\": true\n}\n",
       "stderr": ""
     },
     {
@@ -152,9 +153,9 @@
       "attempt": 16,
       "label": "page-video-discovery-2",
       "script": "scripts/discover-game-videos.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 80,\n  \"rejected\": 150,\n  \"video_reviews\": 51,\n  \"trailers\": 15,\n  \"gameplay\": 14,\n  \"provider_independent_search\": true\n}\n",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 0,\n  \"rejected\": 27,\n  \"video_reviews\": 0,\n  \"trailers\": 0,\n  \"gameplay\": 0,\n  \"provider_independent_search\": true\n}\n",
       "stderr": ""
     },
     {
@@ -199,7 +200,7 @@
       "script": "scripts/prepare-review-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 8,\n  \"scored_sources\": 2,\n  \"rejected\": 1,\n  \"ai_required\": false\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 7,\n  \"scored_sources\": 2,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
       "stderr": ""
     },
     {
@@ -208,7 +209,7 @@
       "script": "scripts/enrich-review-native-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"native_added\": 0,\n  \"total_reviews\": 8,\n  \"total_score_sources\": 2,\n  \"rejected\": 3\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"native_added\": 0,\n  \"total_reviews\": 7,\n  \"total_score_sources\": 2,\n  \"rejected\": 3\n}\n",
       "stderr": ""
     },
     {
@@ -217,7 +218,7 @@
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"completed\",\n  \"material_links\": 8,\n  \"seed_rejected\": 0,\n  \"sources\": 2,\n  \"score_10\": 6.5,\n  \"use_all_discovered_scores\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"completed\",\n  \"material_links\": 7,\n  \"seed_rejected\": 0,\n  \"sources\": 2,\n  \"score_10\": 6.5,\n  \"use_all_discovered_scores\": true\n}\n",
       "stderr": ""
     },
     {
@@ -233,9 +234,9 @@
       "attempt": 25,
       "label": "page-video-discovery-3",
       "script": "scripts/discover-game-videos.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 87,\n  \"rejected\": 153,\n  \"video_reviews\": 55,\n  \"trailers\": 18,\n  \"gameplay\": 14,\n  \"provider_independent_search\": true\n}\n",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 0,\n  \"rejected\": 16,\n  \"video_reviews\": 0,\n  \"trailers\": 0,\n  \"gameplay\": 0,\n  \"provider_independent_search\": true\n}\n",
       "stderr": ""
     },
     {
@@ -280,7 +281,7 @@
       "script": "scripts/prepare-review-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 8,\n  \"scored_sources\": 2,\n  \"rejected\": 1,\n  \"ai_required\": false\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 7,\n  \"scored_sources\": 2,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
       "stderr": ""
     },
     {
@@ -289,7 +290,7 @@
       "script": "scripts/enrich-review-native-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"native_added\": 0,\n  \"total_reviews\": 8,\n  \"total_score_sources\": 2,\n  \"rejected\": 3\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"native_added\": 0,\n  \"total_reviews\": 7,\n  \"total_score_sources\": 2,\n  \"rejected\": 3\n}\n",
       "stderr": ""
     },
     {
@@ -298,7 +299,7 @@
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"completed\",\n  \"material_links\": 8,\n  \"seed_rejected\": 0,\n  \"sources\": 2,\n  \"score_10\": 6.5,\n  \"use_all_discovered_scores\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"completed\",\n  \"material_links\": 7,\n  \"seed_rejected\": 0,\n  \"sources\": 2,\n  \"score_10\": 6.5,\n  \"use_all_discovered_scores\": true\n}\n",
       "stderr": ""
     },
     {
@@ -314,9 +315,9 @@
       "attempt": 34,
       "label": "page-video-discovery-4",
       "script": "scripts/discover-game-videos.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 93,\n  \"rejected\": 151,\n  \"video_reviews\": 55,\n  \"trailers\": 18,\n  \"gameplay\": 20,\n  \"provider_independent_search\": true\n}\n",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"accepted\": 0,\n  \"rejected\": 18,\n  \"video_reviews\": 0,\n  \"trailers\": 0,\n  \"gameplay\": 0,\n  \"provider_independent_search\": true\n}\n",
       "stderr": ""
     },
     {
