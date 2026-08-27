@@ -56,7 +56,10 @@ function normalizedSentences(value = '') {
 }
 
 function requiredStableEntities(input = {}) {
-  const source = `${input.title || ''} ${input.summary || ''} ${input.articleText || ''}`;
+  // Only the feed headline and lead define entities that must survive editing.
+  // Full article extraction may contain navigation, related-story cards or site chrome
+  // mentioning unrelated brands; those must never become mandatory for this story.
+  const source = `${input.title || ''} ${input.summary || ''}`;
   return stableEntities.filter(entity => containsEntity(source, entity));
 }
 
