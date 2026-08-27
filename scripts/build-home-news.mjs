@@ -52,7 +52,9 @@ function newestFirst(a,b) {
   return publishedTimestamp(b) - publishedTimestamp(a) || rank(a,b);
 }
 
-const normalized = events.map(normalize).filter(item => item.titleRu && item.primaryUrl && item.image);
+// Images are explicitly non-blocking. Missing/local image failures are rewritten to
+// the permanent first-party branded fallback by publish-news-storage.mjs.
+const normalized = events.map(normalize).filter(item => item.titleRu && item.primaryUrl);
 const seen = new Set();
 const items = normalized
   .filter(item => item.publicEligible)
