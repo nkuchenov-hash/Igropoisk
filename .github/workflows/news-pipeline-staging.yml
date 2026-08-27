@@ -59,6 +59,7 @@ jobs:
         with:
           path: /tmp/igropoisk-news-editor-models
           key: news-editor-${{ runner.os }}-node22-hf-4.2.0-qwen3-4b-instruct-2507-q4-v1
+          save-always: true
 
       - name: Run contract tests
         run: |
@@ -86,7 +87,7 @@ jobs:
           NEWS_EDITOR_DTYPE: q4
           NEWS_EDITOR_RUNTIME: /tmp/igropoisk-news-translator-runtime
           NEWS_EDITOR_CACHE: /tmp/igropoisk-news-editor-models
-          NEWS_EDITOR_MAX_ITEMS: '14'
+          NEWS_EDITOR_MAX_ITEMS: '18'
           NEWS_EDITOR_MIN_PUBLIC: '12'
         run: |
           node scripts/run-news-pipeline.mjs --force
