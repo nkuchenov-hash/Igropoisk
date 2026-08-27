@@ -1,0 +1,83 @@
+{
+  "schema_version": 5,
+  "game_slug": "red-dead-redemption",
+  "checked_at": "2026-08-27T22:37:48.877Z",
+  "status": "insufficient-scores",
+  "method": {
+    "name": "Среднее всех найденных подтверждённых независимых профессиональных оценок",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources_for_confident_rating": 10,
+    "maximum_sources": null,
+    "use_all_discovered_scores": true,
+    "persistent_discovery_seeds": true,
+    "output_scale": 10,
+    "letter_grade_map": {
+      "A+": 10,
+      "A": 9.5,
+      "A-": 9,
+      "B+": 8.5,
+      "B": 8,
+      "B-": 7.5,
+      "C+": 7,
+      "C": 6.5,
+      "C-": 6,
+      "D+": 5.5,
+      "D": 5,
+      "D-": 4.5,
+      "F": 2.5
+    },
+    "rounding_decimals": 1
+  },
+  "sources": [
+    {
+      "publication": "IGN",
+      "title": "Red Dead Redemption Review - IGN",
+      "url": "https://www.ign.com/articles/2010/05/17/red-dead-redemption-review",
+      "original_score": {
+        "score": 9.7,
+        "scale": 10,
+        "grade": null,
+        "display": "9.7/10"
+      },
+      "normalized_10": 9.7,
+      "checked_at": "2026-08-27T22:37:48.877Z"
+    },
+    {
+      "publication": "gamingbolt.com",
+      "title": "Red Dead Redemption (PS5) Review – Behind The Times - GamingBolt",
+      "url": "https://gamingbolt.com/red-dead-redemption-ps5-review-behind-the-times",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "checked_at": "2026-08-27T22:37:48.877Z"
+    },
+    {
+      "publication": "digitalchumps.com",
+      "title": "Red Dead Redemption (PS5) Review - digitalchumps",
+      "url": "https://digitalchumps.com/red-dead-redemption-ps5-review",
+      "original_score": {
+        "score": 9.8,
+        "scale": 10,
+        "grade": null,
+        "display": "9.8/10"
+      },
+      "normalized_10": 9.8,
+      "checked_at": "2026-08-27T22:37:48.877Z"
+    }
+  ],
+  "calculation": {
+    "source_count": 3,
+    "values": [
+      9.7,
+      7,
+      9.8
+    ],
+    "mean_10": 8.8333,
+    "score_10": 8.8,
+    "status": "insufficient-scores"
+  }
+}
