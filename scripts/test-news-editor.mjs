@@ -12,6 +12,9 @@ assert.equal(isLikelyNewsSource({ title: 'The Sinking City 2: How to open the sa
 assert.equal(isLikelyNewsSource({ title: "The Witcher 3 Remastered: Here’s How to Upgrade" }), false);
 assert.equal(isLikelyNewsSource({ title: 'The 10 best Metal Gear games of all time' }), false);
 assert.equal(isLikelyNewsSource({ title: 'Early-game tips to help you manage the miasma' }), false);
+assert.equal(isLikelyNewsSource({ title: 'Best abilities in Star Wars Zero Company' }), false);
+assert.equal(isLikelyNewsSource({ title: 'Star Wars Zero Company gameplay tips' }), false);
+assert.equal(isLikelyNewsSource({ title: 'Star Wars Zero Company launches this year', url: 'https://news.xbox.com/en-us/2026/08/27/star-wars-zero-company-tips/' }), false);
 assert.equal(isLikelyNewsSource({ title: 'How NVIDIA plans to change its gaming business' }), true);
 assert.equal(isLikelyNewsSource({ title: 'Konami wants annual Silent Hill games and is working on many unannounced projects' }), true);
 
@@ -23,6 +26,15 @@ const clean = validateProductionNews({
   summary: 'EA told investors that annual costs will be cut by 700 million dollars.'
 });
 assert.equal(clean.ok, true, clean.reasons.join('; '));
+
+const cleanRussianSource = validateProductionNews({
+  titleRu: 'Microsoft объявила новую презентацию Xbox на сентябрь',
+  briefRu: 'Компания проведёт отдельную презентацию Xbox и расскажет о ближайших релизах. Список участников и точное расписание эфира обещают раскрыть позже.'
+}, {
+  title: 'Microsoft объявила новую презентацию Xbox на сентябрь',
+  summary: 'Компания проведёт отдельную презентацию Xbox и расскажет о ближайших релизах. Список участников и точное расписание эфира обещают раскрыть позже.'
+});
+assert.equal(cleanRussianSource.ok, true, cleanRussianSource.reasons.join('; '));
 
 const repeated = validateProductionNews({
   titleRu: 'EA готовит сокращения после кризиса после сделки',
@@ -94,6 +106,27 @@ const awkwardWolfenstein = validateProductionNews({
 }, { title: 'Wolfenstein 2009 could get a remaster after Steam page changes' });
 assert.equal(awkwardWolfenstein.ok, false);
 assert.ok(awkwardWolfenstein.reasons.includes('awkward machine-like Russian'));
+
+const badGtaRussian = validateProductionNews({
+  titleRu: 'Grand Theft Auto 6 не будет иметь микроперекупок или генеративной АИ',
+  briefRu: 'Rockstar заявила, что в игре не будет микроперекупок и генеративной АИ. Разработчики рассказали о подходе к созданию контента.'
+}, { title: 'Grand Theft Auto 6 will have no microtransactions or generative AI' });
+assert.equal(badGtaRussian.ok, false);
+assert.ok(badGtaRussian.reasons.includes('awkward machine-like Russian'));
+
+const badCrimsonRussian = validateProductionNews({
+  titleRu: 'Кровавый месяц: действие на PS5 начнётся 1 сентября',
+  briefRu: 'Игрок станет воином полувещим, полувозможно и столкнётся с последствиями демонической инфицированности. Релиз заявлен на 1 сентября.'
+}, { title: 'Crimson Moon launches on PS5 September 1', summary: 'The game launches September 1.' });
+assert.equal(badCrimsonRussian.ok, false);
+assert.ok(badCrimsonRussian.reasons.includes('awkward machine-like Russian'));
+
+const truncatedRussian = validateProductionNews({
+  titleRu: 'Разработчики показали новый трейлер игры',
+  briefRu: 'Студия опубликовала новый трейлер и рассказала о ключевых особенностях проекта... Подробности релиза обещают раскрыть позднее.'
+}, { title: 'Разработчики показали новый трейлер игры', summary: 'Студия опубликовала новый трейлер и рассказала о ключевых особенностях проекта.' });
+assert.equal(truncatedRussian.ok, false);
+assert.ok(truncatedRussian.reasons.includes('brief looks truncated'));
 
 const inventedNumber = validateProductionNews({
   titleRu: 'Ubisoft обновила планы по Assassin’s Creed',
