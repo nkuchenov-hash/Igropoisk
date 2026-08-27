@@ -11,6 +11,7 @@ assert.equal(isLikelyNewsSource({ title: 'How to catch and kill Fish Tuna' }), f
 assert.equal(isLikelyNewsSource({ title: 'The Sinking City 2: How to open the salt storage lock' }), false);
 assert.equal(isLikelyNewsSource({ title: "The Witcher 3 Remastered: Here’s How to Upgrade" }), false);
 assert.equal(isLikelyNewsSource({ title: 'The 10 best Metal Gear games of all time' }), false);
+assert.equal(isLikelyNewsSource({ title: 'Early-game tips to help you manage the miasma' }), false);
 assert.equal(isLikelyNewsSource({ title: 'How NVIDIA plans to change its gaming business' }), true);
 assert.equal(isLikelyNewsSource({ title: 'Konami wants annual Silent Hill games and is working on many unannounced projects' }), true);
 
@@ -18,7 +19,8 @@ const clean = validateProductionNews({
   titleRu: 'EA может сократить сотрудников после роста долговой нагрузки',
   briefRu: 'EA планирует сократить ежегодные расходы на 700 миллионов долларов, включая организационные издержки. Компания ожидает значительные процентные платежи после сделки, поэтому аналитики допускают новые сокращения персонала.'
 }, {
-  title: "Mass layoffs may be in EA's near future after leveraged buyout raises company debt"
+  title: "Mass layoffs may be in EA's near future after leveraged buyout raises company debt",
+  summary: 'EA told investors that annual costs will be cut by 700 million dollars.'
 });
 assert.equal(clean.ok, true, clean.reasons.join('; '));
 
@@ -78,6 +80,27 @@ const unrelatedArticleChrome = validateProductionNews({
   articleText: 'Related stories: Xbox at Gamescom. PlayStation announcements. Ubisoft showcase. CD Projekt Red interview.'
 });
 assert.equal(unrelatedArticleChrome.ok, true, unrelatedArticleChrome.reasons.join('; '));
+
+const awkwardBuyout = validateProductionNews({
+  titleRu: 'EA может сократить расходы после крупного купли-продажи',
+  briefRu: 'Компания планирует снизить расходы после леверед бай-аута. Подробности программы экономии будут объявлены позднее.'
+}, { title: 'EA may cut costs after leveraged buyout' });
+assert.equal(awkwardBuyout.ok, false);
+assert.ok(awkwardBuyout.reasons.includes('awkward machine-like Russian'));
+
+const awkwardWolfenstein = validateProductionNews({
+  titleRu: 'Удалённая игра Wolfenstein 2009 может получить ремастер',
+  briefRu: 'Изменения на странице Steam вызвали спрос на возможный ремастер. Факт подтверждает лишь теорию, официального анонса пока не было.'
+}, { title: 'Wolfenstein 2009 could get a remaster after Steam page changes' });
+assert.equal(awkwardWolfenstein.ok, false);
+assert.ok(awkwardWolfenstein.reasons.includes('awkward machine-like Russian'));
+
+const inventedNumber = validateProductionNews({
+  titleRu: 'Ubisoft обновила планы по Assassin’s Creed',
+  briefRu: 'Компания рассказала о дальнейшей работе над серией. В проекте якобы участвуют 970 сотрудников, хотя источник такой цифры не приводит.'
+}, { title: 'Ubisoft updates its Assassin’s Creed plans', summary: 'The company discussed future work on the series.' });
+assert.equal(inventedNumber.ok, false);
+assert.ok(inventedNumber.reasons.some(reason => reason.startsWith('unsupported number:')));
 
 const html = `<html><body><article>
 <p>When you buy through links on our site, we may earn an affiliate commission.</p>
