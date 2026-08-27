@@ -1,10 +1,10 @@
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { editNewsToRussian, fetchArticleText, isLikelyNewsSource, warmNewsEditor } from './lib/news-editor-production.mjs';
+import { editNewsToRussian, fetchArticleText, isLikelyNewsSource, validateProductionNews, warmNewsEditor } from './lib/news-editor-production.mjs';
 
 const eventsPath = 'data/news-events.json';
 const reportPath = process.env.NEWS_EDITOR_REPORT || 'tmp/news-editor-report.json';
-const editorialVersion = 4;
+const editorialVersion = 5;
 const minimumPublicItems = Math.max(12, Number(process.env.NEWS_EDITOR_MIN_PUBLIC || 12));
 // Strict filtering needs headroom, but one-pass generation keeps the hourly run bounded.
 const maxItems = Math.max(minimumPublicItems + 18, Number(process.env.NEWS_EDITOR_MAX_ITEMS || minimumPublicItems + 18));
@@ -78,6 +78,10 @@ function sourceTitle(item) {
   return String(item.titleEn || item.title || '').trim();
 }
 
+function sourceSummary(item) {
+  return String(item.summaryEn || item.summary || sourceTitle(item)).trim();
+}
+
 const payload = JSON.parse(await fs.readFile(eventsPath, 'utf8'));
 const items = Array.isArray(payload) ? payload : (payload.items || []);
 
@@ -91,12 +95,15 @@ let attempted = 0;
 let modelLoadMs = 0;
 const failures = [];
 const attemptedItems = new Set();
+const nativeApprovedItems = new Set();
 
 for (const item of items) {
   if (!isPublic(item)) continue;
 
   const title = sourceTitle(item);
-  if (!isLikelyNewsSource({ title })) {
+  const summary = sourceSummary(item);
+  const url = item.primaryUrl || item.url || '';
+  if (!isLikelyNewsSource({ title, url })) {
     filteredNonNews += 1;
     setPublic(item, false);
     item.editorialStatus = 'filtered-non-news';
@@ -107,22 +114,40 @@ for (const item of items) {
   }
 
   if (sourceIsRussian(item)) {
-    item.editorialStatus = 'source-ru';
-    item.editorialVersion = editorialVersion;
-    nativeRussian += 1;
+    const nativeValidation = validateProductionNews(
+      { titleRu: title, briefRu: summary },
+      { title, summary, url }
+    );
+    if (nativeValidation.ok) {
+      item.titleRu = nativeValidation.titleRu;
+      item.summaryRu = paragraphize(nativeValidation.briefRu);
+      item.editorialBriefRu = item.summaryRu;
+      item.editorialStatus = 'source-ru';
+      item.editorialVersion = editorialVersion;
+      item.editorialSourceHash = itemHash(item);
+      delete item.editorialReasons;
+      nativeApprovedItems.add(item);
+      nativeRussian += 1;
+    } else {
+      item.editorialStatus = 'source-ru-needs-edit';
+      item.editorialVersion = editorialVersion;
+      item.editorialSourceHash = itemHash(item);
+      item.editorialReasons = nativeValidation.reasons;
+      console.error(`[news/editor] Russian source needs edit ${title}: ${nativeValidation.reasons.join('; ')}`);
+    }
   } else if (cachedApproval(item)) {
     cached += 1;
   }
 }
 
 const candidates = items
-  .filter(item => isPublic(item) && !sourceIsRussian(item) && !cachedApproval(item))
+  .filter(item => isPublic(item) && !nativeApprovedItems.has(item) && !cachedApproval(item))
   .sort((a, b) => publishedAt(b) - publishedAt(a));
 
 if (candidates.length && nativeRussian + cached < minimumPublicItems) {
   const warmup = await warmNewsEditor();
   modelLoadMs = warmup.elapsedMs;
-  console.log(`[news/editor] ${warmup.model} ready in ${(warmup.elapsedMs / 1000).toFixed(1)}s; ${candidates.length} uncached public English items`);
+  console.log(`[news/editor] ${warmup.model} ready in ${(warmup.elapsedMs / 1000).toFixed(1)}s; ${candidates.length} uncached public items need editorial pass`);
 }
 
 for (const item of candidates) {
@@ -132,7 +157,7 @@ for (const item of candidates) {
   attempted += 1;
   attemptedItems.add(item);
   const title = sourceTitle(item);
-  const summary = String(item.summaryEn || item.summary || title).trim();
+  const summary = sourceSummary(item);
   const url = item.primaryUrl || item.url || '';
   let articleText = '';
   let articleFetchError = '';
@@ -149,6 +174,7 @@ for (const item of candidates) {
       title,
       summary,
       articleText,
+      url,
       source: item.primarySource || item.source || ''
     }, { maxAttempts: 1, maxNewTokens: 165 });
 
@@ -204,7 +230,7 @@ for (const item of candidates) {
 }
 
 const publicItems = items.filter(isPublic);
-const publicApproved = publicItems.filter(item => sourceIsRussian(item) || cachedApproval(item) || item.editorialStatus === 'approved').length;
+const publicApproved = publicItems.filter(item => nativeApprovedItems.has(item) || cachedApproval(item) || item.editorialStatus === 'approved').length;
 const output = Array.isArray(payload) ? items : { ...payload, generatedAt: new Date().toISOString(), items };
 await fs.mkdir('tmp', { recursive: true });
 await fs.writeFile(eventsPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
