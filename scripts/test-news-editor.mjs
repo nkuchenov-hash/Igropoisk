@@ -69,6 +69,16 @@ const missingStableEntity = validateProductionNews({
 assert.equal(missingStableEntity.ok, false);
 assert.ok(missingStableEntity.reasons.includes('stable entity missing: Konami'));
 
+const unrelatedArticleChrome = validateProductionNews({
+  titleRu: 'The Witcher 3 Remastered получит модификации сообщества',
+  briefRu: 'Разработчики рассказали, что ремастер The Witcher 3 включает часть созданных сообществом модификаций. Один из авторов модов также поделился опытом работы над обновлённой версией игры.'
+}, {
+  title: 'The Witcher 3 Remastered features community-made mods, modder speaks about working with CD Projekt Red',
+  summary: 'A modder explains how community work became part of the remaster.',
+  articleText: 'Related stories: Xbox at Gamescom. PlayStation announcements. Ubisoft showcase.'
+});
+assert.equal(unrelatedArticleChrome.ok, true, unrelatedArticleChrome.reasons.join('; '));
+
 const html = `<html><body><article>
 <p>When you buy through links on our site, we may earn an affiliate commission.</p>
 <p>Ubisoft has appointed a veteran developer to a senior role on the Assassin's Creed series.</p>
