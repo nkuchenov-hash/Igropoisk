@@ -1,12 +1,13 @@
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { editNewsToRussian, fetchArticleText, warmNewsEditor } from './lib/news-editor-qwen.mjs';
+import { editNewsToRussian, fetchArticleText, isLikelyNewsSource, warmNewsEditor } from './lib/news-editor-qwen.mjs';
 
 const eventsPath = 'data/news-events.json';
 const reportPath = process.env.NEWS_EDITOR_REPORT || 'tmp/news-editor-report.json';
-const editorialVersion = 2;
-const maxItems = Math.max(1, Number(process.env.NEWS_EDITOR_MAX_ITEMS || 14));
+const editorialVersion = 3;
 const minimumPublicItems = Math.max(12, Number(process.env.NEWS_EDITOR_MIN_PUBLIC || 12));
+// Keep enough headroom for strict editorial rejection, but stop as soon as the public minimum is reached.
+const maxItems = Math.max(minimumPublicItems + 6, Number(process.env.NEWS_EDITOR_MAX_ITEMS || minimumPublicItems + 6));
 
 function hasCyrillic(value = '') {
   return /[А-Яа-яЁё]/.test(String(value));
@@ -73,6 +74,10 @@ function publishedAt(item) {
   return Number.isFinite(value) ? value : 0;
 }
 
+function sourceTitle(item) {
+  return String(item.titleEn || item.title || '').trim();
+}
+
 const payload = JSON.parse(await fs.readFile(eventsPath, 'utf8'));
 const items = Array.isArray(payload) ? payload : (payload.items || []);
 
@@ -80,13 +85,27 @@ let nativeRussian = 0;
 let cached = 0;
 let approved = 0;
 let rejected = 0;
+let filteredNonNews = 0;
 let pending = 0;
 let attempted = 0;
 let modelLoadMs = 0;
 const failures = [];
+const attemptedItems = new Set();
 
 for (const item of items) {
   if (!isPublic(item)) continue;
+
+  const title = sourceTitle(item);
+  if (!isLikelyNewsSource({ title })) {
+    filteredNonNews += 1;
+    setPublic(item, false);
+    item.editorialStatus = 'filtered-non-news';
+    item.editorialVersion = editorialVersion;
+    item.editorialSourceHash = itemHash(item);
+    item.editorialReasons = ['guide/how-to content is not a news item'];
+    continue;
+  }
+
   if (sourceIsRussian(item)) {
     item.editorialStatus = 'source-ru';
     item.editorialVersion = editorialVersion;
@@ -100,15 +119,19 @@ const candidates = items
   .filter(item => isPublic(item) && !sourceIsRussian(item) && !cachedApproval(item))
   .sort((a, b) => publishedAt(b) - publishedAt(a));
 
-if (candidates.length) {
+if (candidates.length && nativeRussian + cached < minimumPublicItems) {
   const warmup = await warmNewsEditor();
   modelLoadMs = warmup.elapsedMs;
   console.log(`[news/editor] ${warmup.model} ready in ${(warmup.elapsedMs / 1000).toFixed(1)}s; ${candidates.length} uncached public English items`);
 }
 
-for (const item of candidates.slice(0, maxItems)) {
+for (const item of candidates) {
+  if (attempted >= maxItems) break;
+  if (nativeRussian + cached + approved >= minimumPublicItems) break;
+
   attempted += 1;
-  const title = String(item.titleEn || item.title || '').trim();
+  attemptedItems.add(item);
+  const title = sourceTitle(item);
   const summary = String(item.summaryEn || item.summary || title).trim();
   const url = item.primaryUrl || item.url || '';
   let articleText = '';
@@ -170,7 +193,8 @@ for (const item of candidates.slice(0, maxItems)) {
   }
 }
 
-for (const item of candidates.slice(maxItems)) {
+for (const item of candidates) {
+  if (attemptedItems.has(item)) continue;
   pending += 1;
   setPublic(item, false);
   item.editorialStatus = 'pending';
@@ -190,6 +214,7 @@ await fs.writeFile(reportPath, `${JSON.stringify({
   model: process.env.NEWS_EDITOR_MODEL || 'onnx-community/Qwen3-4B-Instruct-2507-ONNX',
   dtype: process.env.NEWS_EDITOR_DTYPE || 'q4',
   maxItems,
+  minimumPublicItems,
   modelLoadMs,
   totalItems: items.length,
   candidateItems: candidates.length,
@@ -198,13 +223,14 @@ await fs.writeFile(reportPath, `${JSON.stringify({
   cached,
   nativeRussian,
   rejected,
+  filteredNonNews,
   pending,
   publicItems: publicItems.length,
   publicApproved,
   failures
 }, null, 2)}\n`, 'utf8');
 
-console.log(`[news/editor] public=${publicItems.length}; approved-now=${approved}; cached=${cached}; source-ru=${nativeRussian}; rejected=${rejected}; pending=${pending}`);
+console.log(`[news/editor] public=${publicItems.length}; approved-now=${approved}; cached=${cached}; source-ru=${nativeRussian}; rejected=${rejected}; filtered-non-news=${filteredNonNews}; pending=${pending}`);
 if (publicApproved < minimumPublicItems) {
   throw new Error(`Only ${publicApproved} editorially approved public news items remain; minimum is ${minimumPublicItems}. Live publication must keep the previous snapshot.`);
 }
