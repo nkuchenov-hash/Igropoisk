@@ -73,9 +73,9 @@ const unrelatedArticleChrome = validateProductionNews({
   titleRu: 'The Witcher 3 Remastered получит модификации сообщества',
   briefRu: 'Разработчики рассказали, что ремастер The Witcher 3 включает часть созданных сообществом модификаций. Один из авторов модов также поделился опытом работы над обновлённой версией игры.'
 }, {
-  title: 'The Witcher 3 Remastered features community-made mods, modder speaks about working with CD Projekt Red',
+  title: 'The Witcher 3 Remastered features community-made mods',
   summary: 'A modder explains how community work became part of the remaster.',
-  articleText: 'Related stories: Xbox at Gamescom. PlayStation announcements. Ubisoft showcase.'
+  articleText: 'Related stories: Xbox at Gamescom. PlayStation announcements. Ubisoft showcase. CD Projekt Red interview.'
 });
 assert.equal(unrelatedArticleChrome.ok, true, unrelatedArticleChrome.reasons.join('; '));
 
