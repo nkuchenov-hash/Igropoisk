@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import puppeteer from 'puppeteer-core';
 
-const base=String(process.env.FALLOUT2_SMOKE_BASE_URL||'https://nkuchenov-hash.github.io/Igropoisk/').replace(/\/+$/,'');
+const base=String(process.env.FALLOUT2_SMOKE_BASE_URL||process.env.DOOM_SMOKE_BASE_URL||'https://nkuchenov-hash.github.io/Igropoisk/').replace(/\/+$/,'');
 const browserPath=()=>[process.env.CHROME_PATH,'/usr/bin/google-chrome-stable','/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'].filter(Boolean).find(fs.existsSync);
 const executablePath=browserPath();
 if(!executablePath)throw new Error('Chrome/Chromium executable was not found.');
@@ -9,8 +9,10 @@ const browser=await puppeteer.launch({executablePath,headless:true,args:['--no-s
 try{
   const page=await browser.newPage();
   await page.setViewport({width:1440,height:1100});
-  await page.goto(`${base}/game/fallout-2/?media-smoke=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:30000});
+  await page.goto(`${base}/game/fallout-2/?media-smoke=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45000});
   await page.waitForFunction(()=>document.querySelector('#gameTitle')?.textContent?.trim()==='Fallout 2',{timeout:30000});
+  await page.evaluate(()=>document.querySelector('.game-tabs [data-tab="media"]')?.click());
+  await page.waitForFunction(()=>document.querySelector('#media')?.classList.contains('active'),{timeout:10000});
   await page.waitForFunction(()=>document.querySelectorAll('#mediaArt img').length>=4,{timeout:30000});
   await new Promise(resolve=>setTimeout(resolve,2000));
   const state=await page.evaluate(()=>{
