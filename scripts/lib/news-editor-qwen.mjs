@@ -52,6 +52,13 @@ function cleanText(value = '') {
 }
 
 const boilerplatePattern = /cookie|newsletter|subscribe|sign up|privacy policy|when you (?:purchase|buy) through links|we may (?:earn|receive) (?:an )?(?:affiliate )?commission|affiliate commission|here(?:'s| is) how (?:it|this) works|support us|terms (?:of|and) conditions|all rights reserved|recommended by|shopping links|buying guide|follow us|more about|contact me with news/i;
+const obviousGuidePattern = /^(?:how to\b|where to (?:find|get|catch|buy)\b|best (?:build|settings|weapon|weapons|armor|class)\b|all .{0,55}\b(?:locations?|collectibles?)\b|every .{0,55}\b(?:location|collectible)\b)|\bhere(?:'|’)?s how to\b|\bwalkthrough\b|\bbeginner(?:'|’)?s guide\b|\bachievement guide\b/i;
+
+export function isLikelyNewsSource(input = {}) {
+  const title = String(input?.title || input?.titleEn || '').replace(/\s+/g, ' ').trim();
+  if (!title) return true;
+  return !obviousGuidePattern.test(title);
+}
 
 function paragraphText(html = '') {
   return (String(html).match(/<p\b[^>]*>[\s\S]*?<\/p>/gi) || [])
@@ -121,7 +128,7 @@ function protectedNames(title = '') {
 function criticalNames(title = '') {
   return protectedNames(title).filter(value => {
     if (/^(?:FPS|CEO|RPG|PC)$/i.test(value)) return false;
-    return /\d/.test(value) || /['’]/.test(value) || /\s/.test(value) || /^[A-Z]{2,}$/.test(value) || /^(?:Ubisoft|Steam|QuakeCon|Wolfenstein|PlayStation|Xbox|Nintendo|EA|NVIDIA|AMD)$/i.test(value);
+    return /\d/.test(value) || /['’]/.test(value) || /\s/.test(value) || /^[A-Z]{2,}$/.test(value) || /^(?:Ubisoft|Steam|QuakeCon|Wolfenstein|PlayStation|Xbox|Nintendo|EA|NVIDIA|AMD|Konami|Capcom|SEGA|Bethesda|Valve|Rockstar|Activision|miHoYo|HoYoverse)$/i.test(value);
   });
 }
 
@@ -136,8 +143,16 @@ const brandRepairs = [
   [/(?<![\p{L}\p{N}])Иксбокс(?![\p{L}\p{N}])/giu, 'Xbox'],
   [/(?<![\p{L}\p{N}])Плейстейшн(?![\p{L}\p{N}])/giu, 'PlayStation'],
   [/(?<![\p{L}\p{N}])Нинтендо(?![\p{L}\p{N}])/giu, 'Nintendo'],
-  [/(?<![\p{L}\p{N}])Энвидиа(?![\p{L}\p{N}])/giu, 'NVIDIA'],
-  [/(?<![\p{L}\p{N}])АМД(?![\p{L}\p{N}])/giu, 'AMD']
+  [/(?<![\p{L}\p{N}])(?:Энвидиа|Nvidia)(?![\p{L}\p{N}])/giu, 'NVIDIA'],
+  [/(?<![\p{L}\p{N}])АМД(?![\p{L}\p{N}])/giu, 'AMD'],
+  [/(?<![\p{L}\p{N}])Конами(?![\p{L}\p{N}])/giu, 'Konami'],
+  [/(?<![\p{L}\p{N}])Капком(?![\p{L}\p{N}])/giu, 'Capcom'],
+  [/(?<![\p{L}\p{N}])Сега(?![\p{L}\p{N}])/giu, 'SEGA'],
+  [/(?<![\p{L}\p{N}])Бетесда(?![\p{L}\p{N}])/giu, 'Bethesda'],
+  [/(?<![\p{L}\p{N}])Вэлв(?![\p{L}\p{N}])/giu, 'Valve'],
+  [/(?<![\p{L}\p{N}])Рокстар(?![\p{L}\p{N}])/giu, 'Rockstar'],
+  [/(?<![\p{L}\p{N}])Активижн(?![\p{L}\p{N}])/giu, 'Activision'],
+  [/(?<![\p{L}\p{N}])(?:Михоё|Михойо|Mihoyo)(?![\p{L}\p{N}])/giu, 'miHoYo']
 ];
 
 export function normalizeEditorialNames(value = '') {
@@ -147,7 +162,7 @@ export function normalizeEditorialNames(value = '') {
 }
 
 function baseSystem() {
-  return `Ты редактор русского игрового издания «Игропоиск». Пиши коротко, естественно и точно, как русскоязычный редактор, а не машинный переводчик. Ничего не выдумывай и не усиливай причинность. Не меняй должности, цифры, даты, степень уверенности и причинно-следственные связи. Латинские названия игр, компаний, сервисов и мероприятий не переводи и не транслитерируй: Ubisoft нельзя превращать в «Убисофт» или «Убикс», Assassin's Creed нельзя переводить. Игнорируй рекламу, партнерские вставки, подписки, навигацию и служебный текст сайта.`;
+  return `Ты редактор русского игрового издания «Игропоиск». Пиши коротко, нейтрально, естественно и точно, как русскоязычный редактор, а не машинный переводчик. Ничего не выдумывай и не усиливай причинность. Не меняй должности, цифры, даты, степень уверенности и причинно-следственные связи. Не оставляй английские предложения, авторские шутки, first-person реплики или комментарии автора источника: пересказывай их смысл нейтральным русским, только если он важен для новости. Латинские названия игр, компаний, сервисов и мероприятий не переводи и не транслитерируй: Ubisoft нельзя превращать в «Убисофт» или «Убикс», Assassin's Creed нельзя переводить. Не создавай гибридные слова из латиницы и кириллицы. Игнорируй рекламу, партнерские вставки, подписки, навигацию и служебный текст сайта.`;
 }
 
 function materialBlock({ title, summary, articleText, source, draftTitleRu, draftSummaryRu }) {
@@ -158,14 +173,14 @@ function materialBlock({ title, summary, articleText, source, draftTitleRu, draf
 }
 
 function qwenPrompt(input) {
-  const user = `${materialBlock(input)}\n\nВерни только:\nЗАГОЛОВОК: <естественный русский заголовок 45–130 знаков>\nТЕКСТ:\n<2–3 предложения, примерно 180–500 знаков>\n\nПравила: первое предложение сообщает главное, второе даёт важную конкретику или контекст. Не повторяй связки вроде «после ... после» или «спустя ... спустя». Delisted в контексте магазина — «снята с продажи» или «удалена из магазина», не «исключена из списка». Remaster — «ремастер», не «переоснащение». Если исходник говорит «может», «предполагают», «по слухам» — не превращай это в подтвержденный факт. Не повторяй факты и не вставляй рекламу.`;
+  const user = `${materialBlock(input)}\n\nВерни только:\nЗАГОЛОВОК: <естественный русский заголовок 45–130 знаков>\nТЕКСТ:\n<2–3 коротких предложения, примерно 180–500 знаков>\n\nПравила: первое предложение сообщает главное, второе даёт важную конкретику или контекст. В результате не должно быть английских фраз — латиницей оставляй только точные названия, имена, аббревиатуры и термины из исходника. Не копируй субъективные хвосты заголовка вроде «I think», «I'm betting», шутки и разговорные ремарки автора. Не повторяй связки вроде «после ... после» или «спустя ... спустя». Delisted в контексте магазина — «снята с продажи» или «удалена из магазина», не «исключена из списка». Remaster — «ремастер», не «переоснащение». Если исходник говорит «может», «предполагают», «по слухам» — не превращай это в подтвержденный факт. Не повторяй факты и не вставляй рекламу.`;
   return [{ role: 'system', content: baseSystem() }, { role: 'user', content: user }];
 }
 
 function repairPrompt(input, previous, reasons) {
   return [
     { role: 'system', content: baseSystem() },
-    { role: 'user', content: `${materialBlock(input)}\n\nПредыдущий вариант:\n${previous}\n\nОн забракован редакционным контролем по причинам: ${reasons.join('; ') || 'формат или качество'}. Исправь только эти проблемы, сохрани факты исходника и MUST_KEEP. Убери буквальный машинный перевод и повторы. Верни строго:\nЗАГОЛОВОК: <заголовок>\nТЕКСТ:\n<2–3 предложения>` }
+    { role: 'user', content: `${materialBlock(input)}\n\nПредыдущий вариант:\n${previous}\n\nОн забракован редакционным контролем по причинам: ${reasons.join('; ') || 'формат или качество'}. Исправь только эти проблемы, сохрани факты исходника и MUST_KEEP. Полностью убери английские фразы, гибриды латиницы/кириллицы, буквальный машинный перевод, авторские ремарки и повторы. Верни строго:\nЗАГОЛОВОК: <заголовок>\nТЕКСТ:\n<2–3 предложения>` }
   ];
 }
 
@@ -197,6 +212,34 @@ function normalizedSentences(value = '') {
     .filter(sentence => sentence.length >= 20);
 }
 
+function mixedScriptTokens(value = '') {
+  return (String(value).match(/[\p{L}\p{N}'’.-]+/gu) || [])
+    .filter(token => /[A-Za-z]/.test(token) && /[А-Яа-яЁё]/.test(token));
+}
+
+function escapeRegExp(value = '') {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function maskAllowedLatin(value = '', input = {}) {
+  let output = String(value);
+  const names = [...new Set([
+    ...protectedNames(input.title || ''),
+    ...protectedNames(input.summary || '')
+  ])].sort((a, b) => b.length - a.length);
+  for (const name of names) {
+    if (name.length < 2) continue;
+    output = output.replace(new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(name)}(?![\\p{L}\\p{N}])`, 'giu'), ' ');
+  }
+  return output.replace(/(?<![\p{L}\p{N}])(?:DLC|PC|PS[45]|VR|RPG|FPS|GPU|CPU|4K|EA|AMD|NVIDIA|Xbox|Steam)(?![\p{L}\p{N}])/giu, ' ');
+}
+
+function englishClause(value = '', input = {}) {
+  const residual = maskAllowedLatin(value, input);
+  const sequences = residual.match(/\b[A-Za-z][A-Za-z'’-]*(?:\s+[A-Za-z][A-Za-z'’-]*){2,}\b/g) || [];
+  return sequences.find(sequence => sequence.split(/\s+/).length >= 3) || '';
+}
+
 export function validateEditedNews(value, input = {}) {
   const titleRu = normalizeEditorialNames(value?.titleRu || '').replace(/\s+/g, ' ').trim();
   const briefRu = normalizeEditorialNames(value?.briefRu || '').replace(/\n{3,}/g, '\n\n').trim();
@@ -210,6 +253,9 @@ export function validateEditedNews(value, input = {}) {
   if (boilerplatePattern.test(briefRu)) reasons.push('site boilerplate leaked into brief');
   if (/(?:^|\s)спустя(?:\s+\S+){0,7}\s+спустя(?:\s|$)/iu.test(titleRu) || /(?:^|\s)после(?:\s+\S+){0,7}\s+после(?:\s|$)/iu.test(titleRu)) reasons.push('repeated connector in title');
   if (/(?:переоснащ(?:ен|ена|ение)|исключ(?:ен(?:а|о)?|ени[ея]) из списка)/iu.test(`${titleRu} ${briefRu}`)) reasons.push('literal machine translation');
+  if (mixedScriptTokens(`${titleRu} ${briefRu}`).length) reasons.push('mixed Latin/Cyrillic token');
+  if (englishClause(titleRu, input) || englishClause(briefRu, input)) reasons.push('untranslated English clause');
+  if (/\b(?:i think|i'm|i am|we think|my bet|i bet)\b/i.test(`${titleRu} ${briefRu}`)) reasons.push('source-author commentary leaked');
   const sentences = normalizedSentences(briefRu);
   if (sentences.length >= 2 && new Set(sentences).size !== sentences.length) reasons.push('duplicate sentence');
   const combined = canonicalName(`${titleRu} ${briefRu}`);
