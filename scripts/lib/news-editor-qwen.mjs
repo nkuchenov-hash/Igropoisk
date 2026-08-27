@@ -209,7 +209,7 @@ export function validateEditedNews(value, input = {}) {
   if (/(?:я как ии|искусственный интеллект|как модель|перевод статьи|в статье говорится|по данным материала)/i.test(briefRu)) reasons.push('meta language');
   if (boilerplatePattern.test(briefRu)) reasons.push('site boilerplate leaked into brief');
   if (/(?:^|\s)спустя(?:\s+\S+){0,7}\s+спустя(?:\s|$)/iu.test(titleRu) || /(?:^|\s)после(?:\s+\S+){0,7}\s+после(?:\s|$)/iu.test(titleRu)) reasons.push('repeated connector in title');
-  if (/(?:переоснащ(?:ен|ена|ение)|исключен(?:а|о)? из списка)/iu.test(`${titleRu} ${briefRu}`)) reasons.push('literal machine translation');
+  if (/(?:переоснащ(?:ен|ена|ение)|исключ(?:ен(?:а|о)?|ени[ея]) из списка)/iu.test(`${titleRu} ${briefRu}`)) reasons.push('literal machine translation');
   const sentences = normalizedSentences(briefRu);
   if (sentences.length >= 2 && new Set(sentences).size !== sentences.length) reasons.push('duplicate sentence');
   const combined = canonicalName(`${titleRu} ${briefRu}`);
