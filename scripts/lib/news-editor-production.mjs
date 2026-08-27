@@ -8,8 +8,9 @@ import {
 export { fetchArticleText, warmNewsEditor };
 
 const boilerplatePattern = /cookie|newsletter|subscribe|sign up|privacy policy|when you (?:purchase|buy) through links|we may (?:earn|receive) (?:an )?(?:affiliate )?commission|affiliate commission|here(?:'s| is) how (?:it|this) works|support us|terms (?:of|and) conditions|all rights reserved|recommended by|shopping links|buying guide|follow us|more about|contact me with news/i;
-const nonNewsPattern = /(?:\bhow to\b|\bwalkthrough\b|\bbeginner(?:'|’)?s guide\b|\bachievement guide\b|\bwhere to (?:find|get|catch|buy|unlock|open)\b|\bbest .{0,90}\bof all time\b|^\s*(?:the\s+)?\d+\s+best\b|\b(?:all|every) .{0,65}\b(?:locations?|collectibles?)\b)/i;
+const nonNewsPattern = /(?:\bhow to\b|\bwalkthrough\b|\bbeginner(?:'|’)?s guide\b|\bachievement guide\b|\bwhere to (?:find|get|catch|buy|unlock|open)\b|\bbest .{0,90}\bof all time\b|^\s*(?:the\s+)?\d+\s+best\b|\b(?:all|every) .{0,65}\b(?:locations?|collectibles?)\b|\b(?:tips?|guide) to help you\b)/i;
 const literalMachinePattern = /(?:переоснащ(?:ен|ена|ение)|исключ(?:ен(?:а|о)?|ени[ея]) из списка)/iu;
+const awkwardRussianPattern = /(?:\bлеверед\b|бай[- ]?аут|крупн\w* купл[ие]-продаж|факт подтверждает (?:лишь )?теори|вызвал[аи]? спрос на возможн|оста[её]тся вероятн\w+ налич|\bудал[её]нн(?:ая|ую|ой) игр[ау]\b)/iu;
 const metaPattern = /(?:я как ии|искусственный интеллект|как модель|перевод статьи|в статье говорится|по данным материала)/iu;
 const authorCommentPattern = /\b(?:i think|i'm|i am|we think|we're|my bet|i bet|i'm just glad)\b/i;
 
@@ -26,6 +27,13 @@ function canonical(value = '') {
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
+}
+
+function polishEditorialNames(value = '') {
+  return normalizeEditorialNames(value)
+    .replace(/(?<![\p{L}\p{N}])XBOX(?![\p{L}\p{N}])/gu, 'Xbox')
+    .replace(/(?<![\p{L}\p{N}])PLAYSTATION(?![\p{L}\p{N}])/gu, 'PlayStation')
+    .replace(/(?<![\p{L}\p{N}])Nvidia(?![\p{L}\p{N}])/gu, 'NVIDIA');
 }
 
 function escapeRegExp(value = '') {
@@ -53,6 +61,15 @@ function normalizedSentences(value = '') {
     .split(/(?<=[.!?])\s+/)
     .map(sentence => sentence.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').replace(/\s+/g, ' ').trim())
     .filter(sentence => sentence.length >= 20);
+}
+
+function numericTokens(value = '') {
+  return new Set((String(value).match(/\d+(?:[.,]\d+)?/g) || []).map(token => token.replace(',', '.')));
+}
+
+function unsupportedNumbers(value = '', input = {}) {
+  const source = numericTokens(`${input.title || ''} ${input.summary || ''} ${input.articleText || ''}`);
+  return [...numericTokens(value)].filter(token => !source.has(token));
 }
 
 function requiredStableEntities(input = {}) {
@@ -83,8 +100,8 @@ export function isLikelyNewsSource(input = {}) {
 }
 
 export function validateProductionNews(value, input = {}) {
-  const titleRu = normalizeEditorialNames(value?.titleRu || '').replace(/\s+/g, ' ').trim();
-  const briefRu = normalizeEditorialNames(value?.briefRu || '').replace(/\n{3,}/g, '\n\n').trim();
+  const titleRu = polishEditorialNames(value?.titleRu || '').replace(/\s+/g, ' ').trim();
+  const briefRu = polishEditorialNames(value?.briefRu || '').replace(/\n{3,}/g, '\n\n').trim();
   const reasons = [];
 
   const titleCyr = countLetters(titleRu, /[А-Яа-яЁё]/g);
@@ -107,6 +124,7 @@ export function validateProductionNews(value, input = {}) {
   if (metaPattern.test(`${titleRu} ${briefRu}`)) reasons.push('meta language');
   if (boilerplatePattern.test(briefRu)) reasons.push('site boilerplate leaked into brief');
   if (literalMachinePattern.test(`${titleRu} ${briefRu}`)) reasons.push('literal machine translation');
+  if (awkwardRussianPattern.test(`${titleRu} ${briefRu}`)) reasons.push('awkward machine-like Russian');
   if (authorCommentPattern.test(`${titleRu} ${briefRu}`)) reasons.push('source-author commentary leaked');
   if (mixedScriptTokens(`${titleRu} ${briefRu}`).length) reasons.push('mixed Latin/Cyrillic token');
   if (/(?:^|\s)спустя(?:\s+\S+){0,7}\s+спустя(?:\s|$)/iu.test(titleRu) || /(?:^|\s)после(?:\s+\S+){0,7}\s+после(?:\s|$)/iu.test(titleRu)) {
@@ -115,6 +133,9 @@ export function validateProductionNews(value, input = {}) {
 
   const sentences = normalizedSentences(briefRu);
   if (sentences.length >= 2 && new Set(sentences).size !== sentences.length) reasons.push('duplicate sentence');
+
+  const newNumbers = unsupportedNumbers(`${titleRu} ${briefRu}`, input);
+  if (newNumbers.length) reasons.push(`unsupported number: ${newNumbers.join(', ')}`);
 
   for (const entity of requiredStableEntities(input)) {
     if (!containsEntity(`${titleRu} ${briefRu}`, entity)) reasons.push(`stable entity missing: ${entity}`);
@@ -127,7 +148,7 @@ export async function editNewsToRussian(input, options = {}) {
   // One deterministic pass keeps a full hourly run inside the GitHub runner budget.
   // The production validator below is intentionally separate from the model's conservative experimental validator:
   // it rejects actual English/mixed-script garbage without treating headline prose as a mandatory proper name.
-  const maxNewTokens = Math.max(120, Math.min(175, Number(options.maxNewTokens || 165)));
+  const maxNewTokens = Math.max(120, Math.min(165, Number(options.maxNewTokens || 150)));
   const generated = await generateRussianDraft(input, { maxAttempts: 1, maxNewTokens });
   const validation = validateProductionNews(generated, input);
 
