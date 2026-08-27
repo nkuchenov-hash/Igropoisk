@@ -2,6 +2,9 @@
   const script=document.createElement('script');
   script.src='../_shared/game-page-v3-bootstrap.js?v=20260812-3';
   document.head.appendChild(script);
+  const mediaSanitize=document.createElement('script');
+  mediaSanitize.src='../_shared/game-media-sanitize.js?v=20260827-1';
+  document.head.appendChild(mediaSanitize);
   const qualityStyle=document.createElement('link');
   qualityStyle.rel='stylesheet';
   qualityStyle.href='../_shared/game-page-quality.css?v=20260823-5';
