@@ -16,7 +16,7 @@ const authorCommentPattern = /\b(?:i think|i'm|i am|we think|we're|my bet|i bet|
 const stableEntities = [
   'Ubisoft', 'EA', 'Electronic Arts', 'Steam', 'Xbox', 'PlayStation', 'Nintendo', 'NVIDIA', 'AMD',
   'Konami', 'Capcom', 'SEGA', 'Bethesda', 'Valve', 'Rockstar', 'Activision', 'miHoYo', 'HoYoverse',
-  'Pearl Abyss', 'CD Projekt Red', 'CD PROJEKT RED', 'Gamescom', 'QuakeCon', 'Epic Games', 'Bandai Namco'
+  'Pearl Abyss', 'CD Projekt Red', 'Gamescom', 'QuakeCon', 'Epic Games', 'Bandai Namco'
 ];
 
 function canonical(value = '') {
@@ -26,6 +26,17 @@ function canonical(value = '') {
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
+}
+
+function escapeRegExp(value = '') {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function containsEntity(value = '', entity = '') {
+  const text = canonical(value);
+  const needle = canonical(entity);
+  if (!needle) return false;
+  return new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(needle)}(?![\\p{L}\\p{N}])`, 'iu').test(text);
 }
 
 function countLetters(value = '', pattern) {
@@ -45,8 +56,8 @@ function normalizedSentences(value = '') {
 }
 
 function requiredStableEntities(input = {}) {
-  const source = canonical(`${input.title || ''} ${input.summary || ''} ${input.articleText || ''}`);
-  return stableEntities.filter(entity => source.includes(canonical(entity)));
+  const source = `${input.title || ''} ${input.summary || ''} ${input.articleText || ''}`;
+  return stableEntities.filter(entity => containsEntity(source, entity));
 }
 
 function looksLikeUntranslatedClause(value = '') {
@@ -58,8 +69,7 @@ function looksLikeUntranslatedClause(value = '') {
       const lower = word.toLowerCase();
       return nameConnectors.has(lower) || /^[A-Z]/.test(word) || /^[A-Z]{2,}$/.test(word);
     });
-    if (titleLike) return false;
-    return true;
+    return !titleLike;
   });
 }
 
@@ -103,9 +113,8 @@ export function validateProductionNews(value, input = {}) {
   const sentences = normalizedSentences(briefRu);
   if (sentences.length >= 2 && new Set(sentences).size !== sentences.length) reasons.push('duplicate sentence');
 
-  const combined = canonical(`${titleRu} ${briefRu}`);
   for (const entity of requiredStableEntities(input)) {
-    if (!combined.includes(canonical(entity))) reasons.push(`stable entity missing: ${entity}`);
+    if (!containsEntity(`${titleRu} ${briefRu}`, entity)) reasons.push(`stable entity missing: ${entity}`);
   }
 
   return { ok: reasons.length === 0, reasons, titleRu, briefRu };
