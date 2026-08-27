@@ -2,6 +2,11 @@ name: Enrich newly created Игропоиск games
 
 on:
   workflow_dispatch:
+    inputs:
+      slug:
+        description: Optional target slug; when set only this game is enriched
+        required: false
+        type: string
   repository_dispatch:
     types: [game-post-create-enrichment]
   workflow_run:
@@ -13,12 +18,9 @@ on:
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/discover-review-media.mjs'
-      - 'scripts/discover-game-videos.mjs'
-      - 'scripts/discover-game-videos-strict.mjs'
       - 'scripts/quality-control-loop.mjs'
-      - 'scripts/validate-target-game-page.mjs'
+      - 'scripts/run-content-pipeline.mjs'
       - 'data/content-pipeline/execution-plan.json'
-      - 'data/content-pipeline/target-page.json'
       - '.github/workflows/game-post-create-enrichment.yml'
 
 permissions:
@@ -27,7 +29,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-enrichment-v6
+  group: game-post-create-enrichment-v6-${{ inputs.slug || 'queue' }}
   cancel-in-progress: false
 
 jobs:
@@ -50,66 +52,31 @@ jobs:
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/quality-control-loop.mjs
+          node --check scripts/build-game-page-basic.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/discover-review-media.mjs
-          node --check scripts/discover-game-videos.mjs
-          node --check scripts/discover-game-videos-strict.mjs
-          node --check scripts/validate-target-game-page.mjs
           node --check game/_shared/game-page-review-sources.js
-      - name: Resolve run mode
-        id: mode
-        shell: bash
-        run: |
-          TARGET=false
-          if [ "${{ github.event_name }}" = "push" ] && [[ "${{ github.event.head_commit.message }}" == Run\ targeted\ page:* ]] && [ -f data/content-pipeline/target-page.json ]; then
-            TARGET=true
-          fi
-          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
-          if [ "$TARGET" = true ]; then
-            SLUG="$(node -p "require('./data/content-pipeline/target-page.json').slug")"
-            GAME_ID="$(node -p "require('./data/content-pipeline/target-page.json').game_id")"
-            echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
-            echo "game_id=$GAME_ID" >> "$GITHUB_OUTPUT"
-            echo "Targeted page control: $SLUG ($GAME_ID)"
-          else
-            echo "Normal autonomous enrichment mode"
-          fi
       - name: Refresh execution plan
-        if: steps.mode.outputs.target != 'true'
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          EDITORIAL_AI_ENABLED: 'true'
         run: node scripts/orchestrate-content.mjs --finalize
-      - name: Run complete autonomous page enrichment cycle
-        if: steps.mode.outputs.target != 'true'
+      - name: Run complete AI-independent page enrichment cycle
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          EDITORIAL_AI_ENABLED: 'true'
-        run: node scripts/run-content-pipeline.mjs
-      - name: Run isolated target page enrichment
-        if: steps.mode.outputs.target == 'true'
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GAME_TARGET_SLUG: ${{ inputs.slug }}
           EDITORIAL_AI_ENABLED: 'false'
+        run: node scripts/run-content-pipeline.mjs
+      - name: Prove page cycle did not call paid OpenAI
         run: |
-          SLUG="${{ steps.mode.outputs.slug }}"
-          GAME_ID="${{ steps.mode.outputs.game_id }}"
-          node scripts/prepare-review-research.mjs "$SLUG"
-          if [ -f scripts/enrich-review-native-sources.mjs ]; then node scripts/enrich-review-native-sources.mjs "$SLUG"; fi
-          node scripts/calculate-ratings-from-research.mjs "$SLUG"
-          node scripts/discover-review-media.mjs "$SLUG"
-          node scripts/discover-game-videos-strict.mjs "$SLUG"
-          node scripts/validate-target-game-page.mjs data/content-pipeline/target-page.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const log=JSON.parse(fs.readFileSync('data/content-pipeline/execution-log.json','utf8'));
+          if(log.summary?.editorial_ai_available) throw new Error('Page cycle unexpectedly enabled paid editorial AI');
+          const text=JSON.stringify(log.results||[]);
+          if(/api\.openai\.com|OpenAI API 429|insufficient_quota/i.test(text)) throw new Error('Paid OpenAI call detected in page cycle');
+          console.log('AI-independent page-cycle contract verified.');
+          NODE
       - name: Validate generated game shells and material feeds
-        if: steps.mode.outputs.target != 'true'
         run: |
           node scripts/validate-game-shells.mjs
-          git diff --check
-      - name: Validate isolated target only
-        if: steps.mode.outputs.target == 'true'
-        run: |
-          node scripts/validate-target-game-page.mjs data/content-pipeline/target-page.json
           git diff --check
       - name: Publish enrichment snapshot to staging
         env:
@@ -123,7 +90,5 @@ jobs:
           git add -A
           git commit -m "Continue game page enrichment ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
           git push origin "$BRANCH"
-          gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated page enrichment: data, existing Media including videos, all discovered review/review-source links and ratings. Игропоиск article synthesis is not a page readiness requirement."
-          PR="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?head=${GITHUB_REPOSITORY_OWNER}:${BRANCH}&base=staging&state=open" --jq '.[0].number')"
-          test -n "$PR"
+          PR="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated AI-independent page enrichment: structured data, Media, discovered review/source links and ratings. Paid editorial AI is not required for Game Page readiness." --json number --jq '.number')"
           gh pr merge "$PR" --merge --delete-branch
