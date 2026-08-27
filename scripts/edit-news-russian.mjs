@@ -1,13 +1,13 @@
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { editNewsToRussian, fetchArticleText, isLikelyNewsSource, warmNewsEditor } from './lib/news-editor-qwen.mjs';
+import { editNewsToRussian, fetchArticleText, isLikelyNewsSource, warmNewsEditor } from './lib/news-editor-production.mjs';
 
 const eventsPath = 'data/news-events.json';
 const reportPath = process.env.NEWS_EDITOR_REPORT || 'tmp/news-editor-report.json';
-const editorialVersion = 3;
+const editorialVersion = 4;
 const minimumPublicItems = Math.max(12, Number(process.env.NEWS_EDITOR_MIN_PUBLIC || 12));
-// Keep enough headroom for strict editorial rejection, but stop as soon as the public minimum is reached.
-const maxItems = Math.max(minimumPublicItems + 6, Number(process.env.NEWS_EDITOR_MAX_ITEMS || minimumPublicItems + 6));
+// Strict filtering needs headroom, but one-pass generation keeps the hourly run bounded.
+const maxItems = Math.max(minimumPublicItems + 18, Number(process.env.NEWS_EDITOR_MAX_ITEMS || minimumPublicItems + 18));
 
 function hasCyrillic(value = '') {
   return /[А-Яа-яЁё]/.test(String(value));
@@ -102,7 +102,7 @@ for (const item of items) {
     item.editorialStatus = 'filtered-non-news';
     item.editorialVersion = editorialVersion;
     item.editorialSourceHash = itemHash(item);
-    item.editorialReasons = ['guide/how-to content is not a news item'];
+    item.editorialReasons = ['guide/list content is not a news item'];
     continue;
   }
 
@@ -138,7 +138,7 @@ for (const item of candidates) {
   let articleFetchError = '';
 
   try {
-    articleText = await fetchArticleText(url, 18000, `${title} ${summary}`);
+    articleText = await fetchArticleText(url, 8000, `${title} ${summary}`);
   } catch (error) {
     articleFetchError = error.message;
     console.error(`[news/editor/article] ${url}: ${error.message}; using source lead`);
@@ -150,7 +150,7 @@ for (const item of candidates) {
       summary,
       articleText,
       source: item.primarySource || item.source || ''
-    }, { maxAttempts: 2 });
+    }, { maxAttempts: 1, maxNewTokens: 165 });
 
     if (!edited.ok) {
       rejected += 1;
@@ -176,6 +176,7 @@ for (const item of candidates) {
     item.editorialDtype = edited.dtype;
     item.editorialGeneratedAt = new Date().toISOString();
     item.editorialAttempts = edited.attempts;
+    item.editorialProductionSalvaged = Boolean(edited.productionSalvaged);
     delete item.editorialReasons;
     delete item.editorialRejectedAt;
     approved += 1;
