@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "game_slug": "the-witcher-3-wild-hunt",
-  "generated_at": "2026-08-28T09:57:08.296Z",
+  "generated_at": "2026-08-28T10:16:07.011Z",
   "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
@@ -538,6 +538,47 @@
       ]
     },
     {
+      "slug": "fallout",
+      "title": "Fallout: A Post Nuclear Role Playing Game",
+      "year": 1997,
+      "score": 0.4629,
+      "base_score": 0.4629,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
       "slug": "fallout-new-vegas",
       "title": "Fallout: New Vegas",
       "year": 2010,
@@ -616,47 +657,6 @@
           "field": "multiplayer",
           "label": "мультиплеер",
           "overlap": 1
-        }
-      ]
-    },
-    {
-      "slug": "black-myth-wukong",
-      "title": "Black Myth: Wukong",
-      "year": 2024,
-      "score": 0.4517,
-      "base_score": 0.4517,
-      "reasons": [
-        "жанр",
-        "тип геймплея",
-        "партия/соло",
-        "мультиплеер",
-        "поджанр"
-      ],
-      "signals": [
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 1
-        },
-        {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 1
-        },
-        {
-          "field": "party_mode",
-          "label": "партия/соло",
-          "overlap": 1
-        },
-        {
-          "field": "multiplayer",
-          "label": "мультиплеер",
-          "overlap": 1
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.818
         }
       ]
     }
