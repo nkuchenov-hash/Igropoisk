@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "game_slug": "stardew-valley",
-  "generated_at": "2026-08-28T09:57:08.894Z",
+  "generated_at": "2026-08-28T10:16:07.624Z",
   "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
@@ -232,6 +232,47 @@
         {
           "field": "progression",
           "label": "прогрессия",
+          "overlap": 1
+        },
+        {
+          "field": "multiplayer",
+          "label": "мультиплеер",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "fallout",
+      "title": "Fallout: A Post Nuclear Role Playing Game",
+      "year": 1997,
+      "score": 0.4632,
+      "base_score": 0.4632,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "мультиплеер"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
           "overlap": 1
         },
         {
@@ -648,47 +689,6 @@
           "field": "subgenres",
           "label": "поджанр",
           "overlap": 0.421
-        }
-      ]
-    },
-    {
-      "slug": "final-fantasy-resonance",
-      "title": "FINAL FANTASY RESONANCE",
-      "year": 2026,
-      "score": 0.4017,
-      "base_score": 0.4017,
-      "reasons": [
-        "жанр",
-        "тип геймплея",
-        "партия/соло",
-        "мультиплеер",
-        "поджанр"
-      ],
-      "signals": [
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 1
-        },
-        {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 1
-        },
-        {
-          "field": "party_mode",
-          "label": "партия/соло",
-          "overlap": 1
-        },
-        {
-          "field": "multiplayer",
-          "label": "мультиплеер",
-          "overlap": 1
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.462
         }
       ]
     }
