@@ -4,7 +4,7 @@ import { editNewsToRussian, fetchArticleText, isLikelyNewsSource, validateProduc
 
 const eventsPath = 'data/news-events.json';
 const reportPath = process.env.NEWS_EDITOR_REPORT || 'tmp/news-editor-report.json';
-const editorialVersion = 5;
+const editorialVersion = 6;
 const minimumPublicItems = Math.max(12, Number(process.env.NEWS_EDITOR_MIN_PUBLIC || 12));
 // Strict filtering needs headroom, but one-pass generation keeps the hourly run bounded.
 const maxItems = Math.max(minimumPublicItems + 18, Number(process.env.NEWS_EDITOR_MAX_ITEMS || minimumPublicItems + 18));
