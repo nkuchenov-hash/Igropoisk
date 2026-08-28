@@ -50,6 +50,15 @@ function validDate(value) {
   return Number.isFinite(Date.parse(value || ''));
 }
 
+export function minimumRetainedFractionForFile(config, file) {
+  const publication = config?.publication || {};
+  const perFile = publication.minimum_retained_fraction_by_file || {};
+  if (Object.prototype.hasOwnProperty.call(perFile, file)) {
+    return Math.max(0, Number(perFile[file]) || 0);
+  }
+  return Math.max(0, Number(publication.minimum_retained_fraction || 0));
+}
+
 function validateFeed(root, file, payload, config, errors) {
   const items = payloadItems(payload);
   const minimum = Number(config.publication.minimum_items?.[file] || 0);
@@ -149,12 +158,12 @@ export function validateNewsPipeline({ root = process.cwd(), configPath = 'confi
     const items = validateFeed(root, file, payload, config, errors);
     itemCounts[file] = items.length;
     const previous = baselinePayload(file, baseline);
-    if (previous) {
+    const minimumRetained = minimumRetainedFractionForFile(config, file);
+    if (previous && minimumRetained > 0) {
       const previousCount = payloadItems(previous).length;
       const retained = previousCount ? items.length / previousCount : 1;
-      const minimumRetained = Number(config.publication.minimum_retained_fraction || 0);
       if (retained < minimumRetained) {
-        errors.push(`${file} retained only ${(retained * 100).toFixed(1)}% of the previous ${previousCount} items.`);
+        errors.push(`${file} retained only ${(retained * 100).toFixed(1)}% of the previous ${previousCount} items; minimum for this feed is ${(minimumRetained * 100).toFixed(1)}%.`);
       }
     }
   }
