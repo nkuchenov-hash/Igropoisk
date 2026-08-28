@@ -164,12 +164,13 @@ export async function editNewsToRussian(input, options = {}) {
   if (firstValidation.ok) return finalize(first, firstValidation);
 
   // Give the local editor one explicit rewrite opportunity before dropping a fresh story.
-  // The Qwen prompt already labels draftTitleRu/draftSummaryRu as machine drafts, so this
-  // second pass sees the failed wording plus the original source material and rewrites it.
+  // Include the production rejection reasons in the machine-draft context so Qwen knows
+  // exactly what failed instead of blindly paraphrasing the same broken wording again.
+  const rejectionFeedback = `Редакционный контроль забраковал этот вариант: ${firstValidation.reasons.join('; ') || 'неестественный русский или формат'}. Перепиши его полностью естественным русским и не повторяй эти ошибки.`;
   const second = await generateRussianDraft({
     ...input,
     draftTitleRu: firstValidation.titleRu || first.titleRu || '',
-    draftSummaryRu: firstValidation.briefRu || first.briefRu || ''
+    draftSummaryRu: `${rejectionFeedback}\n${firstValidation.briefRu || first.briefRu || ''}`.trim()
   }, { maxAttempts: 1, maxNewTokens });
   const secondValidation = validateProductionNews(second, input);
 
