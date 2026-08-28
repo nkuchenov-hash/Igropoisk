@@ -1,7 +1,7 @@
 {
   "schema_version": 9,
-  "started_at": "2026-08-27T23:16:50.167Z",
-  "finished_at": "2026-08-27T23:22:00.986Z",
+  "started_at": "2026-08-28T09:48:26.898Z",
+  "finished_at": "2026-08-28T09:52:58.210Z",
   "summary": {
     "completed": 7,
     "needs_revision": 3,
@@ -18,8 +18,8 @@
       "command": "node scripts/parse-game-data.mjs fallout 38400 Fallout",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 216,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-27T23:16:50.194Z\",\n  \"duration_ms\": 184,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
+      "duration_ms": 202,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-28T09:48:26.926Z\",\n  \"duration_ms\": 169,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -27,8 +27,8 @@
       "command": "node scripts/parse-game-data.mjs no-more-room-in-hell-2 292000 No More Room in Hell 2",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 264,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"no-more-room-in-hell-2\",\n  \"checked_at\": \"2026-08-27T23:16:50.414Z\",\n  \"duration_ms\": 229,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=292000&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"No More Room in Hell 2\",\n    \"developers\": [\n      \"Torn Banner Studios\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 9,\n    \"videos\": 6\n  },\n  \"output\": \"data/parser-output/no-more-room-in-hell-2.json\"\n}\n",
+      "duration_ms": 246,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"no-more-room-in-hell-2\",\n  \"checked_at\": \"2026-08-28T09:48:27.129Z\",\n  \"duration_ms\": 214,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=292000&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"No More Room in Hell 2\",\n    \"developers\": [\n      \"Torn Banner Studios\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 9,\n    \"videos\": 6\n  },\n  \"output\": \"data/parser-output/no-more-room-in-hell-2.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -36,7 +36,7 @@
       "command": "node scripts/build-game-page-basic.mjs game_f5db7308be84c62ed593",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 101,
+      "duration_ms": 99,
       "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"game_id\": \"game_f5db7308be84c62ed593\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 18,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"next\": \"review/rating quality loop\"\n}\n",
       "stderr": ""
     },
@@ -45,8 +45,8 @@
       "command": "node scripts/quality-control-loop.mjs page no-more-room-in-hell-2 game_f5db7308be84c62ed593",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 136906,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 32,\n  \"comments\": [\n    \"hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_hero.jpg\",\n    \"cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900.jpg\"\n  ]\n}\n",
+      "duration_ms": 134842,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 28,\n  \"editorial_ai_enabled\": false,\n  \"comments\": [\n    \"hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_hero.jpg\",\n    \"cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900.jpg\"\n  ]\n}\n",
       "stderr": ""
     },
     {
@@ -62,8 +62,8 @@
       "command": "node scripts/parse-game-data.mjs pax-autocratica 1067360 Pax Autocratica",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 287,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"pax-autocratica\",\n  \"checked_at\": \"2026-08-27T23:19:07.686Z\",\n  \"duration_ms\": 253,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1067360&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Pax Autocratica\",\n    \"developers\": [\n      \"Multiverse\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\",\n      \"Simulation\",\n      \"Early Access\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 29,\n    \"videos\": 3\n  },\n  \"output\": \"data/parser-output/pax-autocratica.json\"\n}\n",
+      "duration_ms": 215,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"pax-autocratica\",\n  \"checked_at\": \"2026-08-28T09:50:42.317Z\",\n  \"duration_ms\": 183,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1067360&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Pax Autocratica\",\n    \"developers\": [\n      \"Multiverse\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\",\n      \"Simulation\",\n      \"Early Access\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 29,\n    \"videos\": 3\n  },\n  \"output\": \"data/parser-output/pax-autocratica.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -71,7 +71,7 @@
       "command": "node scripts/build-game-page-basic.mjs game_2a7ceb637cbcf1a28770",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 103,
+      "duration_ms": 99,
       "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"game_id\": \"game_2a7ceb637cbcf1a28770\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 135,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"next\": \"review/rating quality loop\"\n}\n",
       "stderr": ""
     },
@@ -80,8 +80,8 @@
       "command": "node scripts/quality-control-loop.mjs page pax-autocratica game_2a7ceb637cbcf1a28770",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 172938,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 32,\n  \"comments\": [\n    \"cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900.jpg\"\n  ]\n}\n",
+      "duration_ms": 135604,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 28,\n  \"editorial_ai_enabled\": false,\n  \"comments\": [\n    \"cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900.jpg\"\n  ]\n}\n",
       "stderr": ""
     },
     {
