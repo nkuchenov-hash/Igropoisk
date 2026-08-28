@@ -1,5 +1,5 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "timezone": "UTC",
   "schedule_cron": "23 * * * *",
   "groups": [
@@ -29,6 +29,7 @@
     "node scripts/normalize-news-records.mjs",
     "node scripts/build-news-events.mjs",
     "node scripts/preserve-news-history.mjs --merge",
+    "node scripts/edit-news-russian.mjs",
     "node scripts/resolve-news-game-context.mjs",
     "node scripts/verify-news-game-identities.mjs",
     "node scripts/normalize-news-game-hashtags.mjs",
