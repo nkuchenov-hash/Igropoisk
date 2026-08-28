@@ -4,20 +4,10 @@
   "game_slug": "fallout",
   "game_id": "game_6c7f3f81263d9a409505",
   "canonical_title": "Fallout: A Post Nuclear Role Playing Game",
-  "checked_at": "2026-08-28T10:29:50.114Z",
-  "status": "red-needs-revision",
-  "green": false,
-  "comments": [
-    "Недостаточно скриншотов высокого качества: 5/6.",
-    "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_hero.jpg",
-    "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_600x900.jpg",
-    "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_b3df403b5700498031ae09a5fe888741641da402.1920x1080.jpg?t=1572025441",
-    "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_b0af8ed55a0a71c8d3560de34897ac4ed0b2f004.1920x1080.jpg?t=1572025441",
-    "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_5ba724d7a92c5347377bed7b98b35f3f92317566.1920x1080.jpg?t=1572025441",
-    "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_6c578ed231f8320c003c9ca2684e5d00aa0dfc69.1920x1080.jpg?t=1572025441",
-    "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_87e2a0835387d9a01b1dbcd51f5baa68bc95fe1b.1920x1080.jpg?t=1572025441",
-    "После quality gate осталось только 0/6 допустимых скриншотов."
-  ],
+  "checked_at": "2026-08-28T12:27:22.107Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
   "revision_history": [
     {
       "attempt": 1,
@@ -70,7 +60,7 @@
       "script": "scripts/discover-game-videos.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"accepted\": 25,\n  \"rejected\": 9,\n  \"video_reviews\": 17,\n  \"trailers\": 2,\n  \"gameplay\": 6,\n  \"provider_independent_search\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"accepted\": 21,\n  \"rejected\": 8,\n  \"video_reviews\": 12,\n  \"trailers\": 2,\n  \"gameplay\": 7,\n  \"provider_independent_search\": true\n}\n",
       "stderr": ""
     },
     {
@@ -79,196 +69,7 @@
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"media_profile\": \"modern\",\n  \"comments\": 9,\n  \"accepted_screenshots\": 0,\n  \"minimum_screenshots\": 6\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 8,
-      "label": "similarity-2",
-      "script": "scripts/build-similarity-index.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"catalog_games\": 215,\n  \"profiles\": 220,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"year_proximity_used\": false\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 9,
-      "label": "page-materials-research-2",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 0,\n  \"scored_sources\": 0,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 10,
-      "label": "page-native-review-sources-2",
-      "script": "scripts/enrich-review-native-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"native_added\": 0,\n  \"total_reviews\": 0,\n  \"total_score_sources\": 0,\n  \"rejected\": 3\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 11,
-      "label": "page-ratings-2",
-      "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"completed\",\n  \"material_links\": 0,\n  \"seed_rejected\": 0,\n  \"sources\": 0,\n  \"score_10\": null,\n  \"use_all_discovered_scores\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 12,
-      "label": "page-media-discovery-2",
-      "script": "scripts/discover-review-media.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"mode\": \"relevance_and_file_verified\",\n  \"screenshots\": 5,\n  \"artwork\": 0,\n  \"total\": 5,\n  \"required_screenshots\": 8\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 13,
-      "label": "page-video-discovery-2",
-      "script": "scripts/discover-game-videos.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"accepted\": 26,\n  \"rejected\": 33,\n  \"video_reviews\": 18,\n  \"trailers\": 2,\n  \"gameplay\": 6,\n  \"provider_independent_search\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 14,
-      "label": "media-validation-2",
-      "script": "scripts/validate-game-media-quality.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"media_profile\": \"modern\",\n  \"comments\": 9,\n  \"accepted_screenshots\": 0,\n  \"minimum_screenshots\": 6\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 15,
-      "label": "similarity-3",
-      "script": "scripts/build-similarity-index.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"catalog_games\": 215,\n  \"profiles\": 220,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"year_proximity_used\": false\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 16,
-      "label": "page-materials-research-3",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 0,\n  \"scored_sources\": 0,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 17,
-      "label": "page-native-review-sources-3",
-      "script": "scripts/enrich-review-native-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"native_added\": 0,\n  \"total_reviews\": 0,\n  \"total_score_sources\": 0,\n  \"rejected\": 3\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 18,
-      "label": "page-ratings-3",
-      "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"completed\",\n  \"material_links\": 0,\n  \"seed_rejected\": 0,\n  \"sources\": 0,\n  \"score_10\": null,\n  \"use_all_discovered_scores\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 19,
-      "label": "page-media-discovery-3",
-      "script": "scripts/discover-review-media.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"mode\": \"relevance_and_file_verified\",\n  \"screenshots\": 5,\n  \"artwork\": 0,\n  \"total\": 5,\n  \"required_screenshots\": 8\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 20,
-      "label": "page-video-discovery-3",
-      "script": "scripts/discover-game-videos.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"accepted\": 27,\n  \"rejected\": 26,\n  \"video_reviews\": 19,\n  \"trailers\": 2,\n  \"gameplay\": 6,\n  \"provider_independent_search\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 21,
-      "label": "media-validation-3",
-      "script": "scripts/validate-game-media-quality.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"media_profile\": \"modern\",\n  \"comments\": 9,\n  \"accepted_screenshots\": 0,\n  \"minimum_screenshots\": 6\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 22,
-      "label": "similarity-4",
-      "script": "scripts/build-similarity-index.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"catalog_games\": 215,\n  \"profiles\": 220,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"year_proximity_used\": false\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 23,
-      "label": "page-materials-research-4",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 0,\n  \"scored_sources\": 0,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 24,
-      "label": "page-native-review-sources-4",
-      "script": "scripts/enrich-review-native-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"native_added\": 0,\n  \"total_reviews\": 0,\n  \"total_score_sources\": 0,\n  \"rejected\": 3\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 25,
-      "label": "page-ratings-4",
-      "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"completed\",\n  \"material_links\": 0,\n  \"seed_rejected\": 0,\n  \"sources\": 0,\n  \"score_10\": null,\n  \"use_all_discovered_scores\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 26,
-      "label": "page-media-discovery-4",
-      "script": "scripts/discover-review-media.mjs",
-      "status": "revision-required",
-      "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"mode\": \"relevance_and_file_verified\",\n  \"screenshots\": 5,\n  \"artwork\": 0,\n  \"total\": 5,\n  \"required_screenshots\": 8\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 27,
-      "label": "page-video-discovery-4",
-      "script": "scripts/discover-game-videos.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"accepted\": 29,\n  \"rejected\": 24,\n  \"video_reviews\": 21,\n  \"trailers\": 2,\n  \"gameplay\": 6,\n  \"provider_independent_search\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 28,
-      "label": "media-validation-4",
-      "script": "scripts/validate-game-media-quality.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"media_profile\": \"modern\",\n  \"comments\": 9,\n  \"accepted_screenshots\": 0,\n  \"minimum_screenshots\": 6\n}\n",
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"status\": \"green\",\n  \"release_year\": 1997,\n  \"media_profile\": \"historical\",\n  \"comments\": 0,\n  \"accepted_screenshots\": 5,\n  \"minimum_screenshots\": 5\n}\n",
       "stderr": ""
     }
   ],
