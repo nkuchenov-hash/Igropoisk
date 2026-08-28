@@ -145,16 +145,37 @@ export function validateProductionNews(value, input = {}) {
   return { ok: reasons.length === 0, reasons, titleRu, briefRu };
 }
 
-export async function editNewsToRussian(input, options = {}) {
-  const maxNewTokens = Math.max(120, Math.min(165, Number(options.maxNewTokens || 150)));
-  const generated = await generateRussianDraft(input, { maxAttempts: 1, maxNewTokens });
-  const validation = validateProductionNews(generated, input);
-
+function finalize(generated, validation, { attempts, elapsedMs, salvaged = false } = {}) {
   return {
     ...generated,
     ...validation,
     reasons: validation.reasons,
     ok: validation.ok,
-    productionSalvaged: validation.ok && generated.ok === false
+    attempts: attempts ?? generated.attempts,
+    elapsedMs: elapsedMs ?? generated.elapsedMs,
+    productionSalvaged: Boolean(salvaged && validation.ok)
   };
+}
+
+export async function editNewsToRussian(input, options = {}) {
+  const maxNewTokens = Math.max(120, Math.min(165, Number(options.maxNewTokens || 150)));
+  const first = await generateRussianDraft(input, { maxAttempts: 1, maxNewTokens });
+  const firstValidation = validateProductionNews(first, input);
+  if (firstValidation.ok) return finalize(first, firstValidation);
+
+  // Give the local editor one explicit rewrite opportunity before dropping a fresh story.
+  // The Qwen prompt already labels draftTitleRu/draftSummaryRu as machine drafts, so this
+  // second pass sees the failed wording plus the original source material and rewrites it.
+  const second = await generateRussianDraft({
+    ...input,
+    draftTitleRu: firstValidation.titleRu || first.titleRu || '',
+    draftSummaryRu: firstValidation.briefRu || first.briefRu || ''
+  }, { maxAttempts: 1, maxNewTokens });
+  const secondValidation = validateProductionNews(second, input);
+
+  return finalize(second, secondValidation, {
+    attempts: Number(first.attempts || 1) + Number(second.attempts || 1),
+    elapsedMs: Number(first.elapsedMs || 0) + Number(second.elapsedMs || 0),
+    salvaged: true
+  });
 }
