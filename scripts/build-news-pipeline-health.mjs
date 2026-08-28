@@ -154,7 +154,7 @@ export function buildNewsPipelineHealth({
 
   if (!totalSources) blocking.push('Реестр официальных источников пуст.');
   else if (successRatio < minimumRatio) {
-    warnings.push(`Работает только ${(successRatio * 100).toFixed(1)}% официальных источников; публикация продолжена, поскольку минимальный объём русскоязычных материалов проверяется отдельно.`);
+    blocking.push(`Работает только ${(successRatio * 100).toFixed(1)}% официальных источников при обязательном минимуме ${(minimumRatio * 100).toFixed(1)}%. Live snapshot не должен заменяться при деградации ниже contractual floor.`);
   }
   if (persistentFailures.length) warnings.push(`Систематически не работают источники: ${persistentFailures.map(source => source.id).join(', ')}.`);
 
@@ -167,7 +167,7 @@ export function buildNewsPipelineHealth({
     pipeline: 'news',
     status,
     generated_at: generatedAtIso,
-    last_successful_run_at: runStartedAt || generatedAtIso,
+    last_successful_run_at: blocking.length ? (previous?.last_successful_run_at || null) : (runStartedAt || generatedAtIso),
     due_groups: [...dueGroups],
     data,
     images,
