@@ -1,13 +1,23 @@
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { editNewsToRussian, fetchArticleText, isLikelyNewsSource, validateProductionNews, warmNewsEditor } from './lib/news-editor-production.mjs';
+import { selectCommercialHomeNews } from './lib/news-home-selector.mjs';
 
 const eventsPath = 'data/news-events.json';
 const reportPath = process.env.NEWS_EDITOR_REPORT || 'tmp/news-editor-report.json';
 const editorialVersion = 7;
 const minimumPublicItems = Math.max(12, Number(process.env.NEWS_EDITOR_MIN_PUBLIC || 12));
-// Strict filtering needs headroom; rejected drafts now get one bounded repair pass.
+// Strict filtering needs headroom; rejected drafts get one bounded repair pass and
+// generation continues until the homepage can actually form a fresh/diverse set.
 const maxItems = Math.max(minimumPublicItems + 18, Number(process.env.NEWS_EDITOR_MAX_ITEMS || minimumPublicItems + 18));
+const commercialPolicy = Object.freeze({
+  limit: minimumPublicItems,
+  maxAgeHours: 168,
+  recentHours: 72,
+  minRecent: Math.min(minimumPublicItems, 8),
+  maxPerTopic: 2,
+  maxPerSource: 3
+});
 
 function hasCyrillic(value = '') {
   return /[А-Яа-яЁё]/.test(String(value));
@@ -97,6 +107,19 @@ const failures = [];
 const attemptedItems = new Set();
 const nativeApprovedItems = new Set();
 
+function editoriallyApproved(item) {
+  return nativeApprovedItems.has(item) || cachedApproval(item) || item.editorialStatus === 'approved';
+}
+
+function currentCommercialSelection() {
+  return selectCommercialHomeNews(
+    items
+      .filter(item => isPublic(item) && editoriallyApproved(item))
+      .sort((a, b) => publishedAt(b) - publishedAt(a)),
+    commercialPolicy
+  );
+}
+
 for (const item of items) {
   if (!isPublic(item)) continue;
 
@@ -144,15 +167,16 @@ const candidates = items
   .filter(item => isPublic(item) && !nativeApprovedItems.has(item) && !cachedApproval(item))
   .sort((a, b) => publishedAt(b) - publishedAt(a));
 
-if (candidates.length && nativeRussian + cached < minimumPublicItems) {
+const initialCommercialSelection = currentCommercialSelection();
+if (candidates.length && !initialCommercialSelection.ok) {
   const warmup = await warmNewsEditor();
   modelLoadMs = warmup.elapsedMs;
-  console.log(`[news/editor] ${warmup.model} ready in ${(warmup.elapsedMs / 1000).toFixed(1)}s; ${candidates.length} uncached public items need editorial pass`);
+  console.log(`[news/editor] ${warmup.model} ready in ${(warmup.elapsedMs / 1000).toFixed(1)}s; ${candidates.length} uncached public items available for a commercial homepage mix`);
 }
 
 for (const item of candidates) {
   if (attempted >= maxItems) break;
-  if (nativeRussian + cached + approved >= minimumPublicItems) break;
+  if (currentCommercialSelection().ok) break;
 
   attempted += 1;
   attemptedItems.add(item);
@@ -230,18 +254,24 @@ for (const item of candidates) {
 }
 
 const publicItems = items.filter(isPublic);
-const publicApproved = publicItems.filter(item => nativeApprovedItems.has(item) || cachedApproval(item) || item.editorialStatus === 'approved').length;
+const publicApproved = publicItems.filter(editoriallyApproved).length;
+const commercialSelection = selectCommercialHomeNews(
+  publicItems.filter(editoriallyApproved).sort((a, b) => publishedAt(b) - publishedAt(a)),
+  commercialPolicy
+);
 const output = Array.isArray(payload) ? items : { ...payload, generatedAt: new Date().toISOString(), items };
 await fs.mkdir('tmp', { recursive: true });
 await fs.writeFile(eventsPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
 await fs.writeFile(reportPath, `${JSON.stringify({
-  schemaVersion: 1,
+  schemaVersion: 2,
   generatedAt: new Date().toISOString(),
   editorialVersion,
   model: process.env.NEWS_EDITOR_MODEL || 'onnx-community/Qwen3-4B-Instruct-2507-ONNX',
   dtype: process.env.NEWS_EDITOR_DTYPE || 'q4',
   maxItems,
   minimumPublicItems,
+  commercialPolicy,
+  commercialSelection: commercialSelection.diagnostics,
   modelLoadMs,
   totalItems: items.length,
   candidateItems: candidates.length,
@@ -257,7 +287,7 @@ await fs.writeFile(reportPath, `${JSON.stringify({
   failures
 }, null, 2)}\n`, 'utf8');
 
-console.log(`[news/editor] public=${publicItems.length}; approved-now=${approved}; cached=${cached}; source-ru=${nativeRussian}; rejected=${rejected}; filtered-non-news=${filteredNonNews}; pending=${pending}`);
-if (publicApproved < minimumPublicItems) {
-  throw new Error(`Only ${publicApproved} editorially approved public news items remain; minimum is ${minimumPublicItems}. Live publication must keep the previous snapshot.`);
+console.log(`[news/editor] public=${publicItems.length}; approved-now=${approved}; cached=${cached}; source-ru=${nativeRussian}; rejected=${rejected}; filtered-non-news=${filteredNonNews}; pending=${pending}; commercial=${commercialSelection.ok}`);
+if (!commercialSelection.ok) {
+  throw new Error(`Commercial homepage mix unavailable after ${attempted} editorial attempts: ${JSON.stringify(commercialSelection.diagnostics)}. Live publication must keep the previous snapshot.`);
 }
