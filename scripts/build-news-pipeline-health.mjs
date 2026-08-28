@@ -154,7 +154,7 @@ export function buildNewsPipelineHealth({
 
   if (!totalSources) blocking.push('Реестр официальных источников пуст.');
   else if (successRatio < minimumRatio) {
-    warnings.push(`Работает только ${(successRatio * 100).toFixed(1)}% официальных источников; публикация продолжена, поскольку минимальный объём русскоязычных материалов проверяется отдельно.`);
+    blocking.push(`Работает только ${(successRatio * 100).toFixed(1)}% официальных источников при обязательном минимуме ${(minimumRatio * 100).toFixed(1)}%.`);
   }
   if (persistentFailures.length) warnings.push(`Систематически не работают источники: ${persistentFailures.map(source => source.id).join(', ')}.`);
 
