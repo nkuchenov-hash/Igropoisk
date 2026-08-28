@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "review_corpus": {
     "minimum_sources": 10,
     "target_sources": 20,
@@ -7,12 +7,8 @@
     "candidate_target": 32,
     "minimum_contemporary_modern": 8,
     "minimum_contemporary_historical": 6,
-    "forbidden_title_or_url_terms": [
-      "walkthrough", "guide", "wiki", "tips", "build", "builds", "news", "preview", "interview", "how-to", "howto", "攻略", "прохождение", "гайд", "советы", "новости", "превью", "интервью"
-    ],
-    "forbidden_domains": [
-      "store.steampowered.com", "steamcommunity.com", "metacritic.com", "opencritic.com", "reddit.com", "youtube.com", "youtu.be", "fandom.com"
-    ]
+    "forbidden_title_or_url_terms": ["walkthrough", "guide", "wiki", "tips", "build", "builds", "news", "preview", "interview", "how-to", "howto", "攻略", "прохождение", "гайд", "советы", "новости", "превью", "интервью"],
+    "forbidden_domains": ["store.steampowered.com", "steamcommunity.com", "metacritic.com", "opencritic.com", "reddit.com", "youtube.com", "youtu.be", "fandom.com"]
   },
   "rating": {
     "minimum_sources": 10,
@@ -20,21 +16,7 @@
     "method": "arithmetic_mean",
     "output_scale": 10,
     "rounding_decimals": 1,
-    "letter_grade_map": {
-      "A+": 10,
-      "A": 9.5,
-      "A-": 9,
-      "B+": 8.5,
-      "B": 8,
-      "B-": 7.5,
-      "C+": 7,
-      "C": 6.5,
-      "C-": 6,
-      "D+": 5.5,
-      "D": 5,
-      "D-": 4.5,
-      "F": 2.5
-    }
+    "letter_grade_map": {"A+": 10, "A": 9.5, "A-": 9, "B+": 8.5, "B": 8, "B-": 7.5, "C+": 7, "C": 6.5, "C-": 6, "D+": 5.5, "D": 5, "D-": 4.5, "F": 2.5}
   },
   "images": {
     "modern_year_floor": 2010,
@@ -42,56 +24,43 @@
       "minimum_width_modern": 1200,
       "minimum_height_modern": 675,
       "minimum_width_historical": 960,
-      "minimum_height_historical": 540,
-      "minimum_bytes": 80000
+      "minimum_height_historical": 480,
+      "minimum_bytes_modern": 80000,
+      "minimum_bytes_historical": 45000
     },
     "cover": {
       "minimum_width_modern": 600,
       "minimum_height_modern": 850,
-      "minimum_width_historical": 400,
-      "minimum_height_historical": 560,
-      "minimum_bytes": 45000
+      "minimum_width_historical": 300,
+      "minimum_height_historical": 450,
+      "minimum_bytes_modern": 45000,
+      "minimum_bytes_historical": 25000
     },
     "screenshot": {
       "minimum_width_modern": 1280,
       "minimum_height_modern": 720,
-      "minimum_width_historical": 800,
-      "minimum_height_historical": 600,
-      "minimum_bytes": 70000,
-      "minimum_count": 6
+      "minimum_width_historical": 640,
+      "minimum_height_historical": 480,
+      "minimum_bytes_modern": 70000,
+      "minimum_bytes_historical": 35000,
+      "minimum_count_modern": 6,
+      "minimum_count_historical": 5
     },
     "reject_visible_upscale": true,
     "reject_blur": true,
     "reject_heavy_compression": true,
     "reject_stretching": true,
     "hero_must_not_be_screenshot": true,
-    "official_art_required": true
+    "official_art_required": true,
+    "historical_native_resolution_allowed": true,
+    "historical_media_policy": "Accept clean original/native assets from the game's era; never require artificial upscaling merely to satisfy modern pixel dimensions."
   },
   "similarity": {
     "minimum_score": 0.34,
     "maximum_results": 12,
     "series_weight": 0.05,
     "series_requires_other_similarity": true,
-    "weights": {
-      "genres": 0.16,
-      "subgenres": 0.1,
-      "gameplay_type": 0.08,
-      "combat": 0.09,
-      "perspective": 0.05,
-      "world_structure": 0.07,
-      "party_mode": 0.06,
-      "narrative": 0.08,
-      "progression": 0.07,
-      "setting": 0.05,
-      "tone": 0.04,
-      "multiplayer": 0.04,
-      "mechanics": 0.08,
-      "semantic_tokens": 0.08
-    }
+    "weights": {"genres": 0.16, "subgenres": 0.1, "gameplay_type": 0.08, "combat": 0.09, "perspective": 0.05, "world_structure": 0.07, "party_mode": 0.06, "narrative": 0.08, "progression": 0.07, "setting": 0.05, "tone": 0.04, "multiplayer": 0.04, "mechanics": 0.08, "semantic_tokens": 0.08}
   },
-  "quality_loop": {
-    "immediate_revision_attempts": 4,
-    "keep_queued_until_green": true,
-    "terminal_quality_status_forbidden": true
-  }
+  "quality_loop": {"immediate_revision_attempts": 4, "keep_queued_until_green": true, "terminal_quality_status_forbidden": true}
 }
