@@ -1,7 +1,7 @@
 {
   "schema_version": 10,
-  "started_at": "2026-08-28T10:27:25.750Z",
-  "finished_at": "2026-08-28T10:29:50.119Z",
+  "started_at": "2026-08-28T12:24:06.640Z",
+  "finished_at": "2026-08-28T12:26:43.633Z",
   "summary": {
     "completed": 4,
     "needs_revision": 1,
@@ -18,8 +18,8 @@
       "command": "node scripts/parse-game-data.mjs fallout 38400 Fallout",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 334,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-28T10:27:25.772Z\",\n  \"duration_ms\": 307,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
+      "duration_ms": 221,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-28T12:24:06.664Z\",\n  \"duration_ms\": 194,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -27,8 +27,8 @@
       "command": "node scripts/parse-game-data.mjs fallout 38400 Fallout",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 423,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-28T10:27:26.107Z\",\n  \"duration_ms\": 397,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
+      "duration_ms": 252,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-28T12:24:06.890Z\",\n  \"duration_ms\": 222,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -36,7 +36,7 @@
       "command": "node scripts/build-game-page-basic.mjs game_6c7f3f81263d9a409505",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 78,
+      "duration_ms": 76,
       "stdout": "{\n  \"slug\": \"fallout\",\n  \"game_id\": \"game_6c7f3f81263d9a409505\",\n  \"status\": \"needs_revision\",\n  \"missing\": [\n    \"screenshots:5/6\"\n  ],\n  \"next\": \"quality-control-loop will research/rebuild/recheck\"\n}\n",
       "stderr": ""
     },
@@ -45,7 +45,7 @@
       "command": "node scripts/quality-control-loop.mjs page fallout game_6c7f3f81263d9a409505",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 143531,
+      "duration_ms": 156440,
       "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 28,\n  \"editorial_ai_enabled\": false,\n  \"comments\": [\n    \"Недостаточно скриншотов высокого качества: 5/6.\",\n    \"hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_hero.jpg\",\n    \"cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_600x900.jpg\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_b3df403b5700498031ae09a5fe888741641da402.1920x1080.jpg?t=1572025441\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_b0af8ed55a0a71c8d3560de34897ac4ed0b2f004.1920x1080.jpg?t=1572025441\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_5ba724d7a92c5347377bed7b98b35f3f92317566.1920x1080.jpg?t=1572025441\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_6c578ed231f8320c003c9ca2684e5d00aa0dfc69.1920x1080.jpg?t=1572025441\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_87e2a0835387d9a01b1dbcd51f5baa68bc95fe1b.1920x1080.jpg?t=1572025441\"\n  ]\n}\n",
       "stderr": ""
     },
