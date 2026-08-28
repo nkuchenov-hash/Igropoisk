@@ -54,12 +54,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Trigger independent autonomous news fallback
-        if: github.event_name == 'schedule'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run news-pipeline.yml --ref main --repo "$GITHUB_REPOSITORY"
-
       - name: Checkout current staging code and repository fallback snapshot
         uses: actions/checkout@v4
         with:
@@ -114,6 +108,12 @@ jobs:
         run: |
           mkdir -p assets/covers/releases assets/covers/popular data/release-drafts data/parser-runs
           node scripts/run-scheduled-parsers.mjs
+
+      - name: Trigger autonomous news fallback
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run news-pipeline.yml --ref staging
 
       - name: Repair release slugs generated from non-Latin titles
         id: release_slug_repair
