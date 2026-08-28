@@ -31,7 +31,7 @@ const textRejectPatterns = [
 const urlRejectPattern = /(?:^|[\/_-])(?:guides?|walkthroughs?|tips|reviews?)(?:[\/_-]|$)/i;
 
 const gamingSignals = [
-  /\bgame\b|\bgames\b|игр[аыеу]|геймпле/iu,
+  /\bgame\b|\bgames\b|\bgaming\b|игр[аыеу]|геймпле/iu,
   /release|launch|релиз|выходит|вышла|вышел/iu,
   /announce|анонс|представил|показал|трейлер/iu,
   /update|patch|hotfix|обновлен|патч/iu,
