@@ -1,0 +1,524 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "fallout-shelter",
+  "release_year": 2015,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:35.420Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/588430/library_hero.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/588430/library_600x900_2x.jpg",
+  "screenshots": 12,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 5,
+  "comments": [
+    "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/588430/library_hero.jpg",
+    "screenshot: источник изображения не подтверждён: https://www.gamerevolution.com/wp-content/uploads/sites/2/2026/08/review_0000_4.-Pro-2-Thinnest-Frames-Horizontal.jpg?resize=720",
+    "screenshot: слишком маленькое 1200×675, минимум 1280×720: https://www.gamerevolution.com/wp-content/uploads/sites/2/2026/08/review_0000_4.-Pro-2-Thinnest-Frames-Horizontal.jpg?resize=720",
+    "screenshot: источник изображения не подтверждён: https://www.gamerevolution.com/wp-content/uploads/sites/2/2022/11/yms0c645x1rd5xewtnq4.jpg?resize=94",
+    "screenshot: источник изображения не подтверждён: https://cdn.mos.cms.futurecdn.net/q2HA2bo5kUJMifK3skGGxj.jpg",
+    "screenshot: источник изображения не подтверждён: https://cdn.mos.cms.futurecdn.net/RrUjSNXW6zguGQpcFL2jZj.jpg",
+    "screenshot: источник изображения не подтверждён: https://cdn.mos.cms.futurecdn.net/WuERBKdW24bmcKq68qZeE5.jpg",
+    "screenshot: источник изображения не подтверждён: https://gamerheadquarters.com/articles/images/screenshots/fallout/falloutshelter1.jpg",
+    "screenshot: источник изображения не подтверждён: https://gamerheadquarters.com/articles/images/screenshots/fallout/falloutshelter12.jpg",
+    "После quality gate осталось только 5/6 допустимых скриншотов."
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/588430/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/588430/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/588430/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 620,
+        "bytes": 272000,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/588430/library_hero.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/588430/library_600x900_2x.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 600,
+        "height": 900,
+        "bytes": 132965,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/588430/library_600x900_2x.jpg"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/588430/e67084efb2993a408b0d5abfe258a7b0f6941c6c/ss_e67084efb2993a408b0d5abfe258a7b0f6941c6c.1920x1080.jpg?t=1786883748",
+        "caption": "Fallout Shelter — игровой кадр",
+        "source_url": "",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "bytes": 185997,
+        "provider": "verified-source-page",
+        "kind": "screenshot",
+        "asset_family": "shared.akamai.steamstatic.com/store_item_assets/steam/apps/588430/e67084efb2993a408b0d5abfe258a7b0f6941c6c/ss_e67084efb2993a408b0d5abfe258a7b0f6941c6c.1920x1080.jpg",
+        "content_hash": "be4a897e4b16a3adf972a66b65177cef19848721517d3977f8dbde4ce388da49"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 185997,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/588430/e67084efb2993a408b0d5abfe258a7b0f6941c6c/ss_e67084efb2993a408b0d5abfe258a7b0f6941c6c.1920x1080.jpg?t=1786883748"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.gamerevolution.com/wp-content/uploads/sites/2/2026/08/review_0000_4.-Pro-2-Thinnest-Frames-Horizontal.jpg?resize=720",
+        "caption": "Fallout Shelter — изображение из проверенного источника",
+        "source_url": "https://www.gamerevolution.com/review/68407-fallout-shelter-review",
+        "width": 1200,
+        "height": 675,
+        "mime": "image/jpeg",
+        "bytes": 358527,
+        "provider": "verified-source-page",
+        "kind": "screenshot",
+        "asset_family": "www.gamerevolution.com/wp-content/uploads/sites/2/2026/08/review_0000_4.-pro-2-thinnest-frames-horizontal.jpg",
+        "content_hash": "dd7f08de29fc2751a7e5dbb4d02c54de5c35f0ab41e450cfa66e83e8de6930c6"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.gamerevolution.com/wp-content/uploads/sites/2/2026/08/review_0000_4.-Pro-2-Thinnest-Frames-Horizontal.jpg?resize=720",
+        "screenshot: слишком маленькое 1200×675, минимум 1280×720: https://www.gamerevolution.com/wp-content/uploads/sites/2/2026/08/review_0000_4.-Pro-2-Thinnest-Frames-Horizontal.jpg?resize=720"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1200,
+        "height": 675,
+        "bytes": 358527,
+        "mime": "image/jpeg",
+        "resolved_url": "https://www.gamerevolution.com/wp-content/uploads/sites/2/2026/08/review_0000_4.-Pro-2-Thinnest-Frames-Horizontal.jpg?resize=720"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/588430/ce2be8e14c0cd99d980b949a1bea71479fb13acc/ss_ce2be8e14c0cd99d980b949a1bea71479fb13acc.1920x1080.jpg?t=1786883748",
+        "caption": "Fallout Shelter — игровой кадр",
+        "source_url": "",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "bytes": 106744,
+        "provider": "verified-source-page",
+        "kind": "screenshot",
+        "asset_family": "shared.akamai.steamstatic.com/store_item_assets/steam/apps/588430/ce2be8e14c0cd99d980b949a1bea71479fb13acc/ss_ce2be8e14c0cd99d980b949a1bea71479fb13acc.1920x1080.jpg",
+        "content_hash": "ce3fc279c18b3d9ab708d6d8c7d305f037df9b2d61c975c25cd331cbb2d1ef4f"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 106744,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/588430/ce2be8e14c0cd99d980b949a1bea71479fb13acc/ss_ce2be8e14c0cd99d980b949a1bea71479fb13acc.1920x1080.jpg?t=1786883748"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/588430/59f016ee5a9801770b45d3df38ea37426af8a21e/page_bg_raw.jpg?t=1786883748",
+        "caption": "Fallout Shelter — изображение из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/588430/",
+        "width": 36798,
+        "height": 65240,
+        "mime": "image/jpeg",
+        "bytes": 1051117,
+        "provider": "verified-source-page",
+        "kind": "screenshot",
+        "asset_family": "shared.fastly.steamstatic.com/store_item_assets/steam/apps/588430/59f016ee5a9801770b45d3df38ea37426af8a21e/page_bg_raw.jpg",
+        "content_hash": "971b7322508bbb2fdac75cf24cf2eba9c6cf16435518cafc51f898d862a391a7"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1438,
+        "height": 810,
+        "bytes": 1051117,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/588430/59f016ee5a9801770b45d3df38ea37426af8a21e/page_bg_raw.jpg?t=1786883748"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/588430/4f4e3f72b6a2abec9203b9ddb1e5659190f28cc8/ss_4f4e3f72b6a2abec9203b9ddb1e5659190f28cc8.1920x1080.jpg?t=1786883748",
+        "caption": "Fallout Shelter — игровой кадр",
+        "source_url": "",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "bytes": 225797,
+        "provider": "verified-source-page",
+        "kind": "screenshot",
+        "asset_family": "shared.akamai.steamstatic.com/store_item_assets/steam/apps/588430/4f4e3f72b6a2abec9203b9ddb1e5659190f28cc8/ss_4f4e3f72b6a2abec9203b9ddb1e5659190f28cc8.1920x1080.jpg",
+        "content_hash": "a5496b6cf75bc5523a41950483ec238ada42e003aff82e3d44cb8605dabb924e"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 225797,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/588430/4f4e3f72b6a2abec9203b9ddb1e5659190f28cc8/ss_4f4e3f72b6a2abec9203b9ddb1e5659190f28cc8.1920x1080.jpg?t=1786883748"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/588430/2157c7e85a80932ffa188f9f194e3b7bbf8dd3c1/ss_2157c7e85a80932ffa188f9f194e3b7bbf8dd3c1.1920x1080.jpg?t=1786883748",
+        "caption": "Fallout Shelter — игровой кадр",
+        "source_url": "",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "bytes": 206261,
+        "provider": "verified-source-page",
+        "kind": "screenshot",
+        "asset_family": "shared.akamai.steamstatic.com/store_item_assets/steam/apps/588430/2157c7e85a80932ffa188f9f194e3b7bbf8dd3c1/ss_2157c7e85a80932ffa188f9f194e3b7bbf8dd3c1.1920x1080.jpg",
+        "content_hash": "1a3d852fc5a90c5a383d807c56b044ac3b5c3ccadf0a715431948bbe46712ffa"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 206261,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/588430/2157c7e85a80932ffa188f9f194e3b7bbf8dd3c1/ss_2157c7e85a80932ffa188f9f194e3b7bbf8dd3c1.1920x1080.jpg?t=1786883748"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.gamerevolution.com/wp-content/uploads/sites/2/2022/11/yms0c645x1rd5xewtnq4.jpg?resize=94",
+        "caption": "Fallout Shelter — изображение из проверенного источника",
+        "source_url": "https://www.gamerevolution.com/review/68407-fallout-shelter-review",
+        "width": 2722,
+        "height": 2160,
+        "mime": "image/jpeg",
+        "bytes": 203830,
+        "provider": "verified-source-page",
+        "kind": "screenshot",
+        "asset_family": "www.gamerevolution.com/wp-content/uploads/sites/2/2022/11/yms0c645x1rd5xewtnq4.jpg",
+        "content_hash": "8b91610cf7896f7163b0b297fdc6f0b30e98379a1e72b108986e7a2b4ee5e062"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.gamerevolution.com/wp-content/uploads/sites/2/2022/11/yms0c645x1rd5xewtnq4.jpg?resize=94"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 2722,
+        "height": 2160,
+        "bytes": 203830,
+        "mime": "image/jpeg",
+        "resolved_url": "https://www.gamerevolution.com/wp-content/uploads/sites/2/2022/11/yms0c645x1rd5xewtnq4.jpg?resize=94"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://cdn.mos.cms.futurecdn.net/q2HA2bo5kUJMifK3skGGxj.jpg",
+        "caption": "Fallout Shelter — игровой кадр",
+        "source_url": "https://www.pcgamer.com/fallout-shelter-pc-impressions/",
+        "width": 3840,
+        "height": 2160,
+        "mime": "image/jpeg",
+        "bytes": 3930698,
+        "provider": "verified-source-page",
+        "kind": "screenshot",
+        "asset_family": "cdn.mos.cms.futurecdn.net/q2ha2bo5kujmifk3skggxj.jpg",
+        "content_hash": "96d5544b96128cde3bf9ae18be00d13ae69f47c99af8820b39262bc42019d1cd"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://cdn.mos.cms.futurecdn.net/q2HA2bo5kUJMifK3skGGxj.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 3840,
+        "height": 2160,
+        "bytes": 3930698,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.mos.cms.futurecdn.net/q2HA2bo5kUJMifK3skGGxj.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://cdn.mos.cms.futurecdn.net/RrUjSNXW6zguGQpcFL2jZj.jpg",
+        "caption": "Fallout Shelter — игровой кадр",
+        "source_url": "https://www.pcgamer.com/fallout-shelter-pc-impressions/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "bytes": 129926,
+        "provider": "verified-source-page",
+        "kind": "screenshot",
+        "asset_family": "cdn.mos.cms.futurecdn.net/rrujsnxw6zgugqpcfl2jzj.jpg",
+        "content_hash": "a43ea64e290ce71e1e79732e9af3d20a09231c34e6e307fa40d0d8dcf9ac2512"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://cdn.mos.cms.futurecdn.net/RrUjSNXW6zguGQpcFL2jZj.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 129926,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.mos.cms.futurecdn.net/RrUjSNXW6zguGQpcFL2jZj.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://cdn.mos.cms.futurecdn.net/WuERBKdW24bmcKq68qZeE5.jpg",
+        "caption": "Fallout Shelter — игровой кадр",
+        "source_url": "https://www.pcgamer.com/fallout-shelter-pc-impressions/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "bytes": 286112,
+        "provider": "verified-source-page",
+        "kind": "screenshot",
+        "asset_family": "cdn.mos.cms.futurecdn.net/wuerbkdw24bmckq68qzee5.jpg",
+        "content_hash": "3d1426bc4072f378361055e7e70532876b5fbc2b65e210bbe89501a68d2a71d9"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://cdn.mos.cms.futurecdn.net/WuERBKdW24bmcKq68qZeE5.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 286112,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.mos.cms.futurecdn.net/WuERBKdW24bmcKq68qZeE5.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://gamerheadquarters.com/articles/images/screenshots/fallout/falloutshelter1.jpg",
+        "caption": "Fallout Shelter — игровой кадр",
+        "source_url": "https://gamerheadquarters.com/articles/fallout-shelter-review.html",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "bytes": 76156,
+        "provider": "verified-source-page",
+        "kind": "screenshot",
+        "asset_family": "gamerheadquarters.com/articles/images/screenshots/fallout/falloutshelter1.jpg",
+        "content_hash": "f70761a97b53a0fa4c0a976a84060d4f921a8cbf4af2c9accc6d5a02bda52cff"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://gamerheadquarters.com/articles/images/screenshots/fallout/falloutshelter1.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 76156,
+        "mime": "image/jpeg",
+        "resolved_url": "https://gamerheadquarters.com/articles/images/screenshots/fallout/falloutshelter1.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://gamerheadquarters.com/articles/images/screenshots/fallout/falloutshelter12.jpg",
+        "caption": "Fallout Shelter — игровой кадр",
+        "source_url": "https://gamerheadquarters.com/articles/fallout-shelter-review.html",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "bytes": 153519,
+        "provider": "verified-source-page",
+        "kind": "screenshot",
+        "asset_family": "gamerheadquarters.com/articles/images/screenshots/fallout/falloutshelter12.jpg",
+        "content_hash": "b3d54cd63a9298a3263e4cb1402fd4f3f2b3f782a1090093af124f8feb5f7921"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://gamerheadquarters.com/articles/images/screenshots/fallout/falloutshelter12.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 153519,
+        "mime": "image/jpeg",
+        "resolved_url": "https://gamerheadquarters.com/articles/images/screenshots/fallout/falloutshelter12.jpg"
+      },
+      "accepted": false
+    }
+  ]
+}

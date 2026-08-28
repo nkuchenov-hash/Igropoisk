@@ -1,0 +1,353 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "tides-of-annihilation",
+  "release_year": 9999,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:47.691Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/3292470/library_hero.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/3292470/library_600x900_2x.jpg",
+  "screenshots": 10,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 7,
+  "comments": [
+    "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/3292470/library_hero.jpg",
+    "screenshot: источник изображения не подтверждён: https://images.stopgame.ru/articles/2025/02/14/JKM2OhZJ.jpg",
+    "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3292470/f2a800a3745e07daa24077056118fd7abdbebda4/capsule_616x353.jpg?t=1786504987",
+    "screenshot: слишком маленький файл 52001 B, минимум 70000 B: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3292470/f2a800a3745e07daa24077056118fd7abdbebda4/capsule_616x353.jpg?t=1786504987",
+    "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/f2a800a3745e07daa24077056118fd7abdbebda4/capsule_616x353.jpg?t=1786504987",
+    "screenshot: слишком маленький файл 52001 B, минимум 70000 B: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/f2a800a3745e07daa24077056118fd7abdbebda4/capsule_616x353.jpg?t=1786504987"
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3292470/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/3292470/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/3292470/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 620,
+        "bytes": 155776,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3292470/library_hero.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/3292470/library_600x900_2x.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 600,
+        "height": 900,
+        "bytes": 103766,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3292470/library_600x900_2x.jpg"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/21f7b288e65cc520c3d3abc5d5a2b86becb48b67/ss_21f7b288e65cc520c3d3abc5d5a2b86becb48b67.1920x1080.jpg?t=1786504987",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 460370,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/21f7b288e65cc520c3d3abc5d5a2b86becb48b67/ss_21f7b288e65cc520c3d3abc5d5a2b86becb48b67.1920x1080.jpg?t=1786504987"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3292470/page_bg_raw.jpg?t=1786504987",
+        "caption": "Tides of Annihilation — изображение из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/3292470/",
+        "width": 1438,
+        "height": 810,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1438,
+        "height": 810,
+        "bytes": 242658,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3292470/page_bg_raw.jpg?t=1786504987"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://images.stopgame.ru/articles/2025/02/14/JKM2OhZJ.jpg",
+        "caption": "Tides of Annihilation — изображение из проверенного источника",
+        "source_url": "https://stopgame.ru/show/143243/maskarad_v_bloodlines_2_detali_tides_of_annihilation_stalker_2_mozhno_igrat_pervye_reviewy_avowed",
+        "width": 1500,
+        "height": 843,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://images.stopgame.ru/articles/2025/02/14/JKM2OhZJ.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1500,
+        "height": 843,
+        "bytes": 501343,
+        "mime": "image/jpeg",
+        "resolved_url": "https://images.stopgame.ru/articles/2025/02/14/JKM2OhZJ.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/e51ac89969f614082628bfc7345cd3a5f8e4dc98/ss_e51ac89969f614082628bfc7345cd3a5f8e4dc98.1920x1080.jpg?t=1786504987",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 672210,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/e51ac89969f614082628bfc7345cd3a5f8e4dc98/ss_e51ac89969f614082628bfc7345cd3a5f8e4dc98.1920x1080.jpg?t=1786504987"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3292470/f2a800a3745e07daa24077056118fd7abdbebda4/capsule_616x353.jpg?t=1786504987",
+        "caption": "Tides of Annihilation — изображение из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/3292470/",
+        "width": 616,
+        "height": 353,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3292470/f2a800a3745e07daa24077056118fd7abdbebda4/capsule_616x353.jpg?t=1786504987",
+        "screenshot: слишком маленький файл 52001 B, минимум 70000 B: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3292470/f2a800a3745e07daa24077056118fd7abdbebda4/capsule_616x353.jpg?t=1786504987"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 616,
+        "height": 353,
+        "bytes": 52001,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3292470/f2a800a3745e07daa24077056118fd7abdbebda4/capsule_616x353.jpg?t=1786504987"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/ss_ecc4237ae93410c441f78d9d9b2813dee3572b45.1920x1080.jpg?t=1786504987",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 377978,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/ss_ecc4237ae93410c441f78d9d9b2813dee3572b45.1920x1080.jpg?t=1786504987"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/f2a800a3745e07daa24077056118fd7abdbebda4/capsule_616x353.jpg?t=1786504987",
+        "caption": "Tides of Annihilation — изображение из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/3292470/",
+        "width": 616,
+        "height": 353,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/f2a800a3745e07daa24077056118fd7abdbebda4/capsule_616x353.jpg?t=1786504987",
+        "screenshot: слишком маленький файл 52001 B, минимум 70000 B: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/f2a800a3745e07daa24077056118fd7abdbebda4/capsule_616x353.jpg?t=1786504987"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 616,
+        "height": 353,
+        "bytes": 52001,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/f2a800a3745e07daa24077056118fd7abdbebda4/capsule_616x353.jpg?t=1786504987"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/5394af201b227fa97ef48211dd6beb3299e8a122/ss_5394af201b227fa97ef48211dd6beb3299e8a122.1920x1080.jpg?t=1786504987",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 613532,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/5394af201b227fa97ef48211dd6beb3299e8a122/ss_5394af201b227fa97ef48211dd6beb3299e8a122.1920x1080.jpg?t=1786504987"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/ss_39fc3302a1be41fdba011bbf2df2411be650b3ee.1920x1080.jpg?t=1786504987",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 609235,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/ss_39fc3302a1be41fdba011bbf2df2411be650b3ee.1920x1080.jpg?t=1786504987"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/ss_88d7a18e2ecd1aeef3fa5e78989b528de4e0b343.1920x1080.jpg?t=1786504987",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 742668,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3292470/ss_88d7a18e2ecd1aeef3fa5e78989b528de4e0b343.1920x1080.jpg?t=1786504987"
+      },
+      "accepted": true
+    }
+  ]
+}

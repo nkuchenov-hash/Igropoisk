@@ -1,0 +1,349 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "tomb-raider-legacy-of-atlantis",
+  "release_year": 2027,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:45.016Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/3558670/library_hero.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/3558670/library_600x900_2x.jpg",
+  "screenshots": 10,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 8,
+  "comments": [
+    "hero: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3558670/library_hero.jpg",
+    "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3558670/library_600x900_2x.jpg",
+    "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3558670/18e4755e24df05a0de0672d32b9e859fb87af3b1/capsule_616x353.jpg?t=1780440913",
+    "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/18e4755e24df05a0de0672d32b9e859fb87af3b1/capsule_616x353.jpg?t=1780440913"
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3558670/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/3558670/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3558670/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": false,
+        "status": 404
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/3558670/library_600x900_2x.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [
+        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3558670/library_600x900_2x.jpg"
+      ],
+      "probe": {
+        "ok": false,
+        "status": 404
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/53ebb702379303bc89a71106d74650a8ce8c5411/ss_53ebb702379303bc89a71106d74650a8ce8c5411.1920x1080.jpg?t=1780440913",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 783149,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/53ebb702379303bc89a71106d74650a8ce8c5411/ss_53ebb702379303bc89a71106d74650a8ce8c5411.1920x1080.jpg?t=1780440913"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3558670/ed2cab36765386632d74491a6e53d4b461e185e3/ss_ed2cab36765386632d74491a6e53d4b461e185e3.1920x1080.jpg?t=1780440913",
+        "caption": "Tomb Raider: Legacy of Atlantis — изображение из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/3558670/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 1014649,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3558670/ed2cab36765386632d74491a6e53d4b461e185e3/ss_ed2cab36765386632d74491a6e53d4b461e185e3.1920x1080.jpg?t=1780440913"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/ed2cab36765386632d74491a6e53d4b461e185e3/ss_ed2cab36765386632d74491a6e53d4b461e185e3.1920x1080.jpg?t=1780440913",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 1014649,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/ed2cab36765386632d74491a6e53d4b461e185e3/ss_ed2cab36765386632d74491a6e53d4b461e185e3.1920x1080.jpg?t=1780440913"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3558670/d1f378b21c18d93cd08a4ab396c10fae7841a0fd/ss_d1f378b21c18d93cd08a4ab396c10fae7841a0fd.1920x1080.jpg?t=1780440913",
+        "caption": "Tomb Raider: Legacy of Atlantis — изображение из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/3558670/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 550712,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3558670/d1f378b21c18d93cd08a4ab396c10fae7841a0fd/ss_d1f378b21c18d93cd08a4ab396c10fae7841a0fd.1920x1080.jpg?t=1780440913"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/5403be801ad2b300abf174f3937c989fdb4007a5/ss_5403be801ad2b300abf174f3937c989fdb4007a5.1920x1080.jpg?t=1780440913",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 542229,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/5403be801ad2b300abf174f3937c989fdb4007a5/ss_5403be801ad2b300abf174f3937c989fdb4007a5.1920x1080.jpg?t=1780440913"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3558670/53ebb702379303bc89a71106d74650a8ce8c5411/ss_53ebb702379303bc89a71106d74650a8ce8c5411.1920x1080.jpg?t=1780440913",
+        "caption": "Tomb Raider: Legacy of Atlantis — изображение из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/3558670/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 783149,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3558670/53ebb702379303bc89a71106d74650a8ce8c5411/ss_53ebb702379303bc89a71106d74650a8ce8c5411.1920x1080.jpg?t=1780440913"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/b9154d52d41a8676bab28f8e74a459532990734b/ss_b9154d52d41a8676bab28f8e74a459532990734b.1920x1080.jpg?t=1780440913",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 314335,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/b9154d52d41a8676bab28f8e74a459532990734b/ss_b9154d52d41a8676bab28f8e74a459532990734b.1920x1080.jpg?t=1780440913"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3558670/18e4755e24df05a0de0672d32b9e859fb87af3b1/capsule_616x353.jpg?t=1780440913",
+        "caption": "Tomb Raider: Legacy of Atlantis — изображение из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/3558670/",
+        "width": 616,
+        "height": 353,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3558670/18e4755e24df05a0de0672d32b9e859fb87af3b1/capsule_616x353.jpg?t=1780440913"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 616,
+        "height": 353,
+        "bytes": 81124,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3558670/18e4755e24df05a0de0672d32b9e859fb87af3b1/capsule_616x353.jpg?t=1780440913"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/d1f378b21c18d93cd08a4ab396c10fae7841a0fd/ss_d1f378b21c18d93cd08a4ab396c10fae7841a0fd.1920x1080.jpg?t=1780440913",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 550712,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/d1f378b21c18d93cd08a4ab396c10fae7841a0fd/ss_d1f378b21c18d93cd08a4ab396c10fae7841a0fd.1920x1080.jpg?t=1780440913"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/18e4755e24df05a0de0672d32b9e859fb87af3b1/capsule_616x353.jpg?t=1780440913",
+        "caption": "Tomb Raider: Legacy of Atlantis — изображение из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/3558670/",
+        "width": 616,
+        "height": 353,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/18e4755e24df05a0de0672d32b9e859fb87af3b1/capsule_616x353.jpg?t=1780440913"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 616,
+        "height": 353,
+        "bytes": 81124,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3558670/18e4755e24df05a0de0672d32b9e859fb87af3b1/capsule_616x353.jpg?t=1780440913"
+      },
+      "accepted": false
+    }
+  ]
+}

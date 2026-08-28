@@ -1,0 +1,937 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "rust",
+  "release_year": 2018,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:14.190Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_hero.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_600x900.jpg",
+  "screenshots": 33,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 33,
+  "comments": [
+    "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_hero.jpg",
+    "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_600x900.jpg",
+    "cover: слишком маленький файл 20232 B, минимум 45000 B: https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_600x900.jpg"
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 620,
+        "bytes": 367160,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_hero.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_600x900.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [
+        "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_600x900.jpg",
+        "cover: слишком маленький файл 20232 B, минимум 45000 B: https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_600x900.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 300,
+        "height": 450,
+        "bytes": 20232,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/252490/library_600x900.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_271feae67943bdc141c1249aba116349397e9ba9.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 1",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 652498,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_271feae67943bdc141c1249aba116349397e9ba9.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_e825b087b95e51c3534383cfd75ad6e8038147c3.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 2",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 848033,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_e825b087b95e51c3534383cfd75ad6e8038147c3.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_0e646f1a70e5cb8eed00efef8adb9579d40d5b2e.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 3",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 626619,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_0e646f1a70e5cb8eed00efef8adb9579d40d5b2e.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/69dc23d53163b755e809a562a377bd276154c70e/ss_69dc23d53163b755e809a562a377bd276154c70e.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 4",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 714518,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/69dc23d53163b755e809a562a377bd276154c70e/ss_69dc23d53163b755e809a562a377bd276154c70e.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_1c2d0d1eefee54f0c67626c74eb21699bbb0ef52.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 5",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 720517,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_1c2d0d1eefee54f0c67626c74eb21699bbb0ef52.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_d0fdacaeef5a28a7cee525fd73376adfe083c964.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 6",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 704870,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_d0fdacaeef5a28a7cee525fd73376adfe083c964.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_bbf6c96e490326ec877ae548cb148e53516b5f83.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 7",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 490000,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_bbf6c96e490326ec877ae548cb148e53516b5f83.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_2a8518810024a5fbf9c714e697a43a1201b5d53e.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 8",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 389914,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_2a8518810024a5fbf9c714e697a43a1201b5d53e.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_c88939db635d959b25eb1bcf9b4c4dcdec04b3fe.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 9",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 952065,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_c88939db635d959b25eb1bcf9b4c4dcdec04b3fe.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_eafe26f0577f9fc25d7a89884ea6f40381973c8a.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 10",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 219307,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_eafe26f0577f9fc25d7a89884ea6f40381973c8a.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_9652dbaf2de41b8c8f8305af714ee258564c453d.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 11",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 598203,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_9652dbaf2de41b8c8f8305af714ee258564c453d.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/69d62fcffcc5db58fb8459b84ca9d0f2c0b5cf53/ss_69d62fcffcc5db58fb8459b84ca9d0f2c0b5cf53.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 12",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 447702,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/69d62fcffcc5db58fb8459b84ca9d0f2c0b5cf53/ss_69d62fcffcc5db58fb8459b84ca9d0f2c0b5cf53.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_803a18bcbf6004706f12a1f88bb3cadbd9ac5f5b.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 13",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 486233,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_803a18bcbf6004706f12a1f88bb3cadbd9ac5f5b.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_aaa718a3cb0696a816456283526842c4f2d6b1bc.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 14",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 375294,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_aaa718a3cb0696a816456283526842c4f2d6b1bc.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_24483e657f7e59d74e4914f79c51d9c821454e98.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 15",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 503158,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_24483e657f7e59d74e4914f79c51d9c821454e98.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_dd5a5bf9a19b8b8a078dfdae8b7e09c0e78d2b4d.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 16",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 413030,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_dd5a5bf9a19b8b8a078dfdae8b7e09c0e78d2b4d.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_651097c65458ae555b42c42dd9667d7174397bdf.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 17",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 319851,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_651097c65458ae555b42c42dd9667d7174397bdf.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_40bde646d6ed6ebda0d7f42f52d66d147935bbfa.1920x1080.jpg?t=1781536981",
+        "caption": "Rust — скриншот 18",
+        "source_url": "https://store.steampowered.com/app/252490/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 841723,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_40bde646d6ed6ebda0d7f42f52d66d147935bbfa.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_21afaa3e6697adbb9173e0266c9de913a5a05457.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 633897,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_21afaa3e6697adbb9173e0266c9de913a5a05457.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_9264a17b6bc1b3f9df55cf2aafcc25c6188bba59.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 318383,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_9264a17b6bc1b3f9df55cf2aafcc25c6188bba59.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_69b259a1ab43e2e12f119ecb6b48117a7ff0b216.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 521051,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_69b259a1ab43e2e12f119ecb6b48117a7ff0b216.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ab3ddbe806dc742b564edd41ce5fa6480a0e1a47/ss_ab3ddbe806dc742b564edd41ce5fa6480a0e1a47.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 1085080,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ab3ddbe806dc742b564edd41ce5fa6480a0e1a47/ss_ab3ddbe806dc742b564edd41ce5fa6480a0e1a47.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_2166031b7e6eaedae3dfd8966421c6c4703b89ef.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 453733,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_2166031b7e6eaedae3dfd8966421c6c4703b89ef.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_6c6269c7c6164876585e0728742156b49af966af.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 341572,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_6c6269c7c6164876585e0728742156b49af966af.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_3834344f4f347f133a70096113d71ab3c5a7d587.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 684333,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_3834344f4f347f133a70096113d71ab3c5a7d587.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_f05168330593f4f476cd4a6a6094b248c7c8556e.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 801839,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_f05168330593f4f476cd4a6a6094b248c7c8556e.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/6235d6bfe7e623b96de879dd6d57e1890464206f/ss_6235d6bfe7e623b96de879dd6d57e1890464206f.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 771114,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/6235d6bfe7e623b96de879dd6d57e1890464206f/ss_6235d6bfe7e623b96de879dd6d57e1890464206f.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_a63f203245f322f28cf489bf46beaeec780cccec.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 855615,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_a63f203245f322f28cf489bf46beaeec780cccec.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/adcd2bf3ace8622d1654865ac3c461f6e122df76/ss_adcd2bf3ace8622d1654865ac3c461f6e122df76.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 1237561,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/adcd2bf3ace8622d1654865ac3c461f6e122df76/ss_adcd2bf3ace8622d1654865ac3c461f6e122df76.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_326282c7485e8aff1ebf6750c82622afef098998.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 580937,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_326282c7485e8aff1ebf6750c82622afef098998.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_08a111660a92c33c10d62e74620d258c216fd0bb.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 655593,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/ss_08a111660a92c33c10d62e74620d258c216fd0bb.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/48b357bc6bb912333f362629bae43b32ec4c8081/ss_48b357bc6bb912333f362629bae43b32ec4c8081.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 695099,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/48b357bc6bb912333f362629bae43b32ec4c8081/ss_48b357bc6bb912333f362629bae43b32ec4c8081.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/166928c0b3ccffbf0ed14bde3ecffeeadc541e7a/ss_166928c0b3ccffbf0ed14bde3ecffeeadc541e7a.1920x1080.jpg?t=1781536981",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 781182,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/166928c0b3ccffbf0ed14bde3ecffeeadc541e7a/ss_166928c0b3ccffbf0ed14bde3ecffeeadc541e7a.1920x1080.jpg?t=1781536981"
+      },
+      "accepted": true
+    }
+  ]
+}

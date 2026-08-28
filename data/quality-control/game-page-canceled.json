@@ -1,0 +1,70 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "canceled",
+  "release_year": 9999,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:21:12.586Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/2651130/library_hero.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/2651130/library_600x900_2x.jpg",
+  "screenshots": 0,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 0,
+  "comments": [
+    "Недостаточно скриншотов высокого качества: 0/6.",
+    "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/2651130/library_hero.jpg",
+    "После quality gate осталось только 0/6 допустимых скриншотов."
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/2651130/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/2651130/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/2651130/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 620,
+        "bytes": 218595,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/2651130/library_hero.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/2651130/library_600x900_2x.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 600,
+        "height": 900,
+        "bytes": 133190,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/2651130/library_600x900_2x.jpg"
+      },
+      "accepted": true
+    }
+  ]
+}

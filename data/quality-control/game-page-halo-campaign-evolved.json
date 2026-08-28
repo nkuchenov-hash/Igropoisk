@@ -1,0 +1,76 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "halo-campaign-evolved",
+  "release_year": 9999,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:14.837Z",
+  "status": "red-needs-revision",
+  "hero": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
+  "cover": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
+  "screenshots": 0,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 0,
+  "comments": [
+    "Недостаточно скриншотов высокого качества: 0/6.",
+    "hero: слишком маленькое 231×87, минимум 1200×675: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
+    "hero: слишком маленький файл 10842 B, минимум 80000 B: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
+    "cover: слишком маленькое 231×87, минимум 600×850: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
+    "cover: неверная ориентация/пропорции 2.66; нужна вертикальная обложка: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
+    "cover: слишком маленький файл 10842 B, минимум 45000 B: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
+    "После quality gate осталось только 0/6 допустимых скриншотов."
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: слишком маленькое 231×87, минимум 1200×675: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
+        "hero: слишком маленький файл 10842 B, минимум 80000 B: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 231,
+        "height": 87,
+        "bytes": 10842,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749"
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [
+        "cover: слишком маленькое 231×87, минимум 600×850: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
+        "cover: неверная ориентация/пропорции 2.66; нужна вертикальная обложка: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749",
+        "cover: слишком маленький файл 10842 B, минимум 45000 B: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 231,
+        "height": 87,
+        "bytes": 10842,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2806050/c4569404286b4e8bc5810fbc11282d7b842d4e4a/capsule_231x87.jpg?t=1785367749"
+      },
+      "accepted": false
+    }
+  ]
+}

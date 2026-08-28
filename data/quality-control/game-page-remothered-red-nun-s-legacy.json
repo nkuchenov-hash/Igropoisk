@@ -1,0 +1,324 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "remothered-red-nun-s-legacy",
+  "release_year": 2026,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:48.148Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/3335310/library_hero.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/3335310/library_600x900_2x.jpg",
+  "screenshots": 10,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 9,
+  "comments": [
+    "hero: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3335310/library_hero.jpg",
+    "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3335310/library_600x900_2x.jpg",
+    "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3335310/5582eceba79cd68b39dea18b87376e83ed798a2e/capsule_616x353.jpg?t=1786987129",
+    "screenshot: слишком маленький файл 63096 B, минимум 70000 B: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3335310/5582eceba79cd68b39dea18b87376e83ed798a2e/capsule_616x353.jpg?t=1786987129"
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3335310/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/3335310/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3335310/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": false,
+        "status": 404
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/3335310/library_600x900_2x.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [
+        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3335310/library_600x900_2x.jpg"
+      ],
+      "probe": {
+        "ok": false,
+        "status": 404
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/ba3f19d681a6089043c653961b04a9b3f86befc2/ss_ba3f19d681a6089043c653961b04a9b3f86befc2.1920x1080.jpg?t=1786987129",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 357763,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/ba3f19d681a6089043c653961b04a9b3f86befc2/ss_ba3f19d681a6089043c653961b04a9b3f86befc2.1920x1080.jpg?t=1786987129"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3335310/f6e5de1b1b46cddcdeace18a413e355e21c290ca/page_bg_raw.jpg?t=1786987129",
+        "caption": "Remothered: Red Nun's Legacy — изображение из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/3335310/",
+        "width": 1438,
+        "height": 810,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1438,
+        "height": 810,
+        "bytes": 1561172,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3335310/f6e5de1b1b46cddcdeace18a413e355e21c290ca/page_bg_raw.jpg?t=1786987129"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/469633836acb6334b3a7387d78a436b880e29f1b/ss_469633836acb6334b3a7387d78a436b880e29f1b.1920x1080.jpg?t=1786987129",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 212010,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/469633836acb6334b3a7387d78a436b880e29f1b/ss_469633836acb6334b3a7387d78a436b880e29f1b.1920x1080.jpg?t=1786987129"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3335310/5582eceba79cd68b39dea18b87376e83ed798a2e/capsule_616x353.jpg?t=1786987129",
+        "caption": "Remothered: Red Nun's Legacy — изображение из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/3335310/",
+        "width": 616,
+        "height": 353,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3335310/5582eceba79cd68b39dea18b87376e83ed798a2e/capsule_616x353.jpg?t=1786987129",
+        "screenshot: слишком маленький файл 63096 B, минимум 70000 B: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3335310/5582eceba79cd68b39dea18b87376e83ed798a2e/capsule_616x353.jpg?t=1786987129"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 616,
+        "height": 353,
+        "bytes": 63096,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3335310/5582eceba79cd68b39dea18b87376e83ed798a2e/capsule_616x353.jpg?t=1786987129"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/f504ed3405320bb12b21ce54c905536f3ef5598a/ss_f504ed3405320bb12b21ce54c905536f3ef5598a.1920x1080.jpg?t=1786987129",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 264869,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/f504ed3405320bb12b21ce54c905536f3ef5598a/ss_f504ed3405320bb12b21ce54c905536f3ef5598a.1920x1080.jpg?t=1786987129"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/00ef5216fbde66a37158247848cd19a826638ec6/ss_00ef5216fbde66a37158247848cd19a826638ec6.1920x1080.jpg?t=1786987129",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 373977,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/00ef5216fbde66a37158247848cd19a826638ec6/ss_00ef5216fbde66a37158247848cd19a826638ec6.1920x1080.jpg?t=1786987129"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/31b13c821aa8f4602e15ee81ff1f462cd0857644/ss_31b13c821aa8f4602e15ee81ff1f462cd0857644.1920x1080.jpg?t=1786987129",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 393677,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/31b13c821aa8f4602e15ee81ff1f462cd0857644/ss_31b13c821aa8f4602e15ee81ff1f462cd0857644.1920x1080.jpg?t=1786987129"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/d6a96cfdfb331df27bcaad210ebbb91845daf29c/ss_d6a96cfdfb331df27bcaad210ebbb91845daf29c.1920x1080.jpg?t=1786987129",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 493207,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/d6a96cfdfb331df27bcaad210ebbb91845daf29c/ss_d6a96cfdfb331df27bcaad210ebbb91845daf29c.1920x1080.jpg?t=1786987129"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/e7732e7eaefe2407a71e9d1c61e3d2545ad494c5/ss_e7732e7eaefe2407a71e9d1c61e3d2545ad494c5.1920x1080.jpg?t=1786987129",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 189479,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/e7732e7eaefe2407a71e9d1c61e3d2545ad494c5/ss_e7732e7eaefe2407a71e9d1c61e3d2545ad494c5.1920x1080.jpg?t=1786987129"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/dcc5f98519c4d047e529e2236c43180fe3abe94c/ss_dcc5f98519c4d047e529e2236c43180fe3abe94c.1920x1080.jpg?t=1786987129",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 274137,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3335310/dcc5f98519c4d047e529e2236c43180fe3abe94c/ss_dcc5f98519c4d047e529e2236c43180fe3abe94c.1920x1080.jpg?t=1786987129"
+      },
+      "accepted": true
+    }
+  ]
+}

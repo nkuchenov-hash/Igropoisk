@@ -1,0 +1,286 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "gunz-the-duel",
+  "release_year": 2026,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:51.141Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/3139440/library_hero.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/3139440/library_600x900_2x.jpg",
+  "screenshots": 8,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 6,
+  "comments": [
+    "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/3139440/library_hero.jpg",
+    "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3139440/1a654db478194a3ca15dc64310ab8b3d2d56d847/capsule_616x353.jpg?t=1786696577",
+    "screenshot: слишком маленький файл 67465 B, минимум 70000 B: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3139440/1a654db478194a3ca15dc64310ab8b3d2d56d847/capsule_616x353.jpg?t=1786696577",
+    "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/1a654db478194a3ca15dc64310ab8b3d2d56d847/capsule_616x353.jpg?t=1786696577",
+    "screenshot: слишком маленький файл 67465 B, минимум 70000 B: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/1a654db478194a3ca15dc64310ab8b3d2d56d847/capsule_616x353.jpg?t=1786696577"
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3139440/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/3139440/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/3139440/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 620,
+        "bytes": 252237,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3139440/library_hero.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/3139440/library_600x900_2x.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 600,
+        "height": 900,
+        "bytes": 172358,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3139440/library_600x900_2x.jpg"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/3c559e26c6f000789312b193d1cd35d8ce6a7802/ss_3c559e26c6f000789312b193d1cd35d8ce6a7802.1920x1080.jpg?t=1786696577",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 609644,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/3c559e26c6f000789312b193d1cd35d8ce6a7802/ss_3c559e26c6f000789312b193d1cd35d8ce6a7802.1920x1080.jpg?t=1786696577"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3139440/1a654db478194a3ca15dc64310ab8b3d2d56d847/capsule_616x353.jpg?t=1786696577",
+        "caption": "GunZ: The Duel — игровой кадр из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/3139440/",
+        "width": 616,
+        "height": 353,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3139440/1a654db478194a3ca15dc64310ab8b3d2d56d847/capsule_616x353.jpg?t=1786696577",
+        "screenshot: слишком маленький файл 67465 B, минимум 70000 B: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3139440/1a654db478194a3ca15dc64310ab8b3d2d56d847/capsule_616x353.jpg?t=1786696577"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 616,
+        "height": 353,
+        "bytes": 67465,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3139440/1a654db478194a3ca15dc64310ab8b3d2d56d847/capsule_616x353.jpg?t=1786696577"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/1c6e007b6e51797126e129aa3f0806c2ee5f223b/ss_1c6e007b6e51797126e129aa3f0806c2ee5f223b.1920x1080.jpg?t=1786696577",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 241522,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/1c6e007b6e51797126e129aa3f0806c2ee5f223b/ss_1c6e007b6e51797126e129aa3f0806c2ee5f223b.1920x1080.jpg?t=1786696577"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/1a654db478194a3ca15dc64310ab8b3d2d56d847/capsule_616x353.jpg?t=1786696577",
+        "caption": "GunZ: The Duel — игровой кадр из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/3139440/",
+        "width": 616,
+        "height": 353,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/1a654db478194a3ca15dc64310ab8b3d2d56d847/capsule_616x353.jpg?t=1786696577",
+        "screenshot: слишком маленький файл 67465 B, минимум 70000 B: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/1a654db478194a3ca15dc64310ab8b3d2d56d847/capsule_616x353.jpg?t=1786696577"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 616,
+        "height": 353,
+        "bytes": 67465,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/1a654db478194a3ca15dc64310ab8b3d2d56d847/capsule_616x353.jpg?t=1786696577"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/af416cdd2522e10af7b29cbe96973922d7d4cc3b/ss_af416cdd2522e10af7b29cbe96973922d7d4cc3b.1920x1080.jpg?t=1786696577",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 128299,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/af416cdd2522e10af7b29cbe96973922d7d4cc3b/ss_af416cdd2522e10af7b29cbe96973922d7d4cc3b.1920x1080.jpg?t=1786696577"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/e03a7a8f80fe71de587c08a1dead8bc38dac3ce5/ss_e03a7a8f80fe71de587c08a1dead8bc38dac3ce5.1920x1080.jpg?t=1786696577",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 137369,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/e03a7a8f80fe71de587c08a1dead8bc38dac3ce5/ss_e03a7a8f80fe71de587c08a1dead8bc38dac3ce5.1920x1080.jpg?t=1786696577"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/c2f024ebf4801e8b0ae1a17cb133cd4f0543701a/ss_c2f024ebf4801e8b0ae1a17cb133cd4f0543701a.1920x1080.jpg?t=1786696577",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 423011,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/c2f024ebf4801e8b0ae1a17cb133cd4f0543701a/ss_c2f024ebf4801e8b0ae1a17cb133cd4f0543701a.1920x1080.jpg?t=1786696577"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/6dacf3145fcfb068294e00aeb24430bf6f580705/ss_6dacf3145fcfb068294e00aeb24430bf6f580705.1920x1080.jpg?t=1786696577",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 403705,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3139440/6dacf3145fcfb068294e00aeb24430bf6f580705/ss_6dacf3145fcfb068294e00aeb24430bf6f580705.1920x1080.jpg?t=1786696577"
+      },
+      "accepted": true
+    }
+  ]
+}

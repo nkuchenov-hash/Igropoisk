@@ -1,0 +1,365 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "the-blood-of-dawnwalker",
+  "release_year": 2026,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:42.663Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/3751260/library_hero.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/3751260/library_600x900_2x.jpg",
+  "screenshots": 10,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 5,
+  "comments": [
+    "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/3751260/library_hero.jpg",
+    "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3751260/library_600x900_2x.jpg",
+    "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-006.webp",
+    "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-010.webp",
+    "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Screenshot-006.webp",
+    "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-009.webp",
+    "screenshot: слишком маленький файл 27324 B, минимум 70000 B: https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-009.webp",
+    "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-008.webp",
+    "После quality gate осталось только 5/6 допустимых скриншотов."
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3751260/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/3751260/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/3751260/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 620,
+        "bytes": 418808,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3751260/library_hero.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/3751260/library_600x900_2x.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [
+        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3751260/library_600x900_2x.jpg"
+      ],
+      "probe": {
+        "ok": false,
+        "status": 404
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751260/1af5d14d9b6a36c14eae3bebf56c0e0f63235633/ss_1af5d14d9b6a36c14eae3bebf56c0e0f63235633.1920x1080.jpg?t=1785244344",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 812634,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751260/1af5d14d9b6a36c14eae3bebf56c0e0f63235633/ss_1af5d14d9b6a36c14eae3bebf56c0e0f63235633.1920x1080.jpg?t=1785244344"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-006.webp",
+        "caption": "The Blood of Dawnwalker — изображение из проверенного источника",
+        "source_url": "https://www.rpgfan.com/game/the-blood-of-dawnwalker/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/webp",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-006.webp"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 137480,
+        "mime": "image/webp",
+        "resolved_url": "https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-006.webp"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751260/8b1df8a547116394a9c1b7225c11904c09dc9a37/ss_8b1df8a547116394a9c1b7225c11904c09dc9a37.1920x1080.jpg?t=1785244344",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 275677,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751260/8b1df8a547116394a9c1b7225c11904c09dc9a37/ss_8b1df8a547116394a9c1b7225c11904c09dc9a37.1920x1080.jpg?t=1785244344"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-010.webp",
+        "caption": "The Blood of Dawnwalker — изображение из проверенного источника",
+        "source_url": "https://www.rpgfan.com/game/the-blood-of-dawnwalker/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/webp",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-010.webp"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 189976,
+        "mime": "image/webp",
+        "resolved_url": "https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-010.webp"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751260/b91c26c945ec2453f7dbb1f6a3f8992edcccc484/ss_b91c26c945ec2453f7dbb1f6a3f8992edcccc484.1920x1080.jpg?t=1785244344",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 898355,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751260/b91c26c945ec2453f7dbb1f6a3f8992edcccc484/ss_b91c26c945ec2453f7dbb1f6a3f8992edcccc484.1920x1080.jpg?t=1785244344"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Screenshot-006.webp",
+        "caption": "The Blood of Dawnwalker — изображение из проверенного источника",
+        "source_url": "https://www.rpgfan.com/game/the-blood-of-dawnwalker/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/webp",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Screenshot-006.webp"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 72084,
+        "mime": "image/webp",
+        "resolved_url": "https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Screenshot-006.webp"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751260/2aeb99f7ea9968e69ea460e4c994a1ff280fb32d/ss_2aeb99f7ea9968e69ea460e4c994a1ff280fb32d.1920x1080.jpg?t=1785244344",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 449413,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751260/2aeb99f7ea9968e69ea460e4c994a1ff280fb32d/ss_2aeb99f7ea9968e69ea460e4c994a1ff280fb32d.1920x1080.jpg?t=1785244344"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-009.webp",
+        "caption": "The Blood of Dawnwalker — изображение из проверенного источника",
+        "source_url": "https://www.rpgfan.com/game/the-blood-of-dawnwalker/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/webp",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-009.webp",
+        "screenshot: слишком маленький файл 27324 B, минимум 70000 B: https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-009.webp"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 27324,
+        "mime": "image/webp",
+        "resolved_url": "https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-009.webp"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751260/533e61e6ba42cfebbd3b6d3926ecbbc4edd285dc/ss_533e61e6ba42cfebbd3b6d3926ecbbc4edd285dc.1920x1080.jpg?t=1785244344",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 292240,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3751260/533e61e6ba42cfebbd3b6d3926ecbbc4edd285dc/ss_533e61e6ba42cfebbd3b6d3926ecbbc4edd285dc.1920x1080.jpg?t=1785244344"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-008.webp",
+        "caption": "The Blood of Dawnwalker — изображение из проверенного источника",
+        "source_url": "https://www.rpgfan.com/game/the-blood-of-dawnwalker/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/webp",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-008.webp"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 80432,
+        "mime": "image/webp",
+        "resolved_url": "https://www.rpgfan.com/wp-content/uploads/2025/01/The-Blood-of-Dawnwalker-Artwork-008.webp"
+      },
+      "accepted": false
+    }
+  ]
+}

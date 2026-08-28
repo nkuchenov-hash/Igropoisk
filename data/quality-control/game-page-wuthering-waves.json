@@ -1,0 +1,347 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "wuthering-waves",
+  "release_year": 2025,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:13.161Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/library_hero.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/library_600x900.jpg",
+  "screenshots": 10,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 10,
+  "comments": [
+    "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/library_hero.jpg",
+    "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/library_600x900.jpg"
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/3513350/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 620,
+        "bytes": 643870,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/library_hero.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/library_600x900.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [
+        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3513350/library_600x900.jpg"
+      ],
+      "probe": {
+        "ok": false,
+        "status": 404
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/38e036c76308655fac5f247945ac6d32f8759039/ss_38e036c76308655fac5f247945ac6d32f8759039.1920x1080.jpg?t=1787182292",
+        "caption": "Wuthering Waves — скриншот 1",
+        "source_url": "https://store.steampowered.com/app/3513350/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 772269,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/38e036c76308655fac5f247945ac6d32f8759039/ss_38e036c76308655fac5f247945ac6d32f8759039.1920x1080.jpg?t=1787182292"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/e0cdae6c1db7b0ba908507454567f5935954d8f7/ss_e0cdae6c1db7b0ba908507454567f5935954d8f7.1920x1080.jpg?t=1787182292",
+        "caption": "Wuthering Waves — скриншот 2",
+        "source_url": "https://store.steampowered.com/app/3513350/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 390713,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/e0cdae6c1db7b0ba908507454567f5935954d8f7/ss_e0cdae6c1db7b0ba908507454567f5935954d8f7.1920x1080.jpg?t=1787182292"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/e303e0094da7fa466133be71ac7b76274739bc83/ss_e303e0094da7fa466133be71ac7b76274739bc83.1920x1080.jpg?t=1787182292",
+        "caption": "Wuthering Waves — скриншот 3",
+        "source_url": "https://store.steampowered.com/app/3513350/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 508884,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/e303e0094da7fa466133be71ac7b76274739bc83/ss_e303e0094da7fa466133be71ac7b76274739bc83.1920x1080.jpg?t=1787182292"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/e1b33ff7320e3fbe3bad8ae3fe4ab0d852bee7f3/ss_e1b33ff7320e3fbe3bad8ae3fe4ab0d852bee7f3.1920x1080.jpg?t=1787182292",
+        "caption": "Wuthering Waves — скриншот 4",
+        "source_url": "https://store.steampowered.com/app/3513350/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 637932,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/e1b33ff7320e3fbe3bad8ae3fe4ab0d852bee7f3/ss_e1b33ff7320e3fbe3bad8ae3fe4ab0d852bee7f3.1920x1080.jpg?t=1787182292"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/8adfda436889d6c241fe4a179c190ecdb7065941/ss_8adfda436889d6c241fe4a179c190ecdb7065941.1920x1080.jpg?t=1787182292",
+        "caption": "Wuthering Waves — скриншот 5",
+        "source_url": "https://store.steampowered.com/app/3513350/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 522849,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/8adfda436889d6c241fe4a179c190ecdb7065941/ss_8adfda436889d6c241fe4a179c190ecdb7065941.1920x1080.jpg?t=1787182292"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/26f16274525cf72f10aa94516e25ce2a3fc2f521/ss_26f16274525cf72f10aa94516e25ce2a3fc2f521.1920x1080.jpg?t=1787182292",
+        "caption": "Wuthering Waves — скриншот 6",
+        "source_url": "https://store.steampowered.com/app/3513350/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 429023,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/26f16274525cf72f10aa94516e25ce2a3fc2f521/ss_26f16274525cf72f10aa94516e25ce2a3fc2f521.1920x1080.jpg?t=1787182292"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/e8bcc6943d4cddab02a470663bd8510e7ee3a2e3/ss_e8bcc6943d4cddab02a470663bd8510e7ee3a2e3.1920x1080.jpg?t=1787182292",
+        "caption": "Wuthering Waves — скриншот 7",
+        "source_url": "https://store.steampowered.com/app/3513350/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 458583,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/e8bcc6943d4cddab02a470663bd8510e7ee3a2e3/ss_e8bcc6943d4cddab02a470663bd8510e7ee3a2e3.1920x1080.jpg?t=1787182292"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/4498d66558b0418c1b87379a750d5ac0b689ec79/ss_4498d66558b0418c1b87379a750d5ac0b689ec79.1920x1080.jpg?t=1787182292",
+        "caption": "Wuthering Waves — скриншот 8",
+        "source_url": "https://store.steampowered.com/app/3513350/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 389448,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/4498d66558b0418c1b87379a750d5ac0b689ec79/ss_4498d66558b0418c1b87379a750d5ac0b689ec79.1920x1080.jpg?t=1787182292"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/e30c476500dce890d7664cbe9d7e1dccb27729c9/ss_e30c476500dce890d7664cbe9d7e1dccb27729c9.1920x1080.jpg?t=1787182292",
+        "caption": "Wuthering Waves — скриншот 9",
+        "source_url": "https://store.steampowered.com/app/3513350/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 311357,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/e30c476500dce890d7664cbe9d7e1dccb27729c9/ss_e30c476500dce890d7664cbe9d7e1dccb27729c9.1920x1080.jpg?t=1787182292"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/78ce51a6663b834b2f912c297a41e8f0cd7c542f/ss_78ce51a6663b834b2f912c297a41e8f0cd7c542f.1920x1080.jpg?t=1787182292",
+        "caption": "Wuthering Waves — скриншот 10",
+        "source_url": "https://store.steampowered.com/app/3513350/"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 405111,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3513350/78ce51a6663b834b2f912c297a41e8f0cd7c542f/ss_78ce51a6663b834b2f912c297a41e8f0cd7c542f.1920x1080.jpg?t=1787182292"
+      },
+      "accepted": true
+    }
+  ]
+}

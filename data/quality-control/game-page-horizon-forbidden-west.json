@@ -1,0 +1,47 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "horizon-forbidden-west",
+  "release_year": 2022,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:19:57.656Z",
+  "status": "red-needs-revision",
+  "hero": "",
+  "cover": "https://upload.wikimedia.org/wikipedia/en/6/69/Horizon_Forbidden_West_cover_art.jpg",
+  "screenshots": 0,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 0,
+  "comments": [
+    "Нет отдельного официального арта для большой верхней картинки; скриншот нельзя использовать как hero.",
+    "Обложка не подтверждена официальным источником: https://upload.wikimedia.org/wikipedia/en/6/69/Horizon_Forbidden_West_cover_art.jpg",
+    "Недостаточно скриншотов высокого качества: 0/6.",
+    "cover: слишком маленькое 273×365, минимум 600×850: https://upload.wikimedia.org/wikipedia/en/6/69/Horizon_Forbidden_West_cover_art.jpg",
+    "После quality gate осталось только 0/6 допустимых скриншотов."
+  ],
+  "checks": [
+    {
+      "role": "cover",
+      "item": "https://upload.wikimedia.org/wikipedia/en/6/69/Horizon_Forbidden_West_cover_art.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [
+        "cover: слишком маленькое 273×365, минимум 600×850: https://upload.wikimedia.org/wikipedia/en/6/69/Horizon_Forbidden_West_cover_art.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 273,
+        "height": 365,
+        "bytes": 115978,
+        "mime": "image/jpeg",
+        "resolved_url": "https://upload.wikimedia.org/wikipedia/en/6/69/Horizon_Forbidden_West_cover_art.jpg"
+      },
+      "accepted": false
+    }
+  ]
+}

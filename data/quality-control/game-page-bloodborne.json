@@ -1,0 +1,70 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "bloodborne",
+  "release_year": 2015,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:19:39.816Z",
+  "status": "red-needs-revision",
+  "hero": "",
+  "cover": "https://image.api.playstation.com/cdn/UP9000/CUSA00900_00/9EJsLXyKS0S1BRey5nwQBOuYr6EDRbGX.png",
+  "screenshots": 1,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 1,
+  "comments": [
+    "Нет отдельного официального арта для большой верхней картинки; скриншот нельзя использовать как hero.",
+    "Недостаточно скриншотов высокого качества: 1/6.",
+    "cover: неверная ориентация/пропорции 1.00; нужна вертикальная обложка: https://image.api.playstation.com/cdn/UP9000/CUSA00900_00/9EJsLXyKS0S1BRey5nwQBOuYr6EDRbGX.png",
+    "После quality gate осталось только 1/6 допустимых скриншотов."
+  ],
+  "checks": [
+    {
+      "role": "cover",
+      "item": "https://image.api.playstation.com/cdn/UP9000/CUSA00900_00/9EJsLXyKS0S1BRey5nwQBOuYr6EDRbGX.png",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [
+        "cover: неверная ориентация/пропорции 1.00; нужна вертикальная обложка: https://image.api.playstation.com/cdn/UP9000/CUSA00900_00/9EJsLXyKS0S1BRey5nwQBOuYr6EDRbGX.png"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1024,
+        "height": 1024,
+        "bytes": 180521,
+        "mime": "image/jpeg",
+        "resolved_url": "https://image.api.playstation.com/cdn/UP9000/CUSA00900_00/9EJsLXyKS0S1BRey5nwQBOuYr6EDRbGX.png"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://image.api.playstation.com/vulcan/img/rnd/202010/2614/O2Z66UWrZH8zcejxopwWxhGu.png",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 3840,
+        "height": 2160,
+        "bytes": 2081830,
+        "mime": "image/jpeg",
+        "resolved_url": "https://image.api.playstation.com/vulcan/img/rnd/202010/2614/O2Z66UWrZH8zcejxopwWxhGu.png"
+      },
+      "accepted": true
+    }
+  ]
+}
