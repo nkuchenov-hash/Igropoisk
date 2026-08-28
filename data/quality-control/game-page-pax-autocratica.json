@@ -1,63 +1,67 @@
 {
-  "schema_version": 4,
+  "schema_version": 6,
   "validator": "game-media-quality",
   "game_slug": "pax-autocratica",
-  "checked_at": "2026-08-28T09:52:58.195Z",
-  "status": "red-needs-revision",
-  "hero": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1067360/eaf9f9363d8efaee9b68d45c0dbc84e1fe8c53a7/page_bg_raw.jpg?t=1787757968",
-  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900.jpg",
+  "release_year": 2026,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T20:54:54.987Z",
+  "status": "green",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_hero_2x.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900_2x.jpg",
   "screenshots": 40,
+  "minimum_screenshots": 6,
   "accepted_screenshots": 40,
-  "comments": [
-    "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900.jpg"
-  ],
+  "comments": [],
   "checks": [
     {
       "role": "hero",
-      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1067360/eaf9f9363d8efaee9b68d45c0dbc84e1fe8c53a7/page_bg_raw.jpg?t=1787757968",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_hero_2x.jpg",
+        "source_url": "https://store.steampowered.com/app/1067360/"
+      },
       "rules": {
         "minimum_width_modern": 1200,
         "minimum_height_modern": 675,
         "minimum_width_historical": 960,
-        "minimum_height_historical": 540,
-        "minimum_bytes": 80000
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
       },
       "errors": [],
       "probe": {
         "ok": true,
-        "width": 1438,
-        "height": 810,
-        "bytes": 201901,
+        "width": 3840,
+        "height": 1240,
+        "bytes": 1571935,
         "mime": "image/jpeg",
-        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1067360/eaf9f9363d8efaee9b68d45c0dbc84e1fe8c53a7/page_bg_raw.jpg?t=1787757968"
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_hero_2x.jpg"
       },
       "accepted": true
     },
     {
       "role": "cover",
       "item": {
-        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900.jpg",
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900_2x.jpg",
         "source_url": "https://store.steampowered.com/app/1067360/"
       },
       "rules": {
         "minimum_width_modern": 600,
         "minimum_height_modern": 850,
-        "minimum_width_historical": 400,
-        "minimum_height_historical": 560,
-        "minimum_bytes": 45000
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
       },
-      "errors": [
-        "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900.jpg"
-      ],
+      "errors": [],
       "probe": {
         "ok": true,
-        "width": 300,
-        "height": 450,
-        "bytes": 71861,
+        "width": 600,
+        "height": 900,
+        "bytes": 226427,
         "mime": "image/jpeg",
-        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900.jpg"
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900_2x.jpg"
       },
-      "accepted": false
+      "accepted": true
     },
     {
       "role": "screenshot",
@@ -82,10 +86,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -121,10 +127,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -160,10 +168,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -199,10 +209,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -238,10 +250,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -277,10 +291,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -316,10 +332,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -355,10 +373,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -394,10 +414,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -433,10 +455,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -472,10 +496,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -511,10 +537,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -550,10 +578,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -589,10 +619,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -628,10 +660,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -667,10 +701,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -706,10 +742,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -745,10 +783,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -784,10 +824,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -823,10 +865,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -862,10 +906,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -901,10 +947,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -940,10 +988,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -979,10 +1029,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1018,10 +1070,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1057,10 +1111,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1096,10 +1152,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1135,10 +1193,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1174,10 +1234,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1213,10 +1275,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1252,10 +1316,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1291,10 +1357,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1330,10 +1398,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1369,10 +1439,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1408,10 +1480,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1447,10 +1521,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1486,10 +1562,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1525,10 +1603,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1564,10 +1644,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
@@ -1603,10 +1685,12 @@
       "rules": {
         "minimum_width_modern": 1280,
         "minimum_height_modern": 720,
-        "minimum_width_historical": 800,
-        "minimum_height_historical": 600,
-        "minimum_bytes": 70000,
-        "minimum_count": 6
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
       },
       "errors": [],
       "probe": {
