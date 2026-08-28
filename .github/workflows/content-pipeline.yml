@@ -160,6 +160,10 @@ jobs:
           node scripts/validate-top-250.mjs
           python3 scripts/enforce_layout_contract.py --check
           git diff --check
+          # Validators intentionally refresh reports. Include those refreshed files in the
+          # same isolated publication commit so checkout/PR creation cannot fail on a dirty tree.
+          git add -A -- data/quality-control data/audits
+          node scripts/validate-automation-publish-diff.mjs --profile content-pipeline
       - name: Open and merge isolated lifecycle PR
         env:
           GH_TOKEN: ${{ github.token }}
