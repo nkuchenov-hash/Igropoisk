@@ -4,9 +4,9 @@ import { editNewsToRussian, fetchArticleText, isLikelyNewsSource, validateProduc
 
 const eventsPath = 'data/news-events.json';
 const reportPath = process.env.NEWS_EDITOR_REPORT || 'tmp/news-editor-report.json';
-const editorialVersion = 6;
+const editorialVersion = 7;
 const minimumPublicItems = Math.max(12, Number(process.env.NEWS_EDITOR_MIN_PUBLIC || 12));
-// Strict filtering needs headroom, but one-pass generation keeps the hourly run bounded.
+// Strict filtering needs headroom; rejected drafts now get one bounded repair pass.
 const maxItems = Math.max(minimumPublicItems + 18, Number(process.env.NEWS_EDITOR_MAX_ITEMS || minimumPublicItems + 18));
 
 function hasCyrillic(value = '') {
@@ -176,7 +176,7 @@ for (const item of candidates) {
       articleText,
       url,
       source: item.primarySource || item.source || ''
-    }, { maxAttempts: 1, maxNewTokens: 165 });
+    }, { maxAttempts: 2, maxNewTokens: 165 });
 
     if (!edited.ok) {
       rejected += 1;
