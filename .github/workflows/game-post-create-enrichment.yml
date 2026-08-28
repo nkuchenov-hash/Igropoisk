@@ -23,6 +23,7 @@ on:
       - 'scripts/validate-game-shells.mjs'
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/select-next-game-page-target.mjs'
+      - 'scripts/materialize-green-game-page.mjs'
       - 'config/game-page-quality-v2.json'
       - 'data/content-pipeline/execution-plan.json'
       - 'data/content-pipeline/page-acceptance-target.json'
@@ -58,6 +59,7 @@ jobs:
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/quality-control-loop.mjs
           node --check scripts/build-game-page-basic.mjs
+          node --check scripts/materialize-green-game-page.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/discover-review-media.mjs
