@@ -1,0 +1,29 @@
+name: Official news JSON-LD adapter test
+
+on:
+  push:
+    branches: [experiment/news-official-jsonld-20260828]
+    paths:
+      - 'scripts/fetch-publisher-news.mjs'
+      - 'scripts/lib/news-official-structured.mjs'
+      - 'scripts/test-news-official-structured.mjs'
+      - '.github/workflows/news-official-jsonld-test.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate structured official-source adapter
+        run: |
+          node --check scripts/lib/news-official-structured.mjs
+          node --check scripts/fetch-publisher-news.mjs
+          node scripts/test-news-official-structured.mjs
