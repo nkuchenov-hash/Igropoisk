@@ -126,5 +126,13 @@ const recovered = buildNewsPipelineHealth({ root, now, dueGroups: ['official-sou
 assert.equal(recovered.sources.history.find(source => source.id === 'broken').consecutive_failures, 0);
 assert.equal(recovered.sources.persistent_failures.length, 0);
 
+const belowFloorPayload = JSON.parse(fs.readFileSync(path.join(root, 'data/publisher-news.json'), 'utf8'));
+belowFloorPayload.sourceCount = 10;
+belowFloorPayload.successfulSourceCount = 1;
+fs.writeFileSync(path.join(root, 'data/publisher-news.json'), JSON.stringify(belowFloorPayload));
+const belowFloor = buildNewsPipelineHealth({ root, now, dueGroups: ['official-sources'] });
+assert.equal(belowFloor.status, 'error', 'Falling below the configured official source success floor must block publication.');
+assert.match(belowFloor.blocking_errors.join('\n'), /10\.0%.*15\.0%/);
+
 fs.rmSync(root, { recursive: true, force: true });
 console.log('News pipeline health self-test passed.');
