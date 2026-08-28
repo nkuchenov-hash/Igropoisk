@@ -6,6 +6,19 @@ const snapshotPath = 'tmp/news-events-before-rebuild.json';
 const backupRoot = 'tmp/news-history-assets';
 const minimumRecentPublic = 18;
 const recentWindowHours = 24;
+const editorialFields = [
+  'titleRu',
+  'summaryRu',
+  'editorialBriefRu',
+  'editorialStatus',
+  'editorialVersion',
+  'editorialSourceHash',
+  'editorialModel',
+  'editorialDtype',
+  'editorialGeneratedAt',
+  'editorialAttempts',
+  'editorialProductionSalvaged'
+];
 
 async function readPayload(file) {
   try {
@@ -80,6 +93,32 @@ export function promoteBalancedSelection(items, minimum = minimumRecentPublic) {
   return result;
 }
 
+export function carryEditorialCache(currentItems, previousItems) {
+  const previousByUrl = new Map();
+  for (const item of previousItems) {
+    if (!['approved', 'source-ru'].includes(item?.editorialStatus)) continue;
+    const key = canonicalUrl(item.primaryUrl || item.url);
+    if (key && !previousByUrl.has(key)) previousByUrl.set(key, item);
+  }
+
+  let restored = 0;
+  const current = currentItems.map(item => {
+    const key = canonicalUrl(item.primaryUrl || item.url);
+    const previous = key ? previousByUrl.get(key) : null;
+    if (!previous) return item;
+    const next = { ...item };
+    let copied = false;
+    for (const field of editorialFields) {
+      if (previous[field] === undefined) continue;
+      next[field] = previous[field];
+      copied = true;
+    }
+    if (copied) restored += 1;
+    return next;
+  });
+  return { items: current, restored };
+}
+
 export function historicalCandidates(currentItems, previousItems, windowHours = recentWindowHours) {
   if (!currentItems.length) return previousItems.filter(wasPublic);
   const newestCurrent = Math.max(...currentItems.map(itemTime).filter(Boolean));
@@ -142,8 +181,10 @@ async function snapshot() {
 async function merge() {
   const currentPayload = await readPayload(eventsPath);
   const previousPayload = await readPayload(snapshotPath);
-  const current = promoteBalancedSelection(Array.isArray(currentPayload) ? currentPayload : (currentPayload.items || []));
+  const rawCurrent = promoteBalancedSelection(Array.isArray(currentPayload) ? currentPayload : (currentPayload.items || []));
   const previous = Array.isArray(previousPayload) ? previousPayload : (previousPayload.items || []);
+  const carried = carryEditorialCache(rawCurrent, previous);
+  const current = carried.items;
   const historical = await restoreHistoricalImages(historicalCandidates(current, previous));
   const items = [...current, ...historical].sort((a, b) => itemTime(b) - itemTime(a));
   const publicCount = items.filter(wasPublic).length;
@@ -153,12 +194,13 @@ async function merge() {
     model: 'event-first-editorial-selection-plus-region-history',
     minimumRecentPublic,
     retainedHistory: historical.length,
+    restoredEditorialCache: carried.restored,
     items
   };
   await fs.writeFile(eventsPath, `${JSON.stringify(payload, null, 2)}\n`);
   await fs.rm(snapshotPath, { force: true });
   await fs.rm(backupRoot, { recursive: true, force: true });
-  console.log(`[news/history] ${current.length} current events; ${historical.length} historical retained; ${publicCount} public across archive`);
+  console.log(`[news/history] ${current.length} current events; ${historical.length} historical retained; ${carried.restored} editorial cache entries restored; ${publicCount} public across archive`);
 }
 
 const mode = process.argv[2];
