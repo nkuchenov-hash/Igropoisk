@@ -1,0 +1,97 @@
+{
+  "schema_version": 5,
+  "game_slug": "the-sinking-city-2",
+  "checked_at": "2026-08-28T12:20:16.715Z",
+  "status": "insufficient-scores",
+  "method": {
+    "name": "Среднее всех найденных подтверждённых независимых профессиональных оценок",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources_for_confident_rating": 10,
+    "maximum_sources": null,
+    "use_all_discovered_scores": true,
+    "persistent_discovery_seeds": true,
+    "output_scale": 10,
+    "letter_grade_map": {
+      "A+": 10,
+      "A": 9.5,
+      "A-": 9,
+      "B+": 8.5,
+      "B": 8,
+      "B-": 7.5,
+      "C+": 7,
+      "C": 6.5,
+      "C-": 6,
+      "D+": 5.5,
+      "D": 5,
+      "D-": 4.5,
+      "F": 2.5
+    },
+    "rounding_decimals": 1
+  },
+  "sources": [
+    {
+      "publication": "PC Gamer",
+      "title": "The Sinking City 2 review - PC Gamer",
+      "url": "https://www.pcgamer.com/games/horror/the-sinking-city-2-review",
+      "original_score": {
+        "score": 70,
+        "scale": 100,
+        "grade": null,
+        "display": "70/100"
+      },
+      "normalized_10": 7,
+      "checked_at": "2026-08-28T12:20:16.715Z"
+    },
+    {
+      "publication": "IGN",
+      "title": "The Sinking City 2 Review - IGN",
+      "url": "https://www.ign.com/articles/the-sinking-city-2-review",
+      "original_score": {
+        "score": 8,
+        "scale": 10,
+        "grade": null,
+        "display": "8/10"
+      },
+      "normalized_10": 8,
+      "checked_at": "2026-08-28T12:20:16.715Z"
+    },
+    {
+      "publication": "GamesRadar+",
+      "title": "The Sinking City 2 review: \"A Lovecraftian fusion of Resident Evil and ...",
+      "url": "https://www.gamesradar.com/games/survival-horror/the-sinking-city-2-review",
+      "original_score": {
+        "score": 4,
+        "scale": 5,
+        "grade": null,
+        "display": "4/5"
+      },
+      "normalized_10": 8,
+      "checked_at": "2026-08-28T12:20:16.715Z"
+    },
+    {
+      "publication": "dualshockers.com",
+      "title": "The Sinking City 2 Review: A Triumph of Survival Horror",
+      "url": "https://www.dualshockers.com/the-sinking-city-2-review",
+      "original_score": {
+        "score": 9,
+        "scale": 10,
+        "grade": null,
+        "display": "9/10"
+      },
+      "normalized_10": 9,
+      "checked_at": "2026-08-28T12:20:16.715Z"
+    }
+  ],
+  "calculation": {
+    "source_count": 4,
+    "values": [
+      7,
+      8,
+      8,
+      9
+    ],
+    "mean_10": 8,
+    "score_10": 8,
+    "status": "insufficient-scores"
+  }
+}
