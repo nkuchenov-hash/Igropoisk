@@ -1,0 +1,65 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "gta",
+  "release_year": 2025,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:21:19.972Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/3482260/library_hero.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/3482260/library_600x900_2x.jpg",
+  "screenshots": 0,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 0,
+  "comments": [
+    "Недостаточно скриншотов высокого качества: 0/6.",
+    "hero: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3482260/library_hero.jpg",
+    "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3482260/library_600x900_2x.jpg",
+    "После quality gate осталось только 0/6 допустимых скриншотов."
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3482260/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/3482260/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3482260/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": false,
+        "status": 404
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/3482260/library_600x900_2x.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [
+        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/3482260/library_600x900_2x.jpg"
+      ],
+      "probe": {
+        "ok": false,
+        "status": 404
+      },
+      "accepted": false
+    }
+  ]
+}

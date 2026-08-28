@@ -1,0 +1,74 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "overwatch-2",
+  "release_year": 9999,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:10.254Z",
+  "status": "red-needs-revision",
+  "hero": "https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg",
+  "cover": "https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg",
+  "screenshots": 0,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 0,
+  "comments": [
+    "Hero не подтверждён как официальный арт: https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg",
+    "Обложка не подтверждена официальным источником: https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg",
+    "Недостаточно скриншотов высокого качества: 0/6.",
+    "hero: слишком маленькое 258×387, минимум 1200×675: https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg",
+    "hero: арт недостаточно широкоформатный (0.67): https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg",
+    "cover: слишком маленькое 258×387, минимум 600×850: https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg",
+    "После quality gate осталось только 0/6 допустимых скриншотов."
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": "https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg",
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: слишком маленькое 258×387, минимум 1200×675: https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg",
+        "hero: арт недостаточно широкоформатный (0.67): https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 258,
+        "height": 387,
+        "bytes": 96173,
+        "mime": "image/jpeg",
+        "resolved_url": "https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [
+        "cover: слишком маленькое 258×387, минимум 600×850: https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 258,
+        "height": 387,
+        "bytes": 96173,
+        "mime": "image/jpeg",
+        "resolved_url": "https://upload.wikimedia.org/wikipedia/en/8/89/Overwatch_2_Steam_artwork.jpg"
+      },
+      "accepted": false
+    }
+  ]
+}

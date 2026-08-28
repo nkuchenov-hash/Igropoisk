@@ -1,0 +1,403 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "fallout-76",
+  "release_year": 2018,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:37.547Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/1151340/library_hero.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/1151340/library_600x900_2x.jpg",
+  "screenshots": 10,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 2,
+  "comments": [
+    "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/1151340/library_hero.jpg",
+    "screenshot: источник изображения не подтверждён: https://gameinformer.com/sites/default/files/styles/content_header_l/public/2018/11/21/4283dd33/fallout76.jpg.webp",
+    "screenshot: источник изображения не подтверждён: https://vignette.wikia.nocookie.net/sonic/images/4/4a/I_HEGE_THAT_HOGHATE.png/revision/latest?cb=20141102135153",
+    "screenshot: слишком маленькое 1212×910, минимум 1280×720: https://vignette.wikia.nocookie.net/sonic/images/4/4a/I_HEGE_THAT_HOGHATE.png/revision/latest?cb=20141102135153",
+    "screenshot: источник изображения не подтверждён: https://www.thesixthaxis.com/wp-content/uploads/2020/05/Fallout76Wastelanders-Hero500R.jpg",
+    "screenshot: слишком маленькое 1260×500, минимум 1280×720: https://www.thesixthaxis.com/wp-content/uploads/2020/05/Fallout76Wastelanders-Hero500R.jpg",
+    "screenshot: источник изображения не подтверждён: https://cdn.mos.cms.futurecdn.net/flexiimages/fzlg0fzmx11773302065.jpeg",
+    "screenshot: источник изображения не подтверждён: https://cdn.mos.cms.futurecdn.net/HLH8eqMsNokyvByjE35nX6-1280-80.jpg",
+    "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2020/11/Fallout-76-Artwork-003.jpg",
+    "screenshot: источник изображения не подтверждён: https://gameinformer.com/sites/default/files/styles/og_image/public/2018/11/21/4283dd33/fallout76.jpg.webp",
+    "screenshot: слишком маленькое 1200×675, минимум 1280×720: https://gameinformer.com/sites/default/files/styles/og_image/public/2018/11/21/4283dd33/fallout76.jpg.webp",
+    "screenshot: источник изображения не подтверждён: https://images.pushsquare.com/3c20305c6b556/1280x720.jpg",
+    "После quality gate осталось только 2/6 допустимых скриншотов."
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1151340/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/1151340/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/1151340/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 620,
+        "bytes": 503081,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1151340/library_hero.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/1151340/library_600x900_2x.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 600,
+        "height": 900,
+        "bytes": 199443,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/1151340/library_600x900_2x.jpg"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1151340/0d9b8b403d3c5ffebf054d293ea46607b8e249ab/ss_0d9b8b403d3c5ffebf054d293ea46607b8e249ab.1920x1080.jpg?t=1786635263",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 588458,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1151340/0d9b8b403d3c5ffebf054d293ea46607b8e249ab/ss_0d9b8b403d3c5ffebf054d293ea46607b8e249ab.1920x1080.jpg?t=1786635263"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://gameinformer.com/sites/default/files/styles/content_header_l/public/2018/11/21/4283dd33/fallout76.jpg.webp",
+        "caption": "Fallout 76 — изображение из проверенного источника",
+        "source_url": "https://gameinformer.com/review/fallout-76/over-encumbered",
+        "width": 1460,
+        "height": 821,
+        "mime": "image/webp",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://gameinformer.com/sites/default/files/styles/content_header_l/public/2018/11/21/4283dd33/fallout76.jpg.webp"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1460,
+        "height": 821,
+        "bytes": 185866,
+        "mime": "image/webp",
+        "resolved_url": "https://gameinformer.com/sites/default/files/styles/content_header_l/public/2018/11/21/4283dd33/fallout76.jpg.webp"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://vignette.wikia.nocookie.net/sonic/images/4/4a/I_HEGE_THAT_HOGHATE.png/revision/latest?cb=20141102135153",
+        "caption": "Fallout 76 — изображение из проверенного источника",
+        "source_url": "https://www.pushsquare.com/reviews/ps4/fallout-76",
+        "width": 1212,
+        "height": 910,
+        "mime": "image/webp",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://vignette.wikia.nocookie.net/sonic/images/4/4a/I_HEGE_THAT_HOGHATE.png/revision/latest?cb=20141102135153",
+        "screenshot: слишком маленькое 1212×910, минимум 1280×720: https://vignette.wikia.nocookie.net/sonic/images/4/4a/I_HEGE_THAT_HOGHATE.png/revision/latest?cb=20141102135153"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1212,
+        "height": 910,
+        "bytes": 102322,
+        "mime": "image/webp",
+        "resolved_url": "https://vignette.wikia.nocookie.net/sonic/images/4/4a/I_HEGE_THAT_HOGHATE.png/revision/latest?cb=20141102135153"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.thesixthaxis.com/wp-content/uploads/2020/05/Fallout76Wastelanders-Hero500R.jpg",
+        "caption": "Fallout 76 — изображение из проверенного источника",
+        "source_url": "https://www.thesixthaxis.com/2020/05/01/fallout-76-wastelanders-reviews",
+        "width": 1260,
+        "height": 500,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.thesixthaxis.com/wp-content/uploads/2020/05/Fallout76Wastelanders-Hero500R.jpg",
+        "screenshot: слишком маленькое 1260×500, минимум 1280×720: https://www.thesixthaxis.com/wp-content/uploads/2020/05/Fallout76Wastelanders-Hero500R.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1260,
+        "height": 500,
+        "bytes": 167935,
+        "mime": "image/jpeg",
+        "resolved_url": "https://www.thesixthaxis.com/wp-content/uploads/2020/05/Fallout76Wastelanders-Hero500R.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://cdn.mos.cms.futurecdn.net/flexiimages/fzlg0fzmx11773302065.jpeg",
+        "caption": "Fallout 76 — изображение из проверенного источника",
+        "source_url": "https://www.pcgamer.com/fallout-76-review",
+        "width": 2121,
+        "height": 1414,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://cdn.mos.cms.futurecdn.net/flexiimages/fzlg0fzmx11773302065.jpeg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 2121,
+        "height": 1414,
+        "bytes": 606575,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.mos.cms.futurecdn.net/flexiimages/fzlg0fzmx11773302065.jpeg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://cdn.mos.cms.futurecdn.net/HLH8eqMsNokyvByjE35nX6-1280-80.jpg",
+        "caption": "Fallout 76 — изображение из проверенного источника",
+        "source_url": "https://www.gamesradar.com/fallout-76-review",
+        "width": 1280,
+        "height": 720,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://cdn.mos.cms.futurecdn.net/HLH8eqMsNokyvByjE35nX6-1280-80.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1280,
+        "height": 720,
+        "bytes": 125918,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.mos.cms.futurecdn.net/HLH8eqMsNokyvByjE35nX6-1280-80.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.rpgfan.com/wp-content/uploads/2020/11/Fallout-76-Artwork-003.jpg",
+        "caption": "Fallout 76 — изображение из проверенного источника",
+        "source_url": "https://www.rpgfan.com/game/fallout-76/",
+        "width": 2400,
+        "height": 1350,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2020/11/Fallout-76-Artwork-003.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 2400,
+        "height": 1350,
+        "bytes": 417838,
+        "mime": "image/jpeg",
+        "resolved_url": "https://www.rpgfan.com/wp-content/uploads/2020/11/Fallout-76-Artwork-003.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1151340/943155b933edb9fedb4c221185e885c98e7d03fe/ss_943155b933edb9fedb4c221185e885c98e7d03fe.1920x1080.jpg?t=1786635263",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 619510,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1151340/943155b933edb9fedb4c221185e885c98e7d03fe/ss_943155b933edb9fedb4c221185e885c98e7d03fe.1920x1080.jpg?t=1786635263"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://gameinformer.com/sites/default/files/styles/og_image/public/2018/11/21/4283dd33/fallout76.jpg.webp",
+        "caption": "Fallout 76 — изображение из проверенного источника",
+        "source_url": "https://gameinformer.com/review/fallout-76/over-encumbered",
+        "width": 1200,
+        "height": 675,
+        "mime": "image/webp",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://gameinformer.com/sites/default/files/styles/og_image/public/2018/11/21/4283dd33/fallout76.jpg.webp",
+        "screenshot: слишком маленькое 1200×675, минимум 1280×720: https://gameinformer.com/sites/default/files/styles/og_image/public/2018/11/21/4283dd33/fallout76.jpg.webp"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1200,
+        "height": 675,
+        "bytes": 138642,
+        "mime": "image/webp",
+        "resolved_url": "https://gameinformer.com/sites/default/files/styles/og_image/public/2018/11/21/4283dd33/fallout76.jpg.webp"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://images.pushsquare.com/3c20305c6b556/1280x720.jpg",
+        "caption": "Fallout 76 — изображение из проверенного источника",
+        "source_url": "https://www.pushsquare.com/reviews/ps4/fallout-76",
+        "width": 1280,
+        "height": 720,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://images.pushsquare.com/3c20305c6b556/1280x720.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1280,
+        "height": 720,
+        "bytes": 104389,
+        "mime": "image/jpeg",
+        "resolved_url": "https://images.pushsquare.com/3c20305c6b556/1280x720.jpg"
+      },
+      "accepted": false
+    }
+  ]
+}

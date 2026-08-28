@@ -1,0 +1,375 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "fallout-new-vegas",
+  "release_year": 2010,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:33.601Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/22380/library_hero.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/22380/library_600x900_2x.jpg",
+  "screenshots": 10,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 4,
+  "comments": [
+    "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/22380/library_hero.jpg",
+    "screenshot: источник изображения не подтверждён: https://gameinformer.com/sites/default/files/styles/no_compression/public/2024/04/09/36510f9b/zfallout_s1_ut_101_220829_whijoj_01364rc.jpg.webp",
+    "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2020/10/Fallout-New-Vegas-Artwork-019.jpg",
+    "screenshot: источник изображения не подтверждён: https://gameinformer.com/sites/default/files/styles/no_compression/public/2024/04/09/a0849744/zfallout_s1_ut_101_220913_whijoj_00125rc.jpg.webp",
+    "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2020/10/Fallout-New-Vegas-Artwork-023.jpg",
+    "screenshot: источник изображения не подтверждён: https://gameinformer.com/sites/default/files/styles/no_compression/public/2024/04/09/64005d1b/zfallout_s1_ut_102_220810_whijoj_00905rc.jpg.webp",
+    "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2020/10/Fallout-New-Vegas-Artwork-023-1536x864.jpg",
+    "После quality gate осталось только 4/6 допустимых скриншотов."
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/22380/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/22380/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/22380/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 620,
+        "bytes": 274781,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/22380/library_hero.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/22380/library_600x900_2x.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 600,
+        "height": 900,
+        "bytes": 222503,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/22380/library_600x900_2x.jpg"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/22380/ss_62f8d0b006935ff6de7fe276f713e7d15e579bc9.1920x1080.jpg?t=1765992876",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1280,
+        "height": 720,
+        "bytes": 124903,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/22380/ss_62f8d0b006935ff6de7fe276f713e7d15e579bc9.1920x1080.jpg?t=1765992876"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://gameinformer.com/sites/default/files/styles/no_compression/public/2024/04/09/36510f9b/zfallout_s1_ut_101_220829_whijoj_01364rc.jpg.webp",
+        "caption": "Fallout: New Vegas — изображение из проверенного источника",
+        "source_url": "https://gameinformer.com/review/2024/04/10/the-fallout-tv-show-is-good-season-1-review",
+        "width": 3900,
+        "height": 2598,
+        "mime": "image/webp",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://gameinformer.com/sites/default/files/styles/no_compression/public/2024/04/09/36510f9b/zfallout_s1_ut_101_220829_whijoj_01364rc.jpg.webp"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 3900,
+        "height": 2598,
+        "bytes": 702834,
+        "mime": "image/webp",
+        "resolved_url": "https://gameinformer.com/sites/default/files/styles/no_compression/public/2024/04/09/36510f9b/zfallout_s1_ut_101_220829_whijoj_01364rc.jpg.webp"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.rpgfan.com/wp-content/uploads/2020/10/Fallout-New-Vegas-Artwork-019.jpg",
+        "caption": "Fallout: New Vegas — изображение из проверенного источника",
+        "source_url": "https://www.rpgfan.com/media/fallout-new-vegas/",
+        "width": 2000,
+        "height": 1200,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2020/10/Fallout-New-Vegas-Artwork-019.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 2000,
+        "height": 1200,
+        "bytes": 350972,
+        "mime": "image/jpeg",
+        "resolved_url": "https://www.rpgfan.com/wp-content/uploads/2020/10/Fallout-New-Vegas-Artwork-019.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/22380/ss_ec8a28942fcb5cb15718f949ab81124932a5084d.1920x1080.jpg?t=1765992876",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 204733,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/22380/ss_ec8a28942fcb5cb15718f949ab81124932a5084d.1920x1080.jpg?t=1765992876"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://gameinformer.com/sites/default/files/styles/no_compression/public/2024/04/09/a0849744/zfallout_s1_ut_101_220913_whijoj_00125rc.jpg.webp",
+        "caption": "Fallout: New Vegas — изображение из проверенного источника",
+        "source_url": "https://gameinformer.com/review/2024/04/10/the-fallout-tv-show-is-good-season-1-review",
+        "width": 3900,
+        "height": 2598,
+        "mime": "image/webp",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://gameinformer.com/sites/default/files/styles/no_compression/public/2024/04/09/a0849744/zfallout_s1_ut_101_220913_whijoj_00125rc.jpg.webp"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 3900,
+        "height": 2598,
+        "bytes": 645226,
+        "mime": "image/webp",
+        "resolved_url": "https://gameinformer.com/sites/default/files/styles/no_compression/public/2024/04/09/a0849744/zfallout_s1_ut_101_220913_whijoj_00125rc.jpg.webp"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.rpgfan.com/wp-content/uploads/2020/10/Fallout-New-Vegas-Artwork-023.jpg",
+        "caption": "Fallout: New Vegas — изображение из проверенного источника",
+        "source_url": "https://www.rpgfan.com/game/fallout-new-vegas/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2020/10/Fallout-New-Vegas-Artwork-023.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 278594,
+        "mime": "image/jpeg",
+        "resolved_url": "https://www.rpgfan.com/wp-content/uploads/2020/10/Fallout-New-Vegas-Artwork-023.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/22380/ss_f703adcb9aa1d718a39288adf7d2e1b4dc0e568a.1920x1080.jpg?t=1765992876",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 221859,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/22380/ss_f703adcb9aa1d718a39288adf7d2e1b4dc0e568a.1920x1080.jpg?t=1765992876"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://gameinformer.com/sites/default/files/styles/no_compression/public/2024/04/09/64005d1b/zfallout_s1_ut_102_220810_whijoj_00905rc.jpg.webp",
+        "caption": "Fallout: New Vegas — изображение из проверенного источника",
+        "source_url": "https://gameinformer.com/review/2024/04/10/the-fallout-tv-show-is-good-season-1-review",
+        "width": 3900,
+        "height": 2598,
+        "mime": "image/webp",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://gameinformer.com/sites/default/files/styles/no_compression/public/2024/04/09/64005d1b/zfallout_s1_ut_102_220810_whijoj_00905rc.jpg.webp"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 3900,
+        "height": 2598,
+        "bytes": 299780,
+        "mime": "image/webp",
+        "resolved_url": "https://gameinformer.com/sites/default/files/styles/no_compression/public/2024/04/09/64005d1b/zfallout_s1_ut_102_220810_whijoj_00905rc.jpg.webp"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.rpgfan.com/wp-content/uploads/2020/10/Fallout-New-Vegas-Artwork-023-1536x864.jpg",
+        "caption": "Fallout: New Vegas — изображение из проверенного источника",
+        "source_url": "https://www.rpgfan.com/game/fallout-new-vegas/",
+        "width": 1536,
+        "height": 864,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2020/10/Fallout-New-Vegas-Artwork-023-1536x864.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1536,
+        "height": 864,
+        "bytes": 148541,
+        "mime": "image/jpeg",
+        "resolved_url": "https://www.rpgfan.com/wp-content/uploads/2020/10/Fallout-New-Vegas-Artwork-023-1536x864.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/22380/ss_e05e3697347c076d3382188bcf883339cf6144d5.1920x1080.jpg?t=1765992876",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1728,
+        "height": 1080,
+        "bytes": 227823,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/22380/ss_e05e3697347c076d3382188bcf883339cf6144d5.1920x1080.jpg?t=1765992876"
+      },
+      "accepted": true
+    }
+  ]
+}

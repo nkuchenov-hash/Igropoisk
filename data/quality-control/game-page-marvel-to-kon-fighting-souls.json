@@ -1,0 +1,381 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "marvel-to-kon-fighting-souls",
+  "release_year": 2026,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:04.732Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/library_hero.jpg",
+  "cover": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1786097849",
+  "screenshots": 12,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 10,
+  "comments": [
+    "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/library_hero.jpg",
+    "cover: слишком маленькое 231×87, минимум 600×850: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1786097849",
+    "cover: неверная ориентация/пропорции 2.66; нужна вертикальная обложка: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1786097849",
+    "cover: слишком маленький файл 10071 B, минимум 45000 B: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1786097849",
+    "screenshot: источник изображения не подтверждён: https://m.media-amazon.com/images/I/91aahQ9UNGL.png",
+    "screenshot: источник изображения не подтверждён: https://colorir.info/images/imgcolor/Desenho-de-Crianca-Estudando-Imprimivel-Gratis-para-colorir.jpg",
+    "screenshot: слишком маленькое 1024×1024, минимум 1280×720: https://colorir.info/images/imgcolor/Desenho-de-Crianca-Estudando-Imprimivel-Gratis-para-colorir.jpg",
+    "screenshot: подозрительные пропорции (1.00): https://colorir.info/images/imgcolor/Desenho-de-Crianca-Estudando-Imprimivel-Gratis-para-colorir.jpg"
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/3787240/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 620,
+        "bytes": 439417,
+        "mime": "image/jpeg",
+        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/3787240/library_hero.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1786097849",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [
+        "cover: слишком маленькое 231×87, минимум 600×850: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1786097849",
+        "cover: неверная ориентация/пропорции 2.66; нужна вертикальная обложка: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1786097849",
+        "cover: слишком маленький файл 10071 B, минимум 45000 B: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1786097849"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 231,
+        "height": 87,
+        "bytes": 10071,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3787240/59af95e2175fe017802e3fe79588197a52bef6c0/capsule_231x87.jpg?t=1786097849"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/10c0fc19577ce7b7d5ea0fbcb257a1744d320f91/ss_10c0fc19577ce7b7d5ea0fbcb257a1744d320f91.1920x1080.jpg?t=1787294563",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 767341,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/10c0fc19577ce7b7d5ea0fbcb257a1744d320f91/ss_10c0fc19577ce7b7d5ea0fbcb257a1744d320f91.1920x1080.jpg?t=1787294563"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/695493c0bcb6f662019b22d148092b60e7de6167/ss_695493c0bcb6f662019b22d148092b60e7de6167.1920x1080.jpg?t=1787294563",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 796911,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/695493c0bcb6f662019b22d148092b60e7de6167/ss_695493c0bcb6f662019b22d148092b60e7de6167.1920x1080.jpg?t=1787294563"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/4c831d2310a742238e3755366a6b8ae073aa44c0/ss_4c831d2310a742238e3755366a6b8ae073aa44c0.1920x1080.jpg?t=1787294563",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 591881,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/4c831d2310a742238e3755366a6b8ae073aa44c0/ss_4c831d2310a742238e3755366a6b8ae073aa44c0.1920x1080.jpg?t=1787294563"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/b64c0eb3fdfa7b80cd8b0899ae0440d02f9daaf4/ss_b64c0eb3fdfa7b80cd8b0899ae0440d02f9daaf4.1920x1080.jpg?t=1787294563",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 396543,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/b64c0eb3fdfa7b80cd8b0899ae0440d02f9daaf4/ss_b64c0eb3fdfa7b80cd8b0899ae0440d02f9daaf4.1920x1080.jpg?t=1787294563"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/953c246f3b05c5fa26b2ff5081001a7e8fe03a86/ss_953c246f3b05c5fa26b2ff5081001a7e8fe03a86.1920x1080.jpg?t=1787294563",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 651130,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/953c246f3b05c5fa26b2ff5081001a7e8fe03a86/ss_953c246f3b05c5fa26b2ff5081001a7e8fe03a86.1920x1080.jpg?t=1787294563"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/9b9f80562039feb05bb71759a2f185a8ed7d2253/ss_9b9f80562039feb05bb71759a2f185a8ed7d2253.1920x1080.jpg?t=1787294563",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 341738,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/9b9f80562039feb05bb71759a2f185a8ed7d2253/ss_9b9f80562039feb05bb71759a2f185a8ed7d2253.1920x1080.jpg?t=1787294563"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/47d19210a3b60ef03cd24bfa5c33b16429598384/ss_47d19210a3b60ef03cd24bfa5c33b16429598384.1920x1080.jpg?t=1787294563",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 543964,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/47d19210a3b60ef03cd24bfa5c33b16429598384/ss_47d19210a3b60ef03cd24bfa5c33b16429598384.1920x1080.jpg?t=1787294563"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/53c006b5fd5bf3d8ea62dd6d411ddeac4a624502/ss_53c006b5fd5bf3d8ea62dd6d411ddeac4a624502.1920x1080.jpg?t=1787294563",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 582374,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/53c006b5fd5bf3d8ea62dd6d411ddeac4a624502/ss_53c006b5fd5bf3d8ea62dd6d411ddeac4a624502.1920x1080.jpg?t=1787294563"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/f742f63a322d9178e5ead166423840dfdd6ef73d/ss_f742f63a322d9178e5ead166423840dfdd6ef73d.1920x1080.jpg?t=1787294563",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 591173,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/f742f63a322d9178e5ead166423840dfdd6ef73d/ss_f742f63a322d9178e5ead166423840dfdd6ef73d.1920x1080.jpg?t=1787294563"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/3e0586b860aa01cc1cf73cf0385fba6aafca9ce1/ss_3e0586b860aa01cc1cf73cf0385fba6aafca9ce1.1920x1080.jpg?t=1787294563",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 810340,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3787240/3e0586b860aa01cc1cf73cf0385fba6aafca9ce1/ss_3e0586b860aa01cc1cf73cf0385fba6aafca9ce1.1920x1080.jpg?t=1787294563"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://m.media-amazon.com/images/I/91aahQ9UNGL.png",
+        "caption": "MARVEL Tōkon: Fighting Souls",
+        "source_url": "https://www.bing.com/images/search"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://m.media-amazon.com/images/I/91aahQ9UNGL.png"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 660891,
+        "mime": "image/png",
+        "resolved_url": "https://m.media-amazon.com/images/I/91aahQ9UNGL.png"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://colorir.info/images/imgcolor/Desenho-de-Crianca-Estudando-Imprimivel-Gratis-para-colorir.jpg",
+        "caption": "MARVEL Tōkon: Fighting Souls",
+        "source_url": "https://www.bing.com/images/search"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://colorir.info/images/imgcolor/Desenho-de-Crianca-Estudando-Imprimivel-Gratis-para-colorir.jpg",
+        "screenshot: слишком маленькое 1024×1024, минимум 1280×720: https://colorir.info/images/imgcolor/Desenho-de-Crianca-Estudando-Imprimivel-Gratis-para-colorir.jpg",
+        "screenshot: подозрительные пропорции (1.00): https://colorir.info/images/imgcolor/Desenho-de-Crianca-Estudando-Imprimivel-Gratis-para-colorir.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1024,
+        "height": 1024,
+        "bytes": 100491,
+        "mime": "image/jpeg",
+        "resolved_url": "https://colorir.info/images/imgcolor/Desenho-de-Crianca-Estudando-Imprimivel-Gratis-para-colorir.jpg"
+      },
+      "accepted": false
+    }
+  ]
+}

@@ -1,0 +1,367 @@
+{
+  "schema_version": 6,
+  "validator": "game-media-quality",
+  "game_slug": "arknights-endfield",
+  "release_year": 9999,
+  "media_profile": "modern",
+  "checked_at": "2026-08-28T14:20:49.579Z",
+  "status": "red-needs-revision",
+  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/4732690/library_hero.jpg",
+  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/4732690/library_600x900_2x.jpg",
+  "screenshots": 10,
+  "minimum_screenshots": 6,
+  "accepted_screenshots": 5,
+  "comments": [
+    "hero: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/4732690/library_hero.jpg",
+    "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/4732690/library_600x900_2x.jpg",
+    "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-001.jpg",
+    "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4732690/d491692a834d0988196386df36afd97a405ceb7e/capsule_616x353.jpg?t=1786628467",
+    "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-010.jpg",
+    "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-009.jpg",
+    "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-008.jpg",
+    "После quality gate осталось только 5/6 допустимых скриншотов."
+  ],
+  "checks": [
+    {
+      "role": "hero",
+      "item": {
+        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/4732690/library_hero.jpg",
+        "source_url": "https://store.steampowered.com/app/4732690/"
+      },
+      "rules": {
+        "minimum_width_modern": 1200,
+        "minimum_height_modern": 675,
+        "minimum_width_historical": 960,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 80000,
+        "minimum_bytes_historical": 45000
+      },
+      "errors": [
+        "hero: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/4732690/library_hero.jpg"
+      ],
+      "probe": {
+        "ok": false,
+        "status": 404
+      },
+      "accepted": false
+    },
+    {
+      "role": "cover",
+      "item": "https://cdn.cloudflare.steamstatic.com/steam/apps/4732690/library_600x900_2x.jpg",
+      "rules": {
+        "minimum_width_modern": 600,
+        "minimum_height_modern": 850,
+        "minimum_width_historical": 300,
+        "minimum_height_historical": 450,
+        "minimum_bytes_modern": 45000,
+        "minimum_bytes_historical": 25000
+      },
+      "errors": [
+        "cover: изображение недоступно https://cdn.cloudflare.steamstatic.com/steam/apps/4732690/library_600x900_2x.jpg"
+      ],
+      "probe": {
+        "ok": false,
+        "status": 404
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4732690/57940d18fc2451e3ccf3d7f8e13a08532e041402/ss_57940d18fc2451e3ccf3d7f8e13a08532e041402.1920x1080.jpg?t=1786628467",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 507382,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4732690/57940d18fc2451e3ccf3d7f8e13a08532e041402/ss_57940d18fc2451e3ccf3d7f8e13a08532e041402.1920x1080.jpg?t=1786628467"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4732690/8706edd47de4d7fa8d99e7265e3905448b718397/page_bg_raw.jpg?t=1786628467",
+        "caption": "Arknights: Endfield — изображение из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/4732690/",
+        "width": 1438,
+        "height": 810,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1438,
+        "height": 810,
+        "bytes": 334826,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4732690/8706edd47de4d7fa8d99e7265e3905448b718397/page_bg_raw.jpg?t=1786628467"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-001.jpg",
+        "caption": "Arknights: Endfield — изображение из проверенного источника",
+        "source_url": "https://www.rpgfan.com/game/arknights-endfield/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-001.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 675805,
+        "mime": "image/jpeg",
+        "resolved_url": "https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-001.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4732690/34a0e3a2fb9860e0da28bf8acb66f75d5579f035/ss_34a0e3a2fb9860e0da28bf8acb66f75d5579f035.1920x1080.jpg?t=1786628467",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 703969,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4732690/34a0e3a2fb9860e0da28bf8acb66f75d5579f035/ss_34a0e3a2fb9860e0da28bf8acb66f75d5579f035.1920x1080.jpg?t=1786628467"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4732690/d491692a834d0988196386df36afd97a405ceb7e/capsule_616x353.jpg?t=1786628467",
+        "caption": "Arknights: Endfield — изображение из проверенного источника",
+        "source_url": "https://store.steampowered.com/app/4732690/",
+        "width": 616,
+        "height": 353,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: слишком маленькое 616×353, минимум 1280×720: https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4732690/d491692a834d0988196386df36afd97a405ceb7e/capsule_616x353.jpg?t=1786628467"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 616,
+        "height": 353,
+        "bytes": 94675,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4732690/d491692a834d0988196386df36afd97a405ceb7e/capsule_616x353.jpg?t=1786628467"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-010.jpg",
+        "caption": "Arknights: Endfield — изображение из проверенного источника",
+        "source_url": "https://www.rpgfan.com/game/arknights-endfield/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-010.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 771850,
+        "mime": "image/jpeg",
+        "resolved_url": "https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-010.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4732690/ae77e90326f3ee8281e54620e59724ede6c24512/ss_ae77e90326f3ee8281e54620e59724ede6c24512.1920x1080.jpg?t=1786628467",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 735768,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4732690/ae77e90326f3ee8281e54620e59724ede6c24512/ss_ae77e90326f3ee8281e54620e59724ede6c24512.1920x1080.jpg?t=1786628467"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-009.jpg",
+        "caption": "Arknights: Endfield — изображение из проверенного источника",
+        "source_url": "https://www.rpgfan.com/game/arknights-endfield/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-009.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 518572,
+        "mime": "image/jpeg",
+        "resolved_url": "https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-009.jpg"
+      },
+      "accepted": false
+    },
+    {
+      "role": "screenshot",
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4732690/4eb9007d69fc9e2aa6642ac84854475c656c49ad/ss_4eb9007d69fc9e2aa6642ac84854475c656c49ad.1920x1080.jpg?t=1786628467",
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 841862,
+        "mime": "image/jpeg",
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4732690/4eb9007d69fc9e2aa6642ac84854475c656c49ad/ss_4eb9007d69fc9e2aa6642ac84854475c656c49ad.1920x1080.jpg?t=1786628467"
+      },
+      "accepted": true
+    },
+    {
+      "role": "screenshot",
+      "item": {
+        "url": "https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-008.jpg",
+        "caption": "Arknights: Endfield — изображение из проверенного источника",
+        "source_url": "https://www.rpgfan.com/game/arknights-endfield/",
+        "width": 1920,
+        "height": 1080,
+        "mime": "image/jpeg",
+        "provider": "verified-source-page"
+      },
+      "rules": {
+        "minimum_width_modern": 1280,
+        "minimum_height_modern": 720,
+        "minimum_width_historical": 640,
+        "minimum_height_historical": 480,
+        "minimum_bytes_modern": 70000,
+        "minimum_bytes_historical": 35000,
+        "minimum_count_modern": 6,
+        "minimum_count_historical": 5
+      },
+      "errors": [
+        "screenshot: источник изображения не подтверждён: https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-008.jpg"
+      ],
+      "probe": {
+        "ok": true,
+        "width": 1920,
+        "height": 1080,
+        "bytes": 553117,
+        "mime": "image/jpeg",
+        "resolved_url": "https://www.rpgfan.com/wp-content/uploads/2024/01/Arknights-Endfield-Artwork-008.jpg"
+      },
+      "accepted": false
+    }
+  ]
+}
