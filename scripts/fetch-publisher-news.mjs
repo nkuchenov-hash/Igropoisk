@@ -3,11 +3,12 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
+import { parseStructuredOfficialNews } from './lib/news-official-structured.mjs';
 
 const registryPath = path.resolve('data/news-sources.json');
 const outputPath = path.resolve('data/publisher-news.json');
 const imageDirectory = path.resolve('assets/publisher-news');
-const userAgent = 'IgropoiskOfficialSourceBot/3.1 (+https://github.com/nkuchenov-hash/Igropoisk)';
+const userAgent = 'IgropoiskOfficialSourceBot/3.2 (+https://github.com/nkuchenov-hash/Igropoisk)';
 const maxItems = 180;
 const maxAgeDays = 14;
 const localModel = process.env.NEWS_LOCAL_TRANSLATION_MODEL || 'Xenova/opus-mt-en-ru';
@@ -47,20 +48,18 @@ async function fetchText(url, timeout = 20000, accept = 'text/html,application/x
   } finally { clearTimeout(timer); }
 }
 
-async function discoverFeed(source) {
-  if (source.feedUrl) return source.feedUrl;
-  try {
-    const { text, finalUrl } = await fetchText(source.siteUrl, 15000);
-    const links = text.match(/<link\b[^>]*>/gi) || [];
-    for (const link of links) {
-      const type = attr(link, 'type').toLowerCase();
-      const rel = attr(link, 'rel').toLowerCase();
-      if (!rel.includes('alternate') || !/(rss|atom|xml)/.test(type)) continue;
-      const candidate = absolute(attr(link, 'href'), finalUrl);
-      if (candidate) return candidate;
-    }
-  } catch (error) { console.error(`[official/discovery] ${source.name}: ${error.message}`); }
-  return '';
+async function discoverSource(source) {
+  if (source.feedUrl) return { feedUrl: source.feedUrl, pageText: '', pageUrl: source.siteUrl };
+  const { text, finalUrl } = await fetchText(source.siteUrl, 15000);
+  const links = text.match(/<link\b[^>]*>/gi) || [];
+  for (const link of links) {
+    const type = attr(link, 'type').toLowerCase();
+    const rel = attr(link, 'rel').toLowerCase();
+    if (!rel.includes('alternate') || !/(rss|atom|xml)/.test(type)) continue;
+    const candidate = absolute(attr(link, 'href'), finalUrl);
+    if (candidate) return { feedUrl: candidate, pageText: text, pageUrl: finalUrl };
+  }
+  return { feedUrl: '', pageText: text, pageUrl: finalUrl };
 }
 
 function parseFeed(xml, source, feedUrl) {
@@ -77,9 +76,27 @@ function parseFeed(xml, source, feedUrl) {
       id: createHash('sha1').update(url || `${source.id}-${title}`).digest('hex').slice(0, 16),
       title, summary, url, publishedAt,
       sourceId: source.id, source: source.name, organization: source.organization,
-      sourceKind: source.kind, game: source.game || '', sourceLanguage: source.language || 'en'
+      sourceKind: source.kind, game: source.game || '', sourceLanguage: source.language || 'en', discoveryMode: 'rss'
     };
   }).filter(item => item.title && item.url && Date.now() - new Date(item.publishedAt).getTime() <= maxAgeDays * 864e5);
+}
+
+function structuredWithIds(html, source, pageUrl) {
+  return parseStructuredOfficialNews(html, source, pageUrl, { maxAgeDays }).map(item => ({
+    ...item,
+    id: createHash('sha1').update(item.url || `${source.id}-${item.title}`).digest('hex').slice(0, 16)
+  }));
+}
+
+async function structuredFallback(source, discovery = {}) {
+  let pageText = discovery.pageText || '';
+  let pageUrl = discovery.pageUrl || source.siteUrl;
+  if (!pageText) {
+    const fetched = await fetchText(source.siteUrl, 15000);
+    pageText = fetched.text;
+    pageUrl = fetched.finalUrl;
+  }
+  return structuredWithIds(pageText, source, pageUrl);
 }
 
 function translatedText(result) {
@@ -268,16 +285,50 @@ const sources = (registry.sources || []).filter(source => source.enabled !== fal
 const raw = [];
 const sourceReport = [];
 for (const source of sources) {
-  const feedUrl = await discoverFeed(source);
-  if (!feedUrl) { sourceReport.push({ id: source.id, status: 'no-feed' }); continue; }
+  let discovery;
   try {
-    const { text } = await fetchText(feedUrl, 15000);
-    const parsed = parseFeed(text, source, feedUrl);
-    raw.push(...parsed);
-    sourceReport.push({ id: source.id, status: 'ok', feedUrl, items: parsed.length });
+    discovery = await discoverSource(source);
   } catch (error) {
-    sourceReport.push({ id: source.id, status: 'error', feedUrl, error: error.message });
-    console.error(`[official/feed] ${source.name}: ${error.message}`);
+    sourceReport.push({ id: source.id, status: 'error', mode: 'discovery', error: error.message });
+    console.error(`[official/discovery] ${source.name}: ${error.message}`);
+    continue;
+  }
+
+  if (discovery.feedUrl) {
+    try {
+      const { text } = await fetchText(discovery.feedUrl, 15000);
+      const parsed = parseFeed(text, source, discovery.feedUrl);
+      raw.push(...parsed);
+      sourceReport.push({ id: source.id, status: 'ok', mode: 'rss', feedUrl: discovery.feedUrl, items: parsed.length });
+      continue;
+    } catch (error) {
+      console.error(`[official/feed] ${source.name}: ${error.message}; checking structured fallback`);
+      try {
+        const parsed = await structuredFallback(source, discovery);
+        if (parsed.length) {
+          raw.push(...parsed);
+          sourceReport.push({ id: source.id, status: 'ok', mode: 'jsonld-after-feed-error', feedUrl: discovery.feedUrl, feedError: error.message, items: parsed.length });
+          continue;
+        }
+      } catch (structuredError) {
+        console.error(`[official/jsonld] ${source.name}: ${structuredError.message}`);
+      }
+      sourceReport.push({ id: source.id, status: 'error', mode: 'rss', feedUrl: discovery.feedUrl, error: error.message });
+      continue;
+    }
+  }
+
+  try {
+    const parsed = await structuredFallback(source, discovery);
+    if (parsed.length) {
+      raw.push(...parsed);
+      sourceReport.push({ id: source.id, status: 'ok', mode: 'jsonld', pageUrl: discovery.pageUrl, items: parsed.length });
+    } else {
+      sourceReport.push({ id: source.id, status: 'no-feed', mode: 'none', pageUrl: discovery.pageUrl, items: 0 });
+    }
+  } catch (error) {
+    sourceReport.push({ id: source.id, status: 'error', mode: 'jsonld', error: error.message });
+    console.error(`[official/jsonld] ${source.name}: ${error.message}`);
   }
 }
 
@@ -289,6 +340,8 @@ for (const file of await fs.readdir(imageDirectory).catch(() => [])) if (!used.h
 await fs.writeFile(outputPath, `${JSON.stringify({
   generatedAt: new Date().toISOString(), updateFrequency: 'hourly', sourceCount: sources.length,
   successfulSourceCount: sourceReport.filter(item => item.status === 'ok').length,
+  rssSourceCount: sourceReport.filter(item => item.status === 'ok' && item.mode === 'rss').length,
+  structuredSourceCount: sourceReport.filter(item => item.status === 'ok' && String(item.mode).startsWith('jsonld')).length,
   localTranslatedItemCount: localTranslatedItems,
   remoteTranslatedItemCount: remoteTranslatedItems,
   sourceRussianItemCount: sourceRussianItems,
@@ -298,4 +351,4 @@ await fs.writeFile(outputPath, `${JSON.stringify({
   localTranslationModel: localModel,
   sourceReport, items
 }, null, 2)}\n`);
-console.log(`[official] wrote ${items.length} Russian-ready items from ${sourceReport.filter(item => item.status === 'ok').length}/${sources.length} sources; local=${localTranslatedItems}; remote=${remoteTranslatedItems}; source-ru=${sourceRussianItems}; image-fallback=${imageFallbackItems}; untranslated-dropped=${untranslatedDroppedItems}; source-language-fallback=0`);
+console.log(`[official] wrote ${items.length} Russian-ready items from ${sourceReport.filter(item => item.status === 'ok').length}/${sources.length} sources; rss=${sourceReport.filter(item => item.status === 'ok' && item.mode === 'rss').length}; jsonld=${sourceReport.filter(item => item.status === 'ok' && String(item.mode).startsWith('jsonld')).length}; local=${localTranslatedItems}; remote=${remoteTranslatedItems}; source-ru=${sourceRussianItems}; image-fallback=${imageFallbackItems}; untranslated-dropped=${untranslatedDroppedItems}`);
