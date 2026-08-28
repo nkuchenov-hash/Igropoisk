@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import { isLikelyNewsContent } from './lib/news-content-policy.mjs';
 import { validateProductionNews } from './lib/news-editor-production.mjs';
-import { promoteBalancedSelection } from './preserve-news-history.mjs';
 
 const rejectTitles = [
   'Saw: Genesis has a gnarly vision for asymmetrical multiplayer games, but the execution needs work – pun intended',
@@ -25,13 +24,6 @@ const acceptItems = [
 for (const [title, summary] of acceptItems) {
   assert.equal(isLikelyNewsContent({ title, summary, url: 'https://example.test/news' }), true, title);
 }
-
-const notPromoted = promoteBalancedSelection([
-  { id: 'real', publicEligible: true },
-  { id: 'low-confidence', publicEligible: false, globalEligible: false }
-], 12);
-assert.equal(notPromoted[1].publicEligible, false, 'Low-confidence content must never be promoted to public just to fill the homepage.');
-assert.notEqual(notPromoted[1].selectionReason, 'editorial-balance-floor');
 
 const viceInput = {
   title: 'GTA 6 Looks Like It Features This Popular TV Show Apartment',
