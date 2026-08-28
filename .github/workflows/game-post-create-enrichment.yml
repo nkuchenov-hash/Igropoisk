@@ -22,6 +22,7 @@ on:
       - 'scripts/validate-game-media-quality.mjs'
       - 'scripts/validate-game-shells.mjs'
       - 'scripts/run-content-pipeline.mjs'
+      - 'scripts/select-next-game-page-target.mjs'
       - 'config/game-page-quality-v2.json'
       - 'data/content-pipeline/execution-plan.json'
       - 'data/content-pipeline/page-acceptance-target.json'
@@ -33,14 +34,14 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-enrichment-v7-${{ inputs.slug || 'queue' }}
+  group: game-post-create-enrichment-v8-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
   cancel-in-progress: false
 
 jobs:
   enrich:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 30
     steps:
       - name: Checkout staging snapshot
         uses: actions/checkout@v4
@@ -62,12 +63,22 @@ jobs:
           node --check scripts/discover-review-media.mjs
           node --check scripts/validate-game-media-quality.mjs
           node --check scripts/validate-game-shells.mjs
+          node --check scripts/select-next-game-page-target.mjs
           node --check game/_shared/game-page-review-sources.js
       - name: Refresh execution plan
         run: node scripts/orchestrate-content.mjs --finalize
+      - name: Resolve one bounded page target
+        id: target
+        env:
+          REQUESTED_SLUG: ${{ inputs.slug || github.event.client_payload.slug || '' }}
+        run: |
+          TARGET="$(node scripts/select-next-game-page-target.mjs "$REQUESTED_SLUG")"
+          test -n "$TARGET"
+          echo "slug=$TARGET" >> "$GITHUB_OUTPUT"
+          echo "Bounded Game Page target: $TARGET"
       - name: Run complete AI-independent page enrichment cycle
         env:
-          GAME_TARGET_SLUG: ${{ inputs.slug }}
+          GAME_TARGET_SLUG: ${{ steps.target.outputs.slug }}
           EDITORIAL_AI_ENABLED: 'false'
         run: node scripts/run-content-pipeline.mjs
       - name: Prove page cycle did not call paid OpenAI
@@ -78,17 +89,15 @@ jobs:
           if(log.summary?.editorial_ai_available) throw new Error('Page cycle unexpectedly enabled paid editorial AI');
           const text=JSON.stringify(log.results||[]);
           if(/api\.openai\.com|OpenAI API 429|insufficient_quota/i.test(text)) throw new Error('Paid OpenAI call detected in page cycle');
-          console.log('AI-independent page-cycle contract verified.');
+          if(!log.summary?.target_slug) throw new Error('Bounded target was lost inside the page cycle');
+          console.log(`AI-independent bounded page-cycle contract verified for ${log.summary.target_slug}.`);
           NODE
-      - name: Validate generated game shells and material feeds
+      - name: Validate generated game shell and material feeds
         run: |
           TARGET="$(node -p "require('./data/content-pipeline/execution-log.json').summary.target_slug || ''")"
-          if [ -n "$TARGET" ]; then
-            echo "Validating isolated target shell: $TARGET"
-            node scripts/validate-game-shells.mjs "$TARGET"
-          else
-            node scripts/validate-game-shells.mjs
-          fi
+          test -n "$TARGET"
+          echo "Validating isolated target shell: $TARGET"
+          node scripts/validate-game-shells.mjs "$TARGET"
           git diff --check
       - name: Require active target to be green before publication
         run: |
@@ -96,7 +105,7 @@ jobs:
           const fs=require('fs');
           const log=JSON.parse(fs.readFileSync('data/content-pipeline/execution-log.json','utf8'));
           const slug=log.summary?.target_slug;
-          if(!slug) process.exit(0);
+          if(!slug) throw new Error('Target slug missing after bounded page cycle');
           const qc=JSON.parse(fs.readFileSync(`data/quality-control/page-${slug}-control.json`,'utf8'));
           if(!qc.green) throw new Error(`Target ${slug} is still red: ${(qc.comments||[]).join(' | ')}`);
           console.log(`Target ${slug} passed page QC.`);
@@ -113,5 +122,5 @@ jobs:
           git add -A
           git commit -m "Continue game page enrichment ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
           git push origin "$BRANCH"
-          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated AI-independent page enrichment: structured data, Media, discovered review/source links and ratings. Paid editorial AI is not required for Game Page readiness.")"
+          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated AI-independent bounded page enrichment: structured data, Media, discovered review/source links and ratings. Paid editorial AI is not required for Game Page readiness.")"
           gh pr merge "$PR_URL" --merge --delete-branch
