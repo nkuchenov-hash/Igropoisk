@@ -1,15 +1,13 @@
 {
-  "schema_version": 6,
+  "schema_version": 8,
   "type": "page",
   "game_slug": "pax-autocratica",
   "game_id": "game_2a7ceb637cbcf1a28770",
   "canonical_title": "Pax Autocratica",
-  "checked_at": "2026-08-28T09:52:58.204Z",
-  "status": "red-needs-revision",
-  "green": false,
-  "comments": [
-    "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900.jpg"
-  ],
+  "checked_at": "2026-08-28T20:54:55.003Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
   "revision_history": [
     {
       "attempt": 1,
@@ -17,7 +15,7 @@
       "script": "scripts/build-similarity-index.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"catalog_games\": 215,\n  \"profiles\": 220,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"year_proximity_used\": false\n}\n",
+      "stdout": "{\n  \"catalog_games\": 216,\n  \"profiles\": 220,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"year_proximity_used\": false\n}\n",
       "stderr": ""
     },
     {
@@ -62,7 +60,7 @@
       "script": "scripts/discover-game-videos.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"accepted\": 54,\n  \"rejected\": 80,\n  \"video_reviews\": 37,\n  \"trailers\": 8,\n  \"gameplay\": 9,\n  \"provider_independent_search\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"accepted\": 59,\n  \"rejected\": 74,\n  \"video_reviews\": 41,\n  \"trailers\": 10,\n  \"gameplay\": 8,\n  \"provider_independent_search\": true\n}\n",
       "stderr": ""
     },
     {
@@ -71,197 +69,18 @@
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": 1,\n  \"accepted_screenshots\": 40\n}\n",
+      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"green\",\n  \"release_year\": 2026,\n  \"media_profile\": \"modern\",\n  \"comments\": 0,\n  \"accepted_screenshots\": 40,\n  \"minimum_screenshots\": 6\n}\n",
       "stderr": ""
     },
     {
       "attempt": 8,
-      "label": "similarity-2",
-      "script": "scripts/build-similarity-index.mjs",
+      "label": "finalize-green-page-state",
       "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"catalog_games\": 215,\n  \"profiles\": 220,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"year_proximity_used\": false\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 9,
-      "label": "page-materials-research-2",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 4,\n  \"scored_sources\": 1,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 10,
-      "label": "page-native-review-sources-2",
-      "script": "scripts/enrich-review-native-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"native_added\": 0,\n  \"total_reviews\": 4,\n  \"total_score_sources\": 1,\n  \"rejected\": 3\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 11,
-      "label": "page-ratings-2",
-      "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"completed\",\n  \"material_links\": 4,\n  \"seed_rejected\": 0,\n  \"sources\": 1,\n  \"score_10\": 8,\n  \"use_all_discovered_scores\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 12,
-      "label": "page-media-discovery-2",
-      "script": "scripts/discover-review-media.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"mode\": \"relevance_and_file_verified\",\n  \"screenshots\": 135,\n  \"artwork\": 1,\n  \"total\": 136,\n  \"required_screenshots\": 8\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 13,
-      "label": "page-video-discovery-2",
-      "script": "scripts/discover-game-videos.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"accepted\": 56,\n  \"rejected\": 133,\n  \"video_reviews\": 38,\n  \"trailers\": 8,\n  \"gameplay\": 10,\n  \"provider_independent_search\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 14,
-      "label": "media-validation-2",
-      "script": "scripts/validate-game-media-quality.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": 1,\n  \"accepted_screenshots\": 40\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 15,
-      "label": "similarity-3",
-      "script": "scripts/build-similarity-index.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"catalog_games\": 215,\n  \"profiles\": 220,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"year_proximity_used\": false\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 16,
-      "label": "page-materials-research-3",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 4,\n  \"scored_sources\": 1,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 17,
-      "label": "page-native-review-sources-3",
-      "script": "scripts/enrich-review-native-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"native_added\": 0,\n  \"total_reviews\": 4,\n  \"total_score_sources\": 1,\n  \"rejected\": 3\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 18,
-      "label": "page-ratings-3",
-      "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"completed\",\n  \"material_links\": 4,\n  \"seed_rejected\": 0,\n  \"sources\": 1,\n  \"score_10\": 8,\n  \"use_all_discovered_scores\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 19,
-      "label": "page-media-discovery-3",
-      "script": "scripts/discover-review-media.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"mode\": \"relevance_and_file_verified\",\n  \"screenshots\": 135,\n  \"artwork\": 1,\n  \"total\": 136,\n  \"required_screenshots\": 8\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 20,
-      "label": "page-video-discovery-3",
-      "script": "scripts/discover-game-videos.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"accepted\": 62,\n  \"rejected\": 125,\n  \"video_reviews\": 44,\n  \"trailers\": 8,\n  \"gameplay\": 10,\n  \"provider_independent_search\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 21,
-      "label": "media-validation-3",
-      "script": "scripts/validate-game-media-quality.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": 1,\n  \"accepted_screenshots\": 40\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 22,
-      "label": "similarity-4",
-      "script": "scripts/build-similarity-index.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"catalog_games\": 215,\n  \"profiles\": 220,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"year_proximity_used\": false\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 23,
-      "label": "page-materials-research-4",
-      "script": "scripts/prepare-review-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 4,\n  \"scored_sources\": 1,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 24,
-      "label": "page-native-review-sources-4",
-      "script": "scripts/enrich-review-native-sources.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"native_added\": 0,\n  \"total_reviews\": 4,\n  \"total_score_sources\": 1,\n  \"rejected\": 3\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 25,
-      "label": "page-ratings-4",
-      "script": "scripts/calculate-ratings-from-research.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"completed\",\n  \"material_links\": 4,\n  \"seed_rejected\": 0,\n  \"sources\": 1,\n  \"score_10\": 8,\n  \"use_all_discovered_scores\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 26,
-      "label": "page-media-discovery-4",
-      "script": "scripts/discover-review-media.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"mode\": \"relevance_and_file_verified\",\n  \"screenshots\": 135,\n  \"artwork\": 1,\n  \"total\": 136,\n  \"required_screenshots\": 8\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 27,
-      "label": "page-video-discovery-4",
-      "script": "scripts/discover-game-videos.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"accepted\": 63,\n  \"rejected\": 130,\n  \"video_reviews\": 44,\n  \"trailers\": 8,\n  \"gameplay\": 11,\n  \"provider_independent_search\": true\n}\n",
-      "stderr": ""
-    },
-    {
-      "attempt": 28,
-      "label": "media-validation-4",
-      "script": "scripts/validate-game-media-quality.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"red-needs-revision\",\n  \"comments\": 1,\n  \"accepted_screenshots\": 40\n}\n",
-      "stderr": ""
+      "release_year": 2026,
+      "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_hero_2x.jpg",
+      "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900_2x.jpg",
+      "accepted_screenshots": 40,
+      "minimum_screenshots": 6
     }
   ],
   "policy": {
@@ -271,6 +90,8 @@
     "page_ready_requires_video_discovery": true,
     "page_source_scan_ai_independent": true,
     "page_revision_ai_optional": true,
+    "page_media_uses_game_page_quality_gate_not_article_image_quota": true,
+    "green_page_state_is_materialized": true,
     "editorial_ai_enabled": false,
     "review_article_not_required_for_page": true,
     "quality_never_terminally_blocks": true,
