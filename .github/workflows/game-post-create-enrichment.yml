@@ -19,8 +19,12 @@ on:
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/discover-review-media.mjs'
       - 'scripts/quality-control-loop.mjs'
+      - 'scripts/validate-game-media-quality.mjs'
+      - 'scripts/validate-game-shells.mjs'
       - 'scripts/run-content-pipeline.mjs'
+      - 'config/game-page-quality-v2.json'
       - 'data/content-pipeline/execution-plan.json'
+      - 'data/content-pipeline/page-acceptance-target.json'
       - '.github/workflows/game-post-create-enrichment.yml'
 
 permissions:
@@ -29,7 +33,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-enrichment-v6-${{ inputs.slug || 'queue' }}
+  group: game-post-create-enrichment-v7-${{ inputs.slug || 'queue' }}
   cancel-in-progress: false
 
 jobs:
@@ -56,6 +60,8 @@ jobs:
           node --check scripts/prepare-review-research.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/discover-review-media.mjs
+          node --check scripts/validate-game-media-quality.mjs
+          node --check scripts/validate-game-shells.mjs
           node --check game/_shared/game-page-review-sources.js
       - name: Refresh execution plan
         run: node scripts/orchestrate-content.mjs --finalize
@@ -76,8 +82,25 @@ jobs:
           NODE
       - name: Validate generated game shells and material feeds
         run: |
-          node scripts/validate-game-shells.mjs
+          TARGET="$(node -p "require('./data/content-pipeline/execution-log.json').summary.target_slug || ''")"
+          if [ -n "$TARGET" ]; then
+            echo "Validating isolated target shell: $TARGET"
+            node scripts/validate-game-shells.mjs "$TARGET"
+          else
+            node scripts/validate-game-shells.mjs
+          fi
           git diff --check
+      - name: Require active target to be green before publication
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const log=JSON.parse(fs.readFileSync('data/content-pipeline/execution-log.json','utf8'));
+          const slug=log.summary?.target_slug;
+          if(!slug) process.exit(0);
+          const qc=JSON.parse(fs.readFileSync(`data/quality-control/page-${slug}-control.json`,'utf8'));
+          if(!qc.green) throw new Error(`Target ${slug} is still red: ${(qc.comments||[]).join(' | ')}`);
+          console.log(`Target ${slug} passed page QC.`);
+          NODE
       - name: Publish enrichment snapshot to staging
         env:
           GH_TOKEN: ${{ github.token }}
