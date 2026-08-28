@@ -109,6 +109,12 @@ jobs:
           mkdir -p assets/covers/releases assets/covers/popular data/release-drafts data/parser-runs
           node scripts/run-scheduled-parsers.mjs
 
+      - name: Trigger autonomous news fallback
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run news-pipeline.yml --ref staging
+
       - name: Repair release slugs generated from non-Latin titles
         id: release_slug_repair
         if: always()
