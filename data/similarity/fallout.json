@@ -1,18 +1,19 @@
 {
   "schema_version": 3,
   "game_slug": "fallout",
-  "generated_at": "2026-08-28T09:38:31.634Z",
+  "generated_at": "2026-08-28T10:10:23.094Z",
   "algorithm": "weighted-structured-semantic-v3",
   "year_proximity_used": false,
   "series_alone_can_qualify": false,
   "profile_quality": {
-    "populated_axes": 6,
+    "populated_axes": 7,
     "total_axes": 13,
     "populated": [
       "genres",
       "subgenres",
       "gameplay_type",
       "party_mode",
+      "setting",
       "multiplayer",
       "mechanics"
     ],
@@ -20,21 +21,13 @@
   },
   "profile": {
     "genres": [
-      "ролевые",
-      "игры",
       "rpg"
     ],
     "subgenres": [
-      "для",
-      "одного",
-      "игрока",
-      "steam",
-      "cloud",
-      "семеи",
-      "ныи",
-      "доступ",
       "single",
       "player",
+      "steam",
+      "cloud",
       "family",
       "sharing"
     ],
@@ -49,81 +42,69 @@
     ],
     "narrative": [],
     "progression": [],
-    "setting": [],
+    "setting": [
+      "postapoc"
+    ],
     "tone": [],
     "multiplayer": [
       "singleplayer"
     ],
     "mechanics": [
-      "для",
-      "одного",
-      "игрока",
-      "steam",
-      "cloud",
-      "семеи",
-      "ныи",
-      "доступ",
       "single",
       "player",
+      "steam",
+      "cloud",
       "family",
       "sharing"
     ],
     "semantic_tokens": [
-      "только",
-      "открыли",
-      "классическую",
-      "апокалиптическую",
-      "ролевую",
-      "которая",
-      "возродила",
-      "целыи",
-      "система",
-      "special",
+      "unearthed",
+      "classic",
+      "apocalyptic",
+      "playing",
+      "revitalized",
+      "entire",
+      "genre",
       "fallout",
-      "позволяет",
-      "создать",
-      "коренным",
-      "образом",
-      "отличающихся",
-      "друга",
-      "персонажеи",
-      "развивать",
-      "принимать",
-      "важные",
-      "решения",
-      "исследуи",
-      "опустошенные",
-      "руины",
-      "цивилизации",
-      "достигшеи",
-      "золотого",
-      "одного",
-      "игрока",
-      "steam",
-      "cloud",
-      "семеи",
-      "доступ",
+      "special",
+      "system",
+      "allows",
+      "drastically",
+      "different",
+      "types",
+      "characters",
+      "meaningful",
+      "decisions",
+      "development",
+      "complete",
+      "control",
+      "explore",
+      "devastated",
+      "ruins",
+      "golden",
+      "civilization",
       "single",
       "player",
+      "steam",
+      "cloud",
       "family",
-      "sharing",
-      "ролевые"
+      "sharing"
     ],
-    "franchise": "fallout"
+    "franchise": ""
   },
   "recommendations": [
     {
-      "slug": "fallout-2",
-      "title": "Fallout 2",
-      "year": 1998,
-      "score": 0.5967,
-      "base_score": 0.5467,
+      "slug": "fallout-3",
+      "title": "Fallout 3",
+      "year": 2008,
+      "score": 0.5588,
+      "base_score": 0.5588,
       "reasons": [
         "жанр",
         "поджанр",
         "тип геймплея",
         "партия/соло",
-        "мультиплеер"
+        "сеттинг"
       ],
       "signals": [
         {
@@ -147,18 +128,59 @@
           "overlap": 1
         },
         {
-          "field": "multiplayer",
-          "label": "мультиплеер",
+          "field": "setting",
+          "label": "сеттинг",
           "overlap": 1
         }
       ]
     },
     {
-      "slug": "fallout-shelter",
-      "title": "Fallout Shelter",
-      "year": 2015,
-      "score": 0.532,
-      "base_score": 0.482,
+      "slug": "code-vein-ii",
+      "title": "CODE VEIN II",
+      "year": 2026,
+      "score": 0.5103,
+      "base_score": 0.5103,
+      "reasons": [
+        "жанр",
+        "поджанр",
+        "тип геймплея",
+        "партия/соло",
+        "сеттинг"
+      ],
+      "signals": [
+        {
+          "field": "genres",
+          "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
+          "overlap": 1
+        },
+        {
+          "field": "gameplay_type",
+          "label": "тип геймплея",
+          "overlap": 1
+        },
+        {
+          "field": "party_mode",
+          "label": "партия/соло",
+          "overlap": 1
+        },
+        {
+          "field": "setting",
+          "label": "сеттинг",
+          "overlap": 1
+        }
+      ]
+    },
+    {
+      "slug": "fallout-2",
+      "title": "Fallout 2",
+      "year": 1998,
+      "score": 0.4981,
+      "base_score": 0.4981,
       "reasons": [
         "жанр",
         "поджанр",
@@ -198,8 +220,8 @@
       "slug": "provoron",
       "title": "Provoron",
       "year": 2026,
-      "score": 0.5311,
-      "base_score": 0.5311,
+      "score": 0.4869,
+      "base_score": 0.4869,
       "reasons": [
         "жанр",
         "поджанр",
@@ -236,11 +258,11 @@
       ]
     },
     {
-      "slug": "fallout-3",
-      "title": "Fallout 3",
-      "year": 2008,
-      "score": 0.5269,
-      "base_score": 0.4769,
+      "slug": "tails-of-iron-2-whiskers-of-winter",
+      "title": "Tails of Iron 2: Whiskers of Winter",
+      "year": 2025,
+      "score": 0.4749,
+      "base_score": 0.4749,
       "reasons": [
         "жанр",
         "поджанр",
@@ -277,11 +299,11 @@
       ]
     },
     {
-      "slug": "wartales",
-      "title": "Wartales",
-      "year": 2023,
-      "score": 0.4972,
-      "base_score": 0.4972,
+      "slug": "kingdom-come-deliverance",
+      "title": "Kingdom Come: Deliverance",
+      "year": 2018,
+      "score": 0.4716,
+      "base_score": 0.4716,
       "reasons": [
         "жанр",
         "поджанр",
@@ -318,11 +340,11 @@
       ]
     },
     {
-      "slug": "magic-monsters",
-      "title": "MAGIC & MONSTERS",
+      "slug": "nioh-3",
+      "title": "Nioh 3",
       "year": 2026,
-      "score": 0.4946,
-      "base_score": 0.4946,
+      "score": 0.467,
+      "base_score": 0.467,
       "reasons": [
         "жанр",
         "поджанр",
@@ -359,11 +381,11 @@
       ]
     },
     {
-      "slug": "echoes-of-elysium",
-      "title": "Echoes of Elysium",
-      "year": 2026,
-      "score": 0.4838,
-      "base_score": 0.4838,
+      "slug": "undertale",
+      "title": "Undertale",
+      "year": 2015,
+      "score": 0.4642,
+      "base_score": 0.4642,
       "reasons": [
         "жанр",
         "тип геймплея",
@@ -400,11 +422,11 @@
       ]
     },
     {
-      "slug": "code-vein-ii",
-      "title": "CODE VEIN II",
+      "slug": "final-fantasy-resonance",
+      "title": "FINAL FANTASY RESONANCE",
       "year": 2026,
-      "score": 0.4835,
-      "base_score": 0.4835,
+      "score": 0.4632,
+      "base_score": 0.4632,
       "reasons": [
         "жанр",
         "поджанр",
@@ -441,11 +463,11 @@
       ]
     },
     {
-      "slug": "ark-survival-evolved",
-      "title": "ARK: Survival Evolved",
-      "year": 2017,
-      "score": 0.4815,
-      "base_score": 0.4815,
+      "slug": "stardew-valley",
+      "title": "Stardew Valley",
+      "year": 2016,
+      "score": 0.4632,
+      "base_score": 0.4632,
       "reasons": [
         "жанр",
         "поджанр",
@@ -482,22 +504,27 @@
       ]
     },
     {
-      "slug": "hope-01",
-      "title": "HOPE 01",
-      "year": 2026,
-      "score": 0.4814,
-      "base_score": 0.4814,
+      "slug": "cyberpunk-2077",
+      "title": "Cyberpunk 2077",
+      "year": 2020,
+      "score": 0.4631,
+      "base_score": 0.4631,
       "reasons": [
         "жанр",
+        "поджанр",
         "тип геймплея",
         "партия/соло",
-        "мультиплеер",
-        "поджанр"
+        "мультиплеер"
       ],
       "signals": [
         {
           "field": "genres",
           "label": "жанр",
+          "overlap": 1
+        },
+        {
+          "field": "subgenres",
+          "label": "поджанр",
           "overlap": 1
         },
         {
@@ -514,20 +541,15 @@
           "field": "multiplayer",
           "label": "мультиплеер",
           "overlap": 1
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 0.917
         }
       ]
     },
     {
-      "slug": "after-the-end",
-      "title": "After the End",
-      "year": 0,
-      "score": 0.4794,
-      "base_score": 0.4794,
+      "slug": "fallout-new-vegas",
+      "title": "Fallout: New Vegas",
+      "year": 2010,
+      "score": 0.4629,
+      "base_score": 0.4629,
       "reasons": [
         "жанр",
         "тип геймплея",
@@ -560,47 +582,6 @@
           "field": "subgenres",
           "label": "поджанр",
           "overlap": 0.833
-        }
-      ]
-    },
-    {
-      "slug": "the-binding-of-isaac-repentance",
-      "title": "The Binding of Isaac: Repentance",
-      "year": 2021,
-      "score": 0.4765,
-      "base_score": 0.4765,
-      "reasons": [
-        "жанр",
-        "поджанр",
-        "тип геймплея",
-        "партия/соло",
-        "мультиплеер"
-      ],
-      "signals": [
-        {
-          "field": "genres",
-          "label": "жанр",
-          "overlap": 1
-        },
-        {
-          "field": "subgenres",
-          "label": "поджанр",
-          "overlap": 1
-        },
-        {
-          "field": "gameplay_type",
-          "label": "тип геймплея",
-          "overlap": 1
-        },
-        {
-          "field": "party_mode",
-          "label": "партия/соло",
-          "overlap": 1
-        },
-        {
-          "field": "multiplayer",
-          "label": "мультиплеер",
-          "overlap": 1
         }
       ]
     }

@@ -1,0 +1,111 @@
+{
+  "schema_version": 5,
+  "game_slug": "starfield",
+  "checked_at": "2026-08-28T10:05:10.605Z",
+  "status": "insufficient-scores",
+  "method": {
+    "name": "Среднее всех найденных подтверждённых независимых профессиональных оценок",
+    "formula": "sum(normalized_10) / source_count",
+    "minimum_sources_for_confident_rating": 10,
+    "maximum_sources": null,
+    "use_all_discovered_scores": true,
+    "persistent_discovery_seeds": true,
+    "output_scale": 10,
+    "letter_grade_map": {
+      "A+": 10,
+      "A": 9.5,
+      "A-": 9,
+      "B+": 8.5,
+      "B": 8,
+      "B-": 7.5,
+      "C+": 7,
+      "C": 6.5,
+      "C-": 6,
+      "D+": 5.5,
+      "D": 5,
+      "D-": 4.5,
+      "F": 2.5
+    },
+    "rounding_decimals": 1
+  },
+  "sources": [
+    {
+      "publication": "PC Gamer",
+      "title": "Starfield review - PC Gamer",
+      "url": "https://www.pcgamer.com/starfield-review",
+      "original_score": {
+        "score": 75,
+        "scale": 100,
+        "grade": null,
+        "display": "75/100"
+      },
+      "normalized_10": 7.5,
+      "checked_at": "2026-08-28T10:05:10.605Z"
+    },
+    {
+      "publication": "IGN",
+      "title": "Starfield Review - IGN",
+      "url": "https://www.ign.com/articles/starfield-review",
+      "original_score": {
+        "score": 7,
+        "scale": 10,
+        "grade": null,
+        "display": "7/10"
+      },
+      "normalized_10": 7,
+      "checked_at": "2026-08-28T10:05:10.605Z"
+    },
+    {
+      "publication": "GamesRadar+",
+      "title": "Starfield review: \"The best thing Bethesda's done since Oblivion\"",
+      "url": "https://www.gamesradar.com/starfield-review",
+      "original_score": {
+        "score": 5,
+        "scale": 5,
+        "grade": null,
+        "display": "5/5"
+      },
+      "normalized_10": 10,
+      "checked_at": "2026-08-28T10:05:10.605Z"
+    },
+    {
+      "publication": "PCWorld",
+      "title": "Starfield review: The best game Bethesda ever created?",
+      "url": "https://www.pcworld.com/article/2057129/starfield-review-best-bethesda-game.html",
+      "original_score": {
+        "score": 5,
+        "scale": 5,
+        "grade": null,
+        "display": "5/5"
+      },
+      "normalized_10": 10,
+      "checked_at": "2026-08-28T10:05:10.605Z"
+    },
+    {
+      "publication": "RPGFan",
+      "title": "Starfield Review",
+      "url": "https://www.rpgfan.com/review/starfield",
+      "original_score": {
+        "score": 98,
+        "scale": 100,
+        "grade": null,
+        "display": "98/100"
+      },
+      "normalized_10": 9.8,
+      "checked_at": "2026-08-28T10:05:10.605Z"
+    }
+  ],
+  "calculation": {
+    "source_count": 5,
+    "values": [
+      7.5,
+      7,
+      10,
+      10,
+      9.8
+    ],
+    "mean_10": 8.86,
+    "score_10": 8.9,
+    "status": "insufficient-scores"
+  }
+}

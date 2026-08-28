@@ -1,14 +1,14 @@
 {
-  "schema_version": 9,
-  "started_at": "2026-08-28T09:48:26.898Z",
-  "finished_at": "2026-08-28T09:52:58.210Z",
+  "schema_version": 10,
+  "started_at": "2026-08-28T10:08:39.085Z",
+  "finished_at": "2026-08-28T10:10:47.118Z",
   "summary": {
-    "completed": 7,
-    "needs_revision": 3,
-    "total": 10,
+    "completed": 4,
+    "needs_revision": 1,
+    "total": 5,
     "editorial_ai_enabled": false,
     "editorial_ai_available": false,
-    "target_slug": null,
+    "target_slug": "fallout",
     "page_builder": "structured_sources",
     "quality_policy": "page build and page QC are AI-independent; editorial AI is optional"
   },
@@ -18,83 +18,52 @@
       "command": "node scripts/parse-game-data.mjs fallout 38400 Fallout",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 202,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-28T09:48:26.926Z\",\n  \"duration_ms\": 169,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
+      "duration_ms": 255,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-28T10:08:39.108Z\",\n  \"duration_ms\": 229,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
       "stderr": ""
     },
     {
-      "label": "parse:no-more-room-in-hell-2",
-      "command": "node scripts/parse-game-data.mjs no-more-room-in-hell-2 292000 No More Room in Hell 2",
+      "label": "parse:fallout",
+      "command": "node scripts/parse-game-data.mjs fallout 38400 Fallout",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 246,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"no-more-room-in-hell-2\",\n  \"checked_at\": \"2026-08-28T09:48:27.129Z\",\n  \"duration_ms\": 214,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=292000&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"No More Room in Hell 2\",\n    \"developers\": [\n      \"Torn Banner Studios\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 9,\n    \"videos\": 6\n  },\n  \"output\": \"data/parser-output/no-more-room-in-hell-2.json\"\n}\n",
+      "duration_ms": 294,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-28T10:08:39.365Z\",\n  \"duration_ms\": 268,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
       "stderr": ""
     },
     {
-      "label": "page:no-more-room-in-hell-2",
-      "command": "node scripts/build-game-page-basic.mjs game_f5db7308be84c62ed593",
+      "label": "page:fallout",
+      "command": "node scripts/build-game-page-basic.mjs game_6c7f3f81263d9a409505",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 99,
-      "stdout": "{\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"game_id\": \"game_f5db7308be84c62ed593\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 18,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"next\": \"review/rating quality loop\"\n}\n",
+      "duration_ms": 78,
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"game_id\": \"game_6c7f3f81263d9a409505\",\n  \"status\": \"needs_revision\",\n  \"missing\": [\n    \"screenshots:5/6\"\n  ],\n  \"next\": \"quality-control-loop will research/rebuild/recheck\"\n}\n",
       "stderr": ""
     },
     {
-      "label": "page-qc:no-more-room-in-hell-2",
-      "command": "node scripts/quality-control-loop.mjs page no-more-room-in-hell-2 game_f5db7308be84c62ed593",
+      "label": "page-qc:fallout",
+      "command": "node scripts/quality-control-loop.mjs page fallout game_6c7f3f81263d9a409505",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 134842,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"no-more-room-in-hell-2\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 28,\n  \"editorial_ai_enabled\": false,\n  \"comments\": [\n    \"hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_hero.jpg\",\n    \"cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900.jpg\"\n  ]\n}\n",
+      "duration_ms": 127402,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 28,\n  \"editorial_ai_enabled\": false,\n  \"comments\": [\n    \"Недостаточно скриншотов высокого качества: 5/6.\",\n    \"hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_hero.jpg\",\n    \"cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_600x900.jpg\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_b3df403b5700498031ae09a5fe888741641da402.1920x1080.jpg?t=1572025441\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_b0af8ed55a0a71c8d3560de34897ac4ed0b2f004.1920x1080.jpg?t=1572025441\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_5ba724d7a92c5347377bed7b98b35f3f92317566.1920x1080.jpg?t=1572025441\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_6c578ed231f8320c003c9ca2684e5d00aa0dfc69.1920x1080.jpg?t=1572025441\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_87e2a0835387d9a01b1dbcd51f5baa68bc95fe1b.1920x1080.jpg?t=1572025441\"\n  ]\n}\n",
       "stderr": ""
     },
     {
-      "label": "page-qc-state:no-more-room-in-hell-2",
+      "label": "page-qc-state:fallout",
       "status": "needs_revision",
       "comments": [
-        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_hero.jpg",
-        "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/292000/library_600x900.jpg"
+        "Недостаточно скриншотов высокого качества: 5/6.",
+        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_hero.jpg",
+        "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_600x900.jpg",
+        "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_b3df403b5700498031ae09a5fe888741641da402.1920x1080.jpg?t=1572025441",
+        "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_b0af8ed55a0a71c8d3560de34897ac4ed0b2f004.1920x1080.jpg?t=1572025441",
+        "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_5ba724d7a92c5347377bed7b98b35f3f92317566.1920x1080.jpg?t=1572025441",
+        "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_6c578ed231f8320c003c9ca2684e5d00aa0dfc69.1920x1080.jpg?t=1572025441",
+        "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_87e2a0835387d9a01b1dbcd51f5baa68bc95fe1b.1920x1080.jpg?t=1572025441",
+        "После quality gate осталось только 0/6 допустимых скриншотов.",
+        "Не завершена проверка существующего медиакорпуса."
       ]
-    },
-    {
-      "label": "parse:pax-autocratica",
-      "command": "node scripts/parse-game-data.mjs pax-autocratica 1067360 Pax Autocratica",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 215,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"pax-autocratica\",\n  \"checked_at\": \"2026-08-28T09:50:42.317Z\",\n  \"duration_ms\": 183,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=1067360&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Pax Autocratica\",\n    \"developers\": [\n      \"Multiverse\"\n    ],\n    \"genres\": [\n      \"Action\",\n      \"Indie\",\n      \"Simulation\",\n      \"Early Access\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 29,\n    \"videos\": 3\n  },\n  \"output\": \"data/parser-output/pax-autocratica.json\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "page:pax-autocratica",
-      "command": "node scripts/build-game-page-basic.mjs game_2a7ceb637cbcf1a28770",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 99,
-      "stdout": "{\n  \"slug\": \"pax-autocratica\",\n  \"game_id\": \"game_2a7ceb637cbcf1a28770\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 135,\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"next\": \"review/rating quality loop\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "page-qc:pax-autocratica",
-      "command": "node scripts/quality-control-loop.mjs page pax-autocratica game_2a7ceb637cbcf1a28770",
-      "status": "completed",
-      "exit_code": 0,
-      "duration_ms": 135604,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"pax-autocratica\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 28,\n  \"editorial_ai_enabled\": false,\n  \"comments\": [\n    \"cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900.jpg\"\n  ]\n}\n",
-      "stderr": ""
-    },
-    {
-      "label": "page-qc-state:pax-autocratica",
-      "status": "needs_revision",
-      "comments": [
-        "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/1067360/library_600x900.jpg"
-      ]
-    },
-    {
-      "label": "review:call-of-duty-modern-warfare-4",
-      "status": "needs_revision",
-      "reason": "Optional editorial AI unavailable; page publication is unaffected"
     }
   ]
 }
