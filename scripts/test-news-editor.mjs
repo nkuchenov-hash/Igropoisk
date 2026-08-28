@@ -121,6 +121,41 @@ const badCrimsonRussian = validateProductionNews({
 assert.equal(badCrimsonRussian.ok, false);
 assert.ok(badCrimsonRussian.reasons.includes('awkward machine-like Russian'));
 
+const badWantedRussian = validateProductionNews({
+  titleRu: 'В GTA 6 система поиска преступников будет улучшена',
+  briefRu: 'В GTA 6 вернётся система wanted, где полиция отслеживает лицо, одежду и автомобиль героя. Игроки могут снизить уровень внимания, распадаясь на группы и уходя из поля зрения полиции.'
+}, { title: 'GTA 6 wanted system lets police track your face, clothes and car', summary: 'Players can split up to lower police perception.' });
+assert.equal(badWantedRussian.ok, false);
+assert.ok(badWantedRussian.reasons.includes('awkward machine-like Russian'));
+
+const badBeastRussian = validateProductionNews({
+  titleRu: 'Beast of Reincarnation: постапокалипсисное действие с мутантным собаком',
+  briefRu: 'Героиня путешествует по разрушенной Японии вместе с мутантным собаком и сражается с чудовищами. Система боя включает парирование, уменьшения метров врагов и специальные навыки.'
+}, { title: 'Beast of Reincarnation is a post-apocalyptic action game with a mutant dog', summary: 'Combat includes parrying and lowering enemy meters.' });
+assert.equal(badBeastRussian.ok, false);
+assert.ok(badBeastRussian.reasons.includes('awkward machine-like Russian'));
+
+const badZombieRussian = validateProductionNews({
+  titleRu: 'Стойте за своим кладбищем: управляйте день и борьбой с зомби',
+  briefRu: 'Днём игрок развивает кладбище и распределяет ресурсы, а ночью защищает территорию от зомби. Улучшения позволяют расширять хозяйство и открывать новые возможности.'
+}, { title: 'Run your graveyard by day and fight zombies at night' });
+assert.equal(badZombieRussian.ok, false);
+assert.ok(badZombieRussian.reasons.includes('awkward machine-like Russian'));
+
+const badConsoleRussian = validateProductionNews({
+  titleRu: 'Русы против Ящеров 2 вышла на новых платформах',
+  briefRu: 'Проект достиг консолей PlayStation и Xbox и получил бесплатное сюжетное дополнение. Разработчики также улучшили управление, освещение и интерфейс.'
+}, { title: 'Lizards Must Die 2 launches on PlayStation and Xbox' });
+assert.equal(badConsoleRussian.ok, false);
+assert.ok(badConsoleRussian.reasons.includes('awkward machine-like Russian'));
+
+const badChaosRussian = validateProductionNews({
+  titleRu: 'Мать в хаосе: история Дэви в 1998 году',
+  briefRu: 'Игра рассказывает о женщине, которая пытается защитить ребёнка во время социальных потрясений в Индонезии. Сюжет опирается на реальные события и экономический кризис 1998 года.'
+}, { title: '1998: The Toll Keeper Story follows a mother during unrest', summary: 'The story is set during the 1998 Indonesian crisis.' });
+assert.equal(badChaosRussian.ok, false);
+assert.ok(badChaosRussian.reasons.includes('awkward machine-like Russian'));
+
 const truncatedRussian = validateProductionNews({
   titleRu: 'Разработчики показали новый трейлер игры',
   briefRu: 'Студия опубликовала новый трейлер и рассказала о ключевых особенностях проекта... Подробности релиза обещают раскрыть позднее.'
