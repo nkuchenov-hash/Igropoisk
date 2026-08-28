@@ -4,18 +4,17 @@ import {
   normalizeEditorialNames,
   warmNewsEditor
 } from './news-editor-qwen.mjs';
+import { isLikelyNewsContent } from './news-content-policy.mjs';
 
 export { fetchArticleText, warmNewsEditor };
 
 const boilerplatePattern = /cookie|newsletter|subscribe|sign up|privacy policy|when you (?:purchase|buy) through links|we may (?:earn|receive) (?:an )?(?:affiliate )?commission|affiliate commission|here(?:'s| is) how (?:it|this) works|support us|terms (?:of|and) conditions|all rights reserved|recommended by|shopping links|buying guide|follow us|more about|contact me with news/i;
-const nonNewsPattern = /(?:\bhow to\b|\bwalkthrough\b|\bbeginner(?:'|’)?s guide\b|\bachievement guide\b|\bwhere to (?:find|get|catch|buy|unlock|open)\b|\bbest .{0,90}\bof all time\b|^\s*(?:the\s+)?\d+\s+best\b|\b(?:all|every) .{0,65}\b(?:locations?|collectibles?)\b|\b(?:tips?|guide) to help you\b|\b(?:best|top) (?:skills?|abilities|builds?|weapons?|armor|classes)\b|\b(?:gameplay )?tips?\b|\btips? and tricks?\b|\bwhat you need to know\b)/i;
-const nonNewsUrlPattern = /(?:^|[\/_-])(?:guides?|walkthroughs?|tips)(?:[\/_-]|$)/i;
 const literalMachinePattern = /(?:переоснащ(?:ен|ена|ение)|исключ(?:ен(?:а|о)?|ени[ея]) из списка)/iu;
-// Do not use JS \b around Cyrillic phrases: \b is ASCII-centric and silently lets broken Russian pass.
-const awkwardRussianPattern = /(?:леверед|бай[- ]?аут|крупн\w* купл[ие]-продаж|факт подтверждает (?:лишь )?теори|вызвал[аи]? спрос на возможн|оста[её]тся вероятн\w+ налич|удал[её]нн(?:ая|ую|ой) игр[ау]|микроперекуп|генеративн\w+\s+(?:аи|AI)|целый другой мир|не будут единственн\w+ в насилии|мать в хаосе|действие на PS5 начн[её]тся|полувещ|полувозмож|инфицированност|демоническ\w+ инфицир|продемонстрировал[аи]? \d+[\s\S]{0,30}копи[йи] продано|достиг(?:ла|ло|ли)?\s+консол\w*|собаком|постапокалипсисн\w+\s+действи\w*|уменьшен\w+\s+метр\w*\s+(?:враг|противник)\w*|уменьшения\s+метров|управля(?:йте|ет|ют|я)\s+(?:день|ночь)|распадаясь\s+на\s+групп\w*|система\s+wanted|сниз\w+\s+уровень\s+внимания|действие\s+в\s+постапокалиптическ\w+|правомерност\w+\s+поступк\w*|появляющ\w+\s+ангел\w+\s+и\s+демон\w+)/iu;
+const awkwardRussianPattern = /(?:леверед|бай[- ]?аут|крупн\w* купл[ие]-продаж|факт подтверждает (?:лишь )?теори|вызвал[аи]? спрос на возможн|оста[её]тся вероятн\w+ налич|удал[её]нн(?:ая|ую|ой) игр[ау]|микроперекуп|генеративн\w+\s+(?:аи|AI)|целый другой мир|не будут единственн\w+ в насилии|мать в хаосе|действие на PS5 начн[её]тся|полувещ|полувозмож|инфицированност|демоническ\w+ инфицир|продемонстрировал[аи]? \d+[\s\S]{0,30}копи[йи] продано|достиг(?:ла|ло|ли)?\s+консол\w*|собаком|постапокалипсисн\w+\s+действи\w*|уменьшен\w+\s+метр\w*\s+(?:враг|противник)\w*|уменьшения\s+метров|управля(?:йте|ет|ют|я)\s+(?:день|ночь)|распадаясь\s+на\s+групп\w*|система\s+wanted|сниз\w+\s+уровень\s+внимания|действие\s+в\s+постапокалиптическ\w+|правомерност\w+\s+поступк\w*|появляющ\w+\s+ангел\w+\s+и\s+демон\w+|о\s+главном\s+герою|тур[- ]?базов\w*|гангов\w*\s+(?:бой|боев)|ранее\s+отмечавш\w+\s+как\s+от|обрадовал\w+\s+запуском|версайск\w+\s+город)/iu;
 const metaPattern = /(?:я как ии|искусственный интеллект|как модель|перевод статьи|в статье говорится|по данным материала)/iu;
 const authorCommentPattern = /\b(?:i think|i'm|i am|we think|we're|my bet|i bet|i'm just glad)\b/i;
 const truncatedBriefPattern = /(?:\.\.\.|…)/u;
+const englishPossessiveCompanyPattern = /(?:Motive|Rockstar|Ubisoft|Bethesda|Microsoft|Nintendo|Capcom|Konami|SEGA|Valve|PlayStation|Xbox)'s\b/i;
 
 const stableEntities = [
   'Ubisoft', 'EA', 'Electronic Arts', 'Steam', 'Xbox', 'PlayStation', 'Nintendo', 'NVIDIA', 'AMD',
@@ -36,7 +35,11 @@ function polishEditorialNames(value = '') {
   return normalizeEditorialNames(value)
     .replace(/(?<![\p{L}\p{N}])XBOX(?![\p{L}\p{N}])/gu, 'Xbox')
     .replace(/(?<![\p{L}\p{N}])PLAYSTATION(?![\p{L}\p{N}])/gu, 'PlayStation')
-    .replace(/(?<![\p{L}\p{N}])Nvidia(?![\p{L}\p{N}])/gu, 'NVIDIA');
+    .replace(/(?<![\p{L}\p{N}])Nvidia(?![\p{L}\p{N}])/gu, 'NVIDIA')
+    .replace(/\s+([,.!?;:])/g, '$1')
+    .replace(/([«(])\s+/g, '$1')
+    .replace(/[ \t]+/g, ' ')
+    .trim();
 }
 
 function escapeRegExp(value = '') {
@@ -45,9 +48,9 @@ function escapeRegExp(value = '') {
 
 function containsEntity(value = '', entity = '') {
   const text = canonical(value);
-  const needle = canonical(entity);
+  const needle = canonical(entity).replace(/^(?:the|a|an)\s+/, '');
   if (!needle) return false;
-  return new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(needle)}(?![\\p{L}\\p{N}])`, 'iu').test(text);
+  return new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(needle)}(?![\\p{L}\\p{N}])`, 'iu').test(text.replace(/^(?:the|a|an)\s+/, ''));
 }
 
 function countLetters(value = '', pattern) {
@@ -80,6 +83,16 @@ function requiredStableEntities(input = {}) {
   return stableEntities.filter(entity => containsEntity(source, entity));
 }
 
+function sourceProperNames(input = {}) {
+  const source = `${input.title || ''} ${input.summary || ''}`;
+  const matches = source.match(/(?<![A-Za-z0-9])(?:[A-Z]{2,}|[A-Z][A-Za-z0-9'’.-]+)(?:\s+(?:[A-Z]{2,}|[A-Z][A-Za-z0-9'’.-]+|\d{2,4})){1,3}/g) || [];
+  const ignored = /^(?:Summer Game Fest|Gamescom Awards|North America|Early Look|Official Podcast)$/i;
+  return [...new Set(matches
+    .map(value => value.replace(/^(?:The|A|An)\s+/i, '').trim())
+    .filter(value => value.length >= 5 && !ignored.test(value)))]
+    .slice(0, 12);
+}
+
 function looksLikeUntranslatedClause(value = '') {
   const sequences = String(value).match(/\b[A-Za-z][A-Za-z'’-]*(?:\s+[A-Za-z][A-Za-z'’-]*){4,}\b/g) || [];
   const nameConnectors = new Set(['of', 'the', 'and', 'to', 'for', 'in', 'on', 'from', 'with', 'vs']);
@@ -93,11 +106,26 @@ function looksLikeUntranslatedClause(value = '') {
   });
 }
 
+function firstSentence(value = '') {
+  return String(value).split(/(?<=[.!?])\s+/)[0]?.trim() || '';
+}
+
+function headlineRepeatedInLead(title = '', brief = '') {
+  const a = canonical(title).replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const b = canonical(firstSentence(brief)).replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  if (!a || !b) return false;
+  const shorter = Math.min(a.length, b.length);
+  const longer = Math.max(a.length, b.length);
+  return shorter >= 30 && shorter / longer >= 0.82 && (a.includes(b) || b.includes(a));
+}
+
+function hasBalancedQuotes(value = '') {
+  const pairs = [['«', '»'], ['“', '”']];
+  return pairs.every(([open, close]) => (String(value).split(open).length - 1) === (String(value).split(close).length - 1));
+}
+
 export function isLikelyNewsSource(input = {}) {
-  const title = String(input?.title || input?.titleEn || '').replace(/\s+/g, ' ').trim();
-  const url = String(input?.url || input?.primaryUrl || '').trim();
-  if (!title && !url) return true;
-  return !nonNewsPattern.test(title) && !nonNewsUrlPattern.test(url);
+  return isLikelyNewsContent(input);
 }
 
 export function validateProductionNews(value, input = {}) {
@@ -114,8 +142,11 @@ export function validateProductionNews(value, input = {}) {
   if (!briefCyr) reasons.push('brief has no Cyrillic');
   if (titleRu.length < 25 || titleRu.length > 180) reasons.push(`title length ${titleRu.length}`);
   if (briefRu.length < 135 || briefRu.length > 720) reasons.push(`brief length ${briefRu.length}`);
-  if ((briefRu.match(/[.!?](?:\s|$)/g) || []).length < 2) reasons.push('brief has fewer than 2 sentences');
+  if ((briefRu.match(/[.!?](?:[»”)]?)(?:\s|$)/g) || []).length < 2) reasons.push('brief has fewer than 2 complete sentences');
+  if (!/[.!?…»”)]$/.test(briefRu)) reasons.push('brief does not end as a complete sentence');
   if (truncatedBriefPattern.test(briefRu)) reasons.push('brief looks truncated');
+  if (!hasBalancedQuotes(`${titleRu} ${briefRu}`)) reasons.push('unbalanced quotation marks');
+  if (headlineRepeatedInLead(titleRu, briefRu)) reasons.push('lead repeats headline');
 
   if (titleLat > 28 && titleLat > titleCyr * 2.4) reasons.push('title is dominated by untranslated English');
   if (briefLat > 45 && briefLat > briefCyr * 0.65) reasons.push('brief is dominated by untranslated English');
@@ -127,6 +158,7 @@ export function validateProductionNews(value, input = {}) {
   if (literalMachinePattern.test(`${titleRu} ${briefRu}`)) reasons.push('literal machine translation');
   if (awkwardRussianPattern.test(`${titleRu} ${briefRu}`)) reasons.push('awkward machine-like Russian');
   if (authorCommentPattern.test(`${titleRu} ${briefRu}`)) reasons.push('source-author commentary leaked');
+  if (englishPossessiveCompanyPattern.test(`${titleRu} ${briefRu}`)) reasons.push('English possessive company name leaked into Russian copy');
   if (mixedScriptTokens(`${titleRu} ${briefRu}`).length) reasons.push('mixed Latin/Cyrillic token');
   if (/(?:^|\s)спустя(?:\s+\S+){0,7}\s+спустя(?:\s|$)/iu.test(titleRu) || /(?:^|\s)после(?:\s+\S+){0,7}\s+после(?:\s|$)/iu.test(titleRu)) {
     reasons.push('repeated connector in title');
@@ -138,8 +170,9 @@ export function validateProductionNews(value, input = {}) {
   const newNumbers = unsupportedNumbers(`${titleRu} ${briefRu}`, input);
   if (newNumbers.length) reasons.push(`unsupported number: ${newNumbers.join(', ')}`);
 
-  for (const entity of requiredStableEntities(input)) {
-    if (!containsEntity(`${titleRu} ${briefRu}`, entity)) reasons.push(`stable entity missing: ${entity}`);
+  const requiredEntities = [...new Set([...requiredStableEntities(input), ...sourceProperNames(input)])];
+  for (const entity of requiredEntities) {
+    if (!containsEntity(`${titleRu} ${briefRu}`, entity)) reasons.push(`source entity missing: ${entity}`);
   }
 
   return { ok: reasons.length === 0, reasons, titleRu, briefRu };
@@ -163,8 +196,7 @@ export async function editNewsToRussian(input, options = {}) {
   const firstValidation = validateProductionNews(first, input);
   if (firstValidation.ok) return finalize(first, firstValidation);
 
-  // One bounded rewrite only when the production gate rejects the first draft.
-  const rejectionFeedback = `Редакционный контроль забраковал этот вариант: ${firstValidation.reasons.join('; ') || 'неестественный русский или формат'}. Перепиши его полностью естественным русским и не повторяй эти ошибки.`;
+  const rejectionFeedback = `Редакционный контроль забраковал этот вариант: ${firstValidation.reasons.join('; ') || 'неестественный русский или формат'}. Перепиши текст полностью, естественным литературным русским. Сохрани все названия и факты источника, исправь грамматику и не повторяй заголовок первым предложением.`;
   const second = await generateRussianDraft({
     ...input,
     draftTitleRu: firstValidation.titleRu || first.titleRu || '',
