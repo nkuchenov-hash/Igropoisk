@@ -12,7 +12,11 @@ const PROFILES = {
     patterns: [/^game\/[^/]+\/index\.html$/],
   },
   'content-pipeline': {
-    exact: new Set(['data/catalog-visible.json']),
+    exact: new Set([
+      'data/catalog-visible.json',
+      'data/audits/review-publication.json',
+      'data/audits/review-feed-materialization.json',
+    ]),
     prefixes: [
       'data/content-pipeline/',
       'data/game-registry/',
