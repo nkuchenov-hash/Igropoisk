@@ -4,9 +4,11 @@ on:
   push:
     branches: [experiment/news-official-jsonld-20260828]
     paths:
+      - 'data/news-sources.json'
       - 'scripts/fetch-publisher-news.mjs'
       - 'scripts/lib/news-official-structured.mjs'
       - 'scripts/test-news-official-structured.mjs'
+      - 'scripts/probe-news-official-structured.mjs'
       - '.github/workflows/news-official-jsonld-test.yml'
   workflow_dispatch:
 
@@ -26,4 +28,23 @@ jobs:
         run: |
           node --check scripts/lib/news-official-structured.mjs
           node --check scripts/fetch-publisher-news.mjs
+          node --check scripts/probe-news-official-structured.mjs
           node scripts/test-news-official-structured.mjs
+
+  live-probe:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Probe current official sites
+        run: node scripts/probe-news-official-structured.mjs
+      - name: Upload structured-source report
+        uses: actions/upload-artifact@v4
+        with:
+          name: news-official-structured-probe-${{ github.sha }}
+          path: tmp/news-official-structured-probe.json
+          retention-days: 3
