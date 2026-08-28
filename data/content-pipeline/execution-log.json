@@ -1,11 +1,11 @@
 {
   "schema_version": 10,
-  "started_at": "2026-08-28T12:24:06.640Z",
-  "finished_at": "2026-08-28T12:26:43.633Z",
+  "started_at": "2026-08-28T14:22:00.872Z",
+  "finished_at": "2026-08-28T14:22:44.143Z",
   "summary": {
-    "completed": 4,
-    "needs_revision": 1,
-    "total": 5,
+    "completed": 6,
+    "needs_revision": 0,
+    "total": 6,
     "editorial_ai_enabled": false,
     "editorial_ai_available": false,
     "target_slug": "fallout",
@@ -18,8 +18,8 @@
       "command": "node scripts/parse-game-data.mjs fallout 38400 Fallout",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 221,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-28T12:24:06.664Z\",\n  \"duration_ms\": 194,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
+      "duration_ms": 285,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-28T14:22:00.901Z\",\n  \"duration_ms\": 248,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -27,8 +27,8 @@
       "command": "node scripts/parse-game-data.mjs fallout 38400 Fallout",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 252,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-28T12:24:06.890Z\",\n  \"duration_ms\": 222,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
+      "duration_ms": 239,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-28T14:22:01.185Z\",\n  \"duration_ms\": 208,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -36,8 +36,8 @@
       "command": "node scripts/build-game-page-basic.mjs game_6c7f3f81263d9a409505",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 76,
-      "stdout": "{\n  \"slug\": \"fallout\",\n  \"game_id\": \"game_6c7f3f81263d9a409505\",\n  \"status\": \"needs_revision\",\n  \"missing\": [\n    \"screenshots:5/6\"\n  ],\n  \"next\": \"quality-control-loop will research/rebuild/recheck\"\n}\n",
+      "duration_ms": 104,
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"game_id\": \"game_6c7f3f81263d9a409505\",\n  \"mode\": \"structured_sources\",\n  \"year\": 1997,\n  \"sources\": 1,\n  \"screenshots\": 5,\n  \"minimum_screenshots\": 5,\n  \"media_profile\": \"historical\",\n  \"gate_passed\": true,\n  \"public_ready\": true\n}\n",
       "stderr": ""
     },
     {
@@ -45,24 +45,27 @@
       "command": "node scripts/quality-control-loop.mjs page fallout game_6c7f3f81263d9a409505",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 156440,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"fallout\",\n  \"status\": \"red-needs-revision\",\n  \"attempts\": 28,\n  \"editorial_ai_enabled\": false,\n  \"comments\": [\n    \"Недостаточно скриншотов высокого качества: 5/6.\",\n    \"hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_hero.jpg\",\n    \"cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_600x900.jpg\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_b3df403b5700498031ae09a5fe888741641da402.1920x1080.jpg?t=1572025441\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_b0af8ed55a0a71c8d3560de34897ac4ed0b2f004.1920x1080.jpg?t=1572025441\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_5ba724d7a92c5347377bed7b98b35f3f92317566.1920x1080.jpg?t=1572025441\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_6c578ed231f8320c003c9ca2684e5d00aa0dfc69.1920x1080.jpg?t=1572025441\",\n    \"screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_87e2a0835387d9a01b1dbcd51f5baa68bc95fe1b.1920x1080.jpg?t=1572025441\"\n  ]\n}\n",
+      "duration_ms": 32911,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"fallout\",\n  \"status\": \"green\",\n  \"attempts\": 8,\n  \"editorial_ai_enabled\": false,\n  \"comments\": []\n}\n",
       "stderr": ""
     },
     {
-      "label": "page-qc-state:fallout",
-      "status": "needs_revision",
-      "comments": [
-        "Недостаточно скриншотов высокого качества: 5/6.",
-        "hero: слишком маленькое 1920×620, минимум 1200×675: https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_hero.jpg",
-        "cover: слишком маленькое 300×450, минимум 600×850: https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_600x900.jpg",
-        "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_b3df403b5700498031ae09a5fe888741641da402.1920x1080.jpg?t=1572025441",
-        "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_b0af8ed55a0a71c8d3560de34897ac4ed0b2f004.1920x1080.jpg?t=1572025441",
-        "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_5ba724d7a92c5347377bed7b98b35f3f92317566.1920x1080.jpg?t=1572025441",
-        "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_6c578ed231f8320c003c9ca2684e5d00aa0dfc69.1920x1080.jpg?t=1572025441",
-        "screenshot: слишком маленькое 640×480, минимум 1280×720: https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/ss_87e2a0835387d9a01b1dbcd51f5baa68bc95fe1b.1920x1080.jpg?t=1572025441",
-        "После quality gate осталось только 0/6 допустимых скриншотов."
-      ]
+      "label": "canonicalize-page:fallout",
+      "command": "node scripts/canonicalize-editorial-game-id.mjs fallout",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 4717,
+      "stdout": "{\n  \"slug\": \"fallout\",\n  \"game_id\": \"game_6c7f3f81263d9a409505\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 7,\n  \"artifacts_changed\": 5\n}\n",
+      "stderr": ""
+    },
+    {
+      "label": "replan-after-pages",
+      "command": "node scripts/orchestrate-content.mjs --finalize",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 5010,
+      "stdout": "{\n  \"schema_version\": 5,\n  \"generated_at\": \"2026-08-28T14:22:39.164Z\",\n  \"mode\": \"finalize\",\n  \"canonical_registry\": \"data/game-registry/registry.transition.json\",\n  \"summary\": {\n    \"source_records\": 1825,\n    \"games\": 619,\n    \"published_pages\": 216,\n    \"published_reviews\": 2,\n    \"registry_review_flags_published\": 78,\n    \"ready_for_page\": 1,\n    \"awaiting_sources\": 402,\n    \"queued\": 618,\n    \"runnable_pages\": 2,\n    \"runnable_reviews\": 1,\n    \"blocked_identity\": 1,\n    \"popular_ranked_games\": 25,\n    \"popular_registered\": 0,\n    \"popular_unresolved\": 6,\n    \"public_release_games\": 269,\n    \"releases_registered\": 0,\n    \"releases_unresolved\": 1\n  },\n  \"next\": {\n    \"pages\": [\n      {\n        \"type\": \"build_page\",\n        \"game_id\": \"game_f5db7308be84c62ed593\",\n        \"slug\": \"no-more-room-in-hell-2\",\n        \"title\": \"No More Room in Hell 2\",\n        \"steam_appid\": 292000,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 199,\n        \"reason\": \"canonical publication gate passed\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_2a7ceb637cbcf1a28770\",\n        \"slug\": \"pax-autocratica\",\n        \"title\": \"Pax Autocratica\",\n        \"steam_appid\": 1067360,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 163,\n        \"reason\": \"release_confirmation\"\n      }\n    ],\n    \"reviews\": [\n      {\n        \"type\": \"build_review\",\n        \"game_id\": \"game_72bf0963b99d4c9b1ab4\",\n        \"slug\": \"big-walk\",\n        \"title\": \"big-walk\",\n        \"popular_rank\": 2,\n        \"release_candidate\": true,\n        \"priority\": 298,\n        \"reason\": \"review_quality_needs_revision:missing\"\n      }\n    ]\n  }\n}\n",
+      "stderr": ""
     }
   ]
 }
