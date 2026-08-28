@@ -113,5 +113,5 @@ jobs:
           git add -A
           git commit -m "Continue game page enrichment ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
           git push origin "$BRANCH"
-          PR="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated AI-independent page enrichment: structured data, Media, discovered review/source links and ratings. Paid editorial AI is not required for Game Page readiness." --json number --jq '.number')"
-          gh pr merge "$PR" --merge --delete-branch
+          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated AI-independent page enrichment: structured data, Media, discovered review/source links and ratings. Paid editorial AI is not required for Game Page readiness.")"
+          gh pr merge "$PR_URL" --merge --delete-branch
