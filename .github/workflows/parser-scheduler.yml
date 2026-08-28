@@ -54,6 +54,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      - name: Trigger independent autonomous news fallback
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run news-pipeline.yml --ref main --repo "$GITHUB_REPOSITORY"
+
       - name: Checkout current staging code and repository fallback snapshot
         uses: actions/checkout@v4
         with:
