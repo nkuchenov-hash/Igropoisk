@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { editNewsToRussian, fetchArticleText, isLikelyNewsSource, validateProductionNews, warmNewsEditor } from './lib/news-editor-production.mjs';
-import { selectCommercialHomeNews } from './lib/news-home-selector.mjs';
+import { newsTopicKey, selectCommercialHomeNews } from './lib/news-home-selector.mjs';
 
 const eventsPath = 'data/news-events.json';
 const reportPath = process.env.NEWS_EDITOR_REPORT || 'tmp/news-editor-report.json';
@@ -92,6 +92,36 @@ function sourceSummary(item) {
   return String(item.summaryEn || item.summary || sourceTitle(item)).trim();
 }
 
+function sourceKey(item) {
+  const explicit = String(item?.primarySource || item?.source || '').trim().toLowerCase();
+  if (explicit) return explicit;
+  try { return new URL(item?.primaryUrl || item?.url || '').hostname.toLowerCase().replace(/^www\./, ''); }
+  catch { return ''; }
+}
+
+function prioritizeCommercialCandidates(values) {
+  const sorted = [...values].sort((a, b) => publishedAt(b) - publishedAt(a));
+  const priority = [];
+  const reserve = [];
+  const topicCounts = new Map();
+  const sourceCounts = new Map();
+
+  for (const item of sorted) {
+    const topic = newsTopicKey(item);
+    const source = sourceKey(item);
+    const topicFull = topic && Number(topicCounts.get(topic) || 0) >= commercialPolicy.maxPerTopic;
+    const sourceFull = source && Number(sourceCounts.get(source) || 0) >= commercialPolicy.maxPerSource;
+    if (topicFull || sourceFull) {
+      reserve.push(item);
+      continue;
+    }
+    priority.push(item);
+    if (topic) topicCounts.set(topic, Number(topicCounts.get(topic) || 0) + 1);
+    if (source) sourceCounts.set(source, Number(sourceCounts.get(source) || 0) + 1);
+  }
+  return [...priority, ...reserve];
+}
+
 const payload = JSON.parse(await fs.readFile(eventsPath, 'utf8'));
 const items = Array.isArray(payload) ? payload : (payload.items || []);
 
@@ -163,9 +193,9 @@ for (const item of items) {
   }
 }
 
-const candidates = items
-  .filter(item => isPublic(item) && !nativeApprovedItems.has(item) && !cachedApproval(item))
-  .sort((a, b) => publishedAt(b) - publishedAt(a));
+const candidates = prioritizeCommercialCandidates(
+  items.filter(item => isPublic(item) && !nativeApprovedItems.has(item) && !cachedApproval(item))
+);
 
 const initialCommercialSelection = currentCommercialSelection();
 if (candidates.length && !initialCommercialSelection.ok) {
