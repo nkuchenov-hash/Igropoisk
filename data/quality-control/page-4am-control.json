@@ -1,0 +1,103 @@
+{
+  "schema_version": 9,
+  "type": "page",
+  "game_slug": "4am",
+  "game_id": "game_a0d66db8a5b2124ca89a",
+  "canonical_title": "4am",
+  "checked_at": "2026-08-29T12:17:09.760Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
+  "revision_history": [
+    {
+      "attempt": 1,
+      "label": "similarity-1",
+      "script": "scripts/build-similarity-index.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 218,\n  \"profiles\": 220,\n  \"similarity_files_written\": 0,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"year_proximity_used\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 2,
+      "label": "page-materials-research-1",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"4am\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 0,\n  \"scored_sources\": 0,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 3,
+      "label": "page-native-review-sources-1",
+      "script": "scripts/enrich-review-native-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"4am\",\n  \"native_added\": 2,\n  \"total_reviews\": 2,\n  \"total_score_sources\": 0,\n  \"rejected\": 3\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 4,
+      "label": "page-ratings-1",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"4am\",\n  \"status\": \"completed\",\n  \"material_links\": 2,\n  \"seed_rejected\": 0,\n  \"sources\": 0,\n  \"score_10\": null,\n  \"use_all_discovered_scores\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 5,
+      "label": "page-media-discovery-1",
+      "script": "scripts/discover-review-media.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"4am\",\n  \"mode\": \"relevance_and_file_verified\",\n  \"screenshots\": 5,\n  \"artwork\": 2,\n  \"total\": 7,\n  \"required_screenshots\": 8\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 6,
+      "label": "page-video-discovery-1",
+      "script": "scripts/discover-game-videos.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"4am\",\n  \"accepted\": 59,\n  \"rejected\": 25,\n  \"video_reviews\": 36,\n  \"trailers\": 12,\n  \"gameplay\": 11,\n  \"provider_independent_search\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 7,
+      "label": "media-validation-1",
+      "script": "scripts/validate-game-media-quality.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"4am\",\n  \"status\": \"green\",\n  \"release_year\": 2026,\n  \"media_profile\": \"modern\",\n  \"comments\": 0,\n  \"accepted_screenshots\": 5,\n  \"minimum_screenshots\": 5,\n  \"nominal_minimum_screenshots\": 6,\n  \"official_source_screenshots\": 5,\n  \"official_source_exhausted\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 8,
+      "label": "finalize-green-page-state",
+      "status": "completed",
+      "release_year": 2026,
+      "hero": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4963870/346b9fd220449798e7a7c00ec4c4fd469758598d/library_hero_2x.jpg",
+      "cover": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4963870/5e96ac4c87409cc20be59c5ac8aa8541940c598f/library_capsule_2x.jpg",
+      "accepted_screenshots": 5,
+      "minimum_screenshots": 5
+    }
+  ],
+  "policy": {
+    "page_ready_requires_source_scan": true,
+    "page_ready_requires_native_publisher_scan": true,
+    "page_ready_requires_media_validation": true,
+    "page_ready_requires_video_discovery": true,
+    "page_source_scan_ai_independent": true,
+    "page_revision_ai_optional": true,
+    "page_media_uses_game_page_quality_gate_not_article_image_quota": true,
+    "green_page_state_is_materialized": true,
+    "video_discovery_zero_verified_results_allowed_after_completed_search": true,
+    "editorial_ai_enabled": false,
+    "review_article_not_required_for_page": true,
+    "quality_never_terminally_blocks": true,
+    "red_means_revise_again": true,
+    "immediate_revision_attempts": 4,
+    "keep_queued_until_green": true
+  }
+}
