@@ -1,7 +1,7 @@
 {
   "schema_version": 12,
-  "started_at": "2026-08-29T12:16:08.787Z",
-  "finished_at": "2026-08-29T12:17:19.324Z",
+  "started_at": "2026-08-29T12:23:19.323Z",
+  "finished_at": "2026-08-29T12:24:10.499Z",
   "summary": {
     "completed": 7,
     "needs_revision": 0,
@@ -18,8 +18,8 @@
       "command": "node scripts/parse-game-data.mjs 4am 4963870 4am",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 871,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"4am\",\n  \"checked_at\": \"2026-08-29T12:16:08.815Z\",\n  \"duration_ms\": 780,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4963870&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"4am\",\n    \"developers\": [\n      \"Studio Marigold\"\n    ],\n    \"genres\": [\n      \"Adventure\",\n      \"Indie\",\n      \"Simulation\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 1,\n    \"library_assets_provider\": \"steamcmd-appinfo\",\n    \"library_hero\": true,\n    \"library_cover\": true\n  },\n  \"output\": \"data/parser-output/4am.json\"\n}\n",
+      "duration_ms": 775,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"4am\",\n  \"checked_at\": \"2026-08-29T12:23:19.352Z\",\n  \"duration_ms\": 684,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4963870&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"4am\",\n    \"developers\": [\n      \"Studio Marigold\"\n    ],\n    \"genres\": [\n      \"Adventure\",\n      \"Indie\",\n      \"Simulation\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 1,\n    \"library_assets_provider\": \"steamcmd-appinfo\",\n    \"library_hero\": true,\n    \"library_cover\": true\n  },\n  \"output\": \"data/parser-output/4am.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -36,7 +36,7 @@
       "command": "node scripts/quality-control-loop.mjs page 4am game_a0d66db8a5b2124ca89a",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 60007,
+      "duration_ms": 39644,
       "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"4am\",\n  \"status\": \"green\",\n  \"attempts\": 8,\n  \"editorial_ai_enabled\": false,\n  \"comments\": []\n}\n",
       "stderr": ""
     },
@@ -45,7 +45,7 @@
       "command": "node scripts/merge-official-steam-videos.mjs 4am",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 33,
+      "duration_ms": 35,
       "stdout": "{\n  \"slug\": \"4am\",\n  \"official_found\": 1,\n  \"total_videos\": 2\n}\n",
       "stderr": ""
     },
@@ -54,8 +54,8 @@
       "command": "node scripts/canonicalize-editorial-game-id.mjs 4am",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 4623,
-      "stdout": "{\n  \"slug\": \"4am\",\n  \"game_id\": \"game_a0d66db8a5b2124ca89a\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 5,\n  \"artifacts_changed\": 4\n}\n",
+      "duration_ms": 5275,
+      "stdout": "{\n  \"slug\": \"4am\",\n  \"game_id\": \"game_a0d66db8a5b2124ca89a\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 6,\n  \"artifacts_changed\": 4\n}\n",
       "stderr": ""
     },
     {
@@ -63,8 +63,8 @@
       "command": "node scripts/materialize-green-game-page.mjs 4am",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 32,
-      "stdout": "{\n  \"slug\": \"4am\",\n  \"title\": \"4am\",\n  \"game_id\": \"game_a0d66db8a5b2124ca89a\",\n  \"year\": 2026,\n  \"public_page\": \"game/4am/index.html\",\n  \"catalog_entry\": true,\n  \"status\": \"green\"\n}\n",
+      "duration_ms": 55,
+      "stdout": "{\n  \"slug\": \"4am\",\n  \"title\": \"4am\",\n  \"game_id\": \"game_a0d66db8a5b2124ca89a\",\n  \"year\": 2026,\n  \"public_page\": \"game/4am/index.html\",\n  \"game_content\": \"data/game-content/2023-2025.json\",\n  \"catalog_entry\": true,\n  \"status\": \"green\"\n}\n",
       "stderr": ""
     },
     {
@@ -72,8 +72,8 @@
       "command": "node scripts/orchestrate-content.mjs --finalize",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 4869,
-      "stdout": "{\n  \"schema_version\": 5,\n  \"generated_at\": \"2026-08-29T12:17:14.488Z\",\n  \"mode\": \"finalize\",\n  \"canonical_registry\": \"data/game-registry/registry.transition.json\",\n  \"summary\": {\n    \"source_records\": 1833,\n    \"games\": 619,\n    \"published_pages\": 220,\n    \"published_reviews\": 2,\n    \"registry_review_flags_published\": 78,\n    \"ready_for_page\": 0,\n    \"awaiting_sources\": 399,\n    \"queued\": 617,\n    \"runnable_pages\": 2,\n    \"runnable_reviews\": 1,\n    \"blocked_identity\": 1,\n    \"popular_ranked_games\": 25,\n    \"popular_registered\": 0,\n    \"popular_unresolved\": 6,\n    \"public_release_games\": 269,\n    \"releases_registered\": 0,\n    \"releases_unresolved\": 1\n  },\n  \"next\": {\n    \"pages\": [\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_21c17c838347b802cfe5\",\n        \"slug\": \"a-game-about-penguins\",\n        \"title\": \"A Game About Penguins\",\n        \"steam_appid\": 4061800,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"description, cover_or_hero\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_604f78ebf37981bf4b5d\",\n        \"slug\": \"a-very-simple-idle-game\",\n        \"title\": \"A Very Simple Idle Game\",\n        \"steam_appid\": 4965540,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"release_confirmation\"\n      }\n    ],\n    \"reviews\": [\n      {\n        \"type\": \"build_review\",\n        \"game_id\": \"game_72bf0963b99d4c9b1ab4\",\n        \"slug\": \"big-walk\",\n        \"title\": \"big-walk\",\n        \"popular_rank\": 2,\n        \"release_candidate\": true,\n        \"priority\": 298,\n        \"reason\": \"review_quality_needs_revision:missing\"\n      }\n    ]\n  }\n}\n",
+      "duration_ms": 5290,
+      "stdout": "{\n  \"schema_version\": 5,\n  \"generated_at\": \"2026-08-29T12:24:05.242Z\",\n  \"mode\": \"finalize\",\n  \"canonical_registry\": \"data/game-registry/registry.transition.json\",\n  \"summary\": {\n    \"source_records\": 1834,\n    \"games\": 619,\n    \"published_pages\": 220,\n    \"published_reviews\": 2,\n    \"registry_review_flags_published\": 78,\n    \"ready_for_page\": 0,\n    \"awaiting_sources\": 399,\n    \"queued\": 617,\n    \"runnable_pages\": 2,\n    \"runnable_reviews\": 1,\n    \"blocked_identity\": 1,\n    \"popular_ranked_games\": 25,\n    \"popular_registered\": 0,\n    \"popular_unresolved\": 6,\n    \"public_release_games\": 269,\n    \"releases_registered\": 0,\n    \"releases_unresolved\": 1\n  },\n  \"next\": {\n    \"pages\": [\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_21c17c838347b802cfe5\",\n        \"slug\": \"a-game-about-penguins\",\n        \"title\": \"A Game About Penguins\",\n        \"steam_appid\": 4061800,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"description, cover_or_hero\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_604f78ebf37981bf4b5d\",\n        \"slug\": \"a-very-simple-idle-game\",\n        \"title\": \"A Very Simple Idle Game\",\n        \"steam_appid\": 4965540,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"release_confirmation\"\n      }\n    ],\n    \"reviews\": [\n      {\n        \"type\": \"build_review\",\n        \"game_id\": \"game_72bf0963b99d4c9b1ab4\",\n        \"slug\": \"big-walk\",\n        \"title\": \"big-walk\",\n        \"popular_rank\": 2,\n        \"release_candidate\": true,\n        \"priority\": 298,\n        \"reason\": \"review_quality_needs_revision:missing\"\n      }\n    ]\n  }\n}\n",
       "stderr": ""
     }
   ]
