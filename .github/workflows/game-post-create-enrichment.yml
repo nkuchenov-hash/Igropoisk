@@ -24,6 +24,7 @@ on:
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/select-next-game-page-target.mjs'
       - 'scripts/materialize-green-game-page.mjs'
+      - 'scripts/publish-green-game-page-production.mjs'
       - 'config/game-page-quality-v2.json'
       - 'data/content-pipeline/execution-plan.json'
       - 'data/content-pipeline/page-acceptance-target.json'
@@ -35,7 +36,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-enrichment-v8-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
+  group: game-post-create-enrichment-v9-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
   cancel-in-progress: false
 
 jobs:
@@ -60,6 +61,8 @@ jobs:
           node --check scripts/quality-control-loop.mjs
           node --check scripts/build-game-page-basic.mjs
           node --check scripts/materialize-green-game-page.mjs
+          node --check scripts/publish-green-game-page-production.mjs
+          node --check scripts/materialize-game-creator-pages.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/discover-review-media.mjs
@@ -113,10 +116,17 @@ jobs:
           console.log(`Target ${slug} passed page QC.`);
           NODE
       - name: Publish enrichment snapshot to staging
+        id: staging_publish
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -z "$(git status --porcelain)" ]; then echo "No enrichment changes produced."; exit 0; fi
+          set -euo pipefail
+          if [ -z "$(git status --porcelain)" ]; then
+            git fetch origin staging
+            echo "No enrichment changes produced."
+            echo "staging_sha=$(git rev-parse origin/staging)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           git config user.name "igropoisk-content-bot"
           git config user.email "igropoisk-content-bot@users.noreply.github.com"
           BRANCH="automation/post-create-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
@@ -126,3 +136,47 @@ jobs:
           git push origin "$BRANCH"
           PR_URL="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated AI-independent bounded page enrichment: structured data, Media, discovered review/source links and ratings. Paid editorial AI is not required for Game Page readiness.")"
           gh pr merge "$PR_URL" --merge --delete-branch
+          git fetch origin staging
+          echo "staging_sha=$(git rev-parse origin/staging)" >> "$GITHUB_OUTPUT"
+      - name: Publish green Game Page directly to production
+        id: production
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_TARGET_SLUG: ${{ steps.target.outputs.slug }}
+          STAGING_SHA: ${{ steps.staging_publish.outputs.staging_sha }}
+          GAME_PAGE_PRODUCTION_REPORT: ${{ runner.temp }}/game-page-production.json
+        run: |
+          set -euo pipefail
+          test -n "$GAME_TARGET_SLUG"
+          test -n "$STAGING_SHA"
+          node scripts/publish-green-game-page-production.mjs "$GAME_TARGET_SLUG" "$STAGING_SHA"
+          PRODUCTION_SHA="$(node -p "require(process.env.GAME_PAGE_PRODUCTION_REPORT).production_sha || ''")"
+          test -n "$PRODUCTION_SHA"
+          echo "production_sha=$PRODUCTION_SHA" >> "$GITHUB_OUTPUT"
+      - name: Deploy exact production snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRODUCTION_SHA: ${{ steps.production.outputs.production_sha }}
+        run: |
+          set -euo pipefail
+          test -n "$PRODUCTION_SHA"
+          node - <<'NODE' | gh api --method POST "repos/${GITHUB_REPOSITORY}/dispatches" --input -
+          process.stdout.write(JSON.stringify({event_type:'production-pages',client_payload:{target_branch:'main',mode:'production',production_sha:process.env.PRODUCTION_SHA,sha:process.env.PRODUCTION_SHA,source:'green-game-page-production'}}));
+          NODE
+      - name: Require the new Game Page to be live
+        env:
+          TARGET: ${{ steps.target.outputs.slug }}
+        run: |
+          set -euo pipefail
+          URL="https://nkuchenov-hash.github.io/Igropoisk/game/${TARGET}/"
+          ready=false
+          for attempt in $(seq 1 90); do
+            body="$(curl -L -sS --max-time 10 "$URL" || true)"
+            if printf '%s' "$body" | grep -Fq "data-slug=\"${TARGET}\""; then
+              ready=true
+              echo "Live Game Page verified: $URL"
+              break
+            fi
+            sleep 2
+          done
+          test "$ready" = "true"
