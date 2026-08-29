@@ -22,6 +22,8 @@ const stableEntities = [
   'Pearl Abyss', 'CD Projekt Red', 'Gamescom', 'QuakeCon', 'Epic Games', 'Bandai Namco'
 ];
 
+const contextualEntitySuffix = /\b(?:City|Studios?|Games|Interactive|Entertainment|Assembly|Productions?|Engine)$/i;
+
 function canonical(value = '') {
   return String(value)
     .normalize('NFKC')
@@ -81,6 +83,15 @@ function unsupportedNumbers(value = '', input = {}) {
 function requiredStableEntities(input = {}) {
   const source = `${input.title || ''} ${input.summary || ''}`;
   return stableEntities.filter(entity => containsEntity(source, entity));
+}
+
+function requiredContextEntities(input = {}) {
+  const source = String(input.summary || '');
+  const matches = source.match(/\b(?:[A-Z]{2,}|[A-Z][A-Za-z0-9'’.-]+)(?:\s+(?:[A-Z]{2,}|[A-Z][A-Za-z0-9'’.-]+)){1,3}\b/g) || [];
+  return [...new Set(matches
+    .map(value => value.trim())
+    .filter(value => contextualEntitySuffix.test(value)))]
+    .slice(0, 4);
 }
 
 function requiredExplicitEntities(input = {}) {
@@ -166,7 +177,11 @@ export function validateProductionNews(value, input = {}) {
   const newNumbers = unsupportedNumbers(`${titleRu} ${briefRu}`, input);
   if (newNumbers.length) reasons.push(`unsupported number: ${newNumbers.join(', ')}`);
 
-  const requiredEntities = [...new Set([...requiredStableEntities(input), ...requiredExplicitEntities(input)])];
+  const requiredEntities = [...new Set([
+    ...requiredStableEntities(input),
+    ...requiredContextEntities(input),
+    ...requiredExplicitEntities(input)
+  ])];
   for (const entity of requiredEntities) {
     if (!containsEntity(`${titleRu} ${briefRu}`, entity)) reasons.push(`source entity missing: ${entity}`);
   }
