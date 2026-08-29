@@ -17,7 +17,10 @@ const titleRejectPatterns = [
   /\bdebuts? on disney\+|\bcoming to disney\+/i,
   /\b(?:tv|television) (?:show|series)\b|\bmovie adaptation\b|\banime adaptation\b/i,
   /\blife[- ]sized statues?\b|\bcollectible statues?\b|\bfigurines?\b|\bmerch(?:andise)?\b/i,
-  /\bcritical role\b.{0,80}\b(?:d&d|dungeons\s*&\s*dragons)\b/i
+  /\bcritical role\b.{0,80}\b(?:d&d|dungeons\s*&\s*dragons)\b/i,
+  /(?:^|\b)(?:блогер|журналист).{0,90}(?:ж[её]стко\s+)?раскритиковал|\b(?:blogger|journalist)\b.{0,90}\b(?:slams?|critic(?:izes?|ised?|ized?))\b/iu,
+  /бросает\s+вызов\s+жадности|а\s+не\s+то,?\s+что\s+вы\s+подумали/iu,
+  /\bсам(?:ой|ая|ый|ое)\s+(?:эмоциональн\w*|крут\w*|лучш\w*|худш\w*)\s+(?:игр\w*|част\w*|проект\w*)/iu
 ];
 
 const textRejectPatterns = [
@@ -29,6 +32,14 @@ const textRejectPatterns = [
   /\bdeal of the day\b|\bbest deals\b|скидки дня|распродажа/iu,
   /\bgift guide\b|подарочный гид/iu,
   /\bletter from the editor\b|обращение редакции/iu
+];
+
+const nonGamingRejectPatterns = [
+  /\b(?:netflix|hulu|prime video|streaming)\b.{0,140}\b(?:film|movie|thriller|series|show)\b|\b(?:film|movie|thriller|series|show)\b.{0,140}\b(?:netflix|hulu|prime video|streaming)\b/i,
+  /(?:netflix|стриминг).{0,140}(?:фильм|сериал)|(?:фильм|сериал).{0,140}(?:netflix|стриминг)/iu,
+  /\bdebian\b.{0,140}\b(?:generative ai|artificial intelligence|software development|developers vote)\b/i,
+  /\b(?:bios|firmware|tpm|cve-\d{4}-\d+|motherboard)\b/i,
+  /(?:bios|прошивк\w*|tpm|cve-\d{4}-\d+).{0,140}(?:уязвимост\w*|безопасност\w*|amd|asus|ryzen)/iu
 ];
 
 const urlRejectPattern = /(?:^|[\/_-])(?:guides?|walkthroughs?|tips|reviews?)(?:[\/_-]|$)/i;
@@ -43,7 +54,7 @@ const gamingSignals = [
   /steam|valve|playstation|xbox|nintendo|switch|game pass|epic games/iu,
   /pc|console|консол/iu,
   /rpg|shooter|strategy|simulator|survival|horror|action|adventure|mmorpg/iu,
-  /движок|unreal engine|unity|directx|vulkan|proton|steam deck/iu,
+  /движок|unreal engine|unity|directx|vulkan|proton|dxvk|frostbite|steam deck/iu,
   /sales|copies sold|тираж|продаж/iu,
   /acquisition|layoffs|закрытие студии|увольнен|поглощени/iu,
   /beta|demo|early access|бета|демоверси|ранний доступ/iu,
@@ -60,6 +71,7 @@ export function newsContentRejectionReasons(input = {}) {
 
   if (titleRejectPatterns.some(pattern => pattern.test(title))) reasons.push('feature/opinion/guide/cross-media title');
   if (textRejectPatterns.some(pattern => pattern.test(combined))) reasons.push('non-news editorial or promotional content');
+  if (nonGamingRejectPatterns.some(pattern => pattern.test(combined))) reasons.push('non-gaming technology or entertainment content');
   if (urlRejectPattern.test(url)) reasons.push('guide/review URL');
   if (combined && !gamingSignals.some(pattern => pattern.test(combined))) reasons.push('no material gaming-news signal');
 
