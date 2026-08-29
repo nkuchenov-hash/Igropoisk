@@ -1,70 +1,70 @@
 {
   "schema_version": 12,
-  "started_at": "2026-08-29T09:49:07.176Z",
-  "finished_at": "2026-08-29T09:50:20.095Z",
+  "started_at": "2026-08-29T12:16:08.787Z",
+  "finished_at": "2026-08-29T12:17:19.324Z",
   "summary": {
     "completed": 7,
     "needs_revision": 0,
     "total": 7,
     "editorial_ai_enabled": false,
     "editorial_ai_available": false,
-    "target_slug": "100-mystic-cats",
+    "target_slug": "4am",
     "page_builder": "structured_sources",
     "quality_policy": "page build, page QC and green-page materialization are AI-independent; editorial AI is optional"
   },
   "results": [
     {
-      "label": "parse:100-mystic-cats",
-      "command": "node scripts/parse-game-data.mjs 100-mystic-cats 4326430 100 Mystic Cats",
+      "label": "parse:4am",
+      "command": "node scripts/parse-game-data.mjs 4am 4963870 4am",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 964,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"100-mystic-cats\",\n  \"checked_at\": \"2026-08-29T09:49:07.212Z\",\n  \"duration_ms\": 871,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4326430&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"100 Mystic Cats\",\n    \"developers\": [\n      \"100 Cozy Games\",\n      \"Cats\"\n    ],\n    \"genres\": [\n      \"Casual\",\n      \"Indie\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 10,\n    \"videos\": 1,\n    \"library_assets_provider\": \"steamcmd-appinfo\",\n    \"library_hero\": true,\n    \"library_cover\": true\n  },\n  \"output\": \"data/parser-output/100-mystic-cats.json\"\n}\n",
+      "duration_ms": 871,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"4am\",\n  \"checked_at\": \"2026-08-29T12:16:08.815Z\",\n  \"duration_ms\": 780,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4963870&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"4am\",\n    \"developers\": [\n      \"Studio Marigold\"\n    ],\n    \"genres\": [\n      \"Adventure\",\n      \"Indie\",\n      \"Simulation\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 1,\n    \"library_assets_provider\": \"steamcmd-appinfo\",\n    \"library_hero\": true,\n    \"library_cover\": true\n  },\n  \"output\": \"data/parser-output/4am.json\"\n}\n",
       "stderr": ""
     },
     {
-      "label": "page:100-mystic-cats",
-      "command": "node scripts/build-game-page-basic.mjs game_c2bf9099249a66dab3bc",
+      "label": "page:4am",
+      "command": "node scripts/build-game-page-basic.mjs game_a0d66db8a5b2124ca89a",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 112,
-      "stdout": "{\n  \"slug\": \"100-mystic-cats\",\n  \"game_id\": \"game_c2bf9099249a66dab3bc\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 10,\n  \"minimum_screenshots\": 6,\n  \"media_profile\": \"modern\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"next\": \"review/rating quality loop\"\n}\n",
+      "duration_ms": 98,
+      "stdout": "{\n  \"slug\": \"4am\",\n  \"game_id\": \"game_a0d66db8a5b2124ca89a\",\n  \"status\": \"needs_revision\",\n  \"missing\": [\n    \"screenshots:5/6\"\n  ],\n  \"next\": \"quality-control-loop will research/rebuild/recheck\"\n}\n",
       "stderr": ""
     },
     {
-      "label": "page-qc:100-mystic-cats",
-      "command": "node scripts/quality-control-loop.mjs page 100-mystic-cats game_c2bf9099249a66dab3bc",
+      "label": "page-qc:4am",
+      "command": "node scripts/quality-control-loop.mjs page 4am game_a0d66db8a5b2124ca89a",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 61942,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"100-mystic-cats\",\n  \"status\": \"green\",\n  \"attempts\": 8,\n  \"editorial_ai_enabled\": false,\n  \"comments\": []\n}\n",
+      "duration_ms": 60007,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"4am\",\n  \"status\": \"green\",\n  \"attempts\": 8,\n  \"editorial_ai_enabled\": false,\n  \"comments\": []\n}\n",
       "stderr": ""
     },
     {
-      "label": "official-steam-videos:100-mystic-cats",
-      "command": "node scripts/merge-official-steam-videos.mjs 100-mystic-cats",
+      "label": "official-steam-videos:4am",
+      "command": "node scripts/merge-official-steam-videos.mjs 4am",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 31,
-      "stdout": "{\n  \"slug\": \"100-mystic-cats\",\n  \"official_found\": 1,\n  \"total_videos\": 1\n}\n",
+      "duration_ms": 33,
+      "stdout": "{\n  \"slug\": \"4am\",\n  \"official_found\": 1,\n  \"total_videos\": 2\n}\n",
       "stderr": ""
     },
     {
-      "label": "canonicalize-page:100-mystic-cats",
-      "command": "node scripts/canonicalize-editorial-game-id.mjs 100-mystic-cats",
+      "label": "canonicalize-page:4am",
+      "command": "node scripts/canonicalize-editorial-game-id.mjs 4am",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 4833,
-      "stdout": "{\n  \"slug\": \"100-mystic-cats\",\n  \"game_id\": \"game_c2bf9099249a66dab3bc\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 6,\n  \"artifacts_changed\": 5\n}\n",
+      "duration_ms": 4623,
+      "stdout": "{\n  \"slug\": \"4am\",\n  \"game_id\": \"game_a0d66db8a5b2124ca89a\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 5,\n  \"artifacts_changed\": 4\n}\n",
       "stderr": ""
     },
     {
-      "label": "materialize-page:100-mystic-cats",
-      "command": "node scripts/materialize-green-game-page.mjs 100-mystic-cats",
+      "label": "materialize-page:4am",
+      "command": "node scripts/materialize-green-game-page.mjs 4am",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 34,
-      "stdout": "{\n  \"slug\": \"100-mystic-cats\",\n  \"title\": \"100 Mystic Cats\",\n  \"game_id\": \"game_c2bf9099249a66dab3bc\",\n  \"year\": 2026,\n  \"public_page\": \"game/100-mystic-cats/index.html\",\n  \"catalog_entry\": true,\n  \"status\": \"green\"\n}\n",
+      "duration_ms": 32,
+      "stdout": "{\n  \"slug\": \"4am\",\n  \"title\": \"4am\",\n  \"game_id\": \"game_a0d66db8a5b2124ca89a\",\n  \"year\": 2026,\n  \"public_page\": \"game/4am/index.html\",\n  \"catalog_entry\": true,\n  \"status\": \"green\"\n}\n",
       "stderr": ""
     },
     {
@@ -72,8 +72,8 @@
       "command": "node scripts/orchestrate-content.mjs --finalize",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 4998,
-      "stdout": "{\n  \"schema_version\": 5,\n  \"generated_at\": \"2026-08-29T09:50:15.128Z\",\n  \"mode\": \"finalize\",\n  \"canonical_registry\": \"data/game-registry/registry.transition.json\",\n  \"summary\": {\n    \"source_records\": 1831,\n    \"games\": 619,\n    \"published_pages\": 219,\n    \"published_reviews\": 2,\n    \"registry_review_flags_published\": 78,\n    \"ready_for_page\": 0,\n    \"awaiting_sources\": 400,\n    \"queued\": 617,\n    \"runnable_pages\": 2,\n    \"runnable_reviews\": 1,\n    \"blocked_identity\": 1,\n    \"popular_ranked_games\": 25,\n    \"popular_registered\": 0,\n    \"popular_unresolved\": 6,\n    \"public_release_games\": 269,\n    \"releases_registered\": 0,\n    \"releases_unresolved\": 1\n  },\n  \"next\": {\n    \"pages\": [\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_a0d66db8a5b2124ca89a\",\n        \"slug\": \"4am\",\n        \"title\": \"4am\",\n        \"steam_appid\": 4963870,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_21c17c838347b802cfe5\",\n        \"slug\": \"a-game-about-penguins\",\n        \"title\": \"A Game About Penguins\",\n        \"steam_appid\": 4061800,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"description, cover_or_hero\"\n      }\n    ],\n    \"reviews\": [\n      {\n        \"type\": \"build_review\",\n        \"game_id\": \"game_72bf0963b99d4c9b1ab4\",\n        \"slug\": \"big-walk\",\n        \"title\": \"big-walk\",\n        \"popular_rank\": 2,\n        \"release_candidate\": true,\n        \"priority\": 298,\n        \"reason\": \"review_quality_needs_revision:missing\"\n      }\n    ]\n  }\n}\n",
+      "duration_ms": 4869,
+      "stdout": "{\n  \"schema_version\": 5,\n  \"generated_at\": \"2026-08-29T12:17:14.488Z\",\n  \"mode\": \"finalize\",\n  \"canonical_registry\": \"data/game-registry/registry.transition.json\",\n  \"summary\": {\n    \"source_records\": 1833,\n    \"games\": 619,\n    \"published_pages\": 220,\n    \"published_reviews\": 2,\n    \"registry_review_flags_published\": 78,\n    \"ready_for_page\": 0,\n    \"awaiting_sources\": 399,\n    \"queued\": 617,\n    \"runnable_pages\": 2,\n    \"runnable_reviews\": 1,\n    \"blocked_identity\": 1,\n    \"popular_ranked_games\": 25,\n    \"popular_registered\": 0,\n    \"popular_unresolved\": 6,\n    \"public_release_games\": 269,\n    \"releases_registered\": 0,\n    \"releases_unresolved\": 1\n  },\n  \"next\": {\n    \"pages\": [\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_21c17c838347b802cfe5\",\n        \"slug\": \"a-game-about-penguins\",\n        \"title\": \"A Game About Penguins\",\n        \"steam_appid\": 4061800,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"description, cover_or_hero\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_604f78ebf37981bf4b5d\",\n        \"slug\": \"a-very-simple-idle-game\",\n        \"title\": \"A Very Simple Idle Game\",\n        \"steam_appid\": 4965540,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"release_confirmation\"\n      }\n    ],\n    \"reviews\": [\n      {\n        \"type\": \"build_review\",\n        \"game_id\": \"game_72bf0963b99d4c9b1ab4\",\n        \"slug\": \"big-walk\",\n        \"title\": \"big-walk\",\n        \"popular_rank\": 2,\n        \"release_candidate\": true,\n        \"priority\": 298,\n        \"reason\": \"review_quality_needs_revision:missing\"\n      }\n    ]\n  }\n}\n",
       "stderr": ""
     }
   ]
