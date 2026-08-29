@@ -173,6 +173,10 @@ export async function mergeNativeRussianFeeds({ outputPath = defaultOutput, now 
     : {
         ...payload,
         generatedAt: new Date(now).toISOString(),
+        updateFrequency: 'hourly',
+        evaluationWindow: 'rolling 96 hours; homepage requires 8/12 within 72 hours',
+        sourceRussianItemCount: Number(payload.sourceRussianItemCount || 0) + additions.length,
+        localizedItemCount: Number(payload.localizedItemCount || existing.length) + additions.length,
         nativeRussianProfessionalFeeds: report,
         nativeRussianProfessionalItemCount: additions.length,
         items: merged
