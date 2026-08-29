@@ -12,6 +12,9 @@ assert.equal(isLikelyNewsSource({ title: 'How to catch and kill Fish Tuna' }), f
 assert.equal(isLikelyNewsSource({ title: 'The 10 best Metal Gear games of all time' }), false);
 assert.equal(isLikelyNewsSource({ title: 'Star Wars Zero Company gameplay tips' }), false);
 assert.equal(isLikelyNewsSource({ title: 'How NVIDIA plans to change its gaming business' }), true);
+assert.equal(isLikelyNewsSource({ title: 'Pokémon is coming to Disney as The Misadventures of Sirfetch’d & Pichu debuts on Disney+' }), false);
+assert.equal(isLikelyNewsSource({ title: 'Capcom Is Making Life-Sized Statues of Lady Dimitrescu and Albert Wesker' }), false);
+assert.equal(isLikelyNewsSource({ title: 'Critical Role Teases a Game-Changing D&D Choice for One Beloved Player' }), false);
 
 const clean = validateProductionNews({
   titleRu: 'EA может сократить сотрудников после роста долговой нагрузки',
@@ -21,6 +24,28 @@ const clean = validateProductionNews({
   summary: 'EA told investors that annual costs will be cut by 700 million dollars.'
 });
 assert.equal(clean.ok, true, clean.reasons.join('; '));
+
+const fableEntityRegression = validateProductionNews({
+  titleRu: 'Разработчики Fable рады переносу игры на 2027 год',
+  briefRu: 'Команда Fable считает перенос на 2027 год полезным для проекта и хочет избежать слишком плотного окна крупных релизов. Разработчики подчёркивают, что дополнительное время позволит спокойно завершить работу над игрой.'
+}, {
+  title: 'Fable Dev Happy About Delay To 2027 To Avoid Chaotic Window',
+  summary: 'The studio says the delay gives the team more time to finish the game.',
+  requiredEntities: ['Fable']
+});
+assert.equal(fableEntityRegression.ok, true, fableEntityRegression.reasons.join('; '));
+assert.ok(!fableEntityRegression.reasons.some(reason => /Fable Dev Happy About|February 2027|Chaotic Window/.test(reason)));
+
+const missingRealEntity = validateProductionNews({
+  titleRu: 'Разработчики рады переносу игры на 2027 год',
+  briefRu: 'Команда считает перенос на 2027 год полезным для проекта и хочет избежать слишком плотного окна крупных релизов. Дополнительное время позволит спокойно завершить работу над игрой и провести финальную полировку.'
+}, {
+  title: 'Fable Dev Happy About Delay To 2027',
+  summary: 'The studio says the delay gives the team more time to finish the game.',
+  requiredEntities: ['Fable']
+});
+assert.equal(missingRealEntity.ok, false);
+assert.ok(missingRealEntity.reasons.includes('source entity missing: Fable'));
 
 const badCases = [
   {
