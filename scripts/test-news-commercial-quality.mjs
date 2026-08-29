@@ -10,16 +10,39 @@ const rejectTitles = [
   'Every GTA 6 song confirmed so far',
   'Game of the Week – Star Wars Zero Company has stolen my strategy-loving heart',
   'What Console Should You Buy for GTA 6? We Break Down PS5 vs. Xbox Pricing, Deals, and More',
-  'Pokémon is coming to Disney as The Misadventures of Sirfetch’d & Pichu debuts on Disney+'
+  'Pokémon is coming to Disney as The Misadventures of Sirfetch’d & Pichu debuts on Disney+',
+  'Блогер Антон Логвинов жестко раскритиковал скептиков DLSS 5 на фоне утечки технологии и первых модификаций',
+  'Никаких микротранзакций в раннем доступе: как WARDOGS бросает вызов жадности Activision и EA',
+  'Кадр из SPINE стал популярным мемом: разработчики пояснили, что это отсылка к "Джону Уику", а не то, что вы подумали',
+  'Crymelight станет самой эмоциональной игрой серии Cry'
 ];
 for (const title of rejectTitles) {
   assert.equal(isLikelyNewsContent({ title, summary: 'A gaming article.', url: 'https://example.test/article' }), false, title);
 }
 
+const rejectItems = [
+  {
+    title: 'Debian Linux developers vote to allow Responsible Use of Generative AI',
+    summary: 'Debian developers voted on generative AI use in software development.'
+  },
+  {
+    title: 'ASUS выпускает обновления BIOS для AM4 и AM5, устраняющие критические уязвимости TPM AMD',
+    summary: 'Обновление прошивки закрывает уязвимости CVE-2026-6726 и CVE-2026-6727.'
+  },
+  {
+    title: "Marvel Star's Forgotten 100-Minute Action Thriller Is About to Disappear From Streaming",
+    summary: 'The film Legion is leaving Netflix.'
+  }
+];
+for (const item of rejectItems) {
+  assert.equal(isLikelyNewsContent({ ...item, url: 'https://example.test/news' }), false, item.title);
+}
+
 const acceptItems = [
   ['EA Motive’s Iron Man Game Trailer Seemingly Leaked With Early Look at Gameplay', 'Gameplay footage from what appears to be EA Motive Studio’s Iron Man game has leaked online.'],
   ['Rockstar says GTA 6 runs at 30 FPS', 'Rockstar confirmed the current console frame rate target for GTA 6.'],
-  ['Авторы Project ZETA объявили второе глобальное тестирование', 'Публичный плейтест в Steam пройдёт в сентябре.']
+  ['Авторы Project ZETA объявили второе глобальное тестирование', 'Публичный плейтест в Steam пройдёт в сентябре.'],
+  ['Direct3D 8/9/10/11 to Vulkan translation layer DXVK 3.1 brings improvements for game launchers, older Frostbite engine and more', 'DXVK 3.1 improves game launchers and older Frostbite games.']
 ];
 for (const [title, summary] of acceptItems) {
   assert.equal(isLikelyNewsContent({ title, summary, url: 'https://example.test/news' }), true, title);
@@ -48,6 +71,15 @@ const badGrammar = validateProductionNews({
 }, { title: 'Alien Isolation 2 theory about the protagonist', summary: 'Creative Assembly says the character is not canon.' });
 assert.equal(badGrammar.ok, false);
 assert.ok(badGrammar.reasons.includes('awkward machine-like Russian'));
+
+for (const [titleRu, briefRu] of [
+  ['В сети появился трейлер', 'В сети появился трейлер неофициального видеоигры Iron Man. Разработчики публикацию пока не комментировали.'],
+  ['Bethesda обсуждает The Elder Scrolls 6', 'Каждый платформа нуждается в эксклюзивных контентах. Microsoft пока не уточнила статус релиза The Elder Scrolls 6.']
+]) {
+  const result = validateProductionNews({ titleRu, briefRu }, { title: 'Game news', summary: 'A game-related source summary.' });
+  assert.equal(result.ok, false);
+  assert.ok(result.reasons.includes('awkward machine-like Russian'), result.reasons.join('; '));
+}
 
 const duplicateLead = validateProductionNews({
   titleRu: 'Project ZETA проведёт второй глобальный тест в сентябре',
