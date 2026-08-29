@@ -18,6 +18,14 @@ const gameId=String(draft.game_id||draft.publication?.gate?.canonical_game_id||'
 if(!title||!gameId) throw new Error(`${slug}: title or canonical game id missing`);
 const year=Number(String(draft.release?.date_text||draft.release?.date||'').match(/(?:19|20)\d{2}/)?.[0]||0)||null;
 const steamAppId=Number(draft.identity?.steam_appid||0)||null;
+const chunkForYear=value=>value&&value<=2015?'2002-2015':value&&value<=2017?'2016-2017':value&&value<=2019?'2018-2019':value===2020?'2020':value&&value<=2022?'2021-2022':'2023-2025';
+const chunk=chunkForYear(year);
+const chunkPath=`data/game-content/${chunk}.json`;
+const chunkData=read(chunkPath,{schema_version:4,games:{}});
+chunkData.schema_version=Math.max(Number(chunkData.schema_version||1),4);
+chunkData.games=chunkData.games||{};
+chunkData.games[slug]=draft;
+write(chunkPath,chunkData);
 const catalog=read('data/catalog-visible.json',[]);
 const index=catalog.findIndex(item=>String(item?.slug||'')===slug);
 const entry={title,year,slug,game_id:gameId,...(steamAppId?{steam_appid:steamAppId}:{})};
@@ -28,5 +36,5 @@ const html=`<!doctype html><html lang="ru" data-theme="dark"><head><meta charset
 const pagePath=path.join(root,'game',slug,'index.html');
 fs.mkdirSync(path.dirname(pagePath),{recursive:true});
 fs.writeFileSync(pagePath,`${html}\n`);
-write(`data/parser-runs/game-page-${slug}.json`,{parser:'materialize-green-game-page',status:'green',game_slug:slug,game_id:gameId,checked_at:new Date().toISOString(),public_ready:true,output:['data/catalog-visible.json',`game/${slug}/index.html`]});
-console.log(JSON.stringify({slug,title,game_id:gameId,year,public_page:`game/${slug}/index.html`,catalog_entry:true,status:'green'},null,2));
+write(`data/parser-runs/game-page-${slug}.json`,{parser:'materialize-green-game-page',status:'green',game_slug:slug,game_id:gameId,checked_at:new Date().toISOString(),public_ready:true,output:['data/catalog-visible.json',chunkPath,`game/${slug}/index.html`]});
+console.log(JSON.stringify({slug,title,game_id:gameId,year,public_page:`game/${slug}/index.html`,game_content:chunkPath,catalog_entry:true,status:'green'},null,2));
