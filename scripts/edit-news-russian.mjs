@@ -70,6 +70,28 @@ function sourceSummary(item) {
   return String(item.summaryEn || item.summary || sourceTitle(item)).trim();
 }
 
+function displayGameEntity(game = {}) {
+  const raw = String(game.title || game.slug || '').trim();
+  if (!raw) return '';
+  if (!raw.includes('-')) return raw;
+  return raw.split('-').filter(Boolean).map(part => {
+    if (/^(?:gta|rpg|vr|pc)$/i.test(part)) return part.toUpperCase();
+    if (/^[ivx]+$/i.test(part)) return part.toUpperCase();
+    return part.charAt(0).toUpperCase() + part.slice(1);
+  }).join(' ');
+}
+
+function requiredEntitiesForItem(item, title, summary) {
+  const source = `${title} ${summary}`.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ');
+  return [...new Set((Array.isArray(item.games) ? item.games : [])
+    .map(displayGameEntity)
+    .filter(Boolean)
+    .filter(entity => {
+      const needle = entity.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+      return needle.length >= 4 && source.includes(needle);
+    }))].slice(0, 4);
+}
+
 function sourceKey(item) {
   const explicit = String(item?.primarySource || item?.source || '').trim().toLowerCase();
   if (explicit) return explicit;
@@ -135,13 +157,13 @@ for (const item of items) {
   const title = sourceTitle(item);
   const summary = sourceSummary(item);
   const url = item.primaryUrl || item.url || '';
-  if (!isLikelyNewsSource({ title, url })) {
+  if (!isLikelyNewsSource({ title, summary, url })) {
     filteredNonNews += 1;
     setPublic(item, false);
     item.editorialStatus = 'filtered-non-news';
     item.editorialVersion = NEWS_EDITORIAL_VERSION;
     item.editorialSourceHash = editorialSourceHash(item);
-    item.editorialReasons = ['guide/list content is not a news item'];
+    item.editorialReasons = ['content policy rejected non-news material'];
     continue;
   }
 
@@ -170,7 +192,6 @@ for (const item of items) {
       item.editorialVersion = NEWS_EDITORIAL_VERSION;
       item.editorialSourceHash = editorialSourceHash(item);
       item.editorialReasons = nativeValidation.reasons;
-      console.error(`[news/editor] Russian source needs article salvage ${title}: ${nativeValidation.reasons.join('; ')}`);
     }
   }
 }
@@ -198,29 +219,42 @@ for (const item of candidates) {
     console.error(`[news/editor/article] ${url}: ${error.message}; using source lead`);
   }
 
-  if (sourceIsRussian(item) && articleText && hasCyrillic(articleText)) {
-    const articleBrief = nativeArticleBrief(articleText);
-    if (articleBrief) {
-      const nativeValidation = validateProductionNews(
-        { titleRu: title, briefRu: articleBrief },
-        { title, summary, articleText, url }
-      );
-      if (nativeValidation.ok) {
-        item.titleRu = nativeValidation.titleRu;
-        item.summaryRu = paragraphize(nativeValidation.briefRu);
-        item.editorialBriefRu = item.summaryRu;
-        item.editorialStatus = 'source-ru';
-        item.editorialVersion = NEWS_EDITORIAL_VERSION;
-        item.editorialSourceHash = editorialSourceHash(item);
-        item.editorialGeneratedAt = new Date().toISOString();
-        item.editorialModel = 'source-ru-article';
-        delete item.editorialReasons;
-        nativeApprovedItems.add(item);
-        nativeArticleSalvaged += 1;
-        console.log(`[news/editor] source-ru article salvage approved ${item.id}: ${item.titleRu}`);
-        continue;
+  if (sourceIsRussian(item)) {
+    if (articleText && hasCyrillic(articleText)) {
+      const articleBrief = nativeArticleBrief(articleText);
+      if (articleBrief) {
+        const nativeValidation = validateProductionNews(
+          { titleRu: title, briefRu: articleBrief },
+          { title, summary, articleText, url }
+        );
+        if (nativeValidation.ok) {
+          item.titleRu = nativeValidation.titleRu;
+          item.summaryRu = paragraphize(nativeValidation.briefRu);
+          item.editorialBriefRu = item.summaryRu;
+          item.editorialStatus = 'source-ru';
+          item.editorialVersion = NEWS_EDITORIAL_VERSION;
+          item.editorialSourceHash = editorialSourceHash(item);
+          item.editorialGeneratedAt = new Date().toISOString();
+          item.editorialModel = 'source-ru-article';
+          delete item.editorialReasons;
+          nativeApprovedItems.add(item);
+          nativeArticleSalvaged += 1;
+          console.log(`[news/editor] source-ru article salvage approved ${item.id}: ${item.titleRu}`);
+          continue;
+        }
       }
     }
+
+    rejected += 1;
+    setPublic(item, false);
+    item.editorialStatus = 'rejected';
+    item.editorialVersion = NEWS_EDITORIAL_VERSION;
+    item.editorialSourceHash = editorialSourceHash(item);
+    item.editorialRejectedAt = new Date().toISOString();
+    item.editorialReasons = ['native Russian source did not provide two complete publishable sentences'];
+    failures.push({ id: item.id, url, reasons: item.editorialReasons, articleFetchError });
+    console.error(`[news/editor] rejected native Russian source without Qwen ${title}`);
+    continue;
   }
 
   if (!modelLoadMs) {
@@ -230,13 +264,15 @@ for (const item of candidates) {
   }
 
   try {
+    const requiredEntities = requiredEntitiesForItem(item, title, summary);
     const edited = await editNewsToRussian({
       title,
       summary,
       articleText,
       url,
-      source: item.primarySource || item.source || ''
-    }, { maxAttempts: 2, maxNewTokens: 165 });
+      source: item.primarySource || item.source || '',
+      requiredEntities
+    }, { maxAttempts: 2, maxNewTokens: 130 });
 
     if (!edited.ok) {
       rejected += 1;
@@ -246,7 +282,7 @@ for (const item of candidates) {
       item.editorialSourceHash = editorialSourceHash(item);
       item.editorialRejectedAt = new Date().toISOString();
       item.editorialReasons = edited.reasons;
-      failures.push({ id: item.id, url, reasons: edited.reasons, articleFetchError });
+      failures.push({ id: item.id, url, reasons: edited.reasons, requiredEntities, articleFetchError });
       console.error(`[news/editor] rejected ${title}: ${edited.reasons.join('; ')}`);
       continue;
     }
@@ -263,6 +299,7 @@ for (const item of candidates) {
     item.editorialGeneratedAt = new Date().toISOString();
     item.editorialAttempts = edited.attempts;
     item.editorialProductionSalvaged = Boolean(edited.productionSalvaged);
+    item.editorialRequiredEntities = requiredEntities;
     delete item.editorialReasons;
     delete item.editorialRejectedAt;
     approved += 1;
@@ -299,7 +336,7 @@ const output = Array.isArray(payload) ? items : { ...payload, generatedAt: new D
 await fs.mkdir('tmp', { recursive: true });
 await fs.writeFile(eventsPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
 await fs.writeFile(reportPath, `${JSON.stringify({
-  schemaVersion: 3,
+  schemaVersion: 4,
   generatedAt: new Date().toISOString(),
   editorialVersion: NEWS_EDITORIAL_VERSION,
   model: process.env.NEWS_EDITOR_MODEL || 'onnx-community/Qwen3-4B-Instruct-2507-ONNX',
