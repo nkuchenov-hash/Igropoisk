@@ -2,6 +2,13 @@ const romanNumbers = new Map([
   ['ii', '2'], ['iii', '3'], ['iv', '4'], ['v', '5'], ['vi', '6'], ['vii', '7'], ['viii', '8'], ['ix', '9'], ['x', '10']
 ]);
 
+const storyStopWords = new Set([
+  'the', 'a', 'an', 'of', 'to', 'for', 'in', 'on', 'at', 'from', 'with', 'and', 'or', 'is', 'are', 'was', 'were',
+  'this', 'that', 'it', 'its', 'has', 'have', 'had', 'will', 'could', 'would', 'about', 'after', 'before',
+  'как', 'что', 'это', 'для', 'или', 'при', 'после', 'перед', 'из', 'на', 'в', 'во', 'по', 'о', 'об', 'и', 'а', 'но',
+  'стал', 'стала', 'станет', 'будет', 'могут', 'может', 'новый', 'новая', 'новое', 'новые'
+]);
+
 function canonical(value = '') {
   return String(value)
     .normalize('NFKC')
@@ -36,16 +43,25 @@ function gameMentionPosition(headline, game = {}) {
   return Math.max(full, short);
 }
 
+function storyTopicKey(item = {}) {
+  const headline = canonical(item.titleEn || item.titleRu || item.title || '');
+  const tokens = headline.split(' ')
+    .filter(token => token.length >= 3 || /^\d+$/.test(token))
+    .filter(token => !storyStopWords.has(token));
+  if (!tokens.length) return '';
+  return `story:${tokens.slice(0, 6).join('-')}`;
+}
+
 export function newsTopicKey(item = {}) {
   const games = Array.isArray(item.games) ? item.games.filter(game => game?.slug || game?.gameId) : [];
-  if (!games.length) return '';
+  if (!games.length) return storyTopicKey(item);
   const headline = canonical(`${item.titleEn || ''} ${item.titleRu || ''}`);
   const mentioned = games
     .map(game => ({ game, position: gameMentionPosition(headline, game) }))
     .filter(entry => entry.position >= 0)
     .sort((a, b) => a.position - b.position || String(b.game.title || '').length - String(a.game.title || '').length);
   const game = mentioned[0]?.game || (games.length === 1 ? games[0] : null);
-  return game ? String(game.slug || game.gameId || '').trim() : '';
+  return game ? String(game.slug || game.gameId || '').trim() : storyTopicKey(item);
 }
 
 function sourceKey(item = {}) {
