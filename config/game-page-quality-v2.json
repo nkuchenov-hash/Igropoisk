@@ -44,7 +44,10 @@
       "minimum_bytes_modern": 70000,
       "minimum_bytes_historical": 35000,
       "minimum_count_modern": 6,
-      "minimum_count_historical": 5
+      "minimum_count_historical": 5,
+      "accept_complete_official_source_set": true,
+      "minimum_complete_official_source_count": 1,
+      "source_exhaustion_policy": "When the authoritative store exposes fewer screenshots than the nominal target, require every available official screenshot to pass the normal resolution, file-size, aspect, relevance and provenance gates instead of inventing or looping forever for unavailable media."
     },
     "reject_visible_upscale": true,
     "reject_blur": true,
