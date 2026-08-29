@@ -89,7 +89,7 @@ function baselinePayload(file, baseline) {
   }
 }
 
-function validateHealth(health, payloads, itemCounts, config, errors) {
+function validateHealth(health, payloads, itemCounts, config, errors, { enforceFreshness = true } = {}) {
   const healthFile = config.health?.output_file || 'data/news-pipeline-health.json';
   if (!health || typeof health !== 'object') {
     errors.push(`${healthFile} is not an object.`);
@@ -119,7 +119,9 @@ function validateHealth(health, payloads, itemCounts, config, errors) {
       errors.push(`${healthFile} generated_at mismatch for ${file}.`);
     }
     const blockingAge = Number(config.health?.blocking_age_minutes?.[file] || 0);
-    if (blockingAge && Number(metric.age_minutes) > blockingAge) errors.push(`${healthFile} marks ${file} older than ${blockingAge} minutes.`);
+    if (enforceFreshness && blockingAge && Number(metric.age_minutes) > blockingAge) {
+      errors.push(`${healthFile} marks ${file} older than ${blockingAge} minutes.`);
+    }
   }
 
   const official = payloads.get('data/publisher-news.json') || {};
@@ -133,7 +135,12 @@ function validateHealth(health, payloads, itemCounts, config, errors) {
   if (health.blocking_errors?.length) errors.push(`${healthFile} contains blocking errors.`);
 }
 
-export function validateNewsPipeline({ root = process.cwd(), configPath = 'config/news-pipeline.json', baseline = null } = {}) {
+export function validateNewsPipeline({
+  root = process.cwd(),
+  configPath = 'config/news-pipeline.json',
+  baseline = null,
+  allowStaleRepositoryFallback = false
+} = {}) {
   const errors = [];
   const config = readJson(root, configPath);
   const payloads = new Map();
@@ -182,7 +189,14 @@ export function validateNewsPipeline({ root = process.cwd(), configPath = 'confi
     if (!totalSources) errors.push('Official source registry produced no source count.');
   }
 
-  validateHealth(payloads.get(config.health?.output_file || 'data/news-pipeline-health.json'), payloads, itemCounts, config, errors);
+  validateHealth(
+    payloads.get(config.health?.output_file || 'data/news-pipeline-health.json'),
+    payloads,
+    itemCounts,
+    config,
+    errors,
+    { enforceFreshness: !allowStaleRepositoryFallback }
+  );
 
   const module = readJson(root, 'features/news/module.json');
   const contentFiles = new Set((module.content || []).filter(value => value.endsWith('.json')));
@@ -202,15 +216,17 @@ export function validateNewsPipeline({ root = process.cwd(), configPath = 'confi
     counts: itemCounts,
     health: payloads.get(config.health?.output_file || 'data/news-pipeline-health.json')?.status || 'missing',
     checked_at: new Date().toISOString(),
-    baseline
+    baseline,
+    freshness_enforced: !allowStaleRepositoryFallback
   };
 }
 
 function parseArguments(argv) {
-  const result = { baseline: null, configPath: 'config/news-pipeline.json' };
+  const result = { baseline: null, configPath: 'config/news-pipeline.json', allowStaleRepositoryFallback: false };
   for (let index = 0; index < argv.length; index += 1) {
     if (argv[index] === '--baseline') result.baseline = argv[++index];
     else if (argv[index] === '--config') result.configPath = argv[++index];
+    else if (argv[index] === '--allow-stale-repository-fallback') result.allowStaleRepositoryFallback = true;
     else throw new Error(`Unknown argument: ${argv[index]}`);
   }
   return result;
@@ -221,5 +237,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if (!result.ok) {
     throw new Error(`News pipeline publication gate failed:\n${result.errors.map(error => `- ${error}`).join('\n')}`);
   }
-  console.log(`News pipeline publication gate passed: ${JSON.stringify(result.counts)}; health=${result.health}.`);
+  console.log(`News pipeline publication gate passed: ${JSON.stringify(result.counts)}; health=${result.health}; freshness-enforced=${result.freshness_enforced}.`);
 }
