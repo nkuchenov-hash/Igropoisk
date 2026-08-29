@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
 import { nativeRussianFeeds, parseNativeRussianFeed } from './merge-russian-news-feeds.mjs';
 
-assert.equal(nativeRussianFeeds.length, 3);
+assert.equal(nativeRussianFeeds.length, 5);
 assert.ok(nativeRussianFeeds.some(feed => feed.source === 'StopGame' && feed.url.includes('rss_news.xml')));
 assert.ok(nativeRussianFeeds.some(feed => feed.source === 'GoHa.Ru' && feed.url.includes('/rss/videogames')));
+assert.ok(nativeRussianFeeds.some(feed => feed.source === '3DNews' && feed.url.includes('/games/rss/')));
+assert.ok(nativeRussianFeeds.some(feed => feed.source === 'App2Top' && feed.url.endsWith('/rss')));
+assert.ok(nativeRussianFeeds.some(feed => feed.source === 'Игромания'));
 
 const now = Date.parse('2026-08-29T08:00:00.000Z');
 const xml = `<?xml version="1.0"?><rss><channel>
