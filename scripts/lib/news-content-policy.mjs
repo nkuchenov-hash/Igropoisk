@@ -20,10 +20,10 @@ const titleRejectPatterns = [
   /\bcritical role\b.{0,80}\b(?:d&d|dungeons\s*&\s*dragons)\b/i,
   /\?/u,
   /\b(?:history|retrospective)\s+(?:of\s+)?(?:the\s+)?(?:series|franchise)\b/i,
-  /(?:^|[^\p{L}\p{N}])истори\w*\s+(?:серии|франшиз\w*)/iu,
+  /(?:^|[^\p{L}\p{N}])истори\p{L}*\s+(?:серии|франшиз\p{L}*)/iu,
   /(?:^|[^\p{L}\p{N}])(?:наконец[- ]?то|насмотрелись)(?:$|[^\p{L}\p{N}])/iu,
-  /(?:^|[^\p{L}\p{N}])(?:возможно|вероятно),?\s+(?:сам\w*\s+)?(?:худш\w*|лучш\w*)\s+(?:част\w*|игр\w*|релиз\w*)/iu,
-  /(?:^|[^\p{L}\p{N}])сам(?:ой|ая|ый|ое)\s+(?:эмоциональн\w*|крут\w*|лучш\w*|худш\w*)\s+(?:игр\w*|част\w*|проект\w*)/iu,
+  /(?:^|[^\p{L}\p{N}])(?:возможно|вероятно),?\s+(?:сам\p{L}*\s+)?(?:худш\p{L}*|лучш\p{L}*)\s+(?:част\p{L}*|игр\p{L}*|релиз\p{L}*)/iu,
+  /(?:^|[^\p{L}\p{N}])сам(?:ой|ая|ый|ое)\s+(?:эмоциональн\p{L}*|крут\p{L}*|лучш\p{L}*|худш\p{L}*)\s+(?:игр\p{L}*|част\p{L}*|проект\p{L}*)/iu,
   /(?:^|\b)(?:блогер|журналист).{0,90}(?:ж[её]стко\s+)?раскритиковал|\b(?:blogger|journalist)\b.{0,90}\b(?:slams?|critic(?:izes?|ised?|ized?))\b/iu,
   /бросает\s+вызов\s+жадности|а\s+не\s+то,?\s+что\s+вы\s+подумали/iu
 ];
@@ -37,12 +37,12 @@ const textRejectPatterns = [
   /\bdeal of the day\b|\bbest deals\b|скидки дня|распродажа/iu,
   /\bgift guide\b|подарочный гид/iu,
   /\bletter from the editor\b|обращение редакции/iu,
-  /обучающ\w+\s+(?:ролик|видео)|tutorial\s+(?:video|guide)/iu,
-  /огромн\w+\s+внимани\w*|вывести[^.!?]{0,50}на\s+новый\s+уровень/iu,
-  /(?:его|её|их)(?:\s+и\s+[^.!?]{1,80})?\s+похитили\s+(?:ноутбук\w*|оборудован\w*|техник\w*|устройств\w*)/iu,
+  /обучающ\p{L}+\s+(?:ролик|видео)|tutorial\s+(?:video|guide)/iu,
+  /огромн\p{L}+\s+внимани\p{L}*|вывести[^.!?]{0,50}на\s+новый\s+уровень/iu,
+  /(?:его|её|их)(?:\s+и\s+[^.!?]{1,80})?\s+похитили\s+(?:ноутбук\p{L}*|оборудован\p{L}*|техник\p{L}*|устройств\p{L}*)/iu,
   /\d+\.\s+\d+/u,
   /(?:^|\s)с\s+\d+\.\s*$/u,
-  /\bмаркап\w*|\$\d+(?:[.,]\d+)?\s+товар\w*/iu
+  /\bмаркап\p{L}*|\$\d+(?:[.,]\d+)?\s+товар\p{L}*/iu
 ];
 
 const nonGamingRejectPatterns = [
@@ -50,7 +50,7 @@ const nonGamingRejectPatterns = [
   /(?:netflix|стриминг).{0,140}(?:фильм|сериал)|(?:фильм|сериал).{0,140}(?:netflix|стриминг)/iu,
   /\bdebian\b.{0,140}\b(?:generative ai|artificial intelligence|software development|developers vote)\b/i,
   /\b(?:bios|firmware|tpm|cve-\d{4}-\d+|motherboard)\b/i,
-  /(?:bios|прошивк\w*|tpm|cve-\d{4}-\d+).{0,140}(?:уязвимост\w*|безопасност\w*|amd|asus|ryzen)/iu
+  /(?:bios|прошивк\p{L}*|tpm|cve-\d{4}-\d+).{0,140}(?:уязвимост\p{L}*|безопасност\p{L}*|amd|asus|ryzen)/iu
 ];
 
 const urlRejectPattern = /(?:^|[\/_-])(?:guides?|walkthroughs?|tips|reviews?)(?:[\/_-]|$)/i;
