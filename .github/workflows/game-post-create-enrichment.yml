@@ -2,6 +2,11 @@ name: Enrich newly created Игропоиск games
 
 on:
   workflow_dispatch:
+    inputs:
+      slug:
+        description: Optional target slug; when set only this game is enriched
+        required: false
+        type: string
   repository_dispatch:
     types: [game-post-create-enrichment]
   workflow_run:
@@ -14,7 +19,15 @@ on:
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/discover-review-media.mjs'
       - 'scripts/quality-control-loop.mjs'
+      - 'scripts/validate-game-media-quality.mjs'
+      - 'scripts/validate-game-shells.mjs'
+      - 'scripts/run-content-pipeline.mjs'
+      - 'scripts/select-next-game-page-target.mjs'
+      - 'scripts/materialize-green-game-page.mjs'
+      - 'scripts/publish-green-game-page-production.mjs'
+      - 'config/game-page-quality-v2.json'
       - 'data/content-pipeline/execution-plan.json'
+      - 'data/content-pipeline/page-acceptance-target.json'
       - '.github/workflows/game-post-create-enrichment.yml'
 
 permissions:
@@ -23,14 +36,14 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-enrichment-v5
+  group: game-post-create-enrichment-v9-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
   cancel-in-progress: false
 
 jobs:
   enrich:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 30
     steps:
       - name: Checkout staging snapshot
         uses: actions/checkout@v4
@@ -46,29 +59,74 @@ jobs:
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/quality-control-loop.mjs
+          node --check scripts/build-game-page-basic.mjs
+          node --check scripts/materialize-green-game-page.mjs
+          node --check scripts/publish-green-game-page-production.mjs
+          node --check scripts/materialize-game-creator-pages.mjs
           node --check scripts/prepare-review-research.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/discover-review-media.mjs
+          node --check scripts/validate-game-media-quality.mjs
+          node --check scripts/validate-game-shells.mjs
+          node --check scripts/select-next-game-page-target.mjs
           node --check game/_shared/game-page-review-sources.js
       - name: Refresh execution plan
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          EDITORIAL_AI_ENABLED: 'true'
         run: node scripts/orchestrate-content.mjs --finalize
-      - name: Run complete page enrichment cycle
+      - name: Resolve one bounded page target
+        id: target
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          EDITORIAL_AI_ENABLED: 'true'
-        run: node scripts/run-content-pipeline.mjs
-      - name: Validate generated game shells and material feeds
+          REQUESTED_SLUG: ${{ inputs.slug || github.event.client_payload.slug || '' }}
         run: |
-          node scripts/validate-game-shells.mjs
+          TARGET="$(node scripts/select-next-game-page-target.mjs "$REQUESTED_SLUG")"
+          test -n "$TARGET"
+          echo "slug=$TARGET" >> "$GITHUB_OUTPUT"
+          echo "Bounded Game Page target: $TARGET"
+      - name: Run complete AI-independent page enrichment cycle
+        env:
+          GAME_TARGET_SLUG: ${{ steps.target.outputs.slug }}
+          EDITORIAL_AI_ENABLED: 'false'
+        run: node scripts/run-content-pipeline.mjs
+      - name: Prove page cycle did not call paid OpenAI
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const log=JSON.parse(fs.readFileSync('data/content-pipeline/execution-log.json','utf8'));
+          if(log.summary?.editorial_ai_available) throw new Error('Page cycle unexpectedly enabled paid editorial AI');
+          const text=JSON.stringify(log.results||[]);
+          if(/api\.openai\.com|OpenAI API 429|insufficient_quota/i.test(text)) throw new Error('Paid OpenAI call detected in page cycle');
+          if(!log.summary?.target_slug) throw new Error('Bounded target was lost inside the page cycle');
+          console.log(`AI-independent bounded page-cycle contract verified for ${log.summary.target_slug}.`);
+          NODE
+      - name: Validate generated game shell and material feeds
+        run: |
+          TARGET="$(node -p "require('./data/content-pipeline/execution-log.json').summary.target_slug || ''")"
+          test -n "$TARGET"
+          echo "Validating isolated target shell: $TARGET"
+          node scripts/validate-game-shells.mjs "$TARGET"
           git diff --check
+      - name: Require active target to be green before publication
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const log=JSON.parse(fs.readFileSync('data/content-pipeline/execution-log.json','utf8'));
+          const slug=log.summary?.target_slug;
+          if(!slug) throw new Error('Target slug missing after bounded page cycle');
+          const qc=JSON.parse(fs.readFileSync(`data/quality-control/page-${slug}-control.json`,'utf8'));
+          if(!qc.green) throw new Error(`Target ${slug} is still red: ${(qc.comments||[]).join(' | ')}`);
+          console.log(`Target ${slug} passed page QC.`);
+          NODE
       - name: Publish enrichment snapshot to staging
+        id: staging_publish
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -z "$(git status --porcelain)" ]; then echo "No enrichment changes produced."; exit 0; fi
+          set -euo pipefail
+          if [ -z "$(git status --porcelain)" ]; then
+            git fetch origin staging
+            echo "No enrichment changes produced."
+            echo "staging_sha=$(git rev-parse origin/staging)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           git config user.name "igropoisk-content-bot"
           git config user.email "igropoisk-content-bot@users.noreply.github.com"
           BRANCH="automation/post-create-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
@@ -76,5 +134,49 @@ jobs:
           git add -A
           git commit -m "Continue game page enrichment ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
           git push origin "$BRANCH"
-          PR="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated page enrichment: data, existing Media, all discovered review/review-source links and ratings. Игропоиск article synthesis is not a page readiness requirement." --json number --jq '.number')"
-          gh pr merge "$PR" --merge --delete-branch
+          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated AI-independent bounded page enrichment: structured data, Media, discovered review/source links and ratings. Paid editorial AI is not required for Game Page readiness.")"
+          gh pr merge "$PR_URL" --merge --delete-branch
+          git fetch origin staging
+          echo "staging_sha=$(git rev-parse origin/staging)" >> "$GITHUB_OUTPUT"
+      - name: Publish green Game Page directly to production
+        id: production
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_TARGET_SLUG: ${{ steps.target.outputs.slug }}
+          STAGING_SHA: ${{ steps.staging_publish.outputs.staging_sha }}
+          GAME_PAGE_PRODUCTION_REPORT: ${{ runner.temp }}/game-page-production.json
+        run: |
+          set -euo pipefail
+          test -n "$GAME_TARGET_SLUG"
+          test -n "$STAGING_SHA"
+          node scripts/publish-green-game-page-production.mjs "$GAME_TARGET_SLUG" "$STAGING_SHA"
+          PRODUCTION_SHA="$(node -p "require(process.env.GAME_PAGE_PRODUCTION_REPORT).production_sha || ''")"
+          test -n "$PRODUCTION_SHA"
+          echo "production_sha=$PRODUCTION_SHA" >> "$GITHUB_OUTPUT"
+      - name: Deploy exact production snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRODUCTION_SHA: ${{ steps.production.outputs.production_sha }}
+        run: |
+          set -euo pipefail
+          test -n "$PRODUCTION_SHA"
+          node - <<'NODE' | gh api --method POST "repos/${GITHUB_REPOSITORY}/dispatches" --input -
+          process.stdout.write(JSON.stringify({event_type:'production-pages',client_payload:{target_branch:'main',mode:'production',production_sha:process.env.PRODUCTION_SHA,sha:process.env.PRODUCTION_SHA,source:'green-game-page-production'}}));
+          NODE
+      - name: Require the new Game Page to be live
+        env:
+          TARGET: ${{ steps.target.outputs.slug }}
+        run: |
+          set -euo pipefail
+          URL="https://nkuchenov-hash.github.io/Igropoisk/game/${TARGET}/"
+          ready=false
+          for attempt in $(seq 1 90); do
+            body="$(curl -L -sS --max-time 10 "$URL" || true)"
+            if printf '%s' "$body" | grep -Fq "data-slug=\"${TARGET}\""; then
+              ready=true
+              echo "Live Game Page verified: $URL"
+              break
+            fi
+            sleep 2
+          done
+          test "$ready" = "true"
