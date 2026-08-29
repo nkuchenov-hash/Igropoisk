@@ -1,0 +1,103 @@
+{
+  "schema_version": 9,
+  "type": "page",
+  "game_slug": "a-game-about-penguins",
+  "game_id": "game_21c17c838347b802cfe5",
+  "canonical_title": "A Game About Penguins",
+  "checked_at": "2026-08-29T12:26:55.112Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
+  "revision_history": [
+    {
+      "attempt": 1,
+      "label": "similarity-1",
+      "script": "scripts/build-similarity-index.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 219,\n  \"profiles\": 222,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"year_proximity_used\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 2,
+      "label": "page-materials-research-1",
+      "script": "scripts/prepare-review-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"a-game-about-penguins\",\n  \"status\": \"green\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 0,\n  \"scored_sources\": 0,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 3,
+      "label": "page-native-review-sources-1",
+      "script": "scripts/enrich-review-native-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"a-game-about-penguins\",\n  \"native_added\": 0,\n  \"total_reviews\": 0,\n  \"total_score_sources\": 0,\n  \"rejected\": 3\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 4,
+      "label": "page-ratings-1",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"a-game-about-penguins\",\n  \"status\": \"completed\",\n  \"material_links\": 0,\n  \"seed_rejected\": 0,\n  \"sources\": 0,\n  \"score_10\": null,\n  \"use_all_discovered_scores\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 5,
+      "label": "page-media-discovery-1",
+      "script": "scripts/discover-review-media.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"a-game-about-penguins\",\n  \"mode\": \"relevance_and_file_verified\",\n  \"screenshots\": 13,\n  \"artwork\": 2,\n  \"total\": 15,\n  \"required_screenshots\": 8\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 6,
+      "label": "page-video-discovery-1",
+      "script": "scripts/discover-game-videos.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"a-game-about-penguins\",\n  \"accepted\": 19,\n  \"rejected\": 36,\n  \"video_reviews\": 11,\n  \"trailers\": 4,\n  \"gameplay\": 4,\n  \"provider_independent_search\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 7,
+      "label": "media-validation-1",
+      "script": "scripts/validate-game-media-quality.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"a-game-about-penguins\",\n  \"status\": \"green\",\n  \"release_year\": 2026,\n  \"media_profile\": \"modern\",\n  \"comments\": 0,\n  \"accepted_screenshots\": 13,\n  \"minimum_screenshots\": 6,\n  \"nominal_minimum_screenshots\": 6,\n  \"official_source_screenshots\": 13,\n  \"official_source_exhausted\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 8,
+      "label": "finalize-green-page-state",
+      "status": "completed",
+      "release_year": 2026,
+      "hero": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4061800/41293af9b726cc70a79479c89e55e969a6413336/library_hero_2x.jpg",
+      "cover": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4061800/621df188d6250be5900e53523cea99c4ca973971/library_capsule_2x.jpg",
+      "accepted_screenshots": 13,
+      "minimum_screenshots": 6
+    }
+  ],
+  "policy": {
+    "page_ready_requires_source_scan": true,
+    "page_ready_requires_native_publisher_scan": true,
+    "page_ready_requires_media_validation": true,
+    "page_ready_requires_video_discovery": true,
+    "page_source_scan_ai_independent": true,
+    "page_revision_ai_optional": true,
+    "page_media_uses_game_page_quality_gate_not_article_image_quota": true,
+    "green_page_state_is_materialized": true,
+    "video_discovery_zero_verified_results_allowed_after_completed_search": true,
+    "editorial_ai_enabled": false,
+    "review_article_not_required_for_page": true,
+    "quality_never_terminally_blocks": true,
+    "red_means_revise_again": true,
+    "immediate_revision_attempts": 4,
+    "keep_queued_until_green": true
+  }
+}

@@ -1,70 +1,70 @@
 {
   "schema_version": 12,
-  "started_at": "2026-08-29T12:23:19.323Z",
-  "finished_at": "2026-08-29T12:24:10.499Z",
+  "started_at": "2026-08-29T12:25:47.914Z",
+  "finished_at": "2026-08-29T12:27:04.678Z",
   "summary": {
     "completed": 7,
     "needs_revision": 0,
     "total": 7,
     "editorial_ai_enabled": false,
     "editorial_ai_available": false,
-    "target_slug": "4am",
+    "target_slug": "a-game-about-penguins",
     "page_builder": "structured_sources",
     "quality_policy": "page build, page QC and green-page materialization are AI-independent; editorial AI is optional"
   },
   "results": [
     {
-      "label": "parse:4am",
-      "command": "node scripts/parse-game-data.mjs 4am 4963870 4am",
+      "label": "parse:a-game-about-penguins",
+      "command": "node scripts/parse-game-data.mjs a-game-about-penguins 4061800 A Game About Penguins",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 775,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"4am\",\n  \"checked_at\": \"2026-08-29T12:23:19.352Z\",\n  \"duration_ms\": 684,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4963870&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"4am\",\n    \"developers\": [\n      \"Studio Marigold\"\n    ],\n    \"genres\": [\n      \"Adventure\",\n      \"Indie\",\n      \"Simulation\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 1,\n    \"library_assets_provider\": \"steamcmd-appinfo\",\n    \"library_hero\": true,\n    \"library_cover\": true\n  },\n  \"output\": \"data/parser-output/4am.json\"\n}\n",
+      "duration_ms": 2148,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"a-game-about-penguins\",\n  \"checked_at\": \"2026-08-29T12:25:47.946Z\",\n  \"duration_ms\": 2055,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=4061800&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"A Game About Penguins\",\n    \"developers\": [\n      \"CO's Entertainment\"\n    ],\n    \"genres\": [\n      \"Adventure\",\n      \"Casual\",\n      \"Indie\",\n      \"Sports\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 13,\n    \"videos\": 1,\n    \"library_assets_provider\": \"steamcmd-appinfo\",\n    \"library_hero\": true,\n    \"library_cover\": true\n  },\n  \"output\": \"data/parser-output/a-game-about-penguins.json\"\n}\n",
       "stderr": ""
     },
     {
-      "label": "page:4am",
-      "command": "node scripts/build-game-page-basic.mjs game_a0d66db8a5b2124ca89a",
+      "label": "page:a-game-about-penguins",
+      "command": "node scripts/build-game-page-basic.mjs game_21c17c838347b802cfe5",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 98,
-      "stdout": "{\n  \"slug\": \"4am\",\n  \"game_id\": \"game_a0d66db8a5b2124ca89a\",\n  \"status\": \"needs_revision\",\n  \"missing\": [\n    \"screenshots:5/6\"\n  ],\n  \"next\": \"quality-control-loop will research/rebuild/recheck\"\n}\n",
+      "duration_ms": 114,
+      "stdout": "{\n  \"slug\": \"a-game-about-penguins\",\n  \"game_id\": \"game_21c17c838347b802cfe5\",\n  \"mode\": \"structured_sources\",\n  \"year\": 2026,\n  \"sources\": 1,\n  \"screenshots\": 13,\n  \"minimum_screenshots\": 6,\n  \"media_profile\": \"modern\",\n  \"gate_passed\": true,\n  \"public_ready\": false,\n  \"next\": \"review/rating quality loop\"\n}\n",
       "stderr": ""
     },
     {
-      "label": "page-qc:4am",
-      "command": "node scripts/quality-control-loop.mjs page 4am game_a0d66db8a5b2124ca89a",
+      "label": "page-qc:a-game-about-penguins",
+      "command": "node scripts/quality-control-loop.mjs page a-game-about-penguins game_21c17c838347b802cfe5",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 39644,
-      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"4am\",\n  \"status\": \"green\",\n  \"attempts\": 8,\n  \"editorial_ai_enabled\": false,\n  \"comments\": []\n}\n",
+      "duration_ms": 64937,
+      "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"a-game-about-penguins\",\n  \"status\": \"green\",\n  \"attempts\": 8,\n  \"editorial_ai_enabled\": false,\n  \"comments\": []\n}\n",
       "stderr": ""
     },
     {
-      "label": "official-steam-videos:4am",
-      "command": "node scripts/merge-official-steam-videos.mjs 4am",
+      "label": "official-steam-videos:a-game-about-penguins",
+      "command": "node scripts/merge-official-steam-videos.mjs a-game-about-penguins",
       "status": "completed",
       "exit_code": 0,
       "duration_ms": 35,
-      "stdout": "{\n  \"slug\": \"4am\",\n  \"official_found\": 1,\n  \"total_videos\": 2\n}\n",
+      "stdout": "{\n  \"slug\": \"a-game-about-penguins\",\n  \"official_found\": 1,\n  \"total_videos\": 2\n}\n",
       "stderr": ""
     },
     {
-      "label": "canonicalize-page:4am",
-      "command": "node scripts/canonicalize-editorial-game-id.mjs 4am",
+      "label": "canonicalize-page:a-game-about-penguins",
+      "command": "node scripts/canonicalize-editorial-game-id.mjs a-game-about-penguins",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 5275,
-      "stdout": "{\n  \"slug\": \"4am\",\n  \"game_id\": \"game_a0d66db8a5b2124ca89a\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 6,\n  \"artifacts_changed\": 4\n}\n",
+      "duration_ms": 4579,
+      "stdout": "{\n  \"slug\": \"a-game-about-penguins\",\n  \"game_id\": \"game_21c17c838347b802cfe5\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 6,\n  \"artifacts_changed\": 5\n}\n",
       "stderr": ""
     },
     {
-      "label": "materialize-page:4am",
-      "command": "node scripts/materialize-green-game-page.mjs 4am",
+      "label": "materialize-page:a-game-about-penguins",
+      "command": "node scripts/materialize-green-game-page.mjs a-game-about-penguins",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 55,
-      "stdout": "{\n  \"slug\": \"4am\",\n  \"title\": \"4am\",\n  \"game_id\": \"game_a0d66db8a5b2124ca89a\",\n  \"year\": 2026,\n  \"public_page\": \"game/4am/index.html\",\n  \"game_content\": \"data/game-content/2023-2025.json\",\n  \"catalog_entry\": true,\n  \"status\": \"green\"\n}\n",
+      "duration_ms": 50,
+      "stdout": "{\n  \"slug\": \"a-game-about-penguins\",\n  \"title\": \"A Game About Penguins\",\n  \"game_id\": \"game_21c17c838347b802cfe5\",\n  \"year\": 2026,\n  \"public_page\": \"game/a-game-about-penguins/index.html\",\n  \"game_content\": \"data/game-content/2023-2025.json\",\n  \"catalog_entry\": true,\n  \"status\": \"green\"\n}\n",
       "stderr": ""
     },
     {
@@ -72,8 +72,8 @@
       "command": "node scripts/orchestrate-content.mjs --finalize",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 5290,
-      "stdout": "{\n  \"schema_version\": 5,\n  \"generated_at\": \"2026-08-29T12:24:05.242Z\",\n  \"mode\": \"finalize\",\n  \"canonical_registry\": \"data/game-registry/registry.transition.json\",\n  \"summary\": {\n    \"source_records\": 1834,\n    \"games\": 619,\n    \"published_pages\": 220,\n    \"published_reviews\": 2,\n    \"registry_review_flags_published\": 78,\n    \"ready_for_page\": 0,\n    \"awaiting_sources\": 399,\n    \"queued\": 617,\n    \"runnable_pages\": 2,\n    \"runnable_reviews\": 1,\n    \"blocked_identity\": 1,\n    \"popular_ranked_games\": 25,\n    \"popular_registered\": 0,\n    \"popular_unresolved\": 6,\n    \"public_release_games\": 269,\n    \"releases_registered\": 0,\n    \"releases_unresolved\": 1\n  },\n  \"next\": {\n    \"pages\": [\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_21c17c838347b802cfe5\",\n        \"slug\": \"a-game-about-penguins\",\n        \"title\": \"A Game About Penguins\",\n        \"steam_appid\": 4061800,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"description, cover_or_hero\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_604f78ebf37981bf4b5d\",\n        \"slug\": \"a-very-simple-idle-game\",\n        \"title\": \"A Very Simple Idle Game\",\n        \"steam_appid\": 4965540,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"release_confirmation\"\n      }\n    ],\n    \"reviews\": [\n      {\n        \"type\": \"build_review\",\n        \"game_id\": \"game_72bf0963b99d4c9b1ab4\",\n        \"slug\": \"big-walk\",\n        \"title\": \"big-walk\",\n        \"popular_rank\": 2,\n        \"release_candidate\": true,\n        \"priority\": 298,\n        \"reason\": \"review_quality_needs_revision:missing\"\n      }\n    ]\n  }\n}\n",
+      "duration_ms": 4895,
+      "stdout": "{\n  \"schema_version\": 5,\n  \"generated_at\": \"2026-08-29T12:26:59.820Z\",\n  \"mode\": \"finalize\",\n  \"canonical_registry\": \"data/game-registry/registry.transition.json\",\n  \"summary\": {\n    \"source_records\": 1839,\n    \"games\": 619,\n    \"published_pages\": 221,\n    \"published_reviews\": 2,\n    \"registry_review_flags_published\": 78,\n    \"ready_for_page\": 0,\n    \"awaiting_sources\": 398,\n    \"queued\": 617,\n    \"runnable_pages\": 2,\n    \"runnable_reviews\": 1,\n    \"blocked_identity\": 1,\n    \"popular_ranked_games\": 25,\n    \"popular_registered\": 0,\n    \"popular_unresolved\": 6,\n    \"public_release_games\": 269,\n    \"releases_registered\": 0,\n    \"releases_unresolved\": 1\n  },\n  \"next\": {\n    \"pages\": [\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_604f78ebf37981bf4b5d\",\n        \"slug\": \"a-very-simple-idle-game\",\n        \"title\": \"A Very Simple Idle Game\",\n        \"steam_appid\": 4965540,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_d63f9c0874f2efdf9824\",\n        \"slug\": \"abys-orbit\",\n        \"title\": \"Abys Orbit\",\n        \"steam_appid\": 5007590,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"description, cover_or_hero\"\n      }\n    ],\n    \"reviews\": [\n      {\n        \"type\": \"build_review\",\n        \"game_id\": \"game_72bf0963b99d4c9b1ab4\",\n        \"slug\": \"big-walk\",\n        \"title\": \"big-walk\",\n        \"popular_rank\": 2,\n        \"release_candidate\": true,\n        \"priority\": 298,\n        \"reason\": \"review_quality_needs_revision:missing\"\n      }\n    ]\n  }\n}\n",
       "stderr": ""
     }
   ]
