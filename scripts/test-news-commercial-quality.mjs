@@ -74,7 +74,8 @@ assert.ok(badGrammar.reasons.includes('awkward machine-like Russian'));
 
 for (const [titleRu, briefRu] of [
   ['В сети появился трейлер', 'В сети появился трейлер неофициального видеоигры Iron Man. Разработчики публикацию пока не комментировали.'],
-  ['Bethesda обсуждает The Elder Scrolls 6', 'Каждый платформа нуждается в эксклюзивных контентах. Microsoft пока не уточнила статус релиза The Elder Scrolls 6.']
+  ['Bethesda обсуждает The Elder Scrolls 6', 'Каждый платформа нуждается в эксклюзивных контентах. Microsoft пока не уточнила статус релиза The Elder Scrolls 6.'],
+  ['DXVK 3.1 обновился', 'DXVK 3.1 улучшает работу игровых запускаторов и старых версий Frostbite. Обновление ориентировано на совместимость игр в Linux.']
 ]) {
   const result = validateProductionNews({ titleRu, briefRu }, { title: 'Game news', summary: 'A game-related source summary.' });
   assert.equal(result.ok, false);
