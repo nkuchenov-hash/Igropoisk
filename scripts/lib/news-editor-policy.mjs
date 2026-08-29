@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-export const NEWS_EDITORIAL_VERSION = 9;
+export const NEWS_EDITORIAL_VERSION = 10;
 
 export function hasCyrillic(value = '') {
   return /[А-Яа-яЁё]/.test(String(value));
