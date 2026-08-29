@@ -15,6 +15,9 @@ on:
   push:
     branches: [staging]
     paths:
+      - 'scripts/parse-game-data.mjs'
+      - 'scripts/lib/steam-library-assets.mjs'
+      - 'scripts/merge-official-steam-videos.mjs'
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/discover-review-media.mjs'
@@ -59,6 +62,9 @@ jobs:
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/quality-control-loop.mjs
+          node --check scripts/parse-game-data.mjs
+          node --check scripts/lib/steam-library-assets.mjs
+          node --check scripts/merge-official-steam-videos.mjs
           node --check scripts/build-game-page-basic.mjs
           node --check scripts/materialize-green-game-page.mjs
           node --check scripts/publish-green-game-page-production.mjs
