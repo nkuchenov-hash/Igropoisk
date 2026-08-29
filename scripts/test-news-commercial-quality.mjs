@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { isLikelyNewsContent } from './lib/news-content-policy.mjs';
+import { editorializeNewsSummary } from './lib/news-editorial-summary.mjs';
 import { validateProductionNews } from './lib/news-editor-production.mjs';
 
 const rejectTitles = [
@@ -14,7 +15,11 @@ const rejectTitles = [
   'Блогер Антон Логвинов жестко раскритиковал скептиков DLSS 5 на фоне утечки технологии и первых модификаций',
   'Никаких микротранзакций в раннем доступе: как WARDOGS бросает вызов жадности Activision и EA',
   'Кадр из SPINE стал популярным мемом: разработчики пояснили, что это отсылка к "Джону Уику", а не то, что вы подумали',
-  'Crymelight станет самой эмоциональной игрой серии Cry'
+  'Crymelight станет самой эмоциональной игрой серии Cry',
+  'Стартовала публичная бета Call of Duty: Modern Warfare 4 — возможно, худшей части франшизы',
+  'Насмотрелись "Одиссеи" Нолана? В Resonance: A Plague Tale Legacy греки стали африканцами, а мужчины-герои - женщинами',
+  'Были демоны, но они самоликвидировались: история серии Onimusha',
+  'Наконец-то живой геймплей State of Decay 3'
 ];
 for (const title of rejectTitles) {
   assert.equal(isLikelyNewsContent({ title, summary: 'A gaming article.', url: 'https://example.test/article' }), false, title);
@@ -32,6 +37,22 @@ const rejectItems = [
   {
     title: "Marvel Star's Forgotten 100-Minute Action Thriller Is About to Disappear From Streaming",
     summary: 'The film Legion is leaving Netflix.'
+  },
+  {
+    title: 'Разработчики Expedition: Into Darkness выпустили видео про крафт и снаряжение',
+    summary: 'Авторы выпустили новый обучающий ролик и подробно разобрали систему крафта в игре.'
+  },
+  {
+    title: 'Столкнулся с кражей ноутбуков — разработчик игры Mimic сообщил о потере оборудования на Gamescom',
+    summary: 'Разработчик сообщил, что его и других разработчиков похитили ноутбуки на Gamescom.'
+  },
+  {
+    title: 'Valve выпустила SteamOS 3.9 для Steam Deck',
+    summary: 'Обновление переводит ядро Linux до версии 7. 2 и KDE Plasma с 6.'
+  },
+  {
+    title: 'Facepunch обновил дорожную карту Rust',
+    summary: 'Rust Premium доступна игрокам, собравшим более $15 товаров.'
   }
 ];
 for (const item of rejectItems) {
@@ -47,6 +68,15 @@ const acceptItems = [
 for (const [title, summary] of acceptItems) {
   assert.equal(isLikelyNewsContent({ title, summary, url: 'https://example.test/news' }), true, title);
 }
+
+const decimalSummary = editorializeNewsSummary(
+  'Разработчики продолжают улучшать систему материалов. С выходом обновления 1.61 технология станет доступна ещё на трёх грузовиках. SteamOS обновляет ядро Linux до версии 7.2 и KDE Plasma с 6.4.3 до 6.7.3.',
+  { title: 'Обновление симулятора и SteamOS' }
+);
+assert.match(decimalSummary, /1\.61/);
+assert.match(decimalSummary, /7\.2/);
+assert.match(decimalSummary, /6\.4\.3/);
+assert.doesNotMatch(decimalSummary, /1\.\s+61|7\.\s+2|6\.\s+4/);
 
 const viceInput = {
   title: 'GTA 6 Looks Like It Features This Popular TV Show Apartment',

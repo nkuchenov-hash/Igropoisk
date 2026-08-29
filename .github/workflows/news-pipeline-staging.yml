@@ -69,8 +69,10 @@ jobs:
           node --check scripts/lib/news-editor-production.mjs
           node --check scripts/lib/news-editor-policy.mjs
           node --check scripts/lib/news-content-policy.mjs
+          node --check scripts/lib/news-editorial-summary.mjs
           node --check scripts/lib/news-home-selector.mjs
           node scripts/test-news-editor.mjs
+          node scripts/test-news-commercial-quality.mjs
           node scripts/test-russian-news-feeds.mjs
           node scripts/test-news-home-selector.mjs
           node scripts/test-news-pipeline.mjs

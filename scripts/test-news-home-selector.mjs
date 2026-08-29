@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { newsTopicKey, selectCommercialHomeNews } from './lib/news-home-selector.mjs';
+import { isSameNewsStory, newsTopicKey, selectCommercialHomeNews } from './lib/news-home-selector.mjs';
 
 const now = Date.parse('2026-08-28T10:00:00Z');
 const hoursAgo = hours => new Date(now - hours * 60 * 60 * 1000).toISOString();
@@ -19,6 +19,15 @@ const noGameTopicB = newsTopicKey({ titleEn: 'Rust roadmap delays major features
 assert.ok(noGameTopicA.startsWith('story:'), noGameTopicA);
 assert.ok(noGameTopicB.startsWith('story:'), noGameTopicB);
 assert.notEqual(noGameTopicA, noGameTopicB);
+
+const gamescomTheftA = {
+  titleEn: 'Indie Dev Posts Video Reporting Stolen Laptops at gamescom as CD Projekt Red and More Step in to Help'
+};
+const gamescomTheftB = {
+  titleEn: 'CD Projekt Red Offers To Help Gamescom Theft Victim As Industry Shows Its Support'
+};
+assert.equal(isSameNewsStory(gamescomTheftA, gamescomTheftB), true, 'same Gamescom theft story must dedupe across publishers');
+assert.equal(isSameNewsStory(gamescomTheftA, { titleEn: 'Xbox announces a new family of next-generation consoles' }), false);
 
 function item(id, ageHours, source, topic = id, extra = {}) {
   return {
@@ -66,11 +75,13 @@ assert.ok(selection.diagnostics.recentCount >= 8);
 assert.ok(selection.diagnostics.uniqueTopics >= 10, JSON.stringify(selection.diagnostics));
 
 const noGameSelection = selectCommercialHomeNews([
-  item('story-a', 1, 'A', 'unused-a', { games: [], titleEn: 'Iron Man gameplay trailer leaked online' }),
-  item('story-b', 2, 'B', 'unused-b', { games: [], titleEn: 'Rust roadmap delays major features' })
+  item('theft-a', 1, 'IGN', 'unused-a', { games: [], titleEn: gamescomTheftA.titleEn }),
+  item('theft-b', 2, 'GameSpot', 'unused-b', { games: [], titleEn: gamescomTheftB.titleEn }),
+  item('story-c', 3, 'Polygon', 'unused-c', { games: [], titleEn: 'Rust roadmap delays major features' })
 ], { now, limit: 2, minRecent: 2 });
 assert.equal(noGameSelection.ok, true, JSON.stringify(noGameSelection.diagnostics));
-assert.equal(noGameSelection.diagnostics.uniqueTopics, 2);
+assert.equal(noGameSelection.items.some(entry => entry.id === 'theft-a') && noGameSelection.items.some(entry => entry.id === 'theft-b'), false);
+assert.equal(noGameSelection.diagnostics.rejected.duplicateStory, 1);
 
 const insufficientFresh = selectCommercialHomeNews([
   ...Array.from({ length: 7 }, (_, index) => item(`recent-${index}`, index + 1, `Fresh ${index}`)),
@@ -78,4 +89,4 @@ const insufficientFresh = selectCommercialHomeNews([
 ], { now, limit: 12, minRecent: 8 });
 assert.equal(insufficientFresh.ok, false);
 
-console.log('Commercial homepage freshness, diversity and primary-topic tests passed.');
+console.log('Commercial homepage freshness, diversity and semantic-story dedupe tests passed.');

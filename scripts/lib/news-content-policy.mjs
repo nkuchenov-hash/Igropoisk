@@ -18,9 +18,14 @@ const titleRejectPatterns = [
   /\b(?:tv|television) (?:show|series)\b|\bmovie adaptation\b|\banime adaptation\b/i,
   /\blife[- ]sized statues?\b|\bcollectible statues?\b|\bfigurines?\b|\bmerch(?:andise)?\b/i,
   /\bcritical role\b.{0,80}\b(?:d&d|dungeons\s*&\s*dragons)\b/i,
+  /\?/u,
+  /\b(?:history|retrospective)\s+(?:of\s+)?(?:the\s+)?(?:series|franchise)\b/i,
+  /(?:^|[^\p{L}\p{N}])истори\w*\s+(?:серии|франшиз\w*)/iu,
+  /(?:^|[^\p{L}\p{N}])(?:наконец[- ]?то|насмотрелись)(?:$|[^\p{L}\p{N}])/iu,
+  /(?:^|[^\p{L}\p{N}])(?:возможно|вероятно),?\s+(?:сам\w*\s+)?(?:худш\w*|лучш\w*)\s+(?:част\w*|игр\w*|релиз\w*)/iu,
+  /(?:^|[^\p{L}\p{N}])сам(?:ой|ая|ый|ое)\s+(?:эмоциональн\w*|крут\w*|лучш\w*|худш\w*)\s+(?:игр\w*|част\w*|проект\w*)/iu,
   /(?:^|\b)(?:блогер|журналист).{0,90}(?:ж[её]стко\s+)?раскритиковал|\b(?:blogger|journalist)\b.{0,90}\b(?:slams?|critic(?:izes?|ised?|ized?))\b/iu,
-  /бросает\s+вызов\s+жадности|а\s+не\s+то,?\s+что\s+вы\s+подумали/iu,
-  /\bсам(?:ой|ая|ый|ое)\s+(?:эмоциональн\w*|крут\w*|лучш\w*|худш\w*)\s+(?:игр\w*|част\w*|проект\w*)/iu
+  /бросает\s+вызов\s+жадности|а\s+не\s+то,?\s+что\s+вы\s+подумали/iu
 ];
 
 const textRejectPatterns = [
@@ -31,7 +36,13 @@ const textRejectPatterns = [
   /\bsupport us\b|\bdonate\b|\bpatreon\b|поддержать издание/iu,
   /\bdeal of the day\b|\bbest deals\b|скидки дня|распродажа/iu,
   /\bgift guide\b|подарочный гид/iu,
-  /\bletter from the editor\b|обращение редакции/iu
+  /\bletter from the editor\b|обращение редакции/iu,
+  /обучающ\w+\s+(?:ролик|видео)|tutorial\s+(?:video|guide)/iu,
+  /огромн\w+\s+внимани\w*|вывести[^.!?]{0,50}на\s+новый\s+уровень/iu,
+  /(?:его|её|их)(?:\s+и\s+[^.!?]{1,80})?\s+похитили\s+(?:ноутбук\w*|оборудован\w*|техник\w*|устройств\w*)/iu,
+  /\d+\.\s+\d+/u,
+  /(?:^|\s)с\s+\d+\.\s*$/u,
+  /\bмаркап\w*|\$\d+(?:[.,]\d+)?\s+товар\w*/iu
 ];
 
 const nonGamingRejectPatterns = [
@@ -70,7 +81,7 @@ export function newsContentRejectionReasons(input = {}) {
   const reasons = [];
 
   if (titleRejectPatterns.some(pattern => pattern.test(title))) reasons.push('feature/opinion/guide/cross-media title');
-  if (textRejectPatterns.some(pattern => pattern.test(combined))) reasons.push('non-news editorial or promotional content');
+  if (textRejectPatterns.some(pattern => pattern.test(combined))) reasons.push('non-news editorial, malformed or promotional content');
   if (nonGamingRejectPatterns.some(pattern => pattern.test(combined))) reasons.push('non-gaming technology or entertainment content');
   if (urlRejectPattern.test(url)) reasons.push('guide/review URL');
   if (combined && !gamingSignals.some(pattern => pattern.test(combined))) reasons.push('no material gaming-news signal');

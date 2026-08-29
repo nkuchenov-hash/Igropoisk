@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import { selectCommercialHomeNews } from './lib/news-home-selector.mjs';
+import { isLikelyNewsContent } from './lib/news-content-policy.mjs';
 
 const eventsPayload = JSON.parse(await fs.readFile('data/news-events.json','utf8'));
 const events = Array.isArray(eventsPayload) ? eventsPayload : (eventsPayload.items || []);
@@ -29,6 +30,7 @@ const normalize = item => ({
   globalScore:Number(item.globalScore || 0),
   regionalScore:Number(item.regionalScore || 0),
   editorialScore:Number(item.editorialScore || 0),
+  editorialStatus:String(item.editorialStatus || ''),
   mediaSourceCount:Number(item.mediaSourceCount || item.sourceCount || 0),
   discussionMentions:Number(item.discussionMentions || 0),
   official:Boolean(item.official),
@@ -54,11 +56,22 @@ function newestFirst(a,b) {
   return publishedTimestamp(b) - publishedTimestamp(a) || rank(a,b);
 }
 
+function passesFinalCommercialPolicy(item) {
+  if (!['approved', 'source-ru'].includes(item.editorialStatus)) return false;
+  return isLikelyNewsContent({
+    title: item.titleRu,
+    summary: item.summaryRu,
+    url: item.primaryUrl
+  });
+}
+
 // Images are explicitly non-blocking. Missing/local image failures are rewritten to
 // the permanent first-party branded fallback by publish-news-storage.mjs.
+// Copy quality is blocking: only editor-approved items that still pass the current
+// commercial policy after localization can enter the homepage selector.
 const normalized = events
   .map(normalize)
-  .filter(item => item.titleRu && item.primaryUrl && item.publicEligible)
+  .filter(item => item.titleRu && item.summaryRu && item.primaryUrl && item.publicEligible && passesFinalCommercialPolicy(item))
   .sort(newestFirst);
 
 const selection = selectCommercialHomeNews(normalized, {
@@ -76,7 +89,7 @@ if (!selection.ok) {
   throw new Error(
     `Homepage commercial gate failed: selected ${d.selected}/12; ${d.recentCount}/${d.minRecent} required cards are <=${d.recentHours}h; `
     + `unique topics=${d.uniqueTopics}; unique sources=${d.uniqueSources}; rejected=${JSON.stringify(d.rejected)}. `
-    + 'Previous live snapshot must remain active instead of publishing stale or repetitive news.'
+    + 'Previous live snapshot must remain active instead of publishing stale, malformed or repetitive news.'
   );
 }
 
