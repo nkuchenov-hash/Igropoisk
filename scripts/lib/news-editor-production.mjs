@@ -17,8 +17,8 @@ const truncatedBriefPattern = /(?:\.\.\.|…)/u;
 const englishPossessiveCompanyPattern = /(?:Motive|Rockstar|Ubisoft|Bethesda|Microsoft|Nintendo|Capcom|Konami|SEGA|Valve|PlayStation|Xbox)'s\b/i;
 
 const stableEntities = [
-  'Ubisoft', 'EA', 'Electronic Arts', 'Steam', 'Xbox', 'PlayStation', 'Nintendo', 'NVIDIA', 'AMD',
-  'Konami', 'Capcom', 'SEGA', 'Bethesda', 'Valve', 'Rockstar', 'Activision', 'miHoYo', 'HoYoverse',
+  'Ubisoft', 'EA', 'Electronic Arts', 'Steam', 'Steam Deck', 'Xbox', 'PlayStation', 'Nintendo', 'NVIDIA', 'AMD',
+  'Microsoft', 'Konami', 'Capcom', 'SEGA', 'Bethesda', 'Valve', 'Rockstar', 'Activision', 'miHoYo', 'HoYoverse',
   'Pearl Abyss', 'CD Projekt Red', 'Gamescom', 'QuakeCon', 'Epic Games', 'Bandai Namco'
 ];
 
@@ -83,14 +83,10 @@ function requiredStableEntities(input = {}) {
   return stableEntities.filter(entity => containsEntity(source, entity));
 }
 
-function sourceProperNames(input = {}) {
-  const source = `${input.title || ''} ${input.summary || ''}`;
-  const matches = source.match(/(?<![A-Za-z0-9])(?:[A-Z]{2,}|[A-Z][A-Za-z0-9'’.-]+)(?:\s+(?:[A-Z]{2,}|[A-Z][A-Za-z0-9'’.-]+|\d{2,4})){1,3}/g) || [];
-  const ignored = /^(?:Summer Game Fest|Gamescom Awards|North America|Early Look|Official Podcast)$/i;
-  return [...new Set(matches
-    .map(value => value.replace(/^(?:The|A|An)\s+/i, '').trim())
-    .filter(value => value.length >= 5 && !ignored.test(value)))]
-    .slice(0, 12);
+function requiredExplicitEntities(input = {}) {
+  return [...new Set((Array.isArray(input.requiredEntities) ? input.requiredEntities : [])
+    .map(value => String(value || '').trim())
+    .filter(Boolean))].slice(0, 12);
 }
 
 function looksLikeUntranslatedClause(value = '') {
@@ -170,7 +166,7 @@ export function validateProductionNews(value, input = {}) {
   const newNumbers = unsupportedNumbers(`${titleRu} ${briefRu}`, input);
   if (newNumbers.length) reasons.push(`unsupported number: ${newNumbers.join(', ')}`);
 
-  const requiredEntities = [...new Set([...requiredStableEntities(input), ...sourceProperNames(input)])];
+  const requiredEntities = [...new Set([...requiredStableEntities(input), ...requiredExplicitEntities(input)])];
   for (const entity of requiredEntities) {
     if (!containsEntity(`${titleRu} ${briefRu}`, entity)) reasons.push(`source entity missing: ${entity}`);
   }
@@ -191,12 +187,12 @@ function finalize(generated, validation, { attempts, elapsedMs, salvaged = false
 }
 
 export async function editNewsToRussian(input, options = {}) {
-  const maxNewTokens = Math.max(120, Math.min(165, Number(options.maxNewTokens || 150)));
+  const maxNewTokens = Math.max(115, Math.min(145, Number(options.maxNewTokens || 130)));
   const first = await generateRussianDraft(input, { maxAttempts: 1, maxNewTokens });
   const firstValidation = validateProductionNews(first, input);
   if (firstValidation.ok) return finalize(first, firstValidation);
 
-  const rejectionFeedback = `Редакционный контроль забраковал этот вариант: ${firstValidation.reasons.join('; ') || 'неестественный русский или формат'}. Перепиши текст полностью, естественным литературным русским. Сохрани все названия и факты источника, исправь грамматику и не повторяй заголовок первым предложением.`;
+  const rejectionFeedback = `Редакционный контроль забраковал этот вариант: ${firstValidation.reasons.join('; ') || 'неестественный русский или формат'}. Перепиши текст полностью естественным литературным русским. Сохрани проверенные MUST_KEEP, цифры и факты источника, исправь грамматику и не повторяй заголовок первым предложением.`;
   const second = await generateRussianDraft({
     ...input,
     draftTitleRu: firstValidation.titleRu || first.titleRu || '',
