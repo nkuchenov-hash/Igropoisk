@@ -14,7 +14,10 @@ const titleRejectPatterns = [
   /\b(?:all|every) .{0,65}\b(?:locations?|collectibles?)\b/i,
   /\b(?:tips?|guide) to help you\b|\b(?:gameplay )?tips?\b|\btips? and tricks?\b/i,
   /\b(?:best|top) (?:skills?|abilities|builds?|weapons?|armor|classes)\b/i,
-  /\bdebuts? on disney\+\b|\bcoming to disney\+\b/i
+  /\bdebuts? on disney\+|\bcoming to disney\+/i,
+  /\b(?:tv|television) (?:show|series)\b|\bmovie adaptation\b|\banime adaptation\b/i,
+  /\blife[- ]sized statues?\b|\bcollectible statues?\b|\bfigurines?\b|\bmerch(?:andise)?\b/i,
+  /\bcritical role\b.{0,80}\b(?:d&d|dungeons\s*&\s*dragons)\b/i
 ];
 
 const textRejectPatterns = [
@@ -55,7 +58,7 @@ export function newsContentRejectionReasons(input = {}) {
   const combined = `${title} ${summary}`.trim();
   const reasons = [];
 
-  if (titleRejectPatterns.some(pattern => pattern.test(title))) reasons.push('feature/opinion/guide title');
+  if (titleRejectPatterns.some(pattern => pattern.test(title))) reasons.push('feature/opinion/guide/cross-media title');
   if (textRejectPatterns.some(pattern => pattern.test(combined))) reasons.push('non-news editorial or promotional content');
   if (urlRejectPattern.test(url)) reasons.push('guide/review URL');
   if (combined && !gamingSignals.some(pattern => pattern.test(combined))) reasons.push('no material gaming-news signal');
