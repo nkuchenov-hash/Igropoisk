@@ -11,7 +11,9 @@ const userAgent = 'IgropoiskNativeRussianNews/1.0 (+https://github.com/nkuchenov
 export const nativeRussianFeeds = Object.freeze([
   { source: 'StopGame', url: 'https://rss.stopgame.ru/rss_news.xml', weight: 1.12 },
   { source: 'Игромания', url: 'https://www.igromania.ru/rss/news-game.rss', weight: 1.08 },
-  { source: 'GoHa.Ru', url: 'https://www.goha.ru/rss/videogames', weight: 1.06 }
+  { source: 'GoHa.Ru', url: 'https://www.goha.ru/rss/videogames', weight: 1.06 },
+  { source: '3DNews', url: 'https://3dnews.ru/games/rss/', weight: 1.05 },
+  { source: 'App2Top', url: 'https://app2top.ru/rss', weight: 1.04 }
 ]);
 
 function decode(value = '') {
