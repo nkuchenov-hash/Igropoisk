@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "identity": {
     "slug": "100-mystic-cats",
     "title": "100 Mystic Cats",
@@ -42,8 +42,8 @@
     ]
   },
   "media": {
-    "cover": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4326430/0c0e6e5b84edb312f801210c2082170ef04aaeae/header.jpg?t=1786287753",
-    "hero": "https://store.akamai.steamstatic.com/images/storepagebackground/app/4326430?t=1786287753",
+    "cover": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4326430/d2dd6b357ad0f4ba29ccefcfadc8b8201f328877/library_capsule_2x.jpg",
+    "hero": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4326430/c4fbd4bff8bd77a6b060fbaf170d5b5e5bf23e17/library_hero_2x.jpg",
     "screenshots": [
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4326430/100fe7312be4a84312888ae34fac6f8bf548278f/ss_100fe7312be4a84312888ae34fac6f8bf548278f.1920x1080.jpg?t=1786287753",
       "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4326430/c95fd09555dfa65704acebf711e3d11e2c98c8b4/ss_c95fd09555dfa65704acebf711e3d11e2c98c8b4.1920x1080.jpg?t=1786287753",
@@ -59,11 +59,20 @@
     "videos": [
       {
         "title": "Gameplay",
-        "url": "",
-        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257263191/e494ef245ccf629b2a50870f1934305899715cf2/movie_600x337.jpg?t=1774946169"
+        "url": "https://video.akamai.steamstatic.com/store_trailers/4326430/2117166413/208f2da7d37164d900ab39d56efa404b3251e3b5/1774945980/hls_264_master.m3u8?t=1774946169",
+        "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257263191/e494ef245ccf629b2a50870f1934305899715cf2/movie_600x337.jpg?t=1774946169",
+        "source_name": "Steam",
+        "source_url": "https://store.steampowered.com/app/4326430/",
+        "kind": "gameplay"
       }
     ],
-    "artwork": []
+    "artwork": [],
+    "library_assets": {
+      "provider": "steamcmd-appinfo",
+      "source_url": "https://api.steamcmd.net/v1/info/4326430",
+      "hero": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4326430/c4fbd4bff8bd77a6b060fbaf170d5b5e5bf23e17/library_hero_2x.jpg",
+      "cover": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4326430/d2dd6b357ad0f4ba29ccefcfadc8b8201f328877/library_capsule_2x.jpg"
+    }
   },
   "requirements": {
     "pc": {
@@ -84,6 +93,6 @@
   "source": {
     "name": "Steam Store API",
     "url": "https://store.steampowered.com/api/appdetails?appids=4326430&l=english&cc=us",
-    "checked_at": "2026-08-11T10:30:47.212Z"
+    "checked_at": "2026-08-29T09:49:07.212Z"
   }
 }
