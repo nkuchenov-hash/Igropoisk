@@ -100,6 +100,20 @@ jobs:
         run: node scripts/materialize-catalog-game-data.mjs
       - name: Exercise verified Steam media repair
         run: node scripts/repair-game-media-from-steam.mjs
+      - name: Verify source-exhausted official Steam screenshot policy
+        run: |
+          node scripts/parse-game-data.mjs 4am 4963870 4am
+          node scripts/build-game-page-basic.mjs game_a0d66db8a5b2124ca89a
+          node scripts/validate-game-media-quality.mjs 4am
+          node - <<'NODE'
+          const fs=require('fs');
+          const report=JSON.parse(fs.readFileSync('data/quality-control/game-page-4am.json','utf8'));
+          if(report.status!=='green') throw new Error(`4am media QC must be green: ${(report.comments||[]).join(' | ')}`);
+          if(report.official_source_exhausted!==true) throw new Error('4am must exercise the source-exhausted policy');
+          if(report.nominal_minimum_screenshots!==6||report.minimum_screenshots!==5) throw new Error(`Expected nominal/effective screenshot minimum 6/5, got ${report.nominal_minimum_screenshots}/${report.minimum_screenshots}`);
+          if(report.accepted_screenshots!==5) throw new Error(`All five official screenshots must pass, got ${report.accepted_screenshots}`);
+          console.log('Source-exhausted Steam screenshot policy verified on 4am.');
+          NODE
       - name: Produce media quality diagnoses
         run: node scripts/validate-game-media-quality.mjs
       - name: Rebuild similarity reasons for the full catalog
