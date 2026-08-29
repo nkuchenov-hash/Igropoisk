@@ -8,6 +8,12 @@ const runtimeDir = process.env.NEWS_EDITOR_RUNTIME || '/tmp/igropoisk-news-edito
 
 let generatorPromise = null;
 
+const stableEntities = [
+  'Ubisoft', 'EA', 'Electronic Arts', 'Steam', 'Steam Deck', 'Xbox', 'PlayStation', 'Nintendo', 'NVIDIA', 'AMD',
+  'Konami', 'Capcom', 'SEGA', 'Bethesda', 'Valve', 'Rockstar', 'Activision', 'miHoYo', 'HoYoverse',
+  'Pearl Abyss', 'CD Projekt Red', 'Gamescom', 'QuakeCon', 'Epic Games', 'Bandai Namco'
+];
+
 async function loadTransformersRuntime() {
   try {
     return await import('@huggingface/transformers');
@@ -108,7 +114,7 @@ export async function fetchArticleText(url, timeoutMs = 18000, context = '') {
       redirect: 'follow',
       signal: controller.signal,
       headers: {
-        'user-agent': 'IgropoiskNewsEditor/1.0 (+https://github.com/nkuchenov-hash/Igropoisk)',
+        'user-agent': 'IgropoiskNewsEditor/1.1 (+https://github.com/nkuchenov-hash/Igropoisk)',
         accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.5'
       }
     });
@@ -119,21 +125,33 @@ export async function fetchArticleText(url, timeoutMs = 18000, context = '') {
   }
 }
 
-function protectedNames(title = '') {
-  const matches = String(title).match(/\b(?:[A-Z]{2,}|[A-Z][A-Za-z0-9'’.-]+)(?:\s+(?:[A-Z]{2,}|[A-Z][A-Za-z0-9'’.-]+|\d{2,4})){0,3}\b/g) || [];
-  const ignore = new Set(['Mass', 'Fans', 'Sudden', 'Another', 'Series', 'Future', 'Steam Page', 'Steam Deck']);
-  return [...new Set(matches.filter(value => value.length >= 2 && !ignore.has(value)))].slice(0, 12);
-}
-
-function criticalNames(title = '') {
-  return protectedNames(title).filter(value => {
-    if (/^(?:FPS|CEO|RPG|PC)$/i.test(value)) return false;
-    return /\d/.test(value) || /['’]/.test(value) || /\s/.test(value) || /^[A-Z]{2,}$/.test(value) || /^(?:Ubisoft|Steam|QuakeCon|Wolfenstein|PlayStation|Xbox|Nintendo|EA|NVIDIA|AMD|Konami|Capcom|SEGA|Bethesda|Valve|Rockstar|Activision|miHoYo|HoYoverse)$/i.test(value);
-  });
-}
-
 function canonicalName(value = '') {
   return String(value).normalize('NFKC').replace(/[’‘`´]/g, "'").replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+function escapeRegExp(value = '') {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function containsEntity(value = '', entity = '') {
+  const text = canonicalName(value);
+  const needle = canonicalName(entity);
+  if (!needle) return false;
+  return new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(needle)}(?![\\p{L}\\p{N}])`, 'iu').test(text);
+}
+
+function requiredEntities(input = {}) {
+  const source = `${input.title || ''} ${input.summary || ''}`;
+  const explicit = Array.isArray(input.requiredEntities) ? input.requiredEntities : [];
+  return [...new Set([
+    ...stableEntities.filter(entity => containsEntity(source, entity)),
+    ...explicit.map(value => String(value || '').trim()).filter(Boolean)
+  ])].slice(0, 16);
+}
+
+function sourceNameCandidates(value = '') {
+  const matches = String(value).match(/\b(?:[A-Z]{2,}|[A-Z][A-Za-z0-9'’.-]+)(?:\s+(?:[A-Z]{2,}|[A-Z][A-Za-z0-9'’.-]+|\d{2,4})){0,3}\b/g) || [];
+  return [...new Set(matches.filter(value => value.length >= 2))].slice(0, 24);
 }
 
 const brandRepairs = [
@@ -162,14 +180,13 @@ export function normalizeEditorialNames(value = '') {
 }
 
 function baseSystem() {
-  return `Ты редактор русского игрового издания «Игропоиск». Пиши коротко, нейтрально, естественно и точно, как русскоязычный редактор, а не машинный переводчик. Ничего не выдумывай и не усиливай причинность. Не меняй должности, цифры, даты, степень уверенности и причинно-следственные связи. Не оставляй английские предложения, авторские шутки, first-person реплики или комментарии автора источника: пересказывай их смысл нейтральным русским, только если он важен для новости. Латинские названия игр, компаний, сервисов и мероприятий не переводи и не транслитерируй: Ubisoft нельзя превращать в «Убисофт» или «Убикс», Assassin's Creed нельзя переводить. Не создавай гибридные слова из латиницы и кириллицы. Игнорируй рекламу, партнерские вставки, подписки, навигацию и служебный текст сайта. Избегай кальки с английского: wanted system — «система розыска», meter/health meter — «шкала» или «индикатор», mutant dog — «мутировавший пёс», launches/reaches consoles — «вышла на консолях», action game — «экшен» или естественное описание жанра. Английские повелительные заголовки не переводи буквально: перескажи новость нормальным русским.`;
+  return `Ты редактор русского игрового издания «Игропоиск». Пиши коротко, нейтрально, естественно и точно, как русскоязычный редактор, а не машинный переводчик. Ничего не выдумывай и не усиливай причинность. Не меняй должности, цифры, даты, степень уверенности и причинно-следственные связи. Не оставляй английские предложения, авторские шутки, first-person реплики или комментарии автора источника: пересказывай их смысл нейтральным русским, только если он важен для новости. Латинские названия игр, компаний, сервисов и мероприятий не переводи и не транслитерируй. Не создавай гибридные слова из латиницы и кириллицы. Игнорируй рекламу, партнерские вставки, подписки, навигацию и служебный текст сайта. Избегай кальки с английского: wanted system — «система розыска», meter/health meter — «шкала» или «индикатор», mutant dog — «мутировавший пёс», launches/reaches consoles — «вышла на консолях», action game — «экшен» или естественное описание жанра. Английские повелительные заголовки не переводи буквально: перескажи новость нормальным русским.`;
 }
 
-function materialBlock({ title, summary, articleText, source, draftTitleRu, draftSummaryRu }) {
-  const names = protectedNames(title);
-  const mustKeep = criticalNames(title);
+function materialBlock({ title, summary, articleText, source, draftTitleRu, draftSummaryRu, requiredEntities: explicitRequired = [] }) {
+  const mustKeep = requiredEntities({ title, summary, requiredEntities: explicitRequired });
   const material = (articleText || summary || title || '').slice(0, 4300);
-  return `Источник: ${source || 'не указан'}\nОригинальный заголовок: ${title || ''}\nОригинальный лид: ${summary || ''}\n${draftTitleRu ? `Черновой машинный заголовок: ${draftTitleRu}\n` : ''}${draftSummaryRu ? `Черновой машинный лид: ${draftSummaryRu}\n` : ''}${names.length ? `Имена и названия из оригинала: ${names.join(' | ')}\n` : ''}${mustKeep.length ? `MUST_KEEP — эти написания обязательно должны остаться в результате латиницей, без перевода и транслитерации: ${mustKeep.join(' | ')}\n` : ''}\nОтобранные абзацы исходного материала:\n${material}`;
+  return `Источник: ${source || 'не указан'}\nОригинальный заголовок: ${title || ''}\nОригинальный лид: ${summary || ''}\n${draftTitleRu ? `Черновой машинный заголовок: ${draftTitleRu}\n` : ''}${draftSummaryRu ? `Черновой машинный лид: ${draftSummaryRu}\n` : ''}${mustKeep.length ? `MUST_KEEP — только эти проверенные названия должны сохраниться в указанном написании: ${mustKeep.join(' | ')}\n` : ''}\nОтобранные абзацы исходного материала:\n${material}`;
 }
 
 function qwenPrompt(input) {
@@ -180,7 +197,7 @@ function qwenPrompt(input) {
 function repairPrompt(input, previous, reasons) {
   return [
     { role: 'system', content: baseSystem() },
-    { role: 'user', content: `${materialBlock(input)}\n\nПредыдущий вариант:\n${previous}\n\nОн забракован редакционным контролем по причинам: ${reasons.join('; ') || 'формат или качество'}. Перепиши вариант полностью заново естественным русским, а не исправляй отдельные слова. Сохрани только факты исходника и MUST_KEEP. Полностью убери английские фразы, гибриды латиницы/кириллицы, буквальный машинный перевод, авторские ремарки и повторы. Верни строго:\nЗАГОЛОВОК: <заголовок>\nТЕКСТ:\n<2–3 предложения>` }
+    { role: 'user', content: `${materialBlock(input)}\n\nПредыдущий вариант:\n${previous}\n\nОн забракован редакционным контролем по причинам: ${reasons.join('; ') || 'формат или качество'}. Перепиши вариант полностью заново естественным русским, а не исправляй отдельные слова. Сохрани только факты исходника и проверенные MUST_KEEP. Полностью убери английские фразы, гибриды латиницы/кириллицы, буквальный машинный перевод, авторские ремарки и повторы. Верни строго:\nЗАГОЛОВОК: <заголовок>\nТЕКСТ:\n<2–3 предложения>` }
   ];
 }
 
@@ -217,21 +234,18 @@ function mixedScriptTokens(value = '') {
     .filter(token => /[A-Za-z]/.test(token) && /[А-Яа-яЁё]/.test(token));
 }
 
-function escapeRegExp(value = '') {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 function maskAllowedLatin(value = '', input = {}) {
   let output = String(value);
   const names = [...new Set([
-    ...protectedNames(input.title || ''),
-    ...protectedNames(input.summary || '')
+    ...sourceNameCandidates(input.title || ''),
+    ...sourceNameCandidates(input.summary || ''),
+    ...requiredEntities(input)
   ])].sort((a, b) => b.length - a.length);
   for (const name of names) {
     if (name.length < 2) continue;
     output = output.replace(new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(name)}(?![\\p{L}\\p{N}])`, 'giu'), ' ');
   }
-  return output.replace(/(?<![\p{L}\p{N}])(?:DLC|PC|PS[45]|VR|RPG|FPS|GPU|CPU|4K|EA|AMD|NVIDIA|Xbox|Steam)(?![\p{L}\p{N}])/giu, ' ');
+  return output.replace(/(?<![\p{L}\p{N}])(?:DLC|PC|PS[45]|VR|RPG|FPS|GPU|CPU|4K|EA|AMD|NVIDIA|Xbox|Steam|GTA)(?![\p{L}\p{N}])/giu, ' ');
 }
 
 function englishClause(value = '', input = {}) {
@@ -259,8 +273,8 @@ export function validateEditedNews(value, input = {}) {
   const sentences = normalizedSentences(briefRu);
   if (sentences.length >= 2 && new Set(sentences).size !== sentences.length) reasons.push('duplicate sentence');
   const combined = canonicalName(`${titleRu} ${briefRu}`);
-  for (const name of criticalNames(input.title || '')) {
-    if (!combined.includes(canonicalName(name))) reasons.push(`critical name missing: ${name}`);
+  for (const name of requiredEntities(input)) {
+    if (!containsEntity(combined, name)) reasons.push(`critical name missing: ${name}`);
   }
   return { ok: reasons.length === 0, reasons, titleRu, briefRu };
 }
