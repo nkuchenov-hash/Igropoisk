@@ -26,12 +26,14 @@
 
   function card(item) {
     const chips = tags(item);
+    const summary = String(item.summaryRu || '').trim();
     return `<a class="card news-card news-event-card" href="${escapeHtml(item.primaryUrl)}" target="_blank" rel="noopener noreferrer">
       <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.titleRu)}" loading="lazy">
       <div class="card-body">
         <div class="date">${escapeHtml(formatter.format(new Date(item.publishedAt)))} · ${escapeHtml(item.primarySource || '')}</div>
         ${chips.length ? `<div class="news-card__tags">${chips.map(tag => `<span>${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
         <h3>${escapeHtml(item.titleRu)}</h3>
+        ${summary ? `<p class="news-card__summary">${escapeHtml(summary)}</p>` : ''}
       </div>
     </a>`;
   }

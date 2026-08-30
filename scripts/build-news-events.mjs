@@ -87,7 +87,10 @@ const output = events.map(event => {
   const regions = [...new Set(event.items.flatMap(item => Array.isArray(item.regions) ? item.regions : []))];
   const mediaSignal = mediaSourceCount >= 2 || discussionMentions >= 3 || trendScore >= 450 || globalScore >= 450;
   const confirmedOfficialSignal = officialItems.length > 0 && (mediaSourceCount >= 1 || discussionMentions >= 2 || trendScore >= 300 || globalScore >= 300);
-  const rankedGlobalSignal = event.items.some(item => !item.official && item.globalEligible === true);
+  // data/news.json is already the output of the global ranking pipeline. Older code
+  // expected a globalEligible flag that fetch-news.mjs never emitted, silently
+  // discarding many valid fresh ranked topics here.
+  const rankedGlobalSignal = event.items.some(item => !item.official && (item.globalEligible === true || item.stream === 'ranked'));
   const globalEligible = mediaSignal || confirmedOfficialSignal || rankedGlobalSignal;
   const regionalEligible = regions.length > 0 && event.items.some(item => item.regionalEligible) && regionalScore > 0;
   const publicEligible = globalEligible || regionalEligible;
@@ -130,6 +133,6 @@ const output = events.map(event => {
 
 const enriched = await enrichNewsItems(output);
 const generatedAt = new Date().toISOString();
-await fs.writeFile(outputPath, `${JSON.stringify({ generatedAt, model: 'event-first-editorial-selection-plus-region', mergeWindowHours, globalMinimumIndependentSources: 2, items: enriched }, null, 2)}\n`);
+await fs.writeFile(outputPath, `${JSON.stringify({ generatedAt, model: 'event-first-editorial-selection-plus-region-v2', mergeWindowHours, globalMinimumIndependentSources: 1, items: enriched }, null, 2)}\n`);
 await fs.writeFile(reviewPath, `${JSON.stringify(buildGameReviewQueue(enriched, { generatedAt }), null, 2)}\n`);
 console.log(`[events] built ${enriched.length} events; ${enriched.filter(item => item.publicEligible).length} passed public editorial selection; ${enriched.filter(item => item.gameReviewStatus === 'needs-review').length} require game review`);
