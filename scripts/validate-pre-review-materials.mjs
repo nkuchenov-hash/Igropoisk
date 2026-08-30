@@ -16,7 +16,7 @@ const accepted=Array.isArray(matrix.accepted)?matrix.accepted:Array.isArray(revi
 const normalized=value=>String(value||'').toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
 const publications=new Set(accepted.map(item=>normalized(item.publication||item.source)).filter(Boolean));
 const scored=Array.isArray(ratings.sources)?ratings.sources:[];
-const forbiddenHosts=new Set(['metacritic.com','opencritic.com','reddit.com','steamcommunity.com','store.steampowered.com']);
+const forbiddenHosts=new Set(['metacritic.com','opencritic.com','gamerankings.com','mobygames.com','reddit.com','steamcommunity.com','store.steampowered.com','wikipedia.org','wikimedia.org']);
 const problems=[];
 if(matrix.source_registry_scan?.complete!==true) problems.push('source registry scan is incomplete');
 if(Number(matrix.coverage?.accepted_readable_articles??accepted.length)<reviewMinimum) problems.push(`professional reviews ${accepted.length}/${reviewMinimum}`);
