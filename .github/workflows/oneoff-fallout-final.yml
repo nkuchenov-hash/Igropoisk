@@ -1,0 +1,29 @@
+name: One-off final Fallout acceptance dispatcher
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - '.github/workflows/oneoff-fallout-final.yml'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Cancel stale queued runs and dispatch explicit Fallout
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/33303006041/cancel" || true
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/33303019662/cancel" || true
+          sleep 3
+          node - <<'NODE' | gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/game-post-create-enrichment.yml/dispatches" --input -
+          process.stdout.write(JSON.stringify({ref:'staging',inputs:{slug:'fallout'}}));
+          NODE
+          echo "Explicit bounded Fallout acceptance dispatched."
