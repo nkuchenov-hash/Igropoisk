@@ -1,23 +1,40 @@
 {
-  "schema_version": 6,
+  "schema_version": 9,
   "validator": "game-media-quality",
   "game_slug": "fallout",
   "release_year": 1997,
   "media_profile": "historical",
-  "checked_at": "2026-08-28T14:20:29.214Z",
+  "checked_at": "2026-08-30T06:32:59.896Z",
   "status": "green",
-  "hero": "https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_hero.jpg",
-  "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_600x900.jpg",
+  "hero": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/library_hero_2x.jpg",
+  "cover": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/library_600x900_2x.jpg",
   "screenshots": 5,
   "minimum_screenshots": 5,
+  "nominal_minimum_screenshots": 5,
+  "official_source_screenshots": 5,
+  "official_source_exhausted": false,
   "accepted_screenshots": 5,
   "comments": [],
   "checks": [
     {
       "role": "hero",
       "item": {
-        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_hero.jpg",
-        "source_url": "https://store.steampowered.com/app/38400/"
+        "id": "media-7",
+        "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/library_hero_2x.jpg",
+        "kind": "artwork",
+        "caption": "Fallout: A Post Nuclear Role Playing Game — арт",
+        "source_url": "https://store.steampowered.com/app/38400/",
+        "source_name": "store.steampowered.com",
+        "source_domain": "store.steampowered.com",
+        "visual_tags": [],
+        "origin": "hero",
+        "mime": "image/jpeg",
+        "bytes": 440430,
+        "width": 3840,
+        "height": 1240,
+        "aspect_ratio": 3.096774193548387,
+        "file_probe_passed": true,
+        "source_context_checked": true
       },
       "rules": {
         "minimum_width_modern": 1200,
@@ -30,20 +47,17 @@
       "errors": [],
       "probe": {
         "ok": true,
-        "width": 1920,
-        "height": 620,
-        "bytes": 156739,
+        "width": 3840,
+        "height": 1240,
+        "bytes": 440430,
         "mime": "image/jpeg",
-        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_hero.jpg"
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/library_hero_2x.jpg"
       },
       "accepted": true
     },
     {
       "role": "cover",
-      "item": {
-        "url": "https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_600x900.jpg",
-        "source_url": "https://store.steampowered.com/app/38400/"
-      },
+      "item": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/library_600x900_2x.jpg",
       "rules": {
         "minimum_width_modern": 600,
         "minimum_height_modern": 850,
@@ -55,11 +69,11 @@
       "errors": [],
       "probe": {
         "ok": true,
-        "width": 300,
-        "height": 450,
-        "bytes": 62696,
+        "width": 600,
+        "height": 900,
+        "bytes": 185083,
         "mime": "image/jpeg",
-        "resolved_url": "https://cdn.cloudflare.steamstatic.com/steam/apps/38400/library_600x900.jpg"
+        "resolved_url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/38400/library_600x900_2x.jpg"
       },
       "accepted": true
     },
@@ -91,7 +105,10 @@
         "minimum_bytes_modern": 70000,
         "minimum_bytes_historical": 35000,
         "minimum_count_modern": 6,
-        "minimum_count_historical": 5
+        "minimum_count_historical": 5,
+        "accept_complete_official_source_set": true,
+        "minimum_complete_official_source_count": 1,
+        "source_exhaustion_policy": "When the authoritative store exposes fewer screenshots than the nominal target, require every available official screenshot to pass the normal resolution, file-size, aspect, relevance and provenance gates instead of inventing or looping forever for unavailable media."
       },
       "errors": [],
       "probe": {
@@ -132,7 +149,10 @@
         "minimum_bytes_modern": 70000,
         "minimum_bytes_historical": 35000,
         "minimum_count_modern": 6,
-        "minimum_count_historical": 5
+        "minimum_count_historical": 5,
+        "accept_complete_official_source_set": true,
+        "minimum_complete_official_source_count": 1,
+        "source_exhaustion_policy": "When the authoritative store exposes fewer screenshots than the nominal target, require every available official screenshot to pass the normal resolution, file-size, aspect, relevance and provenance gates instead of inventing or looping forever for unavailable media."
       },
       "errors": [],
       "probe": {
@@ -173,7 +193,10 @@
         "minimum_bytes_modern": 70000,
         "minimum_bytes_historical": 35000,
         "minimum_count_modern": 6,
-        "minimum_count_historical": 5
+        "minimum_count_historical": 5,
+        "accept_complete_official_source_set": true,
+        "minimum_complete_official_source_count": 1,
+        "source_exhaustion_policy": "When the authoritative store exposes fewer screenshots than the nominal target, require every available official screenshot to pass the normal resolution, file-size, aspect, relevance and provenance gates instead of inventing or looping forever for unavailable media."
       },
       "errors": [],
       "probe": {
@@ -214,7 +237,10 @@
         "minimum_bytes_modern": 70000,
         "minimum_bytes_historical": 35000,
         "minimum_count_modern": 6,
-        "minimum_count_historical": 5
+        "minimum_count_historical": 5,
+        "accept_complete_official_source_set": true,
+        "minimum_complete_official_source_count": 1,
+        "source_exhaustion_policy": "When the authoritative store exposes fewer screenshots than the nominal target, require every available official screenshot to pass the normal resolution, file-size, aspect, relevance and provenance gates instead of inventing or looping forever for unavailable media."
       },
       "errors": [],
       "probe": {
@@ -255,7 +281,10 @@
         "minimum_bytes_modern": 70000,
         "minimum_bytes_historical": 35000,
         "minimum_count_modern": 6,
-        "minimum_count_historical": 5
+        "minimum_count_historical": 5,
+        "accept_complete_official_source_set": true,
+        "minimum_complete_official_source_count": 1,
+        "source_exhaustion_policy": "When the authoritative store exposes fewer screenshots than the nominal target, require every available official screenshot to pass the normal resolution, file-size, aspect, relevance and provenance gates instead of inventing or looping forever for unavailable media."
       },
       "errors": [],
       "probe": {
