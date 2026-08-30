@@ -10,12 +10,30 @@ const storyStopWords = new Set([
   'стал', 'стала', 'станет', 'будет', 'могут', 'может', 'новый', 'новая', 'новое', 'новые', 'игра', 'игры', 'разработчик', 'разработчики'
 ]);
 
+const storyGenericTokens = new Set([
+  'xbox', 'playstation', 'nintendo', 'steam', 'microsoft', 'sony', 'console', 'device', 'family', 'generation',
+  'confirm', 'release', 'update', 'studio', 'company', 'game', 'games', 'developer', 'developers'
+]);
+
 const storyTokenAliases = new Map([
   ['stolen', 'theft'], ['stole', 'theft'], ['steal', 'theft'], ['thefts', 'theft'],
   ['кража', 'theft'], ['краже', 'theft'], ['кражи', 'theft'], ['украли', 'theft'], ['украдено', 'theft'], ['украдены', 'theft'], ['похищено', 'theft'], ['похищены', 'theft'],
-  ['laptop', 'equipment'], ['laptops', 'equipment'], ['device', 'equipment'], ['devices', 'equipment'], ['equipment', 'equipment'],
+  ['laptop', 'equipment'], ['laptops', 'equipment'], ['device', 'device'], ['devices', 'device'], ['equipment', 'equipment'],
+  ['family', 'family'], ['families', 'family'], ['confirm', 'confirm'], ['confirms', 'confirm'], ['confirmed', 'confirm'],
+  ['console', 'console'], ['consoles', 'console'], ['generation', 'generation'], ['generations', 'generation'],
   ['ноутбук', 'equipment'], ['ноутбуки', 'equipment'], ['ноутбуков', 'equipment'], ['оборудование', 'equipment'], ['оборудования', 'equipment'], ['техника', 'equipment'], ['техники', 'equipment']
 ]);
+
+function normalizeStoryToken(token = '') {
+  const direct = storyTokenAliases.get(token);
+  if (direct) return direct;
+  if (/^семейн/u.test(token) || /^семейств/u.test(token) || /^(?:семьи|семья)$/u.test(token)) return 'family';
+  if (/^устройств/u.test(token)) return 'device';
+  if (/^консол/u.test(token)) return 'console';
+  if (/^подтверд/u.test(token)) return 'confirm';
+  if (/^поколен/u.test(token)) return 'generation';
+  return romanNumbers.get(token) || token;
+}
 
 function canonical(value = '') {
   return String(value)
@@ -26,7 +44,7 @@ function canonical(value = '') {
     .trim()
     .split(/\s+/)
     .filter(Boolean)
-    .map(token => romanNumbers.get(token) || token)
+    .map(normalizeStoryToken)
     .join(' ');
 }
 
@@ -52,11 +70,18 @@ function gameMentionPosition(headline, game = {}) {
 }
 
 function storyTokens(item = {}) {
-  const headline = canonical(`${item.titleEn || item.titleRu || item.title || ''}`);
-  return new Set(headline.split(' ')
+  const text = canonical([
+    item.titleEn || '',
+    item.titleRu || '',
+    item.title || '',
+    item.summaryEn || '',
+    item.summaryRu || '',
+    item.summary || ''
+  ].join(' '));
+  return new Set(text.split(' ')
     .filter(token => token.length >= 3 || /^\d+$/.test(token))
     .filter(token => !storyStopWords.has(token))
-    .map(token => storyTokenAliases.get(token) || token));
+    .map(normalizeStoryToken));
 }
 
 function storyTopicKey(item = {}) {
@@ -81,10 +106,12 @@ export function isSameNewsStory(left = {}, right = {}) {
   const a = storyTokens(left);
   const b = storyTokens(right);
   if (!a.size || !b.size) return false;
-  let common = 0;
-  for (const token of a) if (b.has(token)) common += 1;
+  const shared = [...a].filter(token => b.has(token));
+  const common = shared.length;
   const coverage = common / Math.min(a.size, b.size);
-  return common >= 4 && coverage >= 0.4;
+  const distinctive = shared.filter(token => token.length >= 4 && !storyGenericTokens.has(token));
+  return (common >= 4 && coverage >= 0.35)
+    || (common >= 5 && coverage >= 0.2 && distinctive.length >= 2);
 }
 
 function sourceKey(item = {}) {

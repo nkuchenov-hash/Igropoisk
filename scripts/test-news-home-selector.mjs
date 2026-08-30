@@ -29,6 +29,20 @@ const gamescomTheftB = {
 assert.equal(isSameNewsStory(gamescomTheftA, gamescomTheftB), true, 'same Gamescom theft story must dedupe across publishers');
 assert.equal(isSameNewsStory(gamescomTheftA, { titleEn: 'Xbox announces a new family of next-generation consoles' }), false);
 
+const projectHelixA = {
+  titleRu: 'Следующая Xbox будет не одной консолью — Microsoft готовит целое семейство',
+  summaryRu: 'Microsoft работает сразу над несколькими решениями Project Helix. Игровая приставка окажется семейством устройств следующего поколения Xbox.'
+};
+const projectHelixB = {
+  titleRu: 'Xbox подтверждает, что Project Helix будет семейным набором устройств',
+  summaryRu: 'Project Helix выйдет в виде семьи устройств. Компания связывает это с доступностью следующего поколения консолей.'
+};
+assert.equal(isSameNewsStory(projectHelixA, projectHelixB), true, 'same Project Helix announcement must dedupe across languages and publishers');
+assert.equal(isSameNewsStory(projectHelixA, {
+  titleRu: 'Xbox представила обновление приложения для облачного гейминга',
+  summaryRu: 'Microsoft изменила интерфейс приложения Xbox и добавила новые функции для игроков.'
+}), false, 'different Xbox news must remain separate');
+
 function item(id, ageHours, source, topic = id, extra = {}) {
   return {
     id,

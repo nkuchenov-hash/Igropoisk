@@ -19,7 +19,10 @@ const rejectTitles = [
   'Стартовала публичная бета Call of Duty: Modern Warfare 4 — возможно, худшей части франшизы',
   'Насмотрелись "Одиссеи" Нолана? В Resonance: A Plague Tale Legacy греки стали африканцами, а мужчины-герои - женщинами',
   'Были демоны, но они самоликвидировались: история серии Onimusha',
-  'Наконец-то живой геймплей State of Decay 3'
+  'Наконец-то живой геймплей State of Decay 3',
+  'Фанаты GTA 6 травят разработчиц Rockstar, обвинив их в том, что Джейсон - всего лишь "бесхарактерный прихвостень" Люсии',
+  'The best new games releasing September 2026',
+  'В сентябре 2026 выходят лучшие новые игры'
 ];
 for (const title of rejectTitles) {
   assert.equal(isLikelyNewsContent({ title, summary: 'A gaming article.', url: 'https://example.test/article' }), false, title);
@@ -53,6 +56,14 @@ const rejectItems = [
   {
     title: 'Facepunch обновил дорожную карту Rust',
     summary: 'Rust Premium доступна игрокам, собравшим более $15 товаров.'
+  },
+  {
+    title: 'Авторы Windrose показала новые доспехи и корабли из будущего обновления Ashlands',
+    summary: 'Разработчики готовят крупное обновление игры и показали новые материалы.'
+  },
+  {
+    title: 'Rockstar обсуждает реакцию игроков на GTA 6',
+    summary: 'В соцсетях распространился слух, что виной всему женщина на посту сценариста, после чего часть фанатов обрушилась на разработчиц.'
   }
 ];
 for (const item of rejectItems) {
