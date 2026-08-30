@@ -69,19 +69,36 @@ function gameMentionPosition(headline, game = {}) {
   return Math.max(full, short);
 }
 
-function storyTokens(item = {}) {
-  const text = canonical([
-    item.titleEn || '',
-    item.titleRu || '',
-    item.title || '',
-    item.summaryEn || '',
-    item.summaryRu || '',
-    item.summary || ''
-  ].join(' '));
+function storyTokens(item = {}, { titleOnly = false } = {}) {
+  const text = canonical(titleOnly
+    ? (item.titleEn || item.titleRu || item.title || '')
+    : [
+        item.titleEn || '',
+        item.titleRu || '',
+        item.title || '',
+        item.summaryEn || '',
+        item.summaryRu || '',
+        item.summary || ''
+      ].join(' '));
   return new Set(text.split(' ')
     .filter(token => token.length >= 3 || /^\d+$/.test(token))
     .filter(token => !storyStopWords.has(token))
     .map(normalizeStoryToken));
+}
+
+function linkedGameKeys(item = {}) {
+  return new Set((Array.isArray(item.games) ? item.games : [])
+    .flatMap(game => [game?.slug, game?.gameId])
+    .map(value => String(value || '').trim())
+    .filter(Boolean));
+}
+
+function sharesLinkedGame(left = {}, right = {}) {
+  const a = linkedGameKeys(left);
+  const b = linkedGameKeys(right);
+  if (!a.size || !b.size) return false;
+  for (const key of a) if (b.has(key)) return true;
+  return false;
 }
 
 function storyTopicKey(item = {}) {
@@ -103,13 +120,19 @@ export function newsTopicKey(item = {}) {
 }
 
 export function isSameNewsStory(left = {}, right = {}) {
-  const a = storyTokens(left);
-  const b = storyTokens(right);
+  const sameGame = sharesLinkedGame(left, right);
+  const a = storyTokens(left, { titleOnly: sameGame });
+  const b = storyTokens(right, { titleOnly: sameGame });
   if (!a.size || !b.size) return false;
   const shared = [...a].filter(token => b.has(token));
   const common = shared.length;
   const coverage = common / Math.min(a.size, b.size);
   const distinctive = shared.filter(token => token.length >= 4 && !storyGenericTokens.has(token));
+
+  if (sameGame) {
+    return common >= 4 && coverage >= 0.5 && distinctive.length >= 2;
+  }
+
   return (common >= 4 && coverage >= 0.35)
     || (common >= 5 && coverage >= 0.2 && distinctive.length >= 2);
 }
