@@ -1,0 +1,49 @@
+name: Review discovery smoke
+
+on:
+  pull_request:
+    branches: [staging]
+    paths:
+      - 'scripts/prepare-review-research.mjs'
+      - 'scripts/prepare-review-research-v8.mjs'
+      - 'scripts/augment-review-research-from-wikipedia.mjs'
+      - 'scripts/calculate-ratings-from-research.mjs'
+      - 'scripts/validate-pre-review-materials.mjs'
+      - 'config/parsers/review-synthesis.json'
+      - 'config/game-page-quality-v2.json'
+      - '.github/workflows/review-discovery-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  fallout-historical-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify discovery syntax
+        run: |
+          node --check scripts/prepare-review-research.mjs
+          node --check scripts/prepare-review-research-v8.mjs
+          node --check scripts/augment-review-research-from-wikipedia.mjs
+          node --check scripts/calculate-ratings-from-research.mjs
+          node --check scripts/validate-pre-review-materials.mjs
+      - name: Collect Fallout professional reviews and scores
+        run: |
+          node scripts/prepare-review-research.mjs fallout
+          node scripts/augment-review-research-from-wikipedia.mjs fallout
+          node scripts/calculate-ratings-from-research.mjs fallout
+      - name: Require complete pre-review material corpus
+        run: node scripts/validate-pre-review-materials.mjs fallout
+      - name: Reject implausible Fallout aggregate
+        run: |
+          node - <<'NODE'
+          const rating=require('./data/ratings/fallout.json');
+          const score=Number(rating.calculation?.score_10);
+          if(!Number.isFinite(score)||score<7||score>10) throw new Error(`Fallout aggregate is implausible: ${score}`);
+          console.log(`Fallout professional aggregate sanity check passed: ${score}/10`);
+          NODE

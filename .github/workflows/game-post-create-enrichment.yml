@@ -19,7 +19,10 @@ on:
       - 'scripts/lib/steam-library-assets.mjs'
       - 'scripts/merge-official-steam-videos.mjs'
       - 'scripts/prepare-review-research.mjs'
+      - 'scripts/prepare-review-research-v8.mjs'
+      - 'scripts/augment-review-research-from-wikipedia.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
+      - 'scripts/validate-pre-review-materials.mjs'
       - 'scripts/discover-review-media.mjs'
       - 'scripts/quality-control-loop.mjs'
       - 'scripts/validate-game-media-quality.mjs'
@@ -39,7 +42,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-enrichment-v9-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
+  group: game-post-create-enrichment-v10-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
   cancel-in-progress: false
 
 jobs:
@@ -70,7 +73,10 @@ jobs:
           node --check scripts/publish-green-game-page-production.mjs
           node --check scripts/materialize-game-creator-pages.mjs
           node --check scripts/prepare-review-research.mjs
+          node --check scripts/prepare-review-research-v8.mjs
+          node --check scripts/augment-review-research-from-wikipedia.mjs
           node --check scripts/calculate-ratings-from-research.mjs
+          node --check scripts/validate-pre-review-materials.mjs
           node --check scripts/discover-review-media.mjs
           node --check scripts/validate-game-media-quality.mjs
           node --check scripts/validate-game-shells.mjs
@@ -92,6 +98,15 @@ jobs:
           GAME_TARGET_SLUG: ${{ steps.target.outputs.slug }}
           EDITORIAL_AI_ENABLED: 'false'
         run: node scripts/run-content-pipeline.mjs
+      - name: Collect complete professional pre-review materials
+        env:
+          TARGET: ${{ steps.target.outputs.slug }}
+        run: |
+          set -euo pipefail
+          test -n "$TARGET"
+          node scripts/prepare-review-research.mjs "$TARGET"
+          node scripts/augment-review-research-from-wikipedia.mjs "$TARGET"
+          node scripts/calculate-ratings-from-research.mjs "$TARGET"
       - name: Prove page cycle did not call paid OpenAI
         run: |
           node - <<'NODE'
@@ -110,6 +125,12 @@ jobs:
           echo "Validating isolated target shell: $TARGET"
           node scripts/validate-game-shells.mjs "$TARGET"
           git diff --check
+      - name: Require complete professional pre-review materials
+        env:
+          TARGET: ${{ steps.target.outputs.slug }}
+        run: |
+          test -n "$TARGET"
+          node scripts/validate-pre-review-materials.mjs "$TARGET"
       - name: Require active target to be green before publication
         run: |
           node - <<'NODE'
@@ -119,7 +140,7 @@ jobs:
           if(!slug) throw new Error('Target slug missing after bounded page cycle');
           const qc=JSON.parse(fs.readFileSync(`data/quality-control/page-${slug}-control.json`,'utf8'));
           if(!qc.green) throw new Error(`Target ${slug} is still red: ${(qc.comments||[]).join(' | ')}`);
-          console.log(`Target ${slug} passed page QC.`);
+          console.log(`Target ${slug} passed page QC and professional pre-review material gate.`);
           NODE
       - name: Publish enrichment snapshot to staging
         id: staging_publish
@@ -140,7 +161,7 @@ jobs:
           git add -A
           git commit -m "Continue game page enrichment ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
           git push origin "$BRANCH"
-          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated AI-independent bounded page enrichment: structured data, Media, discovered review/source links and ratings. Paid editorial AI is not required for Game Page readiness.")"
+          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated bounded Game Page enrichment: structured data, Media, mandatory professional review/source links and publication scores. The editorial Игропоиск review article remains a separate optional module.")"
           gh pr merge "$PR_URL" --merge --delete-branch
           git fetch origin staging
           echo "staging_sha=$(git rev-parse origin/staging)" >> "$GITHUB_OUTPUT"
