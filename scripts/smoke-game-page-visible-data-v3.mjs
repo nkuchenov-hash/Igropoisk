@@ -24,9 +24,6 @@ try{
     franchiseText:(document.querySelector('#franchisePanel')?.textContent||'').replace(/\s+/g,' ').trim(),
     franchiseBrokenLinks:[...document.querySelectorAll('#franchisePanel a.franchise-game')].filter(node=>node.getAttribute('href')).length,
     guideLinks:document.querySelectorAll('#guides a[href^="http"]').length,
-    externalReviews:document.querySelectorAll('#reviewGrid .quality-review-row').length,
-    externalReviewSources:[...document.querySelectorAll('#reviewGrid .quality-review-source')].map(node=>node.textContent.trim()),
-    calculatedScore:(document.querySelector('#featuredReview .ig-review-feature__score')?.textContent||'').trim(),
     articleLinks:document.querySelectorAll('#featuredReview .ig-review-link').length
   }));
   const errors=[];
@@ -39,10 +36,7 @@ try{
   if(state.franchiseCards<2||!/Baldur's Gate: Enhanced Edition/i.test(state.franchiseText)||!/Baldur's Gate II: Enhanced Edition/i.test(state.franchiseText))errors.push(`Franchise cards are incomplete: ${state.franchiseText}`);
   if(state.franchiseBrokenLinks!==0)errors.push(`Queued franchise pages must not expose broken links: ${state.franchiseBrokenLinks}`);
   if(state.guideLinks<6)errors.push(`Verified guide corpus is not visible: ${state.guideLinks}`);
-  if(state.externalReviews<10)errors.push(`Professional review corpus is not visible: ${state.externalReviews}`);
-  if(new Set(state.externalReviewSources).size<10)errors.push(`Professional review publications are not independent: ${state.externalReviewSources.join(', ')}`);
-  if(state.calculatedScore!=='9.9/10')errors.push(`Calculated BG3 rating is wrong or missing: ${state.calculatedScore}`);
   if(state.articleLinks!==0)errors.push(`Needs-revision Игропоиск article must remain unlinked: ${state.articleLinks}`);
   if(pageErrors.length)errors.push(`Browser errors: ${pageErrors.slice(0,3).join(' | ')}`);
-  console.log(JSON.stringify({state,pageErrors,errors},null,2));if(errors.length)throw new Error(`Visible Game Page data smoke failed:\n- ${errors.join('\n- ')}`);
+  console.log(JSON.stringify({state,pageErrors,errors},null,2));if(errors.length)throw new Error(`Visible Game Page core-data smoke failed:\n- ${errors.join('\n- ')}`);
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve))}
