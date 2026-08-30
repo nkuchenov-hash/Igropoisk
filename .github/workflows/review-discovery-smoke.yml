@@ -5,8 +5,11 @@ on:
     branches: [staging]
     paths:
       - 'scripts/prepare-review-research.mjs'
+      - 'scripts/prepare-review-research-v8.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
+      - 'scripts/validate-pre-review-materials.mjs'
       - 'config/parsers/review-synthesis.json'
+      - 'config/game-page-quality-v2.json'
       - '.github/workflows/review-discovery-smoke.yml'
 
 permissions:
@@ -24,27 +27,12 @@ jobs:
       - name: Verify discovery syntax
         run: |
           node --check scripts/prepare-review-research.mjs
+          node --check scripts/prepare-review-research-v8.mjs
           node --check scripts/calculate-ratings-from-research.mjs
+          node --check scripts/validate-pre-review-materials.mjs
       - name: Collect Fallout professional reviews and scores
         run: |
           node scripts/prepare-review-research.mjs fallout
           node scripts/calculate-ratings-from-research.mjs fallout
-      - name: Require real historical review corpus before editorial review
-        run: |
-          node - <<'NODE'
-          const fs=require('fs');
-          const matrix=JSON.parse(fs.readFileSync('data/research/fallout-source-matrix.json','utf8'));
-          const ratings=JSON.parse(fs.readFileSync('data/ratings/fallout.json','utf8'));
-          const accepted=matrix.accepted||[];
-          const scored=matrix.score_sources||[];
-          if(matrix.identity?.preferred_search_alias!=='fallout') throw new Error(`Expected short canonical alias fallout, got ${matrix.identity?.preferred_search_alias}`);
-          const pubs=new Set(accepted.map(x=>String(x.publication||'').toLowerCase()).filter(Boolean));
-          if(pubs.size<2) throw new Error(`Expected at least 2 independent professional Fallout reviews, got ${pubs.size}`);
-          if(scored.length<1) throw new Error('Expected at least one verified professional Fallout score');
-          if((ratings.calculation?.source_count||0)<1||ratings.calculation?.score_10==null) throw new Error('Fallout aggregate rating was not calculated');
-          for(const item of accepted){
-            const hay=`${item.title||''} ${item.url||''}`.toLowerCase();
-            if(/\bfallout[\s_-]*2\b/.test(hay)) throw new Error(`Fallout 2 contamination accepted: ${item.url}`);
-          }
-          console.log(JSON.stringify({accepted:accepted.length,independent_publications:pubs.size,scored:scored.length,score_10:ratings.calculation.score_10},null,2));
-          NODE
+      - name: Require complete pre-review material corpus
+        run: node scripts/validate-pre-review-materials.mjs fallout
