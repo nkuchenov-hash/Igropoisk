@@ -35,6 +35,7 @@ jobs:
       - name: Collect Fallout professional reviews and scores
         run: |
           node scripts/prepare-review-research.mjs fallout
+          node scripts/augment-review-research-from-wikipedia.mjs fallout
           node scripts/calculate-ratings-from-research.mjs fallout
       - name: Require complete pre-review material corpus
         run: node scripts/validate-pre-review-materials.mjs fallout
