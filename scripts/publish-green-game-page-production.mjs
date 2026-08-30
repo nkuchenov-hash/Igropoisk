@@ -76,6 +76,12 @@ try{
     `data/similarity/${slug}.json`
   ];
   const copiedOptional=optionalPublicArtifacts.filter(relative=>copyIfExists(sourceRoot,productionRoot,relative));
+  const sharedPublicArtifacts=[
+    'game/_shared/game-page-review-sources.js',
+    'game/_shared/game-page-review-publication-control.js'
+  ];
+  const copiedShared=sharedPublicArtifacts.filter(relative=>copyIfExists(sourceRoot,productionRoot,relative));
+  if(copiedShared.length!==sharedPublicArtifacts.length) throw new Error(`Missing shared Game Page review renderer(s): ${sharedPublicArtifacts.filter(x=>!copiedShared.includes(x)).join(', ')}`);
 
   command(process.execPath,[path.join(sourceRoot,'scripts/validate-game-shells.mjs'),slug],{cwd:productionRoot});
   command('python3',[path.join(productionRoot,'scripts/enforce_layout_contract.py'),'--check'],{cwd:productionRoot});
@@ -86,7 +92,8 @@ try{
     `data/drafts/${slug}.json`,
     'data/catalog-visible.json',
     'data/game-content',
-    ...copiedOptional
+    ...copiedOptional,
+    ...copiedShared
   ].filter(relative=>fs.existsSync(path.join(productionRoot,relative)));
   git(['add','-A','--',...stagePaths],{cwd:productionRoot});
 
@@ -98,14 +105,14 @@ try{
     git(['config','user.email','igropoisk-content[bot]@users.noreply.github.com'],{cwd:productionRoot});
     git(['commit','-m',`Publish green Game Page: ${slug}`],{cwd:productionRoot});
     git(['push','origin',branch],{cwd:productionRoot});
-    productionPr=gh(['pr','create','--base','main','--head',branch,'--title',`Publish green Game Page: ${slug}`,'--body',`Production-only publication of the verified green Game Page \`${slug}\` from staging \`${stagingSha}\`. Includes only its public shell/draft, merged catalog and game-content entry, plus available public review/rating/similarity feeds. No unrelated staging UI or pipeline state is promoted.`],{cwd:productionRoot,quiet:true}).stdout.trim();
+    productionPr=gh(['pr','create','--base','main','--head',branch,'--title',`Publish green Game Page: ${slug}`,'--body',`Production-only publication of the verified green Game Page \`${slug}\` from staging \`${stagingSha}\`. Includes only its public shell/draft, merged catalog and game-content entry, available public review/rating/similarity feeds, and the shared review-source renderer required to display that verified pre-review data. No unrelated staging UI or pipeline state is promoted.`],{cwd:productionRoot,quiet:true}).stdout.trim();
     if(!productionPr) throw new Error('Production PR URL was not returned');
     gh(['pr','merge',productionPr,'--merge','--delete-branch'],{cwd:productionRoot});
     git(['fetch','origin','main'],{cwd:productionRoot});
     productionSha=git(['rev-parse','origin/main'],{cwd:productionRoot,quiet:true}).stdout.trim();
   }
 
-  for(const relative of [`game/${slug}/index.html`,`data/drafts/${slug}.json`]){
+  for(const relative of [`game/${slug}/index.html`,`data/drafts/${slug}.json`,...sharedPublicArtifacts]){
     const sourceObject=git(['rev-parse',`${stagingSha}:${relative}`],{quiet:true}).stdout.trim();
     const productionObject=git(['rev-parse',`origin/main:${relative}`],{cwd:productionRoot,quiet:true}).stdout.trim();
     if(!sourceObject||sourceObject!==productionObject) throw new Error(`Production parity failed for ${relative}`);
@@ -118,7 +125,8 @@ try{
     production_sha:productionSha,
     production_pr:productionPr||null,
     public_page:`game/${slug}/index.html`,
-    copied_optional:copiedOptional
+    copied_optional:copiedOptional,
+    copied_shared:copiedShared
   };
   writeJson(reportPath,report);
   console.log(JSON.stringify(report,null,2));
