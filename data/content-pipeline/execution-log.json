@@ -1,7 +1,7 @@
 {
   "schema_version": 12,
-  "started_at": "2026-08-30T06:32:12.611Z",
-  "finished_at": "2026-08-30T06:33:09.804Z",
+  "started_at": "2026-08-30T06:43:35.609Z",
+  "finished_at": "2026-08-30T06:44:36.628Z",
   "summary": {
     "completed": 8,
     "needs_revision": 0,
@@ -18,17 +18,17 @@
       "command": "node scripts/parse-game-data.mjs fallout 38400 Fallout",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 902,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-30T06:32:12.640Z\",\n  \"duration_ms\": 815,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0,\n    \"library_assets_provider\": \"steamcmd-appinfo\",\n    \"library_hero\": true,\n    \"library_cover\": true\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
+      "duration_ms": 509,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-30T06:43:35.636Z\",\n  \"duration_ms\": 473,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0,\n    \"library_assets_provider\": \"steamcmd-appinfo\",\n    \"library_hero\": true,\n    \"library_cover\": true,\n    \"editorial_language\": \"ru\",\n    \"russian_localization_used\": true\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
       "stderr": ""
     },
     {
       "label": "parse:fallout",
-      "command": "node scripts/parse-game-data.mjs fallout 38400 Fallout",
+      "command": "node scripts/parse-game-data.mjs fallout 38400 Fallout: A Post Nuclear Role Playing Game",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 858,
-      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-30T06:32:13.541Z\",\n  \"duration_ms\": 820,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0,\n    \"library_assets_provider\": \"steamcmd-appinfo\",\n    \"library_hero\": true,\n    \"library_cover\": true\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
+      "duration_ms": 520,
+      "stdout": "{\n  \"parser\": \"game-data\",\n  \"status\": \"success\",\n  \"game_slug\": \"fallout\",\n  \"checked_at\": \"2026-08-30T06:43:36.147Z\",\n  \"duration_ms\": 487,\n  \"source_url\": \"https://store.steampowered.com/api/appdetails?appids=38400&l=english&cc=us\",\n  \"summary\": {\n    \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n    \"developers\": [\n      \"Interplay Inc.\"\n    ],\n    \"genres\": [\n      \"RPG\"\n    ],\n    \"platforms\": [\n      \"windows\"\n    ],\n    \"screenshots\": 5,\n    \"videos\": 0,\n    \"library_assets_provider\": \"steamcmd-appinfo\",\n    \"library_hero\": true,\n    \"library_cover\": true,\n    \"editorial_language\": \"ru\",\n    \"russian_localization_used\": true\n  },\n  \"output\": \"data/parser-output/fallout.json\"\n}\n",
       "stderr": ""
     },
     {
@@ -36,7 +36,7 @@
       "command": "node scripts/build-game-page-basic.mjs game_6c7f3f81263d9a409505",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 186,
+      "duration_ms": 106,
       "stdout": "{\n  \"slug\": \"fallout\",\n  \"game_id\": \"game_6c7f3f81263d9a409505\",\n  \"mode\": \"structured_sources\",\n  \"year\": 1997,\n  \"sources\": 1,\n  \"screenshots\": 5,\n  \"minimum_screenshots\": 5,\n  \"media_profile\": \"historical\",\n  \"gate_passed\": true,\n  \"public_ready\": true\n}\n",
       "stderr": ""
     },
@@ -45,7 +45,7 @@
       "command": "node scripts/quality-control-loop.mjs page fallout game_6c7f3f81263d9a409505",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 45350,
+      "duration_ms": 49983,
       "stdout": "{\n  \"mode\": \"page\",\n  \"slug\": \"fallout\",\n  \"status\": \"green\",\n  \"attempts\": 8,\n  \"editorial_ai_enabled\": false,\n  \"comments\": []\n}\n",
       "stderr": ""
     },
@@ -54,7 +54,7 @@
       "command": "node scripts/merge-official-steam-videos.mjs fallout",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 32,
+      "duration_ms": 33,
       "stdout": "{\n  \"slug\": \"fallout\",\n  \"official_found\": 0,\n  \"total_videos\": 1\n}\n",
       "stderr": ""
     },
@@ -63,7 +63,7 @@
       "command": "node scripts/canonicalize-editorial-game-id.mjs fallout",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 4770,
+      "duration_ms": 4776,
       "stdout": "{\n  \"slug\": \"fallout\",\n  \"game_id\": \"game_6c7f3f81263d9a409505\",\n  \"matched_by\": \"slug\",\n  \"artifacts_found\": 7,\n  \"artifacts_changed\": 4\n}\n",
       "stderr": ""
     },
@@ -72,7 +72,7 @@
       "command": "node scripts/materialize-green-game-page.mjs fallout",
       "status": "completed",
       "exit_code": 0,
-      "duration_ms": 41,
+      "duration_ms": 37,
       "stdout": "{\n  \"slug\": \"fallout\",\n  \"title\": \"Fallout: A Post Nuclear Role Playing Game\",\n  \"game_id\": \"game_6c7f3f81263d9a409505\",\n  \"year\": 1997,\n  \"public_page\": \"game/fallout/index.html\",\n  \"game_content\": \"data/game-content/2002-2015.json\",\n  \"catalog_entry\": true,\n  \"status\": \"green\"\n}\n",
       "stderr": ""
     },
@@ -82,7 +82,7 @@
       "status": "completed",
       "exit_code": 0,
       "duration_ms": 5050,
-      "stdout": "{\n  \"schema_version\": 5,\n  \"generated_at\": \"2026-08-30T06:33:04.785Z\",\n  \"mode\": \"finalize\",\n  \"canonical_registry\": \"data/game-registry/registry.transition.json\",\n  \"summary\": {\n    \"source_records\": 1839,\n    \"games\": 619,\n    \"published_pages\": 221,\n    \"published_reviews\": 2,\n    \"registry_review_flags_published\": 78,\n    \"ready_for_page\": 0,\n    \"awaiting_sources\": 398,\n    \"queued\": 617,\n    \"runnable_pages\": 2,\n    \"runnable_reviews\": 1,\n    \"blocked_identity\": 1,\n    \"popular_ranked_games\": 25,\n    \"popular_registered\": 0,\n    \"popular_unresolved\": 6,\n    \"public_release_games\": 269,\n    \"releases_registered\": 0,\n    \"releases_unresolved\": 1\n  },\n  \"next\": {\n    \"pages\": [\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_604f78ebf37981bf4b5d\",\n        \"slug\": \"a-very-simple-idle-game\",\n        \"title\": \"A Very Simple Idle Game\",\n        \"steam_appid\": 4965540,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_d63f9c0874f2efdf9824\",\n        \"slug\": \"abys-orbit\",\n        \"title\": \"Abys Orbit\",\n        \"steam_appid\": 5007590,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"description, cover_or_hero\"\n      }\n    ],\n    \"reviews\": [\n      {\n        \"type\": \"build_review\",\n        \"game_id\": \"game_72bf0963b99d4c9b1ab4\",\n        \"slug\": \"big-walk\",\n        \"title\": \"big-walk\",\n        \"popular_rank\": 2,\n        \"release_candidate\": true,\n        \"priority\": 298,\n        \"reason\": \"review_quality_needs_revision:missing\"\n      }\n    ]\n  }\n}\n",
+      "stdout": "{\n  \"schema_version\": 5,\n  \"generated_at\": \"2026-08-30T06:44:31.610Z\",\n  \"mode\": \"finalize\",\n  \"canonical_registry\": \"data/game-registry/registry.transition.json\",\n  \"summary\": {\n    \"source_records\": 1839,\n    \"games\": 619,\n    \"published_pages\": 221,\n    \"published_reviews\": 2,\n    \"registry_review_flags_published\": 78,\n    \"ready_for_page\": 0,\n    \"awaiting_sources\": 398,\n    \"queued\": 617,\n    \"runnable_pages\": 2,\n    \"runnable_reviews\": 1,\n    \"blocked_identity\": 1,\n    \"popular_ranked_games\": 25,\n    \"popular_registered\": 0,\n    \"popular_unresolved\": 6,\n    \"public_release_games\": 269,\n    \"releases_registered\": 0,\n    \"releases_unresolved\": 1\n  },\n  \"next\": {\n    \"pages\": [\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_604f78ebf37981bf4b5d\",\n        \"slug\": \"a-very-simple-idle-game\",\n        \"title\": \"A Very Simple Idle Game\",\n        \"steam_appid\": 4965540,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"release_confirmation\"\n      },\n      {\n        \"type\": \"enrich_game\",\n        \"game_id\": \"game_d63f9c0874f2efdf9824\",\n        \"slug\": \"abys-orbit\",\n        \"title\": \"Abys Orbit\",\n        \"steam_appid\": 5007590,\n        \"popular_rank\": null,\n        \"release_candidate\": true,\n        \"priority\": 140,\n        \"reason\": \"description, cover_or_hero\"\n      }\n    ],\n    \"reviews\": [\n      {\n        \"type\": \"build_review\",\n        \"game_id\": \"game_72bf0963b99d4c9b1ab4\",\n        \"slug\": \"big-walk\",\n        \"title\": \"big-walk\",\n        \"popular_rank\": 2,\n        \"release_candidate\": true,\n        \"priority\": 298,\n        \"reason\": \"review_quality_needs_revision:missing\"\n      }\n    ]\n  }\n}\n",
       "stderr": ""
     }
   ]
