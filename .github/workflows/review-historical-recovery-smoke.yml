@@ -1,0 +1,38 @@
+name: Historical review recovery smoke
+
+on:
+  pull_request:
+    branches: [staging]
+    paths:
+      - 'scripts/augment-review-research-from-wikipedia.mjs'
+      - 'scripts/calculate-ratings-from-research.mjs'
+      - 'scripts/validate-pre-review-materials.mjs'
+      - '.github/workflows/review-historical-recovery-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  fallout-primary-source-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Recover direct historical Fallout sources
+        run: |
+          node --check scripts/augment-review-research-from-wikipedia.mjs
+          node scripts/augment-review-research-from-wikipedia.mjs fallout
+          node scripts/calculate-ratings-from-research.mjs fallout
+      - name: Require ten independent professional sources and scores
+        run: node scripts/validate-pre-review-materials.mjs fallout
+      - name: Require plausible Fallout aggregate
+        run: |
+          node - <<'NODE'
+          const data=require('./data/ratings/fallout.json');
+          const score=Number(data.calculation?.score_10);
+          if(!Number.isFinite(score)||score<7||score>10) throw new Error(`Implausible Fallout aggregate: ${score}`);
+          console.log(JSON.stringify({sources:data.calculation.source_count,score_10:score},null,2));
+          NODE
