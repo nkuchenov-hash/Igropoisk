@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import { buildGameReviewQueue, enrichNewsItems } from './lib/news-game-linker.mjs';
 import { applyResolvedExternalGame, resolveVerifiedExternalNewsGame } from './lib/news-game-context-resolver.mjs';
+import { canonicalGameIsPrimary } from './lib/news-primary-game-evidence.mjs';
 import { refineNewsPrimaryGame } from './lib/news-primary-game-refiner.mjs';
 
 const eventsPath = 'data/news-events.json';
@@ -24,44 +25,6 @@ function normalize(value = '') {
     .replace(/[^\p{L}\p{N}]+/gu, ' ')
     .replace(/\s+/g, ' ')
     .trim();
-}
-
-function sourceTitleAndUrl(item = {}) {
-  let url = '';
-  try {
-    const parsed = new URL(item.primaryUrl || item.url || '');
-    url = decodeURIComponent(`${parsed.pathname} ${parsed.search}`);
-  } catch {
-    url = item.primaryUrl || item.url || '';
-  }
-  return normalize(`${item.titleRu || ''} ${item.titleEn || ''} ${item.title || ''} ${url}`);
-}
-
-function exactContains(haystack, needle) {
-  return Boolean(needle) && ` ${haystack} `.includes(` ${needle} `);
-}
-
-function canonicalAcronym(value = '') {
-  const tokens = normalize(value).split(' ').filter(Boolean);
-  if (tokens.length < 3) return '';
-  const suffix = sequelMarker.test(tokens.at(-1) || '') ? ` ${tokens.at(-1)}` : '';
-  const stem = suffix ? tokens.slice(0, -1) : tokens;
-  if (stem.length < 3) return '';
-  const acronym = stem.map(token => token[0]).join('');
-  return acronym.length >= 3 ? `${acronym}${suffix}` : '';
-}
-
-export function canonicalGameIsPrimary(item = {}, game = {}) {
-  const headlineAndUrl = sourceTitleAndUrl(item);
-  const identities = [game.title, game.slug]
-    .map(normalize)
-    .filter(Boolean);
-  for (const identity of identities) {
-    if (exactContains(headlineAndUrl, identity)) return true;
-    const acronym = canonicalAcronym(identity);
-    if (acronym && exactContains(headlineAndUrl, acronym)) return true;
-  }
-  return false;
 }
 
 export function hasExplicitSequelMismatch(item = {}) {
