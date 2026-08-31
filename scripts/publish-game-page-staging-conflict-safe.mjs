@@ -112,6 +112,12 @@ function prepareFreshAttempt(targetRoot) {
   return { baseSha, copied };
 }
 
+function readPrMergeState(prUrl, cwd) {
+  const viewed = gh(['pr', 'view', prUrl, '--json', 'state,mergedAt,mergeCommit'], { cwd, quiet: true, allowFailure: true });
+  if (viewed.status !== 0 || !viewed.stdout.trim()) return null;
+  try { return JSON.parse(viewed.stdout); } catch { return null; }
+}
+
 let finalReport = null;
 for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), `igropoisk-staging-publish-${runId}-${attempt}-`));
@@ -150,13 +156,17 @@ for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     ], { cwd: targetRoot, quiet: true }).stdout.trim();
     if (!prUrl) throw new Error('Staging PR URL was not returned');
 
-    const merged = gh(['pr', 'merge', prUrl, '--merge', '--delete-branch'], { cwd: targetRoot, quiet: true, allowFailure: true });
-    if (merged.status !== 0) {
-      gh(['pr', 'close', prUrl, '--delete-branch'], { cwd: targetRoot, quiet: true, allowFailure: true });
+    const mergeAttempt = gh(['pr', 'merge', prUrl, '--merge'], { cwd: targetRoot, quiet: true, allowFailure: true });
+    const mergeState = readPrMergeState(prUrl, targetRoot);
+    const didMerge = Boolean(mergeState?.mergedAt || mergeState?.mergeCommit?.oid || mergeState?.state === 'MERGED');
+    if (mergeAttempt.status !== 0 && !didMerge) {
+      gh(['pr', 'close', prUrl], { cwd: targetRoot, quiet: true, allowFailure: true });
+      git(['push', 'origin', '--delete', branch], { cwd: targetRoot, quiet: true, allowFailure: true });
       console.error(`Staging changed during attempt ${attempt}; rebuilding ${slug} publication on the new staging head.`);
       continue;
     }
 
+    git(['push', 'origin', '--delete', branch], { cwd: targetRoot, quiet: true, allowFailure: true });
     git(['fetch', 'origin', 'staging'], { cwd: targetRoot });
     const stagingSha = git(['rev-parse', 'origin/staging'], { cwd: targetRoot, quiet: true }).stdout.trim();
     finalReport = {
@@ -165,6 +175,7 @@ for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
       staging_sha: stagingSha,
       base_sha: prepared.baseSha,
       staging_pr: prUrl,
+      staging_merge_sha: mergeState?.mergeCommit?.oid || null,
       attempt,
       copied_target_artifacts: prepared.copied,
     };
