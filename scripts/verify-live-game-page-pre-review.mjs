@@ -50,6 +50,7 @@ try{
     if(ratings?.method?.use_all_discovered_scores!==true) problems.push('live aggregate does not use all discovered professional scores');
     if(Number(ratings?.calculation?.source_count)!==scoreRows.length) problems.push('live rating source count does not match live score rows');
     if(mean!==null&&Number.isFinite(published)&&Math.abs(Number(mean.toFixed(1))-published)>0.001) problems.push(`live mean ${Number(mean.toFixed(1))} does not match published ${published}`);
+    for(const item of reviewRows){const url=String(item.resolved_url||item.url||'');if(!/^https?:\/\//i.test(url)||badHost(url)){problems.push(`invalid live review URL: ${url||item.publication||'missing'}`);break}}
     for(const item of scoreRows){const url=String(item.url||'');if(!/^https?:\/\//i.test(url)||badHost(url)){problems.push(`invalid live rating source URL: ${url||item.publication||'missing'}`);break}}
 
     const pageErrors=[];
