@@ -226,6 +226,25 @@ for (const lang of ['ru', 'en']) {
       : [...new Set(refUrls)].find(url => !forbidden(url)) || '';
     if (!evidenceUrl) continue;
     const publication = String(review.publication || review.source || row.publication).trim();
+    const scoreMethod = `wikipedia-${lang}-review-table-secondary-evidence`;
+    const scoreValidation = {
+      status: 'accepted-historical-score-evidence',
+      checked_at: checkedAt,
+      method: scoreMethod,
+      secondary_evidence_url: page.url,
+      evidence_row: row.row_text,
+    };
+
+    // The direct professional review remains the publication URL; Wikipedia only recovers
+    // the historical score value. Persist the recovered score on the review row itself so
+    // users can see the same individual score that participates in the aggregate.
+    review.score = row.score.score;
+    review.scale = row.score.scale;
+    review.grade = row.score.grade;
+    review.score_eligible = true;
+    review.score_extraction_method = scoreMethod;
+    review.score_validation = scoreValidation;
+
     recovered.push({
       publication,
       title: review.title || title,
@@ -236,14 +255,8 @@ for (const lang of ['ru', 'en']) {
       grade: row.score.grade,
       source_kind: 'historical_professional_review_score',
       score_eligible: true,
-      score_extraction_method: `wikipedia-${lang}-review-table-secondary-evidence`,
-      validation: {
-        status: 'accepted-historical-score-evidence',
-        checked_at: checkedAt,
-        method: `wikipedia-${lang}-review-table-secondary-evidence`,
-        secondary_evidence_url: page.url,
-        evidence_row: row.row_text,
-      },
+      score_extraction_method: scoreMethod,
+      validation: scoreValidation,
     });
     alreadyScored.add(key);
     added += 1;
@@ -251,17 +264,18 @@ for (const lang of ['ru', 'en']) {
   diagnostics.push({ lang, status: 'complete', page: page.url, review_rows: rows.length, matched_existing_reviews: matches, recovered_scores: added });
 }
 
+reviews.reviews = currentReviews;
 reviews.score_sources = [...currentScoreSources, ...recovered];
 reviews.historical_score_recovery = {
   checked_at: checkedAt,
   recovered_scores: recovered.length,
   diagnostics,
-  policy: 'Historical score values may use Wikipedia review tables only as secondary evidence and only when bound to an already accepted direct professional review URL. Aggregator URLs remain forbidden as publication sources.',
+  policy: 'Historical score values may use Wikipedia review tables only as secondary evidence and only when bound to an already accepted direct professional review URL. Aggregator URLs remain forbidden as publication sources. Recovered values are written onto the matching direct-review row so the individual score is visible wherever that review is rendered.',
 };
 reviews.updated_at = checkedAt;
 write(`data/reviews/${slug}.json`, reviews);
 write(`data/parser-runs/historical-score-recovery-${slug}.json`, {
-  parser: 'historical-review-score-recovery-v1',
+  parser: 'historical-review-score-recovery-v2-visible-rows',
   status: recovered.length ? 'completed' : 'no-new-scores',
   game_slug: slug,
   checked_at: checkedAt,
@@ -269,4 +283,4 @@ write(`data/parser-runs/historical-score-recovery-${slug}.json`, {
   total_score_sources: reviews.score_sources.length,
   diagnostics,
 });
-console.log(JSON.stringify({ slug, recovered_scores: recovered.length, total_score_sources: reviews.score_sources.length, diagnostics }, null, 2));
+console.log(JSON.stringify({ slug, recovered_scores: recovered.length, total_score_sources: reviews.score_sources.length, visible_scored_reviews: currentReviews.filter(hasValidScore).length, diagnostics }, null, 2));
