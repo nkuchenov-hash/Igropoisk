@@ -17,7 +17,10 @@ import {
 const eventsPath = 'data/news-events.json';
 const reportPath = process.env.NEWS_EDITOR_REPORT || 'tmp/news-editor-report.json';
 const minimumPublicItems = Math.max(12, Number(process.env.NEWS_EDITOR_MIN_PUBLIC || 12));
-const maxItems = Math.max(minimumPublicItems + 18, Number(process.env.NEWS_EDITOR_MAX_ITEMS || minimumPublicItems + 18));
+const qwenMaxItems = Math.max(0, Math.min(4, Number(process.env.NEWS_EDITOR_QWEN_MAX_ITEMS || 3)));
+const qwenBudgetMs = Math.max(60_000, Number(process.env.NEWS_EDITOR_QWEN_BUDGET_MS || 6 * 60_000));
+const nativeConcurrency = Math.max(1, Math.min(8, Number(process.env.NEWS_EDITOR_NATIVE_CONCURRENCY || 6)));
+const startedAt = Date.now();
 const commercialPolicy = Object.freeze({
   limit: minimumPublicItems,
   maxAgeHours: 168,
@@ -45,12 +48,6 @@ function setPublic(item, value) {
   if (!value) item.regionalEligible = false;
 }
 
-function sourceIsRussian(item) {
-  const title = String(item.titleEn || item.title || '');
-  const summary = String(item.summaryEn || item.summary || '');
-  return hasCyrillic(title) && (!summary || hasCyrillic(summary));
-}
-
 function sourceTitle(item) {
   return String(item.titleEn || item.title || '').trim();
 }
@@ -61,6 +58,12 @@ function sourceSummary(item) {
 
 function sourceUrl(item) {
   return String(item.primaryUrl || item.url || '').trim();
+}
+
+function sourceIsRussian(item) {
+  const title = sourceTitle(item);
+  const summary = sourceSummary(item);
+  return hasCyrillic(title) && (!summary || hasCyrillic(summary));
 }
 
 function publishedAt(item) {
@@ -79,14 +82,12 @@ function localizedPolicyEligible(item) {
   return Boolean(title && summary && isLikelyNewsSource({ title, summary, url: sourceUrl(item) }));
 }
 
-function editoriallyApproved(item, nativeApprovedItems) {
-  return nativeApprovedItems.has(item) || hasValidEditorialCache(item);
-}
-
-function commerciallyApproved(item, nativeApprovedItems) {
+function commerciallyApproved(item) {
   return isPublic(item)
     && gameIdentityEligible(item)
-    && editoriallyApproved(item, nativeApprovedItems)
+    && ['approved', 'source-ru'].includes(String(item.editorialStatus || ''))
+    && Number(item.editorialVersion) === NEWS_EDITORIAL_VERSION
+    && item.editorialSourceHash === editorialSourceHash(item)
     && localizedPolicyEligible(item);
 }
 
@@ -149,7 +150,6 @@ function prioritizeCommercialCandidates(values) {
   const reserve = [];
   const topicCounts = new Map();
   const sourceCounts = new Map();
-
   for (const item of sorted) {
     const topic = newsTopicKey(item);
     const source = sourceKey(item);
@@ -166,44 +166,70 @@ function prioritizeCommercialCandidates(values) {
   return [...priority, ...reserve];
 }
 
-function writeApprovedNative(item, validation, nativeApprovedItems, model = 'source-ru') {
+function approve(item, validation, model, status = 'approved') {
   item.titleRu = validation.titleRu;
   item.summaryRu = paragraphize(validation.briefRu);
   item.editorialBriefRu = item.summaryRu;
   if (!localizedPolicyEligible(item)) return false;
-  item.editorialStatus = 'source-ru';
+  item.editorialStatus = status;
   item.editorialVersion = NEWS_EDITORIAL_VERSION;
   item.editorialSourceHash = editorialSourceHash(item);
   item.editorialModel = model;
   item.editorialGeneratedAt = new Date().toISOString();
   delete item.editorialReasons;
   delete item.editorialRejectedAt;
-  nativeApprovedItems.add(item);
   return true;
+}
+
+function reject(item, reasons, failures, extra = {}) {
+  setPublic(item, false);
+  item.editorialStatus = 'rejected';
+  item.editorialVersion = NEWS_EDITORIAL_VERSION;
+  item.editorialSourceHash = editorialSourceHash(item);
+  item.editorialRejectedAt = new Date().toISOString();
+  item.editorialReasons = reasons?.length ? reasons : ['commercial editorial validation failed'];
+  failures.push({ id: item.id, url: sourceUrl(item), reasons: item.editorialReasons, ...extra });
+}
+
+async function mapLimit(values, concurrency, worker) {
+  const results = new Array(values.length);
+  let next = 0;
+  async function run() {
+    while (true) {
+      const index = next++;
+      if (index >= values.length) return;
+      results[index] = await worker(values[index], index);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, values.length) }, () => run()));
+  return results;
 }
 
 const payload = JSON.parse(await fs.readFile(eventsPath, 'utf8'));
 const items = Array.isArray(payload) ? payload : (payload.items || []);
-const nativeApprovedItems = new Set();
-const attemptedItems = new Set();
 const failures = [];
 let nativeRussian = 0;
 let nativeArticleSalvaged = 0;
+let deterministicLocalized = 0;
 let cached = 0;
-let approved = 0;
-let rejected = 0;
 let filteredNonNews = 0;
-let pending = 0;
-let attempted = 0;
+let nativeRejected = 0;
+let qwenAttempted = 0;
+let qwenApproved = 0;
+let qwenRejected = 0;
 let modelLoadMs = 0;
 
 function currentCommercialSelection() {
   return selectCommercialHomeNews(
-    items.filter(item => commerciallyApproved(item, nativeApprovedItems)).sort((a, b) => publishedAt(b) - publishedAt(a)),
+    items.filter(commerciallyApproved).sort((a, b) => publishedAt(b) - publishedAt(a)),
     commercialPolicy
   );
 }
 
+const nativeNeedsArticle = [];
+
+// Pass 1: zero-model work only. Accept native Russian and already-localized OPUS copy
+// through the same strict production validator used after Qwen.
 for (const item of items) {
   if (!isPublic(item) || !gameIdentityEligible(item)) continue;
   const title = sourceTitle(item);
@@ -220,185 +246,177 @@ for (const item of items) {
     continue;
   }
 
-  if (hasValidEditorialCache(item)) {
-    if (localizedPolicyEligible(item)) {
-      cached += 1;
-      continue;
-    }
-    item.editorialStatus = 'stale-commercial-policy';
-    item.editorialReasons = ['cached copy no longer passes commercial content policy'];
-  }
-
-  if (!sourceIsRussian(item)) continue;
-  const nativeValidation = validateProductionNews(
-    { titleRu: title, briefRu: summary },
-    { title, summary, url }
-  );
-  if (nativeValidation.ok && writeApprovedNative(item, nativeValidation, nativeApprovedItems)) {
-    nativeRussian += 1;
-  } else {
-    item.editorialStatus = 'source-ru-needs-edit';
-    item.editorialVersion = NEWS_EDITORIAL_VERSION;
-    item.editorialSourceHash = editorialSourceHash(item);
-    item.editorialReasons = nativeValidation.reasons?.length
-      ? nativeValidation.reasons
-      : ['native Russian copy failed final commercial content policy'];
-  }
-}
-
-const candidates = prioritizeCommercialCandidates(
-  items.filter(item => isPublic(item)
-    && gameIdentityEligible(item)
-    && !nativeApprovedItems.has(item)
-    && !(hasValidEditorialCache(item) && localizedPolicyEligible(item)))
-);
-
-for (const item of candidates) {
-  if (attempted >= maxItems || currentCommercialSelection().ok) break;
-  attempted += 1;
-  attemptedItems.add(item);
-  const title = sourceTitle(item);
-  const summary = sourceSummary(item);
-  const url = sourceUrl(item);
-  let articleText = '';
-  let articleFetchError = '';
-
-  try {
-    articleText = await fetchArticleText(url, 8000, `${title} ${summary}`);
-  } catch (error) {
-    articleFetchError = error.message;
-    console.error(`[news/editor/article] ${url}: ${error.message}; using source lead`);
+  if (hasValidEditorialCache(item) && localizedPolicyEligible(item)) {
+    cached += 1;
+    continue;
   }
 
   if (sourceIsRussian(item)) {
+    const validation = validateProductionNews(
+      { titleRu: title, briefRu: summary },
+      { title, summary, url }
+    );
+    if (validation.ok && approve(item, validation, 'source-ru', 'source-ru')) {
+      nativeRussian += 1;
+    } else {
+      nativeNeedsArticle.push(item);
+      item.editorialStatus = 'source-ru-needs-edit';
+      item.editorialVersion = NEWS_EDITORIAL_VERSION;
+      item.editorialSourceHash = editorialSourceHash(item);
+      item.editorialReasons = validation.reasons || [];
+    }
+    continue;
+  }
+
+  // Upstream global/official ingestion already produced an offline local Russian
+  // translation. Validate and reuse it instead of spending minutes regenerating it.
+  const translatedTitle = String(item.titleRu || '').trim();
+  const translatedSummary = String(item.summaryRu || '').trim();
+  if (translatedTitle && translatedSummary && hasCyrillic(translatedTitle) && hasCyrillic(translatedSummary)) {
+    const validation = validateProductionNews(
+      { titleRu: translatedTitle, briefRu: translatedSummary },
+      { title, summary, url }
+    );
+    if (validation.ok && approve(item, validation, 'validated-upstream-local-translation', 'approved')) {
+      deterministicLocalized += 1;
+    }
+  }
+}
+
+// Pass 2: salvage every remaining native-Russian article before touching Qwen.
+// Fetches are bounded-parallel; a slow Russian site cannot serialize the whole hour.
+await mapLimit(nativeNeedsArticle, nativeConcurrency, async item => {
+  if (currentCommercialSelection().ok) return;
+  const title = sourceTitle(item);
+  const summary = sourceSummary(item);
+  const url = sourceUrl(item);
+  try {
+    const articleText = await fetchArticleText(url, 6500, `${title} ${summary}`);
     const articleBrief = articleText && hasCyrillic(articleText) ? nativeArticleBrief(articleText) : '';
     const validation = articleBrief
       ? validateProductionNews({ titleRu: title, briefRu: articleBrief }, { title, summary, articleText, url })
       : { ok: false, reasons: ['native Russian source did not provide two complete publishable sentences'] };
-    if (validation.ok && writeApprovedNative(item, validation, nativeApprovedItems, 'source-ru-article')) {
+    if (validation.ok && approve(item, validation, 'source-ru-article', 'source-ru')) {
       nativeArticleSalvaged += 1;
       console.log(`[news/editor] source-ru article salvage approved ${item.id}: ${item.titleRu}`);
-      continue;
+      return;
     }
-    rejected += 1;
-    setPublic(item, false);
-    item.editorialStatus = 'rejected';
-    item.editorialVersion = NEWS_EDITORIAL_VERSION;
-    item.editorialSourceHash = editorialSourceHash(item);
-    item.editorialRejectedAt = new Date().toISOString();
-    item.editorialReasons = validation.reasons?.length
-      ? validation.reasons
-      : ['native Russian copy failed final commercial content policy'];
-    failures.push({ id: item.id, url, reasons: item.editorialReasons, articleFetchError });
-    console.error(`[news/editor] rejected native Russian source without Qwen ${title}`);
-    continue;
+    nativeRejected += 1;
+    reject(item, validation.reasons, failures);
+  } catch (error) {
+    nativeRejected += 1;
+    reject(item, [error.message], failures);
   }
+});
 
-  if (!modelLoadMs) {
-    const warmup = await warmNewsEditor();
-    modelLoadMs = warmup.elapsedMs;
-    console.log(`[news/editor] ${warmup.model} ready in ${(warmup.elapsedMs / 1000).toFixed(1)}s`);
-  }
+let selectionBeforeQwen = currentCommercialSelection();
 
-  try {
-    const requiredEntities = requiredEntitiesForItem(item, title, summary);
-    const edited = await editNewsToRussian({
-      title,
-      summary,
-      articleText,
-      url,
-      source: item.primarySource || item.source || '',
-      requiredEntities
-    }, { maxAttempts: 2, maxNewTokens: 130 });
+// Pass 3: Qwen is an emergency top-up only. It is strictly bounded by both item count
+// and wall-clock budget. Normal hourly runs should execute zero model edits.
+if (!selectionBeforeQwen.ok && qwenMaxItems > 0) {
+  const qwenStart = Date.now();
+  const candidates = prioritizeCommercialCandidates(items.filter(item => {
+    if (!isPublic(item) || !gameIdentityEligible(item) || sourceIsRussian(item) || commerciallyApproved(item)) return false;
+    return isLikelyNewsSource({ title: sourceTitle(item), summary: sourceSummary(item), url: sourceUrl(item) });
+  }));
 
-    const finalPolicyOk = edited.ok && isLikelyNewsSource({ title: edited.titleRu, summary: edited.briefRu, url });
-    if (!finalPolicyOk) {
-      rejected += 1;
-      setPublic(item, false);
-      item.editorialStatus = 'rejected';
+  for (const item of candidates) {
+    if (currentCommercialSelection().ok) break;
+    if (qwenAttempted >= qwenMaxItems || Date.now() - qwenStart >= qwenBudgetMs) break;
+    qwenAttempted += 1;
+    const title = sourceTitle(item);
+    const summary = sourceSummary(item);
+    const url = sourceUrl(item);
+    let articleText = '';
+    let articleFetchError = '';
+    try {
+      articleText = await fetchArticleText(url, 5000, `${title} ${summary}`);
+    } catch (error) {
+      articleFetchError = error.message;
+    }
+
+    if (!modelLoadMs) {
+      const warmup = await warmNewsEditor();
+      modelLoadMs = warmup.elapsedMs;
+      console.log(`[news/editor] fallback ${warmup.model} ready in ${(warmup.elapsedMs / 1000).toFixed(1)}s`);
+    }
+
+    try {
+      const requiredEntities = requiredEntitiesForItem(item, title, summary);
+      const edited = await editNewsToRussian({
+        title,
+        summary,
+        articleText,
+        url,
+        source: item.primarySource || item.source || '',
+        requiredEntities
+      }, { maxAttempts: 1, maxNewTokens: 110 });
+      const finalPolicyOk = edited.ok && isLikelyNewsSource({ title: edited.titleRu, summary: edited.briefRu, url });
+      if (!finalPolicyOk) {
+        qwenRejected += 1;
+        reject(item, edited.ok ? ['localized copy failed final commercial content policy'] : edited.reasons, failures, { requiredEntities, articleFetchError });
+        continue;
+      }
+      item.titleRu = edited.titleRu;
+      item.summaryRu = paragraphize(edited.briefRu);
+      item.editorialBriefRu = item.summaryRu;
+      item.editorialStatus = 'approved';
       item.editorialVersion = NEWS_EDITORIAL_VERSION;
       item.editorialSourceHash = editorialSourceHash(item);
-      item.editorialRejectedAt = new Date().toISOString();
-      item.editorialReasons = edited.ok
-        ? ['localized copy failed final commercial content policy']
-        : edited.reasons;
-      failures.push({ id: item.id, url, reasons: item.editorialReasons, requiredEntities, articleFetchError });
-      console.error(`[news/editor] rejected ${title}: ${item.editorialReasons.join('; ')}`);
-      continue;
+      item.editorialModel = edited.model;
+      item.editorialDtype = edited.dtype;
+      item.editorialGeneratedAt = new Date().toISOString();
+      item.editorialAttempts = edited.attempts;
+      item.editorialRequiredEntities = requiredEntities;
+      delete item.editorialReasons;
+      delete item.editorialRejectedAt;
+      qwenApproved += 1;
+      console.log(`[news/editor] fallback approved ${item.id} in ${(edited.elapsedMs / 1000).toFixed(1)}s: ${item.titleRu}`);
+    } catch (error) {
+      qwenRejected += 1;
+      reject(item, [error.message], failures, { articleFetchError });
     }
-
-    item.titleRu = edited.titleRu;
-    item.summaryRu = paragraphize(edited.briefRu);
-    item.editorialBriefRu = item.summaryRu;
-    item.editorialStatus = 'approved';
-    item.editorialVersion = NEWS_EDITORIAL_VERSION;
-    item.editorialSourceHash = editorialSourceHash(item);
-    item.editorialModel = edited.model;
-    item.editorialDtype = edited.dtype;
-    item.editorialGeneratedAt = new Date().toISOString();
-    item.editorialAttempts = edited.attempts;
-    item.editorialProductionSalvaged = Boolean(edited.productionSalvaged);
-    item.editorialRequiredEntities = requiredEntities;
-    delete item.editorialReasons;
-    delete item.editorialRejectedAt;
-    approved += 1;
-    console.log(`[news/editor] approved ${item.id} in ${(edited.elapsedMs / 1000).toFixed(1)}s (${edited.attempts} attempt${edited.attempts === 1 ? '' : 's'}): ${item.titleRu}`);
-  } catch (error) {
-    rejected += 1;
-    setPublic(item, false);
-    item.editorialStatus = 'rejected';
-    item.editorialVersion = NEWS_EDITORIAL_VERSION;
-    item.editorialSourceHash = editorialSourceHash(item);
-    item.editorialRejectedAt = new Date().toISOString();
-    item.editorialReasons = [error.message];
-    failures.push({ id: item.id, url, reasons: item.editorialReasons, articleFetchError });
-    console.error(`[news/editor] failed ${title}: ${error.stack || error.message}`);
   }
 }
 
-for (const item of candidates) {
-  if (attemptedItems.has(item)) continue;
-  pending += 1;
-  setPublic(item, false);
-  item.editorialStatus = 'pending';
-  item.editorialVersion = NEWS_EDITORIAL_VERSION;
-  item.editorialSourceHash = editorialSourceHash(item);
-}
-
-const publicItems = items.filter(isPublic);
 const commercialSelection = currentCommercialSelection();
-const publicApproved = publicItems.filter(item => commerciallyApproved(item, nativeApprovedItems)).length;
+const publicItems = items.filter(isPublic);
+const publicApproved = publicItems.filter(commerciallyApproved).length;
 const output = Array.isArray(payload) ? items : { ...payload, generatedAt: new Date().toISOString(), items };
 await fs.mkdir('tmp', { recursive: true });
 await fs.writeFile(eventsPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
 await fs.writeFile(reportPath, `${JSON.stringify({
-  schemaVersion: 6,
+  schemaVersion: 7,
   generatedAt: new Date().toISOString(),
   editorialVersion: NEWS_EDITORIAL_VERSION,
+  architecture: 'deterministic-russian-first-bounded-qwen-fallback',
   model: process.env.NEWS_EDITOR_MODEL || 'onnx-community/Qwen3-4B-Instruct-2507-ONNX',
   dtype: process.env.NEWS_EDITOR_DTYPE || 'q4',
-  maxItems,
   minimumPublicItems,
   commercialPolicy,
   commercialSelection: commercialSelection.diagnostics,
+  selectionBeforeQwen: selectionBeforeQwen.diagnostics,
+  editorElapsedMs: Date.now() - startedAt,
   modelLoadMs,
-  totalItems: items.length,
-  candidateItems: candidates.length,
-  attempted,
-  approved,
-  cached,
+  qwenMaxItems,
+  qwenBudgetMs,
+  qwenAttempted,
+  qwenApproved,
+  qwenRejected,
+  nativeConcurrency,
   nativeRussian,
+  nativeArticleCandidates: nativeNeedsArticle.length,
   nativeArticleSalvaged,
-  rejected,
+  nativeRejected,
+  deterministicLocalized,
+  cached,
   filteredNonNews,
-  pending,
   publicItems: publicItems.length,
   publicApproved,
-  unresolvedGameItems: items.filter(item => isPublic(item) && !gameIdentityEligible(item)).length,
   failures
 }, null, 2)}\n`, 'utf8');
 
-console.log(`[news/editor] public=${publicItems.length}; commercial-approved=${publicApproved}; approved-now=${approved}; cached=${cached}; source-ru=${nativeRussian}; source-ru-article=${nativeArticleSalvaged}; rejected=${rejected}; filtered-non-news=${filteredNonNews}; pending=${pending}; commercial=${commercialSelection.ok}`);
+console.log(`[news/editor] deterministic=${deterministicLocalized}; source-ru=${nativeRussian}; source-ru-article=${nativeArticleSalvaged}; qwen=${qwenApproved}/${qwenAttempted}; public-approved=${publicApproved}; commercial=${commercialSelection.ok}; elapsed=${((Date.now() - startedAt) / 1000).toFixed(1)}s`);
 if (!commercialSelection.ok) {
-  throw new Error(`Commercial homepage mix unavailable after ${attempted} editorial attempts: ${JSON.stringify(commercialSelection.diagnostics)}. Live publication must keep the previous snapshot.`);
+  throw new Error(`Commercial homepage mix unavailable after bounded fast editorial pass: ${JSON.stringify(commercialSelection.diagnostics)}. Previous live snapshot must remain active.`);
 }
