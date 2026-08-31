@@ -20,6 +20,7 @@ bad('The Elder Scrolls review','https://example.com/the-elder-scrolls-review','t
 
 ok('Fallout review: why New Vegas improved companions','https://example.com/fallout-review-1997');
 ok('Fallout retrospective comparing Fallout 2 and Fallout New Vegas','https://example.com/features/fallout-retrospective-review');
+ok('Fallout compared with Fallout New Vegas review scores','https://example.com/reviews/fallout-comparison');
 ok('Fallout: A Post Nuclear Role Playing Game review','https://example.com/reviews/fallout');
 
 console.log('Review identity policy regression cases passed.');
