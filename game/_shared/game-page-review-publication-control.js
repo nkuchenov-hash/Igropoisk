@@ -6,19 +6,19 @@ const fmt=v=>Number.isFinite(Number(v))?Number(v).toFixed(1).replace(/\.0$/,''):
 const released=d=>{const s=String(d?.release?.status||'').toLowerCase();if(/upcoming|expected|announced|coming|tba|pre[-_ ]?release|ожида/i.test(s))return false;const x=Date.parse(String(d?.release?.date||''));if(Number.isFinite(x)&&x>Date.now())return false;const y=Number(String(d?.release?.date_text||document.body.dataset.year||'').match(/(?:19|20)\d{2}/)?.[0]||0);return !y||y<=new Date().getFullYear()};
 const decisionPromise=Promise.all([
   json(`../../data/reviews/${encodeURIComponent(slug)}.json`),
+  json(`../../data/ratings/${encodeURIComponent(slug)}.json`),
   json(`../../data/articles/${encodeURIComponent(slug)}.json`),
   json(`../../data/review-bootstrap/${encodeURIComponent(slug)}.json`),
   json(`../../data/drafts/${encodeURIComponent(slug)}.json`)
-]).then(([feed,article,bootstrap,draft])=>{
-  const reviewScore=Number(feed?.review_score?.calculation?.score_10);
-  const legacyScore=Number(feed?.igropoisk_article?.score);
-  const canonical=Number.isFinite(reviewScore)?reviewScore:legacyScore;
-  const scoreGreen=feed?.review_score?.status==='green'||feed?.igropoisk_article?.calculation_status==='green';
-  const corpusGreen=feed?.publication_gate?.status==='green'&&scoreGreen&&Number.isFinite(canonical);
-  const fullReady=corpusGreen
+]).then(([feed,ratings,article,bootstrap,draft])=>{
+  const canonical=Number(ratings?.calculation?.score_10);
+  const sourceCount=Number(ratings?.calculation?.source_count||ratings?.sources?.length||0);
+  const professionalReady=feed?.publication_gate?.status==='green'&&ratings?.status==='green'&&Number.isFinite(canonical)&&sourceCount>=10;
+  const fullReady=professionalReady
     &&String(article?.publication_status||'').toLowerCase()==='published'
-    &&String(article?.game_slug||article?.slug||'')===slug;
-  const bootstrapReady=corpusGreen
+    &&String(article?.game_slug||article?.slug||'')===slug
+    &&Number(article?.score)===canonical;
+  const bootstrapReady=professionalReady
     &&feed?.igropoisk_article?.review_stage==='bootstrap'
     &&String(bootstrap?.publication_status||'').toLowerCase()==='published'
     &&bootstrap?.review_stage==='bootstrap'
@@ -26,8 +26,8 @@ const decisionPromise=Promise.all([
     &&Number(bootstrap?.score)===canonical
     &&Array.isArray(bootstrap?.sources)
     &&bootstrap.sources.length>=3;
-  const green=fullReady||bootstrapReady;
-  return{feed,article,bootstrap,draft,canonical,green,reviewStage:fullReady?'full':bootstrapReady?'bootstrap':null,isReleased:released(draft)};
+  const editorialReady=fullReady||bootstrapReady;
+  return{feed,ratings,article,bootstrap,draft,canonical,sourceCount,professionalReady,editorialReady,reviewStage:fullReady?'full':bootstrapReady?'bootstrap':null,isReleased:released(draft)};
 });
 let observer=null,scheduled=false,applying=false;
 const set=(node,value)=>{if(node&&node.textContent!==value)node.textContent=value};
@@ -44,7 +44,7 @@ async function enforce(){
   applying=true;
   if(observer)observer.disconnect();
   try{
-    const{feed,canonical,green,isReleased}=await decisionPromise;
+    const{canonical,sourceCount,professionalReady,editorialReady,isReleased}=await decisionPromise;
     const score=node.querySelector('.ig-review-feature__score');
     const meta=node.querySelector('.ig-review-feature__meta span');
     const body=node.querySelector('.ig-review-feature__body');
@@ -56,15 +56,18 @@ async function enforce(){
       node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());
       return;
     }
-    if(!green){
+    if(!professionalReady){
       set(score,'—');
-      set(meta,'Канонический обзор проходит обязательную проверку');
+      set(meta,'Профессиональные оценки собираются и проверяются');
       node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());
-      if(body){const note=document.createElement('div');note.className='article-source-note';note.textContent='Вышедшая игра не получает отдельную или предварительную оценку: цифра появляется только вместе с проверенным обзором.';body.appendChild(note)}
       return;
     }
     set(score,fmt(canonical));
-    set(meta,`Среднее ${feed.review_score?.sources?.length||feed.reviews?.length||0} независимых профессиональных оценок`);
+    set(meta,`Среднее ${sourceCount} независимых профессиональных оценок`);
+    if(!editorialReady){
+      node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());
+      return;
+    }
     let link=node.querySelector('.ig-review-link');
     if(!link&&body){link=document.createElement('a');link.className='ig-review-link';body.appendChild(link)}
     if(link){link.href=`../../article/${encodeURIComponent(slug)}/`;link.textContent='Читать обзор Игропоиска'}
