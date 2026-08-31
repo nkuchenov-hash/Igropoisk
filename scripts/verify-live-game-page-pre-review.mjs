@@ -15,6 +15,7 @@ const normalize=value=>String(value||'').toLowerCase().replace(/[^a-z0-9а-яё]
 const forbiddenHosts=['metacritic.com','opencritic.com','gamerankings.com','mobygames.com','reddit.com','steamcommunity.com','store.steampowered.com','wikipedia.org','wikimedia.org'];
 const browserPath=()=>[process.env.CHROME_PATH,'/usr/bin/google-chrome-stable','/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'].filter(Boolean).find(fs.existsSync);
 const badHost=value=>{try{const host=new URL(value).hostname.replace(/^www\./,'').toLowerCase();return forbiddenHosts.some(domain=>host===domain||host.endsWith(`.${domain}`))}catch{return true}};
+const visibleScore=value=>{const text=String(value||'').trim();return Boolean(text&&text!=='—'&&text!=='-'&&/(?:\d|^[A-F](?:[+-])?$)/i.test(text))};
 
 const executablePath=browserPath();
 if(!executablePath) throw new Error('Chrome/Chromium executable was not found for live Game Page verification.');
@@ -43,12 +44,13 @@ try{
     const values=scoreRows.map(item=>Number(item.normalized_10)).filter(Number.isFinite);
     const mean=values.length?values.reduce((sum,value)=>sum+value,0)/values.length:null;
     const published=Number(ratings?.calculation?.score_10);
+    const aggregateSourceCount=Number(ratings?.calculation?.source_count||0);
     if(reviewRows.length<reviewMinimum) problems.push(`live professional reviews ${reviewRows.length}/${reviewMinimum}`);
     if(publications.size<reviewMinimum) problems.push(`live independent publications ${publications.size}/${reviewMinimum}`);
     if(scoreRows.length<ratingMinimum) problems.push(`live professional score sources ${scoreRows.length}/${ratingMinimum} minimum`);
     if(ratings?.status!=='green'||!Number.isFinite(published)||mean===null) problems.push('live aggregate professional rating is not green/calculated');
     if(ratings?.method?.use_all_discovered_scores!==true) problems.push('live aggregate does not use all discovered professional scores');
-    if(Number(ratings?.calculation?.source_count)!==scoreRows.length) problems.push('live rating source count does not match live score rows');
+    if(aggregateSourceCount!==scoreRows.length) problems.push('live rating source count does not match live score rows');
     if(mean!==null&&Number.isFinite(published)&&Math.abs(Number(mean.toFixed(1))-published)>0.001) problems.push(`live mean ${Number(mean.toFixed(1))} does not match published ${published}`);
     for(const item of reviewRows){const url=String(item.resolved_url||item.url||'');if(!/^https?:\/\//i.test(url)||badHost(url)){problems.push(`invalid live review URL: ${url||item.publication||'missing'}`);break}}
     for(const item of scoreRows){const url=String(item.url||'');if(!/^https?:\/\//i.test(url)||badHost(url)){problems.push(`invalid live rating source URL: ${url||item.publication||'missing'}`);break}}
@@ -65,11 +67,12 @@ try{
         slug:document.querySelector('[data-slug]')?.getAttribute('data-slug')||'',
         reviews:document.querySelectorAll('#reviewGrid .quality-review-row').length,
         publications:[...document.querySelectorAll('#reviewGrid .quality-review-source')].map(node=>node.textContent.trim()).filter(Boolean),
-        visibleScores:[...document.querySelectorAll('#reviewGrid .quality-review-row strong')].map(node=>node.textContent.trim()).filter(Boolean),
+        scoreDisplays:[...document.querySelectorAll('#reviewGrid .quality-review-row strong')].map(node=>node.textContent.trim()).filter(Boolean),
         aggregate:(document.querySelector('#featuredReview .ig-review-feature__score')?.textContent||'').trim(),
         aggregateMeta:(document.querySelector('#featuredReview .ig-review-feature__meta span')?.textContent||'').trim(),
         editorialLinks:document.querySelectorAll('#featuredReview .ig-review-link').length,
       }));
+      dom.visibleScores=dom.scoreDisplays.filter(visibleScore);
     }catch(error){problems.push(`live DOM verification failed: ${error.message}`)}
     page.off('pageerror',onPageError);
     if(pageErrors.length) problems.push(`live browser errors: ${pageErrors.slice(0,3).join(' | ')}`);
@@ -79,8 +82,9 @@ try{
       const visiblePublications=new Set(dom.publications.map(normalize).filter(Boolean));
       if(visiblePublications.size<reviewMinimum) problems.push(`visible independent publications ${visiblePublications.size}/${reviewMinimum}`);
       if(dom.visibleScores.length<ratingMinimum) problems.push(`visible source scores ${dom.visibleScores.length}/${ratingMinimum} minimum`);
+      if(dom.visibleScores.length<aggregateSourceCount) problems.push(`only ${dom.visibleScores.length}/${aggregateSourceCount} aggregate source scores are visibly rendered`);
       if(Number(dom.aggregate)!==published) problems.push(`visible aggregate ${dom.aggregate||'missing'} does not match live calculated ${published}`);
-      if(!/Среднее\s+\d+\s+независимых профессиональных оценок/i.test(dom.aggregateMeta)) problems.push(`visible aggregate provenance is missing: ${dom.aggregateMeta||'missing'}`);
+      if(!new RegExp(`Среднее\\s+${aggregateSourceCount}\\s+независимых профессиональных оценок`,'i').test(dom.aggregateMeta)) problems.push(`visible aggregate provenance is missing or has wrong source count: ${dom.aggregateMeta||'missing'}`);
       if(dom.editorialLinks!==0) problems.push('editorial Игропоиск review link is visible before the separate review module publishes an article');
     }
 
