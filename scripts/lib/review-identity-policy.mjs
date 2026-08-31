@@ -117,11 +117,6 @@ function titleIdentifiesSibling(title, sibling) {
   for (const prefix of genericReviewPrefixes) {
     if (startsWithPhrase(normalized, `${prefix} ${sibling}`)) return true;
   }
-  const siblingIndex = normalized.indexOf(normalizeReviewIdentity(sibling));
-  if (siblingIndex < 0) return false;
-  const reviewMarkers = [' review', ' обзор', ' реценз'];
-  const markerIndexes = reviewMarkers.map(marker => normalized.indexOf(marker)).filter(index => index >= 0);
-  if (markerIndexes.length && siblingIndex < Math.min(...markerIndexes)) return true;
   return false;
 }
 
