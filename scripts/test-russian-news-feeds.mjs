@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import { nativeRussianFeeds, parseNativeRussianFeed } from './merge-russian-news-feeds.mjs';
 
-assert.equal(nativeRussianFeeds.length, 5);
+assert.ok(nativeRussianFeeds.length >= 7);
 assert.ok(nativeRussianFeeds.some(feed => feed.source === 'StopGame' && feed.url.includes('rss_news.xml')));
 assert.ok(nativeRussianFeeds.some(feed => feed.source === 'GoHa.Ru' && feed.url.includes('/rss/videogames')));
 assert.ok(nativeRussianFeeds.some(feed => feed.source === '3DNews' && feed.url.includes('/games/rss/')));
+assert.ok(nativeRussianFeeds.some(feed => feed.source === 'VGTimes' && feed.url.endsWith('/rss.xml')));
+assert.ok(nativeRussianFeeds.some(feed => feed.source === 'Kanobu' && feed.url.includes('/rss/news.full.xml')));
 assert.ok(nativeRussianFeeds.some(feed => feed.source === 'App2Top' && feed.url.endsWith('/rss')));
 assert.ok(nativeRussianFeeds.some(feed => feed.source === 'Игромания'));
 
