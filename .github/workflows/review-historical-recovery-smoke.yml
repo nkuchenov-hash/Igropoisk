@@ -5,9 +5,11 @@ on:
     branches: [staging]
     paths:
       - 'scripts/augment-review-research-from-wikipedia.mjs'
+      - 'scripts/recover-historical-review-scores.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/validate-pre-review-materials.mjs'
       - 'scripts/smoke-fallout-pre-review-visible.mjs'
+      - 'config/game-page-quality-v2.json'
       - 'game/_shared/game-page-review-publication-control.js'
       - 'game/_shared/game-page-review-sources.js'
       - '.github/workflows/review-historical-recovery-smoke.yml'
@@ -18,7 +20,7 @@ permissions:
 jobs:
   fallout-primary-source-recovery:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,13 +28,15 @@ jobs:
           node-version: '22'
       - name: Install browser validation dependency
         run: npm install --no-save puppeteer-core@24
-      - name: Recover direct historical Fallout sources
+      - name: Recover direct historical Fallout sources and scores
         run: |
           node --check scripts/augment-review-research-from-wikipedia.mjs
+          node --check scripts/recover-historical-review-scores.mjs
           node --check scripts/smoke-fallout-pre-review-visible.mjs
           node scripts/augment-review-research-from-wikipedia.mjs fallout
+          node scripts/recover-historical-review-scores.mjs fallout
           node scripts/calculate-ratings-from-research.mjs fallout
-      - name: Require ten independent professional sources and scores
+      - name: Require complete professional corpus and sufficient score sample
         run: node scripts/validate-pre-review-materials.mjs fallout
       - name: Require plausible Fallout aggregate
         run: |
