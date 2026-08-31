@@ -15,8 +15,6 @@ export const nativeRussianFeeds = Object.freeze([
   { source: 'VGTimes', url: 'https://vgtimes.ru/rss.xml', weight: 1.06 },
   { source: 'Kanobu', url: 'https://kanobu.ru/rss/news.full.xml', weight: 1.05 },
   { source: 'App2Top', url: 'https://app2top.ru/rss', weight: 1.04 },
-  // Kept as a non-blocking source because its historical endpoint can disappear;
-  // failures never block the Russian pool.
   { source: 'Игромания', url: 'https://www.igromania.ru/rss/news-game.rss', weight: 1.03 }
 ]);
 
@@ -24,8 +22,11 @@ function decode(value = '') {
   return String(value)
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
     .replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'")
-    .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)));
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
+    .replace(/&mdash;/g, '—').replace(/&ndash;/g, '–')
+    .replace(/&laquo;/g, '«').replace(/&raquo;/g, '»')
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(Number.parseInt(code, 16)));
 }
 
 function strip(value = '') {
@@ -151,18 +152,15 @@ async function fetchText(url, timeoutMs = 8000) {
 export async function mergeNativeRussianFeeds({ outputPath = defaultOutput, now = Date.now(), fetcher = fetchText } = {}) {
   const payload = JSON.parse(await fs.readFile(outputPath, 'utf8'));
   const existing = Array.isArray(payload) ? payload : (payload.items || []);
-
-  // Independent professional feeds are fetched concurrently. A dead publisher can
-  // cost at most one short timeout, not serialize the entire hourly refresh.
   const results = await Promise.all(nativeRussianFeeds.map(async feed => {
     try {
       const xml = await fetcher(feed.url);
       const parsed = parseNativeRussianFeed(xml, feed, { now });
       console.log(`[news/native-ru] ${feed.source}: ${parsed.length} fresh professional items`);
-      return { feed, parsed, report: { source: feed.source, status: 'ok', items: parsed.length, url: feed.url } };
+      return { parsed, report: { source: feed.source, status: 'ok', items: parsed.length, url: feed.url } };
     } catch (error) {
       console.error(`[news/native-ru] ${feed.source}: ${error.message}`);
-      return { feed, parsed: [], report: { source: feed.source, status: 'error', items: 0, url: feed.url, error: error.message } };
+      return { parsed: [], report: { source: feed.source, status: 'error', items: 0, url: feed.url, error: error.message } };
     }
   }));
 
