@@ -24,6 +24,7 @@ on:
       - 'scripts/recover-historical-review-scores.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/validate-pre-review-materials.mjs'
+      - 'scripts/verify-live-game-page-pre-review.mjs'
       - 'scripts/discover-review-media.mjs'
       - 'scripts/quality-control-loop.mjs'
       - 'scripts/validate-game-media-quality.mjs'
@@ -43,14 +44,14 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-enrichment-v11-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
+  group: game-post-create-enrichment-v12-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
   cancel-in-progress: false
 
 jobs:
   enrich:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - name: Checkout staging snapshot
         uses: actions/checkout@v4
@@ -79,6 +80,7 @@ jobs:
           node --check scripts/recover-historical-review-scores.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/validate-pre-review-materials.mjs
+          node --check scripts/verify-live-game-page-pre-review.mjs
           node --check scripts/discover-review-media.mjs
           node --check scripts/validate-game-media-quality.mjs
           node --check scripts/validate-game-shells.mjs
@@ -164,7 +166,7 @@ jobs:
           git add -A
           git commit -m "Continue game page enrichment ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
           git push origin "$BRANCH"
-          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated bounded Game Page enrichment: structured data, Media, mandatory professional review/source links and publication scores. The editorial Игропоиск review article remains a separate optional module.")"
+          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated bounded Game Page enrichment: structured data, Media, mandatory professional review/source links and all confirmed publication scores found by the exhaustive source scan. The editorial Игропоиск review article remains a separate optional module.")"
           gh pr merge "$PR_URL" --merge --delete-branch
           git fetch origin staging
           echo "staging_sha=$(git rev-parse origin/staging)" >> "$GITHUB_OUTPUT"
@@ -193,44 +195,9 @@ jobs:
           node - <<'NODE' | gh api --method POST "repos/${GITHUB_REPOSITORY}/dispatches" --input -
           process.stdout.write(JSON.stringify({event_type:'production-pages',client_payload:{target_branch:'main',mode:'production',production_sha:process.env.PRODUCTION_SHA,sha:process.env.PRODUCTION_SHA,source:'green-game-page-production'}}));
           NODE
+      - name: Install live browser validation dependency
+        run: npm install --no-save puppeteer-core@24
       - name: Require the new Game Page and professional materials to be live
         env:
           TARGET: ${{ steps.target.outputs.slug }}
-        run: |
-          set -euo pipefail
-          URL="https://nkuchenov-hash.github.io/Igropoisk/game/${TARGET}/"
-          ready=false
-          for attempt in $(seq 1 90); do
-            if TARGET="$TARGET" URL="$URL" node - <<'NODE'
-          const target=process.env.TARGET;
-          const pageUrl=process.env.URL;
-          const root='https://nkuchenov-hash.github.io/Igropoisk';
-          const normalize=value=>String(value||'').toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
-          try {
-            const [pageResponse,reviewsResponse,ratingsResponse]=await Promise.all([
-              fetch(pageUrl,{cache:'no-store'}),
-              fetch(`${root}/data/reviews/${target}.json?live=${Date.now()}`,{cache:'no-store'}),
-              fetch(`${root}/data/ratings/${target}.json?live=${Date.now()}`,{cache:'no-store'}),
-            ]);
-            if(!pageResponse.ok||!reviewsResponse.ok||!ratingsResponse.ok) process.exit(1);
-            const [page,reviews,ratings]=await Promise.all([pageResponse.text(),reviewsResponse.json(),ratingsResponse.json()]);
-            if(!page.includes(`data-slug="${target}"`)) process.exit(1);
-            const reviewRows=Array.isArray(reviews.reviews)?reviews.reviews:[];
-            const publications=new Set(reviewRows.map(item=>normalize(item.publication||item.source)).filter(Boolean));
-            const scoreRows=Array.isArray(ratings.sources)?ratings.sources:[];
-            const values=scoreRows.map(item=>Number(item.normalized_10)).filter(Number.isFinite);
-            const mean=values.length?values.reduce((sum,value)=>sum+value,0)/values.length:null;
-            const published=Number(ratings.calculation?.score_10);
-            if(reviewRows.length<10||publications.size<10||scoreRows.length<10||ratings.status!=='green'||!Number.isFinite(published)||mean===null) process.exit(1);
-            if(Math.abs(Number(mean.toFixed(1))-published)>0.001) process.exit(1);
-            console.log(JSON.stringify({target,live_reviews:reviewRows.length,live_publications:publications.size,live_score_sources:scoreRows.length,live_score_10:published},null,2));
-          } catch { process.exit(1); }
-          NODE
-            then
-              ready=true
-              echo "Live Game Page and professional materials verified: $URL"
-              break
-            fi
-            sleep 2
-          done
-          test "$ready" = "true"
+        run: node scripts/verify-live-game-page-pre-review.mjs "$TARGET"
