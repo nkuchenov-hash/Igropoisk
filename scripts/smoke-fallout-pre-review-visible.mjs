@@ -20,22 +20,25 @@ try{
   const state=await page.evaluate(()=>({
     reviews:document.querySelectorAll('#reviewGrid .quality-review-row').length,
     publications:[...document.querySelectorAll('#reviewGrid .quality-review-source')].map(n=>n.textContent.trim()).filter(Boolean),
-    visibleScores:[...document.querySelectorAll('#reviewGrid .quality-review-row strong')].map(n=>n.textContent.trim()).filter(Boolean),
+    scoreDisplays:[...document.querySelectorAll('#reviewGrid .quality-review-row strong')].map(n=>n.textContent.trim()).filter(Boolean),
     aggregate:(document.querySelector('#featuredReview .ig-review-feature__score')?.textContent||'').trim(),
     aggregateMeta:(document.querySelector('#featuredReview .ig-review-feature__meta span')?.textContent||'').trim(),
     editorialLinks:document.querySelectorAll('#featuredReview .ig-review-link').length
   }));
+  state.visibleScores=state.scoreDisplays.filter(value=>value&&value!=='—'&&value!=='-'&&/(?:\d|^[A-F](?:[+-])?$)/i.test(value));
   const ratings=JSON.parse(fs.readFileSync(path.join(root,'data/ratings/fallout.json'),'utf8'));
   const expected=Number(ratings.calculation?.score_10);
   const ratingMinimum=Number(ratings.method?.minimum_sources_for_confident_rating||5);
+  const aggregateSourceCount=Number(ratings.calculation?.source_count||0);
   const errors=[];
   if(state.reviews<10)errors.push(`Visible professional reviews ${state.reviews}/10`);
   if(new Set(state.publications.map(v=>v.toLowerCase())).size<10)errors.push(`Visible independent publications ${new Set(state.publications).size}/10`);
   if(state.visibleScores.length<ratingMinimum)errors.push(`Visible source scores ${state.visibleScores.length}/${ratingMinimum} minimum`);
+  if(state.visibleScores.length<aggregateSourceCount)errors.push(`Only ${state.visibleScores.length}/${aggregateSourceCount} aggregate source scores are visibly rendered`);
   if(Number(state.aggregate)!==expected)errors.push(`Visible aggregate ${state.aggregate} does not match calculated ${expected}`);
-  if(!/Среднее\s+\d+\s+независимых профессиональных оценок/i.test(state.aggregateMeta))errors.push(`Aggregate provenance is missing: ${state.aggregateMeta}`);
+  if(!new RegExp(`Среднее\\s+${aggregateSourceCount}\\s+независимых профессиональных оценок`,'i').test(state.aggregateMeta))errors.push(`Aggregate provenance is missing or has wrong source count: ${state.aggregateMeta}`);
   if(state.editorialLinks!==0)errors.push('Editorial review link must remain absent before the separate review module publishes an article');
   if(pageErrors.length)errors.push(`Browser errors: ${pageErrors.slice(0,3).join(' | ')}`);
-  console.log(JSON.stringify({state,expected,ratingMinimum,pageErrors,errors},null,2));
+  console.log(JSON.stringify({state,expected,ratingMinimum,aggregateSourceCount,pageErrors,errors},null,2));
   if(errors.length)throw new Error(`Fallout pre-review visible-data smoke failed:\n- ${errors.join('\n- ')}`);
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve))}
