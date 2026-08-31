@@ -71,6 +71,8 @@ const nonGamingRejectPatterns = [
   /\b(?:netflix|hulu|prime video|streaming)\b.{0,140}\b(?:film|movie|thriller|series|show)\b|\b(?:film|movie|thriller|series|show)\b.{0,140}\b(?:netflix|hulu|prime video|streaming)\b/i,
   /(?:netflix|стриминг).{0,140}(?:фильм|сериал)|(?:фильм|сериал).{0,140}(?:netflix|стриминг)/iu,
   /(?:кинокомпан\p{L}*|широк\p{L}*\s+прокат|прокат\s+лент\p{L}*|главн\p{L}*\s+рол\p{L}*.{0,80}исполнил\p{L}*|трейлер\p{L}*\s+(?:драм\p{L}*|фильм\p{L}*|сериал\p{L}*)|(?:драм\p{L}*|фильм\p{L}*|сериал\p{L}*).{0,50}трейлер\p{L}*)/iu,
+  /(?:аниме|мультсериал\p{L}*|мультфильм\p{L}*|полнометражн\p{L}*).{0,140}(?:кинотеатр\p{L}*|больш(?:ой|ом)\s+экран\p{L}*|трейлер\p{L}*|постер\p{L}*)|(?:кинотеатр\p{L}*|больш(?:ой|ом)\s+экран\p{L}*|трейлер\p{L}*|постер\p{L}*).{0,140}(?:аниме|мультсериал\p{L}*|мультфильм\p{L}*|полнометражн\p{L}*)/iu,
+  /\b(?:anime|animated film|animated movie)\b.{0,120}\b(?:cinema|theatrical|trailer|poster)\b|\b(?:cinema|theatrical|trailer|poster)\b.{0,120}\b(?:anime|animated film|animated movie)\b/i,
   /\b(?:film|movie|cinema)\b.{0,100}\b(?:trailer|cast|theatrical|box office)\b|\b(?:trailer|cast|theatrical|box office)\b.{0,100}\b(?:film|movie|cinema)\b/i,
   /\bdebian\b.{0,140}\b(?:generative ai|artificial intelligence|software development|developers vote)\b/i,
   /\b(?:bios|firmware|tpm|cve-\d{4}-\d+|motherboard)\b/i,
