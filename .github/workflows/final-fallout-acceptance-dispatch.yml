@@ -1,0 +1,25 @@
+name: Final Fallout acceptance dispatcher
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - '.github/workflows/final-fallout-acceptance-dispatch.yml'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch explicit Fallout Game Page acceptance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run game-post-create-enrichment.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref staging \
+            -f slug=fallout
+          echo "Dispatched explicit workflow_dispatch slug=fallout."
