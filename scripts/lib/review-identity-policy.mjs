@@ -33,6 +33,12 @@ const containsPhrase = (haystack, phrase) => {
   return Boolean(needle && hay.includes(` ${needle} `));
 };
 
+const startsWithPhrase = (value, phrase) => {
+  const normalized = normalizeReviewIdentity(value);
+  const needle = normalizeReviewIdentity(phrase);
+  return Boolean(needle && (normalized === needle || normalized.startsWith(`${needle} `)));
+};
+
 export function reviewUrlProblem(value) {
   const raw = String(value || '').trim();
   if (!/^https?:\/\//i.test(raw)) return 'missing-or-invalid-direct-url';
@@ -99,6 +105,47 @@ export function buildReviewIdentityPolicy(root, slug, draft) {
   };
 }
 
+const genericReviewPrefixes = [
+  'review', 'review of', 'our review', 'our review of', 'hands on', 'hands on review',
+  'обзор', 'обзор игры', 'рецензия', 'рецензия на',
+];
+
+function titleIdentifiesSibling(title, sibling) {
+  const normalized = normalizeReviewIdentity(title);
+  if (!normalized) return false;
+  if (startsWithPhrase(normalized, sibling)) return true;
+  for (const prefix of genericReviewPrefixes) {
+    if (startsWithPhrase(normalized, `${prefix} ${sibling}`)) return true;
+  }
+  const siblingIndex = normalized.indexOf(normalizeReviewIdentity(sibling));
+  if (siblingIndex < 0) return false;
+  const reviewMarkers = [' review', ' обзор', ' реценз'];
+  const markerIndexes = reviewMarkers.map(marker => normalized.indexOf(marker)).filter(index => index >= 0);
+  if (markerIndexes.length && siblingIndex < Math.min(...markerIndexes)) return true;
+  return false;
+}
+
+function urlIdentifiesSibling(value, sibling) {
+  let parsed;
+  try { parsed = new URL(String(value || '')); }
+  catch { return false; }
+  const segments = safeDecodedUrl(parsed.pathname).split('/').map(normalizeReviewIdentity).filter(Boolean);
+  for (const segment of segments) {
+    if (startsWithPhrase(segment, sibling)) return true;
+    if (startsWithPhrase(segment, `review ${sibling}`)) return true;
+    if (startsWithPhrase(segment, `reviews ${sibling}`)) return true;
+    if (startsWithPhrase(segment, `обзор ${sibling}`)) return true;
+  }
+  return false;
+}
+
+function targetIdentityEvidenced(item, policy) {
+  if (!policy.franchiseToken) return true;
+  const title = String(item?.title || '');
+  const url = safeDecodedUrl(item?.resolved_url || item?.url || '');
+  return containsPhrase(title, policy.franchiseToken) || containsPhrase(url, policy.franchiseToken);
+}
+
 export function reviewIdentityProblem(item, policy) {
   const explicitSlug = normalizeReviewIdentity(item?.game_slug || item?.slug || '');
   if (explicitSlug && explicitSlug !== normalizeReviewIdentity(policy.slug)) {
@@ -107,9 +154,11 @@ export function reviewIdentityProblem(item, policy) {
   const url = String(item?.resolved_url || item?.url || '');
   const urlProblem = reviewUrlProblem(url);
   if (urlProblem) return urlProblem;
-  const hay = `${item?.title || ''} ${safeDecodedUrl(url)}`;
+  if (!targetIdentityEvidenced(item, policy)) return 'target-game-identity-not-evidenced';
   for (const sibling of policy.siblingAliases) {
-    if (containsPhrase(hay, sibling)) return `different-game-in-series:${sibling}`;
+    if (urlIdentifiesSibling(url, sibling) || titleIdentifiesSibling(item?.title || '', sibling)) {
+      return `different-game-in-series:${sibling}`;
+    }
   }
   return '';
 }
