@@ -3,17 +3,36 @@ const slug=document.body.dataset.slug||location.pathname.split('/').filter(Boole
 if(!slug)return;
 const json=async u=>{try{const r=await fetch(u,{cache:'no-store'});return r.ok?await r.json():null}catch{return null}};
 const fmt=v=>Number.isFinite(Number(v))?Number(v).toFixed(1).replace(/\.0$/,''):'—';
+const normalized=v=>String(v||'').toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
 const released=d=>{const s=String(d?.release?.status||'').toLowerCase();if(/upcoming|expected|announced|coming|tba|pre[-_ ]?release|ожида/i.test(s))return false;const x=Date.parse(String(d?.release?.date||''));if(Number.isFinite(x)&&x>Date.now())return false;const y=Number(String(d?.release?.date_text||document.body.dataset.year||'').match(/(?:19|20)\d{2}/)?.[0]||0);return !y||y<=new Date().getFullYear()};
 const decisionPromise=Promise.all([
   json(`../../data/reviews/${encodeURIComponent(slug)}.json`),
   json(`../../data/ratings/${encodeURIComponent(slug)}.json`),
+  json(`../../data/research/${encodeURIComponent(slug)}-source-matrix.json`),
+  json('../../config/game-page-quality-v2.json'),
   json(`../../data/articles/${encodeURIComponent(slug)}.json`),
   json(`../../data/review-bootstrap/${encodeURIComponent(slug)}.json`),
   json(`../../data/drafts/${encodeURIComponent(slug)}.json`)
-]).then(([feed,ratings,article,bootstrap,draft])=>{
+]).then(([feed,ratings,matrix,config,article,bootstrap,draft])=>{
   const canonical=Number(ratings?.calculation?.score_10);
-  const sourceCount=Number(ratings?.calculation?.source_count||ratings?.sources?.length||0);
-  const professionalReady=feed?.publication_gate?.status==='green'&&ratings?.status==='green'&&Number.isFinite(canonical)&&sourceCount>=10;
+  const ratingSources=Array.isArray(ratings?.sources)?ratings.sources:[];
+  const sourceCount=Number(ratings?.calculation?.source_count||ratingSources.length||0);
+  const accepted=Array.isArray(matrix?.accepted)?matrix.accepted:[];
+  const publicationCount=new Set(accepted.map(item=>normalized(item?.publication||item?.source)).filter(Boolean)).size;
+  const reviewMinimum=Number(config?.review_corpus?.minimum_sources||10);
+  const ratingMinimum=Number(config?.rating?.minimum_sources||5);
+  const requireExhaustive=config?.rating?.require_exhaustive_discovery!==false;
+  const reviewCount=Number(matrix?.coverage?.accepted_readable_articles??accepted.length);
+  const matrixReady=matrix?.source_registry_scan?.complete===true
+    &&(!requireExhaustive||matrix?.coverage?.page_material_scan_complete===true)
+    &&reviewCount>=reviewMinimum
+    &&publicationCount>=reviewMinimum;
+  const ratingReady=ratings?.status==='green'
+    &&Number.isFinite(canonical)
+    &&sourceCount>=ratingMinimum
+    &&ratingSources.length===sourceCount
+    &&ratings?.method?.use_all_discovered_scores===true;
+  const professionalReady=feed?.publication_gate?.status==='green'&&matrixReady&&ratingReady;
   const fullReady=professionalReady
     &&String(article?.publication_status||'').toLowerCase()==='published'
     &&String(article?.game_slug||article?.slug||'')===slug
@@ -27,7 +46,7 @@ const decisionPromise=Promise.all([
     &&Array.isArray(bootstrap?.sources)
     &&bootstrap.sources.length>=3;
   const editorialReady=fullReady||bootstrapReady;
-  return{feed,ratings,article,bootstrap,draft,canonical,sourceCount,professionalReady,editorialReady,reviewStage:fullReady?'full':bootstrapReady?'bootstrap':null,isReleased:released(draft)};
+  return{feed,ratings,matrix,config,article,bootstrap,draft,canonical,sourceCount,professionalReady,editorialReady,reviewStage:fullReady?'full':bootstrapReady?'bootstrap':null,isReleased:released(draft)};
 });
 let observer=null,scheduled=false,applying=false;
 const set=(node,value)=>{if(node&&node.textContent!==value)node.textContent=value};
@@ -57,6 +76,7 @@ async function enforce(){
       return;
     }
     if(!professionalReady){
+      suppressUnpublishedReviewRows();
       set(score,'—');
       set(meta,'Профессиональные оценки собираются и проверяются');
       node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());
