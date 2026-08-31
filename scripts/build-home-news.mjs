@@ -1,9 +1,19 @@
 import fs from 'node:fs/promises';
+import { selectCommercialHomeNews } from './lib/news-home-selector.mjs';
+import { isLikelyNewsContent } from './lib/news-content-policy.mjs';
 
 const eventsPayload = JSON.parse(await fs.readFile('data/news-events.json','utf8'));
 const events = Array.isArray(eventsPayload) ? eventsPayload : (eventsPayload.items || []);
 
 const importanceWeight = { critical: 3, major: 2, normal: 1 };
+const unresolvedGameReasons = new Set([
+  'ambiguous-primary-game-verification',
+  'unverified-primary-game',
+  'unknown-explicit-game',
+  'ambiguous-explicit-name',
+  'ambiguous-alias',
+  'manual-game-not-found'
+]);
 const normalize = item => ({
   id:item.id,
   type:item.type || 'ranked',
@@ -20,6 +30,7 @@ const normalize = item => ({
   publishedDay:item.publishedDay,
   publishedLocalTime:item.publishedLocalTime,
   publicationTimeZone:item.publicationTimeZone,
+  homeUntil:item.homeUntil || '',
   primarySource:item.primarySource || item.source || item.organization || '',
   primaryUrl:item.primaryUrl || item.url || '',
   image:item.image || '',
@@ -27,10 +38,13 @@ const normalize = item => ({
   globalScore:Number(item.globalScore || 0),
   regionalScore:Number(item.regionalScore || 0),
   editorialScore:Number(item.editorialScore || 0),
+  editorialStatus:String(item.editorialStatus || ''),
   mediaSourceCount:Number(item.mediaSourceCount || item.sourceCount || 0),
   discussionMentions:Number(item.discussionMentions || 0),
   official:Boolean(item.official),
   games:Array.isArray(item.games) ? item.games : [],
+  gameReviewStatus:String(item.gameReviewStatus || ''),
+  gameReviewReasons:Array.isArray(item.gameReviewReasons) ? item.gameReviewReasons.map(String) : [],
   sources:(item.sources || []).map(source => typeof source === 'string' ? {name:source} : source)
 });
 
@@ -52,18 +66,48 @@ function newestFirst(a,b) {
   return publishedTimestamp(b) - publishedTimestamp(a) || rank(a,b);
 }
 
-const normalized = events.map(normalize).filter(item => item.titleRu && item.primaryUrl && item.image);
-const selected = normalized.filter(item => item.publicEligible).sort(newestFirst);
-const fallback = normalized.filter(item => !item.publicEligible).sort(newestFirst);
-const seen = new Set();
-const items = [...selected, ...fallback]
-  .filter(item => {
-    const key = item.primaryUrl.replace(/[?#].*$/,'');
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  })
-  .slice(0,12);
+function passesFinalCommercialPolicy(item) {
+  if (!['approved', 'source-ru'].includes(item.editorialStatus)) return false;
+  if (item.gameReviewReasons.some(reason => unresolvedGameReasons.has(reason))) return false;
+  return isLikelyNewsContent({
+    title: item.titleRu,
+    summary: item.summaryRu,
+    url: item.primaryUrl
+  });
+}
 
-await fs.writeFile('data/news-home-ru.json', `${JSON.stringify({generatedAt:new Date().toISOString(),model:'editorial-global-feed',items},null,2)}\n`);
-console.log(`[home-news] wrote ${items.length} Russian cards selected newest-first; ${items.filter(item => item.publicEligible).length} passed public editorial selection`);
+// Images are explicitly non-blocking. Missing/local image failures are rewritten to
+// the permanent first-party branded fallback by publish-news-storage.mjs.
+// Copy quality and unresolved specific-game identities are blocking: only editor-approved
+// items that still pass the current commercial policy can enter the homepage selector.
+const normalized = events
+  .map(normalize)
+  .filter(item => item.titleRu && item.summaryRu && item.primaryUrl && item.publicEligible && passesFinalCommercialPolicy(item))
+  .sort(newestFirst);
+
+const selection = selectCommercialHomeNews(normalized, {
+  limit: 12,
+  maxAgeHours: 168,
+  recentHours: 72,
+  minRecent: 8,
+  maxPerTopic: 2,
+  maxPerSource: 3
+});
+const items = selection.items;
+
+if (!selection.ok) {
+  const d = selection.diagnostics;
+  throw new Error(
+    `Homepage commercial gate failed: selected ${d.selected}/12; ${d.recentCount}/${d.minRecent} required cards are <=${d.recentHours}h; `
+    + `unique topics=${d.uniqueTopics}; unique sources=${d.uniqueSources}; rejected=${JSON.stringify(d.rejected)}. `
+    + 'Previous live snapshot must remain active instead of publishing stale, malformed, unresolved-game or repetitive news.'
+  );
+}
+
+await fs.writeFile('data/news-home-ru.json', `${JSON.stringify({
+  generatedAt:new Date().toISOString(),
+  model:'editorial-global-feed',
+  commercialGate:selection.diagnostics,
+  items
+},null,2)}\n`);
+console.log(`[home-news] wrote ${items.length} cards; recent=${selection.diagnostics.recentCount}; topics=${selection.diagnostics.uniqueTopics}; sources=${selection.diagnostics.uniqueSources}`);
