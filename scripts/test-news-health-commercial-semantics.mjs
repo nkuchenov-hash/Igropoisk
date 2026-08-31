@@ -32,8 +32,8 @@ const config = {
   }
 };
 fs.writeFileSync(path.join(root, 'config/news-pipeline.json'), JSON.stringify(config));
-fs.writeFileSync(path.join(root, 'data/news.json'), JSON.stringify({ generatedAt, items: Array.from({ length: 12 }, (_, i) => item(i)) }));
-fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify({ generatedAt, items: Array.from({ length: 12 }, (_, i) => item(i)) }));
+fs.writeFileSync(path.join(root, 'data/news.json'), JSON.stringify({ generatedAt, items: Array.from({ length: 20 }, (_, i) => item(i)) }));
+fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify({ generatedAt, items: Array.from({ length: 20 }, (_, i) => item(i)) }));
 fs.writeFileSync(path.join(root, 'data/news-home-ru.json'), JSON.stringify({ generatedAt, items: Array.from({ length: 12 }, (_, i) => item(i)) }));
 fs.writeFileSync(path.join(root, 'data/youtube-signals.json'), JSON.stringify({ generatedAt, items: [] }));
 fs.writeFileSync(path.join(root, 'data/publisher-news.json'), JSON.stringify({
@@ -41,14 +41,14 @@ fs.writeFileSync(path.join(root, 'data/publisher-news.json'), JSON.stringify({
   sourceCount: 6,
   successfulSourceCount: 1,
   sourceReport: [
-    { id: 'working', status: 'ok', items: 1 },
+    { id: 'working', status: 'ok', items: 3 },
     { id: 'rockstar', status: 'no-feed', items: 0 },
     { id: 'ubisoft', status: 'no-feed', items: 0 },
     { id: 'other-a', status: 'no-feed', items: 0 },
     { id: 'other-b', status: 'no-feed', items: 0 },
     { id: 'other-c', status: 'no-feed', items: 0 }
   ],
-  items: [item('publisher')]
+  items: [item('publisher-1'), item('publisher-2'), item('publisher-3')]
 }));
 fs.writeFileSync(path.join(root, 'data/news-pipeline-health.json'), JSON.stringify({
   status: 'degraded',
