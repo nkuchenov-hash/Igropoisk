@@ -21,6 +21,7 @@ on:
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/prepare-review-research-v8.mjs'
       - 'scripts/augment-review-research-from-wikipedia.mjs'
+      - 'scripts/recover-historical-review-scores.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/validate-pre-review-materials.mjs'
       - 'scripts/discover-review-media.mjs'
@@ -42,7 +43,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-enrichment-v10-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
+  group: game-post-create-enrichment-v11-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
   cancel-in-progress: false
 
 jobs:
@@ -75,6 +76,7 @@ jobs:
           node --check scripts/prepare-review-research.mjs
           node --check scripts/prepare-review-research-v8.mjs
           node --check scripts/augment-review-research-from-wikipedia.mjs
+          node --check scripts/recover-historical-review-scores.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/validate-pre-review-materials.mjs
           node --check scripts/discover-review-media.mjs
@@ -106,6 +108,7 @@ jobs:
           test -n "$TARGET"
           node scripts/prepare-review-research.mjs "$TARGET"
           node scripts/augment-review-research-from-wikipedia.mjs "$TARGET"
+          node scripts/recover-historical-review-scores.mjs "$TARGET"
           node scripts/calculate-ratings-from-research.mjs "$TARGET"
       - name: Prove page cycle did not call paid OpenAI
         run: |
@@ -190,7 +193,7 @@ jobs:
           node - <<'NODE' | gh api --method POST "repos/${GITHUB_REPOSITORY}/dispatches" --input -
           process.stdout.write(JSON.stringify({event_type:'production-pages',client_payload:{target_branch:'main',mode:'production',production_sha:process.env.PRODUCTION_SHA,sha:process.env.PRODUCTION_SHA,source:'green-game-page-production'}}));
           NODE
-      - name: Require the new Game Page to be live
+      - name: Require the new Game Page and professional materials to be live
         env:
           TARGET: ${{ steps.target.outputs.slug }}
         run: |
@@ -198,10 +201,34 @@ jobs:
           URL="https://nkuchenov-hash.github.io/Igropoisk/game/${TARGET}/"
           ready=false
           for attempt in $(seq 1 90); do
-            body="$(curl -L -sS --max-time 10 "$URL" || true)"
-            if printf '%s' "$body" | grep -Fq "data-slug=\"${TARGET}\""; then
+            if TARGET="$TARGET" URL="$URL" node - <<'NODE'
+          const target=process.env.TARGET;
+          const pageUrl=process.env.URL;
+          const root='https://nkuchenov-hash.github.io/Igropoisk';
+          const normalize=value=>String(value||'').toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
+          try {
+            const [pageResponse,reviewsResponse,ratingsResponse]=await Promise.all([
+              fetch(pageUrl,{cache:'no-store'}),
+              fetch(`${root}/data/reviews/${target}.json?live=${Date.now()}`,{cache:'no-store'}),
+              fetch(`${root}/data/ratings/${target}.json?live=${Date.now()}`,{cache:'no-store'}),
+            ]);
+            if(!pageResponse.ok||!reviewsResponse.ok||!ratingsResponse.ok) process.exit(1);
+            const [page,reviews,ratings]=await Promise.all([pageResponse.text(),reviewsResponse.json(),ratingsResponse.json()]);
+            if(!page.includes(`data-slug="${target}"`)) process.exit(1);
+            const reviewRows=Array.isArray(reviews.reviews)?reviews.reviews:[];
+            const publications=new Set(reviewRows.map(item=>normalize(item.publication||item.source)).filter(Boolean));
+            const scoreRows=Array.isArray(ratings.sources)?ratings.sources:[];
+            const values=scoreRows.map(item=>Number(item.normalized_10)).filter(Number.isFinite);
+            const mean=values.length?values.reduce((sum,value)=>sum+value,0)/values.length:null;
+            const published=Number(ratings.calculation?.score_10);
+            if(reviewRows.length<10||publications.size<10||scoreRows.length<10||ratings.status!=='green'||!Number.isFinite(published)||mean===null) process.exit(1);
+            if(Math.abs(Number(mean.toFixed(1))-published)>0.001) process.exit(1);
+            console.log(JSON.stringify({target,live_reviews:reviewRows.length,live_publications:publications.size,live_score_sources:scoreRows.length,live_score_10:published},null,2));
+          } catch { process.exit(1); }
+          NODE
+            then
               ready=true
-              echo "Live Game Page verified: $URL"
+              echo "Live Game Page and professional materials verified: $URL"
               break
             fi
             sleep 2
