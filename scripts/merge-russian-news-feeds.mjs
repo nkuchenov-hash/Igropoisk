@@ -6,14 +6,18 @@ import { isLikelyNewsContent } from './lib/news-content-policy.mjs';
 const defaultOutput = 'data/news.json';
 const maxAgeHours = 96;
 const maxPerSource = 4;
-const userAgent = 'IgropoiskNativeRussianNews/1.0 (+https://github.com/nkuchenov-hash/Igropoisk)';
+const userAgent = 'IgropoiskNativeRussianNews/1.1 (+https://github.com/nkuchenov-hash/Igropoisk)';
 
 export const nativeRussianFeeds = Object.freeze([
   { source: 'StopGame', url: 'https://rss.stopgame.ru/rss_news.xml', weight: 1.12 },
-  { source: 'Игромания', url: 'https://www.igromania.ru/rss/news-game.rss', weight: 1.08 },
-  { source: 'GoHa.Ru', url: 'https://www.goha.ru/rss/videogames', weight: 1.06 },
-  { source: '3DNews', url: 'https://3dnews.ru/games/rss/', weight: 1.05 },
-  { source: 'App2Top', url: 'https://app2top.ru/rss', weight: 1.04 }
+  { source: 'GoHa.Ru', url: 'https://www.goha.ru/rss/videogames', weight: 1.08 },
+  { source: '3DNews', url: 'https://3dnews.ru/games/rss/', weight: 1.07 },
+  { source: 'VGTimes', url: 'https://vgtimes.ru/rss.xml', weight: 1.06 },
+  { source: 'Kanobu', url: 'https://kanobu.ru/rss/news.full.xml', weight: 1.05 },
+  { source: 'App2Top', url: 'https://app2top.ru/rss', weight: 1.04 },
+  // Kept as a non-blocking source because its historical endpoint can disappear;
+  // failures never block the Russian pool.
+  { source: 'Игромания', url: 'https://www.igromania.ru/rss/news-game.rss', weight: 1.03 }
 ]);
 
 function decode(value = '') {
@@ -98,7 +102,7 @@ export function parseNativeRussianFeed(xml, feed, { now = Date.now() } = {}) {
       source: feed.source,
       language: 'ru',
       url,
-      trendScore: 110,
+      trendScore: 110 * Number(feed.weight || 1),
       sourceCount: 1,
       sources: [feed.source],
       discussionMentions: 0,
@@ -112,7 +116,7 @@ export function parseNativeRussianFeed(xml, feed, { now = Date.now() } = {}) {
       regions: [],
       globalEligible: true,
       regionalEligible: false,
-      globalScore: 350,
+      globalScore: 350 * Number(feed.weight || 1),
       regionalScore: 0,
       mainEligible: true,
       superImportant: false,
@@ -128,7 +132,7 @@ export function parseNativeRussianFeed(xml, feed, { now = Date.now() } = {}) {
   }).filter(Boolean).sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt)).slice(0, maxPerSource);
 }
 
-async function fetchText(url, timeoutMs = 15000) {
+async function fetchText(url, timeoutMs = 8000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -147,22 +151,23 @@ async function fetchText(url, timeoutMs = 15000) {
 export async function mergeNativeRussianFeeds({ outputPath = defaultOutput, now = Date.now(), fetcher = fetchText } = {}) {
   const payload = JSON.parse(await fs.readFile(outputPath, 'utf8'));
   const existing = Array.isArray(payload) ? payload : (payload.items || []);
-  const additions = [];
-  const report = [];
 
-  for (const feed of nativeRussianFeeds) {
+  // Independent professional feeds are fetched concurrently. A dead publisher can
+  // cost at most one short timeout, not serialize the entire hourly refresh.
+  const results = await Promise.all(nativeRussianFeeds.map(async feed => {
     try {
       const xml = await fetcher(feed.url);
       const parsed = parseNativeRussianFeed(xml, feed, { now });
-      additions.push(...parsed);
-      report.push({ source: feed.source, status: 'ok', items: parsed.length, url: feed.url });
       console.log(`[news/native-ru] ${feed.source}: ${parsed.length} fresh professional items`);
+      return { feed, parsed, report: { source: feed.source, status: 'ok', items: parsed.length, url: feed.url } };
     } catch (error) {
-      report.push({ source: feed.source, status: 'error', items: 0, url: feed.url, error: error.message });
       console.error(`[news/native-ru] ${feed.source}: ${error.message}`);
+      return { feed, parsed: [], report: { source: feed.source, status: 'error', items: 0, url: feed.url, error: error.message } };
     }
-  }
+  }));
 
+  const additions = results.flatMap(result => result.parsed);
+  const report = results.map(result => result.report);
   const byUrl = new Map();
   for (const item of [...additions, ...existing]) {
     const key = canonicalUrl(item.canonicalUrl || item.url || item.primaryUrl || '') || String(item.id || '');
