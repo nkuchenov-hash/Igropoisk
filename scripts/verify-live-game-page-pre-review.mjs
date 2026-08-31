@@ -85,7 +85,7 @@ try{
 
     if(!problems.length){
       console.log(JSON.stringify({slug,page:pageUrl,live_reviews:reviewRows.length,live_publications:publications.size,live_score_sources:scoreRows.length,rating_minimum:ratingMinimum,rating_target:Number(config.rating?.target_sources||10),live_score_10:published,visible_reviews:dom.reviews,visible_publications:new Set(dom.publications.map(normalize)).size,visible_scores:dom.visibleScores.length},null,2));
-      process.exitCode=0;
+      lastProblems=[];
       break;
     }
     lastProblems=problems;
