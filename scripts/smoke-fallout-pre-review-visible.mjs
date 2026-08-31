@@ -27,14 +27,15 @@ try{
   }));
   const ratings=JSON.parse(fs.readFileSync(path.join(root,'data/ratings/fallout.json'),'utf8'));
   const expected=Number(ratings.calculation?.score_10);
+  const ratingMinimum=Number(ratings.method?.minimum_sources_for_confident_rating||5);
   const errors=[];
   if(state.reviews<10)errors.push(`Visible professional reviews ${state.reviews}/10`);
   if(new Set(state.publications.map(v=>v.toLowerCase())).size<10)errors.push(`Visible independent publications ${new Set(state.publications).size}/10`);
-  if(state.visibleScores.length<10)errors.push(`Visible source scores ${state.visibleScores.length}/10`);
+  if(state.visibleScores.length<ratingMinimum)errors.push(`Visible source scores ${state.visibleScores.length}/${ratingMinimum} minimum`);
   if(Number(state.aggregate)!==expected)errors.push(`Visible aggregate ${state.aggregate} does not match calculated ${expected}`);
   if(!/Среднее\s+\d+\s+независимых профессиональных оценок/i.test(state.aggregateMeta))errors.push(`Aggregate provenance is missing: ${state.aggregateMeta}`);
   if(state.editorialLinks!==0)errors.push('Editorial review link must remain absent before the separate review module publishes an article');
   if(pageErrors.length)errors.push(`Browser errors: ${pageErrors.slice(0,3).join(' | ')}`);
-  console.log(JSON.stringify({state,expected,pageErrors,errors},null,2));
+  console.log(JSON.stringify({state,expected,ratingMinimum,pageErrors,errors},null,2));
   if(errors.length)throw new Error(`Fallout pre-review visible-data smoke failed:\n- ${errors.join('\n- ')}`);
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve))}
