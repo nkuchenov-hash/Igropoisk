@@ -11,8 +11,11 @@
     "forbidden_domains": ["store.steampowered.com", "steamcommunity.com", "metacritic.com", "opencritic.com", "reddit.com", "youtube.com", "youtu.be", "fandom.com"]
   },
   "rating": {
-    "minimum_sources": 10,
-    "maximum_sources": 20,
+    "minimum_sources": 5,
+    "target_sources": 10,
+    "maximum_sources": null,
+    "require_exhaustive_discovery": true,
+    "use_all_discovered_scores": true,
     "method": "arithmetic_mean",
     "output_scale": 10,
     "rounding_decimals": 1,
