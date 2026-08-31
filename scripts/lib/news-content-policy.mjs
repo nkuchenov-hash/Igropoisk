@@ -46,6 +46,8 @@ const textRejectPatterns = [
   /\bdeal of the day\b|\bbest deals\b|скидки дня|распродажа/iu,
   /\bgift guide\b|подарочный гид/iu,
   /\bletter from the editor\b|обращение редакции/iu,
+  /\bread the full article\b|прочтите\s+полную\s+статью|читайте\s+полную\s+статью/iu,
+  /(?:^|[^\p{L}\p{N}])имеет\s+новый\s+релиз(?:$|[^\p{L}\p{N}])/iu,
   /обучающ\p{L}+\s+(?:ролик|видео)|tutorial\s+(?:video|guide)/iu,
   /огромн\p{L}+\s+внимани\p{L}*|вывести[^.!?]{0,50}на\s+новый\s+уровень/iu,
   /(?:его|её|их)(?:\s+и\s+[^.!?]{1,80})?\s+похитили\s+(?:ноутбук\p{L}*|оборудован\p{L}*|техник\p{L}*|устройств\p{L}*)/iu,
@@ -68,6 +70,8 @@ const textRejectPatterns = [
 const nonGamingRejectPatterns = [
   /\b(?:netflix|hulu|prime video|streaming)\b.{0,140}\b(?:film|movie|thriller|series|show)\b|\b(?:film|movie|thriller|series|show)\b.{0,140}\b(?:netflix|hulu|prime video|streaming)\b/i,
   /(?:netflix|стриминг).{0,140}(?:фильм|сериал)|(?:фильм|сериал).{0,140}(?:netflix|стриминг)/iu,
+  /(?:кинокомпан\p{L}*|широк\p{L}*\s+прокат|прокат\s+лент\p{L}*|главн\p{L}*\s+рол\p{L}*.{0,80}исполнил\p{L}*|трейлер\p{L}*\s+(?:драм\p{L}*|фильм\p{L}*|сериал\p{L}*)|(?:драм\p{L}*|фильм\p{L}*|сериал\p{L}*).{0,50}трейлер\p{L}*)/iu,
+  /\b(?:film|movie|cinema)\b.{0,100}\b(?:trailer|cast|theatrical|box office)\b|\b(?:trailer|cast|theatrical|box office)\b.{0,100}\b(?:film|movie|cinema)\b/i,
   /\bdebian\b.{0,140}\b(?:generative ai|artificial intelligence|software development|developers vote)\b/i,
   /\b(?:bios|firmware|tpm|cve-\d{4}-\d+|motherboard)\b/i,
   /(?:bios|прошивк\p{L}*|tpm|cve-\d{4}-\d+).{0,140}(?:уязвимост\p{L}*|безопасност\p{L}*|amd|asus|ryzen)/iu
