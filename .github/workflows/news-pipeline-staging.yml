@@ -64,8 +64,10 @@ jobs:
           node --check scripts/lib/news-content-policy.mjs
           node --check scripts/lib/news-editorial-summary.mjs
           node --check scripts/lib/news-home-selector.mjs
+          node --check scripts/lib/news-primary-game-evidence.mjs
           node scripts/test-news-editor.mjs
           node scripts/test-news-commercial-quality.mjs
+          node scripts/test-news-final-commercial-regressions.mjs
           node scripts/test-news-run287-regressions.mjs
           node scripts/test-news-run295-regressions.mjs
           node scripts/test-news-health-commercial-semantics.mjs
