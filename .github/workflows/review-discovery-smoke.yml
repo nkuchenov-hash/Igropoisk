@@ -5,6 +5,7 @@ on:
     branches: [staging]
     paths:
       - 'scripts/prepare-review-research.mjs'
+      - 'scripts/prefetch-review-searches.mjs'
       - 'scripts/prepare-review-research-v8.mjs'
       - 'scripts/augment-review-research-from-wikipedia.mjs'
       - 'scripts/recover-historical-review-scores.mjs'
@@ -20,7 +21,7 @@ permissions:
 jobs:
   fallout-historical-discovery:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,6 +30,7 @@ jobs:
       - name: Verify discovery syntax
         run: |
           node --check scripts/prepare-review-research.mjs
+          node --check scripts/prefetch-review-searches.mjs
           node --check scripts/prepare-review-research-v8.mjs
           node --check scripts/augment-review-research-from-wikipedia.mjs
           node --check scripts/recover-historical-review-scores.mjs
@@ -37,7 +39,6 @@ jobs:
       - name: Collect Fallout professional reviews and scores
         run: |
           node scripts/prepare-review-research.mjs fallout
-          node scripts/augment-review-research-from-wikipedia.mjs fallout
           node scripts/recover-historical-review-scores.mjs fallout
           node scripts/calculate-ratings-from-research.mjs fallout
       - name: Require exhaustive pre-review material corpus

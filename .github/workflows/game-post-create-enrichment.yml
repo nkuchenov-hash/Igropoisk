@@ -19,6 +19,7 @@ on:
       - 'scripts/lib/steam-library-assets.mjs'
       - 'scripts/merge-official-steam-videos.mjs'
       - 'scripts/prepare-review-research.mjs'
+      - 'scripts/prefetch-review-searches.mjs'
       - 'scripts/prepare-review-research-v8.mjs'
       - 'scripts/augment-review-research-from-wikipedia.mjs'
       - 'scripts/recover-historical-review-scores.mjs'
@@ -32,6 +33,7 @@ on:
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/select-next-game-page-target.mjs'
       - 'scripts/materialize-green-game-page.mjs'
+      - 'scripts/publish-game-page-staging-conflict-safe.mjs'
       - 'scripts/publish-green-game-page-production.mjs'
       - 'config/game-page-quality-v2.json'
       - 'data/content-pipeline/execution-plan.json'
@@ -44,7 +46,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-enrichment-v12-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
+  group: game-post-create-enrichment-v13-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
   cancel-in-progress: false
 
 jobs:
@@ -72,9 +74,11 @@ jobs:
           node --check scripts/merge-official-steam-videos.mjs
           node --check scripts/build-game-page-basic.mjs
           node --check scripts/materialize-green-game-page.mjs
+          node --check scripts/publish-game-page-staging-conflict-safe.mjs
           node --check scripts/publish-green-game-page-production.mjs
           node --check scripts/materialize-game-creator-pages.mjs
           node --check scripts/prepare-review-research.mjs
+          node --check scripts/prefetch-review-searches.mjs
           node --check scripts/prepare-review-research-v8.mjs
           node --check scripts/augment-review-research-from-wikipedia.mjs
           node --check scripts/recover-historical-review-scores.mjs
@@ -109,7 +113,6 @@ jobs:
           set -euo pipefail
           test -n "$TARGET"
           node scripts/prepare-review-research.mjs "$TARGET"
-          node scripts/augment-review-research-from-wikipedia.mjs "$TARGET"
           node scripts/recover-historical-review-scores.mjs "$TARGET"
           node scripts/calculate-ratings-from-research.mjs "$TARGET"
       - name: Prove page cycle did not call paid OpenAI
@@ -151,25 +154,15 @@ jobs:
         id: staging_publish
         env:
           GH_TOKEN: ${{ github.token }}
+          GAME_TARGET_SLUG: ${{ steps.target.outputs.slug }}
+          GAME_PAGE_STAGING_REPORT: ${{ runner.temp }}/game-page-staging.json
         run: |
           set -euo pipefail
-          if [ -z "$(git status --porcelain)" ]; then
-            git fetch origin staging
-            echo "No enrichment changes produced."
-            echo "staging_sha=$(git rev-parse origin/staging)" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          git config user.name "igropoisk-content-bot"
-          git config user.email "igropoisk-content-bot@users.noreply.github.com"
-          BRANCH="automation/post-create-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          git checkout -b "$BRANCH"
-          git add -A
-          git commit -m "Continue game page enrichment ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
-          git push origin "$BRANCH"
-          PR_URL="$(gh pr create --base staging --head "$BRANCH" --title "Continue game page enrichment" --body "Automated bounded Game Page enrichment: structured data, Media, mandatory professional review/source links and all confirmed publication scores found by the exhaustive source scan. The editorial Игропоиск review article remains a separate optional module.")"
-          gh pr merge "$PR_URL" --merge --delete-branch
-          git fetch origin staging
-          echo "staging_sha=$(git rev-parse origin/staging)" >> "$GITHUB_OUTPUT"
+          test -n "$GAME_TARGET_SLUG"
+          node scripts/publish-game-page-staging-conflict-safe.mjs "$GAME_TARGET_SLUG"
+          STAGING_SHA="$(node -p "require(process.env.GAME_PAGE_STAGING_REPORT).staging_sha || ''")"
+          test -n "$STAGING_SHA"
+          echo "staging_sha=$STAGING_SHA" >> "$GITHUB_OUTPUT"
       - name: Publish green Game Page directly to production
         id: production
         env:
