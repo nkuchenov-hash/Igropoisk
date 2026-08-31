@@ -23,6 +23,7 @@ const stableEntities = [
 ];
 
 const contextualEntitySuffix = /\b(?:City|Studios?|Games|Interactive|Entertainment|Assembly|Productions?|Engine)$/i;
+const allowedMixedRussianToken = /^(?:PC|PS[345]|Xbox|Steam|Switch|CERO)-[А-Яа-яЁё]+$/u;
 
 function canonical(value = '') {
   return String(value)
@@ -38,6 +39,7 @@ function polishEditorialNames(value = '') {
     .replace(/(?<![\p{L}\p{N}])XBOX(?![\p{L}\p{N}])/gu, 'Xbox')
     .replace(/(?<![\p{L}\p{N}])PLAYSTATION(?![\p{L}\p{N}])/gu, 'PlayStation')
     .replace(/(?<![\p{L}\p{N}])Nvidia(?![\p{L}\p{N}])/gu, 'NVIDIA')
+    .replace(/(\d)\.\s+(?=\d)/g, '$1.')
     .replace(/\s+([,.!?;:])/g, '$1')
     .replace(/([«(])\s+/g, '$1')
     .replace(/[ \t]+/g, ' ')
@@ -61,7 +63,7 @@ function countLetters(value = '', pattern) {
 
 function mixedScriptTokens(value = '') {
   return (String(value).match(/[\p{L}\p{N}'’.-]+/gu) || [])
-    .filter(token => /[A-Za-z]/.test(token) && /[А-Яа-яЁё]/.test(token));
+    .filter(token => /[A-Za-z]/.test(token) && /[А-Яа-яЁё]/.test(token) && !allowedMixedRussianToken.test(token));
 }
 
 function normalizedSentences(value = '') {
