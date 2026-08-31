@@ -17,6 +17,7 @@ on:
     paths:
       - 'scripts/parse-game-data.mjs'
       - 'scripts/lib/steam-library-assets.mjs'
+      - 'scripts/lib/review-identity-policy.mjs'
       - 'scripts/merge-official-steam-videos.mjs'
       - 'scripts/prepare-review-research.mjs'
       - 'scripts/prefetch-review-searches.mjs'
@@ -46,7 +47,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: game-post-create-enrichment-v13-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
+  group: game-post-create-enrichment-v14-${{ inputs.slug || github.event.client_payload.slug || 'queue' }}
   cancel-in-progress: false
 
 jobs:
@@ -71,6 +72,7 @@ jobs:
           node --check scripts/quality-control-loop.mjs
           node --check scripts/parse-game-data.mjs
           node --check scripts/lib/steam-library-assets.mjs
+          node --check scripts/lib/review-identity-policy.mjs
           node --check scripts/merge-official-steam-videos.mjs
           node --check scripts/build-game-page-basic.mjs
           node --check scripts/materialize-green-game-page.mjs
