@@ -14,9 +14,13 @@ on:
       - 'scripts/run-news-pipeline.mjs'
       - 'scripts/test-news-commercial-quality.mjs'
       - 'scripts/test-news-run287-regressions.mjs'
+      - 'scripts/test-news-run295-regressions.mjs'
       - 'scripts/test-news-health-commercial-semantics.mjs'
+      - 'scripts/test-news-fast-path-contract.mjs'
       - 'scripts/test-russian-news-feeds.mjs'
       - '.github/workflows/news-commercial-preflight.yml'
+      - '.github/workflows/news-pipeline-staging.yml'
+      - '.github/workflows/news-pipeline.yml'
   push:
     branches: [staging, main]
     paths:
@@ -30,9 +34,13 @@ on:
       - 'scripts/run-news-pipeline.mjs'
       - 'scripts/test-news-commercial-quality.mjs'
       - 'scripts/test-news-run287-regressions.mjs'
+      - 'scripts/test-news-run295-regressions.mjs'
       - 'scripts/test-news-health-commercial-semantics.mjs'
+      - 'scripts/test-news-fast-path-contract.mjs'
       - 'scripts/test-russian-news-feeds.mjs'
       - '.github/workflows/news-commercial-preflight.yml'
+      - '.github/workflows/news-pipeline-staging.yml'
+      - '.github/workflows/news-pipeline.yml'
 
 permissions:
   actions: write
@@ -64,7 +72,9 @@ jobs:
           node scripts/test-news-editor.mjs
           node scripts/test-news-commercial-quality.mjs
           node scripts/test-news-run287-regressions.mjs
+          node scripts/test-news-run295-regressions.mjs
           node scripts/test-news-health-commercial-semantics.mjs
+          node scripts/test-news-fast-path-contract.mjs
           node scripts/test-russian-news-feeds.mjs
           node scripts/test-news-home-selector.mjs
           node scripts/test-news-pipeline-health.mjs
