@@ -6,6 +6,14 @@ const eventsPayload = JSON.parse(await fs.readFile('data/news-events.json','utf8
 const events = Array.isArray(eventsPayload) ? eventsPayload : (eventsPayload.items || []);
 
 const importanceWeight = { critical: 3, major: 2, normal: 1 };
+const unresolvedGameReasons = new Set([
+  'ambiguous-primary-game-verification',
+  'unverified-primary-game',
+  'unknown-explicit-game',
+  'ambiguous-explicit-name',
+  'ambiguous-alias',
+  'manual-game-not-found'
+]);
 const normalize = item => ({
   id:item.id,
   type:item.type || 'ranked',
@@ -35,6 +43,8 @@ const normalize = item => ({
   discussionMentions:Number(item.discussionMentions || 0),
   official:Boolean(item.official),
   games:Array.isArray(item.games) ? item.games : [],
+  gameReviewStatus:String(item.gameReviewStatus || ''),
+  gameReviewReasons:Array.isArray(item.gameReviewReasons) ? item.gameReviewReasons.map(String) : [],
   sources:(item.sources || []).map(source => typeof source === 'string' ? {name:source} : source)
 });
 
@@ -58,6 +68,7 @@ function newestFirst(a,b) {
 
 function passesFinalCommercialPolicy(item) {
   if (!['approved', 'source-ru'].includes(item.editorialStatus)) return false;
+  if (item.gameReviewReasons.some(reason => unresolvedGameReasons.has(reason))) return false;
   return isLikelyNewsContent({
     title: item.titleRu,
     summary: item.summaryRu,
@@ -67,8 +78,8 @@ function passesFinalCommercialPolicy(item) {
 
 // Images are explicitly non-blocking. Missing/local image failures are rewritten to
 // the permanent first-party branded fallback by publish-news-storage.mjs.
-// Copy quality is blocking: only editor-approved items that still pass the current
-// commercial policy after localization can enter the homepage selector.
+// Copy quality and unresolved specific-game identities are blocking: only editor-approved
+// items that still pass the current commercial policy can enter the homepage selector.
 const normalized = events
   .map(normalize)
   .filter(item => item.titleRu && item.summaryRu && item.primaryUrl && item.publicEligible && passesFinalCommercialPolicy(item))
@@ -89,7 +100,7 @@ if (!selection.ok) {
   throw new Error(
     `Homepage commercial gate failed: selected ${d.selected}/12; ${d.recentCount}/${d.minRecent} required cards are <=${d.recentHours}h; `
     + `unique topics=${d.uniqueTopics}; unique sources=${d.uniqueSources}; rejected=${JSON.stringify(d.rejected)}. `
-    + 'Previous live snapshot must remain active instead of publishing stale, malformed or repetitive news.'
+    + 'Previous live snapshot must remain active instead of publishing stale, malformed, unresolved-game or repetitive news.'
   );
 }
 
