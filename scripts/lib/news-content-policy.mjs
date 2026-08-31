@@ -1,6 +1,8 @@
 const titleRejectPatterns = [
   /^\s*(?:i|i'm|i’ve|i've|my|we|we're|we’ve|we've)\b/i,
-  /\b(?:review|opinion|column|impressions?|hands[- ]on|preview)\b/i,
+  /\b(?:review|opinion|column|impressions?|hands[- ]on|preview|interview)\b/i,
+  /(?:^|[^\p{L}\p{N}])интервью(?:$|[^\p{L}\p{N}])/iu,
+  /(?:пресс\p{L}*|критик\p{L}*).{0,90}(?:оценил\p{L}*|вынес\p{L}*\s+вердикт|вердикт\p{L}*|рецензи\p{L}*)/iu,
   /\bgame of the week\b/i,
   /\bmy favorite\b|\bstolen my .* heart\b|\btime i let go\b|\bi found solace\b/i,
   /\bneeds work\b|\bpun intended\b|\beating very well\b/i,
@@ -79,7 +81,7 @@ const nonGamingRejectPatterns = [
   /(?:bios|прошивк\p{L}*|tpm|cve-\d{4}-\d+).{0,140}(?:уязвимост\p{L}*|безопасност\p{L}*|amd|asus|ryzen)/iu
 ];
 
-const urlRejectPattern = /(?:^|[\/_-])(?:guides?|walkthroughs?|tips|reviews?)(?:[\/_-]|$)/i;
+const urlRejectPattern = /(?:^|[\/_-])(?:guides?|walkthroughs?|tips|reviews?|interviews?)(?:[\/_-]|$)/i;
 
 const gamingSignals = [
   /\bgame\b|\bgames\b|\bgaming\b|игр[аыеу]|геймпле/iu,
@@ -109,7 +111,7 @@ export function newsContentRejectionReasons(input = {}) {
   if (titleRejectPatterns.some(pattern => pattern.test(title))) reasons.push('feature/opinion/guide/cross-media title');
   if (textRejectPatterns.some(pattern => pattern.test(combined))) reasons.push('non-news editorial, malformed or promotional content');
   if (nonGamingRejectPatterns.some(pattern => pattern.test(combined))) reasons.push('non-gaming technology or entertainment content');
-  if (urlRejectPattern.test(url)) reasons.push('guide/review URL');
+  if (urlRejectPattern.test(url)) reasons.push('guide/review/interview URL');
   if (combined && !gamingSignals.some(pattern => pattern.test(combined))) reasons.push('no material gaming-news signal');
 
   return [...new Set(reasons)];
