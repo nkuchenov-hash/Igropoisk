@@ -17,6 +17,7 @@ const unresolvedGameReasons = new Set([
   'manual-game-not-found'
 ]);
 const pureScreenEntertainmentPattern = /(?:^|[^\p{L}\p{N}])(?:фильм\p{L}*|кинопрокат\p{L}*|сериал\p{L}*|кинотеатр\p{L}*|съ[её]мк\p{L}*|акт[её]р\p{L}*|режисс[её]р\p{L}*|картина\p{L}*)(?:$|[^\p{L}\p{N}])/iu;
+const dealRoundupPattern = /(?:скидк\p{L}*|распродаж\p{L}*).{0,220}(?:промокод\p{L}*|можно\s+(?:купить|приобрести|забрать)|доступн\p{L}*\s+с\s+(?:увеличенн\p{L}*\s+)?скидк\p{L}*|выгодн\p{L}*\s+предложени\p{L}*)|(?:промокод\p{L}*|можно\s+(?:купить|приобрести|забрать)).{0,220}(?:скидк\p{L}*|распродаж\p{L}*)/iu;
 const normalize = item => ({
   id:item.id,
   type:item.type || 'ranked',
@@ -79,11 +80,16 @@ function isPureScreenEntertainmentWithoutGame(item) {
   return pureScreenEntertainmentPattern.test(`${item.titleRu} ${item.summaryRu}`);
 }
 
+function isPromotionalDealRoundup(item) {
+  return dealRoundupPattern.test(`${item.titleRu} ${item.summaryRu}`);
+}
+
 function passesFinalCommercialPolicy(item) {
   if (!['approved', 'source-ru'].includes(item.editorialStatus)) return false;
   if (!hasCommercialLocalImage(item)) return false;
   if (item.gameReviewReasons.some(reason => unresolvedGameReasons.has(reason))) return false;
   if (isPureScreenEntertainmentWithoutGame(item)) return false;
+  if (isPromotionalDealRoundup(item)) return false;
   if (commercialNewsCopyIssues(`${item.titleRu}\n${item.summaryRu}`).length) return false;
   return isLikelyNewsContent({
     title: item.titleRu,
