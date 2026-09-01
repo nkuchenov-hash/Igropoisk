@@ -70,4 +70,10 @@ assert.equal(sanitizeCommercialNewsCopy(dirtyWitcher), 'Игроки увиде�
 const brokenRequirements = 'Разработчики раскрыли требования. Для комфортного прохождения компьютеры должны соответствовать следующим характеристикам: Релиз Fable намечен на 23 февраля 2027-го.';
 assert.equal(sanitizeCommercialNewsCopy(brokenRequirements), 'Разработчики раскрыли требования. Релиз Fable намечен на 23 февраля 2027-го.');
 
+const duplicatedInflection = 'Проект выделяется процедурно генерируемыми подземельямии глубокой системой кастомизации.';
+assert.equal(sanitizeCommercialNewsCopy(duplicatedInflection), 'Проект выделяется процедурно генерируемыми подземельями глубокой системой кастомизации.');
+
+const truncatedAcronym = 'Новинка объединяет черты культовых игр вроде S. Проект выделяется пиксельной графикой.';
+assert.ok(commercialNewsCopyIssues(truncatedAcronym).includes('truncated-dotted-game-acronym'));
+
 console.log('Final commercial news regressions passed.');
