@@ -15,6 +15,7 @@ const unresolvedGameReasons = new Set([
   'ambiguous-alias',
   'manual-game-not-found'
 ]);
+const pureScreenEntertainmentPattern = /(?:^|[^\p{L}\p{N}])(?:фильм\p{L}*|кинопрокат\p{L}*|сериал\p{L}*|кинотеатр\p{L}*|съ[её]мк\p{L}*|акт[её]р\p{L}*|режисс[её]р\p{L}*|картина\p{L}*)(?:$|[^\p{L}\p{N}])/iu;
 const normalize = item => ({
   id:item.id,
   type:item.type || 'ranked',
@@ -71,10 +72,17 @@ function hasCommercialLocalImage(item) {
   return /^assets\/(?:news|publisher-news)\/[\w.-]+$/i.test(String(item.image || ''));
 }
 
+function isPureScreenEntertainmentWithoutGame(item) {
+  if ((item.games || []).length) return false;
+  if (!item.gameReviewReasons.includes('verified-no-primary-game')) return false;
+  return pureScreenEntertainmentPattern.test(`${item.titleRu} ${item.summaryRu}`);
+}
+
 function passesFinalCommercialPolicy(item) {
   if (!['approved', 'source-ru'].includes(item.editorialStatus)) return false;
   if (!hasCommercialLocalImage(item)) return false;
   if (item.gameReviewReasons.some(reason => unresolvedGameReasons.has(reason))) return false;
+  if (isPureScreenEntertainmentWithoutGame(item)) return false;
   if (commercialNewsCopyIssues(`${item.titleRu}\n${item.summaryRu}`).length) return false;
   return isLikelyNewsContent({
     title: item.titleRu,
