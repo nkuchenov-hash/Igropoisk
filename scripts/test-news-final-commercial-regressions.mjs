@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { isLikelyNewsContent } from './lib/news-content-policy.mjs';
+import { sanitizeCommercialNewsCopy, commercialNewsCopyIssues } from './lib/news-commercial-copy.mjs';
 import { canonicalGameIsPrimary } from './lib/news-primary-game-evidence.mjs';
 
 for (const item of [
@@ -50,5 +51,23 @@ const dawnwalkerItem = {
 assert.equal(canonicalGameIsPrimary(dawnwalkerItem, { title: 'the-blood-of-dawnwalker', slug: 'the-blood-of-dawnwalker' }), true);
 assert.equal(canonicalGameIsPrimary(dawnwalkerItem, { title: 'cyberpunk-2077', slug: 'cyberpunk-2077' }), false, 'comparison game in summary must not become primary');
 assert.equal(canonicalGameIsPrimary(dawnwalkerItem, { title: 'the-witcher-3-wild-hunt', slug: 'the-witcher-3-wild-hunt' }), false, 'comparison game in summary must not become primary');
+
+const witcherRuItem = {
+  titleRu: '12 минут геймплея из DLC «Баллады прошлого» для «Ведьмака 3»',
+  summaryRu: 'Дополнение предназначено для The Witcher 3: Wild Hunt.',
+  url: 'https://stopgame.ru/newsdata/72692/12_minut_geympleya_iz_dlc_ballady_proshlogo_dlya_vedmaka_3'
+};
+assert.equal(canonicalGameIsPrimary(witcherRuItem, { title: 'The Witcher 3: Wild Hunt', slug: 'the-witcher-3-wild-hunt' }), true, 'translated declined headline plus canonical numbered title in summary must resolve the same game');
+
+const dirtyFable = 'Амбициозная Fable не станет игрой на сотни сотни часов. По словам разработчиков, сюжет займёт 15&minus;20 часов.';
+const cleanFable = sanitizeCommercialNewsCopy(dirtyFable);
+assert.equal(cleanFable, 'Амбициозная Fable не станет игрой на сотни часов. По словам разработчиков, сюжет займёт 15−20 часов.');
+assert.deepEqual(commercialNewsCopyIssues(cleanFable), []);
+
+const dirtyWitcher = 'Игроки увидели демоверсию «Баллад прошлого » — дополнения для The Witcher 3.';
+assert.equal(sanitizeCommercialNewsCopy(dirtyWitcher), 'Игроки увидели демоверсию «Баллад прошлого» — дополнения для The Witcher 3.');
+
+const brokenRequirements = 'Разработчики раскрыли требования. Для комфортного прохождения компьютеры должны соответствовать следующим характеристикам: Релиз Fable намечен на 23 февраля 2027-го.';
+assert.equal(sanitizeCommercialNewsCopy(brokenRequirements), 'Разработчики раскрыли требования. Релиз Fable намечен на 23 февраля 2027-го.');
 
 console.log('Final commercial news regressions passed.');
