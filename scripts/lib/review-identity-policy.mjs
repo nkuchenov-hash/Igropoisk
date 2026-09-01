@@ -108,7 +108,17 @@ export function buildReviewIdentityPolicy(root, slug, draft) {
 const genericReviewPrefixes = [
   'review', 'review of', 'our review', 'our review of', 'hands on', 'hands on review',
   'обзор', 'обзор игры', 'рецензия', 'рецензия на',
-];
+].sort((a, b) => b.length - a.length);
+
+function stripGenericReviewPrefix(value) {
+  const normalized = normalizeReviewIdentity(value);
+  for (const prefix of genericReviewPrefixes) {
+    const normalizedPrefix = normalizeReviewIdentity(prefix);
+    if (normalized === normalizedPrefix) return '';
+    if (normalized.startsWith(`${normalizedPrefix} `)) return normalized.slice(normalizedPrefix.length + 1).trim();
+  }
+  return normalized;
+}
 
 function titleIdentifiesSibling(title, sibling) {
   const normalized = normalizeReviewIdentity(title);
@@ -134,6 +144,19 @@ function urlIdentifiesSibling(value, sibling) {
   return false;
 }
 
+function nonGameSubjectProblem(item, policy) {
+  const franchise = normalizeReviewIdentity(policy.franchiseToken);
+  if (!franchise) return '';
+  const subject = stripGenericReviewPrefix(item?.title || '');
+  if (!startsWithPhrase(subject, franchise)) return '';
+  const tail = subject.slice(franchise.length).trim();
+  if (/^(?:tv|television) (?:show|series)\b/.test(tail)) return 'non-game-subject:television';
+  if (/^season\s+\d+\b/.test(tail)) return 'non-game-subject:television-season';
+  if (/^(?:the )?(?:movie|film)(?: adaptation)?(?:\s|$)/.test(tail)) return 'non-game-subject:film';
+  if (/^(?:the )?(?:board game|tabletop game|card game)(?:\s|$)/.test(tail)) return 'non-game-subject:tabletop';
+  return '';
+}
+
 function targetIdentityEvidenced(item, policy) {
   if (!policy.franchiseToken) return true;
   const title = String(item?.title || '');
@@ -150,6 +173,8 @@ export function reviewIdentityProblem(item, policy) {
   const urlProblem = reviewUrlProblem(url);
   if (urlProblem) return urlProblem;
   if (!targetIdentityEvidenced(item, policy)) return 'target-game-identity-not-evidenced';
+  const nonGameProblem = nonGameSubjectProblem(item, policy);
+  if (nonGameProblem) return nonGameProblem;
   for (const sibling of policy.siblingAliases) {
     if (urlIdentifiesSibling(url, sibling) || titleIdentifiesSibling(item?.title || '', sibling)) {
       return `different-game-in-series:${sibling}`;
