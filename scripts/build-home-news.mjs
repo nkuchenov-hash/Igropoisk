@@ -7,7 +7,8 @@ const eventsPayload = JSON.parse(await fs.readFile('data/news-events.json','utf8
 const events = Array.isArray(eventsPayload) ? eventsPayload : (eventsPayload.items || []);
 
 const importanceWeight = { critical: 3, major: 2, normal: 1 };
-const minimumHomepageSources = 4;
+const homepageDisplayLimit = 12;
+const preferredHomepageSources = 4;
 const unresolvedGameReasons = new Set([
   'ambiguous-primary-game-verification',
   'unverified-primary-game',
@@ -98,43 +99,43 @@ function passesFinalCommercialPolicy(item) {
   });
 }
 
-// The candidate homepage feed must already be commercially clean: fresh/diverse news,
-// polished Russian copy, a cached first-party image and an unambiguous verified game
-// identity. A verified game whose page is not live yet is intentionally allowed here:
-// the production workflow detects those exact candidates after this build, dispatches
-// the shared Fast Game Creator, keeps the current Object Storage manifest active, waits
-// until the pages are live, then forces this pipeline again before switching the snapshot.
+// Homepage is a bounded view over the complete news dataset, not a publication quota.
+// Every valid event remains in data/news-events.json and the archive. This file may
+// contain anywhere from 0 to homepageDisplayLimit cards depending on real news volume.
 const normalized = events
   .map(normalize)
   .filter(item => item.titleRu && item.summaryRu && item.primaryUrl && item.publicEligible && passesFinalCommercialPolicy(item))
   .sort(newestFirst);
 
 const selection = selectCommercialHomeNews(normalized, {
-  limit: 12,
+  limit: homepageDisplayLimit,
   maxAgeHours: 168,
   recentHours: 72,
   minRecent: 8,
   maxPerTopic: 2,
-  // Four remains a strict concentration ceiling (one third of a 12-card homepage),
-  // but avoids withholding a valid 12th story when the live source mix is temporarily narrow.
+  // Preferred concentration limit only. The selector may exceed it to fill otherwise
+  // empty homepage slots; it never rejects the entire news publication because of it.
   maxPerSource: 4
 });
 const items = selection.items;
-const sourceDiversityOk = selection.diagnostics.uniqueSources >= minimumHomepageSources;
 
-if (!selection.ok || !sourceDiversityOk) {
-  const d = selection.diagnostics;
-  throw new Error(
-    `Homepage commercial gate failed: selected ${d.selected}/12; ${d.recentCount}/${d.minRecent} required cards are <=${d.recentHours}h; `
-    + `unique topics=${d.uniqueTopics}; unique sources=${d.uniqueSources}/${minimumHomepageSources} required; rejected=${JSON.stringify(d.rejected)}. `
-    + 'Previous live snapshot must remain active instead of publishing stale, malformed, image-less, unresolved-game or repetitive news.'
-  );
+if (items.length < homepageDisplayLimit) {
+  console.warn(`[home-news] only ${items.length}/${homepageDisplayLimit} publishable homepage cards are currently available; publishing the available set without blocking the news pipeline.`);
+}
+if (selection.diagnostics.uniqueSources < preferredHomepageSources && items.length) {
+  console.warn(`[home-news] source mix currently has ${selection.diagnostics.uniqueSources} source(s); diversity is advisory and does not block publication.`);
 }
 
 await fs.writeFile('data/news-home-ru.json', `${JSON.stringify({
   generatedAt:new Date().toISOString(),
   model:'editorial-global-feed',
-  commercialGate:{...selection.diagnostics,minimumHomepageSources},
+  displayLimit:homepageDisplayLimit,
+  commercialGate:{
+    ...selection.diagnostics,
+    preferredHomepageSources,
+    volumeBlocking:false,
+    sourceDiversityBlocking:false
+  },
   items
 },null,2)}\n`);
-console.log(`[home-news] wrote ${items.length} commercially complete candidates; recent=${selection.diagnostics.recentCount}; topics=${selection.diagnostics.uniqueTopics}; sources=${selection.diagnostics.uniqueSources}`);
+console.log(`[home-news] wrote ${items.length} commercially complete homepage cards from ${normalized.length} eligible events; recent=${selection.diagnostics.recentCount}; topics=${selection.diagnostics.uniqueTopics}; sources=${selection.diagnostics.uniqueSources}`);
