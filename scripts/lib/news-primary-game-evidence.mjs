@@ -21,6 +21,10 @@ function sourceTitleAndUrl(item = {}) {
   return normalizeNewsGameEvidence(`${item.titleRu || ''} ${item.titleEn || ''} ${item.title || ''} ${url}`);
 }
 
+function sourceSummary(item = {}) {
+  return normalizeNewsGameEvidence(`${item.summaryRu || ''} ${item.summaryEn || ''} ${item.summary || ''}`);
+}
+
 function exactContains(haystack, needle) {
   return Boolean(needle) && ` ${haystack} `.includes(` ${needle} `);
 }
@@ -35,8 +39,13 @@ function canonicalAcronym(value = '') {
   return acronym.length >= 3 ? `${acronym}${suffix}` : '';
 }
 
+function sequelTokens(value = '') {
+  return normalizeNewsGameEvidence(value).split(' ').filter(token => sequelMarker.test(token));
+}
+
 export function canonicalGameIsPrimary(item = {}, game = {}) {
   const headlineAndUrl = sourceTitleAndUrl(item);
+  const summary = sourceSummary(item);
   const identities = [game.title, game.slug]
     .map(normalizeNewsGameEvidence)
     .filter(Boolean);
@@ -44,6 +53,15 @@ export function canonicalGameIsPrimary(item = {}, game = {}) {
     if (exactContains(headlineAndUrl, identity)) return true;
     const acronym = canonicalAcronym(identity);
     if (acronym && exactContains(headlineAndUrl, acronym)) return true;
+
+    // Russian headlines can decline a translated game name while the source summary keeps
+    // the canonical English title. A matching sequel marker in the headline is sufficient
+    // supporting evidence only when the full canonical identity is present in the summary.
+    // This keeps comparison-only games such as Stardew Valley out of Haunted Chocolatier news.
+    if (exactContains(summary, identity)) {
+      const markers = sequelTokens(identity);
+      if (markers.some(marker => exactContains(headlineAndUrl, marker))) return true;
+    }
   }
   return false;
 }
