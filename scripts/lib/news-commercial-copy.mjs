@@ -22,7 +22,7 @@ function decodeEntities(value = '') {
 
 function removeAdjacentWordDuplicates(value = '') {
   let text = String(value);
-  const duplicate = /\b([\p{L}\p{N}][\p{L}\p{N}-]{2,})\b(?:\s+\1\b)+/giu;
+  const duplicate = /(?<![\p{L}\p{N}])([\p{L}\p{N}][\p{L}\p{N}-]{2,})(?:\s+\1)+(?![\p{L}\p{N}-])/giu;
   let previous = '';
   while (text !== previous) {
     previous = text;
@@ -33,7 +33,7 @@ function removeAdjacentWordDuplicates(value = '') {
 
 function removeBrokenListLead(value = '') {
   return String(value).replace(
-    /(^|(?<=[.!?]\s))[^.!?]{0,220}\b(?:следующим|следующие)\s+(?:характеристикам|требованиям|параметрам)\s*:\s+(?=[А-ЯЁA-Z])/giu,
+    /(^|(?<=[.!?]\s))[^.!?]{0,220}(?<![\p{L}\p{N}])(?:следующим|следующие)\s+(?:характеристикам|требованиям|параметрам)\s*:\s+(?=[А-ЯЁA-Z])/giu,
     '$1'
   );
 }
@@ -62,8 +62,8 @@ export function commercialNewsCopyIssues(value = '') {
   const text = String(value || '');
   const issues = [];
   if (/&(?:#\d+|#x[0-9a-f]+|[a-z]+);/i.test(text)) issues.push('html-entity');
-  if (/\b([\p{L}\p{N}][\p{L}\p{N}-]{2,})\b\s+\1\b/iu.test(text)) issues.push('adjacent-duplicate-word');
+  if (/(?<![\p{L}\p{N}])([\p{L}\p{N}][\p{L}\p{N}-]{2,})\s+\1(?![\p{L}\p{N}-])/iu.test(text)) issues.push('adjacent-duplicate-word');
   if (/\s+[»”\)\]]/.test(text)) issues.push('space-before-closing-punctuation');
-  if (/\b(?:следующим|следующие)\s+(?:характеристикам|требованиям|параметрам)\s*:\s*(?=[А-ЯЁA-Z])/iu.test(text)) issues.push('broken-list-introduction');
+  if (/(?<![\p{L}\p{N}])(?:следующим|следующие)\s+(?:характеристикам|требованиям|параметрам)\s*:\s*(?=[А-ЯЁA-Z])/iu.test(text)) issues.push('broken-list-introduction');
   return issues;
 }
