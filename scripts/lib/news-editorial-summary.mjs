@@ -33,9 +33,21 @@ function removeBoilerplate(value) {
   return text;
 }
 
-function sentenceList(value) {
-  const matches = value.match(/[^.!?…]+(?:[.!?…]+|$)/g) || [];
-  return matches.map(sentence => sentence.replace(/\s+/g, ' ').trim()).filter(sentence => sentence.length >= 24);
+export function sentenceList(value = '') {
+  const text = String(value).replace(/\s+/g, ' ').trim();
+  if (!text) return [];
+  try {
+    const segmenter = new Intl.Segmenter(/[А-Яа-яЁё]/.test(text) ? 'ru' : 'en', { granularity: 'sentence' });
+    return [...segmenter.segment(text)]
+      .map(entry => entry.segment.replace(/\s+/g, ' ').trim())
+      .filter(sentence => sentence.length >= 24);
+  } catch {
+    const decimalMarker = '\uE000';
+    const protectedText = text.replace(/(?<=\d)\.(?=\d)/g, decimalMarker);
+    return (protectedText.match(/[^.!?…]+(?:[.!?…]+|$)/g) || [])
+      .map(sentence => sentence.replaceAll(decimalMarker, '.').replace(/\s+/g, ' ').trim())
+      .filter(sentence => sentence.length >= 24);
+  }
 }
 
 function tokens(value = '') {
