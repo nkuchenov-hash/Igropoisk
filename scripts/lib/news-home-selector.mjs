@@ -86,6 +86,25 @@ function storyTokens(item = {}, { titleOnly = false } = {}) {
     .map(normalizeStoryToken));
 }
 
+function storyMilestones(item = {}) {
+  const raw = [item.titleEn, item.titleRu, item.title, item.summaryEn, item.summaryRu, item.summary]
+    .map(value => String(value || ''))
+    .join(' ')
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/(\d{1,3})\s*(?:тыс\.?|тысяч\p{L}*)/giu, (_, value) => String(Number(value) * 1000))
+    .replace(/(\d{1,3})[\s\u00a0](\d{3})(?!\d)/g, '$1$2');
+  return new Set([...raw.matchAll(/(?<!\d)(\d{3,})(?!\d)/g)].map(match => String(Number(match[1]))));
+}
+
+function sharesMilestone(left = {}, right = {}) {
+  const a = storyMilestones(left);
+  const b = storyMilestones(right);
+  if (!a.size || !b.size) return false;
+  for (const value of a) if (b.has(value)) return true;
+  return false;
+}
+
 function linkedGameKeys(item = {}) {
   return new Set((Array.isArray(item.games) ? item.games : [])
     .flatMap(game => [game?.slug, game?.gameId])
@@ -128,6 +147,12 @@ export function isSameNewsStory(left = {}, right = {}) {
   const common = shared.length;
   const coverage = common / Math.min(a.size, b.size);
   const distinctive = shared.filter(token => token.length >= 4 && !storyGenericTokens.has(token));
+
+  const titleA = storyTokens(left, { titleOnly: true });
+  const titleB = storyTokens(right, { titleOnly: true });
+  const titleShared = [...titleA].filter(token => titleB.has(token));
+  const titleDistinctive = titleShared.filter(token => token.length >= 4 && !storyGenericTokens.has(token));
+  if (sharesMilestone(left, right) && titleShared.length >= 2 && titleDistinctive.length >= 1) return true;
 
   if (sameGame) {
     return common >= 4 && coverage >= 0.5 && distinctive.length >= 2;
