@@ -42,7 +42,7 @@ function polishParagraph(value = '') {
   return removeBrokenListLead(removeAdjacentWordDuplicates(decodeEntities(value)))
     .normalize('NFKC')
     .replace(/[ \t]+/g, ' ')
-    .replace(/([а-яё]{3,}ями)и\b/giu, '$1')
+    .replace(/([а-яё]{3,}ями)и(?![\p{L}\p{N}])/giu, '$1')
     .replace(/\s+([,.!?;:»”\)\]])/g, '$1')
     .replace(/([«“\(\[])\s+/g, '$1')
     .replace(/\s+([—–])\s+/g, ' $1 ')
