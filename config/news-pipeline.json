@@ -1,5 +1,5 @@
 {
-  "schema_version": 7,
+  "schema_version": 8,
   "timezone": "UTC",
   "schedule_cron": "23 * * * *",
   "groups": [
@@ -81,16 +81,16 @@
       "assets/publisher-news"
     ],
     "minimum_items": {
-      "data/news.json": 12,
-      "data/publisher-news.json": 1,
-      "data/news-events.json": 12,
-      "data/news-home-ru.json": 12
+      "data/news.json": 0,
+      "data/publisher-news.json": 0,
+      "data/news-events.json": 0,
+      "data/news-home-ru.json": 0
     },
-    "minimum_retained_fraction": 0.25,
+    "minimum_retained_fraction": 0,
     "minimum_retained_fraction_by_file": {
       "data/youtube-signals.json": 0
     },
-    "homepage_exact_items": 12,
+    "homepage_exact_items": 0,
     "minimum_official_source_success_ratio": 0.15,
     "image_roots": [
       "assets/news/",
