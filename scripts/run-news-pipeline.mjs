@@ -5,6 +5,9 @@ import { pathToFileURL } from 'node:url';
 
 const defaultValidationCommands = [
   'node scripts/validate-news-pipeline.mjs --baseline HEAD',
+  'node scripts/test-news-commercial-quality.mjs',
+  'node scripts/test-news-run287-regressions.mjs',
+  'node scripts/test-news-health-commercial-semantics.mjs',
   'node scripts/test-news-content-api.mjs',
   'node scripts/validate-news-module.mjs'
 ];

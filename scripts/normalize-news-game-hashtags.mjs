@@ -39,25 +39,34 @@ function canonicalizeGame(raw = {}) {
 const normalizedItems = items.map(item => {
   const seen = new Set();
   const games = [];
+  const reasons = new Set(Array.isArray(item?.gameReviewReasons) ? item.gameReviewReasons : []);
+
   for (const raw of Array.isArray(item?.games) ? item.games : []) {
     if (!raw || typeof raw !== 'object') continue;
     gameReferences += 1;
     const { game, canonical } = canonicalizeGame(raw);
     const temporary = !canonical && String(game.gameId || '').startsWith('news_game_');
     if (canonical) canonicalReferences += 1;
-    if (temporary) {
-      temporaryReferences += 1;
-      deferredTemporaryReferences += 1;
-      continue;
-    }
+
     const identity = String(game.gameId || game.slug || game.hashtag || '').trim();
     if (!identity || seen.has(identity)) {
       duplicateReferencesRemoved += 1;
       continue;
     }
     seen.add(identity);
-    games.push(game);
 
+    if (temporary) {
+      temporaryReferences += 1;
+      deferredTemporaryReferences += 1;
+      game.pageExists = false;
+      game.pageUrl = '';
+      game.hashtag = '';
+      games.push(game);
+      reasons.add('missing-game-page');
+      continue;
+    }
+
+    games.push(game);
     if (canonical && game.hashtag) {
       const key = hashtagKey(game.hashtag);
       const owner = hashtagOwners.get(key);
@@ -69,7 +78,6 @@ const normalizedItems = items.map(item => {
     }
   }
 
-  const reasons = new Set(Array.isArray(item?.gameReviewReasons) ? item.gameReviewReasons : []);
   if (games.some(game => game.pageExists === false)) reasons.add('missing-game-page');
   else reasons.delete('missing-game-page');
   return {
@@ -81,13 +89,14 @@ const normalizedItems = items.map(item => {
 });
 
 const report = {
-  schema_version: 2,
+  schema_version: 3,
   generated_at: new Date().toISOString(),
   articles: normalizedItems.length,
   game_references: gameReferences,
   canonical_references: canonicalReferences,
   temporary_references: temporaryReferences,
   deferred_temporary_references: deferredTemporaryReferences,
+  preserved_temporary_references: deferredTemporaryReferences,
   unique_canonical_hashtags: hashtagOwners.size,
   duplicate_references_removed: duplicateReferencesRemoved,
   collisions
@@ -97,4 +106,4 @@ await fs.mkdir('tmp', { recursive: true });
 await fs.writeFile(eventsPath, `${JSON.stringify(Array.isArray(payload) ? normalizedItems : { ...payload, items: normalizedItems }, null, 2)}\n`, 'utf8');
 await fs.writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
 if (collisions.length) throw new Error(`Canonical news hashtag collision detected: ${collisions.map(item => item.hashtag).join(', ')}`);
-console.log(`[news/hashtags] ${normalizedItems.length} articles; ${hashtagOwners.size} unique canonical game hashtags; ${temporaryReferences} temporary game references deferred; ${duplicateReferencesRemoved} duplicates removed.`);
+console.log(`[news/hashtags] ${normalizedItems.length} articles; ${hashtagOwners.size} unique canonical game hashtags; ${temporaryReferences} verified temporary game references preserved for page creation; ${duplicateReferencesRemoved} duplicates removed.`);

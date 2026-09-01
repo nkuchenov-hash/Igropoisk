@@ -1,10 +1,10 @@
 {
-  "version": 1,
+  "version": 2,
   "policy": {
     "officialRefreshMinutes": 60,
     "rankedRefreshHours": 24,
     "eventMergeWindowHours": 72,
-    "description": "Official company, studio, platform and game sources. Missing feedUrl values are discovered from the official site through RSS/Atom link tags."
+    "description": "Official company, studio, platform and game sources. Explicit feedUrl values are used only when currently verified; otherwise RSS/Atom is discovered from the official site."
   },
   "sources": [
     {"id":"playstation","name":"PlayStation Blog","organization":"Sony Interactive Entertainment","kind":"platform","siteUrl":"https://blog.playstation.com/","feedUrl":"https://blog.playstation.com/feed/","language":"en","enabled":true},
@@ -12,9 +12,9 @@
     {"id":"nintendo","name":"Nintendo News","organization":"Nintendo","kind":"platform","siteUrl":"https://www.nintendo.com/us/whatsnew/","language":"en","enabled":true},
     {"id":"steam","name":"Steam News","organization":"Valve","kind":"platform","siteUrl":"https://store.steampowered.com/news/","feedUrl":"https://store.steampowered.com/feeds/news.xml","language":"en","enabled":true},
     {"id":"epic","name":"Epic Games News","organization":"Epic Games","kind":"publisher","siteUrl":"https://store.epicgames.com/en-US/news","language":"en","enabled":true},
-    {"id":"rockstar","name":"Rockstar Newswire","organization":"Rockstar Games","kind":"publisher","siteUrl":"https://www.rockstargames.com/newswire","feedUrl":"https://www.rockstargames.com/newswire.rss","language":"en","enabled":true},
-    {"id":"ubisoft","name":"Ubisoft News","organization":"Ubisoft","kind":"publisher","siteUrl":"https://news.ubisoft.com/","feedUrl":"https://news.ubisoft.com/en-us/rss","language":"en","enabled":true},
-    {"id":"ea","name":"EA News","organization":"Electronic Arts","kind":"publisher","siteUrl":"https://www.ea.com/news","language":"en","enabled":true},
+    {"id":"rockstar","name":"Rockstar Newswire","organization":"Rockstar Games","kind":"publisher","siteUrl":"https://www.rockstargames.com/newswire","language":"en","enabled":true},
+    {"id":"ubisoft","name":"Ubisoft News","organization":"Ubisoft","kind":"publisher","siteUrl":"https://news.ubisoft.com/","language":"en","enabled":true},
+    {"id":"ea","name":"EA Newsroom","organization":"Electronic Arts","kind":"publisher","siteUrl":"https://news.ea.com/","feedUrl":"https://news.ea.com/rss/pressrelease.aspx","language":"en","enabled":true},
     {"id":"activision","name":"Activision Blog","organization":"Activision","kind":"publisher","siteUrl":"https://www.callofduty.com/blog","language":"en","enabled":true},
     {"id":"blizzard","name":"Blizzard News","organization":"Blizzard Entertainment","kind":"publisher","siteUrl":"https://news.blizzard.com/","language":"en","enabled":true},
     {"id":"bethesda","name":"Bethesda News","organization":"Bethesda Softworks","kind":"publisher","siteUrl":"https://bethesda.net/en/news","language":"en","enabled":true},
@@ -27,9 +27,9 @@
     {"id":"larian","name":"Larian Studios News","organization":"Larian Studios","kind":"studio","siteUrl":"https://larian.com/support/faqs/","language":"en","enabled":true},
     {"id":"remedy","name":"Remedy News","organization":"Remedy Entertainment","kind":"studio","siteUrl":"https://www.remedygames.com/news","language":"en","enabled":true},
     {"id":"paradox","name":"Paradox News","organization":"Paradox Interactive","kind":"publisher","siteUrl":"https://www.paradoxinteractive.com/media/press-releases","language":"en","enabled":true},
-    {"id":"devolver","name":"Devolver Digital News","organization":"Devolver Digital","kind":"publisher","siteUrl":"https://www.devolverdigital.com/news","language":"en","enabled":true},
+    {"id":"devolver","name":"Devolver Digital News","organization":"Devolver Digital","kind":"publisher","siteUrl":"https://www.devolverdigital.com/","language":"en","enabled":true},
     {"id":"focus","name":"Focus Entertainment News","organization":"Focus Entertainment","kind":"publisher","siteUrl":"https://www.focus-entmt.com/en/news","language":"en","enabled":true},
-    {"id":"team17","name":"Team17 News","organization":"Team17","kind":"publisher","siteUrl":"https://www.team17.com/news/","language":"en","enabled":true},
+    {"id":"team17","name":"Team17 News","organization":"Team17","kind":"publisher","siteUrl":"https://www.team17.com/news","language":"en","enabled":true},
     {"id":"11bit","name":"11 bit studios News","organization":"11 bit studios","kind":"studio","siteUrl":"https://11bitstudios.com/news/","language":"en","enabled":true},
     {"id":"techland","name":"Techland News","organization":"Techland","kind":"studio","siteUrl":"https://techland.net/news","language":"en","enabled":true},
     {"id":"digital-extremes","name":"Warframe News","organization":"Digital Extremes","kind":"game","game":"Warframe","siteUrl":"https://www.warframe.com/news","language":"en","enabled":true},
@@ -48,7 +48,7 @@
     {"id":"pubg","name":"PUBG News","organization":"KRAFTON","kind":"game","game":"PUBG: Battlegrounds","siteUrl":"https://pubg.com/en/news","language":"en","enabled":true},
     {"id":"netease","name":"NetEase Games News","organization":"NetEase Games","kind":"publisher","siteUrl":"https://www.neteasegames.com/news/","language":"en","enabled":true},
     {"id":"tencent","name":"Tencent Games News","organization":"Tencent Games","kind":"publisher","siteUrl":"https://game.qq.com/web202206/news.shtml","language":"zh","enabled":true},
-    {"id":"embracer","name":"Embracer Group News","organization":"Embracer Group","kind":"company","siteUrl":"https://embracer.com/releases/","feedUrl":"https://embracer.com/feed/","language":"en","enabled":true},
+    {"id":"embracer","name":"Embracer Group Press Releases","organization":"Embracer Group","kind":"company","siteUrl":"https://www.embracer.com/news-media/pressreleases/","language":"en","enabled":true},
     {"id":"thq-nordic","name":"THQ Nordic News","organization":"THQ Nordic","kind":"publisher","siteUrl":"https://thqnordic.com/news","language":"en","enabled":true},
     {"id":"saber","name":"Saber Interactive News","organization":"Saber Interactive","kind":"studio","siteUrl":"https://saber.games/news/","language":"en","enabled":true},
     {"id":"owlcat","name":"Owlcat Games News","organization":"Owlcat Games","kind":"studio","siteUrl":"https://owlcat.games/news/","language":"en","enabled":true},
@@ -57,6 +57,6 @@
     {"id":"fromsoftware","name":"FromSoftware News","organization":"FromSoftware","kind":"studio","siteUrl":"https://www.fromsoftware.jp/ww/pressrelease.html","language":"ja","enabled":true},
     {"id":"kojima","name":"Kojima Productions News","organization":"Kojima Productions","kind":"studio","siteUrl":"https://www.kojimaproductions.jp/en/news","language":"en","enabled":true},
     {"id":"anapurna","name":"Annapurna Interactive News","organization":"Annapurna Interactive","kind":"publisher","siteUrl":"https://annapurnainteractive.com/en/news","language":"en","enabled":true},
-    {"id":"raw-fury","name":"Raw Fury News","organization":"Raw Fury","kind":"publisher","siteUrl":"https://rawfury.com/news/","language":"en","enabled":true}
+    {"id":"raw-fury","name":"Raw Fury News","organization":"Raw Fury","kind":"publisher","siteUrl":"https://rawfury.com/news/","feedUrl":"https://rawfury.com/feed/","language":"en","enabled":true}
   ]
 }

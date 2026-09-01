@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
+import { isLikelyNewsContent, newsContentRejectionReasons } from './lib/news-content-policy.mjs';
 
 const file = 'data/news.json';
 const userAgent = 'IgropoiskNewsLocalizer/2.0 (+https://github.com/nkuchenov-hash/Igropoisk)';
@@ -127,9 +128,16 @@ const processed = [];
 let localTranslatedItems = 0;
 let remoteTranslatedItems = 0;
 let sourceRussianItems = 0;
+let filteredNonNewsItems = 0;
 
 for (const item of payload.items || []) {
   try {
+    if (!isLikelyNewsContent({ title: item.title, summary: item.summary, url: item.url })) {
+      filteredNonNewsItems += 1;
+      console.log(`[industry/filter] ${item.source || 'source'}: ${item.title} -> ${newsContentRejectionReasons({ title: item.title, summary: item.summary, url: item.url }).join('; ')}`);
+      continue;
+    }
+
     const sourceIsRussian = item.language === 'ru' || /[А-Яа-яЁё]/.test(item.title || '');
     const baseSummary = item.summary || item.title || '';
 
@@ -165,16 +173,16 @@ for (const item of payload.items || []) {
     const regions = Array.isArray(item.regions) ? [...new Set(item.regions.filter(Boolean))] : [];
     const ageHours = Math.max(0, (now - new Date(item.publishedAt).getTime()) / 36e5);
 
-    const globalEligible = Boolean(item.globalEligible)
-      || sourceCount >= 3
-      || discussionMentions >= 3
-      || trendScore >= 450;
+    // fetch-news has already globally ranked and source-capped this compact set.
+    // Once feature/opinion/guide material is removed above, a selected media item is a valid
+    // global news candidate even when a second publication or Reddit signal has not arrived yet.
+    const globalEligible = true;
     const regionalEligible = Boolean(item.regionalEligible) && regions.length > 0;
-    const globalScore = globalEligible ? Math.round(trendScore + sourceCount * 90 + discussionMentions * 35) : 0;
+    const globalScore = Math.round(150 + trendScore + sourceCount * 90 + discussionMentions * 35);
     const regionalScore = regionalEligible ? Math.round(170 + trendScore * 0.45 + sourceCount * 35) : 0;
     const superImportant = sourceCount >= 6 || discussionMentions >= 7 || trendScore >= 700;
-    const homeHours = superImportant ? 168 : globalEligible ? 72 : regionalEligible ? 48 : 0;
-    const mainEligible = (globalEligible || regionalEligible) && ageHours <= (superImportant ? 168 : 96);
+    const homeHours = superImportant ? 168 : 72;
+    const mainEligible = ageHours <= (superImportant ? 168 : 96);
 
     processed.push({
       ...item,
@@ -192,7 +200,8 @@ for (const item of payload.items || []) {
       regionalScore,
       mainEligible,
       superImportant,
-      homeUntil: homeHours ? new Date(new Date(item.publishedAt).getTime() + homeHours * 3600e3).toISOString() : null
+      selectionReason: 'ranked-global-news',
+      homeUntil: new Date(new Date(item.publishedAt).getTime() + homeHours * 3600e3).toISOString()
     });
   } catch (error) {
     console.error(`[industry/localize] ${item.url}: ${error.message}`);
@@ -200,7 +209,7 @@ for (const item of payload.items || []) {
 }
 
 if (processed.length < Math.min(12, (payload.items || []).length)) {
-  throw new Error(`Only ${processed.length} Russian-ready items produced; refusing to publish an undersized feed`);
+  throw new Error(`Only ${processed.length} policy-compliant Russian-ready items produced; refusing to publish an undersized feed`);
 }
 
 await fs.writeFile(file, `${JSON.stringify({
@@ -208,14 +217,15 @@ await fs.writeFile(file, `${JSON.stringify({
   generatedAt: new Date().toISOString(),
   updateFrequency: 'daily',
   evaluationWindow: '24-72 hours',
-  rankingModel: 'Global significance plus additive user-region relevance',
-  globalMinimumIndependentSources: 3,
+  rankingModel: 'Ranked global gaming news after commercial content-policy filtering',
+  globalMinimumIndependentSources: 1,
   localizedItemCount: processed.length,
   localTranslatedItemCount: localTranslatedItems,
   remoteTranslatedItemCount: remoteTranslatedItems,
   sourceRussianItemCount: sourceRussianItems,
+  filteredNonNewsItemCount: filteredNonNewsItems,
   localTranslationModel: localModel,
   items: processed
 }, null, 2)}\n`);
 
-console.log(`[industry/localize] wrote ${processed.length} Russian-ready items; local=${localTranslatedItems}; remote=${remoteTranslatedItems}; source-ru=${sourceRussianItems}`);
+console.log(`[industry/localize] wrote ${processed.length} policy-compliant Russian-ready items; filtered=${filteredNonNewsItems}; local=${localTranslatedItems}; remote=${remoteTranslatedItems}; source-ru=${sourceRussianItems}`);

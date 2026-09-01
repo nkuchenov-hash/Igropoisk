@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { buildGameReviewQueue, canonicalSourceUrl, enrichNewsItems } from './lib/news-game-linker.mjs';
 import { editorializeNewsSummary } from './lib/news-editorial-summary.mjs';
+import { isLikelyNewsContent } from './lib/news-content-policy.mjs';
 
 const rankedPath = 'data/news.json';
 const officialPath = 'data/publisher-news.json';
@@ -43,6 +44,13 @@ function uniqueGames(items) {
   });
   return [...games.values()];
 }
+function policyEligible(item) {
+  return isLikelyNewsContent({
+    title: item.titleEn || item.title || item.titleRu || '',
+    summary: item.summaryEn || item.summary || item.summaryRu || '',
+    url: item.url || item.primaryUrl || ''
+  });
+}
 
 const [ranked, official] = await Promise.all([readItems(rankedPath), readItems(officialPath)]);
 const all = [
@@ -73,9 +81,10 @@ for (const item of all) {
 
 const output = events.map(event => {
   const officialItems = event.items.filter(item => item.official);
+  const eligibleOfficialItems = officialItems.filter(policyEligible);
   const mediaItems = event.items.filter(item => !item.official);
   const rankedRepresentative = mediaItems.sort((a, b) => Number(b.globalScore || b.trendScore || 0) - Number(a.globalScore || a.trendScore || 0))[0];
-  const officialRepresentative = officialItems.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))[0];
+  const officialRepresentative = eligibleOfficialItems.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))[0];
   const representative = rankedRepresentative || officialRepresentative || event.representative;
   const newestItem = [...event.items].sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))[0];
   const sources = [...new Map(event.items.map(item => [canonicalSourceUrl(item.url), sourceRef(item)])).values()];
@@ -86,8 +95,8 @@ const output = events.map(event => {
   const regionalScore = Math.max(0, ...event.items.map(item => Number(item.regionalScore || 0)));
   const regions = [...new Set(event.items.flatMap(item => Array.isArray(item.regions) ? item.regions : []))];
   const mediaSignal = mediaSourceCount >= 2 || discussionMentions >= 3 || trendScore >= 450 || globalScore >= 450;
-  const confirmedOfficialSignal = officialItems.length > 0 && (mediaSourceCount >= 1 || discussionMentions >= 2 || trendScore >= 300 || globalScore >= 300);
-  const rankedGlobalSignal = event.items.some(item => !item.official && item.globalEligible === true);
+  const confirmedOfficialSignal = eligibleOfficialItems.length > 0;
+  const rankedGlobalSignal = event.items.some(item => !item.official && item.globalEligible === true && policyEligible(item));
   const globalEligible = mediaSignal || confirmedOfficialSignal || rankedGlobalSignal;
   const regionalEligible = regions.length > 0 && event.items.some(item => item.regionalEligible) && regionalScore > 0;
   const publicEligible = globalEligible || regionalEligible;
@@ -96,13 +105,13 @@ const output = events.map(event => {
     : globalEligible || regionalScore >= 250
       ? 'major'
       : 'normal';
-  const editorialScore = globalScore + trendScore + mediaSourceCount * 120 + discussionMentions * 80 + regionalScore + (officialItems.length ? 80 : 0);
-  const type = officialItems.length && mediaItems.length ? 'confirmed' : officialItems.length ? 'official' : 'ranked';
+  const editorialScore = globalScore + trendScore + mediaSourceCount * 120 + discussionMentions * 80 + regionalScore + (eligibleOfficialItems.length ? 80 : 0);
+  const type = eligibleOfficialItems.length && mediaItems.length ? 'confirmed' : eligibleOfficialItems.length ? 'official' : 'ranked';
   const id = createHash('sha1').update(event.items.map(item => canonicalSourceUrl(item.url)).sort().join('|')).digest('hex').slice(0, 16);
   const titleRu = representative.titleRu || representative.title || '';
   const titleEn = representative.titleEn || representative.title || '';
   return {
-    id, type, importance, official: officialItems.length > 0, publicEligible, editorialScore,
+    id, type, importance, official: eligibleOfficialItems.length > 0, publicEligible, editorialScore,
     titleRu, titleEn,
     summaryRu: editorializeNewsSummary(representative.summaryRu || representative.summary || '', { title: titleRu }),
     summaryEn: editorializeNewsSummary(representative.summaryEn || representative.summary || '', { title: titleEn }),
@@ -130,6 +139,6 @@ const output = events.map(event => {
 
 const enriched = await enrichNewsItems(output);
 const generatedAt = new Date().toISOString();
-await fs.writeFile(outputPath, `${JSON.stringify({ generatedAt, model: 'event-first-editorial-selection-plus-region', mergeWindowHours, globalMinimumIndependentSources: 2, items: enriched }, null, 2)}\n`);
+await fs.writeFile(outputPath, `${JSON.stringify({ generatedAt, model: 'event-first-commercial-policy-plus-region', mergeWindowHours, globalMinimumIndependentSources: 1, items: enriched }, null, 2)}\n`);
 await fs.writeFile(reviewPath, `${JSON.stringify(buildGameReviewQueue(enriched, { generatedAt }), null, 2)}\n`);
-console.log(`[events] built ${enriched.length} events; ${enriched.filter(item => item.publicEligible).length} passed public editorial selection; ${enriched.filter(item => item.gameReviewStatus === 'needs-review').length} require game review`);
+console.log(`[events] built ${enriched.length} events; ${enriched.filter(item => item.publicEligible).length} passed commercial public selection; ${enriched.filter(item => item.gameReviewStatus === 'needs-review').length} require game review`);
