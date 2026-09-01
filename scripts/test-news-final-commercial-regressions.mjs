@@ -76,4 +76,11 @@ assert.equal(sanitizeCommercialNewsCopy(duplicatedInflection), 'Проект в�
 const truncatedAcronym = 'Новинка объединяет черты культовых игр вроде S. Проект выделяется пиксельной графикой.';
 assert.ok(commercialNewsCopyIssues(truncatedAcronym).includes('truncated-dotted-game-acronym'));
 
+const clickbaitPreorder = 'Видимо, дела совсем плохо: Microsoft вернет вам 5 баксов, если вы предзакажете Call of Duty: Modern Warfare 4 на Xbox';
+assert.equal(sanitizeCommercialNewsCopy(clickbaitPreorder), 'Microsoft вернёт 5 долларов за предзаказ Call of Duty: Modern Warfare 4 на Xbox');
+assert.deepEqual(commercialNewsCopyIssues(sanitizeCommercialNewsCopy(clickbaitPreorder)), []);
+
+assert.equal(sanitizeCommercialNewsCopy('Поэтому игра выйдет из раннего доступа не в октябре, а в марте 2027-го.'), 'Игра выйдет из раннего доступа не в октябре, а в марте 2027-го.');
+assert.equal(sanitizeCommercialNewsCopy('Dune: Awakening больше не заставляет тратить 100 часов - разработчики дают игрокам контроль'), 'Dune: Awakening больше не заставляет тратить 100 часов — разработчики дают игрокам контроль');
+
 console.log('Final commercial news regressions passed.');
