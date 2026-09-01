@@ -37,14 +37,29 @@ function mentioned(item,game,hint){
   const candidates=[game?.title,game?.slug,...(game?.aliases||[]),...(game?.abbreviations||[]),hint?.title].map(normalize).filter(v=>v.length>=3);
   return candidates.some(value=>hay.includes(value));
 }
-async function fetchJson(url){try{const r=await fetch(url,{headers:{'user-agent':'IgropoiskIdentityBot/1.0'},signal:AbortSignal.timeout(timeout)});if(!r.ok)return null;return await r.json()}catch{return null}}
-async function fetchText(url){try{const r=await fetch(url,{headers:{'user-agent':'IgropoiskIdentityBot/1.0'},signal:AbortSignal.timeout(timeout)});if(!r.ok)return'';return await r.text()}catch{return''}}
+async function fetchJson(url){try{const r=await fetch(url,{headers:{'user-agent':'IgropoiskIdentityBot/1.1'},signal:AbortSignal.timeout(timeout)});if(!r.ok)return null;return await r.json()}catch{return null}}
+async function fetchText(url){try{const r=await fetch(url,{headers:{'user-agent':'IgropoiskIdentityBot/1.1'},signal:AbortSignal.timeout(timeout)});if(!r.ok)return'';return await r.text()}catch{return''}}
+async function verifyWithWikidata(title){
+  const wanted=normalize(title);if(!wanted)return null;
+  const search=await fetchJson(`https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(title)}&language=en&uselang=en&type=item&limit=6&format=json&origin=*`);
+  const rows=Array.isArray(search?.search)?search.search:[];
+  const matches=rows.filter(row=>normalize(row?.label||row?.match?.text||'')===wanted||normalize(row?.match?.text||'')===wanted);
+  for(const row of matches){
+    const id=String(row?.id||'');if(!/^Q\d+$/.test(id))continue;
+    const entityPayload=await fetchJson(`https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${encodeURIComponent(id)}&props=claims&format=json&origin=*`);
+    const entity=entityPayload?.entities?.[id];
+    const instances=(entity?.claims?.P31||[]).map(claim=>claim?.mainsnak?.datavalue?.value?.id).filter(Boolean);
+    if(instances.includes('Q7889'))return{type:'database',url:`https://www.wikidata.org/wiki/${id}`,matchedBy:'wikidata-video-game-exact'};
+  }
+  return null;
+}
 async function verifyExternalTitle(title){
   const wanted=normalize(title);if(!titleLooksLikeGame(title)||!wanted)return null;
   const oc=await fetchJson(`https://opencritic.com/api/game/search?criteria=${encodeURIComponent(title)}`);
   const ocItems=Array.isArray(oc)?oc:(Array.isArray(oc?.results)?oc.results:[]);
   const ocMatch=ocItems.find(item=>normalize(item?.name||item?.title)===wanted);
   if(ocMatch){const id=Number(ocMatch.id||ocMatch.gameId||0);return{type:'database',url:id?`https://opencritic.com/game/${id}`:'https://opencritic.com/',matchedBy:'opencritic-exact'}}
+  const wikidata=await verifyWithWikidata(title);if(wikidata)return wikidata;
   const steam=await fetchText(`https://store.steampowered.com/search/suggest?term=${encodeURIComponent(title)}&f=games&cc=US&l=english`);
   const names=[...steam.matchAll(/<div class="match_name">([^<]+)<\/div>/gi)].map(match=>normalize(match[1]));
   if(names.includes(wanted)){const app=steam.match(/data-ds-appid="(\d+)"|data-ds-appid='(\d+)'/i);const appid=app?.[1]||app?.[2]||'';return{type:'store',url:appid?`https://store.steampowered.com/app/${appid}/`:'https://store.steampowered.com/',matchedBy:'steam-exact'}}
@@ -78,7 +93,7 @@ for(const item of items){
   if(hints.length){ambiguousArticles+=1;reasons.add('ambiguous-primary-game-verification');issues.push({news_id:id,reason:'candidate lacked safe canonical context match or direct database/store evidence',candidates:hints.map(h=>h.title||h.slug)});normalizedItems.push({...item,games:[],gameIds:[],gameReviewReasons:[...reasons]});continue}
   nonGameArticles+=1;reasons.add('verified-no-primary-game');normalizedItems.push({...item,games:[],gameIds:[],gameReviewReasons:[...reasons],gameIdentityVerifiedAt:new Date().toISOString()});
 }
-const report={schema_version:4,generated_at:new Date().toISOString(),provider:'registry-plus-direct-evidence-with-history-safety-guards',paid_ai_required:false,articles:normalizedItems.length,specific_game_articles:specificGameArticles,non_game_articles:nonGameArticles,ambiguous_articles:ambiguousArticles,canonical_matches:canonicalMatches,verified_new_game_references:verifiedNewGames,unsafe_hints_rejected:unsafeHintsRejected,known_person_candidates:knownPersonCandidates.size,unique_games:new Set(normalizedItems.flatMap(item=>(item.games||[]).map(game=>game.gameId))).size,issues};
+const report={schema_version:5,generated_at:new Date().toISOString(),provider:'registry-plus-opencritic-wikidata-steam-with-history-safety-guards',paid_ai_required:false,articles:normalizedItems.length,specific_game_articles:specificGameArticles,non_game_articles:nonGameArticles,ambiguous_articles:ambiguousArticles,canonical_matches:canonicalMatches,verified_new_game_references:verifiedNewGames,unsafe_hints_rejected:unsafeHintsRejected,known_person_candidates:knownPersonCandidates.size,unique_games:new Set(normalizedItems.flatMap(item=>(item.games||[]).map(game=>game.gameId))).size,issues};
 await fs.mkdir(path.dirname(reportPath),{recursive:true});
 await fs.writeFile(eventsPath,`${JSON.stringify(Array.isArray(payload)?normalizedItems:{...payload,items:normalizedItems},null,2)}\n`,'utf8');
 await fs.writeFile(reportPath,`${JSON.stringify(report,null,2)}\n`,'utf8');
