@@ -191,11 +191,11 @@ function timestamp(value) {
 }
 
 export function selectCommercialHomeNews(input = [], options = {}) {
-  const limit = Math.max(1, Number(options.limit || 12));
+  const limit = Math.max(1, Number(options.limit ?? 12));
   const now = Number.isFinite(Number(options.now)) ? Number(options.now) : Date.now();
   const maxAgeHours = Math.max(1, Number(options.maxAgeHours || 168));
   const recentHours = Math.max(1, Number(options.recentHours || 72));
-  const minRecent = Math.min(limit, Math.max(1, Number(options.minRecent || Math.ceil(limit * 2 / 3))));
+  const minRecent = Math.min(limit, Math.max(0, Number(options.minRecent ?? Math.ceil(limit * 2 / 3))));
   const maxPerTopic = Math.max(1, Number(options.maxPerTopic || 2));
   const maxPerSource = Math.max(1, Number(options.maxPerSource || 3));
   const maxAgeMs = maxAgeHours * 60 * 60 * 1000;
@@ -204,7 +204,28 @@ export function selectCommercialHomeNews(input = [], options = {}) {
   const topicCounts = new Map();
   const sourceCounts = new Map();
   const items = [];
-  const rejected = { expired: 0, tooOld: 0, duplicateUrl: 0, duplicateStory: 0, topicCap: 0, sourceCap: 0, invalidDate: 0 };
+  const deferredBySource = [];
+  const rejected = {
+    expired: 0,
+    tooOld: 0,
+    duplicateUrl: 0,
+    duplicateStory: 0,
+    topicCap: 0,
+    sourceCap: 0,
+    sourceCapDeferred: 0,
+    sourceCapFallbackAccepted: 0,
+    invalidDate: 0
+  };
+
+  const addItem = item => {
+    const url = canonicalUrl(item.primaryUrl || item.url || '');
+    const topic = newsTopicKey(item);
+    const source = sourceKey(item);
+    seenUrls.add(url);
+    if (topic) topicCounts.set(topic, Number(topicCounts.get(topic) || 0) + 1);
+    if (source) sourceCounts.set(source, Number(sourceCounts.get(source) || 0) + 1);
+    items.push(item);
+  };
 
   for (const item of input) {
     if (items.length >= limit) break;
@@ -240,25 +261,54 @@ export function selectCommercialHomeNews(input = [], options = {}) {
     }
     const source = sourceKey(item);
     if (source && Number(sourceCounts.get(source) || 0) >= maxPerSource) {
-      rejected.sourceCap += 1;
+      deferredBySource.push(item);
+      rejected.sourceCapDeferred += 1;
       continue;
     }
 
-    seenUrls.add(url);
-    if (topic) topicCounts.set(topic, Number(topicCounts.get(topic) || 0) + 1);
-    if (source) sourceCounts.set(source, Number(sourceCounts.get(source) || 0) + 1);
-    items.push(item);
+    addItem(item);
   }
 
+  // Source concentration is a preference for the homepage, never a publication blocker.
+  // If strict diversity would leave empty display slots, fill them with otherwise valid
+  // stories from the deferred source while preserving URL/story/topic dedupe.
+  if (items.length < limit) {
+    for (const item of deferredBySource) {
+      if (items.length >= limit) break;
+      const url = canonicalUrl(item.primaryUrl || item.url || '');
+      if (!url || seenUrls.has(url)) {
+        rejected.duplicateUrl += 1;
+        continue;
+      }
+      if (items.some(selected => isSameNewsStory(selected, item))) {
+        rejected.duplicateStory += 1;
+        continue;
+      }
+      const topic = newsTopicKey(item);
+      if (topic && Number(topicCounts.get(topic) || 0) >= maxPerTopic) {
+        rejected.topicCap += 1;
+        continue;
+      }
+      addItem(item);
+      rejected.sourceCapFallbackAccepted += 1;
+    }
+  }
+
+  rejected.sourceCap = Math.max(0, rejected.sourceCapDeferred - rejected.sourceCapFallbackAccepted);
   const recentCount = items.filter(item => timestamp(item.publishedAt) >= now - recentMs).length;
+  const effectiveMinRecent = Math.min(minRecent, items.length);
   return {
     items,
-    ok: items.length === limit && recentCount >= minRecent,
+    // `ok` describes freshness of the selected view, not whether publication is allowed.
+    // A feed with fewer than `limit` valid stories is still a valid feed.
+    ok: recentCount >= effectiveMinRecent,
     diagnostics: {
       requested: limit,
       selected: items.length,
+      targetFilled: items.length === limit,
       recentCount,
-      minRecent,
+      minRecent: effectiveMinRecent,
+      configuredMinRecent: minRecent,
       recentHours,
       maxAgeHours,
       maxPerTopic,
