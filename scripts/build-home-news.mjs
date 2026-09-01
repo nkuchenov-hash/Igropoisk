@@ -7,6 +7,7 @@ const eventsPayload = JSON.parse(await fs.readFile('data/news-events.json','utf8
 const events = Array.isArray(eventsPayload) ? eventsPayload : (eventsPayload.items || []);
 
 const importanceWeight = { critical: 3, major: 2, normal: 1 };
+const minimumHomepageSources = 4;
 const unresolvedGameReasons = new Set([
   'ambiguous-primary-game-verification',
   'unverified-primary-game',
@@ -108,15 +109,18 @@ const selection = selectCommercialHomeNews(normalized, {
   recentHours: 72,
   minRecent: 8,
   maxPerTopic: 2,
-  maxPerSource: 3
+  // Four remains a strict concentration ceiling (one third of a 12-card homepage),
+  // but avoids withholding a valid 12th story when the live source mix is temporarily narrow.
+  maxPerSource: 4
 });
 const items = selection.items;
+const sourceDiversityOk = selection.diagnostics.uniqueSources >= minimumHomepageSources;
 
-if (!selection.ok) {
+if (!selection.ok || !sourceDiversityOk) {
   const d = selection.diagnostics;
   throw new Error(
     `Homepage commercial gate failed: selected ${d.selected}/12; ${d.recentCount}/${d.minRecent} required cards are <=${d.recentHours}h; `
-    + `unique topics=${d.uniqueTopics}; unique sources=${d.uniqueSources}; rejected=${JSON.stringify(d.rejected)}. `
+    + `unique topics=${d.uniqueTopics}; unique sources=${d.uniqueSources}/${minimumHomepageSources} required; rejected=${JSON.stringify(d.rejected)}. `
     + 'Previous live snapshot must remain active instead of publishing stale, malformed, image-less, unresolved-game or repetitive news.'
   );
 }
@@ -124,7 +128,7 @@ if (!selection.ok) {
 await fs.writeFile('data/news-home-ru.json', `${JSON.stringify({
   generatedAt:new Date().toISOString(),
   model:'editorial-global-feed',
-  commercialGate:selection.diagnostics,
+  commercialGate:{...selection.diagnostics,minimumHomepageSources},
   items
 },null,2)}\n`);
 console.log(`[home-news] wrote ${items.length} commercially complete candidates; recent=${selection.diagnostics.recentCount}; topics=${selection.diagnostics.uniqueTopics}; sources=${selection.diagnostics.uniqueSources}`);
