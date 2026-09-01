@@ -43,6 +43,7 @@ function polishParagraph(value = '') {
     .normalize('NFKC')
     .replace(/[ \t]+/g, ' ')
     .replace(/^(?:видимо,\s*)?дела\s+(?:совсем\s+)?плохо:\s*/iu, '')
+    .replace(/^поэтому\s+([а-яё])/iu, (_, first) => first.toUpperCase())
     .replace(/^поэтому\s+/iu, '')
     .replace(/(?<![\p{L}\p{N}])вернет\s+вам\s+(\d+)\s+бакс(?:ов|а)?,\s+если\s+вы\s+предзакажете(?![\p{L}\p{N}])/giu, 'вернёт $1 долларов за предзаказ')
     .replace(/(?<![\p{L}\p{N}])(\d+)\s+бакс(?:ов|а)?(?![\p{L}\p{N}])/giu, '$1 долларов')
