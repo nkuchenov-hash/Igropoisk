@@ -14,6 +14,8 @@ const bad=(title,url,fragment)=>assert.match(reviewIdentityProblem({title,url},p
 bad('Fallout: New Vegas review','https://www.pcgamer.com/fallout-new-vegas-review','different-game-in-series');
 bad('Review: Fallout New Vegas','https://example.com/reviews/fallout-new-vegas','different-game-in-series');
 bad('Fallout 76 hands-on gameplay','https://example.com/fallout-76-hands-on-gameplay','different-game-in-series');
+// Numeric CMS/article ids must not hide a sibling game in the URL subject.
+bad('Fallout: A Post Nuclear Role Playing Game — GameRevolution review','https://www.gamerevolution.com/originals/441275-fallout-76-hands-on-gameplay','different-game-in-series');
 bad('Fallout','https://www.ign.com','homepage-not-direct-review');
 bad('Fallout','https://www.webcitation.org/x?url=http%3A%2F%2Fwww.gamerankings.com%2Fpc%2F197289-fallout%2Findex.html','wrapped-forbidden-host');
 bad('The Elder Scrolls review','https://example.com/the-elder-scrolls-review','target-game-identity-not-evidenced');
