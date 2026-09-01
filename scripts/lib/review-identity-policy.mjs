@@ -130,12 +130,20 @@ function titleIdentifiesSibling(title, sibling) {
   return false;
 }
 
+function stripRouteMetadataPrefix(segment) {
+  // Many publishers prefix article slugs with a numeric CMS/article id, e.g.
+  // /441275-fallout-76-hands-on-gameplay. That numeric routing metadata must
+  // not hide the actual reviewed subject from sibling-game detection.
+  return normalizeReviewIdentity(segment).replace(/^(?:\d+\s+)+/, '').trim();
+}
+
 function urlIdentifiesSibling(value, sibling) {
   let parsed;
   try { parsed = new URL(String(value || '')); }
   catch { return false; }
   const segments = safeDecodedUrl(parsed.pathname).split('/').map(normalizeReviewIdentity).filter(Boolean);
-  for (const segment of segments) {
+  for (const rawSegment of segments) {
+    const segment = stripRouteMetadataPrefix(rawSegment);
     if (startsWithPhrase(segment, sibling)) return true;
     if (startsWithPhrase(segment, `review ${sibling}`)) return true;
     if (startsWithPhrase(segment, `reviews ${sibling}`)) return true;
