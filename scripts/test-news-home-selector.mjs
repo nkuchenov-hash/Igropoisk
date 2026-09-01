@@ -111,10 +111,32 @@ assert.equal(noGameSelection.ok, true, JSON.stringify(noGameSelection.diagnostic
 assert.equal(noGameSelection.items.some(entry => entry.id === 'theft-a') && noGameSelection.items.some(entry => entry.id === 'theft-b'), false);
 assert.equal(noGameSelection.diagnostics.rejected.duplicateStory, 1);
 
+// Eight real stories must publish as eight; a display target is not a quota.
+const quietDay = selectCommercialHomeNews(
+  Array.from({ length: 8 }, (_, index) => item(`quiet-${index}`, index + 1, `Source ${index % 4}`, `quiet-topic-${index}`)),
+  { now, limit: 12, minRecent: 8, maxPerSource: 4 }
+);
+assert.equal(quietDay.ok, true, JSON.stringify(quietDay.diagnostics));
+assert.equal(quietDay.items.length, 8);
+assert.equal(quietDay.diagnostics.targetFilled, false);
+
+// Source diversity is preferred, but it must not prevent the twelfth valid card.
+const concentrated = selectCommercialHomeNews([
+  ...Array.from({ length: 8 }, (_, index) => item(`dominant-${index}`, index + 1, 'Dominant Source', `dominant-topic-${index}`)),
+  item('other-a', 9, 'Source A', 'other-a'),
+  item('other-b', 10, 'Source B', 'other-b'),
+  item('other-c', 11, 'Source C', 'other-c'),
+  item('other-d', 12, 'Source D', 'other-d')
+], { now, limit: 12, minRecent: 8, maxPerSource: 4 });
+assert.equal(concentrated.ok, true, JSON.stringify(concentrated.diagnostics));
+assert.equal(concentrated.items.length, 12);
+assert.equal(concentrated.diagnostics.uniqueSources, 5);
+assert.ok(concentrated.diagnostics.rejected.sourceCapFallbackAccepted > 0, JSON.stringify(concentrated.diagnostics));
+
 const insufficientFresh = selectCommercialHomeNews([
   ...Array.from({ length: 7 }, (_, index) => item(`recent-${index}`, index + 1, `Fresh ${index}`)),
   ...Array.from({ length: 5 }, (_, index) => item(`old-${index}`, 100 + index, `Old ${index}`))
 ], { now, limit: 12, minRecent: 8 });
 assert.equal(insufficientFresh.ok, false);
 
-console.log('Commercial homepage freshness, diversity and semantic-story dedupe tests passed.');
+console.log('Commercial homepage freshness, variable-volume selection, diversity preference and semantic-story dedupe tests passed.');
