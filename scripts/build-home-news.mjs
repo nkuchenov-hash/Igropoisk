@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import { selectCommercialHomeNews } from './lib/news-home-selector.mjs';
 import { isLikelyNewsContent } from './lib/news-content-policy.mjs';
+import { commercialNewsCopyIssues, sanitizeCommercialNewsCopy } from './lib/news-commercial-copy.mjs';
 
 const eventsPayload = JSON.parse(await fs.readFile('data/news-events.json','utf8'));
 const events = Array.isArray(eventsPayload) ? eventsPayload : (eventsPayload.items || []);
@@ -12,7 +13,8 @@ const unresolvedGameReasons = new Set([
   'unknown-explicit-game',
   'ambiguous-explicit-name',
   'ambiguous-alias',
-  'manual-game-not-found'
+  'manual-game-not-found',
+  'missing-game-page'
 ]);
 const normalize = item => ({
   id:item.id,
@@ -22,8 +24,8 @@ const normalize = item => ({
   globalEligible:Boolean(item.globalEligible),
   regionalEligible:Boolean(item.regionalEligible),
   regions:Array.isArray(item.regions) ? item.regions : [],
-  titleRu:item.titleRu || (item.language === 'ru' ? item.title : ''),
-  summaryRu:item.summaryRu || (item.language === 'ru' ? item.summary : ''),
+  titleRu:sanitizeCommercialNewsCopy(item.titleRu || (item.language === 'ru' ? item.title : '')),
+  summaryRu:sanitizeCommercialNewsCopy(item.summaryRu || (item.language === 'ru' ? item.summary : '')),
   titleEn:item.titleEn || item.title || '',
   summaryEn:item.summaryEn || item.summary || '',
   publishedAt:item.publishedAt,
@@ -66,9 +68,20 @@ function newestFirst(a,b) {
   return publishedTimestamp(b) - publishedTimestamp(a) || rank(a,b);
 }
 
+function hasCommercialLocalImage(item) {
+  return /^assets\/(?:news|publisher-news)\/[\w.-]+$/i.test(String(item.image || ''));
+}
+
+function gamePagesReady(item) {
+  return (item.games || []).every(game => Boolean(game?.pageExists && String(game?.pageUrl || '').trim()));
+}
+
 function passesFinalCommercialPolicy(item) {
   if (!['approved', 'source-ru'].includes(item.editorialStatus)) return false;
+  if (!hasCommercialLocalImage(item)) return false;
+  if (!gamePagesReady(item)) return false;
   if (item.gameReviewReasons.some(reason => unresolvedGameReasons.has(reason))) return false;
+  if (commercialNewsCopyIssues(`${item.titleRu}\n${item.summaryRu}`).length) return false;
   return isLikelyNewsContent({
     title: item.titleRu,
     summary: item.summaryRu,
@@ -76,10 +89,10 @@ function passesFinalCommercialPolicy(item) {
   });
 }
 
-// Images are explicitly non-blocking. Missing/local image failures are rewritten to
-// the permanent first-party branded fallback by publish-news-storage.mjs.
-// Copy quality and unresolved specific-game identities are blocking: only editor-approved
-// items that still pass the current commercial policy can enter the homepage selector.
+// The homepage is a commercial surface, so every published card is complete on its own:
+// clean Russian copy, a cached first-party image and working canonical game pages whenever
+// the item is tied to a specific game. Incomplete candidates stay in the archive and can be
+// selected automatically after their media/page lifecycle finishes.
 const normalized = events
   .map(normalize)
   .filter(item => item.titleRu && item.summaryRu && item.primaryUrl && item.publicEligible && passesFinalCommercialPolicy(item))
@@ -100,7 +113,7 @@ if (!selection.ok) {
   throw new Error(
     `Homepage commercial gate failed: selected ${d.selected}/12; ${d.recentCount}/${d.minRecent} required cards are <=${d.recentHours}h; `
     + `unique topics=${d.uniqueTopics}; unique sources=${d.uniqueSources}; rejected=${JSON.stringify(d.rejected)}. `
-    + 'Previous live snapshot must remain active instead of publishing stale, malformed, unresolved-game or repetitive news.'
+    + 'Previous live snapshot must remain active instead of publishing stale, malformed, image-less, unresolved-game or repetitive news.'
   );
 }
 
@@ -110,4 +123,4 @@ await fs.writeFile('data/news-home-ru.json', `${JSON.stringify({
   commercialGate:selection.diagnostics,
   items
 },null,2)}\n`);
-console.log(`[home-news] wrote ${items.length} cards; recent=${selection.diagnostics.recentCount}; topics=${selection.diagnostics.uniqueTopics}; sources=${selection.diagnostics.uniqueSources}`);
+console.log(`[home-news] wrote ${items.length} commercially complete cards; recent=${selection.diagnostics.recentCount}; topics=${selection.diagnostics.uniqueTopics}; sources=${selection.diagnostics.uniqueSources}`);
