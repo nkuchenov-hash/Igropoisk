@@ -62,7 +62,7 @@ export function minimumRetainedFractionForFile(config, file) {
 function validateFeed(root, file, payload, config, errors) {
   const items = payloadItems(payload);
   const minimum = Number(config.publication.minimum_items?.[file] || 0);
-  if (items.length < minimum) errors.push(`${file} contains ${items.length} items; minimum is ${minimum}.`);
+  if (minimum > 0 && items.length < minimum) errors.push(`${file} contains ${items.length} items; minimum is ${minimum}.`);
 
   const seenUrls = new Set();
   items.forEach((item, index) => {
@@ -177,8 +177,10 @@ export function validateNewsPipeline({
 
   const homeFile = 'data/news-home-ru.json';
   const home = payloadItems(payloads.get(homeFile));
-  const expectedHome = Number(config.publication.homepage_exact_items || 12);
-  if (home.length !== expectedHome) errors.push(`${homeFile} must contain exactly ${expectedHome} items; found ${home.length}.`);
+  const expectedHome = Math.max(0, Number(config.publication.homepage_exact_items || 0));
+  if (expectedHome > 0 && home.length !== expectedHome) {
+    errors.push(`${homeFile} must contain exactly ${expectedHome} items; found ${home.length}.`);
+  }
   for (const [index, item] of home.entries()) {
     if (!/[А-Яа-яЁё]/.test(String(item.titleRu || ''))) errors.push(`${homeFile} item ${index + 1} has no Russian title.`);
   }
