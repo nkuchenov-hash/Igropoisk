@@ -96,58 +96,104 @@ const originalFetch = globalThis.fetch.bind(globalThis);
 const cache = new Map();
 const queue = [...urls];
 const concurrency = Math.max(1, Math.min(18, Number(process.env.REVIEW_SEARCH_PREFETCH_CONCURRENCY || 18)));
-let cursor = 0;
+const timeoutMs = Math.max(1000, Math.min(12000, Number(process.env.REVIEW_SEARCH_PREFETCH_TIMEOUT_MS || 6000)));
 let warmed = 0;
-let skipped = 0;
+let initialFailed = 0;
+let retryRecovered = 0;
+let exhaustedFailures = 0;
 
-async function worker() {
-  while (true) {
-    const index = cursor++;
-    if (index >= queue.length) return;
-    const url = queue[index];
-    try {
-      const response = await originalFetch(url, {
-        redirect: 'follow',
-        signal: AbortSignal.timeout(6000),
-        headers: {
-          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/127 Safari/537.36',
-          'accept-language': 'en-US,en;q=.9,ru;q=.8',
-        },
-      });
-      if (!response.ok) {
-        skipped += 1;
-        continue;
-      }
-      cache.set(url, {
-        body: await response.text(),
-        status: response.status,
-        headers: [...response.headers.entries()],
-      });
-      warmed += 1;
-    } catch {
-      // Do not cache failures. The canonical v8 scanner will retry them normally,
-      // preserving exhaustive discovery semantics rather than turning warmup errors
-      // into false negatives.
-      skipped += 1;
-    }
+function requestOptions() {
+  return {
+    redirect: 'follow',
+    signal: AbortSignal.timeout(timeoutMs),
+    headers: {
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/127 Safari/537.36',
+      'accept-language': 'en-US,en;q=.9,ru;q=.8',
+    },
+  };
+}
+
+async function attempt(url) {
+  try {
+    const response = await originalFetch(url, requestOptions());
+    if (!response.ok) return { ok: false, status: response.status || 503, headers: [...response.headers.entries()] };
+    return {
+      ok: true,
+      body: await response.text(),
+      status: response.status,
+      headers: [...response.headers.entries()],
+    };
+  } catch (error) {
+    return { ok: false, status: 504, headers: [], error: String(error?.message || error || 'network failure') };
   }
 }
 
-await Promise.all(Array.from({ length: Math.min(concurrency, queue.length) }, () => worker()));
+async function runWave(items, handler) {
+  let cursor = 0;
+  async function worker() {
+    while (true) {
+      const index = cursor++;
+      if (index >= items.length) return;
+      await handler(items[index]);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, Math.max(1, items.length)) }, () => worker()));
+}
+
+const failed = new Map();
+await runWave(queue, async url => {
+  const result = await attempt(url);
+  if (result.ok) {
+    cache.set(url, result);
+    warmed += 1;
+  } else {
+    failed.set(url, result);
+    initialFailed += 1;
+  }
+});
+
+// The canonical scanner previously retried every prefetch failure one-by-one.
+// Preserve that second attempt exactly, but execute the retry wave concurrently.
+// If both attempts fail, replay the real failed status to v8 instead of making a
+// third network request. Coverage and attempt count stay unchanged; only latency
+// from serialized timeouts/rate-limits is removed.
+await runWave([...failed.keys()], async url => {
+  const result = await attempt(url);
+  if (result.ok) {
+    cache.set(url, result);
+    retryRecovered += 1;
+    return;
+  }
+  const status = Number(result.status) >= 400 && Number(result.status) <= 599 ? Number(result.status) : 504;
+  cache.set(url, {
+    ok: false,
+    body: '',
+    status,
+    headers: [
+      ...(result.headers || []),
+      ['x-igropoisk-prefetch-exhausted', '1'],
+    ],
+  });
+  exhaustedFailures += 1;
+});
 
 globalThis.fetch = async (input, init) => {
   const key = typeof input === 'string' || input instanceof URL ? String(input) : String(input?.url || '');
   const cached = cache.get(key);
   if (!cached) return originalFetch(input, init);
-  return new Response(cached.body, { status: cached.status, headers: cached.headers });
+  return new Response(cached.body || '', { status: cached.status, headers: cached.headers });
 };
 
 console.log(JSON.stringify({
   slug,
   prefetch: 'review-searches',
   exhaustive_query_urls: queue.length,
-  warmed,
-  retry_normally: skipped,
+  initial_warmed: warmed,
+  initial_failed: initialFailed,
+  retry_recovered: retryRecovered,
+  exhausted_failures: exhaustedFailures,
+  total_network_attempts: queue.length + initialFailed,
   concurrency,
-  correctness_policy: 'cache-success-only; failures are retried by canonical scanner',
+  timeout_ms: timeoutMs,
+  correctness_policy: 'all URLs get initial attempt; every initial failure gets the same second attempt as before, concurrently; twice-failed statuses are replayed to canonical scanner without a third request',
 }, null, 2));

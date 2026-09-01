@@ -13,6 +13,9 @@ on:
       - 'scripts/validate-pre-review-materials.mjs'
       - 'scripts/lib/review-identity-policy.mjs'
       - 'scripts/test-review-identity-policy.mjs'
+      - 'scripts/lib/game-page-target-artifacts.mjs'
+      - 'scripts/test-game-page-target-artifacts.mjs'
+      - 'scripts/publish-game-page-staging-conflict-safe.mjs'
       - 'config/parsers/review-synthesis.json'
       - 'config/game-page-quality-v2.json'
       - '.github/workflows/review-discovery-smoke.yml'
@@ -29,7 +32,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify discovery syntax and identity rules
+      - name: Verify discovery syntax, identity and target isolation rules
         run: |
           node --check scripts/prepare-review-research.mjs
           node --check scripts/prefetch-review-searches.mjs
@@ -39,7 +42,10 @@ jobs:
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/validate-pre-review-materials.mjs
           node --check scripts/lib/review-identity-policy.mjs
+          node --check scripts/lib/game-page-target-artifacts.mjs
+          node --check scripts/publish-game-page-staging-conflict-safe.mjs
           node scripts/test-review-identity-policy.mjs
+          node scripts/test-game-page-target-artifacts.mjs
       - name: Collect Fallout professional reviews and scores
         run: |
           node scripts/prepare-review-research.mjs fallout
