@@ -16,16 +16,16 @@ import {
 
 const eventsPath = 'data/news-events.json';
 const reportPath = process.env.NEWS_EDITOR_REPORT || 'tmp/news-editor-report.json';
-const minimumPublicItems = Math.max(12, Number(process.env.NEWS_EDITOR_MIN_PUBLIC || 12));
+const homepageDisplayLimit = Math.max(1, Number(process.env.NEWS_HOMEPAGE_LIMIT || 12));
 const qwenMaxItems = Math.max(0, Math.min(4, Number(process.env.NEWS_EDITOR_QWEN_MAX_ITEMS || 3)));
 const qwenBudgetMs = Math.max(60_000, Number(process.env.NEWS_EDITOR_QWEN_BUDGET_MS || 6 * 60_000));
 const nativeConcurrency = Math.max(1, Math.min(8, Number(process.env.NEWS_EDITOR_NATIVE_CONCURRENCY || 6)));
 const startedAt = Date.now();
 const commercialPolicy = Object.freeze({
-  limit: minimumPublicItems,
+  limit: homepageDisplayLimit,
   maxAgeHours: 168,
   recentHours: 72,
-  minRecent: Math.min(minimumPublicItems, 8),
+  minRecent: Math.min(homepageDisplayLimit, 8),
   maxPerTopic: 2,
   maxPerSource: 3
 });
@@ -283,10 +283,9 @@ for (const item of items) {
   }
 }
 
-// Pass 2: salvage every remaining native-Russian article before touching Qwen.
-// Fetches are bounded-parallel; a slow Russian site cannot serialize the whole hour.
+// Pass 2: salvage every remaining native-Russian article. This pass deliberately does
+// not stop after enough homepage cards exist: editorial processing is volume-independent.
 await mapLimit(nativeNeedsArticle, nativeConcurrency, async item => {
-  if (currentCommercialSelection().ok) return;
   const title = sourceTitle(item);
   const summary = sourceSummary(item);
   const url = sourceUrl(item);
@@ -309,11 +308,11 @@ await mapLimit(nativeNeedsArticle, nativeConcurrency, async item => {
   }
 });
 
-let selectionBeforeQwen = currentCommercialSelection();
+const selectionBeforeQwen = currentCommercialSelection();
 
-// Pass 3: Qwen is an emergency top-up only. It is strictly bounded by both item count
-// and wall-clock budget. Normal hourly runs should execute zero model edits.
-if (!selectionBeforeQwen.ok && qwenMaxItems > 0) {
+// Pass 3: Qwen remains an optional bounded repair path for individual unapproved items.
+// It is not a homepage top-up and never decides whether the pipeline may publish.
+if (qwenMaxItems > 0) {
   const qwenStart = Date.now();
   const candidates = prioritizeCommercialCandidates(items.filter(item => {
     if (!isPublic(item) || !gameIdentityEligible(item) || sourceIsRussian(item) || commerciallyApproved(item)) return false;
@@ -321,7 +320,6 @@ if (!selectionBeforeQwen.ok && qwenMaxItems > 0) {
   }));
 
   for (const item of candidates) {
-    if (currentCommercialSelection().ok) break;
     if (qwenAttempted >= qwenMaxItems || Date.now() - qwenStart >= qwenBudgetMs) break;
     qwenAttempted += 1;
     const title = sourceTitle(item);
@@ -386,13 +384,13 @@ const output = Array.isArray(payload) ? items : { ...payload, generatedAt: new D
 await fs.mkdir('tmp', { recursive: true });
 await fs.writeFile(eventsPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
 await fs.writeFile(reportPath, `${JSON.stringify({
-  schemaVersion: 7,
+  schemaVersion: 8,
   generatedAt: new Date().toISOString(),
   editorialVersion: NEWS_EDITORIAL_VERSION,
-  architecture: 'deterministic-russian-first-bounded-qwen-fallback',
+  architecture: 'volume-independent-deterministic-russian-first-bounded-qwen-repair',
   model: process.env.NEWS_EDITOR_MODEL || 'onnx-community/Qwen3-4B-Instruct-2507-ONNX',
   dtype: process.env.NEWS_EDITOR_DTYPE || 'q4',
-  minimumPublicItems,
+  homepageDisplayLimit,
   commercialPolicy,
   commercialSelection: commercialSelection.diagnostics,
   selectionBeforeQwen: selectionBeforeQwen.diagnostics,
@@ -416,7 +414,4 @@ await fs.writeFile(reportPath, `${JSON.stringify({
   failures
 }, null, 2)}\n`, 'utf8');
 
-console.log(`[news/editor] deterministic=${deterministicLocalized}; source-ru=${nativeRussian}; source-ru-article=${nativeArticleSalvaged}; qwen=${qwenApproved}/${qwenAttempted}; public-approved=${publicApproved}; commercial=${commercialSelection.ok}; elapsed=${((Date.now() - startedAt) / 1000).toFixed(1)}s`);
-if (!commercialSelection.ok) {
-  throw new Error(`Commercial homepage mix unavailable after bounded fast editorial pass: ${JSON.stringify(commercialSelection.diagnostics)}. Previous live snapshot must remain active.`);
-}
+console.log(`[news/editor] deterministic=${deterministicLocalized}; source-ru=${nativeRussian}; source-ru-article=${nativeArticleSalvaged}; qwen=${qwenApproved}/${qwenAttempted}; public-approved=${publicApproved}; homepage=${commercialSelection.items.length}/${homepageDisplayLimit}; elapsed=${((Date.now() - startedAt) / 1000).toFixed(1)}s`);
