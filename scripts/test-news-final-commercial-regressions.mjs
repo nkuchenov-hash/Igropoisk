@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { isLikelyNewsContent } from './lib/news-content-policy.mjs';
 import { sanitizeCommercialNewsCopy, commercialNewsCopyIssues } from './lib/news-commercial-copy.mjs';
+import { isSameNewsStory } from './lib/news-home-selector.mjs';
 import { canonicalGameIsPrimary } from './lib/news-primary-game-evidence.mjs';
 
 for (const item of [
@@ -23,10 +24,34 @@ for (const item of [
     title: '«Ведьмы Маэбаси» отправятся на большой экран 23 октября',
     summary: 'Полнометражное аниме выйдет в кинотеатрах; опубликованы трейлер и постер.',
     url: 'https://kanobu.ru/news/maebashi-witches-anime-film'
+  },
+  {
+    title: 'Вышел новый трейлер экранизации Street Fighter — фильм выйдет 16 октября',
+    summary: 'Paramount Pictures выпустила новый трейлер экранизации Street Fighter. В прокат фильм выходит 16 октября.',
+    url: 'https://vgtimes.ru/movies-and-tv-series/street-fighter.html'
+  },
+  {
+    title: 'Косплей на Ми Фу из Arknights: Endfield от Oichi — 5 фото',
+    summary: 'Косплеерша представила новый фотосет в образе персонажа игры.',
+    url: 'https://vgtimes.ru/cosplay/arknights-endfield.html'
+  },
+  {
+    title: 'Новый 750-Вт блок питания взорвался при первом подключении из коробки',
+    summary: 'Блок питания вышел из строя при подключении: произошли вспышка, искры и появилось пламя.',
+    url: 'https://www.playground.ru/misc/news/power-supply.html'
   }
 ]) {
   assert.equal(isLikelyNewsContent(item), false, `must reject non-news homepage material: ${item.title}`);
 }
+
+const doomGame = { title: 'doom-the-dark-ages', slug: 'doom-the-dark-ages', gameId: 'game_doom_dark_ages' };
+assert.equal(isSameNewsStory({
+  titleRu: 'Экс-продюсер DOOM: авторы DLC для The Dark Ages столкнулись с беспрецедентными кранчами',
+  games: [doomGame]
+}, {
+  titleRu: 'Бывший продюсер id Software рассказал о жестком кризисе при создании DLC для Doom',
+  games: [doomGame]
+}), true, 'same DOOM DLC crunch report from two publishers must dedupe');
 
 const hauntedItem = {
   title: '«Качество превыше скорости» — ConcernedApe о разработке Haunted Chocolatier',
