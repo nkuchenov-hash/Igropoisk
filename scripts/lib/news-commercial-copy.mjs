@@ -42,6 +42,7 @@ function polishParagraph(value = '') {
   return removeBrokenListLead(removeAdjacentWordDuplicates(decodeEntities(value)))
     .normalize('NFKC')
     .replace(/[ \t]+/g, ' ')
+    .replace(/([а-яё]{3,}ями)и\b/giu, '$1')
     .replace(/\s+([,.!?;:»”\)\]])/g, '$1')
     .replace(/([«“\(\[])\s+/g, '$1')
     .replace(/\s+([—–])\s+/g, ' $1 ')
@@ -65,5 +66,6 @@ export function commercialNewsCopyIssues(value = '') {
   if (/(?<![\p{L}\p{N}])([\p{L}\p{N}][\p{L}\p{N}-]{2,})\s+\1(?![\p{L}\p{N}-])/iu.test(text)) issues.push('adjacent-duplicate-word');
   if (/\s+[»”\)\]]/.test(text)) issues.push('space-before-closing-punctuation');
   if (/(?<![\p{L}\p{N}])(?:следующим|следующие)\s+(?:характеристикам|требованиям|параметрам)\s*:\s*(?=[А-ЯЁA-Z])/iu.test(text)) issues.push('broken-list-introduction');
+  if (/(?:вроде|как|серии|игр(?:а|ы|е|у|ой|ами|ах)?)\s+[A-Z]\.\s+(?=[А-ЯЁ])/u.test(text)) issues.push('truncated-dotted-game-acronym');
   return issues;
 }
