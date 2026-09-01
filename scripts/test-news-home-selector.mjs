@@ -43,6 +43,20 @@ assert.equal(isSameNewsStory(projectHelixA, {
   summaryRu: 'Microsoft изменила интерфейс приложения Xbox и добавила новые функции для игроков.'
 }), false, 'different Xbox news must remain separate');
 
+const steamDeckMilestoneA = {
+  titleRu: 'Steam Deck получила поддержку более 30 тыс. игр из библиотеки Steam',
+  summaryRu: 'На сегодняшний день платформа поддерживает более 30 000 различных игр.'
+};
+const steamDeckMilestoneB = {
+  titleRu: 'Steam Deck преодолела отметку в 30 000 игр с рейтингами Verified и Playable',
+  summaryRu: 'Valve продолжает тестировать игры для Steam Deck и SteamOS.'
+};
+assert.equal(isSameNewsStory(steamDeckMilestoneA, steamDeckMilestoneB), true, 'same numeric platform milestone must dedupe across publishers');
+assert.equal(isSameNewsStory(steamDeckMilestoneA, {
+  titleRu: 'Steam Deck получила обновление клиента с новым оверлеем',
+  summaryRu: 'Valve изменила интерфейс портативной системы.'
+}), false, 'different Steam Deck events must remain separate');
+
 function item(id, ageHours, source, topic = id, extra = {}) {
   return {
     id,
