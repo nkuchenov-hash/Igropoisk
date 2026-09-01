@@ -5,6 +5,7 @@ import {
   warmNewsEditor
 } from './news-editor-qwen.mjs';
 import { isLikelyNewsContent } from './news-content-policy.mjs';
+import { sanitizeCommercialNewsCopy } from './news-commercial-copy.mjs';
 
 export { fetchArticleText, warmNewsEditor };
 
@@ -35,7 +36,7 @@ function canonical(value = '') {
 }
 
 function polishEditorialNames(value = '') {
-  return normalizeEditorialNames(value)
+  const normalized = normalizeEditorialNames(value)
     .replace(/(?<![\p{L}\p{N}])XBOX(?![\p{L}\p{N}])/gu, 'Xbox')
     .replace(/(?<![\p{L}\p{N}])PLAYSTATION(?![\p{L}\p{N}])/gu, 'PlayStation')
     .replace(/(?<![\p{L}\p{N}])Nvidia(?![\p{L}\p{N}])/gu, 'NVIDIA')
@@ -44,6 +45,7 @@ function polishEditorialNames(value = '') {
     .replace(/([«(])\s+/g, '$1')
     .replace(/[ \t]+/g, ' ')
     .trim();
+  return sanitizeCommercialNewsCopy(normalized);
 }
 
 function escapeRegExp(value = '') {
