@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { parserRunBelongsToSlug } from './lib/game-page-target-artifacts.mjs';
 
 const sourceRoot = process.cwd();
 const slug = String(process.argv[2] || process.env.GAME_TARGET_SLUG || '').trim().toLowerCase();
@@ -63,7 +64,7 @@ function copyTargetArtifacts(targetRoot) {
   const parserRunsDir = path.join(sourceRoot, 'data/parser-runs');
   if (fs.existsSync(parserRunsDir)) {
     for (const name of fs.readdirSync(parserRunsDir)) {
-      if (!name.endsWith('.json') || !name.toLowerCase().includes(slug)) continue;
+      if (!parserRunBelongsToSlug(name, slug)) continue;
       const relative = `data/parser-runs/${name}`;
       if (copyIfExists(path.join(sourceRoot, relative), path.join(targetRoot, relative))) copied.push(relative);
     }
@@ -122,12 +123,10 @@ let finalReport = null;
 for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), `igropoisk-staging-publish-${runId}-${attempt}-`));
   const targetRoot = path.join(tempRoot, 'staging');
-  let worktreeAdded = false;
   let branch = '';
   let prUrl = '';
   try {
     const prepared = prepareFreshAttempt(targetRoot);
-    worktreeAdded = true;
     const changed = git(['status', '--porcelain'], { cwd: targetRoot, quiet: true }).stdout.trim();
     if (!changed) {
       finalReport = {
@@ -181,7 +180,7 @@ for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     };
     break;
   } finally {
-    if (worktreeAdded) git(['worktree', 'remove', '--force', targetRoot], { quiet: true, allowFailure: true });
+    git(['worktree', 'remove', '--force', targetRoot], { quiet: true, allowFailure: true });
     fs.rmSync(tempRoot, { recursive: true, force: true });
   }
 }

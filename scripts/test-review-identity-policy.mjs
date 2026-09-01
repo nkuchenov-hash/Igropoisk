@@ -18,9 +18,18 @@ bad('Fallout','https://www.ign.com','homepage-not-direct-review');
 bad('Fallout','https://www.webcitation.org/x?url=http%3A%2F%2Fwww.gamerankings.com%2Fpc%2F197289-fallout%2Findex.html','wrapped-forbidden-host');
 bad('The Elder Scrolls review','https://example.com/the-elder-scrolls-review','target-game-identity-not-evidenced');
 
+// Franchise adaptations and spin-off media are not reviews of the target video game.
+bad('Fallout TV show review: The best Fallout since New Vegas','https://www.pcgamer.com/movies-tv/fallout-tv-show-review-the-best-fallout-anything-since-fallout-new-vegas','non-game-subject:television');
+bad('Fallout season 2 release dates, reviews, and recaps summarized by ...','https://www.pcgamer.com/movies-tv/fallout-season-2-trailers-release-date-cast','non-game-subject:television-season');
+bad('Fallout Season 2 review: If the first season was a love letter ...','https://www.pcgamer.com/movies-tv/fallout-season-2-review','non-game-subject:television-season');
+bad('Review of Fallout TV series','https://example.com/reviews/fallout-tv-series','non-game-subject:television');
+bad('Fallout: The Board Game review','https://example.com/reviews/fallout-the-board-game','non-game-subject:tabletop');
+
+// Mentioning another Fallout title or adaptation inside a Fallout 1 review is allowed.
 ok('Fallout review: why New Vegas improved companions','https://example.com/fallout-review-1997');
 ok('Fallout retrospective comparing Fallout 2 and Fallout New Vegas','https://example.com/features/fallout-retrospective-review');
 ok('Fallout compared with Fallout New Vegas review scores','https://example.com/reviews/fallout-comparison');
+ok('Fallout review: what the TV show gets wrong about the original game','https://example.com/reviews/fallout-original-game');
 ok('Fallout: A Post Nuclear Role Playing Game review','https://example.com/reviews/fallout');
 
 console.log('Review identity policy regression cases passed.');
