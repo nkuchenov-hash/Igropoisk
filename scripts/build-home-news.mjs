@@ -13,8 +13,7 @@ const unresolvedGameReasons = new Set([
   'unknown-explicit-game',
   'ambiguous-explicit-name',
   'ambiguous-alias',
-  'manual-game-not-found',
-  'missing-game-page'
+  'manual-game-not-found'
 ]);
 const normalize = item => ({
   id:item.id,
@@ -72,14 +71,9 @@ function hasCommercialLocalImage(item) {
   return /^assets\/(?:news|publisher-news)\/[\w.-]+$/i.test(String(item.image || ''));
 }
 
-function gamePagesReady(item) {
-  return (item.games || []).every(game => Boolean(game?.pageExists && String(game?.pageUrl || '').trim()));
-}
-
 function passesFinalCommercialPolicy(item) {
   if (!['approved', 'source-ru'].includes(item.editorialStatus)) return false;
   if (!hasCommercialLocalImage(item)) return false;
-  if (!gamePagesReady(item)) return false;
   if (item.gameReviewReasons.some(reason => unresolvedGameReasons.has(reason))) return false;
   if (commercialNewsCopyIssues(`${item.titleRu}\n${item.summaryRu}`).length) return false;
   return isLikelyNewsContent({
@@ -89,10 +83,12 @@ function passesFinalCommercialPolicy(item) {
   });
 }
 
-// The homepage is a commercial surface, so every published card is complete on its own:
-// clean Russian copy, a cached first-party image and working canonical game pages whenever
-// the item is tied to a specific game. Incomplete candidates stay in the archive and can be
-// selected automatically after their media/page lifecycle finishes.
+// The candidate homepage feed must already be commercially clean: fresh/diverse news,
+// polished Russian copy, a cached first-party image and an unambiguous verified game
+// identity. A verified game whose page is not live yet is intentionally allowed here:
+// the production workflow detects those exact candidates after this build, dispatches
+// the shared Fast Game Creator, keeps the current Object Storage manifest active, waits
+// until the pages are live, then forces this pipeline again before switching the snapshot.
 const normalized = events
   .map(normalize)
   .filter(item => item.titleRu && item.summaryRu && item.primaryUrl && item.publicEligible && passesFinalCommercialPolicy(item))
@@ -123,4 +119,4 @@ await fs.writeFile('data/news-home-ru.json', `${JSON.stringify({
   commercialGate:selection.diagnostics,
   items
 },null,2)}\n`);
-console.log(`[home-news] wrote ${items.length} commercially complete cards; recent=${selection.diagnostics.recentCount}; topics=${selection.diagnostics.uniqueTopics}; sources=${selection.diagnostics.uniqueSources}`);
+console.log(`[home-news] wrote ${items.length} commercially complete candidates; recent=${selection.diagnostics.recentCount}; topics=${selection.diagnostics.uniqueTopics}; sources=${selection.diagnostics.uniqueSources}`);
