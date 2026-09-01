@@ -10,7 +10,7 @@ permissions:
   actions: write
   contents: read
 
-# One-shot commercial-readiness dispatch after PR #1326.
+# One-shot commercial-readiness dispatch after PR #1326 merge.
 jobs:
   dispatch:
     runs-on: ubuntu-latest
@@ -23,4 +23,4 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --ref staging \
             -f slug=fallout
-          echo "Dispatched explicit workflow_dispatch slug=fallout."
+          echo "Dispatched explicit workflow_dispatch slug=fallout after final hygiene merge."
