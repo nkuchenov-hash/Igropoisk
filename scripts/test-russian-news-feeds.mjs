@@ -11,11 +11,12 @@ assert.ok(nativeRussianFeeds.some(feed => feed.source === 'App2Top' && feed.url.
 assert.ok(nativeRussianFeeds.some(feed => feed.source === 'Игромания'));
 
 const now = Date.parse('2026-08-29T08:00:00.000Z');
-const xml = `<?xml version="1.0"?><rss><channel>
+const xml = `<?xml version="1.0"?><rss xmlns:media="http://search.yahoo.com/mrss/"><channel>
 <item>
 <title><![CDATA[Fable получила новый геймплейный трейлер]]></title>
 <link>https://example.ru/news/fable</link>
 <description><![CDATA[Разработчики показали новый фрагмент Fable и рассказали о боевой системе. Релиз игры запланирован на 2027 год.]]></description>
+<media:content url="https://cdn.example.ru/images/fable-main.webp" medium="image" type="image/webp" />
 <pubDate>Sat, 29 Aug 2026 07:30:00 GMT</pubDate>
 </item>
 <item>
@@ -39,5 +40,7 @@ assert.equal(parsed[0].localizationStatus, 'source-ru');
 assert.equal(parsed[0].globalEligible, true);
 assert.match(parsed[0].titleRu, /Fable/);
 assert.equal(parsed[0].selectionReason, 'native-russian-professional-feed');
+assert.equal(parsed[0].imageSourceUrl, 'https://cdn.example.ru/images/fable-main.webp');
+assert.equal(parsed[0].imageCacheStatus, 'pending');
 
 console.log('Native Russian news feed regression tests passed.');
