@@ -1,21 +1,28 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import puppeteer from 'puppeteer-core';
+import { buildReviewIdentityPolicy, normalizeReviewIdentity, reviewIdentityProblem, reviewRowFingerprint } from './lib/review-identity-policy.mjs';
 
 const root=process.cwd();
 const slug=String(process.argv[2]||'').trim();
 if(!slug) throw new Error('Usage: node scripts/verify-live-game-page-pre-review.mjs <slug>');
 const read=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,file),'utf8'))}catch{return fallback}};
 const config=read('config/game-page-quality-v2.json',{});
+const draft=read(`data/drafts/${slug}.json`,{});
+const expectedReviews=read(`data/reviews/${slug}.json`,{});
+const expectedRatings=read(`data/ratings/${slug}.json`,{});
+const policy=buildReviewIdentityPolicy(root,slug,draft);
 const reviewMinimum=Number(config.review_corpus?.minimum_sources||10);
 const ratingMinimum=Number(config.rating?.minimum_sources||5);
+const ratingTarget=Number(config.rating?.target_sources||10);
+const requiredRatingCount=Math.max(ratingMinimum,ratingTarget);
 const base='https://nkuchenov-hash.github.io/Igropoisk';
 const pageUrl=`${base}/game/${slug}/`;
-const normalize=value=>String(value||'').toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
-const forbiddenHosts=['metacritic.com','opencritic.com','gamerankings.com','mobygames.com','reddit.com','steamcommunity.com','store.steampowered.com','wikipedia.org','wikimedia.org'];
+const normalize=normalizeReviewIdentity;
 const browserPath=()=>[process.env.CHROME_PATH,'/usr/bin/google-chrome-stable','/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'].filter(Boolean).find(fs.existsSync);
-const badHost=value=>{try{const host=new URL(value).hostname.replace(/^www\./,'').toLowerCase();return forbiddenHosts.some(domain=>host===domain||host.endsWith(`.${domain}`))}catch{return true}};
 const visibleScore=value=>{const text=String(value||'').trim();return Boolean(text&&text!=='—'&&text!=='-'&&/(?:\d|^[A-F](?:[+-])?$)/i.test(text))};
+const fingerprints=rows=>(Array.isArray(rows)?rows:[]).map(reviewRowFingerprint).sort();
+const sameRows=(left,right)=>JSON.stringify(fingerprints(left))===JSON.stringify(fingerprints(right));
 
 const executablePath=browserPath();
 if(!executablePath) throw new Error('Chrome/Chromium executable was not found for live Game Page verification.');
@@ -47,13 +54,17 @@ try{
     const aggregateSourceCount=Number(ratings?.calculation?.source_count||0);
     if(reviewRows.length<reviewMinimum) problems.push(`live professional reviews ${reviewRows.length}/${reviewMinimum}`);
     if(publications.size<reviewMinimum) problems.push(`live independent publications ${publications.size}/${reviewMinimum}`);
-    if(scoreRows.length<ratingMinimum) problems.push(`live professional score sources ${scoreRows.length}/${ratingMinimum} minimum`);
+    if(scoreRows.length<requiredRatingCount) problems.push(`live professional score sources ${scoreRows.length}/${requiredRatingCount}`);
     if(ratings?.status!=='green'||!Number.isFinite(published)||mean===null) problems.push('live aggregate professional rating is not green/calculated');
     if(ratings?.method?.use_all_discovered_scores!==true) problems.push('live aggregate does not use all discovered professional scores');
+    if(ratings?.method?.identity_sanitized!==true) problems.push('live aggregate was not identity-sanitized');
     if(aggregateSourceCount!==scoreRows.length) problems.push('live rating source count does not match live score rows');
     if(mean!==null&&Number.isFinite(published)&&Math.abs(Number(mean.toFixed(1))-published)>0.001) problems.push(`live mean ${Number(mean.toFixed(1))} does not match published ${published}`);
-    for(const item of reviewRows){const url=String(item.resolved_url||item.url||'');if(!/^https?:\/\//i.test(url)||badHost(url)){problems.push(`invalid live review URL: ${url||item.publication||'missing'}`);break}}
-    for(const item of scoreRows){const url=String(item.url||'');if(!/^https?:\/\//i.test(url)||badHost(url)){problems.push(`invalid live rating source URL: ${url||item.publication||'missing'}`);break}}
+    for(const item of reviewRows){const reason=reviewIdentityProblem(item,policy);if(reason){problems.push(`invalid live review identity/source: ${reason}: ${item.url||item.resolved_url||item.title||'missing'}`);break}}
+    for(const item of scoreRows){const reason=reviewIdentityProblem(item,policy);if(reason){problems.push(`invalid live rating identity/source: ${reason}: ${item.url||item.title||'missing'}`);break}}
+    if(!sameRows(reviewRows,expectedReviews?.reviews||[])) problems.push(`live review corpus does not exactly match production candidate (${reviewRows.length} vs ${(expectedReviews?.reviews||[]).length})`);
+    if(!sameRows(scoreRows,expectedRatings?.sources||[])) problems.push(`live rating corpus does not exactly match production candidate (${scoreRows.length} vs ${(expectedRatings?.sources||[]).length})`);
+    if(Number(expectedRatings?.calculation?.score_10)!==published) problems.push(`live aggregate ${published} does not match production candidate ${expectedRatings?.calculation?.score_10}`);
 
     const pageErrors=[];
     const onPageError=error=>pageErrors.push(String(error?.message||error));
@@ -78,10 +89,9 @@ try{
     if(pageErrors.length) problems.push(`live browser errors: ${pageErrors.slice(0,3).join(' | ')}`);
     if(dom){
       if(dom.slug&&dom.slug!==slug) problems.push(`live DOM slug mismatch: ${dom.slug}`);
-      if(dom.reviews<reviewMinimum) problems.push(`visible professional reviews ${dom.reviews}/${reviewMinimum}`);
+      if(dom.reviews!==reviewRows.length) problems.push(`visible review count ${dom.reviews} does not match live JSON ${reviewRows.length}`);
       const visiblePublications=new Set(dom.publications.map(normalize).filter(Boolean));
-      if(visiblePublications.size<reviewMinimum) problems.push(`visible independent publications ${visiblePublications.size}/${reviewMinimum}`);
-      if(dom.visibleScores.length<ratingMinimum) problems.push(`visible source scores ${dom.visibleScores.length}/${ratingMinimum} minimum`);
+      if(visiblePublications.size!==publications.size) problems.push(`visible publication count ${visiblePublications.size} does not match live JSON ${publications.size}`);
       if(dom.visibleScores.length<aggregateSourceCount) problems.push(`only ${dom.visibleScores.length}/${aggregateSourceCount} aggregate source scores are visibly rendered`);
       if(Number(dom.aggregate)!==published) problems.push(`visible aggregate ${dom.aggregate||'missing'} does not match live calculated ${published}`);
       if(!new RegExp(`Среднее\\s+${aggregateSourceCount}\\s+независимых профессиональных оценок`,'i').test(dom.aggregateMeta)) problems.push(`visible aggregate provenance is missing or has wrong source count: ${dom.aggregateMeta||'missing'}`);
@@ -89,7 +99,7 @@ try{
     }
 
     if(!problems.length){
-      console.log(JSON.stringify({slug,page:pageUrl,live_reviews:reviewRows.length,live_publications:publications.size,live_score_sources:scoreRows.length,rating_minimum:ratingMinimum,rating_target:Number(config.rating?.target_sources||10),live_score_10:published,visible_reviews:dom.reviews,visible_publications:new Set(dom.publications.map(normalize)).size,visible_scores:dom.visibleScores.length},null,2));
+      console.log(JSON.stringify({slug,page:pageUrl,live_reviews:reviewRows.length,live_publications:publications.size,live_score_sources:scoreRows.length,rating_minimum:ratingMinimum,rating_target:ratingTarget,required_rating_sources:requiredRatingCount,live_score_10:published,exact_candidate_parity:true,identity_sanitized:true,visible_reviews:dom.reviews,visible_publications:new Set(dom.publications.map(normalize)).size,visible_scores:dom.visibleScores.length},null,2));
       lastProblems=[];
       break;
     }

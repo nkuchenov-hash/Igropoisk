@@ -11,6 +11,8 @@ on:
       - 'scripts/recover-historical-review-scores.mjs'
       - 'scripts/calculate-ratings-from-research.mjs'
       - 'scripts/validate-pre-review-materials.mjs'
+      - 'scripts/lib/review-identity-policy.mjs'
+      - 'scripts/test-review-identity-policy.mjs'
       - 'config/parsers/review-synthesis.json'
       - 'config/game-page-quality-v2.json'
       - '.github/workflows/review-discovery-smoke.yml'
@@ -27,7 +29,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify discovery syntax
+      - name: Verify discovery syntax and identity rules
         run: |
           node --check scripts/prepare-review-research.mjs
           node --check scripts/prefetch-review-searches.mjs
@@ -36,6 +38,8 @@ jobs:
           node --check scripts/recover-historical-review-scores.mjs
           node --check scripts/calculate-ratings-from-research.mjs
           node --check scripts/validate-pre-review-materials.mjs
+          node --check scripts/lib/review-identity-policy.mjs
+          node scripts/test-review-identity-policy.mjs
       - name: Collect Fallout professional reviews and scores
         run: |
           node scripts/prepare-review-research.mjs fallout
