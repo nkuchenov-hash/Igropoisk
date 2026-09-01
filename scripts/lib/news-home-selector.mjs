@@ -21,6 +21,7 @@ const storyTokenAliases = new Map([
   ['laptop', 'equipment'], ['laptops', 'equipment'], ['device', 'device'], ['devices', 'device'], ['equipment', 'equipment'],
   ['family', 'family'], ['families', 'family'], ['confirm', 'confirm'], ['confirms', 'confirm'], ['confirmed', 'confirm'],
   ['console', 'console'], ['consoles', 'console'], ['generation', 'generation'], ['generations', 'generation'],
+  ['crunch', 'crunch'], ['crunches', 'crunch'], ['кранч', 'crunch'], ['кранчи', 'crunch'], ['кранчами', 'crunch'], ['кранчах', 'crunch'], ['кризис', 'crunch'], ['кризисе', 'crunch'],
   ['ноутбук', 'equipment'], ['ноутбуки', 'equipment'], ['ноутбуков', 'equipment'], ['оборудование', 'equipment'], ['оборудования', 'equipment'], ['техника', 'equipment'], ['техники', 'equipment']
 ]);
 
@@ -155,7 +156,11 @@ export function isSameNewsStory(left = {}, right = {}) {
   if (sharesMilestone(left, right) && titleShared.length >= 2 && titleDistinctive.length >= 1) return true;
 
   if (sameGame) {
-    return common >= 4 && coverage >= 0.5 && distinctive.length >= 2;
+    // Publisher wording can differ heavily for the same event. Four shared headline
+    // concepts with at least three distinctive tokens is enough even when one title
+    // is much longer, while ordinary same-game updates remain separate.
+    return (common >= 4 && coverage >= 0.5 && distinctive.length >= 2)
+      || (common >= 4 && distinctive.length >= 3);
   }
 
   return (common >= 4 && coverage >= 0.35)
