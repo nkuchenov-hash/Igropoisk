@@ -92,7 +92,7 @@ jobs:
           NEWS_LOCAL_TRANSLATION_RUNTIME: /tmp/igropoisk-news-translator-runtime
           NEWS_LOCAL_TRANSLATION_CACHE: /tmp/igropoisk-news-translation-models
           NEWS_EDITOR_QWEN_MAX_ITEMS: '0'
-          NEWS_EDITOR_MIN_PUBLIC: '12'
+          NEWS_HOMEPAGE_LIMIT: '12'
         run: |
           node scripts/run-news-pipeline.mjs --force
           git diff --check
