@@ -111,9 +111,18 @@ assert.equal(noGameSelection.ok, true, JSON.stringify(noGameSelection.diagnostic
 assert.equal(noGameSelection.items.some(entry => entry.id === 'theft-a') && noGameSelection.items.some(entry => entry.id === 'theft-b'), false);
 assert.equal(noGameSelection.diagnostics.rejected.duplicateStory, 1);
 
-// Eight real stories must publish as eight; a display target is not a quota.
+// Eight genuinely different stories must publish as eight; a display target is not a quota.
 const quietDay = selectCommercialHomeNews(
-  Array.from({ length: 8 }, (_, index) => item(`quiet-${index}`, index + 1, `Source ${index % 4}`, `quiet-topic-${index}`)),
+  Array.from({ length: 8 }, (_, index) => item(
+    `quiet-${index}`,
+    index + 1,
+    `Source ${index % 4}`,
+    `quiet-topic-${index}`,
+    {
+      titleEn: `DistinctSignal${index} ProjectMark${index} ReleaseCode${index}`,
+      titleRu: `Сигнал${index} Проект${index} Релиз${index}`
+    }
+  )),
   { now, limit: 12, minRecent: 8, maxPerSource: 4 }
 );
 assert.equal(quietDay.ok, true, JSON.stringify(quietDay.diagnostics));
@@ -122,11 +131,20 @@ assert.equal(quietDay.diagnostics.targetFilled, false);
 
 // Source diversity is preferred, but it must not prevent the twelfth valid card.
 const concentrated = selectCommercialHomeNews([
-  ...Array.from({ length: 8 }, (_, index) => item(`dominant-${index}`, index + 1, 'Dominant Source', `dominant-topic-${index}`)),
-  item('other-a', 9, 'Source A', 'other-a'),
-  item('other-b', 10, 'Source B', 'other-b'),
-  item('other-c', 11, 'Source C', 'other-c'),
-  item('other-d', 12, 'Source D', 'other-d')
+  ...Array.from({ length: 8 }, (_, index) => item(
+    `dominant-${index}`,
+    index + 1,
+    'Dominant Source',
+    `dominant-topic-${index}`,
+    {
+      titleEn: `DominantSignal${index} Marker${index} EventCode${index}`,
+      titleRu: `Доминанта${index} Маркер${index} Событие${index}`
+    }
+  )),
+  item('other-a', 9, 'Source A', 'other-a', { titleEn: 'Amber Harbor Expansion', titleRu: 'Расширение Amber Harbor' }),
+  item('other-b', 10, 'Source B', 'other-b', { titleEn: 'Crimson Valley Launch', titleRu: 'Релиз Crimson Valley' }),
+  item('other-c', 11, 'Source C', 'other-c', { titleEn: 'Silver Forge Update', titleRu: 'Обновление Silver Forge' }),
+  item('other-d', 12, 'Source D', 'other-d', { titleEn: 'Night Circuit Announcement', titleRu: 'Анонс Night Circuit' })
 ], { now, limit: 12, minRecent: 8, maxPerSource: 4 });
 assert.equal(concentrated.ok, true, JSON.stringify(concentrated.diagnostics));
 assert.equal(concentrated.items.length, 12);
