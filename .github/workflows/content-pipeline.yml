@@ -30,6 +30,7 @@ on:
       - 'scripts/enrich-game-relations.mjs'
       - 'scripts/audit-review-publication.mjs'
       - 'scripts/validate-automation-publish-diff.mjs'
+      - 'scripts/lib/free-editorial-ai.mjs'
       - 'scripts/lib/editorial-game-registry-adapter.mjs'
       - 'scripts/lib/system-game-registry-adapter.mjs'
       - 'config/content-pipeline.json'
@@ -83,6 +84,7 @@ jobs:
           node --check scripts/validate-automation-publish-diff.mjs
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/audit-review-publication.mjs
+          node --check scripts/lib/free-editorial-ai.mjs
           node --check scripts/lib/game-registry.mjs
           node --check scripts/lib/game-registry-migration.mjs
           node --check scripts/lib/game-registry-page-sections.mjs
@@ -98,23 +100,33 @@ jobs:
       - name: Materialize and enrich the visible game catalog
         run: node scripts/run-game-catalog-enrichment.mjs
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
-          OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
-          OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
           CATALOG_RELATION_BATCH: '8'
           CATALOG_REVIEW_BATCH: '6'
           CATALOG_GUIDE_BATCH: '8'
       - name: Build canonical registry and semantic work queue
         run: node scripts/orchestrate-content.mjs --finalize
+      - name: Cache free Qwen model
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama/models
+          key: ollama-qwen2.5-3b-v1-${{ runner.os }}
+      - name: Start free local Qwen editorial backend
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve > /tmp/ollama.log 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+          ollama pull qwen2.5:3b
       - name: Build selected game pages and revise red work until green
         run: node scripts/run-content-pipeline.mjs
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
-          OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
-          OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
-          OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
+          OLLAMA_BASE_URL: http://127.0.0.1:11434
+          OLLAMA_EDITORIAL_MODEL: qwen2.5:3b
+          OLLAMA_EDITORIAL_TIMEOUT_MS: '240000'
+          FREE_EDITORIAL_AI_ENABLED: '1'
       - name: Materialize newly green reviews into runtime feed
         run: node scripts/materialize-review-publication-feed.mjs
       - name: Recalculate lifecycle state
@@ -185,7 +197,7 @@ jobs:
             --base staging \
             --head "$branch" \
             --title "Automated game lifecycle ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
-            --body "Autonomous game lifecycle output. Every visible game is tracked for relations/franchise, similarity, professional reviews/rating and guides. Green content is exposed publicly; red quality findings are retained only as revision state and automatically return to research/rebuild/recheck on the next lifecycle pass. Page publication is finalized only after canonical editorial, source, content and media gates are green; failed revisions restore the previous public snapshot.")"
+            --body "Autonomous game lifecycle output. Every visible game is tracked for relations/franchise, similarity, professional reviews/rating and guides. Green content is exposed publicly; red quality findings are retained only as revision state and automatically return to research/rebuild/recheck on the next lifecycle pass. Page publication is finalized only after canonical editorial, source, content and media gates are green; failed revisions restore the previous public snapshot. Game-page editorial and relation enrichment use free local Qwen through Ollama; no paid AI API is required for page publication.")"
           gh pr merge "$pr_url" --merge --delete-branch
       - name: Preserve lifecycle queue and quality audit
         if: always()
