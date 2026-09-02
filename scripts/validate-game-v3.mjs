@@ -13,8 +13,7 @@ const v3Css=read('game/_shared/game-page-v3.css');
 const shell=read('game/_shared/game-shell.js');
 const loader=read('game/_shared/game-page.js');
 const bootstrap=read('game/_shared/game-page-v3-bootstrap.js');
-const rendererRaw=read('game/_shared/game-page-v3.js');
-const renderer=rendererRaw.replace("['artGroup','mediaArt','artCount',art,(url,index)=>mediaCard(url,title,index===0?'Обложка':'Арт']]","['artGroup','mediaArt','artCount',art,(url,index)=>mediaCard(url,title,index===0?'Обложка':'Арт')] ]");
+const renderer=read('game/_shared/game-page-v3.js');
 
 for(const token of ['--ig-user-score','--ig-glass-panel','--ig-card-wide'])expect(design.includes(token),`Missing design token ${token}`);
 for(const component of ['.ig-scroll-rail','.ig-media-group','.ig-game-card-wide','.ig-review-feature','.ig-external-review-grid','.ig-admin-layout'])expect(design.includes(component),`Missing design-system component ${component}`);
@@ -24,11 +23,22 @@ expect(v3Css.includes('.hero-media-arrow'),'Hero media carousel controls are mis
 expect(v3Css.includes('.similar-row'),'Similar games v3 layout is missing');
 expect(shell.includes('game-page.js?v='),'Game shell must bust the shared loader cache');
 expect(loader.includes('game-page-v3-bootstrap.js'),'Shared loader must load v3 bootstrap');
-expect(bootstrap.includes("source.replace"),'Bootstrap must normalize the committed v3 source before execution');
+
+// Bootstrap is a generic loader/hydrator. It must not fetch the renderer source as text,
+// rewrite committed JavaScript with string replacement, or execute rewritten source via Function.
+for(const token of ["document.createElement('script')",'script.src=sourceUrl','hydrateVerifiedPresentation','document.head.appendChild(script)'])expect(bootstrap.includes(token),`Bootstrap is missing generic loader contract: ${token}`);
+expect(!/fetch\s*\(\s*sourceUrl/.test(bootstrap),'Bootstrap must not fetch committed renderer source as text');
+expect(!/source\.replace|corrected\.replace/.test(bootstrap),'Bootstrap must not rewrite committed renderer source');
+expect(!/\bFunction\s*\(/.test(bootstrap),'Bootstrap must not execute rewritten renderer source with Function');
+expect(!/publicDisplayOverrides|applyPublicLocalization/.test(bootstrap),'Bootstrap must not contain game-specific presentation overrides');
+expect(!/(?:\bpageSlug|\bslug)\s*[!=]==?\s*['"][a-z0-9][a-z0-9-]{2,}['"]/i.test(bootstrap),'Bootstrap must not branch on a literal game slug');
+
 for(const contract of ['function renderHero(','function hydrateSimilarGames(','function renderReviews(','function renderMedia(','function bindRating(','data/ratings/','data/reviews/','data/news/'])expect(renderer.includes(contract),`Renderer is missing ${contract}`);
 for(const text of ['Обзоры других изданий','Скриншоты','Арты и обложки','Оценка игроков'])expect(renderer.includes(text),`Renderer is missing UI contract: ${text}`);
 expect(!renderer.includes('igropoisk-rating-${slug}'),'User ratings must not be stored in localStorage');
 expect(renderer.includes('ratings_api_base'),'Renderer must use the ratings API configuration');
+expect(renderer.includes('if(!dialog||!scale||!note||!dialogTitle||!rateGame||!rateInline||!close)return'),'Rating binding must be null-safe for optional controls');
+expect(!renderer.includes('applyPublicLocalization'),'Renderer must not contain game-specific localization branching');
 try{new Function(renderer);new Function(shell);new Function(loader);new Function(bootstrap)}catch(error){errors.push(`Game JavaScript syntax: ${error.message}`)}
 
 const rating=json('data/ratings/the-witcher-3-wild-hunt.json');
@@ -51,4 +61,4 @@ expect(schema.includes('PRIMARY KEY (game_slug, voter_hash)'),'Ratings schema mu
 expect(schema.includes('rating_events'),'Ratings schema must keep append-only vote history');
 
 if(errors.length){console.error(`Game v3 validation failed (${errors.length})`);for(const error of errors)console.error(`- ${error}`);process.exit(1)}
-console.log('Game page v3, parsers, review article and ratings backend passed structural validation.');
+console.log('Game page v3 generic runtime, parsers, review article and ratings backend passed structural validation.');
