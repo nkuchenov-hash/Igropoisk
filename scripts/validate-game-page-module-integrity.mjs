@@ -58,11 +58,9 @@ function variableExpressions(text){
   return vars;
 }
 function resolveExpression(expr,vars,seen=new Set(),depth=0){
-  let value=String(expr||'').trim();if(depth>8)return value;
+  const value=String(expr||'').trim();if(depth>8)return value;
   const exact=value.match(/^([A-Za-z_$][\w$]*)$/)?.[1];
   if(exact&&vars.has(exact)&&!seen.has(exact)){const next=new Set(seen);next.add(exact);return resolveExpression(vars.get(exact),vars,next,depth+1)}
-  const names=[...new Set(value.match(/[A-Za-z_$][\w$]*/g)||[])];
-  for(const name of names){if(seen.has(name)||!vars.has(name))continue;const replacement=resolveExpression(vars.get(name),vars,new Set([...seen,name]),depth+1);value=value.replace(new RegExp(`\\b${name.replace(/[$]/g,'\\$&')}\\b`,'g'),`(${replacement})`)}
   return value;
 }
 function writeTargets(text){
