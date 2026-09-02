@@ -23,28 +23,25 @@ for(let attempt=1;attempt<=attempts;attempt++){
   if(fs.existsSync(path.join(root,'scripts/enrich-game-relations.mjs')))run(`relations-${attempt}`,'scripts/enrich-game-relations.mjs',[slug]);
   run(`similarity-${attempt}`,'scripts/build-similarity-index.mjs',[slug]);
   run(`content-validation-${attempt}`,'scripts/validate-game-page-content.mjs',[slug]);
+  let contentReport=currentContent();
+  if(contentReport.status!=='green'&&fs.existsSync(path.join(root,'scripts/build-game-page-baseline-editorial.mjs'))){
+    run(`baseline-content-repair-${attempt}`,'scripts/build-game-page-baseline-editorial.mjs',[slug]);
+    run(`content-validation-after-baseline-${attempt}`,'scripts/validate-game-page-content.mjs',[slug]);
+    contentReport=currentContent();
+  }
   const mediaOk=run(`page-media-discovery-${attempt}`,'scripts/discover-review-media.mjs',[slug]).status===0;
   run(`media-validation-${attempt}`,'scripts/validate-game-media-quality.mjs',[slug]);
-  const mediaReport=currentPage(),contentReport=currentContent(),sourceCorpus=currentSources();
+  const mediaReport=currentPage(),sourceCorpus=currentSources();
   const sourceComplete=Boolean(sourceCorpus.discovery?.complete),contentGreen=contentReport.status==='green',mediaGreen=mediaReport.status==='green';
   comments=[...(contentReport.errors||[]),...(mediaReport.comments||[]),...(sourceComplete?[]:[`Не завершён полный корпус источников страницы: ${sourceCorpus.counts?.professional_reviews||0} профессиональных материалов, ${sourceCorpus.counts?.scored||0} с оценками.`]),...(mediaOk?[]:['Не завершена проверка существующего медиакорпуса.'])];
   if(contentGreen&&mediaGreen&&mediaOk&&sourceComplete){status='green';comments=[];break}
   status='red-needs-revision';
-
-  // A source-only gap is already exhaustively handled by source discovery and AI page repair cannot add valid review sources.
-  if(contentGreen&&mediaGreen&&mediaOk&&!sourceComplete){
-    comments=[...comments,'Широкий и точечный поиск источников завершён; повторный идентичный QC-цикл пропущен.'];
-    break;
-  }
-
+  if(contentGreen&&mediaGreen&&mediaOk&&!sourceComplete){comments=[...comments,'Широкий и точечный поиск источников завершён; повторный идентичный QC-цикл пропущен.'];break}
   if(process.env.OPENAI_API_KEY){
     const child=run(`page-revision-${attempt}`,'scripts/build-game-page.mjs',[slug]);
-    if(child.status!==0){comments=[...comments,(child.stderr||'').slice(-3000),'Автоматическое исправление страницы не выполнено; повторный идентичный QC-цикл пропущен.'];break}
+    if(child.status!==0){comments=[...comments,(child.stderr||'').slice(-3000),'AI-улучшение страницы недоступно; базовый детерминированный ремонт уже выполнен.'];break}
     normalizeCanonicalTitle();
-  }else{
-    comments=[...comments,'OPENAI_API_KEY отсутствует; автоматическое исправление страницы недоступно.'];
-    break;
-  }
+  }else{comments=[...comments,'AI-улучшение страницы недоступно; базовый детерминированный ремонт уже выполнен.'];break}
  }else{
   run(`game-source-corpus-${attempt}`,'scripts/collect-game-sources.mjs',[slug]);
   if(fs.existsSync(path.join(root,'scripts/enrich-review-native-sources.mjs')))run(`review-native-sources-${attempt}`,'scripts/enrich-review-native-sources.mjs',[slug]);
@@ -53,4 +50,4 @@ for(let attempt=1;attempt<=attempts;attempt++){
   const reviews=currentReviews(),rating=currentRating(),sourceCorpus=currentSources();const corpusGreen=Boolean(sourceCorpus.discovery?.complete)&&reviews.publication_gate?.status==='green';const ratingGreen=rating.status==='green';if(!corpusGreen||!ratingGreen){status='red-needs-revision';comments=[`База источников игры: ${sourceCorpus.counts?.total||0}.`,`Профессиональных материалов: ${sourceCorpus.counts?.professional_reviews||reviews.reviews?.length||0}.`,`Оценок: ${rating.sources?.length||0}.`];continue}const steps=[['media-discovery','scripts/discover-review-media.mjs'],['synthesis','scripts/synthesize-review-adaptive.mjs'],['media-enrichment','scripts/enrich-review-media.mjs'],['validation','scripts/validate-review-output.mjs']];let technicalOk=true;for(const [label,script] of steps){if(!fs.existsSync(path.join(root,script))){technicalOk=false;comments=[`Отсутствует ${script}`];break}const last=run(`${label}-${attempt}`,script,[slug]);if(last.status!==0){technicalOk=false;comments=[(last.stderr||last.stdout||`${label} needs revision`).slice(-5000)];break}}const validation=currentReviewOutput();const identityProblems=reviewIdentityProblems(canonicalTitle);if(technicalOk&&validation?.passed===true&&!identityProblems.length){status='green';comments=[];break}status='red-needs-revision';comments=[...(validation?.errors||[]),...identityProblems]
  }
 }
-const report={schema_version:9,type:mode,game_slug:slug,game_id:gameId||null,canonical_title:canonicalTitle||null,checked_at:new Date().toISOString(),status,green:status==='green',comments,revision_history:history,policy:{page_ready_requires_source_corpus:true,page_ready_requires_complete_source_scan:true,page_ready_requires_review_article:false,page_ready_requires_media_validation:true,page_ready_requires_content_validation:true,page_content_requires_russian_editorial_text:true,page_content_requires_campaign_or_structure:true,page_content_requires_minimum_features:true,source_corpus_owned_by_game_page:true,review_pipeline_reuses_game_source_corpus:true,page_rating_derived_from_source_corpus:true,quality_never_terminally_blocks:true,red_means_revise_again:true,immediate_revision_attempts:attempts,skip_identical_retry_when_source_search_exhausted:true,skip_identical_retry_when_repair_unavailable:true,keep_queued_until_green:true}};write(`data/quality-control/${mode}-${slug}-control.json`,report);write(`data/parser-runs/quality-control-${mode}-${slug}.json`,{parser:'quality-control-loop',game_slug:slug,status:report.green?'green':'needs_revision',checked_at:report.checked_at,comments:report.comments,attempts:history.length});console.log(JSON.stringify({mode,slug,status,attempts:history.length,comments:comments.slice(0,8)},null,2));process.exit(0);
+const report={schema_version:10,type:mode,game_slug:slug,game_id:gameId||null,canonical_title:canonicalTitle||null,checked_at:new Date().toISOString(),status,green:status==='green',comments,revision_history:history,policy:{page_ready_requires_source_corpus:true,page_ready_requires_complete_source_scan:true,page_ready_requires_review_article:false,page_ready_requires_media_validation:true,page_ready_requires_content_validation:true,page_content_requires_russian_editorial_text:true,page_content_requires_campaign_or_structure:true,page_content_requires_minimum_features:true,page_baseline_content_must_not_require_paid_ai:true,source_corpus_owned_by_game_page:true,review_pipeline_reuses_game_source_corpus:true,page_rating_derived_from_source_corpus:true,quality_never_terminally_blocks:true,red_means_revise_again:true,immediate_revision_attempts:attempts,keep_queued_until_green:true}};write(`data/quality-control/${mode}-${slug}-control.json`,report);write(`data/parser-runs/quality-control-${mode}-${slug}.json`,{parser:'quality-control-loop',game_slug:slug,status:report.green?'green':'needs_revision',checked_at:report.checked_at,comments:report.comments,attempts:history.length});console.log(JSON.stringify({mode,slug,status,attempts:history.length,comments:comments.slice(0,8)},null,2));process.exit(0);
