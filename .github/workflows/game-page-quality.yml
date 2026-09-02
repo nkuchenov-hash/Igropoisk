@@ -11,6 +11,8 @@ on:
       - 'data/articles/**'
       - 'data/drafts/**'
       - 'data/parser-output/**'
+      - 'data/page-editorial/**'
+      - 'data/game-sources/**'
       - 'data/article-media/**'
       - 'data/game-media/**'
       - 'data/reviews/**'
@@ -19,10 +21,20 @@ on:
       - 'data/franchises/**'
       - 'data/guides/**'
       - 'config/game-page-quality-v2.json'
+      - 'config/game-page-module.manifest.json'
       - 'config/game-media-steam-overrides.json'
+      - 'docs/GAME_PAGE_MODULE_STABLE.md'
       - 'scripts/parse-game-data.mjs'
       - 'scripts/build-game-page.mjs'
       - 'scripts/build-game-page-basic.mjs'
+      - 'scripts/discover-game-sources-web.mjs'
+      - 'scripts/discover-game-publication-hubs.mjs'
+      - 'scripts/collect-game-sources.mjs'
+      - 'scripts/materialize-page-editorial.mjs'
+      - 'scripts/finalize-game-page-publication.mjs'
+      - 'scripts/validate-game-page-publication-state.mjs'
+      - 'scripts/validate-game-page-module-integrity.mjs'
+      - 'scripts/smoke-game-page-slug.mjs'
       - 'scripts/materialize-game-shells.mjs'
       - 'scripts/validate-game-shells.mjs'
       - 'scripts/orchestrate-content.mjs'
@@ -30,6 +42,7 @@ on:
       - 'scripts/audit-review-publication.mjs'
       - 'scripts/repair-game-media-from-steam.mjs'
       - 'scripts/validate-game-media-quality.mjs'
+      - 'scripts/validate-game-page-content.mjs'
       - 'scripts/build-similarity-index.mjs'
       - 'scripts/enrich-game-relations.mjs'
       - 'scripts/materialize-catalog-game-data.mjs'
@@ -65,6 +78,9 @@ jobs:
         run: |
           node --check game/_shared/game-page-v3-bootstrap.js
           node --check game/_shared/game-page.js
+          node --check game/_shared/game-page-source-corpus.js
+          node --check game/_shared/game-page-integrity.js
+          node --check game/_shared/game-media-sanitize.js
           node --check game/_shared/game-page-quality.js
           node --check game/_shared/game-page-similarity.js
           node --check game/_shared/game-page-review-publication-control.js
@@ -76,6 +92,15 @@ jobs:
           node --check scripts/parse-game-data.mjs
           node --check scripts/build-game-page.mjs
           node --check scripts/build-game-page-basic.mjs
+          node --check scripts/discover-game-sources-web.mjs
+          node --check scripts/discover-game-publication-hubs.mjs
+          node --check scripts/collect-game-sources.mjs
+          node --check scripts/materialize-page-editorial.mjs
+          node --check scripts/finalize-game-page-publication.mjs
+          node --check scripts/validate-game-page-publication-state.mjs
+          node --check scripts/validate-game-page-module-integrity.mjs
+          node --check scripts/smoke-game-page-slug.mjs
+          node --check scripts/validate-game-page-content.mjs
           node --check scripts/materialize-game-shells.mjs
           node --check scripts/validate-game-shells.mjs
           node --check scripts/orchestrate-content.mjs
@@ -98,6 +123,8 @@ jobs:
           node --check scripts/smoke-game-page-visible-data-v3.mjs
           node --check scripts/smoke-doom-game-page-v4.mjs
           node --check scripts/smoke-game-runtime.mjs
+      - name: Require complete game page assembly module
+        run: node scripts/validate-game-page-module-integrity.mjs
       - name: Exercise canonical catalog materialization
         run: node scripts/materialize-catalog-game-data.mjs
       - name: Exercise verified Steam media repair
