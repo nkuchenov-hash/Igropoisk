@@ -12,6 +12,9 @@ on:
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/run-game-catalog-enrichment.mjs'
       - 'scripts/materialize-catalog-game-data.mjs'
+      - 'scripts/materialize-page-editorial.mjs'
+      - 'scripts/finalize-game-page-publication.mjs'
+      - 'scripts/validate-game-page-content.mjs'
       - 'scripts/prepare-guide-research.mjs'
       - 'scripts/build-game-page.mjs'
       - 'scripts/build-game-page-basic.mjs'
@@ -61,6 +64,9 @@ jobs:
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/run-game-catalog-enrichment.mjs
           node --check scripts/materialize-catalog-game-data.mjs
+          node --check scripts/materialize-page-editorial.mjs
+          node --check scripts/finalize-game-page-publication.mjs
+          node --check scripts/validate-game-page-content.mjs
           node --check scripts/prepare-guide-research.mjs
           node --check scripts/build-game-page.mjs
           node --check scripts/build-game-page-basic.mjs
@@ -129,6 +135,7 @@ jobs:
             data/parser-output
             data/parser-runs
             data/drafts
+            data/page-editorial
             data/game-content
             data/catalog-visible.json
             data/research
@@ -178,7 +185,8 @@ jobs:
             --base staging \
             --head "$branch" \
             --title "Automated game lifecycle ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
-            --body "Autonomous game lifecycle output. Every visible game is tracked for relations/franchise, similarity, professional reviews/rating and guides. Green content is exposed publicly; red quality findings are retained only as revision state and automatically return to research/rebuild/recheck on the next lifecycle pass. The workflow never treats a red quality result as terminal.")"
+            --body "Autonomous game lifecycle output. Every visible game is tracked for relations/franchise, similarity, professional reviews/rating and guides. Green content is exposed publicly; red quality findings are retained only as revision state and automatically return to research/rebuild/recheck on the next lifecycle pass. Page publication is finalized only after canonical editorial, source, content and media gates are green; failed revisions restore the previous public snapshot."
+          )"
           gh pr merge "$pr_url" --merge --delete-branch
       - name: Preserve lifecycle queue and quality audit
         if: always()
@@ -195,6 +203,7 @@ jobs:
             data/content-pipeline/catalog-enrichment-log.json
             data/content-pipeline/franchise-queue.json
             data/quality-control
+            data/page-editorial
             data/audits/review-publication.json
             data/audits/review-feed-materialization.json
           if-no-files-found: warn
