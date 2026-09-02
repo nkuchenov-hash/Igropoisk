@@ -39,10 +39,21 @@ for (const item of [
     title: 'Новый 750-Вт блок питания взорвался при первом подключении из коробки',
     summary: 'Блок питания вышел из строя при подключении: произошли вспышка, искры и появилось пламя.',
     url: 'https://www.playground.ru/misc/news/power-supply.html'
+  },
+  {
+    title: 'Новая система ChatGPT ASTRA нашла и использовала две zero-day уязвимости в тестах',
+    summary: 'Система OpenAI автономно обнаружила уязвимости безопасности и подготовила программные эксплойты.',
+    url: 'https://vgtimes.ru/news/145107-novaya-sistema-chatgpt-astra-nashla-i-ispolzovala-dve-zero-day-uyazvimosti-v-testah.html'
   }
 ]) {
   assert.equal(isLikelyNewsContent(item), false, `must reject non-news homepage material: ${item.title}`);
 }
+
+assert.equal(isLikelyNewsContent({
+  title: 'Valve улучшила ИИ ботов в новом патче Deadlock',
+  summary: 'Обновление игры уже доступно в Steam и меняет поведение ботов в матчах.',
+  url: 'https://example.test/news/deadlock-bot-ai-patch'
+}), true, 'AI terminology must remain allowed when the article has explicit video-game context');
 
 const doomGame = { title: 'doom-the-dark-ages', slug: 'doom-the-dark-ages', gameId: 'game_doom_dark_ages' };
 assert.equal(isSameNewsStory({
