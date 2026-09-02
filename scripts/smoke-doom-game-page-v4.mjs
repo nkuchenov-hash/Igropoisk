@@ -55,6 +55,9 @@ try{
   if(state.franchise<2)errors.push(`DOOM franchise card incomplete: ${state.franchise}`);
   if(/Страница готовится/i.test(state.body))errors.push('Forbidden “page preparing” note is visible.');
   if(pageErrors.length)errors.push(`Browser errors: ${pageErrors.slice(0,3).join(' | ')}`);
-  console.log(JSON.stringify({base,state,pageErrors,errors},null,2));
+  const diagnostics={base,state,pageErrors,errors};
+  fs.mkdirSync(path.join(root,'data','quality-control'),{recursive:true});
+  fs.writeFileSync(path.join(root,'data','quality-control','doom-smoke.json'),`${JSON.stringify(diagnostics,null,2)}\n`,'utf8');
+  console.log(JSON.stringify(diagnostics,null,2));
   if(errors.length)throw new Error(`DOOM Game Page v4 smoke failed:\n- ${errors.join('\n- ')}`);
 }finally{await browser.close();if(server)await new Promise(resolve=>server.close(resolve))}
