@@ -1,7 +1,7 @@
 # Игропоиск — стабильный модуль создания страниц игр
 
 **Статус:** STABLE MODULE CONTRACT  
-**Версия контракта:** 2026-09-02.2  
+**Версия контракта:** 2026-09-02.3  
 **Машиночитаемый состав:** `config/game-page-module.manifest.json`
 
 ## 1. Граница модуля
@@ -91,7 +91,7 @@ Finalizer обязан fail closed, если хотя бы одно из усл�
 
 ## 7. Контракт клиентов Page Assembly
 
-Все внешние клиенты разделены manifest на четыре класса.
+Все внешние клиенты разделены manifest на пять классов.
 
 ### Queue-only adapters
 
@@ -105,6 +105,10 @@ News, Top 250 и другие discovery/entry adapters могут:
 ### Copy-only promoters
 
 Staging/production promotion может только скопировать **уже finalized** canonical package. Перед копированием и после него выполняется `validate-game-page-publication-state.mjs`. Promoter не имеет права запускать builder и не имеет права синтезировать public state.
+
+### Rollback-only orchestrators
+
+Lifecycle orchestrator может физически восстановить байты последнего published canonical package после неудачной revision. Он не имеет права синтезировать новое `published/public_ready` состояние. Успешная публикация всё равно проходит только через canonical finalizer.
 
 ### Finalizer delegates
 
@@ -143,7 +147,8 @@ Runtime должен быть устойчив к независимому уд�
 - draft-only контракт builders;
 - sole-finalizer publication contract;
 - immutable published package;
-- queue-only/copy-only/delegate/revision-safe границы;
+- queue-only/copy-only/rollback-only/delegate/revision-safe границы;
+- фактические write targets public artifacts, а не простые упоминания путей;
 - отсутствие прямого `published/public_ready` writer вне finalizer;
 - бесплатный Ollama/Qwen backend без paid OpenAI dependency;
 - наличие source/content/media/editorial gates;
@@ -169,16 +174,19 @@ Page module может показать опубликованный обзор,
 
 ## 11. Определение «100% ready»
 
-Нельзя объявлять модуль готовым только потому, что отдельные unit/production checks зелёные. Статус 100% допускается только одновременно при выполнении условий:
+Нельзя объявлять модуль готовым только потому, что отдельные unit checks зелёные. **Сертификация самого Page Assembly выполняется независимо от создания новой acceptance-игры.** Это позволяет сначала доказать готовность инструмента, а уже затем применять его к новой игре.
 
-1. `validate-game-page-module-integrity.mjs` green на фактической ветке;
-2. все обязательные module/page/runtime/deployment gates green;
-3. ни один writer/adaptor/mutator не способен обойти sole finalizer или изменить published canonical package на месте;
-4. shared runtime не содержит game-specific presentation logic или runtime source rewriting;
-5. production promotion принимает только уже finalized canonical package;
-6. generic fresh-game acceptance после подтверждения готовности модуля проходит всю цепочку без game-specific кода.
+Статус 100% ready допускается только одновременно при выполнении условий:
 
-Конкретная acceptance-игра не является частью архитектурного контракта и не должна фигурировать в shared runtime, manifest или специальных ветках логики.
+1. `validate-game-page-module-integrity.mjs` green на фактической integration-ветке и не содержит unclassified public writers;
+2. все обязательные module/page/runtime/staging gates green;
+3. builders, adapters, mutators, promoters и rollback физически не способны обойти sole finalizer или изменить published canonical package на месте;
+4. shared runtime не содержит game-specific presentation logic, runtime source rewriting или synthetic Review;
+5. бесплатный Ollama/Qwen backend реально отвечает структурированным JSON в CI без paid API;
+6. существующие finalized game pages проходят generic publication-state validation и реальный shared-runtime browser smoke;
+7. модуль безопасно проходит staging merge/promotion и production deployment/runtime gates.
+
+**Fresh-game acceptance выполняется только после этой сертификации.** Он является проверкой применения уже готового инструмента к новой игре, а не способом объявить сам инструмент готовым. Конкретная acceptance-игра не является частью архитектурного контракта и не должна фигурировать в shared runtime, manifest или специальных ветках логики.
 
 ## 12. Freeze rule
 
