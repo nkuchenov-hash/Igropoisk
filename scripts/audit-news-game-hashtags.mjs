@@ -38,6 +38,24 @@ function existsAtRef(relative) {
   return result.status === 0;
 }
 
+function readJsonAtRef(relative) {
+  if (!productionRef) {
+    try { return JSON.parse(fs.readFileSync(relative, 'utf8')); } catch { return null; }
+  }
+  const result = spawnSync('git', ['show', `${productionRef}:${relative.replaceAll('\\', '/')}`], { encoding: 'utf8' });
+  if (result.status !== 0 || !String(result.stdout || '').trim()) return null;
+  try { return JSON.parse(result.stdout); } catch { return null; }
+}
+
+function isLinkableAtRef(slug) {
+  if (!existsAtRef(`game/${slug}/index.html`) || !existsAtRef(`data/drafts/${slug}.json`)) return false;
+  const draft = readJsonAtRef(`data/drafts/${slug}.json`);
+  if (!draft) return false;
+  const directNewsShell = draft?.publication?.creator_source === 'news';
+  if (directNewsShell && draft?.publication?.editorial_ready !== true) return false;
+  return true;
+}
+
 for (const item of items) {
   const games = Array.isArray(item?.games) ? item.games.filter(game => game && typeof game === 'object') : [];
   if (games.length) articlesWithGames += 1;
@@ -65,8 +83,8 @@ for (const item of items) {
       identity_verified: game.identityVerified === true
     });
 
-    // A verified temporary identity intentionally has no public hashtag until the
-    // shared Game Creator materializes its canonical page.
+    // A verified game without a completed page intentionally has no public hashtag
+    // while its request waits in the independent page-assembly queue.
     if (!slug || !title || !hashtag) continue;
     uniqueGames.set(gameId || slug, { game_id: gameId || null, slug, title, hashtag });
 
@@ -91,7 +109,7 @@ for (const item of items) {
     if (game.pageExists === true && String(game.pageUrl || '') !== expectedUrl) {
       badPageUrls.push({ news_id: item.id || null, game_id: gameId || null, slug, actual: game.pageUrl || '', expected: expectedUrl });
     }
-    if (productionRef && (!existsAtRef(`game/${slug}/index.html`) || !existsAtRef(`data/drafts/${slug}.json`))) {
+    if (productionRef && !isLinkableAtRef(slug)) {
       productionMissingPages.push({ game_id: gameId || null, slug, title, hashtag });
     }
   }
@@ -111,7 +129,7 @@ const deferredTemporary = temporary.filter(item => allowMissingPages && item.ide
 const blockingIntegrityFindings = collisions.length + inconsistent.length + duplicateArticleGames.length + unverified.length
   + blockingTemporary.length + badPageUrls.length + (allowMissingPages ? 0 : missingPageFindings);
 const report = {
-  schema_version: 4,
+  schema_version: 5,
   generated_at: new Date().toISOString(),
   production_ref: productionRef || null,
   allow_missing_pages: allowMissingPages,
@@ -138,5 +156,5 @@ const report = {
 
 fs.mkdirSync('tmp', { recursive: true });
 fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
-console.log(`[news/hashtag-audit] ${items.length} articles; ${uniqueGames.size} canonical hashtag identities; ${hashtagOwner.size} unique hashtags; ${report.unverified_game_references.length} unverified refs; ${report.deferred_verified_temporary_games.length} verified temporary games deferred to Game Creator; ${report.missing_staging_pages.length} staging pages missing; ${report.missing_production_pages.length} production pages missing; ${blockingIntegrityFindings} blocking integrity findings; ${unresolvedExplicit.length} context findings deferred without hashtags.`);
+console.log(`[news/hashtag-audit] ${items.length} articles; ${uniqueGames.size} canonical hashtag identities; ${hashtagOwner.size} unique hashtags; ${report.unverified_game_references.length} unverified refs; ${report.deferred_verified_temporary_games.length} verified temporary games deferred to page assembly; ${report.missing_staging_pages.length} staging pages missing; ${report.missing_production_pages.length} production pages missing/incomplete; ${blockingIntegrityFindings} blocking integrity findings; ${unresolvedExplicit.length} context findings deferred without hashtags.`);
 if (strict && blockingIntegrityFindings) process.exit(1);
