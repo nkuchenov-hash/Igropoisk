@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+// This validator is the semantic/content gate for the game-page module; media has a separate gate.
 const root=process.cwd();
 const slug=String(process.argv[2]||'').trim();
 if(!slug)throw new Error('Usage: node scripts/validate-game-page-content.mjs <game-slug>');
