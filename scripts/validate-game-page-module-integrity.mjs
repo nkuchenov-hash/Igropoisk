@@ -11,7 +11,7 @@ const read=p=>fs.readFileSync(abs(p),'utf8');
 const errors=[];
 const checked=[];
 const fail=message=>errors.push(message);
-const persist=value=>{const target=abs(reportPath);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n')};
+const persist=value=>{if(process.env.GAME_PAGE_MODULE_INTEGRITY_WRITE!=='1')return;const target=abs(reportPath);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n')};
 
 if(!exists(manifestPath)){
   const result={module:'game-page-assembly',status:'red',errors:[`missing ${manifestPath}`]};persist(result);console.error(JSON.stringify(result,null,2));process.exit(1);
