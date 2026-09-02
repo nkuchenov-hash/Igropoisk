@@ -32,7 +32,7 @@ const perFeedLimit = 40;
 const maxPerSource = 4;
 const outputPath = path.resolve('data/news.json');
 const imageDirectory = path.resolve('assets/news');
-const userAgent = 'IgropoiskNewsBot/4.0 (+https://github.com/nkuchenov-hash/Igropoisk)';
+const userAgent = 'IgropoiskNewsBot/4.1 (+https://github.com/nkuchenov-hash/Igropoisk)';
 
 const rejectPatterns = [
   /survey|опрос/i,
@@ -383,7 +383,7 @@ async function downloadOriginalImage(imageUrl, id, articleUrl) {
     if (bytes.length > 20 * 1024 * 1024) throw new Error('image exceeds 20 MB');
     const filename = `${id}${extension}`;
     await fs.writeFile(path.join(imageDirectory, filename), bytes);
-    return { image: `assets/news/${filename}`, imageSourceUrl: response.url || imageUrl };
+    return { image: `assets/news/${filename}`, imageSourceUrl: response.url || imageUrl, imageCacheStatus: 'cached' };
   } finally {
     clearTimeout(timer);
   }
@@ -391,29 +391,47 @@ async function downloadOriginalImage(imageUrl, id, articleUrl) {
 
 async function hydrateTopic(cluster) {
   const item = cluster.representative;
+  let finalUrl = item.url;
+  let image = '';
+  let imageSourceUrl = '';
+  let imageCacheStatus = 'fallback';
+
   try {
-    const { text: html, finalUrl } = await fetchText(item.url);
+    const { text: html, finalUrl: resolvedUrl } = await fetchText(item.url);
+    finalUrl = resolvedUrl;
     const originalImageUrl = extractOriginalArticleImage(html, finalUrl);
-    if (!originalImageUrl) throw new Error('original article has no main image');
-    const downloaded = await downloadOriginalImage(originalImageUrl, item.id, finalUrl);
-    return {
-      id: item.id,
-      title: item.title,
-      summary: item.summary,
-      publishedAt: item.publishedAt,
-      source: item.source,
-      language: item.language,
-      url: finalUrl,
-      ...downloaded,
-      trendScore: cluster.trendScore,
-      sourceCount: cluster.sourceCount,
-      sources: cluster.sources,
-      discussionMentions: cluster.redditMentions
-    };
+    if (originalImageUrl) {
+      try {
+        const downloaded = await downloadOriginalImage(originalImageUrl, item.id, finalUrl);
+        image = downloaded.image;
+        imageSourceUrl = downloaded.imageSourceUrl;
+        imageCacheStatus = downloaded.imageCacheStatus;
+      } catch (error) {
+        console.error(`[news/image] ${item.url}: ${error.message}; using branded fallback`);
+      }
+    } else {
+      console.error(`[news/image] ${item.url}: original article has no main image; using branded fallback`);
+    }
   } catch (error) {
-    console.error(`[news/article] ${item.url}: ${error.message}`);
-    return null;
+    console.error(`[news/article] ${item.url}: ${error.message}; continuing from feed data without cached image`);
   }
+
+  return {
+    id: item.id,
+    title: item.title,
+    summary: item.summary,
+    publishedAt: item.publishedAt,
+    source: item.source,
+    language: item.language,
+    url: finalUrl,
+    image,
+    imageSourceUrl,
+    imageCacheStatus,
+    trendScore: cluster.trendScore,
+    sourceCount: cluster.sourceCount,
+    sources: cluster.sources,
+    discussionMentions: cluster.redditMentions
+  };
 }
 
 await fs.mkdir(path.dirname(outputPath), { recursive: true });
@@ -431,22 +449,20 @@ const scoredClusters = scoreClusters(clusters, redditSignals);
 const selectedTopics = selectTopics(scoredClusters);
 
 const items = [];
-for (const topic of selectedTopics) {
-  const hydrated = await hydrateTopic(topic);
-  if (hydrated) items.push(hydrated);
-}
+for (const topic of selectedTopics) items.push(await hydrateTopic(topic));
 
 items.sort((a, b) => b.trendScore - a.trendScore || new Date(b.publishedAt) - new Date(a.publishedAt));
-if (!items.length) throw new Error('No globally ranked gaming news with original images were found.');
+if (!items.length) throw new Error('No globally ranked gaming news were found.');
 
-const usedFiles = new Set(items.map(item => path.basename(item.image)));
+const usedFiles = new Set(items.map(item => path.basename(item.image || '')).filter(Boolean));
 const existingFiles = await fs.readdir(imageDirectory).catch(() => []);
 await Promise.all(existingFiles.filter(filename => !usedFiles.has(filename)).map(filename => fs.rm(path.join(imageDirectory, filename), { force: true })));
 
 await fs.writeFile(outputPath, `${JSON.stringify({
   generatedAt: new Date().toISOString(),
   rankingMethod: 'Cross-source topic clustering + source authority + recency + Reddit discussion signals. One representative article per global topic.',
+  imagePolicy: 'Best-effort seven-day Object Storage acceleration cache; image failure never blocks a news item.',
   items
 }, null, 2)}\n`);
 
-console.log(`[news] wrote ${items.length} globally ranked topics from ${new Set(items.flatMap(item => item.sources)).size} sources`);
+console.log(`[news] wrote ${items.length} globally ranked topics from ${new Set(items.flatMap(item => item.sources)).size} sources; image-fallback=${items.filter(item => item.imageCacheStatus !== 'cached').length}`);
