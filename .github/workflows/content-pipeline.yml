@@ -12,9 +12,13 @@ on:
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/run-game-catalog-enrichment.mjs'
       - 'scripts/materialize-catalog-game-data.mjs'
+      - 'scripts/materialize-page-editorial.mjs'
+      - 'scripts/finalize-game-page-publication.mjs'
+      - 'scripts/validate-game-page-content.mjs'
       - 'scripts/prepare-guide-research.mjs'
       - 'scripts/build-game-page.mjs'
       - 'scripts/build-game-page-basic.mjs'
+      - 'scripts/materialize-green-game-page.mjs'
       - 'scripts/canonicalize-editorial-game-id.mjs'
       - 'scripts/repair-public-catalog-game-ids.mjs'
       - 'scripts/materialize-review-publication-feed.mjs'
@@ -61,9 +65,13 @@ jobs:
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/run-game-catalog-enrichment.mjs
           node --check scripts/materialize-catalog-game-data.mjs
+          node --check scripts/materialize-page-editorial.mjs
+          node --check scripts/finalize-game-page-publication.mjs
+          node --check scripts/validate-game-page-content.mjs
           node --check scripts/prepare-guide-research.mjs
           node --check scripts/build-game-page.mjs
           node --check scripts/build-game-page-basic.mjs
+          node --check scripts/materialize-green-game-page.mjs
           node --check scripts/canonicalize-editorial-game-id.mjs
           node --check scripts/repair-public-catalog-game-ids.mjs
           node --check scripts/render-review-pages.mjs
@@ -105,6 +113,7 @@ jobs:
         run: node scripts/run-content-pipeline.mjs
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PAGE_EDITORIAL_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
           OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
           OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
@@ -129,6 +138,7 @@ jobs:
             data/parser-output
             data/parser-runs
             data/drafts
+            data/page-editorial
             data/game-content
             data/catalog-visible.json
             data/research
@@ -160,8 +170,6 @@ jobs:
           node scripts/validate-top-250.mjs
           python3 scripts/enforce_layout_contract.py --check
           git diff --check
-          # Validators intentionally refresh reports. Include those refreshed files in the
-          # same isolated publication commit so checkout/PR creation cannot fail on a dirty tree.
           git add -A -- data/quality-control data/audits
           node scripts/validate-automation-publish-diff.mjs --profile content-pipeline
       - name: Open and merge isolated lifecycle PR
@@ -182,7 +190,7 @@ jobs:
             --base staging \
             --head "$branch" \
             --title "Automated game lifecycle ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
-            --body "Autonomous game lifecycle output. Every visible game is tracked for relations/franchise, similarity, professional reviews/rating and guides. Green content is exposed publicly; red quality findings are retained only as revision state and automatically return to research/rebuild/recheck on the next lifecycle pass. The workflow never treats a red quality result as terminal.")"
+            --body "Autonomous game lifecycle output. Page assembly is draft-first and publication is green-only: canonical editorial, source corpus, content and media must all pass before the public catalog or page shell is materialized. Red work remains revision state and never replaces the current public page.")"
           gh pr merge "$pr_url" --merge --delete-branch
       - name: Preserve lifecycle queue and quality audit
         if: always()
@@ -199,6 +207,7 @@ jobs:
             data/content-pipeline/catalog-enrichment-log.json
             data/content-pipeline/franchise-queue.json
             data/quality-control
+            data/page-editorial
             data/audits/review-publication.json
             data/audits/review-feed-materialization.json
           if-no-files-found: warn

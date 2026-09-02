@@ -1,81 +1,27 @@
+#!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 
 const root=process.cwd();
-const slug=process.argv[2];
-if(!slug){console.error('Usage: node scripts/build-game-page.mjs <slug>');process.exit(1)}
-if(!process.env.OPENAI_API_KEY){console.error('OPENAI_API_KEY is required');process.exit(2)}
-const readJSON=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
-const writeJSON=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n')};
-const config=readJSON('config/content-pipeline.json',{});
-const gate=config.page_gate||{};
-const parser=readJSON(`data/parser-output/${slug}.json`,null);
-const existingDraft=readJSON(`data/drafts/${slug}.json`,null);
-const seed=existingDraft||parser;
-if(!seed?.identity?.title){console.error(`No parser output or draft for ${slug}`);process.exit(2)}
-const checkedAt=new Date().toISOString();
-const canonical=value=>{try{const url=new URL(value);url.hash='';for(const key of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'])url.searchParams.delete(key);return `${url.origin}${url.pathname.replace(/\/$/,'')}${url.search}`}catch{return String(value||'').trim()}};
-const uniqueByUrl=items=>items.filter((item,index,list)=>item?.url&&list.findIndex(other=>canonical(other.url)===canonical(item.url))===index);
-async function call(body){const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);const data=await response.json();const text=data.output_text||data.output?.flatMap(item=>item.content||[]).find(item=>item.type==='output_text')?.text;if(!text)throw new Error('No structured output');return JSON.parse(text)}
-const stringArray={type:'array',items:{type:'string'}};
-const schema={type:'object',additionalProperties:false,required:['identity','release','companies','classification','editorial','media','requirements','links','sources'],properties:{identity:{type:'object',additionalProperties:false,required:['slug','title','steam_appid','aliases','excluded_versions'],properties:{slug:{type:'string'},title:{type:'string'},steam_appid:{type:['integer','null']},aliases:stringArray,excluded_versions:stringArray}},release:{type:'object',additionalProperties:false,required:['date','date_text','status'],properties:{date:{type:'string'},date_text:{type:'string'},status:{type:'string'}}},companies:{type:'object',additionalProperties:false,required:['developers','publishers'],properties:{developers:stringArray,publishers:stringArray}},classification:{type:'object',additionalProperties:false,required:['genres','platforms','categories'],properties:{genres:stringArray,platforms:stringArray,categories:stringArray}},editorial:{type:'object',additionalProperties:false,required:['short_description','integrated_description','campaign','features'],properties:{short_description:{type:'string'},integrated_description:{type:'string'},campaign:{type:'string'},features:{type:'array',minItems:4,items:{type:'string'}}}},media:{type:'object',additionalProperties:false,required:['hero','cover','screenshots','videos','artwork','official_video_exists'],properties:{hero:{type:'string'},cover:{type:'string'},screenshots:{type:'array',minItems:6,items:{type:'object',additionalProperties:false,required:['url','caption','source_url'],properties:{url:{type:'string'},caption:{type:'string'},source_url:{type:'string'}}}},videos:{type:'array',items:{type:'object',additionalProperties:false,required:['title','url','thumbnail','source_url'],properties:{title:{type:'string'},url:{type:'string'},thumbnail:{type:'string'},source_url:{type:'string'}}}},artwork:{type:'array',items:{type:'object',additionalProperties:false,required:['url','caption','source_url'],properties:{url:{type:'string'},caption:{type:'string'},source_url:{type:'string'}}}},official_video_exists:{type:'boolean'}}},requirements:{type:'object',additionalProperties:false,required:['pc','platforms'],properties:{pc:{type:'object',additionalProperties:false,required:['minimum','recommended'],properties:{minimum:{type:'object',additionalProperties:false,required:['raw'],properties:{raw:{type:'string'}}},recommended:{type:'object',additionalProperties:false,required:['raw'],properties:{raw:{type:'string'}}}}},platforms:stringArray}},links:{type:'object',additionalProperties:false,required:['official','store','developer','publisher'],properties:{official:{type:'string'},store:{type:'string'},developer:{type:'string'},publisher:{type:'string'}}},sources:{type:'array',minItems:10,items:{type:'object',additionalProperties:false,required:['name','url','type','published_at','checked_at','trust','evidence'],properties:{name:{type:'string'},url:{type:'string'},type:{type:'string',enum:['official','store','database','editorial']},published_at:{type:'string'},checked_at:{type:'string'},trust:{type:'number'},evidence:{type:'array',minItems:1,items:{type:'string'}}}}}}};
-const prompt=`Собери полностью проверенную карточку игры для публичной страницы Игропоиска. Используй активный веб-поиск. Речь должна идти только о точной игре и точной версии, указанной ниже. Не смешивай ремейк, ремастер, продолжение, DLC или другую игру с похожим названием.\n\nИСХОДНЫЕ ДАННЫЕ ИЗ STEAM/ЧЕРНОВИКА:\n${JSON.stringify(seed,null,2)}\n\nОБЯЗАТЕЛЬНО:\n- Подтверди идентичность минимум официальным источником и крупной базой/магазином либо двумя независимыми базами.\n- Собери не менее ${Number(gate.minimum_sources||10)} реально открываемых прямых источников. Каталоги-разделы и поисковые выдачи не подходят.\n- Для дат, компаний, платформ и системных требований приоритет у официальных страниц и магазинов.\n- title — точное каноническое пользовательское название игры. Никогда не используй slug, техническое имя или имя файла как title.\n- Напиши оригинальное краткое описание и интегрированный текст о том, как устроена игра, без копирования чужих формулировок.\n- campaign объясняет сюжетную кампанию или прямо и содержательно объясняет её отсутствие.\n- Нужны минимум ${Number(gate.minimum_features||4)} конкретные особенности.\n- hero — только качественный официальный key art / promotional artwork игры, НЕ gameplay screenshot. cover — отдельная вертикальная официальная обложка. Скриншоты идут отдельно после арта.\n- Нужны hero, cover и минимум ${Number(gate.minimum_screenshots||6)} полноразмерных реальных кадров именно этой игры. Не используй логотипы, миниатюры, фан-арт, растянутые/размытые/пережатые картинки и кадры другой версии.\n- Не используй скриншоты, залитые сильным синим/циановым оттенком или слоем, если из-за него игровой кадр становится плохо читаемым и по изображению нельзя нормально рассмотреть игру. Обычные цветные, тёмные или стилизованные кадры не отбрасывай только из-за палитры.\n- artwork должен содержать официальный арт с прямым source_url; не подменяй artwork скриншотом.\n- Если существует официальный трейлер или видео, обязательно добавь его и поставь official_video_exists=true.\n- Каждому изображению и видео укажи source_url.\n- steam_appid сохраняй из исходных данных; не угадывай другой ID.\n- checked_at для всех источников: ${checkedAt}.\n- slug должен быть ${slug}.`;
-const result=await call({model:process.env.OPENAI_RESEARCH_MODEL||process.env.OPENAI_MODEL||'gpt-5',tools:[{type:'web_search',search_context_size:'high'}],tool_choice:'required',input:prompt,text:{format:{type:'json_schema',name:'igropoisk_game_page',strict:true,schema}}});
-result.identity.slug=slug;
-result.identity.steam_appid=Number(seed.identity?.steam_appid)||result.identity.steam_appid||null;
-result.sources=uniqueByUrl(result.sources||[]);
-const steamScreens=(seed.media?.screenshots||[]).map(item=>typeof item==='string'?{url:item,caption:'Официальный скриншот Steam',source_url:seed.links?.store||seed.source?.url||''}:item).filter(item=>item?.url);
-result.media.screenshots=uniqueByUrl([...(result.media?.screenshots||[]),...steamScreens]);
-result.media.hero=result.media.hero||seed.media?.hero||'';
-result.media.cover=result.media.cover||seed.media?.cover||'';
-result.media.videos=(result.media.videos||[]).filter(item=>item?.url||item?.thumbnail);
-result.media.artwork=result.media.artwork||[];
-result.links.store=result.links.store||seed.links?.store||'';
-const missing=[];
-const required=(value,key)=>{if(!value||(Array.isArray(value)&&!value.length))missing.push(key)};
-required(result.identity.title,'identity.title');required(result.release.date_text||result.release.date||result.release.status,'release');required(result.companies.developers,'companies.developers');required(result.companies.publishers,'companies.publishers');required(result.classification.genres,'classification.genres');required(result.classification.platforms,'classification.platforms');required(result.editorial.short_description,'editorial.short_description');required(result.editorial.integrated_description,'editorial.integrated_description');required(result.editorial.campaign,'editorial.campaign');required(result.media.hero,'media.hero');required(result.media.cover,'media.cover');required(result.media.artwork,'media.artwork');
-if((result.editorial.features||[]).length<Number(gate.minimum_features||4))missing.push(`features:${result.editorial.features?.length||0}`);
-if(result.media.screenshots.length<Number(gate.minimum_screenshots||6))missing.push(`screenshots:${result.media.screenshots.length}`);
-if(result.sources.length<Number(gate.minimum_sources||10))missing.push(`sources:${result.sources.length}`);
-const identitySources=result.sources.filter(item=>['official','store','database'].includes(item.type));
-if(identitySources.length<Number(gate.minimum_identity_sources||2))missing.push(`identity_sources:${identitySources.length}`);
-if(result.media.official_video_exists&&!result.media.videos.length)missing.push('official_video');
-const passed=missing.length===0;
-const publication={status:passed?'published':'needs_revision',gate_passed:passed,updated_at:checkedAt,gate:{minimum_sources:Number(gate.minimum_sources||10),accepted_sources:result.sources.length,minimum_screenshots:Number(gate.minimum_screenshots||6),accepted_screenshots:result.media.screenshots.length,identity_sources:identitySources.length,missing,passed}};
-const registryId=String(process.env.GAME_REGISTRY_ID||seed.game_id||'').trim();
-const game={schema_version:4,publication,...result,updated_at:checkedAt};if(registryId)game.game_id=registryId;if(existingDraft?.relations)game.relations=existingDraft.relations;
-writeJSON(`data/drafts/${slug}.json`,game);
-writeJSON(`data/parser-runs/game-page-${slug}.json`,{parser:'game-page-builder',status:passed?'green':'needs_revision',game_slug:slug,checked_at:checkedAt,gate:publication.gate,output:passed?'data/game-content':`data/drafts/${slug}.json`,comments:passed?[]:missing.map(item=>`Нужно доработать: ${item}`)});
-if(!passed){console.log(JSON.stringify({slug,status:'needs_revision',missing},null,2));process.exit(0)}
-
-// Review-source collection is a mandatory part of creating a game page.
-// The page may exist only after the central editorial source registry has been checked
-// and the resulting direct review URLs/scores have been persisted for this exact game.
-const reviewRun=spawnSync(process.execPath,[path.join(root,'scripts/prepare-review-research.mjs'),slug],{cwd:root,env:process.env,encoding:'utf8',stdio:['ignore','pipe','pipe']});
-if(reviewRun.status!==0){console.error(reviewRun.stderr||reviewRun.stdout||`Review-source collection failed for ${slug}`);process.exit(reviewRun.status||3)}
-const reviewData=readJSON(`data/reviews/${slug}.json`,null);
-const reviewAccepted=Number(reviewData?.publication_gate?.accepted||reviewData?.reviews?.length||0);
-const reviewMinimum=Number(reviewData?.publication_gate?.minimum||10);
-if(!reviewData||reviewAccepted<reviewMinimum){console.error(`Game page blocked: review-source corpus for ${slug} has ${reviewAccepted}/${reviewMinimum} accepted reviews`);process.exit(3)}
-game.review_sources={file:`data/reviews/${slug}.json`,accepted:reviewAccepted,minimum:reviewMinimum,status:reviewData.publication_gate?.status||'green'};
-writeJSON(`data/drafts/${slug}.json`,game);
-
-const year=Number(String(result.release.date||result.release.date_text).match(/(?:19|20)\d{2}/)?.[0]||new Date().getUTCFullYear());
-const chunk=year<=2015?'2002-2015':year<=2017?'2016-2017':year<=2019?'2018-2019':year===2020?'2020':year<=2022?'2021-2022':'2023-2025';
-const chunkPath=`data/game-content/${chunk}.json`;
-const chunkData=readJSON(chunkPath,{schema_version:2,games:{}});
-chunkData.schema_version=Math.max(Number(chunkData.schema_version||1),4);
-chunkData.games=chunkData.games||{};
-chunkData.games[slug]=game;
-writeJSON(chunkPath,chunkData);
-const catalog=readJSON('data/catalog-visible.json',[]);
-const entry={title:result.identity.title,year,slug};if(registryId)entry.game_id=registryId;const index=catalog.findIndex(item=>item.slug===slug);
-if(index>=0)catalog[index]={...catalog[index],...entry};else catalog.push(entry);
-catalog.sort((a,b)=>Number(a.year)-Number(b.year)||String(a.title).localeCompare(String(b.title),'ru'));
-writeJSON('data/catalog-visible.json',catalog);
-const safeTitle=String(result.identity.title).replace(/[&<>"']/g,'');
-const gameIdAttr=registryId?` data-game-id="${registryId}"`:'';
-const html=`<!doctype html><html lang="ru" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safeTitle} — Игропоиск</title><link rel="stylesheet" href="../_shared/game-page.css"></head><body data-title="${safeTitle}" data-year="${year}" data-slug="${slug}" data-draft="${slug}"${gameIdAttr}><script src="../_shared/game-shell.js"></script></body></html>`;
-const pagePath=path.join(root,'game',slug,'index.html');fs.mkdirSync(path.dirname(pagePath),{recursive:true});fs.writeFileSync(pagePath,html+'\n');
-console.log(JSON.stringify({slug,status:'green',year,chunk,sources:result.sources.length,review_sources:reviewAccepted,screenshots:result.media.screenshots.length},null,2));
+const slug=String(process.argv[2]||'').trim();
+if(!slug)throw new Error('Usage: node scripts/build-game-page.mjs <slug>');
+if(!process.env.OPENAI_API_KEY)throw new Error('OPENAI_API_KEY is required for editorial repair');
+const read=(p,f=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,p),'utf8'))}catch{return f}};
+const write=(p,v)=>{const t=path.join(root,p);fs.mkdirSync(path.dirname(t),{recursive:true});fs.writeFileSync(t,JSON.stringify(v,null,2)+'\n')};
+const draft=read(`data/drafts/${slug}.json`),corpus=read(`data/game-sources/${slug}.json`,{}),ratings=read(`data/ratings/${slug}.json`,{});
+if(!draft?.identity?.title)throw new Error(`Missing draft for ${slug}`);
+const sources=(corpus?.sources||[]).map(s=>({name:s.publication||s.name||s.source_name||'',title:s.title||'',url:s.resolved_url||s.url||'',kind:s.kind||'',roles:s.roles||[],score:s.score??s.original_score??null})).filter(s=>s.url);
+if(!corpus?.discovery?.complete||!sources.length)throw new Error(`${slug}: complete canonical source corpus is required before editorial repair`);
+const schema={type:'object',additionalProperties:false,required:['short_description','integrated_description','campaign','features'],properties:{short_description:{type:'string'},integrated_description:{type:'string'},campaign:{type:'string'},features:{type:'array',minItems:4,maxItems:8,items:{type:'string'}}}};
+const input=`Ты редактор русскоязычной игровой энциклопедии Игропоиск. Напиши содержательный текст страницы игры ${draft.identity.title}. Используй веб-поиск только для проверки фактов и только источники, относящиеся к точной игре. Не смешивай ремейки, ремастеры, DLC, продолжения и одноимённые игры.\n\nПроверенный draft:\n${JSON.stringify({identity:draft.identity,release:draft.release,companies:draft.companies,classification:draft.classification,requirements:draft.requirements,links:draft.links},null,2)}\n\nCanonical source corpus:\n${JSON.stringify(sources,null,2)}\n\nРассчитанные оценки:\n${JSON.stringify(ratings?.sources||[],null,2)}\n\nТребования к тексту:\n- Только естественный русский язык, как у сильного живого игрового редактора.\n- short_description: 100–220 символов, сразу объясняет суть и отличительную черту игры; без технических фраз о сборе данных.\n- integrated_description: минимум 350 символов; конкретно объясняет игровой цикл, мир/структуру, ключевые механики и чем игра выделяется. Не пересказывай маркетинговый текст и не используй пустые формулы.\n- campaign: минимум 150 символов; конкретно описывает роль игрока и структуру прохождения/сюжета либо содержательно объясняет отсутствие кампании.\n- features: 4–8 конкретных особенностей, каждая полноценная осмысленная фраза не короче 18 символов.\n- Запрещены формулы «построена как», «основной режим рассчитан», «ключевые механики здесь выводятся», «официальное описание указывает», «описание не добавляет», «информация собрана из источников».\n- Не выдумывай факты, которых нельзя подтвердить источниками.`;
+const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'content-type':'application/json'},body:JSON.stringify({model:process.env.OPENAI_RESEARCH_MODEL||process.env.OPENAI_MODEL||'gpt-5',tools:[{type:'web_search',search_context_size:'high'}],input,text:{format:{type:'json_schema',name:'igropoisk_page_editorial',strict:true,schema}}})});
+if(!response.ok)throw new Error(`OpenAI API ${response.status}: ${await response.text()}`);
+const data=await response.json(),raw=data.output_text||data.output?.flatMap(x=>x.content||[]).find(x=>x.type==='output_text')?.text;
+if(!raw)throw new Error('No editorial output');
+const editorial=JSON.parse(raw);
+draft.editorial={...(draft.editorial||{}),short_description:String(editorial.short_description||'').trim(),integrated_description:String(editorial.integrated_description||'').trim(),campaign:String(editorial.campaign||'').trim(),features:(editorial.features||[]).map(x=>String(x||'').trim()).filter(Boolean)};
+draft.publication={...(draft.publication||{}),status:'needs_revision',public_ready:false,quality_status:'editorial_generated_pending_qc'};
+draft.updated_at=new Date().toISOString();
+write(`data/drafts/${slug}.json`,draft);
+write(`data/parser-runs/page-editorial-generation-${slug}.json`,{parser:'game-page-editorial-builder',status:'completed_pending_qc',game_slug:slug,checked_at:draft.updated_at,source_corpus:`data/game-sources/${slug}.json`,source_count:sources.length,output:`data/drafts/${slug}.json`});
+console.log(JSON.stringify({slug,status:'completed_pending_qc',sources:sources.length,public_ready:false},null,2));
