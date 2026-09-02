@@ -10,6 +10,8 @@ const fast = read('scripts/run-news-game-page-fast.mjs');
 const creator = read('scripts/ensure-game-page.mjs');
 const adapter = read('scripts/materialize-news-game-pages-fast.mjs');
 const workflow = read('.github/workflows/news-game-page-fast.yml');
+const newsNormalizer = read('scripts/normalize-news-game-hashtags.mjs');
+const newsPipeline = read('.github/workflows/news-pipeline.yml');
 
 // News may resolve/register a canonical identity, but page construction must stay
 // delegated to the shared Game Creator rather than becoming a second page builder.
@@ -60,6 +62,19 @@ assert.equal(repairedSmash?.identity?.kind?.value, 'game',
   'previously misclassified verified standalone games must be repaired');
 assert.equal(repairedSmash?.presentation?.standalonePage, true,
   'repaired verified standalone games must receive standalone pages');
+
+// A missing game page must never create a broken public hashtag and must never hold
+// the entire fresh news snapshot hostage while its page is being created.
+assert.match(newsNormalizer, /canonical && canonical\.pageExists === false \? '' : canonicalGameHashtag\(base\)/,
+  'canonical games without live pages must expose no public hashtag');
+assert.match(newsNormalizer, /if \(canonical && game\.pageExists === false\)[\s\S]{0,220}game\.pageUrl = '';[\s\S]{0,120}game\.hashtag = '';/,
+  'missing canonical game pages must expose neither page URL nor hashtag');
+assert.match(newsPipeline, /Create every verified missing game page through the shared Game Creator/,
+  'missing verified game pages must still be created asynchronously');
+assert.doesNotMatch(newsPipeline, /Publish compact live snapshot and stable monthly archive[\s\S]{0,220}game_pages\.outputs\.count == '0'/,
+  'missing game pages must not block publication of the fresh news snapshot');
+assert.match(newsPipeline, /Continue publication while verified missing game pages are created/,
+  'pipeline must explicitly continue publication while page creation proceeds');
 
 // The shared creator must materialize the canonical draft and public game route.
 assert.match(creator, /write\(`data\/drafts\/\$\{slug\}\.json`,\s*game\)/,
