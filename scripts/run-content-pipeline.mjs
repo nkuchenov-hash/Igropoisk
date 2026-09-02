@@ -54,6 +54,7 @@ function restorePublishedSnapshot(slug,snapshot){
   for(const [relative,value] of Object.entries(snapshot.canonicalFiles||{}))restoreFile(relative,value);
   results.push({label:`page-rollback:${slug}`,status:'completed',reason:'failed revision restored last published canonical page package'});return true;
 }
+function canonicalizePage(slug,snapshot){const ok=run(`canonicalize-page:${slug}`,'node',['scripts/canonicalize-editorial-game-id.mjs',slug]);if(ok)return true;restorePublishedSnapshot(slug,snapshot);results.push({label:`page-identity:${slug}`,status:'needs_revision',reason:'canonical identity could not be applied before finalization'});return false}
 function finalizePage(slug,gameId,snapshot){const ok=run(`page-finalize:${slug}`,'node',['scripts/finalize-game-page-publication.mjs',slug,gameId||'']);if(ok)return true;restorePublishedSnapshot(slug,snapshot);results.push({label:`page-publication:${slug}`,status:'needs_revision',reason:'strict finalizer rejected revision'});return false}
 
 const relationTask=catalog.find(item=>{const slug=String(item.slug||'');if(!slug||targetSlug&&slug!==targetSlug)return false;const draft=readJSON(`data/drafts/${slug}.json`);return Boolean(draft?.identity)&&!draft?.relations?.checked_at;});
@@ -65,7 +66,7 @@ if(franchiseTask){
   ensureFranchiseSeed(franchiseTask);const snapshot=publicationSnapshot(franchiseTask.slug);
   if(franchiseTask.steam_appid)run(`franchise-parse:${franchiseTask.slug}`,'node',['scripts/parse-game-data.mjs',franchiseTask.slug,String(franchiseTask.steam_appid),franchiseTask.title||'']);
   const registryId=String(franchiseTask.game_id||'').trim();const built=registryId?run(`franchise-page:${franchiseTask.slug}`,'node',['scripts/build-game-page-basic.mjs',registryId]):false;
-  if(built){run(`franchise-page-qc:${franchiseTask.slug}`,'node',['scripts/quality-control-loop.mjs','page',franchiseTask.slug,registryId]);preserveOfficialSteamVideos(franchiseTask.slug);const qc=qualityStatus('page',franchiseTask.slug);if(qc.green&&finalizePage(franchiseTask.slug,registryId,snapshot)){franchiseTask.status='page_green';const replanned=run('replan-after-franchise-page','node',['scripts/orchestrate-content.mjs','--finalize']);if(replanned)mergePlan(readJSON('data/content-pipeline/execution-plan.json',{pages:[],reviews:[]}))}else{franchiseTask.status='needs_revision';restorePublishedSnapshot(franchiseTask.slug,snapshot)}}else{franchiseTask.status='needs_revision';restorePublishedSnapshot(franchiseTask.slug,snapshot)}
+  if(built){run(`franchise-page-qc:${franchiseTask.slug}`,'node',['scripts/quality-control-loop.mjs','page',franchiseTask.slug,registryId]);preserveOfficialSteamVideos(franchiseTask.slug);const qc=qualityStatus('page',franchiseTask.slug);const identityReady=qc.green&&canonicalizePage(franchiseTask.slug,snapshot);if(identityReady&&finalizePage(franchiseTask.slug,registryId,snapshot)){franchiseTask.status='page_green';const replanned=run('replan-after-franchise-page','node',['scripts/orchestrate-content.mjs','--finalize']);if(replanned)mergePlan(readJSON('data/content-pipeline/execution-plan.json',{pages:[],reviews:[]}))}else{franchiseTask.status='needs_revision';restorePublishedSnapshot(franchiseTask.slug,snapshot)}}else{franchiseTask.status='needs_revision';restorePublishedSnapshot(franchiseTask.slug,snapshot)}
   franchiseTask.updated_at=new Date().toISOString();franchiseQueue.updated_at=franchiseTask.updated_at;writeJSON('data/content-pipeline/franchise-queue.json',franchiseQueue);
 }
 
@@ -77,8 +78,8 @@ for(const task of plan.pages||[]){
   const built=run(`page:${task.slug}`,'node',['scripts/build-game-page-basic.mjs',task.game_id]);
   if(!built){restorePublishedSnapshot(task.slug,snapshot);continue}
   run(`page-qc:${task.slug}`,'node',['scripts/quality-control-loop.mjs','page',task.slug,task.game_id]);preserveOfficialSteamVideos(task.slug);
-  const qc=qualityStatus('page',task.slug);
-  if(qc.green&&finalizePage(task.slug,task.game_id,snapshot)){pageSucceeded=true;run(`canonicalize-page:${task.slug}`,'node',['scripts/canonicalize-editorial-game-id.mjs',task.slug])}
+  const qc=qualityStatus('page',task.slug);const identityReady=qc.green&&canonicalizePage(task.slug,snapshot);
+  if(identityReady&&finalizePage(task.slug,task.game_id,snapshot))pageSucceeded=true;
   else{restorePublishedSnapshot(task.slug,snapshot);results.push({label:`page-qc-state:${task.slug}`,status:'needs_revision',comments:qc.comments||[]})}
 }
 if(pageSucceeded){const replanned=run('replan-after-pages','node',['scripts/orchestrate-content.mjs','--finalize']);if(replanned)mergePlan(readJSON('data/content-pipeline/execution-plan.json',{pages:[],reviews:[]}))}
@@ -95,5 +96,5 @@ if(reviewSucceeded&&exists('scripts/render-review-pages.mjs'))run('render-review
 
 if(acceptance.enabled&&targetSlug===acceptance.slug){const draft=readJSON(`data/drafts/${targetSlug}.json`,{}),qc=qualityStatus('page',targetSlug);const passed=Boolean(qc.green&&draft.publication?.status==='published'&&draft.publication?.public_ready===true);acceptance.status=passed?'passed':'needs_revision';acceptance.last_checked_at=new Date().toISOString();acceptance.enabled=!passed;acceptance.last_comments=qc.comments||[];writeJSON(acceptancePath,acceptance)}
 const finishedAt=new Date().toISOString();
-const summary={completed:results.filter(item=>item.status==='completed').length,needs_revision:results.filter(item=>item.status==='needs_revision'||item.status==='revision_required').length,total:results.length,free_page_ai_configured:freePageAiConfigured,review_ai_available:reviewAiAvailable,target_slug:targetSlug||null,page_builder:'draft-first-structured-sources',quality_policy:'draft -> canonical source corpus -> free page editorial -> content/media/page QC -> sole finalizer -> public; failed revision cannot replace last published canonical package'};
-writeJSON('data/content-pipeline/execution-log.json',{schema_version:13,started_at:startedAt,finished_at:finishedAt,summary,results});console.log(JSON.stringify(summary,null,2));
+const summary={completed:results.filter(item=>item.status==='completed').length,needs_revision:results.filter(item=>item.status==='needs_revision'||item.status==='revision_required').length,total:results.length,free_page_ai_configured:freePageAiConfigured,review_ai_available:reviewAiAvailable,target_slug:targetSlug||null,page_builder:'draft-first-structured-sources',quality_policy:'draft -> canonical source corpus -> free page editorial -> content/media/page QC -> canonical identity -> sole finalizer -> public; published package is immutable and failed revision restores the previous canonical package'};
+writeJSON('data/content-pipeline/execution-log.json',{schema_version:14,started_at:startedAt,finished_at:finishedAt,summary,results});console.log(JSON.stringify(summary,null,2));
