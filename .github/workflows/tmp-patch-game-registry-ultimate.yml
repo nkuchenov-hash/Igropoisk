@@ -1,0 +1,68 @@
+name: Temporary exact game-kind patch
+
+on:
+  push:
+    branches: [fix/news-page-assembly-queue-20260902]
+    paths:
+      - '.github/workflows/tmp-patch-game-registry-ultimate.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/news-page-assembly-queue-20260902
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply exact minimal replacements
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          registry = Path('scripts/lib/game-registry.mjs')
+          text = registry.read_text(encoding='utf-8')
+          old_regex = "const EDITION_SUFFIX = /\\b(?:deluxe|ultimate|gold|complete|collector'?s|digital deluxe|goty|game of the year)\\s+edition\\b/giu;"
+          new_regex = "const EDITION_SUFFIX = /\\b(?:deluxe|ultimate|gold|complete|collector'?s|digital deluxe|goty|game of the year)\\s+edition\\b/iu;"
+          old_infer = "  if (/\\b(deluxe|ultimate|gold|complete|collector'?s)\\b/iu.test(title)) return 'edition';"
+          new_infer = "  if (EDITION_SUFFIX.test(title)) return 'edition';"
+          if old_regex not in text:
+              raise SystemExit('Expected EDITION_SUFFIX declaration not found')
+          if old_infer not in text:
+              raise SystemExit('Expected broad edition inference not found')
+          text = text.replace(old_regex, new_regex, 1).replace(old_infer, new_infer, 1)
+          registry.write_text(text, encoding='utf-8')
+
+          tests = Path('tests/game-registry.test.mjs')
+          text = tests.read_text(encoding='utf-8')
+          if 'inferKind, validateForPublication' not in text:
+              marker = '  validateForPublication\n'
+              if marker not in text:
+                  raise SystemExit('Expected game-registry test import marker not found')
+              text = text.replace(marker, '  inferKind, validateForPublication\n', 1)
+          test_case = """\ntest('commercial words are editions only in explicit edition titles', () => {\n  assert.equal(inferKind({title:'Super Smash Bros. Ultimate'}),'game');\n  assert.equal(inferKind({title:'Control Ultimate Edition'}),'edition');\n  assert.equal(inferKind({title:'Gold Rush'}),'game');\n});\n"""
+          anchor = "\ntest('edition, remaster, DLC and expansion cannot publish as standalone games by default', () => {"
+          if test_case.strip() not in text:
+              if anchor not in text:
+                  raise SystemExit('Expected edition test anchor not found')
+              text = text.replace(anchor, test_case + anchor, 1)
+          tests.write_text(text, encoding='utf-8')
+          PY
+      - name: Verify exact behavior
+        run: |
+          node --check scripts/lib/game-registry.mjs
+          node --test tests/game-registry.test.mjs
+          node scripts/test-game-page-assembly-queue.mjs
+          git diff --check
+      - name: Commit exact patch
+        run: |
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git add scripts/lib/game-registry.mjs tests/game-registry.test.mjs
+          git commit -m "fix(game-registry): require explicit edition titles"
+          git push origin HEAD:fix/news-page-assembly-queue-20260902
