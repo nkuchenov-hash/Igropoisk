@@ -4,7 +4,7 @@ import {migrateRepository, writeMigrationArtifacts} from './lib/game-registry-mi
 import {GameRegistryApi, validateForPublication} from './lib/game-registry.mjs';
 import {registerPopularCandidates, registerReleaseCandidates, resolveSystemGameIdentity} from './lib/system-game-registry-adapter.mjs';
 import {resolveEditorialGame} from './lib/editorial-game-registry-adapter.mjs';
-import {queueRequestToRegistryCandidate} from './lib/game-page-assembly-queue.mjs';
+import {queueRequestToRegistryCandidate, reconcileQueuedCandidateWithRegistry} from './lib/game-page-assembly-queue.mjs';
 
 const root = process.cwd();
 const now = new Date().toISOString();
@@ -35,11 +35,14 @@ const assemblyInbox = readJSON('tmp/game-page-assembly-inbox.json', {items: []})
 const assemblyItems = Array.isArray(assemblyInbox?.items) ? assemblyInbox.items : [];
 const assemblyApi = new GameRegistryApi(migration.registry);
 const assemblyGameIds = new Set();
-const assemblyImport = {created: 0, matched: 0, needs_review: 0, invalid: 0};
+const assemblyImport = {created: 0, matched: 0, needs_review: 0, invalid: 0, reconciled: 0};
 for (const request of assemblyItems) {
   try {
-    const result = assemblyApi.registerCandidate(queueRequestToRegistryCandidate(request), {now, actor: 'game-page-assembly-queue'});
+    const prepared = reconcileQueuedCandidateWithRegistry(assemblyApi, request, {now});
+    const candidate = prepared?.candidate ?? queueRequestToRegistryCandidate(request);
+    const result = assemblyApi.registerCandidate(candidate, {now, actor: 'game-page-assembly-queue'});
     assemblyImport[result.decision] = (assemblyImport[result.decision] ?? 0) + 1;
+    if (prepared?.reconciled) assemblyImport.reconciled += 1;
     if (result.entity) assemblyGameIds.add(result.entity.id);
   } catch {
     assemblyImport.invalid += 1;
