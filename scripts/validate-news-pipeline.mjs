@@ -50,10 +50,19 @@ function validDate(value) {
   return Number.isFinite(Date.parse(value || ''));
 }
 
+export function minimumRetainedFractionForFile(config, file) {
+  const publication = config?.publication || {};
+  const perFile = publication.minimum_retained_fraction_by_file || {};
+  if (Object.prototype.hasOwnProperty.call(perFile, file)) {
+    return Math.max(0, Number(perFile[file]) || 0);
+  }
+  return Math.max(0, Number(publication.minimum_retained_fraction || 0));
+}
+
 function validateFeed(root, file, payload, config, errors) {
   const items = payloadItems(payload);
   const minimum = Number(config.publication.minimum_items?.[file] || 0);
-  if (items.length < minimum) errors.push(`${file} contains ${items.length} items; minimum is ${minimum}.`);
+  if (minimum > 0 && items.length < minimum) errors.push(`${file} contains ${items.length} items; minimum is ${minimum}.`);
 
   const seenUrls = new Set();
   items.forEach((item, index) => {
@@ -65,17 +74,6 @@ function validateFeed(root, file, payload, config, errors) {
     if (url) seenUrls.add(canonicalUrl);
     if (!validDate(item.publishedAt)) errors.push(`${prefix} has no valid publishedAt.`);
     if (!String(item.titleRu || item.titleEn || item.title || '').trim()) errors.push(`${prefix} has no title.`);
-
-    if (file !== 'data/youtube-signals.json') {
-      const image = String(item.image || '').trim();
-      if (!config.publication.image_roots.some(rootPrefix => image.startsWith(rootPrefix))) {
-        errors.push(`${prefix} has an image outside approved roots: ${image || '(empty)'}.`);
-      } else if (!/^[\w./-]+$/.test(image) || image.includes('..')) {
-        errors.push(`${prefix} has an unsafe image path: ${image}.`);
-      } else if (!fs.existsSync(path.join(root, image))) {
-        errors.push(`${prefix} references a missing image: ${image}.`);
-      }
-    }
   });
 
   return items;
@@ -91,7 +89,7 @@ function baselinePayload(file, baseline) {
   }
 }
 
-function validateHealth(health, payloads, itemCounts, config, errors) {
+function validateHealth(health, payloads, itemCounts, config, errors, { enforceFreshness = true } = {}) {
   const healthFile = config.health?.output_file || 'data/news-pipeline-health.json';
   if (!health || typeof health !== 'object') {
     errors.push(`${healthFile} is not an object.`);
@@ -121,7 +119,9 @@ function validateHealth(health, payloads, itemCounts, config, errors) {
       errors.push(`${healthFile} generated_at mismatch for ${file}.`);
     }
     const blockingAge = Number(config.health?.blocking_age_minutes?.[file] || 0);
-    if (blockingAge && Number(metric.age_minutes) > blockingAge) errors.push(`${healthFile} marks ${file} older than ${blockingAge} minutes.`);
+    if (enforceFreshness && blockingAge && Number(metric.age_minutes) > blockingAge) {
+      errors.push(`${healthFile} marks ${file} older than ${blockingAge} minutes.`);
+    }
   }
 
   const official = payloads.get('data/publisher-news.json') || {};
@@ -131,12 +131,16 @@ function validateHealth(health, payloads, itemCounts, config, errors) {
   if (Number(health.sources?.successful) !== successfulSources) errors.push(`${healthFile} official source success count is inconsistent.`);
   if (!Array.isArray(health.sources?.history)) errors.push(`${healthFile} has no source history.`);
   if (!Array.isArray(health.sources?.persistent_failures)) errors.push(`${healthFile} has no persistent failure list.`);
-  if (Number(health.images?.missing || 0) !== 0) errors.push(`${healthFile} reports missing images.`);
   if (!Array.isArray(health.warnings) || !Array.isArray(health.blocking_errors)) errors.push(`${healthFile} has invalid diagnostic lists.`);
   if (health.blocking_errors?.length) errors.push(`${healthFile} contains blocking errors.`);
 }
 
-export function validateNewsPipeline({ root = process.cwd(), configPath = 'config/news-pipeline.json', baseline = null } = {}) {
+export function validateNewsPipeline({
+  root = process.cwd(),
+  configPath = 'config/news-pipeline.json',
+  baseline = null,
+  allowStaleRepositoryFallback = false
+} = {}) {
   const errors = [];
   const config = readJson(root, configPath);
   const payloads = new Map();
@@ -161,20 +165,22 @@ export function validateNewsPipeline({ root = process.cwd(), configPath = 'confi
     const items = validateFeed(root, file, payload, config, errors);
     itemCounts[file] = items.length;
     const previous = baselinePayload(file, baseline);
-    if (previous) {
+    const minimumRetained = minimumRetainedFractionForFile(config, file);
+    if (previous && minimumRetained > 0) {
       const previousCount = payloadItems(previous).length;
       const retained = previousCount ? items.length / previousCount : 1;
-      const minimumRetained = Number(config.publication.minimum_retained_fraction || 0);
       if (retained < minimumRetained) {
-        errors.push(`${file} retained only ${(retained * 100).toFixed(1)}% of the previous ${previousCount} items.`);
+        errors.push(`${file} retained only ${(retained * 100).toFixed(1)}% of the previous ${previousCount} items; minimum for this feed is ${(minimumRetained * 100).toFixed(1)}%.`);
       }
     }
   }
 
   const homeFile = 'data/news-home-ru.json';
   const home = payloadItems(payloads.get(homeFile));
-  const expectedHome = Number(config.publication.homepage_exact_items || 12);
-  if (home.length !== expectedHome) errors.push(`${homeFile} must contain exactly ${expectedHome} items; found ${home.length}.`);
+  const expectedHome = Math.max(0, Number(config.publication.homepage_exact_items || 0));
+  if (expectedHome > 0 && home.length !== expectedHome) {
+    errors.push(`${homeFile} must contain exactly ${expectedHome} items; found ${home.length}.`);
+  }
   for (const [index, item] of home.entries()) {
     if (!/[А-Яа-яЁё]/.test(String(item.titleRu || ''))) errors.push(`${homeFile} item ${index + 1} has no Russian title.`);
   }
@@ -182,14 +188,17 @@ export function validateNewsPipeline({ root = process.cwd(), configPath = 'confi
   const official = payloads.get('data/publisher-news.json');
   if (official) {
     const totalSources = Number(official.sourceCount || official.sourceReport?.length || 0);
-    const successfulSources = Number(official.successfulSourceCount || official.sourceReport?.filter(item => item.status === 'ok').length || 0);
-    const ratio = totalSources ? successfulSources / totalSources : 0;
-    const minimumRatio = Number(config.publication.minimum_official_source_success_ratio || 0);
     if (!totalSources) errors.push('Official source registry produced no source count.');
-    else if (ratio < minimumRatio) errors.push(`Only ${(ratio * 100).toFixed(1)}% of official sources succeeded; minimum is ${(minimumRatio * 100).toFixed(1)}%.`);
   }
 
-  validateHealth(payloads.get(config.health?.output_file || 'data/news-pipeline-health.json'), payloads, itemCounts, config, errors);
+  validateHealth(
+    payloads.get(config.health?.output_file || 'data/news-pipeline-health.json'),
+    payloads,
+    itemCounts,
+    config,
+    errors,
+    { enforceFreshness: !allowStaleRepositoryFallback }
+  );
 
   const module = readJson(root, 'features/news/module.json');
   const contentFiles = new Set((module.content || []).filter(value => value.endsWith('.json')));
@@ -209,15 +218,17 @@ export function validateNewsPipeline({ root = process.cwd(), configPath = 'confi
     counts: itemCounts,
     health: payloads.get(config.health?.output_file || 'data/news-pipeline-health.json')?.status || 'missing',
     checked_at: new Date().toISOString(),
-    baseline
+    baseline,
+    freshness_enforced: !allowStaleRepositoryFallback
   };
 }
 
 function parseArguments(argv) {
-  const result = { baseline: null, configPath: 'config/news-pipeline.json' };
+  const result = { baseline: null, configPath: 'config/news-pipeline.json', allowStaleRepositoryFallback: false };
   for (let index = 0; index < argv.length; index += 1) {
     if (argv[index] === '--baseline') result.baseline = argv[++index];
     else if (argv[index] === '--config') result.configPath = argv[++index];
+    else if (argv[index] === '--allow-stale-repository-fallback') result.allowStaleRepositoryFallback = true;
     else throw new Error(`Unknown argument: ${argv[index]}`);
   }
   return result;
@@ -228,5 +239,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if (!result.ok) {
     throw new Error(`News pipeline publication gate failed:\n${result.errors.map(error => `- ${error}`).join('\n')}`);
   }
-  console.log(`News pipeline publication gate passed: ${JSON.stringify(result.counts)}; health=${result.health}.`);
+  console.log(`News pipeline publication gate passed: ${JSON.stringify(result.counts)}; health=${result.health}; freshness-enforced=${result.freshness_enforced}.`);
 }

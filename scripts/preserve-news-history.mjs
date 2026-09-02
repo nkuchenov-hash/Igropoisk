@@ -4,8 +4,20 @@ import path from 'node:path';
 const eventsPath = 'data/news-events.json';
 const snapshotPath = 'tmp/news-events-before-rebuild.json';
 const backupRoot = 'tmp/news-history-assets';
-const minimumRecentPublic = 18;
 const recentWindowHours = 24;
+const editorialFields = [
+  'titleRu',
+  'summaryRu',
+  'editorialBriefRu',
+  'editorialStatus',
+  'editorialVersion',
+  'editorialSourceHash',
+  'editorialModel',
+  'editorialDtype',
+  'editorialGeneratedAt',
+  'editorialAttempts',
+  'editorialProductionSalvaged'
+];
 
 async function readPayload(file) {
   try {
@@ -49,35 +61,40 @@ function localImagePath(item) {
 }
 
 function wasPublic(item) {
+  if (item?.selectionReason === 'editorial-balance-floor') return false;
   return Boolean(item?.publicEligible ?? item?.globalEligible ?? item?.regionalEligible);
 }
 
-function editorialScore(item) {
-  return Number(item?.editorialScore || 0)
-    + Number(item?.globalScore || item?.trendScore || 0)
-    + Number(item?.mediaSourceCount || 0) * 100
-    + Number(item?.discussionMentions || 0) * 70
-    + Number(item?.regionalScore || 0)
-    + (item?.official ? 60 : 0);
+// Kept as an exported compatibility seam for existing tests/callers, but it no longer
+// promotes low-confidence content. Commercial publication must fail closed instead.
+export function promoteBalancedSelection(items) {
+  return items.map(item => ({ ...item }));
 }
 
-export function promoteBalancedSelection(items, minimum = minimumRecentPublic) {
-  const result = items.map(item => ({ ...item }));
-  let selected = result.filter(wasPublic).length;
-  if (selected >= minimum) return result;
-
-  const candidates = result
-    .filter(item => !wasPublic(item))
-    .sort((a, b) => editorialScore(b) - editorialScore(a) || itemTime(b) - itemTime(a));
-
-  for (const item of candidates) {
-    if (selected >= Math.min(minimum, result.length)) break;
-    item.publicEligible = true;
-    item.globalEligible = true;
-    item.selectionReason = 'editorial-balance-floor';
-    selected += 1;
+export function carryEditorialCache(currentItems, previousItems) {
+  const previousByUrl = new Map();
+  for (const item of previousItems) {
+    if (!['approved', 'source-ru'].includes(item?.editorialStatus)) continue;
+    const key = canonicalUrl(item.primaryUrl || item.url);
+    if (key && !previousByUrl.has(key)) previousByUrl.set(key, item);
   }
-  return result;
+
+  let restored = 0;
+  const current = currentItems.map(item => {
+    const key = canonicalUrl(item.primaryUrl || item.url);
+    const previous = key ? previousByUrl.get(key) : null;
+    if (!previous) return item;
+    const next = { ...item };
+    let copied = false;
+    for (const field of editorialFields) {
+      if (previous[field] === undefined) continue;
+      next[field] = previous[field];
+      copied = true;
+    }
+    if (copied) restored += 1;
+    return next;
+  });
+  return { items: current, restored };
 }
 
 export function historicalCandidates(currentItems, previousItems, windowHours = recentWindowHours) {
@@ -142,23 +159,25 @@ async function snapshot() {
 async function merge() {
   const currentPayload = await readPayload(eventsPath);
   const previousPayload = await readPayload(snapshotPath);
-  const current = promoteBalancedSelection(Array.isArray(currentPayload) ? currentPayload : (currentPayload.items || []));
+  const rawCurrent = promoteBalancedSelection(Array.isArray(currentPayload) ? currentPayload : (currentPayload.items || []));
   const previous = Array.isArray(previousPayload) ? previousPayload : (previousPayload.items || []);
+  const carried = carryEditorialCache(rawCurrent, previous);
+  const current = carried.items;
   const historical = await restoreHistoricalImages(historicalCandidates(current, previous));
   const items = [...current, ...historical].sort((a, b) => itemTime(b) - itemTime(a));
   const publicCount = items.filter(wasPublic).length;
   const payload = {
     ...(Array.isArray(currentPayload) ? {} : currentPayload),
     generatedAt: new Date().toISOString(),
-    model: 'event-first-editorial-selection-plus-region-history',
-    minimumRecentPublic,
+    model: 'event-first-commercial-policy-plus-region-history',
     retainedHistory: historical.length,
+    restoredEditorialCache: carried.restored,
     items
   };
   await fs.writeFile(eventsPath, `${JSON.stringify(payload, null, 2)}\n`);
   await fs.rm(snapshotPath, { force: true });
   await fs.rm(backupRoot, { recursive: true, force: true });
-  console.log(`[news/history] ${current.length} current events; ${historical.length} historical retained; ${publicCount} public across archive`);
+  console.log(`[news/history] ${current.length} current events; ${historical.length} historical retained; ${carried.restored} editorial cache entries restored; ${publicCount} genuine public events`);
 }
 
 const mode = process.argv[2];

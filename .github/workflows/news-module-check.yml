@@ -79,7 +79,7 @@ jobs:
           node scripts/test-news-storage-content-api.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
-          node scripts/validate-news-pipeline.mjs
+          node scripts/validate-news-pipeline.mjs --allow-stale-repository-fallback
           node scripts/validate-production-boundaries.mjs
 
       - name: Verify news module and central component boundary

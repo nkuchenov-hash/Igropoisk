@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { classifyNewsImage } from './lib/news-media-policy.mjs';
 
 const feedFiles = [
   'data/news.json',
@@ -49,6 +50,7 @@ function sourceHistory(previous, report, checkedOfficial, checkedAt, persistentT
     const prior = previousById.get(id) || {};
     const successful = status === 'ok';
     const failed = status === 'error';
+    const unsupported = status === 'no-feed';
     let consecutiveFailures = Number(prior.consecutive_failures || 0);
     let lastSuccessAt = prior.last_success_at || null;
     let lastFailureAt = prior.last_failure_at || null;
@@ -60,6 +62,8 @@ function sourceHistory(previous, report, checkedOfficial, checkedAt, persistentT
       } else if (failed) {
         consecutiveFailures += 1;
         lastFailureAt = checkedAt;
+      } else if (unsupported) {
+        consecutiveFailures = 0;
       }
     }
 
@@ -76,7 +80,7 @@ function sourceHistory(previous, report, checkedOfficial, checkedAt, persistentT
   });
 }
 
-function collectImages(root, payloads) {
+function collectImages(root, payloads, config) {
   const referenced = new Set();
   for (const file of feedFiles) {
     if (file === 'data/youtube-signals.json') continue;
@@ -85,7 +89,10 @@ function collectImages(root, payloads) {
       if (image) referenced.add(image);
     }
   }
-  const missing = [...referenced].filter(file => !fs.existsSync(path.join(root, file)));
+  const missing = [...referenced].filter(image => {
+    const classification = classifyNewsImage(image, { root, config });
+    return !classification.approved || !classification.exists;
+  });
   return {
     referenced: referenced.size,
     missing: missing.length,
@@ -122,6 +129,9 @@ export function buildNewsPipelineHealth({
     const minimum = Number(config.publication?.minimum_items?.[file] || 0);
     const warningAge = Number(healthConfig.warning_age_minutes?.[file] || 0);
     const blockingAge = Number(healthConfig.blocking_age_minutes?.[file] || 0);
+    const exactFixedCount = file === 'data/news-home-ru.json'
+      && Number(config.publication?.homepage_exact_items || 0) === minimum
+      && minimum > 0;
     data[file] = {
       generated_at: fileGeneratedAt,
       age_minutes: age,
@@ -132,7 +142,7 @@ export function buildNewsPipelineHealth({
     if (count < minimum) blocking.push(`${file}: ${count} элементов при минимуме ${minimum}.`);
     if (age !== null && blockingAge && age > blockingAge) blocking.push(`${file}: данные старше ${blockingAge} минут.`);
     else if (age !== null && warningAge && age > warningAge) warnings.push(`${file}: данные старше ${warningAge} минут.`);
-    if (minimum > 0 && count >= minimum && count <= Math.ceil(minimum * 1.25)) {
+    if (!exactFixedCount && minimum > 0 && count >= minimum && count <= Math.ceil(minimum * 1.25)) {
       warnings.push(`${file}: объём близок к минимальному порогу (${count}/${minimum}).`);
     }
   }
@@ -149,11 +159,13 @@ export function buildNewsPipelineHealth({
   const minimumRatio = Number(config.publication?.minimum_official_source_success_ratio || 0);
 
   if (!totalSources) blocking.push('Реестр официальных источников пуст.');
-  else if (successRatio < minimumRatio) blocking.push(`Работает только ${(successRatio * 100).toFixed(1)}% официальных источников.`);
+  else if (successRatio < minimumRatio) {
+    blocking.push(`Работает только ${(successRatio * 100).toFixed(1)}% официальных источников при обязательном минимуме ${(minimumRatio * 100).toFixed(1)}%. Live snapshot не должен заменяться при деградации ниже contractual floor.`);
+  }
   if (persistentFailures.length) warnings.push(`Систематически не работают источники: ${persistentFailures.map(source => source.id).join(', ')}.`);
 
-  const images = collectImages(root, payloads);
-  if (images.missing) blocking.push(`Отсутствуют ${images.missing} изображений, на которые ссылаются новости.`);
+  const images = collectImages(root, payloads, config);
+  if (images.missing) warnings.push(`Недоступны ${images.missing} изображений новостей; публикация продолжена с фирменной заглушкой.`);
 
   const status = blocking.length ? 'error' : warnings.length ? 'degraded' : 'healthy';
   const health = {
@@ -161,7 +173,7 @@ export function buildNewsPipelineHealth({
     pipeline: 'news',
     status,
     generated_at: generatedAtIso,
-    last_successful_run_at: runStartedAt || generatedAtIso,
+    last_successful_run_at: blocking.length ? (previous?.last_successful_run_at || null) : (runStartedAt || generatedAtIso),
     due_groups: [...dueGroups],
     data,
     images,
