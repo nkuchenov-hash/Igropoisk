@@ -6,6 +6,39 @@ function clampConfidence(value, floor = 0.78) {
   return Math.max(floor, Math.min(0.99, Number.isFinite(number) ? number : floor));
 }
 
+function verifiesStandaloneVideoGame(request = {}) {
+  const sources = Array.isArray(request.verification_sources) ? request.verification_sources : [];
+  return sources.some(source => /video[-_ ]?game[-_ ]?exact/i.test(String(source?.matchedBy || source?.matched_by || '')));
+}
+
+function repairVerifiedStandaloneIdentity(entity, request = {}) {
+  if (!entity || !verifiesStandaloneVideoGame(request)) return entity;
+  const kind = String(entity.identity?.kind?.value || '').trim().toLowerCase();
+  const kindSource = String(entity.identity?.kind?.source?.name || '').trim();
+  if (!['edition', 'remaster', 'dlc', 'expansion'].includes(kind) || !kindSource.startsWith('news-game-')) return entity;
+
+  const now = new Date().toISOString();
+  entity.identity.kind = {
+    ...entity.identity.kind,
+    value: 'game',
+    lastCheckedAt: now
+  };
+  entity.presentation = {
+    ...(entity.presentation || {}),
+    standalonePage: true,
+    embeddedTab: null
+  };
+  entity.updatedAt = now;
+  entity.auditLog = Array.isArray(entity.auditLog) ? entity.auditLog : [];
+  entity.auditLog.push({
+    at: now,
+    action: 'news_verified_standalone_kind_repair',
+    actor: 'news-registry-adapter',
+    reason: 'external database verified the title as an exact standalone video game'
+  });
+  return entity;
+}
+
 export function decodeNewsGameRequests(encoded = '') {
   const value = String(encoded || '').trim();
   if (!value) return [];
@@ -30,6 +63,7 @@ export function registerNewsGameCandidates(registry = {}, requests = []) {
     const temporaryGameId = String(request.game_id || request.gameId || '').trim();
     const identityVerified = request.identity_verified === true || request.identityVerified === true;
     const verifiedExternal = Boolean(request.verified_external || request.verifiedExternal);
+    const standaloneVideoGame = verifiesStandaloneVideoGame(request);
     if (!title || !slug) {
       issues.push({ index, game_id: temporaryGameId || null, slug: slug || null, status: 'unresolved', reason: 'news_candidate_missing_identity' });
       continue;
@@ -50,6 +84,7 @@ export function registerNewsGameCandidates(registry = {}, requests = []) {
       const registration = api.registerCandidate({
         title,
         slug,
+        ...(standaloneVideoGame ? { kind: 'game', standalonePage: true } : {}),
         source: {
           type: 'automated_inference',
           name: verifiedExternal ? 'news-game-web-identity-verified' : 'news-game-canonical-identity-verified',
@@ -65,6 +100,7 @@ export function registerNewsGameCandidates(registry = {}, requests = []) {
       decision = registration.decision || '';
     }
 
+    entity = repairVerifiedStandaloneIdentity(entity, request);
     if (!entity || decision === 'ambiguous' || decision === 'needs_review') {
       issues.push({ index, game_id: temporaryGameId || null, slug, title, status: decision || 'unresolved', reason: 'news_candidate_needs_identity_review' });
       continue;
