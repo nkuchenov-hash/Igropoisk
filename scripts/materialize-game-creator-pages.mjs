@@ -20,7 +20,7 @@ const slugs=[...new Set(candidates.map(game=>String(game.slug||'').trim().toLowe
 if(!slugs.length){console.log('[game-page-promotion] no finalized pages to promote');process.exit(0)}
 for(const slug of slugs)if(!/^[a-z0-9][a-z0-9-]*$/.test(slug))throw new Error(`Unsafe game slug: ${slug}`);
 
-// This adapter never creates public state. It may only copy a package that has already
+// copy-only promotion adapter: never creates public state. It may only copy a package that has already
 // been finalized by scripts/finalize-game-page-publication.mjs and passes the canonical gate.
 validate(sourceRoot,slugs);
 const sourceCatalog=read(path.join(sourceRoot,'data/catalog-visible.json'),[]),targetCatalogPath=path.join(targetRoot,'data/catalog-visible.json'),targetCatalog=read(targetCatalogPath,[]);
@@ -51,5 +51,5 @@ const files=fs.existsSync(sourceContent)?fs.readdirSync(sourceContent).filter(na
 for(const name of files){const sourceChunk=read(path.join(sourceContent,name));if(!sourceChunk?.games)continue;const selected=slugs.filter(slug=>sourceChunk.games[slug]);if(!selected.length)continue;const targetFile=path.join(targetRoot,'data/game-content',name),targetChunk=read(targetFile,{schema_version:sourceChunk.schema_version||5,games:{}});targetChunk.schema_version=Math.max(Number(targetChunk.schema_version||1),Number(sourceChunk.schema_version||1));targetChunk.games=targetChunk.games||{};for(const slug of selected){targetChunk.games[slug]=sourceChunk.games[slug];located.set(slug,name)}write(targetFile,targetChunk)}
 for(const slug of slugs)if(!located.has(slug))throw new Error(`Finalized game-content missing ${slug}`);
 validate(targetRoot,slugs);
-write(outputPath,{schema_version:2,generated_at:new Date().toISOString(),source_report:path.relative(sourceRoot,reportPath),publication_owner:'scripts/finalize-game-page-publication.mjs',games:slugs.map(slug=>({slug,game_content:located.get(slug),copied:copiedBySlug[slug]}))});
+write(outputPath,{schema_version:2,generated_at:new Date().toISOString(),source_report:path.relative(sourceRoot,reportPath),publication_owner:'scripts/finalize-game-page-publication.mjs',promoter:'copy-only',games:slugs.map(slug=>({slug,game_content:located.get(slug),copied:copiedBySlug[slug]}))});
 console.log(`[game-page-promotion] copied ${slugs.length} already-finalized Game Page package(s); no public state was synthesized by the promotion adapter.`);
