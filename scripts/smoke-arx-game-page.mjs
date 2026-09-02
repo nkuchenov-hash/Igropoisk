@@ -9,8 +9,10 @@ const corpus=JSON.parse(fs.readFileSync('data/game-sources/arx-fatalis.json','ut
 const arr=v=>Array.isArray(v)?v:[];
 const url=s=>String(s?.resolved_url||s?.url||s?.source_url||'');
 const host=u=>{try{return new URL(u).hostname.toLowerCase()}catch{return''}};
+const pathOf=u=>{try{return new URL(u).pathname.replace(/\/$/,'')}catch{return''}};
 const blockedReviewDomain=u=>/(?:^|\.)gamerankings\.com$|(?:^|\.)metacritic\.com$|(?:^|\.)opencritic\.com$/i.test(host(u));
-const direct=s=>{const roles=arr(s?.roles).map(String);const kind=String(s?.kind||'');const u=url(s),t=String(s?.title||'');if(!u||blockedReviewDomain(u))return false;if(!roles.includes('review')&&kind!=='professional-review')return false;if(/пользовательские отзывы|user reviews?/i.test(t))return false;return true};
+const hubLike=u=>{const p=pathOf(u);return !p||p==='/'||/^\/(?:games?|title)\/[^/]+$/i.test(p)};
+const direct=s=>{const roles=arr(s?.roles).map(String);const kind=String(s?.kind||'');const u=url(s),t=String(s?.title||'');if(!u||blockedReviewDomain(u)||hubLike(u))return false;if(!roles.includes('review')&&kind!=='professional-review')return false;if(/пользовательские отзывы|user reviews?/i.test(t))return false;return true};
 const canon=u=>{try{const x=new URL(String(u||''));x.hash='';for(const k of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','ysclid'])x.searchParams.delete(k);return `${x.origin}${x.pathname.replace(/\/$/,'')}${x.search}`}catch{return String(u||'').replace(/\/$/,'')}};
 const expectedReviewLinks=[...new Set(arr(corpus.sources).filter(direct).map(s=>canon(url(s))))];
 const expectedReviews=expectedReviewLinks.length;
