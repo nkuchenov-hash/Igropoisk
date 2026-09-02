@@ -30,7 +30,7 @@ const decode=s=>String(s||'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').repla
 const canonical=v=>{try{const u=new URL(String(v||''),'https://duckduckgo.com');if(u.hostname.endsWith('duckduckgo.com')&&u.pathname.startsWith('/l/')){const x=u.searchParams.get('uddg');if(x)return canonical(decodeURIComponent(x))}if(/google\./i.test(u.hostname)&&u.pathname==='/url'){const x=u.searchParams.get('q')||u.searchParams.get('url');if(x)return canonical(x)}u.hash='';for(const k of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','ysclid'])u.searchParams.delete(k);return `${u.origin}${u.pathname.replace(/\/$/,'')}${u.search}`}catch{return''}};
 const host=v=>{try{return new URL(v).hostname.replace(/^www\./,'').toLowerCase()}catch{return''}};
 const technical=v=>{try{return/(^|\/)(?:_?captcha|login|signin|search)(?:[/?#]|$)/i.test(new URL(v).pathname)}catch{return true}};
-const excludedHost=v=>/(metacritic\.com|opencritic\.com|kritikanstvo\.ru|steambase\.io|reddit\.com|steamcommunity\.com|youtube\.com|youtu\.be|rutube\.ru|vkvideo\.ru|fandom\.com|spotify\.com|podbean\.com)/i.test(host(v));
+const excludedHost=v=>/(metacritic\.com|opencritic\.com|kritikanstvo\.ru|steambase\.io|reddit\.com|steamcommunity\.com|youtube\.com|youtu\.be|rutube\.ru|vkvideo\.ru|fandom\.com|spotify\.com|podbean\.com|zencastr\.com)/i.test(host(v));
 const badText=v=>/(walkthrough|guide|wiki|tips|cheat|news|preview|interview|podcast|episode|how[- ]?to|прохожд|гайд|новост|превью|интервью|подкаст)/i.test(String(v||''));
 const tokens=title.toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').trim().split(/\s+/).filter(t=>t.length>1||/^\d+$/.test(t));
 const identity=v=>{const h=' '+String(v||'').toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim()+' ';return tokens.every(t=>h.includes(` ${t} `))};
@@ -63,24 +63,34 @@ function extractScore(html,text){
   for(const rx of [/(?:overall\s+score|final\s+score|review\s+score|score|rating|verdict|оценк\w*)\s*[:\-]?\s*([0-9]+(?:\.[0-9]+)?)\s*\/\s*(5|10|20|100)/i,/\b([0-9]+(?:\.[0-9]+)?)\s*\/\s*(5|10|20|100)\b/i]){const m=text.match(rx);if(m){const score=Number(m[1]),scale=Number(m[2]);if(score>=0&&score<=scale)return{score,scale,grade:''}}}
   const pct=text.match(/(?:overall\s+score|final\s+score|review\s+score|score|rating|verdict|оценк\w*)\s*[:\-]?\s*([0-9]{1,3})\s*%/i);if(pct){const score=Number(pct[1]);if(score<=100)return{score,scale:100,grade:''}}
   const plain=text.match(/(?:overall\s+score|final\s+score|review\s+score|rating|verdict|оценка)\s*[:\-]?\s*([0-9]+(?:\.[0-9]+)?)(?!\s*\/)/i);if(plain){const score=Number(plain[1]);if(score>=0&&score<=100)return{score,scale:score>10?100:10,grade:''}}
+  const share=text.match(/\b([0-9](?:\.[0-9])?|10)\s+(?:[A-Z][A-Za-z0-9 .,'’'&()\-]{0,80}\s+)?Share article\b/i);if(share){const score=Number(share[1]);if(score>=0&&score<=10)return{score,scale:10,grade:''}}
   const grade=text.match(/(?:grade|rating|verdict|оценка)\s*[:\-]?\s*([ABCDF][+-]?)(?:\s|<|$)/i);return{score:null,scale:null,grade:grade?grade[1].toUpperCase():''};
 }
-async function probe(raw){try{const r=await fetch(raw.url,{redirect:'follow',headers,signal:AbortSignal.timeout(6500)});if(!r.ok)return null;const url=canonical(r.url||raw.url);if(technical(url)||excludedHost(url))return null;const type=(r.headers.get('content-type')||'').toLowerCase();if(!/html|text/.test(type))return null;const html=await r.text(),text=decode(html).slice(0,700000);if(!identity(`${raw.title} ${text.slice(0,25000)}`))return null;const found=extractScore(html,text),eligible=editorialScoreAllowed(url)&&Boolean((Number.isFinite(found.score)&&Number.isFinite(found.scale)&&found.scale>0)||found.grade);return{...raw,url,score:eligible?found.score:null,scale:eligible?found.scale:null,grade:eligible?found.grade:'',score_eligible:eligible,checked_at:checkedAt,validation:{status:'accepted-readable-link',http_status:r.status,checked_at:checkedAt,method:'parallel-direct-editorial-v6'}}}catch{return null}}
+async function probe(raw){try{const r=await fetch(raw.url,{redirect:'follow',headers,signal:AbortSignal.timeout(6500)});if(!r.ok)return null;const url=canonical(r.url||raw.url);if(technical(url)||excludedHost(url))return null;const type=(r.headers.get('content-type')||'').toLowerCase();if(!/html|text/.test(type))return null;const html=await r.text(),text=decode(html).slice(0,700000);if(!identity(`${raw.title} ${text.slice(0,25000)}`))return null;const found=extractScore(html,text),eligible=editorialScoreAllowed(url)&&Boolean((Number.isFinite(found.score)&&Number.isFinite(found.scale)&&found.scale>0)||found.grade);return{...raw,url,score:eligible?found.score:null,scale:eligible?found.scale:null,grade:eligible?found.grade:'',score_eligible:eligible,checked_at:checkedAt,validation:{status:'accepted-readable-link',http_status:r.status,checked_at:checkedAt,method:'parallel-direct-editorial-v7'}}}catch{return null}}
 async function probeAll(raws){let i=0;const out=[];async function worker(){while(i<raws.length){const x=raws[i++],v=await probe(x);if(v)out.push(v)}}await Promise.all(Array.from({length:Math.min(24,raws.length||1)},worker));return out}
 const stats=list=>{const m=new Map();for(const x of list){const k=host(x.url)||x.publication.toLowerCase(),old=m.get(k);if(!old||(!old.score_eligible&&x.score_eligible))m.set(k,x)}return{count:m.size,scored:[...m.values()].filter(x=>x.score_eligible).length}};
 
-let unique=new Map();for(const x of await probeAll([...candidates.values()]))unique.set(canonical(x.url).toLowerCase(),x);let sources=[...unique.values()],s=stats(sources);
-if(s.count<minProfessional||s.scored<minScored){
-  const represented=new Set(sources.map(x=>host(x.url)));
-  const priority=['cubed3.com','gamingnexus.com','rpgfan.com','gamerevolution.com','ign.com','gamespot.com','eurogamer.net','pcgamer.com','igromania.ru','ag.ru','stopgame.ru','vgtimes.ru','gameguru.ru'];
-  const missing=pubs.filter(p=>![...represented].some(h=>h===p.domain||h.endsWith('.'+p.domain))).sort((a,b)=>{const ai=priority.indexOf(a.domain),bi=priority.indexOf(b.domain);return(ai<0?999:ai)-(bi<0?999:bi)});
-  const queries=[];for(const p of missing){queries.push(`"${title}" site:${p.domain}`,`"${title}" review site:${p.domain}`);if(p.domain.endsWith('.ru'))queries.push(`"${title}" обзор site:${p.domain}`)}
-  for(let n=0;n<queries.length&&(s.count<minProfessional||s.scored<minScored);n+=12){providerStats.targeted_queries+=await runQueries(queries.slice(n,n+12),'targeted-publication-search');const known=new Set(sources.map(x=>canonical(x.url).toLowerCase()));for(const x of await probeAll([...candidates.values()].filter(x=>!known.has(canonical(x.url).toLowerCase()))))unique.set(canonical(x.url).toLowerCase(),x);sources=[...unique.values()];s=stats(sources)}
+let unique=new Map();
+for(const x of await probeAll([...candidates.values()]))unique.set(canonical(x.url).toLowerCase(),x);
+let sources=[...unique.values()];
+
+// Exhaustively scan every still-unrepresented registered editorial domain. Reaching the minimum
+// is an acceptance threshold, not a reason to stop source discovery.
+const represented=new Set(sources.map(x=>host(x.url)));
+const priority=['cubed3.com','gamingnexus.com','rpgfan.com','gamerevolution.com','ign.com','gamespot.com','eurogamer.net','pcgamer.com','igromania.ru','ag.ru','stopgame.ru','vgtimes.ru','gameguru.ru'];
+const missing=pubs.filter(p=>![...represented].some(h=>h===p.domain||h.endsWith('.'+p.domain))).sort((a,b)=>{const ai=priority.indexOf(a.domain),bi=priority.indexOf(b.domain);return(ai<0?999:ai)-(bi<0?999:bi)});
+const targeted=[];
+for(const p of missing){targeted.push(`"${title}" site:${p.domain}`,`"${title}" review site:${p.domain}`);if(p.domain.endsWith('.ru'))targeted.push(`"${title}" обзор site:${p.domain}`)}
+for(let n=0;n<targeted.length;n+=12){
+  providerStats.targeted_queries+=await runQueries(targeted.slice(n,n+12),'targeted-publication-search');
+  const known=new Set(sources.map(x=>canonical(x.url).toLowerCase()));
+  for(const x of await probeAll([...candidates.values()].filter(x=>!known.has(canonical(x.url).toLowerCase()))))unique.set(canonical(x.url).toLowerCase(),x);
+  sources=[...unique.values()];
 }
 
 sources.sort((a,b)=>Number(b.score_eligible)-Number(a.score_eligible)||a.publication.localeCompare(b.publication,'en'));
-s=stats(sources);
-const result={schema_version:6,game_slug:slug,title,checked_at:checkedAt,elapsed_ms:Date.now()-started,providers:providerStats,queries:providerStats.broad_queries+providerStats.targeted_queries,candidates:candidates.size,accepted:sources.length,publication_count:s.count,scored:s.scored,minimum_professional_sources:minProfessional,minimum_scored_sources:minScored,coverage_passed:s.count>=minProfessional&&s.scored>=minScored,sources};
+const s=stats(sources);
+const result={schema_version:7,game_slug:slug,title,checked_at:checkedAt,elapsed_ms:Date.now()-started,providers:providerStats,queries:providerStats.broad_queries+providerStats.targeted_queries,candidates:candidates.size,accepted:sources.length,publication_count:s.count,scored:s.scored,registered_publications_scanned:pubs.length,targeted_publications_scanned:missing.length,minimum_professional_sources:minProfessional,minimum_scored_sources:minScored,coverage_passed:s.count>=minProfessional&&s.scored>=minScored,sources};
 write(outPath,result);
-write(`data/parser-runs/independent-web-sources-${slug}.json`,{parser:'independent-game-source-web-discovery-v6',status:result.coverage_passed?'green':'needs_revision',checked_at:checkedAt,game_slug:slug,elapsed_ms:result.elapsed_ms,accepted:sources.length,publication_count:s.count,scored:s.scored,providers:providerStats,output:outPath});
+write(`data/parser-runs/independent-web-sources-${slug}.json`,{parser:'independent-game-source-web-discovery-v7',status:result.coverage_passed?'green':'needs_revision',checked_at:checkedAt,game_slug:slug,elapsed_ms:result.elapsed_ms,accepted:sources.length,publication_count:s.count,scored:s.scored,registered_publications_scanned:pubs.length,targeted_publications_scanned:missing.length,providers:providerStats,output:outPath});
 console.log(JSON.stringify({...result,sources:undefined},null,2));
