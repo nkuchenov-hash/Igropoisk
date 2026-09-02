@@ -34,7 +34,7 @@
   materialized.defer=true;
   document.head.appendChild(materialized);
   const integrity=document.createElement('script');
-  integrity.src='../_shared/game-page-integrity.js?v=20260902-8';
+  integrity.src='../_shared/game-page-integrity.js?v=20260902-9';
   integrity.defer=true;
   document.head.appendChild(integrity);
   const editions=document.createElement('script');
