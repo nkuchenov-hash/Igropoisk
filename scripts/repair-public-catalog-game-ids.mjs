@@ -5,23 +5,17 @@ import {migrateRepository} from './lib/game-registry-migration.mjs';
 import {projectPublicCatalog} from './lib/system-game-registry-adapter.mjs';
 
 const root=process.cwd();
-const catalogPath=path.join(root,'data/catalog-visible.json');
-const catalog=JSON.parse(fs.readFileSync(catalogPath,'utf8'));
-const {registry}=migrateRepository(root,{dryRun:true,publicBaseUrl:'/game'});
-const projected=projectPublicCatalog(catalog,registry);
-const unresolved=projected.issues.filter(issue=>issue.status==='unresolved');
-if(unresolved.length)throw new Error(`Public catalog contains unresolved Game Registry identities: ${JSON.stringify(unresolved)}`);
-let filled=0;
-let conflicts=0;
-const records=catalog.map((item,index)=>{
-  const projectedId=projected.records[index]?.game_id??null;
-  const pinned=String(item?.game_id??'').trim();
-  if(pinned){
-    if(projectedId&&projectedId!==pinned)conflicts++;
-    return {...projected.records[index],...item,game_id:pinned};
-  }
-  if(projectedId)filled++;
-  return {...item,...projected.records[index],...(projectedId?{game_id:projectedId}:{})};
-});
-fs.writeFileSync(catalogPath,JSON.stringify(records,null,2)+'\n');
-console.log(JSON.stringify({records:records.length,canonical_ids_filled:filled,pinned_ids_preserved:records.filter(item=>item.game_id).length,projection_conflicts_ignored:conflicts,issues:projected.issues.length,registry_source:'fresh_migration',policy:'existing public game_id is authoritative'},null,2));
+const read=(relative,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'))}catch{return fallback}};
+const write=(relative,value)=>{const target=path.join(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,`${JSON.stringify(value,null,2)}\n`)};
+const catalog=read('data/catalog-visible.json',[]),{registry}=migrateRepository(root,{dryRun:true,publicBaseUrl:'/game'}),projected=projectPublicCatalog(catalog,registry),unresolved=projected.issues.filter(issue=>issue.status==='unresolved');if(unresolved.length)throw new Error(`Public catalog contains unresolved Game Registry identities: ${JSON.stringify(unresolved)}`);
+const plan=read('data/content-pipeline/execution-plan.json',{schema_version:1,pages:[],reviews:[]});plan.pages=Array.isArray(plan.pages)?plan.pages:[];plan.reviews=Array.isArray(plan.reviews)?plan.reviews:[];
+let missingIds=0,queued=0,conflicts=0;
+for(let index=0;index<catalog.length;index++){
+  const item=catalog[index],projectedId=String(projected.records[index]?.game_id||'').trim(),pinned=String(item?.game_id||'').trim(),slug=String(item?.slug||'').trim();
+  if(pinned&&projectedId&&projectedId!==pinned){conflicts++;continue}
+  if(pinned||!projectedId||!slug)continue;missingIds++;
+  if(!plan.pages.some(task=>task.slug===slug)){plan.pages.push({type:'build_page',game_id:projectedId,slug,title:item.title||slug,steam_appid:Number(item.steam_appid)||null,priority:1200,reason:'public_catalog_identity_requires_canonical_page_revision'});queued++}
+}
+if(conflicts)throw new Error(`Public catalog contains ${conflicts} canonical identity conflict(s); direct public repair is forbidden.`);
+plan.updated_at=new Date().toISOString();write('data/content-pipeline/execution-plan.json',plan);
+console.log(JSON.stringify({records:catalog.length,missing_game_ids:missingIds,queued_canonical_revisions:queued,public_catalog_mutations:0,policy:'public identity changes are applied only by the Game Page finalizer'},null,2));
