@@ -4,21 +4,21 @@ import path from 'node:path';
 
 const root=process.cwd();
 const manifestPath='config/game-page-module.manifest.json';
+const reportPath='data/quality-control/game-page-module-integrity.json';
 const abs=p=>path.join(root,p);
 const exists=p=>fs.existsSync(abs(p))&&fs.statSync(abs(p)).isFile();
 const read=p=>fs.readFileSync(abs(p),'utf8');
 const errors=[];
 const checked=[];
 const fail=message=>errors.push(message);
+const persist=value=>{const target=abs(reportPath);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n')};
 
 if(!exists(manifestPath)){
-  console.error(JSON.stringify({module:'game-page-assembly',status:'red',errors:[`missing ${manifestPath}`]},null,2));
-  process.exit(1);
+  const result={module:'game-page-assembly',status:'red',errors:[`missing ${manifestPath}`]};persist(result);console.error(JSON.stringify(result,null,2));process.exit(1);
 }
 let manifest;
 try{manifest=JSON.parse(read(manifestPath));}catch(error){
-  console.error(JSON.stringify({module:'game-page-assembly',status:'red',errors:[`invalid ${manifestPath}: ${error.message}`]},null,2));
-  process.exit(1);
+  const result={module:'game-page-assembly',status:'red',errors:[`invalid ${manifestPath}: ${error.message}`]};persist(result);console.error(JSON.stringify(result,null,2));process.exit(1);
 }
 if(manifest.schema_version!==1)fail('manifest schema_version must be 1');
 if(manifest.module!=='game-page-assembly')fail('manifest module must be game-page-assembly');
@@ -58,9 +58,8 @@ for(const [name,text] of [['scripts/build-game-page-basic.mjs',basic],['scripts/
     if(text.includes(token))fail(`${name} violates draft-only builder contract via ${JSON.stringify(token)}`);
   }
 }
-for(const token of ['OPENAI_API_KEY','api.openai.com','openai.com/v1']){
-  if(editorial.includes(token))fail(`scripts/build-game-page.mjs must not require paid OpenAI: ${token}`);
-}
+for(const token of ['OPENAI_API_KEY','api.openai.com','openai.com/v1'])if(editorial.includes(token))fail(`scripts/build-game-page.mjs must not require paid OpenAI: ${token}`);
+
 const freeAi=exists('scripts/lib/free-editorial-ai.mjs')?read('scripts/lib/free-editorial-ai.mjs'):'';
 for(const token of ['OLLAMA_BASE_URL','qwen2.5:3b','/api/chat'])if(!freeAi.includes(token))fail(`free editorial backend lost required token: ${token}`);
 for(const token of ['OPENAI_API_KEY','api.openai.com'])if(freeAi.includes(token))fail(`free editorial backend contains paid API dependency: ${token}`);
@@ -77,6 +76,7 @@ for(const token of ['game-page-source-corpus.js','game-page-integrity.js','game-
 const stableDoc=exists('docs/GAME_PAGE_MODULE_STABLE.md')?read('docs/GAME_PAGE_MODULE_STABLE.md'):'';
 for(const token of ['config/game-page-module.manifest.json','validate-game-page-module-integrity.mjs','Обзор игры не является частью модуля страницы игры','finalize-game-page-publication.mjs'])if(!stableDoc.includes(token))fail(`stable module documentation lost architecture token: ${token}`);
 
-const result={module:manifest.module,module_version:manifest.module_version,status:errors.length?'red':'green',checked_files:[...new Set(checked)].length,required_files:(manifest.required_files||[]).length,required_workflows:(manifest.required_workflows||[]).length,required_docs:(manifest.required_docs||[]).length,contract:manifest.contract,errors};
+const result={schema_version:1,checked_at:new Date().toISOString(),module:manifest.module,module_version:manifest.module_version,status:errors.length?'red':'green',checked_files:[...new Set(checked)].length,required_files:(manifest.required_files||[]).length,required_workflows:(manifest.required_workflows||[]).length,required_docs:(manifest.required_docs||[]).length,contract:manifest.contract,errors};
+persist(result);
 console.log(JSON.stringify(result,null,2));
 if(errors.length)process.exit(1);
