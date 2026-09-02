@@ -4,6 +4,7 @@ import {migrateRepository, writeMigrationArtifacts} from './lib/game-registry-mi
 import {GameRegistryApi, validateForPublication} from './lib/game-registry.mjs';
 import {registerPopularCandidates, registerReleaseCandidates, resolveSystemGameIdentity} from './lib/system-game-registry-adapter.mjs';
 import {resolveEditorialGame} from './lib/editorial-game-registry-adapter.mjs';
+import {queueRequestToRegistryCandidate} from './lib/game-page-assembly-queue.mjs';
 
 const root = process.cwd();
 const now = new Date().toISOString();
@@ -30,10 +31,27 @@ const releaseSnapshots = releasePaths.map(relative => readJSON(relative, {}));
 const releaseDiscovery = registerReleaseCandidates(migration.registry, releaseSnapshots);
 migration.registry = releaseDiscovery.registry;
 
+const assemblyInbox = readJSON('tmp/game-page-assembly-inbox.json', {items: []});
+const assemblyItems = Array.isArray(assemblyInbox?.items) ? assemblyInbox.items : [];
+const assemblyApi = new GameRegistryApi(migration.registry);
+const assemblyGameIds = new Set();
+const assemblyImport = {created: 0, matched: 0, needs_review: 0, invalid: 0};
+for (const request of assemblyItems) {
+  try {
+    const result = assemblyApi.registerCandidate(queueRequestToRegistryCandidate(request), {now, actor: 'game-page-assembly-queue'});
+    assemblyImport[result.decision] = (assemblyImport[result.decision] ?? 0) + 1;
+    if (result.entity) assemblyGameIds.add(result.entity.id);
+  } catch {
+    assemblyImport.invalid += 1;
+  }
+}
+migration.registry = assemblyApi.registry;
+
 migration.report.canonicalGames = Object.values(migration.registry.games ?? {})
   .filter(game => game.workflow?.status !== 'merged_into_another_game').length;
 migration.report.popularDiscovery = {created: popularDiscovery.created, matched: popularDiscovery.matched, issues: popularDiscovery.issues.length};
 migration.report.releaseDiscovery = {created: releaseDiscovery.created, matched: releaseDiscovery.matched, issues: releaseDiscovery.issues.length};
+migration.report.pageAssemblyQueue = {received: assemblyItems.length, ...assemblyImport};
 
 if (finalize) writeMigrationArtifacts(root, migration);
 const api = new GameRegistryApi(migration.registry);
@@ -65,7 +83,8 @@ const queuePriority = (game, extra = 0) => {
   const rank = popularRankById.get(game.id) ?? null;
   const popularBoost = rank ? Math.max(20, 140 - rank * 5) : 0;
   const releaseBoost = publicReleaseIds.has(game.id) ? 110 : 0;
-  return Number(game.priority?.score ?? 0) + popularBoost + releaseBoost + extra;
+  const assemblyBoost = assemblyGameIds.has(game.id) ? 220 : 0;
+  return Number(game.priority?.score ?? 0) + popularBoost + releaseBoost + assemblyBoost + extra;
 };
 
 function articleUrlMatches(value, slug) {
@@ -124,21 +143,25 @@ for (const game of Object.values(api.registry.games)) {
   const steamAppId = game.externalIds.steamAppId ? Number(game.externalIds.steamAppId) : null;
   const popularRank = popularRankById.get(game.id) ?? null;
   const releaseCandidate = publicReleaseIds.has(game.id);
+  const assemblyRequest = assemblyGameIds.has(game.id);
   const reviewState = reviewStateById.get(game.id) ?? {published:false, reason:'review_state_missing'};
   if (game.workflow.status === 'needs_review') {
-    queue.push({type: 'resolve_identity', game_id: game.id, slug, title, popular_rank: popularRank, release_candidate: releaseCandidate, priority: queuePriority(game, 100), reason: game.workflow.statusReason});
+    queue.push({type: 'resolve_identity', game_id: game.id, slug, title, popular_rank: popularRank, release_candidate: releaseCandidate, assembly_request: assemblyRequest, priority: queuePriority(game, 100), reason: game.workflow.statusReason});
     continue;
   }
   if (!api.isPublished(game)) {
-    queue.push({type: gate.passed ? 'build_page' : 'enrich_game', game_id: game.id, slug, title, steam_appid: steamAppId, popular_rank: popularRank, release_candidate: releaseCandidate, priority: queuePriority(game, gate.passed ? 60 : 30), reason: gate.passed ? 'canonical publication gate passed' : gate.errors.join(', ')});
+    queue.push({type: gate.passed ? 'build_page' : 'enrich_game', game_id: game.id, slug, title, steam_appid: steamAppId, popular_rank: popularRank, release_candidate: releaseCandidate, assembly_request: assemblyRequest, priority: queuePriority(game, gate.passed ? 60 : 30), reason: gate.passed ? 'canonical publication gate passed' : gate.errors.join(', ')});
   }
   if (!reviewState.published && ['ready_for_page','page_draft','published'].includes(game.workflow.status)) {
-    queue.push({type: 'build_review', game_id: game.id, slug, title, popular_rank: popularRank, release_candidate: releaseCandidate, priority: queuePriority(game, 40), reason: reviewState.reason});
+    queue.push({type: 'build_review', game_id: game.id, slug, title, popular_rank: popularRank, release_candidate: releaseCandidate, assembly_request: assemblyRequest, priority: queuePriority(game, 40), reason: reviewState.reason});
   }
 }
 queue.sort((a,b) => b.priority - a.priority || a.slug.localeCompare(b.slug));
 
-const runnablePages = queue.filter(item => item.type === 'build_page' || (item.type === 'enrich_game' && (item.popular_rank || item.release_candidate))).slice(0, Number(limits.pages_per_run ?? 2));
+const assemblyLimit = Number(limits.page_assembly_queue_per_run ?? 8);
+const assemblyPages = queue.filter(item => item.assembly_request && ['build_page','enrich_game'].includes(item.type)).slice(0, assemblyLimit);
+const normalPages = queue.filter(item => !item.assembly_request && (item.type === 'build_page' || (item.type === 'enrich_game' && (item.popular_rank || item.release_candidate)))).slice(0, Number(limits.pages_per_run ?? 2));
+const runnablePages = [...assemblyPages, ...normalPages].filter((item, index, all) => all.findIndex(other => other.game_id === item.game_id) === index);
 const runnableReviews = queue.filter(item => item.type === 'build_review').slice(0, Number(limits.reviews_per_run ?? 1));
 const games = Object.values(api.registry.games);
 const semanticPublishedReviews = [...reviewStateById.values()].filter(item => item.published).length;
@@ -164,7 +187,9 @@ const status = {
     popular_unresolved: popularDiscovery.issues.length,
     public_release_games: publicReleaseIds.size,
     releases_registered: releaseDiscovery.created,
-    releases_unresolved: releaseDiscovery.issues.length
+    releases_unresolved: releaseDiscovery.issues.length,
+    page_assembly_requests: assemblyItems.length,
+    page_assembly_runnable: assemblyPages.length
   },
   next: {pages: runnablePages, reviews: runnableReviews}
 };
