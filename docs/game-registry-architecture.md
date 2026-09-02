@@ -2,28 +2,54 @@
 
 ## Scope and transition rule
 
-This branch finishes the existing game-content contour without introducing another parser. The canonical registry is a transition layer over the repository's current discovery, page, review and publishing mechanisms. Production switching is explicitly disabled. Existing source files and published pages remain the recovery source and are never deleted by migration.
+The canonical Game Registry is the identity and lifecycle layer shared by the repository's discovery, page, review and publishing systems. It does not make those systems one module.
 
-The branch starts from `98ac2cac48abe4b7bcdd4816c5114ce15d802534`. After PR #57 is merged, this branch must be rebased or synchronized with current `staging`; no commits belong in PR #57, #58 or #59.
+The registry unifies identity, provenance, discovery records, lifecycle state, releases, media metadata, relations, conflicts, duplicates, editorial locks, audit events and revisions in one `GameEntity`.
+
+## Module boundaries
+
+The project has separate concerns that may be coordinated by the same system scheduler:
+
+### Game page module
+
+Owns:
+
+- game identity resolution through the registry;
+- factual enrichment;
+- game media and system requirements;
+- relations and similarity data;
+- page quality control;
+- shared page rendering;
+- game-page publication and refresh.
+
+A game page must be publishable without an editorial review.
+
+### Review/editorial subsystem
+
+Owns:
+
+- discovery of professional reviews;
+- review research corpus;
+- professional score aggregation;
+- editorial review synthesis;
+- review validation/QC;
+- review publication and refresh.
+
+A published review links back to the canonical game through `game_id` (and slug for routing). The game page may display that review, but does not own or generate it.
+
+### Other independent modules
+
+News, releases, Popular, guides and other content systems may discover games or produce content related to games. They resolve the game through the registry and link their output to the same canonical `game_id`.
 
 ## Existing mechanisms reused
 
-- `scripts/orchestrate-content.mjs`: remains the scheduler and queue materializer, now projected from canonical IDs rather than slug-only identities.
-- `scripts/run-content-pipeline.mjs`: remains the per-game runner with failure isolation.
-- `scripts/parse-game-data.mjs`: remains the current Steam-backed enrichment step; it is not treated as proof for non-Steam platforms.
-- `scripts/build-game-page.mjs`: remains the page renderer. The canonical wrapper adds identity lookup, validation and `game/_shared/**` integrity protection.
-- `game/_shared/`: remains the single protected runtime and visual component system. No redesign is introduced.
-- research, score aggregation, review synthesis, media enrichment and review validation scripts remain separate specialist stages.
-- the existing non-destructive publishing guard and object-storage adapter remain authoritative boundaries.
-- the existing administrative area is extended with one game-management entrypoint instead of replaced.
-
-## What is unified
-
-Identity, field provenance, discovery records, lifecycle state, priority, releases, media metadata, articles, conflicts, possible duplicates, editorial locks, audit events and revisions are unified in one `GameEntity`. All discovery streams register candidates through `GameRegistryApi.registerCandidate()`.
-
-## What remains separate
-
-Parsers and source adapters remain independent collectors. Page rendering, research, professional score calculation, review synthesis, media storage and publication remain distinct pipeline stages. News and release PRs are not modified; they can later consume the registry through small adapters.
+- `scripts/orchestrate-content.mjs`: system-level scheduler/queue materializer. It may coordinate page work and review work in the same run, but those remain separate pipelines.
+- `scripts/run-content-pipeline.mjs`: system-level per-game runner with failure isolation.
+- `scripts/parse-game-data.mjs`: factual enrichment step.
+- `scripts/build-game-page-basic.mjs` / page renderer: game-page creation. Page publication is independent of review readiness.
+- `game/_shared/`: single protected runtime and visual component system for game pages.
+- research, score aggregation, review synthesis and review validation scripts: review/editorial subsystem, not page-builder stages.
+- non-destructive publishing guard and object-storage adapter remain authoritative boundaries.
 
 ## Canonical Game Entity
 
@@ -32,53 +58,41 @@ GameEntity
 ├── schemaVersion
 ├── id                         permanent game_* identifier
 ├── identity
-│   ├── canonicalTitle         FieldValue
-│   ├── slug                   FieldValue
-│   ├── aliases                FieldValue
-│   ├── abbreviations          FieldValue
-│   ├── originalTitle          FieldValue
-│   ├── series                 FieldValue
+│   ├── canonicalTitle
+│   ├── slug
+│   ├── aliases
+│   ├── abbreviations
+│   ├── originalTitle
+│   ├── series
 │   └── kind                   game/remake/remaster/dlc/expansion/edition/collection
 ├── externalIds
-│   ├── steamAppId
-│   ├── igdbId
-│   ├── rawgId
-│   ├── playstation[]
-│   ├── xbox[]
-│   └── nintendo[]
-├── fields
-│   ├── developers / publishers
-│   ├── platforms
-│   ├── genres / subgenres
-│   ├── technicalModes
-│   ├── description / shortDescription
-│   ├── ageRatings
-│   ├── systemRequirements
-│   └── officialLinks
-├── releases[]                 platform + region + date + precision + status
-├── media[]                    kind + URL/object key + checksum + provenance + revisions
-├── relations                  series/base/related game IDs
-├── discovery[]                source, time, reason, source record
-├── workflow                   game/page/research/article/review states and reasons
-├── priority                   score, explainable reasons, calculation time
-├── editorial                  field locks and notes
+├── fields                     developers, publishers, platforms, genres, description, requirements, links
+├── releases[]
+├── media[]
+├── relations
+├── discovery[]
+├── workflow
+├── priority
+├── editorial
 ├── conflicts[]
 ├── possibleDuplicates[]
-├── articles[]
+├── articles[]                 references to independently owned related materials
 ├── revisions[]
 ├── auditLog[]
 └── mergedIntoGameId
 ```
 
-Every `FieldValue` contains the value, source descriptor, fetched time, last verification time, confidence and editorial lock. Manual locks always win. Source trust order is official site, official platform store, official press release, structured database, professional publication, platform store for its own platform, then automated inference.
+Every field value keeps provenance, fetched/verified time, confidence and editorial lock. Manual locks win over automated updates.
 
 ## Identity rules
 
-Exact external IDs are the strongest match. Trademark symbols, punctuation and localized aliases do not create a second game. Commercial Deluxe/Ultimate variants may resolve to the base entity. Explicitly different release years, remake/remaster/DLC kind conflicts and multiple exact alias candidates are not silently merged; the candidate enters `reviewQueue`.
+Exact external IDs are the strongest match. Trademark symbols, punctuation and localized aliases do not create a second game. Commercial Deluxe/Ultimate variants may resolve to the base entity.
 
-Original, remake, remaster, DLC and collection distinctions are structural, not title heuristics used to force a merge. Manual merge and undo merge are audit-logged.
+Different release years, remake/remaster/DLC kind conflicts and ambiguous exact aliases are not silently merged; the candidate enters review/identity resolution.
 
-## Lifecycle
+Original, remake, remaster, DLC and collection distinctions are structural. Manual merge and undo merge are audit-logged.
+
+## Game-page lifecycle
 
 ```text
 discovery adapter
@@ -88,26 +102,54 @@ discovery adapter
   → enriching
   → ready_for_page
   → page_draft
-  → validation gate
-  → published
+  → page validation gate
+  → page published
   → scheduled refresh / update_required
 ```
 
-A rejected candidate remains recorded with its reason. A merged record remains as `merged_into_another_game` and can be restored. Incomplete games remain internal and do not receive a public page.
+**No review state is required in this lifecycle.** A page may be published before an editorial review exists.
+
+Incomplete or ambiguous games remain internal until the page's own requirements are satisfied.
+
+## Review lifecycle
+
+Review/editorial content has its own lifecycle:
+
+```text
+canonical game exists
+  → review researching
+  → review draft
+  → editorial review / QC
+  → approved
+  → review published
+  → update_required
+```
+
+The review subsystem may start before or after the page is public. Publishing or updating a review does not recreate the game entity or replace the page lifecycle.
 
 ## Priority
 
-Priority is explainable and recalculated from publication mentions, Игропоиск news mentions, release proximity, popularity rank, professional review corpus, known company, explicit editorial/user request and an existing partial page. It does not force equal enrichment of all discovered games.
+Priority is explainable and can be recalculated from publication mentions, Игропоиск news mentions, release proximity, popularity rank, known company, explicit editorial/user request and an existing partial page.
 
-## Articles and reviews
+Page priority and review priority may use some of the same signals, but they are separate tasks. A missing review must not downgrade an otherwise valid game page to unpublished.
 
-Canonical types are: Игропоиск review, professional external review, news, guide, mechanics analysis, development history, technical material, and update/DLC. Игропоиск review states are `researching`, `draft`, `editorial_review`, `approved`, `published`, and `update_required`. Automatic output begins as a draft. The existing research and review scripts remain responsible for sourced dossier creation and professional score calculation; the registry stores links and workflow state.
+## Page integration with related content
 
-The page content order remains unchanged by this branch. Empty sections are omitted by the existing shared renderer. No achievements section, separate game-modes section or platform badges over the cover are introduced. The primary action remains “Оценить игру”; Игропоиск review is first when present.
+The page renderer may display:
 
-## Registry API for later adapters
+- an Игропоиск editorial review;
+- external professional review cards;
+- news;
+- guides;
+- other related materials.
 
-`GameRegistryApi` provides:
+These are **integrations**, not owned page-generation stages. Empty integrations are omitted/hidden according to the shared renderer contract.
+
+The page content rules remain: no achievements section, no separate game-modes section, no platform badges over the cover, and the primary action remains “Оценить игру”.
+
+## Registry API
+
+`GameRegistryApi` provides identity and linking operations including:
 
 - `findById(id)`
 - `findBySlug(slug)`
@@ -123,11 +165,13 @@ The page content order remains unchanged by this branch. Empty sections are omit
 - `lockField(gameId, fieldPath)`
 - `setStatus(gameId, status, reason)`
 
-PR #58 and PR #59 should later call this API through small news/release adapters. Their files are deliberately untouched here.
+News, releases, Popular and future modules should use this registry rather than inventing separate game identities.
 
 ## Storage boundaries
 
-GitHub stores code, small configuration, workflow definitions and temporary transition reports. PostgreSQL is the target for canonical entities, provenance, workflow state, conflicts, audit and revisions. Object Storage is the target for images, checksums, replacement history, research attachments and publication artifacts. Transition JSON snapshots allow the current static site to continue without requiring an immediate production database.
+GitHub stores code, small configuration, workflow definitions and transition reports. PostgreSQL is the target for canonical entities, provenance, workflow state, conflicts, audit and revisions. Object Storage is the target for media and larger publication artifacts.
+
+Review/article artifacts may have their own storage but must retain canonical game linkage.
 
 ## Safe publication and rollback
 
@@ -135,17 +179,17 @@ GitHub stores code, small configuration, workflow definitions and temporary tran
 - no automatic game deletion;
 - empty import is a no-op;
 - partial import preserves unrelated games;
-- `game/_shared/**` is checksum-protected around page generation;
+- `game/_shared/**` is protected around page generation;
 - manual field values and locks are preserved;
-- validation is required before page generation;
+- page validation is required before page generation/publication;
+- **review publication is not required for page publication**;
 - one failed game does not stop later tasks;
-- audit records and per-game revisions support targeted rollback;
-- migration writes new artifacts and never modifies or deletes source data.
+- audit records and per-game revisions support targeted rollback.
 
 ## Administrative boundary
 
-`admin/games/` reads the same canonical model. It shows status, reason, page/research/article states, completeness, priority, sources, conflicts, duplicates, locks and history. Write controls call Content API endpoints only. Without Content API/PostgreSQL it remains explicitly read-only, preventing fake persistence or destructive static-file edits.
+`admin/games/` reads the canonical model and can show page state and related-content states separately. A future review administration area may manage review workflow independently while resolving the same canonical game IDs.
 
 ## Migration
 
-`scripts/migrate-game-registry.mjs` scans the current visible/public catalogs, legacy content-pipeline registry, game content, drafts, parser outputs, release and popular entities, research, reviews, articles and published `game/<slug>/` directories. It is deterministic and idempotent. It writes a new registry and report only when `--write` is supplied. Source fingerprint and base commit form the recovery point.
+`scripts/migrate-game-registry.mjs` scans current visible/public catalogs, legacy content-pipeline registry, game content, drafts, parser outputs, release and popular entities, research, reviews, articles and published `game/<slug>/` directories. Migration data can reference all of those sources without implying they belong to one runtime module.
