@@ -1,18 +1,7 @@
 name: Arx Fatalis game-page module test
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/arx-fatalis-page-module-test.yml'
-      - 'scripts/collect-game-sources.mjs'
-      - 'scripts/discover-game-sources-web.mjs'
-      - 'scripts/prepare-review-research.mjs'
-      - 'scripts/quality-control-loop.mjs'
-      - 'scripts/validate-game-page-content.mjs'
-      - 'scripts/build-game-page-basic.mjs'
-      - 'scripts/build-game-page.mjs'
-      - 'config/game-page-quality-v2.json'
+  workflow_dispatch:
 
 permissions:
   contents: read
