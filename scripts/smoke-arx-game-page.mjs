@@ -22,14 +22,18 @@ try{
  await page.waitForFunction(()=>document.querySelector('#gameTitle')?.textContent?.trim()==='Arx Fatalis',{timeout:30000});
  await page.waitForFunction(expected=>document.querySelectorAll('#reviewGrid .quality-review-row').length===expected,{timeout:30000},expectedReviews);
  await new Promise(r=>setTimeout(r,2800));
- const state=await page.evaluate(()=>({
+ const state=await page.evaluate(()=>{const rows=[...document.querySelectorAll('#reviewGrid .quality-review-row')];const titleXs=rows.map(r=>Math.round(r.querySelector('b')?.getBoundingClientRect().left||0));return{
   title:document.querySelector('#gameTitle')?.textContent?.trim()||'',
   meta:document.querySelector('#gameMeta')?.textContent?.trim()||'',
   pitch:document.querySelector('.hero-pitch')?.textContent?.trim()||'',
   description:document.querySelector('#description')?.textContent?.trim()||'',
-  reviewRows:document.querySelectorAll('#reviewGrid .quality-review-row').length,
+  reviewRows:rows.length,
   reviewNames:[...document.querySelectorAll('#reviewGrid .quality-review-source')].map(n=>n.textContent.trim()),
-  reviewLinks:[...document.querySelectorAll('#reviewGrid .quality-review-row')].map(n=>n.href),
+  reviewLinks:rows.map(n=>n.href),
+  reviewTitleXs:titleXs,
+  reviewCardVisible:Boolean(document.querySelector('#featuredReview.review-summary-card'))&&getComputedStyle(document.querySelector('#featuredReview')).display!=='none',
+  reviewCardImage:Boolean(document.querySelector('#featuredReview.review-summary-card img')),
+  reviewCardText:(document.querySelector('#featuredReview.review-summary-card')?.textContent||'').replace(/\s+/g,' ').trim(),
   reviewEmpty:(document.querySelector('#reviewGrid')?.textContent||'').includes('Источники ещё собираются'),
   blue:[...document.querySelectorAll('img')].map(n=>n.currentSrc||n.src).filter(u=>/storepagebackground\/app\/1700/i.test(u)),
   blueBg:[...document.querySelectorAll('*')].filter(n=>/storepagebackground\/app\/1700/i.test(getComputedStyle(n).backgroundImage||'')).length,
@@ -39,16 +43,20 @@ try{
   recommendedPairs:document.querySelectorAll('#recommendedRequirements dt').length,
   minimum:(document.querySelector('#minimumRequirements')?.textContent||'').replace(/\s+/g,' ').trim(),
   recommended:(document.querySelector('#recommendedRequirements')?.textContent||'').replace(/\s+/g,' ').trim(),
-  ownGuide:Boolean(document.querySelector('#featuredGuide')),
+  ownGuide:Boolean(document.querySelector('#featuredGuide:not([hidden])')),
   guideLinks:[...document.querySelectorAll('#guideGrid a[href]')].map(a=>a.href),
   body:(document.body.textContent||'').replace(/\s+/g,' ').trim()
- }));
+ }});
  const errors=[];
  if(!/2002/.test(state.meta)||!/RPG/i.test(state.meta))errors.push(`Hero metadata incomplete: ${state.meta}`);
  if(state.pitch.length<80||!/Arkane/i.test(state.pitch))errors.push(`Hero pitch is weak/missing: ${state.pitch}`);
  if(state.description.length<350||!/руны|заклинан/i.test(state.description)||!/Arkane/i.test(state.description))errors.push(`Editorial description is weak: ${state.description}`);
  if(/Arx Fatalis построена как ролевая игра с видом от первого лица/i.test(state.body))errors.push('Forbidden generic Arx text is still visible.');
  if(state.reviewRows!==expectedReviews)errors.push(`Review corpus incomplete: ${state.reviewRows}/${expectedReviews}`);
+ if(!state.reviewCardVisible)errors.push('Review summary card is missing.');
+ if(!state.reviewCardImage)errors.push('Review summary card has no screenshot.');
+ if(!/Обзор Arx Fatalis/i.test(state.reviewCardText)||state.reviewCardText.length<250)errors.push(`Review summary card is incomplete: ${state.reviewCardText}`);
+ if(new Set(state.reviewTitleXs).size!==1)errors.push(`Review title column is not aligned: ${state.reviewTitleXs.join(', ')}`);
  if(state.reviewEmpty)errors.push('Review section still says sources are being collected.');
  if(state.blue.length||state.blueBg)errors.push(`Forbidden blue store background visible: ${state.blue.length} img / ${state.blueBg} bg`);
  if(state.ratingNote)errors.push(`Forbidden rating explanation visible: ${state.ratingNote}`);
