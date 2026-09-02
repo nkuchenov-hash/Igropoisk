@@ -16,6 +16,39 @@ function existsAtProduction(relative) {
   return result.status === 0;
 }
 
+function readJsonAtProduction(relative) {
+  if (!productionRef) return null;
+  const result = spawnSync('git', ['show', `${productionRef}:${relative}`], { cwd: root, encoding: 'utf8' });
+  if (result.status !== 0 || !String(result.stdout || '').trim()) return null;
+  try { return JSON.parse(result.stdout); } catch { return null; }
+}
+
+function isFullyAssembledAtProduction(slug) {
+  if (!productionRef) return existsAtProduction(`game/${slug}/index.html`) && existsAtProduction(`data/drafts/${slug}.json`);
+  const page = `game/${slug}/index.html`;
+  const draftPath = `data/drafts/${slug}.json`;
+  if (!existsAtProduction(page) || !existsAtProduction(draftPath)) return false;
+
+  const draft = readJsonAtProduction(draftPath);
+  const editorial = readJsonAtProduction(`data/page-editorial/${slug}.json`);
+  const pageQc = readJsonAtProduction(`data/quality-control/page-${slug}-control.json`);
+  const contentQc = readJsonAtProduction(`data/quality-control/game-page-content-${slug}.json`);
+  const mediaQc = readJsonAtProduction(`data/quality-control/game-page-${slug}.json`);
+  const corpus = readJsonAtProduction(`data/game-sources/${slug}.json`);
+
+  return Boolean(
+    draft?.publication?.public_ready === true
+    && draft?.publication?.status === 'published'
+    && editorial?.game_slug === slug
+    && editorial?.quality_status === 'green'
+    && pageQc?.status === 'green'
+    && pageQc?.green === true
+    && contentQc?.status === 'green'
+    && mediaQc?.status === 'green'
+    && corpus?.discovery?.complete === true
+  );
+}
+
 if (productionRef) {
   for (const item of items) {
     for (const game of Array.isArray(item?.games) ? item.games : []) {
@@ -24,9 +57,7 @@ if (productionRef) {
       const slug = String(game.slug || '').trim().toLowerCase();
       const title = String(game.title || item.game || '').trim();
       if (!slug || !title || !gameId || gameId.startsWith('news_game_')) continue;
-      const page = `game/${slug}/index.html`;
-      const draft = `data/drafts/${slug}.json`;
-      if (existsAtProduction(page) && existsAtProduction(draft)) continue;
+      if (isFullyAssembledAtProduction(slug)) continue;
       const key = gameId || slug;
       if (requestsByGame.has(key)) continue;
       requestsByGame.set(key, {
@@ -41,7 +72,8 @@ if (productionRef) {
         matched_by: game.matchedBy || 'canonical-production-audit',
         source_url: item.primaryUrl || item.url || null,
         published_at: item.publishedAt || null,
-        production_missing: true
+        production_missing: true,
+        assembly_required: true
       });
     }
   }
@@ -50,7 +82,7 @@ if (productionRef) {
 const requests = [...requestsByGame.values()];
 const requestsB64 = Buffer.from(JSON.stringify(requests), 'utf8').toString('base64');
 const output = {
-  schema_version: 3,
+  schema_version: 4,
   generated_at: new Date().toISOString(),
   production_ref: productionRef || null,
   count: requests.length,

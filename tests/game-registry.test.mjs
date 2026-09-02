@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   GameRegistryApi, aggregateProfessionalScores, applySafeUpsert, calculatePriority, compareIdentity, createGameEntity,
   createRegistry, createRevision, fieldValue, mergeField, planSafeUpsert, rollbackRevision,
-  validateForPublication
+  inferKind, validateForPublication
 } from '../scripts/lib/game-registry.mjs';
 
 const official = {type:'official_site',name:'Official'};
@@ -48,6 +48,12 @@ test('remake, remaster and original are not silently merged', () => {
 test('DLC is not merged with its base game by generic identity matching', () => {
   const base=createGameEntity({title:'Elden Ring',kind:'game',source:official});
   assert.notEqual(compareIdentity(base,{title:'Elden Ring: Shadow of the Erdtree',kind:'dlc'}).decision,'match');
+});
+
+test('commercial words are editions only in explicit edition titles', () => {
+  assert.equal(inferKind({title:'Super Smash Bros. Ultimate'}),'game');
+  assert.equal(inferKind({title:'Control Ultimate Edition'}),'edition');
+  assert.equal(inferKind({title:'Gold Rush'}),'game');
 });
 
 test('edition, remaster, DLC and expansion cannot publish as standalone games by default', () => {
