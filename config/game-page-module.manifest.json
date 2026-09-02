@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "module": "game-page-assembly",
-  "module_version": "2026-09-02.3",
+  "module_version": "2026-09-02.4",
   "ownership": "game-page-module",
   "canonical_document": "docs/GAME_PAGE_MODULE_STABLE.md",
   "contract": {
@@ -43,7 +43,8 @@
     "revision_safe_mutators": [
       "scripts/enrich-game-relations.mjs",
       "scripts/discover-review-media.mjs",
-      "scripts/merge-official-steam-videos.mjs"
+      "scripts/merge-official-steam-videos.mjs",
+      "scripts/repair-game-media-from-steam.mjs"
     ],
     "public_artifacts": [
       "data/catalog-visible.json",
@@ -72,6 +73,7 @@
     "scripts/enrich-game-relations.mjs",
     "scripts/discover-review-media.mjs",
     "scripts/merge-official-steam-videos.mjs",
+    "scripts/repair-game-media-from-steam.mjs",
     "scripts/ensure-game-page.mjs",
     "scripts/run-news-game-page-fast.mjs",
     "scripts/materialize-game-creator-pages.mjs",
@@ -133,6 +135,7 @@
     "scripts/enrich-game-relations.mjs": ["published_package_preserved","needs_revision"],
     "scripts/discover-review-media.mjs": ["published_package_preserved","needs_revision"],
     "scripts/merge-official-steam-videos.mjs": ["published_package_preserved","needs_revision"],
+    "scripts/repair-game-media-from-steam.mjs": ["published_package_preserved","queued_new_page_revision","needs_revision","public_ready:false"],
     "game/_shared/game-page.js": ["game-page-source-corpus.js","game-page-integrity.js","game-media-sanitize.js"],
     "game/_shared/game-page-v3.js": ["if(!dialog||!scale||!note||!dialogTitle||!rateGame||!rateInline||!close)return","if(articleUrl)","mergeGame(curatedFile?.games?.[slug]"],
     "game/_shared/game-page-v3-bootstrap.js": ["hydrateVerifiedPresentation","document.createElement('script')"],
