@@ -3,61 +3,19 @@
 const slug=document.body.dataset.slug||decodeURIComponent(location.pathname.split('/').filter(Boolean).at(-1)||'');
 if(!slug)return;
 const arr=v=>Array.isArray(v)?v:[];
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fetchJSON=async u=>{try{const r=await fetch(u,{cache:'no-store'});return r.ok?await r.json():null}catch{return null}};
 const canon=u=>{try{const x=new URL(String(u||''),location.href);x.hash='';return `${x.origin}${x.pathname.replace(/\/$/,'')}`}catch{return String(u||'').trim()}};
 const sourceName=s=>String(s?.publication||s?.name||s?.source_name||s?.domain||'Источник');
 const sourceUrl=s=>String(s?.resolved_url||s?.url||s?.source_url||'');
 const score=s=>{const a=Number(s?.score),b=Number(s?.scale);if(Number.isFinite(a)&&Number.isFinite(b)&&b>0)return `${a}/${b}`;if(s?.original_score?.display)return String(s.original_score.display);if(Number.isFinite(Number(s?.normalized_10)))return `${Number(s.normalized_10).toFixed(1)}/10`;return '—'};
-const directReview=s=>{
-  const roles=arr(s?.roles).map(String);
-  if(!roles.includes('review')&&s?.kind!=='professional-review')return false;
-  const u=sourceUrl(s),t=String(s?.title||'');
-  if(!u)return false;
-  if(/gamerankings\.com|\/games\/arx-fatalis\/?$|\/game\/arx_fatalis\/reviews\/?$|^https?:\/\/gamezone\.com\/?$/i.test(u))return false;
-  if(/пользовательские отзывы/i.test(t))return false;
-  return true;
-};
+const directReview=s=>{const roles=arr(s?.roles).map(String);if(!roles.includes('review')&&s?.kind!=='professional-review')return false;const u=sourceUrl(s),t=String(s?.title||'');if(!u)return false;if(/gamerankings\.com|\/games\/arx-fatalis\/?$|\/game\/arx_fatalis\/reviews\/?$|^https?:\/\/gamezone\.com\/?$/i.test(u))return false;if(/пользовательские отзывы/i.test(t))return false;return true};
 const unique=list=>{const seen=new Set();return list.filter(x=>{const k=canon(sourceUrl(x));if(!k||seen.has(k))return false;seen.add(k);return true})};
 function row(s){const u=sourceUrl(s);return `<a class="quality-review-row" href="${esc(u)}" target="_blank" rel="noopener noreferrer"><span class="quality-review-source">${esc(sourceName(s))}</span><b>${esc(s.title||'Обзор')}</b><strong>${esc(score(s))}</strong><span aria-hidden="true">↗</span></a>`}
-function renderAllReviews(corpus,ratings){
-  const grid=document.querySelector('#reviewGrid');if(!grid)return;
-  const ratingMap=new Map(arr(ratings?.sources).map(s=>[canon(s.url),s]));
-  const all=unique(arr(corpus?.sources).filter(directReview).map(s=>{const r=ratingMap.get(canon(s.url));return r?{...s,publication:r.publication||s.name,score:r.original_score?.score,scale:r.original_score?.scale,normalized_10:r.normalized_10}:s}));
-  grid.classList.add('quality-review-table');grid.innerHTML=all.length?all.map(row).join(''):'<div class="ig-empty-state empty-state">Обзоры пока не найдены.</div>';
-  const count=document.querySelector('#externalReviewCount');if(count)count.textContent=`${all.length} источников`;
-  const heading=grid.previousElementSibling?.querySelector?.('h2');if(heading)heading.textContent='Обзоры и оценки изданий';
-}
-function polishArx(draft){
-  if(slug!=='arx-fatalis')return;
-  const short='Мрачная подземная RPG от Arkane Studios: заклинания рисуются мышью, задачи решаются несколькими способами, а мир постоянно предлагает экспериментировать.';
-  const long='После того как солнце погасло, жители Аркса ушли под землю — в огромный многоуровневый мир людей, гоблинов, троллей и куда более опасных существ. Arx Fatalis не ведёт игрока по коридору из маркеров: здесь можно подслушивать разговоры, готовить еду, комбинировать предметы, искать обходные пути и буквально рисовать мышью руны заклинаний. Главное достоинство игры — свобода взаимодействия с миром: одну и ту же проблему часто можно решить силой, магией, хитростью или просто внимательным исследованием. Именно этот подход стал ранним почерком Arkane, который позже узнавался в Dark Messiah, Dishonored и Prey.';
-  const meta=document.querySelector('#gameMeta');if(meta)meta.textContent='2002 · RPG · Immersive sim · Фэнтези · Arkane Studios';
-  const description=document.querySelector('#description');if(description)description.textContent=long;
-  const title=document.querySelector('#gameTitle');
-  if(title&&!document.querySelector('.hero-pitch')){const p=document.createElement('p');p.className='hero-pitch';p.textContent=short;title.closest('.hero-copy')?.insertBefore(p,title.nextSibling)}
-  const tags=document.querySelector('#genreTags');if(tags)tags.innerHTML=['RPG','Immersive sim','Фэнтези'].map(x=>`<span class="game-chip">${x}</span>`).join('');
-  const note=document.querySelector('#editorialNote');if(note)note.remove();
-  const hero=document.querySelector('#gameHero');const shots=arr(draft?.media?.screenshots).map(x=>typeof x==='string'?x:x?.url).filter(Boolean);if(hero&&shots.length)hero.style.backgroundImage=`url("${String(shots[2]||shots[1]||shots[0]).replace(/"/g,'%22')}")`;
-  document.querySelectorAll('img').forEach(img=>{if(/storepagebackground\/app\/1700/i.test(img.src))img.closest('article,figure,button,.media-card,.ig-media-card')?.remove()});
-}
-function fixOfficialLinks(draft){
-  const box=document.querySelector('#officialLinks');if(!box)return;
-  const official=String(draft?.links?.official||'').trim();const store=String(draft?.links?.store||'').trim();
-  const links=[];if(official&&/^https?:\/\//i.test(official))links.push(['Официальный сайт',official]);if(store&&/^https?:\/\//i.test(store))links.push(['Страница магазина',store]);
-  box.innerHTML=links.length?links.map(([n,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer"><span>${esc(n)}</span><b>Открыть ↗</b></a>`).join(''):'<div class="ig-muted">Подтверждённая официальная ссылка не найдена.</div>';
-}
-function removeOwnGuidePresentation(){
-  document.querySelector('#featuredGuide')?.remove();
-  document.querySelector('#guideQuickLinks')?.closest('section')?.remove();
-  document.querySelector('#guideUpdated')?.closest('section')?.remove();
-  const layout=document.querySelector('#guides .guides-layout');if(layout)layout.style.gridTemplateColumns='1fr';
-}
-async function main(){
-  const [draft,corpus,ratings]=await Promise.all([fetchJSON(`../../data/drafts/${encodeURIComponent(slug)}.json`),fetchJSON(`../../data/game-sources/${encodeURIComponent(slug)}.json`),fetchJSON(`../../data/ratings/${encodeURIComponent(slug)}.json`)]);
-  for(let i=0;i<120&&!document.querySelector('#reviewGrid');i++)await new Promise(r=>setTimeout(r,100));
-  const apply=()=>{renderAllReviews(corpus,ratings);polishArx(draft);fixOfficialLinks(draft);removeOwnGuidePresentation()};
-  apply();setTimeout(apply,400);setTimeout(apply,1200);setTimeout(apply,2500);
-}
+function renderAllReviews(corpus,ratings){const grid=document.querySelector('#reviewGrid');if(!grid)return;const ratingMap=new Map(arr(ratings?.sources).map(s=>[canon(s.url),s]));const all=unique(arr(corpus?.sources).filter(directReview).map(s=>{const r=ratingMap.get(canon(s.url));return r?{...s,publication:r.publication||s.name,score:r.original_score?.score,scale:r.original_score?.scale,normalized_10:r.normalized_10}:s}));grid.classList.add('quality-review-table');grid.innerHTML=all.length?all.map(row).join(''):'<div class="ig-empty-state empty-state">Обзоры пока не найдены.</div>';const count=document.querySelector('#externalReviewCount');if(count)count.textContent=`${all.length} источников`;const heading=grid.previousElementSibling?.querySelector?.('h2');if(heading)heading.textContent='Обзоры и оценки изданий'}
+function polishArx(draft){if(slug!=='arx-fatalis')return;const short='Мрачная подземная RPG от Arkane Studios: заклинания рисуются мышью, задачи решаются несколькими способами, а мир постоянно предлагает экспериментировать.';const long='После того как солнце погасло, жители Аркса ушли под землю — в огромный многоуровневый мир людей, гоблинов, троллей и куда более опасных существ. Arx Fatalis не ведёт игрока по коридору из маркеров: здесь можно подслушивать разговоры, готовить еду, комбинировать предметы, искать обходные пути и буквально рисовать мышью руны заклинаний. Главное достоинство игры — свобода взаимодействия с миром: одну и ту же проблему часто можно решить силой, магией, хитростью или просто внимательным исследованием. Именно этот подход стал ранним почерком Arkane, который позже узнавался в Dark Messiah, Dishonored и Prey.';const meta=document.querySelector('#gameMeta');if(meta)meta.textContent='2002 · RPG · Immersive sim · Фэнтези · Arkane Studios';const description=document.querySelector('#description');if(description)description.textContent=long;const title=document.querySelector('#gameTitle');if(title&&!document.querySelector('.hero-pitch')){const p=document.createElement('p');p.className='hero-pitch';p.textContent=short;title.closest('.hero-copy')?.insertBefore(p,title.nextSibling)}const tags=document.querySelector('#genreTags');if(tags)tags.innerHTML=['RPG','Immersive sim','Фэнтези'].map(x=>`<span class="game-chip">${x}</span>`).join('');const note=document.querySelector('#editorialNote');if(note){note.textContent='';note.hidden=true}const hero=document.querySelector('#gameHero');const shots=arr(draft?.media?.screenshots).map(x=>typeof x==='string'?x:x?.url).filter(Boolean);if(hero&&shots.length)hero.style.backgroundImage=`url("${String(shots[2]||shots[1]||shots[0]).replace(/"/g,'%22')}")`;document.querySelectorAll('img').forEach(img=>{if(/storepagebackground\/app\/1700/i.test(img.src))img.closest('article,figure,button,.media-card,.ig-media-card')?.remove()})}
+function fixOfficialLinks(draft){const box=document.querySelector('#officialLinks');if(!box)return;const official=String(draft?.links?.official||'').trim();const store=String(draft?.links?.store||'').trim();const links=[];if(official&&/^https?:\/\//i.test(official))links.push(['Официальный сайт',official]);if(store&&/^https?:\/\//i.test(store))links.push(['Страница магазина',store]);box.innerHTML=links.length?links.map(([n,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer"><span>${esc(n)}</span><b>Открыть ↗</b></a>`).join(''):'<div class="ig-muted">Подтверждённая официальная ссылка не найдена.</div>'}
+function removeOwnGuidePresentation(){document.querySelector('#featuredGuide')?.remove();document.querySelector('#guideQuickLinks')?.closest('section')?.remove();document.querySelector('#guideUpdated')?.closest('section')?.remove();const layout=document.querySelector('#guides .guides-layout');if(layout)layout.style.gridTemplateColumns='1fr'}
+async function main(){const[draft,corpus,ratings]=await Promise.all([fetchJSON(`../../data/drafts/${encodeURIComponent(slug)}.json`),fetchJSON(`../../data/game-sources/${encodeURIComponent(slug)}.json`),fetchJSON(`../../data/ratings/${encodeURIComponent(slug)}.json`)]);for(let i=0;i<120&&!document.querySelector('#reviewGrid');i++)await new Promise(r=>setTimeout(r,100));const apply=()=>{renderAllReviews(corpus,ratings);polishArx(draft);fixOfficialLinks(draft);removeOwnGuidePresentation()};apply();setTimeout(apply,400);setTimeout(apply,1200);setTimeout(apply,2500)}
 main().catch(e=>console.warn('Игропоиск: page integrity',e));
 })();
