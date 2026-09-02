@@ -5,6 +5,8 @@ on:
     branches: [staging]
     paths:
       - '.github/workflows/spore-page-module-run.yml'
+      - 'config/game-page-module.manifest.json'
+      - 'scripts/validate-game-page-module-integrity.mjs'
   workflow_dispatch:
 
 permissions:
@@ -27,6 +29,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install browser validation dependency
+        run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+      - name: Verify complete page-module composition before touching Spore
+        env:
+          GAME_PAGE_MODULE_INTEGRITY_WRITE: '1'
+        run: node scripts/validate-game-page-module-integrity.mjs
       - name: Parse official Spore data
         run: node scripts/parse-game-data.mjs spore 17390 Spore
       - name: Register parsed Spore in canonical registry
@@ -39,12 +47,12 @@ jobs:
           if(!entity) throw new Error('Spore was not registered after parser migration');
           console.log(JSON.stringify({game_id:entity.id,slug:entity.identity.slug.value,steam:entity.externalIds?.steamAppId},null,2));
           NODE
-      - name: Build draft only
+      - name: Build deterministic draft only
         run: node scripts/build-game-page-basic.mjs spore
-      - name: Discover and collect review/source corpus
+      - name: Discover and collect canonical review/source corpus
         run: |
           node scripts/discover-game-sources-web.mjs spore || true
-          node scripts/discover-publication-review-hubs.mjs spore || true
+          node scripts/discover-game-publication-hubs.mjs spore || true
           node scripts/collect-game-sources.mjs spore
           node scripts/calculate-ratings-from-research.mjs spore || true
       - name: Cache free Qwen model
@@ -71,30 +79,44 @@ jobs:
         run: node scripts/quality-control-loop.mjs spore
       - name: Finalize only if every publication gate is green
         run: node scripts/finalize-game-page-publication.mjs spore
-      - name: Assert Spore is actually publishable
+      - name: Verify strict published-state contract
+        run: node scripts/validate-game-page-publication-state.mjs spore
+      - name: Assert canonical Spore artifacts are genuinely green
         run: |
           node - <<'NODE'
           const fs=require('fs');
           const must=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+          const integrity=must('data/quality-control/game-page-module-integrity.json');
           const source=must('data/game-sources/spore.json');
+          const page=must('data/quality-control/page-spore-control.json');
           const content=must('data/quality-control/game-page-content-spore.json');
           const media=must('data/quality-control/game-page-spore.json');
           const editorial=must('data/page-editorial/spore.json');
           const draft=must('data/drafts/spore.json');
+          const professional=(source.sources||[]).filter(x=>x.professional===true&&x.kind==='professional-review');
+          const scored=professional.filter(x=>x.score_eligible===true);
+          if(integrity.status!=='green') throw new Error(`module integrity=${integrity.status}`);
+          if(page.status!=='green'||page.green!==true) throw new Error(`overall page QC=${page.status}`);
           if(content.status!=='green') throw new Error(`content QC=${content.status}`);
           if(media.status!=='green') throw new Error(`media QC=${media.status}`);
-          if(!source.source_scan_complete) throw new Error('source scan incomplete');
+          if(source.discovery?.complete!==true) throw new Error('source discovery incomplete');
+          if(professional.length < Number(source.discovery?.minimum_professional_sources||10)) throw new Error(`professional sources=${professional.length}`);
+          if(scored.length < Number(source.discovery?.minimum_scored_sources||5)) throw new Error(`scored sources=${scored.length}`);
+          if(editorial.quality_status!=='green') throw new Error(`editorial=${editorial.quality_status}`);
           if(draft.publication?.status!=='published' || draft.publication?.public_ready!==true) throw new Error('draft was not finalized as published');
           if(!editorial.short_description || !editorial.integrated_description) throw new Error('canonical editorial missing');
           if(!fs.existsSync('game/spore/index.html')) throw new Error('public Spore page shell missing');
-          console.log(JSON.stringify({title:draft.identity?.title,release:draft.release?.date_text,sources:(source.sources||[]).length,professional_reviews:(source.sources||[]).filter(x=>x.role==='professional_review'||x.type==='professional_review').length,rating:draft.ratings?.igropoisk??null,screenshots:(draft.media?.screenshots||[]).length,content_qc:content.status,media_qc:media.status,publication:draft.publication?.status},null,2));
+          console.log(JSON.stringify({title:draft.identity?.title,release:draft.release?.date_text,total_sources:(source.sources||[]).length,professional_reviews:professional.length,scored_reviews:scored.length,rating:draft.ratings?.igropoisk??null,screenshots:(draft.media?.screenshots||[]).length,page_qc:page.status,content_qc:content.status,media_qc:media.status,editorial:editorial.quality_status,publication:draft.publication?.status},null,2));
           NODE
+      - name: Verify the assembled Spore page in a real browser
+        run: node scripts/smoke-game-page-slug.mjs spore
       - name: Preserve complete Spore acceptance artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: spore-page-module-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            data/quality-control/game-page-module-integrity.json
             data/parser-output/spore.json
             data/drafts/spore.json
             data/game-sources/spore.json
@@ -118,5 +140,5 @@ jobs:
           git checkout -b "$branch"
           git commit -m "Build complete Spore game page"
           git push origin "$branch"
-          pr_url="$(gh pr create --base staging --head "$branch" --title "Build complete Spore game page" --body "Full Spore page-module acceptance run. Publication is committed only after source, content, media and canonical editorial gates are green.")"
+          pr_url="$(gh pr create --base staging --head "$branch" --title "Build complete Spore game page" --body "Full Spore page-module acceptance run. Publication is committed only after module-integrity, source, content, media, canonical editorial and browser-runtime gates are green.")"
           gh pr merge "$pr_url" --merge --delete-branch
