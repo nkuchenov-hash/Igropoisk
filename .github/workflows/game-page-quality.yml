@@ -10,6 +10,7 @@ on:
       - 'article/**/index.html'
       - 'data/articles/**'
       - 'data/drafts/**'
+      - 'data/page-editorial/**'
       - 'data/parser-output/**'
       - 'data/article-media/**'
       - 'data/game-media/**'
@@ -23,6 +24,9 @@ on:
       - 'config/game-media-steam-overrides.json'
       - 'scripts/build-game-page.mjs'
       - 'scripts/build-game-page-basic.mjs'
+      - 'scripts/materialize-page-editorial.mjs'
+      - 'scripts/finalize-game-page-publication.mjs'
+      - 'scripts/validate-game-page-content.mjs'
       - 'scripts/collect-game-sources.mjs'
       - 'scripts/materialize-game-shells.mjs'
       - 'scripts/orchestrate-content.mjs'
@@ -76,6 +80,9 @@ jobs:
           node --check article/_shared/review-article.js
           node --check scripts/build-game-page.mjs
           node --check scripts/build-game-page-basic.mjs
+          node --check scripts/materialize-page-editorial.mjs
+          node --check scripts/finalize-game-page-publication.mjs
+          node --check scripts/validate-game-page-content.mjs
           node --check scripts/collect-game-sources.mjs
           node --check scripts/materialize-game-shells.mjs
           node --check scripts/orchestrate-content.mjs
