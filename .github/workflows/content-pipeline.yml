@@ -8,6 +8,9 @@ on:
     branches: [staging]
     paths:
       - 'scripts/hydrate-live-home-feeds.mjs'
+      - 'scripts/hydrate-game-page-assembly-queue.mjs'
+      - 'scripts/ack-game-page-assembly-queue.mjs'
+      - 'scripts/test-game-page-assembly-queue.mjs'
       - 'scripts/orchestrate-content.mjs'
       - 'scripts/run-content-pipeline.mjs'
       - 'scripts/run-game-catalog-enrichment.mjs'
@@ -36,6 +39,8 @@ on:
       - 'scripts/enrich-game-relations.mjs'
       - 'scripts/audit-review-publication.mjs'
       - 'scripts/validate-automation-publish-diff.mjs'
+      - 'scripts/lib/game-page-assembly-queue.mjs'
+      - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/lib/free-editorial-ai.mjs'
       - 'scripts/lib/editorial-game-registry-adapter.mjs'
       - 'scripts/lib/system-game-registry-adapter.mjs'
@@ -69,6 +74,8 @@ jobs:
       - name: Validate lifecycle scripts
         run: |
           node --check scripts/hydrate-live-home-feeds.mjs
+          node --check scripts/hydrate-game-page-assembly-queue.mjs
+          node --check scripts/ack-game-page-assembly-queue.mjs
           node --check scripts/orchestrate-content.mjs
           node --check scripts/run-content-pipeline.mjs
           node --check scripts/run-game-catalog-enrichment.mjs
@@ -98,6 +105,8 @@ jobs:
           node --check scripts/validate-automation-publish-diff.mjs
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/audit-review-publication.mjs
+          node --check scripts/lib/game-page-assembly-queue.mjs
+          node --check scripts/lib/yandex-object-storage.mjs
           node --check scripts/lib/free-editorial-ai.mjs
           node --check scripts/lib/game-registry.mjs
           node --check scripts/lib/game-registry-migration.mjs
@@ -105,10 +114,20 @@ jobs:
           node --check scripts/lib/editorial-game-registry-adapter.mjs
           node --check scripts/lib/system-game-registry-adapter.mjs
           node --check game/_shared/game-page-materialized-data.js
+          node scripts/test-game-page-assembly-queue.mjs
       - name: Require complete game page assembly module
         run: node scripts/validate-game-page-module-integrity.mjs
       - name: Hydrate current Popular and Releases snapshots from Object Storage
         run: node scripts/hydrate-live-home-feeds.mjs
+      - name: Hydrate temporary game-page assembly queue
+        continue-on-error: true
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/hydrate-game-page-assembly-queue.mjs
       - name: Repair public catalog canonical identities
         run: node scripts/repair-public-catalog-game-ids.mjs
       - name: Restore only green identity-safe publication links before planning new work
@@ -217,12 +236,27 @@ jobs:
             --title "Automated game lifecycle ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
             --body "Autonomous game lifecycle output. Page assembly is draft-first and publication is green-only: canonical editorial, source corpus, content and media must all pass before the public catalog or page shell is materialized. Red work remains revision state and never replaces the current public page. Game-page editorial and relation enrichment use free local Qwen through Ollama; no paid AI API is required for page publication.")"
           gh pr merge "$pr_url" --merge --delete-branch
+      - name: Acknowledge temporary requests only after their production pages exist
+        if: always()
+        continue-on-error: true
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+          GAME_PAGE_ASSEMBLY_PRODUCTION_REF: origin/main
+        run: |
+          git fetch origin main:refs/remotes/origin/main --force
+          node scripts/ack-game-page-assembly-queue.mjs
       - name: Preserve lifecycle queue and quality audit
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: game-lifecycle-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            tmp/game-page-assembly-inbox.json
+            tmp/game-page-assembly-queue-ack.json
             data/parser-runs/home-feed-hydration.json
             data/content-pipeline/status.json
             data/content-pipeline/queue.json
