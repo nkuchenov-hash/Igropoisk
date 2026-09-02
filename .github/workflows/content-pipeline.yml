@@ -14,6 +14,11 @@ on:
       - 'scripts/materialize-catalog-game-data.mjs'
       - 'scripts/materialize-page-editorial.mjs'
       - 'scripts/finalize-game-page-publication.mjs'
+      - 'scripts/validate-game-page-publication-state.mjs'
+      - 'scripts/validate-game-page-module-integrity.mjs'
+      - 'scripts/discover-game-sources-web.mjs'
+      - 'scripts/discover-game-publication-hubs.mjs'
+      - 'scripts/collect-game-sources.mjs'
       - 'scripts/validate-game-page-content.mjs'
       - 'scripts/prepare-guide-research.mjs'
       - 'scripts/build-game-page.mjs'
@@ -36,7 +41,9 @@ on:
       - 'scripts/lib/system-game-registry-adapter.mjs'
       - 'config/content-pipeline.json'
       - 'config/game-page-quality-v2.json'
+      - 'config/game-page-module.manifest.json'
       - 'config/home-feeds-storage.json'
+      - 'docs/GAME_PAGE_MODULE_STABLE.md'
       - '.github/workflows/content-pipeline.yml'
 
 permissions:
@@ -68,6 +75,11 @@ jobs:
           node --check scripts/materialize-catalog-game-data.mjs
           node --check scripts/materialize-page-editorial.mjs
           node --check scripts/finalize-game-page-publication.mjs
+          node --check scripts/validate-game-page-publication-state.mjs
+          node --check scripts/validate-game-page-module-integrity.mjs
+          node --check scripts/discover-game-sources-web.mjs
+          node --check scripts/discover-game-publication-hubs.mjs
+          node --check scripts/collect-game-sources.mjs
           node --check scripts/validate-game-page-content.mjs
           node --check scripts/prepare-guide-research.mjs
           node --check scripts/build-game-page.mjs
@@ -93,6 +105,8 @@ jobs:
           node --check scripts/lib/editorial-game-registry-adapter.mjs
           node --check scripts/lib/system-game-registry-adapter.mjs
           node --check game/_shared/game-page-materialized-data.js
+      - name: Require complete game page assembly module
+        run: node scripts/validate-game-page-module-integrity.mjs
       - name: Hydrate current Popular and Releases snapshots from Object Storage
         run: node scripts/hydrate-live-home-feeds.mjs
       - name: Repair public catalog canonical identities
