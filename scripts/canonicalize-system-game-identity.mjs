@@ -34,8 +34,10 @@ if (!popularOnly) {
     if (issue.status === 'unresolved') blocking.push({file: catalogPath, ...issue});
   }
   if (!same(catalog, projectedCatalog.records)) {
-    changes.push({file: catalogPath, before: catalog.length, after: projectedCatalog.records.length});
-    if (write) writeJson(catalogPath, projectedCatalog.records);
+    // The public catalog is part of the finalized Game Page package. Identity normalization
+    // may diagnose drift here, but must never mutate it in place. The affected page must be
+    // rebuilt as a needs_revision package and published through finalize-game-page-publication.mjs.
+    changes.push({file: catalogPath, before: catalog.length, after: projectedCatalog.records.length, action: 'page_revision_required', public_catalog_mutations: 0});
   }
 }
 
@@ -54,17 +56,20 @@ for (let index = 0; index < popularPaths.length; index += 1) {
 }
 
 const report = {
-  schema_version: 1,
-  mode: write ? 'write' : 'check',
+  schema_version: 2,
+  mode: write ? 'write-non-public-projections' : 'check',
   scope: popularOnly ? 'popular' : 'system',
   canonical_games: Object.keys(registry.games ?? {}).filter(id => registry.games[id]?.workflow?.status !== 'merged_into_another_game').length,
   migration_canonical_games: migration.report.canonicalGames,
   popular_discovery: {created: discovery.created, matched: discovery.matched},
   embedded_content: migration.report.embeddedContent,
+  public_catalog_mutations: 0,
+  publication_owner: 'scripts/finalize-game-page-publication.mjs',
   changes,
   repaired,
   blocking
 };
 console.log(JSON.stringify(report, null, 2));
 if (blocking.length) process.exit(2);
+if (changes.some(change => change.file === 'data/catalog-visible.json')) process.exit(3);
 if (!write && changes.length) process.exit(3);
