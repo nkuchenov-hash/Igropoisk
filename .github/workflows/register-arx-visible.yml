@@ -1,0 +1,35 @@
+name: Register Arx Fatalis in visible catalog
+
+on:
+  push:
+    paths:
+      - '.github/workflows/register-arx-visible.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add Arx Fatalis to visible catalog
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p='data/catalog-visible.json';
+          const games=JSON.parse(fs.readFileSync(p,'utf8'));
+          const slug='arx-fatalis';
+          const item={title:'Arx Fatalis',year:2002,slug,game_id:'game_cc3016ae0647c9b8ec2c',steam_appid:1700};
+          const i=games.findIndex(g=>g?.slug===slug);
+          if(i>=0) games[i]={...games[i],...item}; else games.push(item);
+          fs.writeFileSync(p,JSON.stringify(games,null,2)+'\n');
+          NODE
+      - name: Commit catalog registration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/catalog-visible.json
+          git diff --cached --quiet && exit 0
+          git commit -m "publish: register Arx Fatalis in visible catalog"
+          git push origin HEAD:main
