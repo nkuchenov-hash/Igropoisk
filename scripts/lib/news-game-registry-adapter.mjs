@@ -17,6 +17,17 @@ function scalarExternalIds(entity = {}) {
   ].filter(([, value]) => value !== null && value !== undefined && value !== '').map(([key, value]) => [key, String(value)])));
 }
 
+async function isLinkablePage(root, slug) {
+  const pagePath = path.join(root, 'game', slug, 'index.html');
+  const pageExists = await fs.access(pagePath).then(() => true).catch(() => false);
+  if (!pageExists) return false;
+  const draft = await readJson(path.join(root, 'data', 'drafts', `${slug}.json`), null);
+  if (!draft) return false;
+  const createdDirectlyByNews = draft?.publication?.creator_source === 'news';
+  const incompleteLegacyShell = createdDirectlyByNews && draft?.publication?.editorial_ready !== true;
+  return !incompleteLegacyShell;
+}
+
 export async function loadCanonicalNewsCatalog({ root = process.cwd() } = {}) {
   const rules = await readJson(path.join(root, 'data/news-game-aliases.json'), { schemaVersion: 1, games: {}, series: {} });
   const { registry } = migrateRepository(root, { dryRun: true, publicBaseUrl: '/game' });
@@ -28,8 +39,7 @@ export async function loadCanonicalNewsCatalog({ root = process.cwd() } = {}) {
     const title = String(entity.identity?.canonicalTitle?.value || '').trim();
     if (!slug || !title) continue;
     const rule = rules?.games?.[slug] || {};
-    const pagePath = path.join(root, 'game', slug, 'index.html');
-    const pageExists = await fs.access(pagePath).then(() => true).catch(() => false);
+    const pageExists = await isLinkablePage(root, slug);
     const aliases = [...new Set([...entityAliases(entity), ...(rule.aliases || [])].map(String).filter(Boolean))];
     const abbreviations = [...new Set((rule.abbreviations || []).map(String).filter(Boolean))];
     games.push(Object.freeze({
