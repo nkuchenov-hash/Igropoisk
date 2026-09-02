@@ -1,0 +1,122 @@
+name: Spore complete page-module run
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - '.github/workflows/spore-page-module-run.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: spore-page-module-acceptance
+  cancel-in-progress: false
+
+jobs:
+  build-spore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Parse official Spore data
+        run: node scripts/parse-game-data.mjs spore 17390 Spore
+      - name: Register parsed Spore in canonical registry
+        run: |
+          node --input-type=module - <<'NODE'
+          import {migrateRepository,writeMigrationArtifacts} from './scripts/lib/game-registry-migration.mjs';
+          const result=migrateRepository(process.cwd());
+          writeMigrationArtifacts(process.cwd(),result);
+          const entity=Object.values(result.registry.games||{}).find(g=>g.identity?.slug?.value==='spore');
+          if(!entity) throw new Error('Spore was not registered after parser migration');
+          console.log(JSON.stringify({game_id:entity.id,slug:entity.identity.slug.value,steam:entity.externalIds?.steamAppId},null,2));
+          NODE
+      - name: Build draft only
+        run: node scripts/build-game-page-basic.mjs spore
+      - name: Discover and collect review/source corpus
+        run: |
+          node scripts/discover-game-sources-web.mjs spore || true
+          node scripts/discover-publication-review-hubs.mjs spore || true
+          node scripts/collect-game-sources.mjs spore
+          node scripts/calculate-ratings-from-research.mjs spore || true
+      - name: Cache free Qwen model
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama/models
+          key: ollama-qwen2.5-3b-v1-${{ runner.os }}
+      - name: Start free local Qwen
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve > /tmp/ollama.log 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+          ollama pull qwen2.5:3b
+      - name: Run full page QC and revision loop
+        env:
+          OLLAMA_BASE_URL: http://127.0.0.1:11434
+          OLLAMA_EDITORIAL_MODEL: qwen2.5:3b
+          OLLAMA_EDITORIAL_TIMEOUT_MS: '240000'
+          FREE_EDITORIAL_AI_ENABLED: '1'
+        run: node scripts/quality-control-loop.mjs spore
+      - name: Finalize only if every publication gate is green
+        run: node scripts/finalize-game-page-publication.mjs spore
+      - name: Assert Spore is actually publishable
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const must=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+          const source=must('data/game-sources/spore.json');
+          const content=must('data/quality-control/game-page-content-spore.json');
+          const media=must('data/quality-control/game-page-spore.json');
+          const editorial=must('data/page-editorial/spore.json');
+          const draft=must('data/drafts/spore.json');
+          if(content.status!=='green') throw new Error(`content QC=${content.status}`);
+          if(media.status!=='green') throw new Error(`media QC=${media.status}`);
+          if(!source.source_scan_complete) throw new Error('source scan incomplete');
+          if(draft.publication?.status!=='published' || draft.publication?.public_ready!==true) throw new Error('draft was not finalized as published');
+          if(!editorial.short_description || !editorial.integrated_description) throw new Error('canonical editorial missing');
+          if(!fs.existsSync('game/spore/index.html')) throw new Error('public Spore page shell missing');
+          console.log(JSON.stringify({title:draft.identity?.title,release:draft.release?.date_text,sources:(source.sources||[]).length,professional_reviews:(source.sources||[]).filter(x=>x.role==='professional_review'||x.type==='professional_review').length,rating:draft.ratings?.igropoisk??null,screenshots:(draft.media?.screenshots||[]).length,content_qc:content.status,media_qc:media.status,publication:draft.publication?.status},null,2));
+          NODE
+      - name: Preserve complete Spore acceptance artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spore-page-module-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            data/parser-output/spore.json
+            data/drafts/spore.json
+            data/game-sources/spore.json
+            data/ratings/spore.json
+            data/page-editorial/spore.json
+            data/quality-control/*spore*.json
+            game/spore/index.html
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Commit green Spore page to staging
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add -A -- data/game-registry data/parser-output/spore.json data/parser-runs data/drafts/spore.json data/game-sources/spore.json data/ratings/spore.json data/page-editorial/spore.json data/quality-control data/game-content data/catalog-visible.json data/research data/media-candidates data/similarity data/franchises data/guides game/spore
+          node scripts/validate-automation-publish-diff.mjs --profile content-pipeline
+          if git diff --cached --quiet; then exit 0; fi
+          branch="automation/spore-page-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "igropoisk-content[bot]"
+          git config user.email "igropoisk-content[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -m "Build complete Spore game page"
+          git push origin "$branch"
+          pr_url="$(gh pr create --base staging --head "$branch" --title "Build complete Spore game page" --body "Full Spore page-module acceptance run. Publication is committed only after source, content, media and canonical editorial gates are green.")"
+          gh pr merge "$pr_url" --merge --delete-branch
