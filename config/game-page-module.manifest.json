@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "module": "game-page-assembly",
+  "module_version": "2026-09-02.1",
+  "ownership": "game-page-module",
+  "canonical_document": "docs/GAME_PAGE_MODULE_STABLE.md",
+  "contract": {
+    "builders_are_draft_only": true,
+    "publication_finalizer_only": true,
+    "canonical_source_corpus_required": true,
+    "canonical_editorial_required": true,
+    "professional_rating_direct_reviews_only": true,
+    "review_article_is_separate": true,
+    "game_specific_presentation_hardcode_forbidden": true,
+    "paid_ai_required": false,
+    "editorial_backend": "ollama:qwen2.5:3b",
+    "failure_mode": "fail_closed"
+  },
+  "required_files": [
+    "scripts/parse-game-data.mjs",
+    "scripts/build-game-page-basic.mjs",
+    "scripts/discover-game-sources-web.mjs",
+    "scripts/discover-game-publication-hubs.mjs",
+    "scripts/collect-game-sources.mjs",
+    "scripts/calculate-ratings-from-research.mjs",
+    "scripts/build-game-page.mjs",
+    "scripts/materialize-page-editorial.mjs",
+    "scripts/validate-game-page-content.mjs",
+    "scripts/validate-game-media-quality.mjs",
+    "scripts/quality-control-loop.mjs",
+    "scripts/finalize-game-page-publication.mjs",
+    "scripts/validate-game-page-publication-state.mjs",
+    "scripts/run-content-pipeline.mjs",
+    "scripts/enrich-game-relations.mjs",
+    "scripts/lib/free-editorial-ai.mjs",
+    "game/_shared/game-page.js",
+    "game/_shared/game-page-v3.js",
+    "game/_shared/game-page-v3-bootstrap.js",
+    "game/_shared/game-page-source-corpus.js",
+    "game/_shared/game-page-integrity.js",
+    "game/_shared/game-media-sanitize.js",
+    "game/_shared/game-page-review-sources.js",
+    "game/_shared/game-page-materialized-data.js",
+    "game/_shared/game-page-quality.js",
+    "game/_shared/game-page-quality.css",
+    "config/game-page-quality-v2.json",
+    "config/parsers/review-synthesis.json"
+  ],
+  "required_workflows": [
+    ".github/workflows/content-pipeline.yml",
+    ".github/workflows/game-page-quality.yml",
+    ".github/workflows/pages.yml",
+    ".github/workflows/phase-a-validation.yml"
+  ],
+  "required_docs": [
+    "docs/GAME_PAGE_MODULE_STABLE.md",
+    "docs/SYSTEM_ARCHITECTURE.md"
+  ],
+  "forbidden_legacy_references": [
+    "discover-publication-review-hubs.mjs"
+  ],
+  "contract_probes": {
+    "scripts/collect-game-sources.mjs": [
+      "discover-game-sources-web.mjs",
+      "discover-game-publication-hubs.mjs"
+    ],
+    "scripts/quality-control-loop.mjs": [
+      "materialize-page-editorial.mjs",
+      "validate-game-page-content.mjs",
+      "validate-game-media-quality.mjs"
+    ],
+    "scripts/run-content-pipeline.mjs": [
+      "finalize-game-page-publication.mjs"
+    ],
+    "scripts/finalize-game-page-publication.mjs": [
+      "data/catalog-visible.json",
+      "game-page-publication-finalizer"
+    ],
+    "scripts/build-game-page.mjs": [
+      "free-editorial-ai.mjs",
+      "needs_revision",
+      "public_ready:false"
+    ],
+    "scripts/build-game-page-basic.mjs": [
+      "needs_revision",
+      "public_ready:false"
+    ],
+    "game/_shared/game-page.js": [
+      "game-page-source-corpus.js",
+      "game-page-integrity.js",
+      "game-media-sanitize.js"
+    ]
+  }
+}
