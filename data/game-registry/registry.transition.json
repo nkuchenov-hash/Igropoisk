@@ -1,6 +1,6 @@
 {
   "schemaVersion": "game-registry/v1",
-  "generatedAt": "2026-09-02T21:11:15.797Z",
+  "generatedAt": "2026-09-02T21:15:15.270Z",
   "games": {
     "game_290e909560ac07a7e7a9": {
       "schemaVersion": "game-entity/v1",
@@ -250103,7 +250103,7 @@
           "editorialLock": false
         },
         "kind": {
-          "value": "edition",
+          "value": "game",
           "source": {
             "type": "automated_inference",
             "name": "news-game-web-identity-verified",
@@ -250111,7 +250111,7 @@
             "externalId": null
           },
           "fetchedAt": "2026-09-02T18:58:45.391Z",
-          "lastCheckedAt": "2026-09-02T18:58:45.391Z",
+          "lastCheckedAt": "2026-09-02T21:15:15.271Z",
           "confidence": 0.95,
           "editorialLock": false
         }
@@ -250134,8 +250134,8 @@
       },
       "variants": [],
       "presentation": {
-        "standalonePage": false,
-        "embeddedTab": "editions"
+        "standalonePage": true,
+        "embeddedTab": null
       },
       "discovery": [
         {
@@ -250177,11 +250177,17 @@
           "action": "created",
           "actor": "news-registry-adapter",
           "reason": "web_verified_primary_game_in_public_news"
+        },
+        {
+          "at": "2026-09-02T21:15:15.271Z",
+          "action": "news_verified_standalone_kind_repair",
+          "actor": "news-registry-adapter",
+          "reason": "external database verified the title as an exact standalone video game"
         }
       ],
       "mergedIntoGameId": null,
       "createdAt": "2026-09-02T18:58:45.391Z",
-      "updatedAt": "2026-09-02T18:58:45.391Z"
+      "updatedAt": "2026-09-02T21:15:15.271Z"
     },
     "game_9f5cbfc5d5f6633b8330": {
       "schemaVersion": "game-entity/v1",
