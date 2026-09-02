@@ -1,0 +1,112 @@
+name: Arx Fatalis game-page module test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/arx-fatalis-page-module-test.yml'
+      - 'scripts/collect-game-sources.mjs'
+      - 'scripts/discover-game-sources-web.mjs'
+      - 'scripts/prepare-review-research.mjs'
+      - 'scripts/quality-control-loop.mjs'
+      - 'config/game-page-quality-v2.json'
+
+permissions:
+  contents: read
+
+jobs:
+  test-page-module:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify page-source pipeline syntax
+        run: |
+          node --check scripts/collect-game-sources.mjs
+          node --check scripts/discover-game-sources-web.mjs
+          node --check scripts/prepare-review-research.mjs
+          node --check scripts/quality-control-loop.mjs
+
+      - name: Start timer and create isolated canonical identity
+        run: |
+          date +%s%3N > /tmp/arx-start-ms
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {createGameEntity, createRegistry} from './scripts/lib/game-registry.mjs';
+          const game=createGameEntity({title:'Arx Fatalis',slug:'arx-fatalis',steamAppId:'1700',releaseYear:2002,status:'ready_for_page',source:{type:'official_platform_store',name:'Steam',url:'https://store.steampowered.com/app/1700/'},confidence:1});
+          game.workflow.status='ready_for_page';
+          const registry=createRegistry({games:{[game.id]:game}});
+          fs.mkdirSync('data/game-registry',{recursive:true});
+          fs.writeFileSync('data/game-registry/arx-fatalis-test.json',JSON.stringify(registry,null,2)+'\n');
+          fs.writeFileSync('/tmp/arx-game-id',game.id+'\n');
+          console.log(JSON.stringify({game_id:game.id,slug:'arx-fatalis',steam_appid:1700},null,2));
+          NODE
+
+      - name: Parse Arx Fatalis from Steam
+        run: node scripts/parse-game-data.mjs arx-fatalis 1700 "Arx Fatalis"
+
+      - name: Build deterministic page
+        run: node scripts/build-game-page-basic.mjs arx-fatalis --registry data/game-registry/arx-fatalis-test.json
+
+      - name: Run complete page quality loop
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5' }}
+          OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
+          OPENAI_VISION_MODEL: ${{ vars.OPENAI_VISION_MODEL || 'gpt-5' }}
+          OPENAI_AUDIT_MODEL: ${{ vars.OPENAI_AUDIT_MODEL || 'gpt-5' }}
+        run: node scripts/quality-control-loop.mjs page arx-fatalis "$(cat /tmp/arx-game-id)"
+
+      - name: Record elapsed time and acceptance summary
+        if: always()
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const read=(p,f=null)=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return f}};
+          const start=Number(fs.readFileSync('/tmp/arx-start-ms','utf8').trim()),end=Date.now();
+          const draft=read('data/drafts/arx-fatalis.json',{}),sources=read('data/game-sources/arx-fatalis.json',{}),rating=read('data/ratings/arx-fatalis.json',{}),control=read('data/quality-control/page-arx-fatalis-control.json',{}),parser=read('data/parser-output/arx-fatalis.json',{}),independent=read('data/research/arx-fatalis-independent-web-sources.json',{});
+          const summary={schema_version:3,game:'Arx Fatalis',slug:'arx-fatalis',steam_appid:1700,started_at_epoch_ms:start,finished_at_epoch_ms:end,elapsed_ms:end-start,elapsed_seconds:Number(((end-start)/1000).toFixed(3)),page_exists:fs.existsSync('game/arx-fatalis/index.html'),parser_title:parser?.identity?.title??null,publication_status:draft?.publication?.status??null,page_gate_passed:draft?.publication?.gate_passed??false,screenshots:draft?.media?.screenshots?.length??0,source_count:sources?.counts?.total??sources?.sources?.length??0,professional_review_count:sources?.counts?.professional_reviews??0,scored_source_count:sources?.counts?.scored??0,source_scan_complete:Boolean(sources?.discovery?.complete),legacy_scan_cached:Boolean(sources?.discovery?.legacy_scan_cached),independent_scan_cached:Boolean(sources?.discovery?.independent_web_fallback?.cached),independent_candidates:independent?.candidates??0,independent_accepted:independent?.accepted??0,independent_scored:independent?.scored??0,rating_status:rating?.status??null,rating:rating?.calculation?.score_10??null,quality_status:control?.status??null,quality_green:Boolean(control?.green),quality_comments:control?.comments??[]};
+          fs.mkdirSync('data/test-results',{recursive:true});fs.writeFileSync('data/test-results/arx-fatalis-page-module.json',JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary,null,2));
+          NODE
+
+      - name: Preserve complete Arx Fatalis result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arx-fatalis-page-module-${{ github.run_id }}
+          path: |
+            data/test-results/arx-fatalis-page-module.json
+            data/parser-output/arx-fatalis.json
+            data/drafts/arx-fatalis.json
+            data/game-sources/arx-fatalis.json
+            data/ratings/arx-fatalis.json
+            data/research/arx-fatalis-independent-web-sources.json
+            data/quality-control/page-arx-fatalis-control.json
+            data/quality-control/game-page-arx-fatalis.json
+            data/media-candidates/arx-fatalis.json
+            data/similarity/arx-fatalis.json
+            data/franchises/arx-fatalis.json
+            game/arx-fatalis/index.html
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Require real Arx Fatalis page acceptance
+        if: always()
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const s=JSON.parse(fs.readFileSync('data/test-results/arx-fatalis-page-module.json','utf8'));
+          const errors=[];
+          if(!s.page_exists)errors.push('page HTML was not created');
+          if(!s.page_gate_passed)errors.push('deterministic page gate did not pass');
+          if(s.screenshots<6)errors.push(`only ${s.screenshots} screenshots`);
+          if(!s.source_scan_complete)errors.push(`source corpus incomplete: ${s.professional_review_count} professional / ${s.scored_source_count} scored`);
+          if(s.rating_status!=='green')errors.push(`rating is ${s.rating_status}`);
+          if(!s.quality_green)errors.push(`page QC is ${s.quality_status}`);
+          if(errors.length)throw new Error('Arx Fatalis acceptance failed: '+errors.join('; '));
+          console.log(`ARX_FATALIS_ACCEPTED elapsed=${s.elapsed_seconds}s sources=${s.source_count} professional=${s.professional_review_count} scored=${s.scored_source_count} rating=${s.rating}`);
+          NODE
