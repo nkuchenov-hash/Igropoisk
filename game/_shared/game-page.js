@@ -1,13 +1,13 @@
 (()=>{
   const script=document.createElement('script');
-  script.src='../_shared/game-page-v3-bootstrap.js?v=20260902-11';
+  script.src='../_shared/game-page-v3-bootstrap.js?v=20260902-12';
   document.head.appendChild(script);
   const mediaSanitize=document.createElement('script');
   mediaSanitize.src='../_shared/game-media-sanitize.js?v=20260902-3';
   document.head.appendChild(mediaSanitize);
   const qualityStyle=document.createElement('link');
   qualityStyle.rel='stylesheet';
-  qualityStyle.href='../_shared/game-page-quality.css?v=20260902-5';
+  qualityStyle.href='../_shared/game-page-quality.css?v=20260902-6';
   document.head.appendChild(qualityStyle);
   const quality=document.createElement('script');
   quality.src='../_shared/game-page-quality.js?v=20260902-3';
@@ -34,7 +34,7 @@
   materialized.defer=true;
   document.head.appendChild(materialized);
   const integrity=document.createElement('script');
-  integrity.src='../_shared/game-page-integrity.js?v=20260902-11';
+  integrity.src='../_shared/game-page-integrity.js?v=20260902-12';
   integrity.defer=true;
   document.head.appendChild(integrity);
   const editions=document.createElement('script');
