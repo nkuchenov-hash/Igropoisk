@@ -22,7 +22,7 @@ export const SOURCE_TRUST = Object.freeze({
   manual: 110
 });
 
-const EDITION_SUFFIX = /\b(?:deluxe|ultimate|gold|complete|collector'?s|digital deluxe|goty|game of the year)\s+edition\b/giu;
+const EDITION_SUFFIX = /\b(?:deluxe|ultimate|gold|complete|collector'?s|digital deluxe|goty|game of the year)\s+edition\b/iu;
 const REMASTER_WORD = /\b(remaster(?:ed)?|definitive edition|hd collection|anniversary edition)\b/iu;
 const REMAKE_WORD = /\b(remake|reimagined)\b/iu;
 const DLC_WORD = /\b(dlc|expansion|season pass|story pack|add[- ]?on)\b/iu;
@@ -59,7 +59,7 @@ export function inferKind(candidate = {}) {
   if (DLC_WORD.test(title)) return /expansion/iu.test(title) ? 'expansion' : 'dlc';
   if (REMAKE_WORD.test(title)) return 'remake';
   if (REMASTER_WORD.test(title)) return 'remaster';
-  if (/\b(deluxe|ultimate|gold|complete|collector'?s)\b/iu.test(title)) return 'edition';
+  if (EDITION_SUFFIX.test(title)) return 'edition';
   return 'game';
 }
 
