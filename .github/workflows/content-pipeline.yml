@@ -185,8 +185,7 @@ jobs:
             --base staging \
             --head "$branch" \
             --title "Automated game lifecycle ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
-            --body "Autonomous game lifecycle output. Every visible game is tracked for relations/franchise, similarity, professional reviews/rating and guides. Green content is exposed publicly; red quality findings are retained only as revision state and automatically return to research/rebuild/recheck on the next lifecycle pass. Page publication is finalized only after canonical editorial, source, content and media gates are green; failed revisions restore the previous public snapshot."
-          )"
+            --body "Autonomous game lifecycle output. Every visible game is tracked for relations/franchise, similarity, professional reviews/rating and guides. Green content is exposed publicly; red quality findings are retained only as revision state and automatically return to research/rebuild/recheck on the next lifecycle pass. Page publication is finalized only after canonical editorial, source, content and media gates are green; failed revisions restore the previous public snapshot.")"
           gh pr merge "$pr_url" --merge --delete-branch
       - name: Preserve lifecycle queue and quality audit
         if: always()
