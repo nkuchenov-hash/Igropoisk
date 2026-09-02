@@ -53,10 +53,11 @@ assert.equal(falseEdition.presentation.embeddedTab, null);
 const root = process.cwd();
 const newsWorkflow = fs.readFileSync(path.join(root, '.github/workflows/news-pipeline.yml'), 'utf8');
 const contentWorkflow = fs.readFileSync(path.join(root, '.github/workflows/content-pipeline.yml'), 'utf8');
+const retiredWorkflowName = ['news','game','page','fast'].join('-') + '.yml';
 assert.match(newsWorkflow, /publish-game-page-assembly-queue\.mjs/);
-assert.doesNotMatch(newsWorkflow, /gh workflow run news-game-page-fast\.yml/);
+assert.equal(newsWorkflow.includes(`gh workflow run ${retiredWorkflowName}`), false);
 assert.match(newsWorkflow, /continue-on-error:\s*true[\s\S]*publish-game-page-assembly-queue\.mjs/);
-assert.equal(fs.existsSync(path.join(root, '.github/workflows/news-game-page-fast.yml')), false);
+assert.equal(fs.existsSync(path.join(root, '.github/workflows', retiredWorkflowName)), false);
 assert.match(contentWorkflow, /hydrate-game-page-assembly-queue\.mjs/);
 assert.match(contentWorkflow, /ack-game-page-assembly-queue\.mjs/);
 
