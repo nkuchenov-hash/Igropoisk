@@ -84,6 +84,22 @@ const nonGamingRejectPatterns = [
   /(?:bios|прошивк\p{L}*|tpm|cve-\d{4}-\d+).{0,140}(?:уязвимост\p{L}*|безопасност\p{L}*|amd|asus|ryzen)/iu
 ];
 
+const explicitGamingContextSignals = [
+  /\b(?:video games?|gaming|gameplay|steam|playstation|xbox|nintendo|switch|game pass|epic games)\b/iu,
+  /\b(?:rpg|shooter|strategy|simulator|survival|horror|action game|adventure game|mmorpg|esports)\b/iu,
+  /(?:^|[^\p{L}\p{N}])(?:видеоигр\p{L}*|геймпле\p{L}*|игров\p{L}*|игра|игры|игре|игру|игрой|играм|играх|консол\p{L}*|киберспорт\p{L}*)(?:$|[^\p{L}\p{N}])/iu
+];
+
+const nonGamingTechnologySignals = [
+  /\b(?:openai|chatgpt|anthropic|gemini|large language model|llm|generative ai|artificial intelligence|ai agent|zero[- ]day|cybersecurity|security research(?:er)?s?|vulnerabilit\w*|software exploit\w*)\b/iu,
+  /(?:^|[^\p{L}\p{N}])(?:нейросет\p{L}*|искусственн\p{L}*\s+интеллект\p{L}*|ии[- ](?:модел\p{L}*|агент\p{L}*)|zero[- ]day|уязвимост\p{L}*|кибербезопасност\p{L}*|исследовател\p{L}*\s+безопасност\p{L}*)(?:$|[^\p{L}\p{N}])/iu
+];
+
+function isExplicitNonGamingTechnology(combined = '') {
+  return nonGamingTechnologySignals.some(pattern => pattern.test(combined))
+    && !explicitGamingContextSignals.some(pattern => pattern.test(combined));
+}
+
 const urlRejectPattern = /(?:^|[\/_-])(?:guides?|walkthroughs?|tips|reviews?|interviews?)(?:[\/_-]|$)/i;
 
 const gamingSignals = [
@@ -113,7 +129,7 @@ export function newsContentRejectionReasons(input = {}) {
 
   if (titleRejectPatterns.some(pattern => pattern.test(title))) reasons.push('feature/opinion/guide/cross-media title');
   if (textRejectPatterns.some(pattern => pattern.test(combined))) reasons.push('non-news editorial, malformed or promotional content');
-  if (nonGamingRejectPatterns.some(pattern => pattern.test(combined))) reasons.push('non-gaming technology or entertainment content');
+  if (nonGamingRejectPatterns.some(pattern => pattern.test(combined)) || isExplicitNonGamingTechnology(combined)) reasons.push('non-gaming technology or entertainment content');
   if (urlRejectPattern.test(url)) reasons.push('guide/review/interview URL');
   if (combined && !gamingSignals.some(pattern => pattern.test(combined))) reasons.push('no material gaming-news signal');
 

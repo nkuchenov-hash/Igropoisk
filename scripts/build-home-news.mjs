@@ -18,6 +18,8 @@ const unresolvedGameReasons = new Set([
   'manual-game-not-found'
 ]);
 const pureScreenEntertainmentPattern = /(?:^|[^\p{L}\p{N}])(?:фильм\p{L}*|кинопрокат\p{L}*|сериал\p{L}*|кинотеатр\p{L}*|съ[её]мк\p{L}*|акт[её]р\p{L}*|режисс[её]р\p{L}*|картина\p{L}*)(?:$|[^\p{L}\p{N}])/iu;
+const screenOnlyUrlPattern = /\/(?:movies-and-tv-series|movies?|tv-series|film-and-tv)(?:\/|$)/i;
+const screenOnlyContextPattern = /(?:акт[её]р\p{L}*|роль\p{L}*|каст\p{L}*|съ[её]мк\p{L}*|экранизац\p{L}*).{0,140}(?:фильм\p{L}*|сериал\p{L}*|amazon|netflix)|(?:фильм\p{L}*|сериал\p{L}*).{0,140}(?:акт[её]р\p{L}*|роль\p{L}*|каст\p{L}*|съ[её]мк\p{L}*|экранизац\p{L}*)/iu;
 const dealRoundupPattern = /(?:скидк\p{L}*|распродаж\p{L}*).{0,220}(?:промокод\p{L}*|можно\s+(?:купить|приобрести|забрать)|доступн\p{L}*\s+с\s+(?:увеличенн\p{L}*\s+)?скидк\p{L}*|выгодн\p{L}*\s+предложени\p{L}*)|(?:промокод\p{L}*|можно\s+(?:купить|приобрести|забрать)).{0,220}(?:скидк\p{L}*|распродаж\p{L}*)/iu;
 const normalize = item => ({
   id:item.id,
@@ -75,10 +77,13 @@ function hasCommercialLocalImage(item) {
   return /^assets\/(?:news|publisher-news)\/[\w.-]+$/i.test(String(item.image || ''));
 }
 
-function isPureScreenEntertainmentWithoutGame(item) {
+function isPureScreenEntertainment(item) {
+  const combined = `${item.titleRu} ${item.summaryRu}`;
+  if (screenOnlyUrlPattern.test(String(item.primaryUrl || ''))) return true;
+  if (screenOnlyContextPattern.test(combined)) return true;
   if ((item.games || []).length) return false;
   if (!item.gameReviewReasons.includes('verified-no-primary-game')) return false;
-  return pureScreenEntertainmentPattern.test(`${item.titleRu} ${item.summaryRu}`);
+  return pureScreenEntertainmentPattern.test(combined);
 }
 
 function isPromotionalDealRoundup(item) {
@@ -89,7 +94,7 @@ function passesFinalCommercialPolicy(item) {
   if (!['approved', 'source-ru'].includes(item.editorialStatus)) return false;
   if (!hasCommercialLocalImage(item)) return false;
   if (item.gameReviewReasons.some(reason => unresolvedGameReasons.has(reason))) return false;
-  if (isPureScreenEntertainmentWithoutGame(item)) return false;
+  if (isPureScreenEntertainment(item)) return false;
   if (isPromotionalDealRoundup(item)) return false;
   if (commercialNewsCopyIssues(`${item.titleRu}\n${item.summaryRu}`).length) return false;
   return isLikelyNewsContent({
