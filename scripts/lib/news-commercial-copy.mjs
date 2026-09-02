@@ -74,5 +74,6 @@ export function commercialNewsCopyIssues(value = '') {
   if (/(?<![\p{L}\p{N}])(?:следующим|следующие)\s+(?:характеристикам|требованиям|параметрам)\s*:\s*(?=[А-ЯЁA-Z])/iu.test(text)) issues.push('broken-list-introduction');
   if (/(?:вроде|как|серии|игр(?:а|ы|е|у|ой|ами|ах)?)\s+[A-Z]\.\s+(?=[А-ЯЁ])/u.test(text)) issues.push('truncated-dotted-game-acronym');
   if (/^(?:видимо,\s*)?дела\s+(?:совсем\s+)?плохо\s*:/iu.test(text)) issues.push('sensational-prefix');
+  if (/(?:выпущен\p{L}*|запущен\p{L}*)\s+в\s+верси(?:ю|и)\s*\d|(?:бета|альфа)[- ]образц\p{L}*|основател\p{L}*\s+для\s+(?:первых|ранних)\s+покупател\p{L}*|чтобы\s+(?:они\s+)?привезли\s+людей/iu.test(text)) issues.push('machine-translation-grammar');
   return issues;
 }
