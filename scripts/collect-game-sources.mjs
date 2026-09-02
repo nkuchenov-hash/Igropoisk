@@ -15,8 +15,18 @@ const checkedAt=new Date().toISOString();
 const quality=read('config/game-page-quality-v2.json',{}),corpusPolicy=quality.game_source_corpus||quality.review_corpus||{},ratingPolicy=quality.rating||{};
 const minimumProfessional=Number(corpusPolicy.minimum_professional_sources??corpusPolicy.minimum_sources??10),minimumScored=Number(ratingPolicy.minimum_sources??5);
 
-const legacyRun=spawnSync(process.execPath,[path.join(root,'scripts/prepare-review-research.mjs'),slug],{cwd:root,env:process.env,encoding:'utf8',stdio:['ignore','pipe','pipe'],maxBuffer:24*1024*1024});
-const reviews=read(`data/reviews/${slug}.json`,{}),rating=read(`data/ratings/${slug}.json`,{}),parser=read(`data/parser-output/${slug}.json`,{});
+// The legacy registered-source scan is also reused inside one QC workspace.
+// A clean page build starts without this file, so the first call still performs
+// a fresh discovery. Later collection passes only rebuild the canonical corpus.
+let legacyRun={status:0,cached:false};
+let reviews=read(`data/reviews/${slug}.json`,null);
+if(!reviews){
+  const run=spawnSync(process.execPath,[path.join(root,'scripts/prepare-review-research.mjs'),slug],{cwd:root,env:process.env,encoding:'utf8',stdio:['ignore','pipe','pipe'],maxBuffer:24*1024*1024});
+  legacyRun={status:run.status,cached:false};
+  reviews=read(`data/reviews/${slug}.json`,{});
+}else legacyRun={status:0,cached:true};
+
+const rating=read(`data/ratings/${slug}.json`,{}),parser=read(`data/parser-output/${slug}.json`,{});
 const seen=new Map();
 function add(raw={}){
   const url=canonical(raw.url||raw.resolved_url||raw.source_url||'');if(!url)return;
@@ -36,8 +46,12 @@ for(const item of reviews.score_sources||[])add({...item,kind:'professional-revi
 for(const item of rating.sources||[])add({name:item.publication,title:item.title,url:item.url,kind:'professional-review',score:item.original_score?.score,scale:item.original_score?.scale,grade:item.original_score?.grade,score_eligible:true});
 const countProfessional=()=>[...seen.values()].filter(x=>x.kind==='professional-review').length,countScored=()=>[...seen.values()].filter(x=>x.kind==='professional-review'&&x.score_eligible).length;
 
-let independentFallback={attempted:false,succeeded:false,error:null,source_count:countProfessional(),scored_count:countScored(),exit_code:null};
-if(countProfessional()<minimumProfessional||countScored()<minimumScored){
+let independentFallback={attempted:false,succeeded:false,error:null,source_count:countProfessional(),scored_count:countScored(),exit_code:null,cached:false};
+const cachedIndependent=read(`data/research/${slug}-independent-web-sources.json`,null);
+if(cachedIndependent){
+  for(const item of cachedIndependent.sources||[])add({...item,kind:'professional-review',provenance:item.provenance||'independent-web-search'});
+  independentFallback={attempted:true,succeeded:Boolean((cachedIndependent.sources||[]).length),error:null,source_count:countProfessional(),scored_count:countScored(),exit_code:0,cached:true};
+}else if(countProfessional()<minimumProfessional||countScored()<minimumScored){
   independentFallback.attempted=true;
   const run=spawnSync(process.execPath,[path.join(root,'scripts/discover-game-sources-web.mjs'),slug],{cwd:root,env:process.env,encoding:'utf8',stdio:['ignore','pipe','pipe'],maxBuffer:24*1024*1024});independentFallback.exit_code=run.status;
   const discovered=read(`data/research/${slug}-independent-web-sources.json`,{});for(const item of discovered.sources||[])add({...item,kind:'professional-review',provenance:item.provenance||'independent-web-search'});
@@ -49,6 +63,6 @@ const sources=[...seen.values()].sort((a,b)=>Number(Boolean(b.score_eligible))-N
 const professionalCount=sources.filter(x=>x.kind==='professional-review').length,scoredCount=sources.filter(x=>x.kind==='professional-review'&&x.score_eligible).length;
 const corpusMinimumPassed=professionalCount>=minimumProfessional,scoreMinimumPassed=scoredCount>=minimumScored,legacyScanComplete=Boolean(reviews?.source_registry_scan?.complete&&reviews?.external_search?.complete);
 const scanComplete=Boolean((legacyScanComplete||independentFallback.attempted)&&corpusMinimumPassed&&scoreMinimumPassed);
-const output={schema_version:3,game_slug:slug,game_id:draft.game_id||reviews.game_id||null,title:draft.identity.title,generated_at:checkedAt,ownership:'game-page-module',purpose:'Canonical reusable evidence corpus for game page, Game DNA, media, descriptions, rating and editorial review.',discovery:{editorial_registry_complete:Boolean(reviews?.source_registry_scan?.complete),broad_web_complete:Boolean(reviews?.external_search?.complete||independentFallback.succeeded),complete:scanComplete,minimum_professional_sources:minimumProfessional,minimum_scored_sources:minimumScored,professional_minimum_passed:corpusMinimumPassed,scored_minimum_passed:scoreMinimumPassed,independent_web_fallback:independentFallback,ai_required:false,legacy_discovery_engine:'scripts/prepare-review-research.mjs'},counts:{total:sources.length,scored:scoredCount,professional_reviews:professionalCount},sources};
-write(`data/game-sources/${slug}.json`,output);write(`data/parser-runs/game-sources-${slug}.json`,{parser:'game-source-corpus',status:scanComplete?'green':'needs_revision',game_slug:slug,checked_at:checkedAt,total_sources:sources.length,scored_sources:scoredCount,professional_reviews:professionalCount,minimum_professional_sources:minimumProfessional,minimum_scored_sources:minimumScored,legacy_discovery_exit_code:legacyRun.status,scan_complete:scanComplete,independent_web_fallback:independentFallback,output:`data/game-sources/${slug}.json`});
-console.log(JSON.stringify({slug,status:scanComplete?'green':'needs_revision',total:sources.length,professional_reviews:professionalCount,scored:scoredCount,minimum_professional_sources:minimumProfessional,minimum_scored_sources:minimumScored,scan_complete:scanComplete,independent_web_fallback:independentFallback},null,2));if(!scanComplete)process.exitCode=2;
+const output={schema_version:4,game_slug:slug,game_id:draft.game_id||reviews.game_id||null,title:draft.identity.title,generated_at:checkedAt,ownership:'game-page-module',purpose:'Canonical reusable evidence corpus for game page, Game DNA, media, descriptions, rating and editorial review.',discovery:{editorial_registry_complete:Boolean(reviews?.source_registry_scan?.complete),broad_web_complete:Boolean(reviews?.external_search?.complete||independentFallback.succeeded),complete:scanComplete,minimum_professional_sources:minimumProfessional,minimum_scored_sources:minimumScored,professional_minimum_passed:corpusMinimumPassed,scored_minimum_passed:scoreMinimumPassed,legacy_scan_cached:legacyRun.cached,independent_web_fallback:independentFallback,ai_required:false,legacy_discovery_engine:'scripts/prepare-review-research.mjs'},counts:{total:sources.length,scored:scoredCount,professional_reviews:professionalCount},sources};
+write(`data/game-sources/${slug}.json`,output);write(`data/parser-runs/game-sources-${slug}.json`,{parser:'game-source-corpus',status:scanComplete?'green':'needs_revision',game_slug:slug,checked_at:checkedAt,total_sources:sources.length,scored_sources:scoredCount,professional_reviews:professionalCount,minimum_professional_sources:minimumProfessional,minimum_scored_sources:minimumScored,legacy_discovery_exit_code:legacyRun.status,legacy_scan_cached:legacyRun.cached,scan_complete:scanComplete,independent_web_fallback:independentFallback,output:`data/game-sources/${slug}.json`});
+console.log(JSON.stringify({slug,status:scanComplete?'green':'needs_revision',total:sources.length,professional_reviews:professionalCount,scored:scoredCount,minimum_professional_sources:minimumProfessional,minimum_scored_sources:minimumScored,scan_complete:scanComplete,legacy_scan_cached:legacyRun.cached,independent_web_fallback:independentFallback},null,2));if(!scanComplete)process.exitCode=2;
