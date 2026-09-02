@@ -5,6 +5,20 @@ if (!rawBase) {
 
 const baseUrl = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
 const cacheBust = `smoke=${Date.now()}`;
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function fetchWithRetry(url, options, attempts = 4) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await fetch(url, options);
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts) await sleep(500 * attempt);
+    }
+  }
+  throw lastError;
+}
 
 const checks = [
   {
@@ -62,7 +76,7 @@ const results = [];
 for (const check of checks) {
   const url = new URL(check.path, baseUrl);
   url.search = cacheBust;
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     cache: 'no-store',
     headers: {
       'Cache-Control': 'no-cache, no-store, max-age=0',
