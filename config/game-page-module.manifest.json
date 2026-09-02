@@ -113,124 +113,33 @@
     "applyPublicLocalization"
   ],
   "contract_probes": {
-    "scripts/collect-game-sources.mjs": [
-      "discover-game-sources-web.mjs",
-      "discover-game-publication-hubs.mjs"
-    ],
-    "scripts/quality-control-loop.mjs": [
-      "materialize-page-editorial.mjs",
-      "validate-game-page-content.mjs",
-      "validate-game-media-quality.mjs"
-    ],
-    "scripts/run-content-pipeline.mjs": [
-      "canonicalizePage",
-      "finalize-game-page-publication.mjs",
-      "published package is immutable"
-    ],
-    "scripts/finalize-game-page-publication.mjs": [
-      "data/catalog-visible.json",
-      "game-page-publication-finalizer",
-      "public_ready:true"
-    ],
-    "scripts/build-game-page.mjs": [
-      "free-editorial-ai.mjs",
-      "needs_revision",
-      "public_ready:false"
-    ],
-    "scripts/build-game-page-basic.mjs": [
-      "needs_revision",
-      "public_ready:false"
-    ],
-    "scripts/ensure-game-page.mjs": [
-      "status:'queued'",
-      "public_ready:false",
-      "finalize-game-page-publication.mjs"
-    ],
-    "scripts/run-news-game-page-fast.mjs": [
-      "adapter:'news->game-page-assembly'",
-      "queued_count",
-      "finalize-game-page-publication.mjs"
-    ],
-    "scripts/materialize-top-250-game-pages.mjs": [
-      "mode:'queue_only'",
-      "public_pages_created_directly:0"
-    ],
-    "scripts/materialize-game-creator-pages.mjs": [
-      "validate-game-page-publication-state.mjs",
-      "already-finalized Game Page package",
-      "copy-only"
-    ],
-    "scripts/publish-game-page-staging-conflict-safe.mjs": [
-      "validate-game-page-publication-state.mjs",
-      "promoter:'copy-only'"
-    ],
-    "scripts/publish-green-game-page-production.mjs": [
-      "validate-game-page-publication-state.mjs",
-      "promoter:'copy-only'"
-    ],
-    "scripts/materialize-catalog-game-data.mjs": [
-      "published_packages_protected",
-      "public_state_mutations:0"
-    ],
-    "scripts/repair-public-catalog-game-ids.mjs": [
-      "public_catalog_mutations:0",
-      "Game Page finalizer"
-    ],
-    "scripts/enrich-game-relations.mjs": [
-      "published_package_preserved",
-      "needs_revision"
-    ],
-    "scripts/discover-review-media.mjs": [
-      "published_package_preserved",
-      "needs_revision"
-    ],
-    "scripts/merge-official-steam-videos.mjs": [
-      "published_package_preserved",
-      "needs_revision"
-    ],
-    "game/_shared/game-page.js": [
-      "game-page-source-corpus.js",
-      "game-page-integrity.js",
-      "game-media-sanitize.js"
-    ],
-    "game/_shared/game-page-v3.js": [
-      "if(!dialog||!scale||!note||!dialogTitle||!rateGame||!rateInline||!close)return",
-      "if(articleUrl)",
-      "mergeGame(curatedFile?.games?.[slug]"
-    ],
-    "game/_shared/game-page-v3-bootstrap.js": [
-      "hydrateVerifiedPresentation",
-      "document.createElement('script')"
-    ],
-    "game/_shared/game-page-integrity.js": [
-      "if(!own?.url)",
-      "if(hydrated){clearInterval(timer)",
-      "if(attempts>=1200)clearInterval(timer)"
-    ],
-    ".github/workflows/content-pipeline.yml": [
-      "validate-game-page-module-integrity.mjs",
-      "run-content-pipeline.mjs"
-    ],
-    ".github/workflows/game-page-quality.yml": [
-      "validate-game-page-module-integrity.mjs"
-    ],
-    ".github/workflows/phase-a-validation.yml": [
-      "validate-game-page-module-integrity.mjs"
-    ],
-    ".github/workflows/pages.yml": [
-      "validate-game-page-module-integrity.mjs",
-      "validate-game-page-publication-state.mjs"
-    ],
-    ".github/workflows/news-game-page-fast.yml": [
-      "News is forbidden from directly publishing a Game Page",
-      "content-pipeline.yml"
-    ],
-    "docs/SYSTEM_ARCHITECTURE.md": [
-      "GAME PAGE ASSEMBLY MODULE",
-      "GAME_PAGE_MODULE_STABLE.md",
-      "config/game-page-module.manifest.json",
-      "собственный обзор Игропоиска — отдельная публикация",
-      "published canonical package"
-    ]
+    "scripts/collect-game-sources.mjs": ["discover-game-sources-web.mjs","discover-game-publication-hubs.mjs"],
+    "scripts/quality-control-loop.mjs": ["materialize-page-editorial.mjs","validate-game-page-content.mjs","validate-game-media-quality.mjs"],
+    "scripts/run-content-pipeline.mjs": ["canonicalizePage","finalize-game-page-publication.mjs","published package is immutable"],
+    "scripts/finalize-game-page-publication.mjs": ["data/catalog-visible.json","game-page-publication-finalizer","public_ready:true"],
+    "scripts/build-game-page.mjs": ["free-editorial-ai.mjs","needs_revision","public_ready:false"],
+    "scripts/build-game-page-basic.mjs": ["needs_revision","public_ready:false"],
+    "scripts/ensure-game-page.mjs": ["status:'queued'","public_ready:false","finalize-game-page-publication.mjs"],
+    "scripts/run-news-game-page-fast.mjs": ["adapter:'news->game-page-assembly'","queued_count","finalize-game-page-publication.mjs"],
+    "scripts/materialize-top-250-game-pages.mjs": ["mode:'queue_only'","public_pages_created_directly:0"],
+    "scripts/materialize-game-creator-pages.mjs": ["validate-game-page-publication-state.mjs","already-finalized Game Page package","copy-only"],
+    "scripts/publish-game-page-staging-conflict-safe.mjs": ["validate-game-page-publication-state.mjs","promoter:'copy-only'"],
+    "scripts/publish-green-game-page-production.mjs": ["validate-game-page-publication-state.mjs","promoter:'copy-only'"],
+    "scripts/materialize-catalog-game-data.mjs": ["published_packages_protected","public_state_mutations:0"],
+    "scripts/repair-public-catalog-game-ids.mjs": ["public_catalog_mutations:0","Game Page finalizer"],
+    "scripts/enrich-game-relations.mjs": ["published_package_preserved","needs_revision"],
+    "scripts/discover-review-media.mjs": ["published_package_preserved","needs_revision"],
+    "scripts/merge-official-steam-videos.mjs": ["published_package_preserved","needs_revision"],
+    "game/_shared/game-page.js": ["game-page-source-corpus.js","game-page-integrity.js","game-media-sanitize.js"],
+    "game/_shared/game-page-v3.js": ["if(!dialog||!scale||!note||!dialogTitle||!rateGame||!rateInline||!close)return","if(articleUrl)","mergeGame(curatedFile?.games?.[slug]"],
+    "game/_shared/game-page-v3-bootstrap.js": ["hydrateVerifiedPresentation","document.createElement('script')"],
+    "game/_shared/game-page-integrity.js": ["if(!own?.url)","if(hydrated){clearInterval(timer)","if(attempts>=1200)clearInterval(timer)"],
+    ".github/workflows/content-pipeline.yml": ["validate-game-page-module-integrity.mjs","run-content-pipeline.mjs"],
+    ".github/workflows/game-page-quality.yml": ["validate-game-page-module-integrity.mjs"],
+    ".github/workflows/phase-a-validation.yml": ["validate-game-page-module-integrity.mjs"],
+    ".github/workflows/pages.yml": ["validate-game-page-module-integrity.mjs","validate-game-page-publication-state.mjs"],
+    ".github/workflows/news-game-page-fast.yml": ["News is forbidden from directly publishing a Game Page","content-pipeline.yml"],
+    "docs/GAME_PAGE_MODULE_STABLE.md": ["published canonical package","Queue-only adapters","Copy-only promoters","runtime monkey-patching"],
+    "docs/SYSTEM_ARCHITECTURE.md": ["GAME PAGE ASSEMBLY MODULE","GAME_PAGE_MODULE_STABLE.md","config/game-page-module.manifest.json","собственный обзор Игропоиска — отдельная публикация","плохая новая ревизия не заменяет последнюю good public version"]
   }
 }
