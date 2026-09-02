@@ -1,4 +1,11 @@
 const clean = value => String(value ?? '').trim();
+const comparable = value => clean(value)
+  .normalize('NFKD')
+  .replace(/[’‘]/gu, "'")
+  .replace(/[–—]/gu, '-')
+  .replace(/[^\p{L}\p{N}]+/gu, ' ')
+  .trim()
+  .toLocaleLowerCase('en-US');
 
 export const GAME_PAGE_ASSEMBLY_QUEUE_PREFIX = 'queues/game-page-assembly/pending/';
 
@@ -6,6 +13,7 @@ const EXPLICIT_EDITION = /\b(?:deluxe|ultimate|gold|complete|collector'?s|digita
 const REMASTER = /\b(remaster(?:ed)?|definitive edition|hd collection|anniversary edition)\b/iu;
 const REMAKE = /\b(remake|reimagined)\b/iu;
 const DLC = /\b(dlc|expansion|season pass|story pack|add[- ]?on)\b/iu;
+const EMBEDDED_KINDS = new Set(['edition', 'remaster', 'dlc', 'expansion']);
 
 export function safeQueuedGameKind(title) {
   const value = clean(title);
@@ -83,4 +91,40 @@ export function queueRequestToRegistryCandidate(request) {
       url: item.source_url
     }
   };
+}
+
+export function reconcileQueuedCandidateWithRegistry(api, request, options = {}) {
+  const item = normalizeGamePageAssemblyRequest(request, {now: request.last_seen_at ?? request.first_seen_at ?? options.now ?? new Date().toISOString()});
+  const candidate = queueRequestToRegistryCandidate(item);
+  const byId = api?.findById?.(item.game_id) ?? null;
+  const bySlug = api?.findBySlug?.(item.slug) ?? null;
+  if (byId && bySlug && byId.id !== bySlug.id) return {candidate, entity: null, reconciled: false, reason: 'canonical_id_slug_conflict'};
+  const target = byId ?? bySlug;
+  if (!target) return {candidate, entity: null, reconciled: false, reason: 'new_queue_identity'};
+  const targetTitle = comparable(target.identity?.canonicalTitle?.value);
+  if (!targetTitle || targetTitle !== comparable(item.title)) return {candidate, entity: target, reconciled: false, reason: 'title_conflict'};
+
+  candidate.game_id = target.id;
+  const currentKind = clean(target.identity?.kind?.value) || 'unknown';
+  const canRepairKind = target.workflow?.pageStatus !== 'published'
+    && item.kind === 'game'
+    && EMBEDDED_KINDS.has(currentKind);
+  if (canRepairKind) {
+    target.identity.kind.value = 'game';
+    target.presentation ??= {};
+    target.presentation.standalonePage = true;
+    target.presentation.embeddedTab = null;
+    target.updatedAt = options.now ?? new Date().toISOString();
+    target.auditLog ??= [];
+    target.auditLog.push({
+      at: target.updatedAt,
+      action: 'queue_identity_kind_repaired',
+      actor: 'game-page-assembly-queue',
+      from: currentKind,
+      to: 'game',
+      reason: 'verified exact title from temporary page-assembly queue'
+    });
+    return {candidate, entity: target, reconciled: true, reason: 'verified_queue_repaired_false_embedded_kind'};
+  }
+  return {candidate, entity: target, reconciled: candidate.game_id !== item.game_id, reason: 'verified_queue_reused_existing_identity'};
 }
