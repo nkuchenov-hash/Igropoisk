@@ -25,6 +25,10 @@
   reviewSources.src='../_shared/game-page-review-sources.js?v=20260824-2';
   reviewSources.defer=true;
   document.head.appendChild(reviewSources);
+  const sourceCorpus=document.createElement('script');
+  sourceCorpus.src='../_shared/game-page-source-corpus.js?v=20260902-1';
+  sourceCorpus.defer=true;
+  document.head.appendChild(sourceCorpus);
   const materialized=document.createElement('script');
   materialized.src='../_shared/game-page-materialized-data.js?v=20260812-2';
   materialized.defer=true;
