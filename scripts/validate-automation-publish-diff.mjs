@@ -24,6 +24,7 @@ const PROFILES = {
       'data/parser-runs/',
       'data/parser-output/',
       'data/drafts/',
+      'data/page-editorial/',
       'data/game-content/',
       'data/research/',
       'data/reviews/',
