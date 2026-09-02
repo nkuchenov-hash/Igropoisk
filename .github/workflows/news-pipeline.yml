@@ -84,6 +84,7 @@ on:
       - 'scripts/lib/news-editor-qwen.mjs'
       - 'scripts/lib/news-editor-production.mjs'
       - 'scripts/lib/news-editor-policy.mjs'
+      - 'scripts/lib/news-content-policy.mjs'
       - 'scripts/lib/news-editorial-summary.mjs'
       - 'scripts/lib/news-home-selector.mjs'
       - 'scripts/lib/news-game-linker.mjs'
@@ -256,9 +257,9 @@ jobs:
           NEWS_GAME_REQUESTS_B64: ${{ steps.game_pages.outputs.requests_b64 }}
         run: gh workflow run news-game-page-fast.yml --ref staging -f news_game_requests_b64="$NEWS_GAME_REQUESTS_B64"
 
-      - name: Defer snapshot publication until every verified game page is live
+      - name: Continue publication while verified missing game pages are created
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count != '0'
-        run: echo "Deferring news snapshot switch; ${COUNT} verified game page(s) are being created. The previous live snapshot remains active."
+        run: echo "Publishing the fresh news snapshot now; ${COUNT} verified game page(s) are being created independently and their public hashtags stay disabled until those pages are live."
         env:
           COUNT: ${{ steps.game_pages.outputs.count }}
 
@@ -266,8 +267,18 @@ jobs:
         if: steps.pipeline.outputs.status == 'success'
         run: node scripts/audit-news-game-hashtags.mjs --strict --allow-missing-pages --production-ref origin/main
 
-      - name: Reclaim redundant Object Storage snapshots
-        if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
+      - name: Publish compact live snapshot and stable monthly archive
+        if: steps.pipeline.outputs.status == 'success'
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/publish-news-storage.mjs
+
+      - name: Reclaim redundant Object Storage snapshots after publication
+        if: steps.pipeline.outputs.status == 'success'
         continue-on-error: true
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
@@ -277,18 +288,8 @@ jobs:
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
         run: node scripts/prune-news-storage.mjs
 
-      - name: Publish compact live snapshot and stable monthly archive
-        if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
-        env:
-          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
-          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
-          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
-          YC_S3_REGION: ru-central1
-          YC_S3_ENDPOINT: https://storage.yandexcloud.net
-        run: node scripts/publish-news-storage.mjs
-
       - name: Expire news image cache older than seven days
-        if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
+        if: steps.pipeline.outputs.status == 'success'
         continue-on-error: true
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}

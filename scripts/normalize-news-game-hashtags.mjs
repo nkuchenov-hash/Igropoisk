@@ -16,6 +16,7 @@ let gameReferences = 0;
 let canonicalReferences = 0;
 let temporaryReferences = 0;
 let deferredTemporaryReferences = 0;
+let missingPageReferences = 0;
 let duplicateReferencesRemoved = 0;
 
 function canonicalizeGame(raw = {}) {
@@ -32,7 +33,7 @@ function canonicalizeGame(raw = {}) {
         pageUrl: canonical.pageExists ? canonical.pageUrl : ''
       }
     : { ...raw, gameId: gameId || null, slug };
-  base.hashtag = canonicalGameHashtag(base);
+  base.hashtag = canonical && canonical.pageExists === false ? '' : canonicalGameHashtag(base);
   return { game: base, canonical: Boolean(canonical) };
 }
 
@@ -66,6 +67,13 @@ const normalizedItems = items.map(item => {
       continue;
     }
 
+    if (canonical && game.pageExists === false) {
+      missingPageReferences += 1;
+      game.pageUrl = '';
+      game.hashtag = '';
+      reasons.add('missing-game-page');
+    }
+
     games.push(game);
     if (canonical && game.hashtag) {
       const key = hashtagKey(game.hashtag);
@@ -89,13 +97,14 @@ const normalizedItems = items.map(item => {
 });
 
 const report = {
-  schema_version: 3,
+  schema_version: 4,
   generated_at: new Date().toISOString(),
   articles: normalizedItems.length,
   game_references: gameReferences,
   canonical_references: canonicalReferences,
   temporary_references: temporaryReferences,
   deferred_temporary_references: deferredTemporaryReferences,
+  missing_page_references: missingPageReferences,
   preserved_temporary_references: deferredTemporaryReferences,
   unique_canonical_hashtags: hashtagOwners.size,
   duplicate_references_removed: duplicateReferencesRemoved,
@@ -106,4 +115,4 @@ await fs.mkdir('tmp', { recursive: true });
 await fs.writeFile(eventsPath, `${JSON.stringify(Array.isArray(payload) ? normalizedItems : { ...payload, items: normalizedItems }, null, 2)}\n`, 'utf8');
 await fs.writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
 if (collisions.length) throw new Error(`Canonical news hashtag collision detected: ${collisions.map(item => item.hashtag).join(', ')}`);
-console.log(`[news/hashtags] ${normalizedItems.length} articles; ${hashtagOwners.size} unique canonical game hashtags; ${temporaryReferences} verified temporary game references preserved for page creation; ${duplicateReferencesRemoved} duplicates removed.`);
+console.log(`[news/hashtags] ${normalizedItems.length} articles; ${hashtagOwners.size} unique canonical game hashtags; ${temporaryReferences} verified temporary game references preserved for page creation; ${missingPageReferences} canonical game references withheld until their pages are live; ${duplicateReferencesRemoved} duplicates removed.`);
