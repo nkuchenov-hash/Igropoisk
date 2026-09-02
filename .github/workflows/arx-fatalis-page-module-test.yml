@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/arx-fatalis-page-module-test.yml'
+      - 'scripts/collect-game-sources.mjs'
+      - 'scripts/prepare-review-research.mjs'
+      - 'scripts/quality-control-loop.mjs'
+      - 'config/game-page-quality-v2.json'
 
 permissions:
   contents: read
@@ -89,6 +93,7 @@ jobs:
             page_gate_passed: draft?.publication?.gate_passed ?? false,
             screenshots: draft?.media?.screenshots?.length ?? 0,
             source_count: sources?.counts?.total ?? sources?.sources?.length ?? 0,
+            professional_review_count: sources?.counts?.professional_reviews ?? 0,
             scored_source_count: sources?.counts?.scored ?? 0,
             source_scan_complete: Boolean(sources?.discovery?.complete),
             rating_status: rating?.status ?? null,
