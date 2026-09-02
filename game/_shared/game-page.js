@@ -7,7 +7,7 @@
   document.head.appendChild(mediaSanitize);
   const qualityStyle=document.createElement('link');
   qualityStyle.rel='stylesheet';
-  qualityStyle.href='../_shared/game-page-quality.css?v=20260902-4';
+  qualityStyle.href='../_shared/game-page-quality.css?v=20260902-5';
   document.head.appendChild(qualityStyle);
   const quality=document.createElement('script');
   quality.src='../_shared/game-page-quality.js?v=20260902-3';
@@ -34,7 +34,7 @@
   materialized.defer=true;
   document.head.appendChild(materialized);
   const integrity=document.createElement('script');
-  integrity.src='../_shared/game-page-integrity.js?v=20260902-5';
+  integrity.src='../_shared/game-page-integrity.js?v=20260902-6';
   integrity.defer=true;
   document.head.appendChild(integrity);
   const editions=document.createElement('script');
