@@ -6,7 +6,7 @@ const shell=document.body.dataset;
 const slug=shell.slug||location.pathname.split('/').filter(Boolean).at(-1)||'game';
 const seedTitle=shell.title||slug.replace(/-/g,' ');
 const seedYear=Number(shell.year)||0;
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const arr=value=>Array.isArray(value)?value:[];
 const nonEmpty=value=>value!==null&&value!==undefined&&value!=='';
 const first=(...values)=>values.find(nonEmpty);
@@ -93,7 +93,7 @@ function renderHero(game){
   const videos=arr(game.media.videos).map(item=>typeof item==='string'?{thumbnail:item}:item).filter(Boolean);
   const hero=first(game.media.hero,shots[0],game.media.cover,'');
   const heroNode=document.querySelector('#gameHero');
-  const setHero=(url,button)=>{if(url)heroNode.style.backgroundImage=`url("${String(url).replace(/"/g,'%22')}")`;document.querySelectorAll('.hero-media__item').forEach(item=>item.classList.toggle('active',item===button))};
+  const setHero=(url,button)=>{if(url&&heroNode)heroNode.style.backgroundImage=`url("${String(url).replace(/"/g,'%22')}")`;document.querySelectorAll('.hero-media__item').forEach(item=>item.classList.toggle('active',item===button))};
   setHero(hero,null);
   document.querySelector('#gameTitle').textContent=title;document.querySelector('#crumb').textContent=title;
   document.querySelector('#gameMeta').textContent=[game.release.date_text,join(game.classification.genres),join(game.companies.developers)].filter(Boolean).join(' · ');
@@ -139,8 +139,8 @@ function renderAwards(awards){const valid=arr(awards).filter(item=>item?.name&&(
 function normalizeReview(item,title,hero){return{source:first(item?.source,item?.source_name,item?.domain,'Издание'),title:first(item?.title,item?.name,`Обзор ${title}`),description:first(item?.description,item?.summary,''),score:item?.score,scale:item?.scale,url:first(item?.url,item?.source_url,''),image:first(item?.image,item?.thumbnail,hero,'')}}
 function renderReviews(game){
   const title=game.identity.title,hero=first(game.media.hero,mediaUrl(arr(game.media.screenshots)[0]),game.media.cover,'');
-  const article=game.igropoisk_article;const articleUrl=article?.url||'';
-  document.querySelector('#featuredReview').innerHTML=`<div class="ig-review-feature__media">${imageMarkup(hero,title)}</div><div class="ig-review-feature__body"><small>ОБЗОР ИГРОПОИСКА</small><h2>${esc(article?.title||`Обзор ${title}`)}</h2><p>${esc(article?.description||first(game.editorial.integrated_description,game.editorial.short_description))}</p><div class="ig-review-feature__meta"><strong class="ig-review-feature__score">${formatScore(first(article?.score,game.ratings.igropoisk))}/10</strong><span>Редакционный синтез нескольких источников</span></div>${articleUrl?`<a class="ig-review-link" href="${esc(articleUrl)}">Открыть полный обзор →</a>`:'<div class="article-source-note">Статья ещё не опубликована.</div>'}</div>`;
+  const article=game.igropoisk_article;const articleUrl=article?.url||'';const featured=document.querySelector('#featuredReview');
+  if(articleUrl){featured.hidden=false;featured.innerHTML=`<div class="ig-review-feature__media">${imageMarkup(first(article?.image,hero),title)}</div><div class="ig-review-feature__body"><small>ОБЗОР ИГРОПОИСКА</small><h2>${esc(article?.title||`Обзор ${title}`)}</h2><p>${esc(article?.description||article?.summary||'')}</p><div class="ig-review-feature__meta"><strong class="ig-review-feature__score">${formatScore(first(article?.score,game.ratings.igropoisk))}/10</strong></div><a class="ig-review-link" href="${esc(articleUrl)}">Открыть полный обзор →</a></div>`}else{featured.hidden=true;featured.innerHTML=''}
   const reviews=arr(game.materials.reviews).map(item=>normalizeReview(item,title,hero)).filter(item=>item.url);
   document.querySelector('#externalReviewCount').textContent=reviews.length?`${reviews.length} материалов`:'';
   document.querySelector('#reviewGrid').innerHTML=reviews.map(item=>`<article class="ig-external-review"><div class="ig-external-review__head"><span>${esc(item.source)}</span>${nonEmpty(item.score)?`<strong class="ig-external-review__score">${formatScore(item.score)}${Number(item.scale)===100?'/100':'/10'}</strong>`:''}</div><h3>${esc(item.title)}</h3><p>${esc(item.description||'Открыть оригинальный обзор издания.')}</p><a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">Перейти к обзору ↗</a></article>`).join('')||'<div class="empty-state">Внешние обзоры появятся после парсинга реальных публикаций.</div>';
@@ -149,7 +149,7 @@ function renderReviews(game){
 function mediaCard(url,title,label,video=false){return `<article class="ig-media-card"><div class="ig-media-card__image">${imageMarkup(url,title)}${video?'<span class="ig-play-overlay">▶</span>':''}</div><div class="ig-media-card__body"><b>${esc(label)}</b><small>${esc(title)}</small></div></article>`}
 function renderMedia(game){
   const title=game.identity.title;const videos=arr(game.media.videos).map(item=>typeof item==='string'?{thumbnail:item,title:'Видео'}:item).filter(Boolean);const shots=unique(arr(game.media.screenshots).map(mediaUrl));const art=unique([...arr(game.media.artwork).map(mediaUrl),game.media.cover,game.media.hero]).filter(url=>!shots.includes(url));
-  const groups=[['videoGroup','mediaVideos','videoCount',videos, item=>mediaCard(first(item.thumbnail,item.poster,item.image,item.url),title,first(item.title,'Видео'),true)],['screenshotGroup','mediaScreenshots','screenshotCount',shots,(url,index)=>mediaCard(url,title,`Скриншот ${index+1}`)],['artGroup','mediaArt','artCount',art,(url,index)=>mediaCard(url,title,index===0?'Обложка':'Арт')]];
+  const groups=[['videoGroup','mediaVideos','videoCount',videos,item=>mediaCard(first(item.thumbnail,item.poster,item.image,item.url),title,first(item.title,'Видео'),true)],['screenshotGroup','mediaScreenshots','screenshotCount',shots,(url,index)=>mediaCard(url,title,`Скриншот ${index+1}`)],['artGroup','mediaArt','artCount',art,(url,index)=>mediaCard(url,title,index===0?'Обложка':'Арт')]];
   groups.forEach(([groupId,targetId,countId,items,render])=>{const group=document.querySelector(`#${groupId}`);group.hidden=!items.length;document.querySelector(`#${countId}`).textContent=items.length?String(items.length):'';document.querySelector(`#${targetId}`).innerHTML=items.map(render).join('')});
 }
 
@@ -167,47 +167,28 @@ function renderGuides(game){const title=game.identity.title,hero=first(game.medi
 function renderSources(game){const safeHost=url=>{try{return new URL(url).hostname}catch{return''}};const sources=[...arr(game.sources),game.links.official&&{title:'Официальный сайт',url:game.links.official,domain:safeHost(game.links.official)},game.links.store&&{title:'Страница магазина',url:game.links.store,domain:safeHost(game.links.store)}].filter(Boolean).filter((item,index,list)=>item.url&&list.findIndex(other=>other.url===item.url)===index);document.querySelector('#sources').innerHTML=sources.map(source=>`<div><a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.title||source.source_name||source.domain)}</a><span>${esc(source.domain||'↗')}</span></div>`).join('')||'<div><span>Источники находятся на редакционной проверке.</span></div>';document.querySelector('#sourceCount').textContent=sources.length?String(sources.length):''}
 
 function bindTabs(){document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(item=>item.classList.toggle('active',item===button));document.querySelectorAll('.game-tab').forEach(section=>section.classList.toggle('active',section.id===button.dataset.tab));const top=document.querySelector('.game-tabs').getBoundingClientRect().top+scrollY-64;scrollTo({top,behavior:'smooth'})}))}
-function bindTheme(){const button=document.querySelector('#theme');root.dataset.theme=localStorage.getItem('igroTheme')||root.dataset.theme||'dark';const paint=()=>button.textContent=root.dataset.theme==='light'?'☾':'☀';paint();button.onclick=()=>{root.dataset.theme=root.dataset.theme==='light'?'dark':'light';localStorage.setItem('igroTheme',root.dataset.theme);paint()}}
-function bindStateButton(selector,key,activeText,inactiveText){const button=document.querySelector(selector),storageKey=`igropoisk-${key}-${slug}`;const paint=()=>{const active=localStorage.getItem(storageKey)==='1';button.setAttribute('aria-pressed',String(active));button.classList.toggle('active',active);button.textContent=active?activeText:inactiveText};button.onclick=()=>{localStorage.setItem(storageKey,localStorage.getItem(storageKey)==='1'?'0':'1');paint()};paint()}
+function bindTheme(){const button=document.querySelector('#theme');if(!button)return;root.dataset.theme=localStorage.getItem('igroTheme')||root.dataset.theme||'dark';const paint=()=>button.textContent=root.dataset.theme==='light'?'☾':'☀';paint();button.onclick=()=>{root.dataset.theme=root.dataset.theme==='light'?'dark':'light';localStorage.setItem('igroTheme',root.dataset.theme);paint()}}
+function bindStateButton(selector,key,activeText,inactiveText){const button=document.querySelector(selector);if(!button)return;const storageKey=`igropoisk-${key}-${slug}`;const paint=()=>{const active=localStorage.getItem(storageKey)==='1';button.setAttribute('aria-pressed',String(active));button.classList.toggle('active',active);button.textContent=active?activeText:inactiveText};button.onclick=()=>{localStorage.setItem(storageKey,localStorage.getItem(storageKey)==='1'?'0':'1');paint()};paint()}
 
 async function refreshUserRating(apiBase,game){
   if(!apiBase)return;
   const data=await fetchJSON(`${apiBase.replace(/\/$/,'')}/api/ratings/${encodeURIComponent(slug)}`);if(!data)return;
-  game.ratings.users=data.average;game.ratings.user_votes=data.count;const votes=Number(data.count||0);document.querySelector('#userScore').textContent=votes?formatScore(data.average):'—';document.querySelector('#userScoreNote').textContent=votes?`${votes.toLocaleString('ru-RU')} оценок`:'Оценок пока нет';
+  game.ratings.users=data.average;game.ratings.user_votes=data.count;const votes=Number(data.count||0),scoreNode=document.querySelector('#userScore'),noteNode=document.querySelector('#userScoreNote');if(scoreNode)scoreNode.textContent=votes?formatScore(data.average):'—';if(noteNode)noteNode.textContent=votes?`${votes.toLocaleString('ru-RU')} оценок`:'Оценок пока нет';
 }
 function bindRating(title,runtime,game){
-  const dialog=document.querySelector('#ratingDialog'),scale=document.querySelector('#ratingScale'),note=document.querySelector('#ratingNote'),apiBase=String(runtime?.ratings_api_base||'').replace(/\/$/,'');document.querySelector('#ratingDialogTitle').textContent=title;scale.innerHTML=Array.from({length:10},(_,index)=>`<button type="button" data-rating="${index+1}">${index+1}</button>`).join('');
-  const open=()=>dialog.showModal();[document.querySelector('#rateGame'),document.querySelector('#rateInline')].forEach(button=>button.onclick=open);document.querySelector('#ratingClose').onclick=()=>dialog.close();dialog.onclick=event=>{if(event.target===dialog)dialog.close()};
+  const dialog=document.querySelector('#ratingDialog'),scale=document.querySelector('#ratingScale'),note=document.querySelector('#ratingNote'),dialogTitle=document.querySelector('#ratingDialogTitle'),rateGame=document.querySelector('#rateGame'),rateInline=document.querySelector('#rateInline'),close=document.querySelector('#ratingClose'),apiBase=String(runtime?.ratings_api_base||'').replace(/\/$/,'');
+  if(!dialog||!scale||!note||!dialogTitle||!rateGame||!rateInline||!close)return;
+  dialogTitle.textContent=title;scale.innerHTML=Array.from({length:10},(_,index)=>`<button type="button" data-rating="${index+1}">${index+1}</button>`).join('');
+  const open=()=>dialog.showModal();[rateGame,rateInline].forEach(button=>button.onclick=open);close.onclick=()=>dialog.close();dialog.onclick=event=>{if(event.target===dialog)dialog.close()};
   if(!apiBase){scale.querySelectorAll('button').forEach(button=>button.disabled=true);note.innerHTML='<strong>Сервер оценок ещё не подключён.</strong> GitHub Pages не может хранить голоса в базе. Backend-модуль подготовлен в репозитории и должен быть развёрнут отдельно.';return}
-  scale.querySelectorAll('button').forEach(button=>button.onclick=async()=>{button.disabled=true;note.textContent='Сохраняем оценку…';try{const response=await fetch(`${apiBase}/api/ratings/${encodeURIComponent(slug)}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({rating:Number(button.dataset.rating)})});const data=await response.json();if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);note.textContent='Оценка сохранена. Учитывается одна текущая оценка с IP; история изменений записана.';document.querySelector('#rateGame').textContent=`Ваша оценка: ${button.dataset.rating}`;document.querySelector('#rateInline').textContent=`Ваша оценка: ${button.dataset.rating}`;await refreshUserRating(apiBase,game);setTimeout(()=>dialog.close(),500)}catch(error){note.textContent=`Не удалось сохранить: ${error.message}`}finally{button.disabled=false}})
-}
-
-function applyPublicLocalization(game,draft){
-  if(slug!=='3-japan-stigmatized-property')return game;
-  const localized={...game};
-  localized.identity={...game.identity,title:'Japan Stigmatized Property 3'};
-  localized.release={...game.release,date_text:'6 августа 2026'};
-  localized.companies={developers:['Japan Stigmatized Property Association'],publishers:['Japan Stigmatized Property Association','Loxarc Inc.']};
-  localized.classification={...game.classification,genres:['Приключения','Казуальная','Инди','Симулятор'],platforms:['Windows','macOS'],categories:['Одиночная игра','Мультиплеер','Достижения Steam','Steam Cloud']};
-  localized.editorial={...game.editorial,
-    short_description:draft?.editorial?.short_description||'Хоррор-наблюдение: игрок следит за камерами в реальных японских объектах, замечает аномалии и сообщает о них, пытаясь продержаться до рассвета.',
-    integrated_description:draft?.editorial?.integrated_description||'Japan Stigmatized Property 3 строится вокруг наблюдения за камерами в реальных японских объектах. Нужно замечать изменения и аномалии, вовремя сообщать о них и не пропустить слишком много событий до наступления рассвета.',
-    features:['Наблюдение за камерами','Поиск аномалий','Реальные японские локации','Одиночная и совместная игра']
-  };
-  localized.sources=arr(game.sources).map(source=>({
-    ...source,
-    name:String(source?.name||'').includes('日本')?'Steam — Japan Stigmatized Property 3':source?.name,
-    source_name:String(source?.source_name||'').includes('日本')?'Steam — Japan Stigmatized Property 3':source?.source_name,
-    title:String(source?.title||'').includes('日本')?'Japan Stigmatized Property 3':source?.title
-  }));
-  return localized;
+  scale.querySelectorAll('button').forEach(button=>button.onclick=async()=>{button.disabled=true;note.textContent='Сохраняем оценку…';try{const response=await fetch(`${apiBase}/api/ratings/${encodeURIComponent(slug)}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({rating:Number(button.dataset.rating)})});const data=await response.json();if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);note.textContent='Оценка сохранена. Учитывается одна текущая оценка с IP; история изменений записана.';if(rateGame.isConnected)rateGame.textContent=`Ваша оценка: ${button.dataset.rating}`;if(rateInline.isConnected)rateInline.textContent=`Ваша оценка: ${button.dataset.rating}`;await refreshUserRating(apiBase,game);setTimeout(()=>{if(dialog.isConnected)dialog.close()},500)}catch(error){note.textContent=`Не удалось сохранить: ${error.message}`}finally{button.disabled=false}})
 }
 
 async function load(){
   shellHTML();root.dataset.designSystem='igropoisk-game-v3';const chunk=chunkForYear(seedYear);
   const [curatedFile,draft,awards,catalog,reviews,rating,news,runtime]=await Promise.all([fetchJSON(`../../data/game-content/${chunk}.json`),fetchJSON(`../../data/drafts/${shell.draft||slug}.json`),fetchJSON(`../../data/awards/${slug}.json`),fetchJSON('../../data/catalog-visible.json'),fetchJSON(`../../data/reviews/${slug}.json`),fetchJSON(`../../data/ratings/${slug}.json`),fetchJSON(`../../data/news/${slug}.json`),fetchJSON('../../config/runtime.json')]);
-  const game=applyPublicLocalization(mergeGame(curatedFile?.games?.[slug]||null,draft,awards,reviews,rating,news),draft);document.title=`${game.identity.title} — Игропоиск`;
+  const game=mergeGame(curatedFile?.games?.[slug]||null,draft,awards,reviews,rating,news);document.title=`${game.identity.title} — Игропоиск`;
   renderHero(game);renderOverview(game,catalog);renderReviews(game);renderMedia(game);renderNews(game);renderRequirements(game);renderGuides(game);renderSources(game);bindTabs();bindTheme();bindStateButton('#favorite','favorite','♥ В избранном','♡ В избранное');bindStateButton('#wantToPlay','want','✓ Хочу сыграть','＋ Хочу сыграть');bindRating(game.identity.title,runtime,game);installImageFallbacks();await refreshUserRating(runtime?.ratings_api_base,game);
 }
-load();
+load().catch(error=>console.error('Игропоиск: game page runtime failed',error));
 })();
