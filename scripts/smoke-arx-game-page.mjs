@@ -21,8 +21,10 @@ try{
  await page.goto(`${base}/game/arx-fatalis/?acceptance=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45000});
  await page.waitForFunction(()=>document.querySelector('#gameTitle')?.textContent?.trim()==='Arx Fatalis',{timeout:30000});
  await page.waitForFunction(expected=>document.querySelectorAll('#reviewGrid .quality-review-row').length===expected,{timeout:30000},expectedReviews);
- await new Promise(r=>setTimeout(r,2800));
- const state=await page.evaluate(()=>{const rows=[...document.querySelectorAll('#reviewGrid .quality-review-row')];const titleXs=rows.map(r=>Math.round(r.querySelector('b')?.getBoundingClientRect().left||0));return{
+ await page.waitForFunction(()=>Boolean(document.querySelector('#reviewSummaryCard img')),{timeout:30000});
+ await page.evaluate(()=>document.querySelector('[data-tab="reviews"]')?.click());
+ await new Promise(r=>setTimeout(r,800));
+ const state=await page.evaluate(()=>{const rows=[...document.querySelectorAll('#reviewGrid .quality-review-row')];const titleXs=rows.map(r=>Math.round(r.querySelector('b')?.getBoundingClientRect().left||0));const card=document.querySelector('#reviewSummaryCard');return{
   title:document.querySelector('#gameTitle')?.textContent?.trim()||'',
   meta:document.querySelector('#gameMeta')?.textContent?.trim()||'',
   pitch:document.querySelector('.hero-pitch')?.textContent?.trim()||'',
@@ -31,13 +33,13 @@ try{
   reviewNames:[...document.querySelectorAll('#reviewGrid .quality-review-source')].map(n=>n.textContent.trim()),
   reviewLinks:rows.map(n=>n.href),
   reviewTitleXs:titleXs,
-  reviewCardVisible:Boolean(document.querySelector('#featuredReview.review-summary-card'))&&getComputedStyle(document.querySelector('#featuredReview')).display!=='none',
-  reviewCardImage:Boolean(document.querySelector('#featuredReview.review-summary-card img')),
-  reviewCardText:(document.querySelector('#featuredReview.review-summary-card')?.textContent||'').replace(/\s+/g,' ').trim(),
+  reviewCardVisible:Boolean(card)&&getComputedStyle(card).display!=='none'&&card.getBoundingClientRect().height>200,
+  reviewCardImage:Boolean(card?.querySelector('img')),
+  reviewCardText:(card?.textContent||'').replace(/\s+/g,' ').trim(),
   reviewEmpty:(document.querySelector('#reviewGrid')?.textContent||'').includes('Источники ещё собираются'),
   blue:[...document.querySelectorAll('img')].map(n=>n.currentSrc||n.src).filter(u=>/storepagebackground\/app\/1700/i.test(u)),
   blueBg:[...document.querySelectorAll('*')].filter(n=>/storepagebackground\/app\/1700/i.test(getComputedStyle(n).backgroundImage||'')).length,
-  ratingNote:(document.querySelector('#featuredReview')?.textContent||'').match(/Среднее[^\n]*/i)?.[0]||'',
+  ratingNote:(document.querySelector('#reviews')?.textContent||'').match(/Среднее[^\n]*/i)?.[0]||'',
   official:[...document.querySelectorAll('#officialLinks a')].map(a=>a.href),
   minimumPairs:document.querySelectorAll('#minimumRequirements dt').length,
   recommendedPairs:document.querySelectorAll('#recommendedRequirements dt').length,
@@ -56,7 +58,7 @@ try{
  if(!state.reviewCardVisible)errors.push('Review summary card is missing.');
  if(!state.reviewCardImage)errors.push('Review summary card has no screenshot.');
  if(!/Обзор Arx Fatalis/i.test(state.reviewCardText)||state.reviewCardText.length<250)errors.push(`Review summary card is incomplete: ${state.reviewCardText}`);
- if(new Set(state.reviewTitleXs).size!==1)errors.push(`Review title column is not aligned: ${state.reviewTitleXs.join(', ')}`);
+ if(new Set(state.reviewTitleXs).size!==1||state.reviewTitleXs[0]<=0)errors.push(`Review title column is not aligned: ${state.reviewTitleXs.join(', ')}`);
  if(state.reviewEmpty)errors.push('Review section still says sources are being collected.');
  if(state.blue.length||state.blueBg)errors.push(`Forbidden blue store background visible: ${state.blue.length} img / ${state.blueBg} bg`);
  if(state.ratingNote)errors.push(`Forbidden rating explanation visible: ${state.ratingNote}`);
