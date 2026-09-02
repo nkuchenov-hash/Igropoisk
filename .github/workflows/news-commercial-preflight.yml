@@ -1,0 +1,102 @@
+name: News commercial production preflight
+
+on:
+  pull_request:
+    branches: [staging]
+    paths:
+      - 'scripts/merge-russian-news-feeds.mjs'
+      - 'scripts/lib/news-commercial-copy.mjs'
+      - 'scripts/lib/news-content-policy.mjs'
+      - 'scripts/lib/news-editorial-summary.mjs'
+      - 'scripts/lib/news-editor-production.mjs'
+      - 'scripts/lib/news-home-selector.mjs'
+      - 'scripts/lib/news-primary-game-evidence.mjs'
+      - 'scripts/verify-news-game-identities.mjs'
+      - 'scripts/build-home-news.mjs'
+      - 'scripts/build-news-pipeline-health.mjs'
+      - 'scripts/run-news-pipeline.mjs'
+      - 'scripts/test-news-commercial-quality.mjs'
+      - 'scripts/test-news-final-commercial-regressions.mjs'
+      - 'scripts/test-news-run287-regressions.mjs'
+      - 'scripts/test-news-run295-regressions.mjs'
+      - 'scripts/test-news-health-commercial-semantics.mjs'
+      - 'scripts/test-news-fast-path-contract.mjs'
+      - 'scripts/test-russian-news-feeds.mjs'
+      - '.github/workflows/news-commercial-preflight.yml'
+      - '.github/workflows/news-pipeline-staging.yml'
+      - '.github/workflows/news-pipeline.yml'
+  push:
+    branches: [staging, main]
+    paths:
+      - 'scripts/merge-russian-news-feeds.mjs'
+      - 'scripts/lib/news-commercial-copy.mjs'
+      - 'scripts/lib/news-content-policy.mjs'
+      - 'scripts/lib/news-editorial-summary.mjs'
+      - 'scripts/lib/news-editor-production.mjs'
+      - 'scripts/lib/news-home-selector.mjs'
+      - 'scripts/lib/news-primary-game-evidence.mjs'
+      - 'scripts/verify-news-game-identities.mjs'
+      - 'scripts/build-home-news.mjs'
+      - 'scripts/build-news-pipeline-health.mjs'
+      - 'scripts/run-news-pipeline.mjs'
+      - 'scripts/test-news-commercial-quality.mjs'
+      - 'scripts/test-news-final-commercial-regressions.mjs'
+      - 'scripts/test-news-run287-regressions.mjs'
+      - 'scripts/test-news-run295-regressions.mjs'
+      - 'scripts/test-news-health-commercial-semantics.mjs'
+      - 'scripts/test-news-fast-path-contract.mjs'
+      - 'scripts/test-russian-news-feeds.mjs'
+      - '.github/workflows/news-commercial-preflight.yml'
+      - '.github/workflows/news-pipeline-staging.yml'
+      - '.github/workflows/news-pipeline.yml'
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: news-commercial-preflight-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate commercial news runtime before network work
+        run: |
+          node --check scripts/merge-russian-news-feeds.mjs
+          node --check scripts/build-home-news.mjs
+          node --check scripts/build-news-pipeline-health.mjs
+          node --check scripts/run-news-pipeline.mjs
+          node --check scripts/lib/news-commercial-copy.mjs
+          node --check scripts/lib/news-content-policy.mjs
+          node --check scripts/lib/news-editorial-summary.mjs
+          node --check scripts/lib/news-editor-production.mjs
+          node --check scripts/lib/news-home-selector.mjs
+          node --check scripts/lib/news-primary-game-evidence.mjs
+          node --check scripts/verify-news-game-identities.mjs
+          node scripts/test-news-editor.mjs
+          node scripts/test-news-commercial-quality.mjs
+          node scripts/test-news-final-commercial-regressions.mjs
+          node scripts/test-news-run287-regressions.mjs
+          node scripts/test-news-run295-regressions.mjs
+          node scripts/test-news-health-commercial-semantics.mjs
+          node scripts/test-news-fast-path-contract.mjs
+          node scripts/test-russian-news-feeds.mjs
+          node scripts/test-news-home-selector.mjs
+          node scripts/test-news-pipeline-health.mjs
+
+  dispatch-production-pipeline:
+    if: github.event_name == 'push'
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch canonical autonomous pipeline on staging runtime
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run news-pipeline.yml --repo "${{ github.repository }}" --ref staging

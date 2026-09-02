@@ -89,9 +89,9 @@ const publicationConfig = {
   },
   publication: {
     required_files: ['data/news.json', 'data/publisher-news.json', 'data/youtube-signals.json', 'data/news-events.json', 'data/news-home-ru.json', 'data/news-pipeline-health.json'],
-    minimum_items: { 'data/news.json': 12, 'data/publisher-news.json': 1, 'data/news-events.json': 12, 'data/news-home-ru.json': 12 },
-    minimum_retained_fraction: 0.25,
-    homepage_exact_items: 12,
+    minimum_items: { 'data/news.json': 0, 'data/publisher-news.json': 0, 'data/news-events.json': 0, 'data/news-home-ru.json': 0 },
+    minimum_retained_fraction: 0,
+    homepage_exact_items: 0,
     minimum_official_source_success_ratio: 0.15,
     image_roots: ['assets/news/', 'assets/publisher-news/'],
     storage: { media_prefix: 'news/media' }
@@ -112,10 +112,13 @@ const makeItem = (index, imageRoot = 'assets/news') => ({
   primaryUrl: `https://example.com/${imageRoot.replaceAll('/', '-')}/${index}`,
   image: `${imageRoot}/${String(index).padStart(16, '0')}.jpg`
 });
-const news = Array.from({ length: 12 }, (_, index) => makeItem(index + 1));
+
+// The complete feed may be busy while the homepage may legitimately be quiet.
+// Neither count is a publication quota.
+const news = Array.from({ length: 36 }, (_, index) => makeItem(index + 1));
 const official = [makeItem(101, 'assets/publisher-news')];
-const events = Array.from({ length: 12 }, (_, index) => makeItem(index + 201));
-const home = Array.from({ length: 12 }, (_, index) => makeItem(index + 301));
+const events = Array.from({ length: 36 }, (_, index) => makeItem(index + 201));
+const home = Array.from({ length: 8 }, (_, index) => makeItem(index + 301));
 for (const item of [...news, ...official, ...events, ...home]) {
   const file = path.join(root, item.image);
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -130,7 +133,7 @@ const youtubeSignals = [
 ];
 fs.writeFileSync(path.join(root, 'data/youtube-signals.json'), JSON.stringify({ generatedAt, items: youtubeSignals }));
 fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify({ generatedAt, items: events }));
-fs.writeFileSync(path.join(root, 'data/news-home-ru.json'), JSON.stringify({ generatedAt, items: home }));
+fs.writeFileSync(path.join(root, 'data/news-home-ru.json'), JSON.stringify({ generatedAt, displayLimit: 12, items: home }));
 fs.writeFileSync(path.join(root, 'data/news-pipeline-health.json'), JSON.stringify({
   schema_version: 1,
   pipeline: 'news',
@@ -139,13 +142,13 @@ fs.writeFileSync(path.join(root, 'data/news-pipeline-health.json'), JSON.stringi
   last_successful_run_at: '2026-08-05T00:29:00.000Z',
   due_groups: ['official-sources'],
   data: {
-    'data/news.json': { generated_at: generatedAt, age_minutes: 30, count: 12, minimum: 12 },
-    'data/publisher-news.json': { generated_at: generatedAt, age_minutes: 30, count: 1, minimum: 1 },
+    'data/news.json': { generated_at: generatedAt, age_minutes: 30, count: 36, minimum: 0 },
+    'data/publisher-news.json': { generated_at: generatedAt, age_minutes: 30, count: 1, minimum: 0 },
     'data/youtube-signals.json': { generated_at: generatedAt, age_minutes: 30, count: 2, minimum: 0 },
-    'data/news-events.json': { generated_at: generatedAt, age_minutes: 30, count: 12, minimum: 12 },
-    'data/news-home-ru.json': { generated_at: generatedAt, age_minutes: 30, count: 12, minimum: 12 }
+    'data/news-events.json': { generated_at: generatedAt, age_minutes: 30, count: 36, minimum: 0 },
+    'data/news-home-ru.json': { generated_at: generatedAt, age_minutes: 30, count: 8, minimum: 0 }
   },
-  images: { referenced: 37, missing: 0, missing_files: [] },
+  images: { referenced: 81, missing: 0, missing_files: [] },
   sources: { total: 10, successful: 5, success_ratio: 0.5, history: [], persistent_failures: [] },
   warnings: [],
   blocking_errors: []
@@ -154,6 +157,8 @@ fs.writeFileSync(path.join(root, 'data/news-pipeline-health.json'), JSON.stringi
 const valid = validateNewsPipeline({ root });
 assert.equal(valid.ok, true, valid.errors.join('\n'));
 assert.equal(valid.health, 'healthy');
+assert.equal(valid.counts['data/news.json'], 36, 'all busy-day news must remain in the feed');
+assert.equal(valid.counts['data/news-home-ru.json'], 8, 'quiet-day homepage must publish available cards instead of blocking');
 
 const eventPayload = JSON.parse(fs.readFileSync(path.join(root, 'data/news-events.json'), 'utf8'));
 eventPayload.items[0].image = 'https://storage.yandexcloud.net/igropoisk-content/news/media/abc123.jpg';
@@ -182,4 +187,4 @@ const missingImage = validateNewsPipeline({ root });
 assert.equal(missingImage.ok, true, 'A missing image must never block otherwise valid news publication.');
 
 fs.rmSync(temp, { recursive: true, force: true });
-console.log('Autonomous news pipeline self-test passed.');
+console.log('Autonomous news pipeline self-test passed, including 8-vs-36 variable-volume publication.');

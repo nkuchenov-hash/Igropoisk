@@ -47,13 +47,26 @@ for (const item of items) {
     const gameId = String(game.gameId || game.game_id || '').trim();
     const slug = String(game.slug || '').trim().toLowerCase();
     const title = String(game.title || '').trim();
-    const hashtag = String(game.hashtag || canonicalGameHashtag({ title, slug })).trim();
+    const storedHashtag = String(game.hashtag || '').trim();
+    const isTemporary = !gameId || gameId.startsWith('news_game_');
+    const hashtag = isTemporary ? storedHashtag : (storedHashtag || canonicalGameHashtag({ title, slug }));
     const identity = gameId || slug;
     if (identity && seen.has(identity)) duplicateArticleGames.push({ news_id: item.id || null, game_id: gameId || null, slug });
     if (identity) seen.add(identity);
 
     if (game.identityVerified !== true) unverified.push({ news_id: item.id || null, game_id: gameId || null, slug, title, hashtag });
-    if (!gameId || gameId.startsWith('news_game_')) temporary.push({ news_id: item.id || null, game_id: gameId || null, slug, title, hashtag, verified_external: Boolean(game.verifiedExternal), identity_verified: game.identityVerified === true });
+    if (isTemporary) temporary.push({
+      news_id: item.id || null,
+      game_id: gameId || null,
+      slug,
+      title,
+      hashtag,
+      verified_external: Boolean(game.verifiedExternal),
+      identity_verified: game.identityVerified === true
+    });
+
+    // A verified temporary identity intentionally has no public hashtag until the
+    // shared Game Creator materializes its canonical page.
     if (!slug || !title || !hashtag) continue;
     uniqueGames.set(gameId || slug, { game_id: gameId || null, slug, title, hashtag });
 
@@ -93,10 +106,12 @@ const dedupeBy = (values, key) => [...new Map(values.map(value => [key(value), v
 const missingPageFindings = productionRef
   ? dedupeBy(productionMissingPages, item => item.game_id || item.slug).length
   : dedupeBy(missingPages, item => item.game_id || item.slug).length;
-const blockingIntegrityFindings = collisions.length + inconsistent.length + duplicateArticleGames.length + unverified.length + temporary.length + badPageUrls.length
-  + (allowMissingPages ? 0 : missingPageFindings);
+const blockingTemporary = temporary.filter(item => !(allowMissingPages && item.identity_verified && item.verified_external));
+const deferredTemporary = temporary.filter(item => allowMissingPages && item.identity_verified && item.verified_external);
+const blockingIntegrityFindings = collisions.length + inconsistent.length + duplicateArticleGames.length + unverified.length
+  + blockingTemporary.length + badPageUrls.length + (allowMissingPages ? 0 : missingPageFindings);
 const report = {
-  schema_version: 3,
+  schema_version: 4,
   generated_at: new Date().toISOString(),
   production_ref: productionRef || null,
   allow_missing_pages: allowMissingPages,
@@ -110,6 +125,8 @@ const report = {
   duplicate_article_games: duplicateArticleGames,
   unverified_game_references: dedupeBy(unverified, item => `${item.news_id}:${item.game_id || item.slug}`),
   temporary_game_references: dedupeBy(temporary, item => `${item.game_id}:${item.slug}`),
+  blocking_temporary_game_references: dedupeBy(blockingTemporary, item => `${item.game_id}:${item.slug}`),
+  deferred_verified_temporary_games: dedupeBy(deferredTemporary, item => `${item.game_id}:${item.slug}`),
   missing_staging_pages: dedupeBy(missingPages, item => item.game_id || item.slug),
   missing_production_pages: dedupeBy(productionMissingPages, item => item.game_id || item.slug),
   bad_page_urls: badPageUrls,
@@ -121,5 +138,5 @@ const report = {
 
 fs.mkdirSync('tmp', { recursive: true });
 fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
-console.log(`[news/hashtag-audit] ${items.length} articles; ${uniqueGames.size} verified game identities; ${hashtagOwner.size} unique hashtags; ${report.unverified_game_references.length} unverified refs; ${report.missing_staging_pages.length} staging pages missing; ${report.missing_production_pages.length} production pages missing; ${blockingIntegrityFindings} blocking integrity findings; ${unresolvedExplicit.length} context findings deferred without hashtags.`);
+console.log(`[news/hashtag-audit] ${items.length} articles; ${uniqueGames.size} canonical hashtag identities; ${hashtagOwner.size} unique hashtags; ${report.unverified_game_references.length} unverified refs; ${report.deferred_verified_temporary_games.length} verified temporary games deferred to Game Creator; ${report.missing_staging_pages.length} staging pages missing; ${report.missing_production_pages.length} production pages missing; ${blockingIntegrityFindings} blocking integrity findings; ${unresolvedExplicit.length} context findings deferred without hashtags.`);
 if (strict && blockingIntegrityFindings) process.exit(1);

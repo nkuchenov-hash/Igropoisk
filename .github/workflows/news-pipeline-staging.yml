@@ -1,4 +1,5 @@
 name: News pipeline staging network test
+# Fast commercial acceptance: native Russian + deterministic local translation.
 
 on:
   pull_request:
@@ -26,6 +27,7 @@ concurrency:
 jobs:
   full-run:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout proposed pipeline
         uses: actions/checkout@v4
@@ -54,6 +56,23 @@ jobs:
 
       - name: Run contract tests
         run: |
+          node --check scripts/edit-news-russian.mjs
+          node --check scripts/merge-russian-news-feeds.mjs
+          node --check scripts/lib/news-editor-qwen.mjs
+          node --check scripts/lib/news-editor-production.mjs
+          node --check scripts/lib/news-editor-policy.mjs
+          node --check scripts/lib/news-content-policy.mjs
+          node --check scripts/lib/news-editorial-summary.mjs
+          node --check scripts/lib/news-home-selector.mjs
+          node --check scripts/lib/news-primary-game-evidence.mjs
+          node scripts/test-news-editor.mjs
+          node scripts/test-news-commercial-quality.mjs
+          node scripts/test-news-final-commercial-regressions.mjs
+          node scripts/test-news-run287-regressions.mjs
+          node scripts/test-news-run295-regressions.mjs
+          node scripts/test-news-health-commercial-semantics.mjs
+          node scripts/test-russian-news-feeds.mjs
+          node scripts/test-news-home-selector.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
@@ -69,8 +88,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           NEWS_PIPELINE_REPORT: tmp/news-pipeline-staging-report.json
+          NEWS_EDITOR_REPORT: tmp/news-editor-report.json
           NEWS_LOCAL_TRANSLATION_RUNTIME: /tmp/igropoisk-news-translator-runtime
           NEWS_LOCAL_TRANSLATION_CACHE: /tmp/igropoisk-news-translation-models
+          NEWS_EDITOR_QWEN_MAX_ITEMS: '0'
+          NEWS_HOMEPAGE_LIMIT: '12'
         run: |
           node scripts/run-news-pipeline.mjs --force
           git diff --check
@@ -97,6 +119,7 @@ jobs:
           const allowed = config.publication.commit_paths;
           const allowedTmp = new Set([
             'tmp/news-pipeline-staging-report.json',
+            'tmp/news-editor-report.json',
             'tmp/news-game-identity-verification.json',
             'tmp/news-game-hashtag-normalization.json',
             'tmp/news-game-hashtag-audit.json'
@@ -116,6 +139,7 @@ jobs:
           name: news-pipeline-staging-${{ github.sha }}
           path: |
             tmp/news-pipeline-staging-report.json
+            tmp/news-editor-report.json
             tmp/news-game-identity-verification.json
             tmp/news-game-hashtag-normalization.json
             tmp/news-game-hashtag-audit.json

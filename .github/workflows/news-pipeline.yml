@@ -41,13 +41,16 @@ on:
       - 'scripts/fetch-news.mjs'
       - 'scripts/collect-regional-news.mjs'
       - 'scripts/postprocess-industry-news.mjs'
+      - 'scripts/merge-russian-news-feeds.mjs'
       - 'scripts/fetch-publisher-news.mjs'
       - 'scripts/fetch-youtube-signals.mjs'
       - 'scripts/build-news-events.mjs'
+      - 'scripts/edit-news-russian.mjs'
       - 'scripts/resolve-news-game-context.mjs'
       - 'scripts/verify-news-game-identities.mjs'
       - 'scripts/normalize-news-game-hashtags.mjs'
       - 'scripts/hydrate-live-news-history.mjs'
+      - 'scripts/preserve-news-history.mjs'
       - 'scripts/audit-news-game-hashtags.mjs'
       - 'scripts/build-home-news.mjs'
       - 'scripts/build-news-pipeline-health.mjs'
@@ -59,6 +62,13 @@ on:
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
       - 'scripts/test-news-pipeline-health.mjs'
+      - 'scripts/test-news-editor.mjs'
+      - 'scripts/test-news-commercial-quality.mjs'
+      - 'scripts/test-news-run287-regressions.mjs'
+      - 'scripts/test-news-run295-regressions.mjs'
+      - 'scripts/test-news-health-commercial-semantics.mjs'
+      - 'scripts/test-russian-news-feeds.mjs'
+      - 'scripts/test-news-home-selector.mjs'
       - 'scripts/test-news-content-api.mjs'
       - 'scripts/test-news-storage-content-api.mjs'
       - 'scripts/test-news-storage-retention.mjs'
@@ -70,6 +80,12 @@ on:
       - 'scripts/test-news-publication-gate.mjs'
       - 'scripts/test-news-game-registry-discovery.mjs'
       - 'scripts/validate-news-module.mjs'
+      - 'scripts/lib/news-content-policy.mjs'
+      - 'scripts/lib/news-editor-qwen.mjs'
+      - 'scripts/lib/news-editor-production.mjs'
+      - 'scripts/lib/news-editor-policy.mjs'
+      - 'scripts/lib/news-editorial-summary.mjs'
+      - 'scripts/lib/news-home-selector.mjs'
       - 'scripts/lib/news-game-linker.mjs'
       - 'scripts/lib/news-game-registry-adapter.mjs'
       - 'scripts/lib/news-game-context-resolver.mjs'
@@ -82,6 +98,7 @@ on:
       - 'scripts/prune-news-storage.mjs'
       - 'scripts/prune-news-media-cache.mjs'
       - 'scripts/publish-news-storage.mjs'
+      - '.github/workflows/news-commercial-preflight.yml'
       - '.github/workflows/news-game-page-fast.yml'
       - '.github/workflows/news-pipeline.yml'
 
@@ -97,7 +114,7 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 20
     steps:
       - name: Checkout current staging code and fallback snapshot
         uses: actions/checkout@v4
@@ -133,15 +150,24 @@ jobs:
           node --check scripts/run-news-pipeline.mjs
           node --check scripts/build-news-pipeline-health.mjs
           node --check scripts/validate-news-pipeline.mjs
+          node --check scripts/edit-news-russian.mjs
+          node --check scripts/merge-russian-news-feeds.mjs
           node --check scripts/resolve-news-game-context.mjs
           node --check scripts/verify-news-game-identities.mjs
           node --check scripts/normalize-news-game-hashtags.mjs
           node --check scripts/hydrate-live-news-history.mjs
+          node --check scripts/preserve-news-history.mjs
           node --check scripts/audit-news-game-hashtags.mjs
           node --check scripts/prepare-news-game-page-requests.mjs
           node --check scripts/ensure-game-page.mjs
           node --check scripts/run-news-game-page-fast.mjs
           node --check scripts/materialize-news-game-pages-fast.mjs
+          node --check scripts/lib/news-editor-qwen.mjs
+          node --check scripts/lib/news-editor-production.mjs
+          node --check scripts/lib/news-editor-policy.mjs
+          node --check scripts/lib/news-content-policy.mjs
+          node --check scripts/lib/news-editorial-summary.mjs
+          node --check scripts/lib/news-home-selector.mjs
           node --check scripts/lib/news-game-context-resolver.mjs
           node --check scripts/lib/news-primary-game-refiner.mjs
           node --check scripts/lib/news-publication-gate.mjs
@@ -152,6 +178,13 @@ jobs:
           node --check scripts/prune-news-storage.mjs
           node --check scripts/prune-news-media-cache.mjs
           node --check scripts/publish-news-storage.mjs
+          node scripts/test-news-editor.mjs
+          node scripts/test-news-commercial-quality.mjs
+          node scripts/test-news-run287-regressions.mjs
+          node scripts/test-news-run295-regressions.mjs
+          node scripts/test-news-health-commercial-semantics.mjs
+          node scripts/test-russian-news-feeds.mjs
+          node scripts/test-news-home-selector.mjs
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
@@ -176,10 +209,13 @@ jobs:
           OPENAI_RESEARCH_MODEL: ${{ vars.OPENAI_RESEARCH_MODEL || 'gpt-5' }}
           PIPELINE_FORCE: ${{ inputs.force || github.event.inputs.force || false }}
           NEWS_PIPELINE_REPORT: tmp/news-pipeline-report.json
+          NEWS_EDITOR_REPORT: tmp/news-editor-report.json
           NEWS_GAME_CONTEXT_MAX_LOOKUPS: '1000'
           NEWS_GAME_VERIFY_BATCH: '8'
           NEWS_LOCAL_TRANSLATION_RUNTIME: /tmp/igropoisk-news-translator-runtime
           NEWS_LOCAL_TRANSLATION_CACHE: /tmp/igropoisk-news-translation-models
+          NEWS_EDITOR_QWEN_MAX_ITEMS: '0'
+          NEWS_EDITOR_MIN_PUBLIC: '12'
         run: |
           args=()
           if [ "$PIPELINE_FORCE" = "true" ]; then
@@ -220,12 +256,18 @@ jobs:
           NEWS_GAME_REQUESTS_B64: ${{ steps.game_pages.outputs.requests_b64 }}
         run: gh workflow run news-game-page-fast.yml --ref staging -f news_game_requests_b64="$NEWS_GAME_REQUESTS_B64"
 
+      - name: Defer snapshot publication until every verified game page is live
+        if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count != '0'
+        run: echo "Deferring news snapshot switch; ${COUNT} verified game page(s) are being created. The previous live snapshot remains active."
+        env:
+          COUNT: ${{ steps.game_pages.outputs.count }}
+
       - name: Require canonical hashtag integrity without waiting for asynchronous page creation
         if: steps.pipeline.outputs.status == 'success'
         run: node scripts/audit-news-game-hashtags.mjs --strict --allow-missing-pages --production-ref origin/main
 
       - name: Reclaim redundant Object Storage snapshots
-        if: steps.pipeline.outputs.status == 'success'
+        if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
         continue-on-error: true
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
@@ -236,7 +278,7 @@ jobs:
         run: node scripts/prune-news-storage.mjs
 
       - name: Publish compact live snapshot and stable monthly archive
-        if: steps.pipeline.outputs.status == 'success'
+        if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
           YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
@@ -246,7 +288,7 @@ jobs:
         run: node scripts/publish-news-storage.mjs
 
       - name: Expire news image cache older than seven days
-        if: steps.pipeline.outputs.status == 'success'
+        if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
         continue-on-error: true
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
@@ -269,6 +311,7 @@ jobs:
           name: news-pipeline-report-${{ github.run_id }}
           path: |
             tmp/news-pipeline-report.json
+            tmp/news-editor-report.json
             tmp/news-history-hydration.json
             tmp/news-game-identity-verification.json
             tmp/news-game-hashtag-normalization.json
