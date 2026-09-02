@@ -1,6 +1,6 @@
 (()=>{
   const script=document.createElement('script');
-  script.src='../_shared/game-page-v3-bootstrap.js?v=20260902-3';
+  script.src='../_shared/game-page-v3-bootstrap.js?v=20260902-11';
   document.head.appendChild(script);
   const mediaSanitize=document.createElement('script');
   mediaSanitize.src='../_shared/game-media-sanitize.js?v=20260902-3';
@@ -34,7 +34,7 @@
   materialized.defer=true;
   document.head.appendChild(materialized);
   const integrity=document.createElement('script');
-  integrity.src='../_shared/game-page-integrity.js?v=20260902-10';
+  integrity.src='../_shared/game-page-integrity.js?v=20260902-11';
   integrity.defer=true;
   document.head.appendChild(integrity);
   const editions=document.createElement('script');
