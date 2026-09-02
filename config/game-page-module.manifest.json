@@ -91,6 +91,26 @@
       "game-page-source-corpus.js",
       "game-page-integrity.js",
       "game-media-sanitize.js"
+    ],
+    ".github/workflows/content-pipeline.yml": [
+      "validate-game-page-module-integrity.mjs",
+      "run-content-pipeline.mjs"
+    ],
+    ".github/workflows/game-page-quality.yml": [
+      "validate-game-page-module-integrity.mjs"
+    ],
+    ".github/workflows/phase-a-validation.yml": [
+      "validate-game-page-module-integrity.mjs"
+    ],
+    ".github/workflows/pages.yml": [
+      "validate-game-page-module-integrity.mjs",
+      "validate-game-page-publication-state.mjs"
+    ],
+    "docs/SYSTEM_ARCHITECTURE.md": [
+      "GAME PAGE ASSEMBLY MODULE",
+      "GAME_PAGE_MODULE_STABLE.md",
+      "config/game-page-module.manifest.json",
+      "собственный обзор Игропоиска — отдельная публикация"
     ]
   }
 }
