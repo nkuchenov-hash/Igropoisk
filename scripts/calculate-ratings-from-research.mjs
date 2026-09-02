@@ -10,6 +10,7 @@ const canonical=value=>{try{const u=new URL(value);u.hash='';for(const key of ['
 const normalize=value=>String(value||'').normalize('NFKD').toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
 const host=value=>{try{return new URL(value).hostname.replace(/^www\./,'').toLowerCase()}catch{return''}};
 const input=read(`data/reviews/${slug}.json`,{});
+const gameSourceCorpus=read(`data/game-sources/${slug}.json`,{});
 const discoverySeeds=read(`data/review-discovery-seeds/${slug}.json`,{});
 const draft=read(`data/drafts/${slug}.json`,{});
 const title=String(draft.identity?.title||slug);
@@ -19,8 +20,9 @@ async function liveUrl(url){try{const r=await fetch(url,{redirect:'follow',signa
 
 const merged=[];
 const seenUrls=new Set();
-const pushUnique=item=>{const url=canonical(item?.resolved_url||item?.url);const key=url?`${url.toLowerCase()}|${normalize(item?.publication||item?.source)}`:`${normalize(item?.publication||item?.source)}|${normalize(item?.title)}`;if(!key||seenUrls.has(key))return;seenUrls.add(key);merged.push({...item,url:canonical(item?.url||url),resolved_url:canonical(item?.resolved_url||url)})};
+const pushUnique=item=>{const url=canonical(item?.resolved_url||item?.url);const publication=item?.publication||item?.name||item?.source;const key=url?`${url.toLowerCase()}|${normalize(publication)}`:`${normalize(publication)}|${normalize(item?.title)}`;if(!key||seenUrls.has(key))return;seenUrls.add(key);merged.push({...item,publication,url:canonical(item?.url||url),resolved_url:canonical(item?.resolved_url||url)})};
 for(const item of input.reviews||[])pushUnique(item);
+for(const item of gameSourceCorpus.sources||[])if(item?.kind==='professional-review'||item?.score_eligible||item?.roles?.includes?.('rating'))pushUnique(item);
 const seedRejected=[];
 for(const item of discoverySeeds.reviews||[]){
   const url=canonical(item?.resolved_url||item?.url);
@@ -37,25 +39,25 @@ input.reviews=merged;
 input.rejected=[...(Array.isArray(input.rejected)?input.rejected:[]),...seedRejected];
 input.publication_gate={...(input.publication_gate||{}),maximum:null,accepted:merged.length,status:'green'};
 if(input.source_registry_scan?.checks){
-  const foundNames=new Set(merged.map(item=>normalize(item.publication||item.source)).filter(Boolean));
-  input.source_registry_scan.checks=input.source_registry_scan.checks.map(check=>foundNames.has(normalize(check.source_name||check.name))?{...check,status:'found',notes:'verified material present in persistent discovery corpus'}:check);
+  const foundNames=new Set(merged.map(item=>normalize(item.publication||item.name||item.source)).filter(Boolean));
+  input.source_registry_scan.checks=input.source_registry_scan.checks.map(check=>foundNames.has(normalize(check.source_name||check.name))?{...check,status:'found',notes:'verified material present in canonical game source corpus'}:check);
   input.source_registry_scan.settled_sources=input.source_registry_scan.checks.length;
   input.source_registry_scan.complete=true;
 }
 input.updated_at=new Date().toISOString();
 
 const quality=read('config/game-page-quality-v2.json',{}),policy=quality.rating||{},minimum=Number(policy.minimum_sources||10),gradeMap=policy.letter_grade_map||{},checkedAt=new Date().toISOString();
-const scoreCandidates=[...(input.reviews||[]),...(input.score_sources||[])];
+const scoreCandidates=[...(gameSourceCorpus.sources||[]),...(input.reviews||[]),...(input.score_sources||[])];
 const scoreSeen=new Set(),scoreSources=[];
 for(const item of scoreCandidates){
-  const publication=String(item.publication||item.source||'').trim(),key=publication.toLowerCase();
+  const publication=String(item.publication||item.name||item.source||'').trim(),key=publication.toLowerCase();
   if(!publication||scoreSeen.has(key))continue;
   const score=Number(item.score),scale=Number(item.scale),grade=String(item.grade||'').trim();
   const validNumeric=Number.isFinite(score)&&Number.isFinite(scale)&&scale>0&&score>=0&&score<=scale;
   const validGrade=grade&&Number.isFinite(Number(gradeMap[grade.toUpperCase()]));
   if(!validNumeric&&!validGrade)continue;
   scoreSeen.add(key);
-  scoreSources.push({publication,title:item.title||'',url:canonical(item.resolved_url||item.url),score:validNumeric?score:null,scale:validNumeric?scale:null,grade,source_kind:item.source_kind||'review'});
+  scoreSources.push({publication,title:item.title||'',url:canonical(item.resolved_url||item.url),score:validNumeric?score:null,scale:validNumeric?scale:null,grade,source_kind:item.source_kind||item.kind||'review'});
 }
 input.score_sources=scoreSources;
 write(`data/reviews/${slug}.json`,input);
@@ -73,7 +75,7 @@ for(const item of scoreSources){
   sources.push({publication,title:item.title||'',url:item.url,original_score:{score:Number.isFinite(score)?score:null,scale:Number.isFinite(scale)?scale:null,grade:grade||null,display:originalDisplay},normalized_10:Number(normalized10.toFixed(3)),checked_at:checkedAt});
 }
 const values=sources.map(item=>item.normalized_10),mean=values.length?values.reduce((sum,value)=>sum+value,0)/values.length:null,decimals=Number(policy.rounding_decimals??1),score10=mean===null?null:Number(mean.toFixed(decimals)),green=sources.length>=minimum;
-const output={schema_version:5,game_slug:slug,checked_at:checkedAt,status:green?'green':'insufficient-scores',method:{name:'Среднее всех найденных подтверждённых независимых профессиональных оценок',formula:'sum(normalized_10) / source_count',minimum_sources_for_confident_rating:minimum,maximum_sources:null,use_all_discovered_scores:true,persistent_discovery_seeds:true,output_scale:10,letter_grade_map:gradeMap,rounding_decimals:decimals},sources,calculation:{source_count:sources.length,values,mean_10:mean===null?null:Number(mean.toFixed(4)),score_10:score10,status:green?'green':'insufficient-scores'}};
+const output={schema_version:6,game_slug:slug,checked_at:checkedAt,status:green?'green':'insufficient-scores',source_corpus:`data/game-sources/${slug}.json`,method:{name:'Среднее всех найденных подтверждённых независимых профессиональных оценок',formula:'sum(normalized_10) / source_count',minimum_sources_for_confident_rating:minimum,maximum_sources:null,use_all_discovered_scores:true,canonical_game_source_corpus:true,persistent_discovery_seeds:true,output_scale:10,letter_grade_map:gradeMap,rounding_decimals:decimals},sources,calculation:{source_count:sources.length,values,mean_10:mean===null?null:Number(mean.toFixed(4)),score_10:score10,status:green?'green':'insufficient-scores'}};
 write(`data/ratings/${slug}.json`,output);
-write(`data/parser-runs/ratings-${slug}.json`,{parser:'ratings-from-review-research-v3-persistent-corpus',status:'completed',game_slug:slug,checked_at:checkedAt,material_links:merged.length,discovery_seed_rejected:seedRejected.length,parsed:sources.length,minimum_for_confident_rating:minimum,score_10:score10,use_all_discovered_scores:true});
-console.log(JSON.stringify({slug,status:'completed',material_links:merged.length,seed_rejected:seedRejected.length,sources:sources.length,score_10:score10,use_all_discovered_scores:true},null,2));
+write(`data/parser-runs/ratings-${slug}.json`,{parser:'ratings-from-canonical-game-source-corpus-v4',status:'completed',game_slug:slug,checked_at:checkedAt,material_links:merged.length,discovery_seed_rejected:seedRejected.length,parsed:sources.length,minimum_for_confident_rating:minimum,score_10:score10,use_all_discovered_scores:true,source_corpus:`data/game-sources/${slug}.json`});
+console.log(JSON.stringify({slug,status:'completed',material_links:merged.length,seed_rejected:seedRejected.length,sources:sources.length,score_10:score10,use_all_discovered_scores:true,source_corpus:`data/game-sources/${slug}.json`},null,2));
