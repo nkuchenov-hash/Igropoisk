@@ -8,6 +8,8 @@ import {
   normalizeGamePageAssemblyRequest
 } from './lib/game-page-assembly-queue.mjs';
 
+// Queue transport is identity/request state only. It never creates a draft publication,
+// never sets public_ready, and never writes catalog, game-content or a public game shell.
 const root = process.cwd();
 const inputPath = path.join(root, process.env.GAME_PAGE_ASSEMBLY_REQUESTS || 'tmp/news-game-page-requests.json');
 const reportPath = path.join(root, 'tmp/game-page-assembly-queue-publish.json');
