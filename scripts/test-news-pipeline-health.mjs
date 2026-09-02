@@ -37,7 +37,9 @@ const config = {
       'data/news-events.json': 1,
       'data/news-home-ru.json': 1
     },
-    minimum_official_source_success_ratio: 0.15
+    minimum_official_source_success_ratio: 0.15,
+    image_roots: ['assets/news/', 'assets/publisher-news/'],
+    storage: { media_prefix: 'news/media' }
   }
 };
 fs.writeFileSync(path.join(root, 'config/news-pipeline.json'), JSON.stringify(config));
@@ -73,6 +75,7 @@ fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify({ gene
 fs.writeFileSync(path.join(root, 'data/news-home-ru.json'), JSON.stringify({ generatedAt: '2026-08-05T09:30:00.000Z', items: home }));
 fs.writeFileSync(path.join(root, 'data/news-pipeline-health.json'), JSON.stringify({
   status: 'degraded',
+  last_successful_run_at: '2026-08-05T08:00:00.000Z',
   sources: {
     history: [
       { id: 'broken', status: 'error', consecutive_failures: 2, last_failure_at: '2026-08-05T08:30:00.000Z' }
@@ -93,15 +96,47 @@ assert.equal(health.sources.persistent_failures.length, 1);
 assert.equal(health.sources.persistent_failures[0].consecutive_failures, 3);
 assert.equal(health.last_successful_run_at, '2026-08-05T09:29:00.000Z');
 
+const hydratedEvents = JSON.parse(fs.readFileSync(path.join(root, 'data/news-events.json'), 'utf8'));
+hydratedEvents.items[0].image = 'https://storage.yandexcloud.net/igropoisk-content/news/media/abc123.jpg';
+fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify(hydratedEvents));
+const hydratedHealth = buildNewsPipelineHealth({ root, now, dueGroups: ['global-media'] });
+assert.equal(hydratedHealth.images.missing, 0, 'Published Object Storage history media must remain valid after hydration.');
+
+const unsafeEvents = JSON.parse(fs.readFileSync(path.join(root, 'data/news-events.json'), 'utf8'));
+unsafeEvents.items[0].image = 'https://example.com/news/media/abc123.jpg';
+fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify(unsafeEvents));
+const unsafeRemote = buildNewsPipelineHealth({ root, now, dueGroups: ['global-media'] });
+assert.equal(unsafeRemote.status, 'degraded');
+assert.equal(unsafeRemote.images.missing, 1);
+assert.equal(unsafeRemote.blocking_errors.length, 0, 'An unavailable image must never block news publication.');
+
+unsafeEvents.items[0].image = events[0].image;
+fs.writeFileSync(path.join(root, 'data/news-events.json'), JSON.stringify(unsafeEvents));
 fs.rmSync(path.join(root, home[0].image));
 const missingImage = buildNewsPipelineHealth({ root, now, dueGroups: ['global-media'] });
-assert.equal(missingImage.status, 'error');
+assert.equal(missingImage.status, 'degraded');
 assert.equal(missingImage.images.missing, 1);
+assert.equal(missingImage.blocking_errors.length, 0, 'A missing local image must degrade gracefully to the branded fallback.');
 
 fs.writeFileSync(path.join(root, home[0].image), 'image');
 const officialPayload = JSON.parse(fs.readFileSync(path.join(root, 'data/publisher-news.json'), 'utf8'));
+officialPayload.sourceCount = 10;
+officialPayload.successfulSourceCount = 1;
+officialPayload.sourceReport = Array.from({ length: 10 }, (_, index) => index === 0
+  ? { id: 'working', status: 'ok', items: 1 }
+  : { id: `missing-${index}`, status: 'no-feed', items: 0 });
+fs.writeFileSync(path.join(root, 'data/publisher-news.json'), JSON.stringify(officialPayload));
+const belowFloor = buildNewsPipelineHealth({ root, now, dueGroups: ['official-sources'], runStartedAt: '2026-08-05T09:59:00.000Z' });
+assert.equal(belowFloor.status, 'error', 'Official source success ratio below contractual floor must block publication.');
+assert.ok(belowFloor.blocking_errors.some(message => message.includes('обязательном минимуме')));
+assert.notEqual(belowFloor.last_successful_run_at, '2026-08-05T09:59:00.000Z', 'A blocked run must not advance last_successful_run_at.');
+
+officialPayload.sourceCount = 2;
 officialPayload.successfulSourceCount = 2;
-officialPayload.sourceReport[1] = { id: 'broken', status: 'ok', items: 1 };
+officialPayload.sourceReport = [
+  { id: 'working', status: 'ok', items: 1 },
+  { id: 'broken', status: 'ok', items: 1 }
+];
 fs.writeFileSync(path.join(root, 'data/publisher-news.json'), JSON.stringify(officialPayload));
 const recovered = buildNewsPipelineHealth({ root, now, dueGroups: ['official-sources'] });
 assert.equal(recovered.sources.history.find(source => source.id === 'broken').consecutive_failures, 0);
