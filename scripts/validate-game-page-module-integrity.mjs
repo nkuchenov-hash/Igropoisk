@@ -21,6 +21,7 @@ if(manifest.contract?.publication_finalizer_only!==true)fail('publication_finali
 if(manifest.contract?.published_package_immutable!==true)fail('published_package_immutable must remain true');
 if(manifest.contract?.review_article_is_separate!==true)fail('review_article_is_separate must remain true');
 if(manifest.contract?.game_specific_presentation_hardcode_forbidden!==true)fail('game_specific_presentation_hardcode_forbidden must remain true');
+if(manifest.contract?.runtime_monkey_patching_forbidden!==true)fail('runtime_monkey_patching_forbidden must remain true');
 
 for(const group of ['required_files','required_workflows','required_docs']){
   const values=manifest[group];if(!Array.isArray(values)||!values.length){fail(`${group} must be a non-empty array`);continue}
@@ -40,45 +41,93 @@ for(const file of allCode){const text=read(file);for(const token of manifest.for
 const boundary=manifest.publication_boundary||{};
 const soleWriter=String(boundary.sole_public_state_writer||'');
 if(soleWriter!=='scripts/finalize-game-page-publication.mjs')fail('sole public state writer changed from canonical finalizer');
-const boundaryFiles=[...(boundary.queue_only_adapters||[]),...(boundary.copy_only_promoters||[]),...(boundary.finalizer_delegates||[]),...(boundary.revision_safe_mutators||[])];
+const queueOnly=new Set(boundary.queue_only_adapters||[]);
+const copyOnly=new Set(boundary.copy_only_promoters||[]);
+const delegates=new Set(boundary.finalizer_delegates||[]);
+const revisionSafe=new Set(boundary.revision_safe_mutators||[]);
+const rollbackOnly=new Set(boundary.rollback_orchestrators||[]);
+const boundaryFiles=[...queueOnly,...copyOnly,...delegates,...revisionSafe,...rollbackOnly];
 for(const file of boundaryFiles)if(!exists(file))fail(`publication-boundary file missing: ${file}`);
 
-// No script except the sole finalizer may assign public_ready:true to a page-owned draft.
-for(const file of scriptFiles){
-  if(file===soleWriter)continue;const text=read(file);
-  const assignsPublicReady=/\bpublic_ready\s*:\s*true\b/.test(text);
-  const writesDraft=/data\/drafts\//.test(text)&&/(?:write|writeJSON|writeFileSync)\s*\(/.test(text);
-  if(assignsPublicReady&&writesDraft)fail(`${file} can assign public_ready:true outside the sole finalizer`);
-  const createsPublished=/\bstatus\s*:\s*['"]published['"]/.test(text)&&writesDraft;
-  if(createsPublished)fail(`${file} can assign published draft state outside the sole finalizer`);
-  const directPublicBundle=/data\/catalog-visible\.json/.test(text)&&/game\/\$\{?slug|game\/.*index\.html/.test(text)&&writesDraft&&/writeFileSync|writeJSON|\bwrite\s*\(/.test(text);
-  if(directPublicBundle&&!boundary.copy_only_promoters?.includes(file))fail(`${file} appears able to synthesize a public page bundle outside finalizer/copy-only promotion`);
+// Resolve actual write targets rather than treating any mention of a public path as a write.
+// This keeps read-only audits/rankers out of the publisher set while still catching indirect
+// writes through simple path variables such as const catalogPath='data/catalog-visible.json'.
+function variableExpressions(text){
+  const vars=new Map();
+  const re=/(?:^|[;\n])\s*(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*([^;\n]+)/g;
+  for(const match of text.matchAll(re))vars.set(match[1],match[2]);
+  return vars;
+}
+function expressionContains(expr,re,vars,seen=new Set()){
+  if(re.test(String(expr||'')))return true;
+  const names=String(expr||'').match(/[A-Za-z_$][\w$]*/g)||[];
+  for(const name of names){if(seen.has(name)||!vars.has(name))continue;const next=new Set(seen);next.add(name);if(expressionContains(vars.get(name),re,vars,next))return true}
+  return false;
+}
+function writeTargets(text){
+  const vars=variableExpressions(text),targets=[];
+  const singleArg=/(?:^|[^\w$])(?:fs\.)?(?:writeFileSync|writeJSON|write|restoreFile)\s*\(\s*([^,\n]+)/gm;
+  for(const match of text.matchAll(singleArg))targets.push({kind:'write',expr:match[1].trim()});
+  const copies=/(?:^|[^\w$])(?:fs\.)?copyFileSync\s*\(\s*([^,\n]+)\s*,\s*([^,\n\)]+)/gm;
+  for(const match of text.matchAll(copies))targets.push({kind:'copy',expr:match[2].trim()});
+  const classify=target=>({
+    ...target,
+    catalog:expressionContains(target.expr,/catalog-visible\.json/i,vars),
+    gameContent:expressionContains(target.expr,/data[\\/][^'"`\s]*game-content|['"`]data\/game-content|game-content\//i,vars),
+    gameShell:expressionContains(target.expr,/(?:['"`]|path\.join\([^\n]*?)game[\\/]|game\/\$\{[^}]+\}\/index\.html/i,vars)&&expressionContains(target.expr,/index\.html/i,vars),
+    draft:expressionContains(target.expr,/data[\\/]drafts|data\/drafts/i,vars)
+  });
+  return targets.map(classify);
+}
+function publicWriteSummary(text){
+  const targets=writeTargets(text);return{targets,catalog:targets.some(x=>x.catalog),gameContent:targets.some(x=>x.gameContent),gameShell:targets.some(x=>x.gameShell),draft:targets.some(x=>x.draft)};
+}
+function assignsPublishedPublication(text){
+  const publicationObject=/\bpublication\s*:\s*\{[\s\S]{0,700}?\b(?:public_ready\s*:\s*true|status\s*:\s*['"]published['"])/m;
+  const publicationAssignment=/\b[A-Za-z_$][\w$]*\.publication(?:\.public_ready)?\s*=\s*(?:true|\{[\s\S]{0,700}?\b(?:public_ready\s*:\s*true|status\s*:\s*['"]published['"]))/m;
+  return publicationObject.test(text)||publicationAssignment.test(text);
 }
 
-for(const file of boundary.queue_only_adapters||[]){
-  if(!exists(file))continue;const text=read(file);
-  if(/\bpublic_ready\s*:\s*true\b/.test(text))fail(`${file} queue-only adapter contains public_ready:true`);
-  if(/\bstatus\s*:\s*['"]published['"]/.test(text))fail(`${file} queue-only adapter contains direct published state`);
-  if(/fs\.writeFileSync\([^\n]*(?:game\/|index\.html)/.test(text))fail(`${file} queue-only adapter writes a public shell directly`);
+const writerAudit=[];
+for(const file of scriptFiles){
+  const text=read(file),writes=publicWriteSummary(text),writesPublic=writes.catalog||writes.gameContent||writes.gameShell;
+  const role=file===soleWriter?'sole-finalizer':copyOnly.has(file)?'copy-only':rollbackOnly.has(file)?'rollback-only':queueOnly.has(file)?'queue-only':delegates.has(file)?'finalizer-delegate':revisionSafe.has(file)?'revision-safe':'unclassified';
+  if(writesPublic||writes.draft)writerAudit.push({file,role,catalog:writes.catalog,game_content:writes.gameContent,game_shell:writes.gameShell,draft:writes.draft});
+  if(file!==soleWriter&&writes.draft&&assignsPublishedPublication(text))fail(`${file} can synthesize published/public_ready draft state outside the sole finalizer`);
+  if(writesPublic&&!copyOnly.has(file)&&!rollbackOnly.has(file)&&file!==soleWriter)fail(`${file} writes Game Page public artifacts but is not the sole finalizer, copy-only promoter, or rollback-only orchestrator`);
 }
-for(const file of boundary.copy_only_promoters||[]){
+
+for(const file of queueOnly){
+  if(!exists(file))continue;const text=read(file),writes=publicWriteSummary(text);
+  if(writes.catalog||writes.gameContent||writes.gameShell)fail(`${file} queue-only adapter writes a public artifact`);
+  if(assignsPublishedPublication(text)&&writes.draft)fail(`${file} queue-only adapter contains direct published/public_ready draft state`);
+}
+for(const file of copyOnly){
   if(!exists(file))continue;const text=read(file);
   if(!text.includes('validate-game-page-publication-state.mjs'))fail(`${file} copy-only promoter lacks canonical publication-state validation`);
   if(!text.includes('copy-only')&&!text.includes('already-finalized Game Page package'))fail(`${file} is not explicitly marked copy-only`);
-  if(/\bpublic_ready\s*:\s*true\b/.test(text))fail(`${file} copy-only promoter synthesizes public_ready:true`);
+  if(assignsPublishedPublication(text)&&publicWriteSummary(text).draft)fail(`${file} copy-only promoter synthesizes published/public_ready state`);
   for(const builder of ['build-game-page-basic.mjs','build-game-page.mjs'])if(text.includes(builder))fail(`${file} copy-only promoter must not build a page via ${builder}`);
 }
-for(const file of boundary.finalizer_delegates||[]){
+for(const file of rollbackOnly){
   if(!exists(file))continue;const text=read(file);
-  if(!text.includes('finalize-game-page-publication.mjs'))fail(`${file} finalizer delegate no longer delegates to sole finalizer`);
-  if(/\bpublic_ready\s*:\s*true\b/.test(text))fail(`${file} finalizer delegate synthesizes public_ready:true itself`);
+  if(!text.includes('finalize-game-page-publication.mjs'))fail(`${file} rollback-only orchestrator no longer delegates successful publication to sole finalizer`);
+  if(!text.includes('failed revision restored last published canonical page package'))fail(`${file} rollback-only orchestrator lost immutable snapshot restoration contract`);
+  if(assignsPublishedPublication(text)&&publicWriteSummary(text).draft)fail(`${file} rollback-only orchestrator synthesizes published/public_ready state instead of restoring bytes`);
 }
-for(const file of boundary.revision_safe_mutators||[]){
-  if(!exists(file))continue;const text=read(file);
+for(const file of delegates){
+  if(!exists(file))continue;const text=read(file),writes=publicWriteSummary(text);
+  if(!text.includes('finalize-game-page-publication.mjs'))fail(`${file} finalizer delegate no longer delegates to sole finalizer`);
+  if(writes.catalog||writes.gameContent||writes.gameShell)fail(`${file} finalizer delegate writes public artifacts itself`);
+  if(assignsPublishedPublication(text)&&writes.draft)fail(`${file} finalizer delegate synthesizes published/public_ready state itself`);
+}
+for(const file of revisionSafe){
+  if(!exists(file))continue;const text=read(file),writes=publicWriteSummary(text);
   if(!text.includes("publication?.status==='published'")||!text.includes('public_ready===true'))fail(`${file} does not protect a finalized package before mutation`);
   if(!text.includes('published_package_preserved'))fail(`${file} lacks immutable-package queue evidence`);
   if(!text.includes('needs_revision'))fail(`${file} does not force mutable work back into revision state`);
-  if(/\bpublic_ready\s*:\s*true\b/.test(text))fail(`${file} revision-safe mutator can publish directly`);
+  if(writes.catalog||writes.gameContent||writes.gameShell)fail(`${file} revision-safe mutator writes public artifacts`);
+  if(assignsPublishedPublication(text)&&writes.draft)fail(`${file} revision-safe mutator can publish directly`);
 }
 
 const basic=exists('scripts/build-game-page-basic.mjs')?read('scripts/build-game-page-basic.mjs'):'';
@@ -96,7 +145,7 @@ for(const token of ['page QC is not green','content QC is not green','media QC i
 const stateGate=exists('scripts/validate-game-page-publication-state.mjs')?read('scripts/validate-game-page-publication-state.mjs'):'';
 for(const token of ['public_ready','canonical page editorial is missing/not green','page QC is not green','content QC is not green','media QC is not green','source discovery is incomplete'])if(!stateGate.includes(token))fail(`publication-state validator lost check: ${token}`);
 
-// Shared runtime must be generic. A literal game slug decision or runtime source monkey patch is forbidden.
+// Shared runtime must be generic. Literal game-slug decisions and runtime source rewriting are forbidden.
 for(const file of runtimeFiles){
   const text=read(file);
   for(const token of manifest.forbidden_runtime_tokens||[])if(text.includes(token))fail(`${file} contains forbidden runtime token: ${token}`);
@@ -123,5 +172,5 @@ if(!newsWorkflow.includes('content-pipeline.yml'))fail('news page requests are n
 const stableDoc=exists('docs/GAME_PAGE_MODULE_STABLE.md')?read('docs/GAME_PAGE_MODULE_STABLE.md'):'';
 for(const token of ['config/game-page-module.manifest.json','validate-game-page-module-integrity.mjs','Обзор игры не является частью модуля страницы игры','finalize-game-page-publication.mjs','published canonical package'])if(!stableDoc.includes(token))fail(`stable module documentation lost architecture token: ${token}`);
 
-const result={schema_version:2,checked_at:new Date().toISOString(),module:manifest.module,module_version:manifest.module_version,status:errors.length?'red':'green',checked_files:[...new Set(checked)].length,required_files:(manifest.required_files||[]).length,required_workflows:(manifest.required_workflows||[]).length,required_docs:(manifest.required_docs||[]).length,boundary:{sole_public_state_writer:soleWriter,queue_only_adapters:(boundary.queue_only_adapters||[]).length,copy_only_promoters:(boundary.copy_only_promoters||[]).length,finalizer_delegates:(boundary.finalizer_delegates||[]).length,revision_safe_mutators:(boundary.revision_safe_mutators||[]).length,published_package_immutable:manifest.contract?.published_package_immutable===true},contract:manifest.contract,errors};
+const result={schema_version:3,checked_at:new Date().toISOString(),module:manifest.module,module_version:manifest.module_version,status:errors.length?'red':'green',checked_files:[...new Set(checked)].length,required_files:(manifest.required_files||[]).length,required_workflows:(manifest.required_workflows||[]).length,required_docs:(manifest.required_docs||[]).length,boundary:{sole_public_state_writer:soleWriter,queue_only_adapters:queueOnly.size,copy_only_promoters:copyOnly.size,finalizer_delegates:delegates.size,revision_safe_mutators:revisionSafe.size,rollback_orchestrators:rollbackOnly.size,published_package_immutable:manifest.contract?.published_package_immutable===true,writer_audit:writerAudit},contract:manifest.contract,errors};
 persist(result);console.log(JSON.stringify(result,null,2));if(errors.length)process.exit(1);
