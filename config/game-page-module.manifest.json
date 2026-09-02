@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "module": "game-page-assembly",
-  "module_version": "2026-09-02.2",
+  "module_version": "2026-09-02.3",
   "ownership": "game-page-module",
   "canonical_document": "docs/GAME_PAGE_MODULE_STABLE.md",
   "contract": {
@@ -31,6 +31,9 @@
       "scripts/materialize-game-creator-pages.mjs",
       "scripts/publish-game-page-staging-conflict-safe.mjs",
       "scripts/publish-green-game-page-production.mjs"
+    ],
+    "rollback_orchestrators": [
+      "scripts/run-content-pipeline.mjs"
     ],
     "finalizer_delegates": [
       "scripts/materialize-green-game-page.mjs",
@@ -115,7 +118,7 @@
   "contract_probes": {
     "scripts/collect-game-sources.mjs": ["discover-game-sources-web.mjs","discover-game-publication-hubs.mjs"],
     "scripts/quality-control-loop.mjs": ["materialize-page-editorial.mjs","validate-game-page-content.mjs","validate-game-media-quality.mjs"],
-    "scripts/run-content-pipeline.mjs": ["canonicalizePage","finalize-game-page-publication.mjs","published package is immutable"],
+    "scripts/run-content-pipeline.mjs": ["canonicalizePage","finalize-game-page-publication.mjs","published package is immutable","failed revision restored last published canonical page package"],
     "scripts/finalize-game-page-publication.mjs": ["data/catalog-visible.json","game-page-publication-finalizer","public_ready:true"],
     "scripts/build-game-page.mjs": ["free-editorial-ai.mjs","needs_revision","public_ready:false"],
     "scripts/build-game-page-basic.mjs": ["needs_revision","public_ready:false"],
