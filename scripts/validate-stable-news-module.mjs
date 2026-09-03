@@ -19,9 +19,14 @@ const requireText = (text, token, file) => {
   if (!text.includes(token)) fail(`${file} lost required stable-contract token: ${JSON.stringify(token)}`);
 };
 
+const forbidText = (text, token, file) => {
+  if (text.includes(token)) fail(`${file} reintroduced forbidden stable-contract token: ${JSON.stringify(token)}`);
+};
+
 const stableDocPath = 'docs/NEWS_MODULE_STABLE.md';
 const contractPath = 'docs/news-production-contract.md';
 const pipelinePath = '.github/workflows/news-pipeline.yml';
+const stagingPipelinePath = '.github/workflows/news-pipeline-staging.yml';
 const pipelineConfigPath = 'config/news-pipeline.json';
 const normalizePath = 'scripts/normalize-news-game-hashtags.mjs';
 const failOpenTestPath = 'scripts/test-news-fail-open-publication.mjs';
@@ -77,8 +82,23 @@ for (const token of [
   'Publish compact live snapshot and stable monthly archive',
   'Reclaim redundant Object Storage snapshots after publication',
   'Expire news image cache older than seven days',
+  'node scripts/finalize-news-publication-quality.mjs',
+  'node scripts/test-news-publication-quality.mjs',
   'node scripts/publish-news-storage.mjs'
 ]) requireText(pipeline, token, pipelinePath);
+
+const stagingPipeline = read(stagingPipelinePath);
+for (const token of [
+  'node scripts/finalize-news-publication-quality.mjs',
+  'node scripts/test-news-publication-quality.mjs',
+  'tmp/news-publication-quality-report.json'
+]) requireText(stagingPipeline, token, stagingPipelinePath);
+
+for (const [file, text] of [[pipelinePath, pipeline], [stagingPipelinePath, stagingPipeline]]) {
+  forbidText(text, 'NEWS_EDITOR_MIN_PUBLIC', file);
+  forbidText(text, "NEWS_HOMEPAGE_LIMIT: '12'", file);
+  forbidText(text, 'NEWS_HOMEPAGE_LIMIT: "12"', file);
+}
 
 const orderedSteps = [
   'Put verified missing games into temporary page-assembly storage',
