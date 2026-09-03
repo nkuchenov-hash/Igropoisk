@@ -1,14 +1,11 @@
 import fs from 'node:fs/promises';
 import {
-  editNewsToRussian,
   fetchArticleText,
-  validateProductionNews,
-  warmNewsEditor
+  validateProductionNews
 } from './lib/news-editor-production.mjs';
 import {
   NEWS_EDITORIAL_VERSION,
-  editorialSourceHash,
-  hasCyrillic
+  editorialSourceHash
 } from './lib/news-editor-policy.mjs';
 import {
   decodeNewsSourceText,
@@ -17,6 +14,7 @@ import {
   sourceEntityCandidates,
   sourceLooksTruncated
 } from './lib/news-publication-quality.mjs';
+import { repairNewsPublicationCopy } from './lib/news-publication-repair.mjs';
 
 const eventsPath = 'data/news-events.json';
 const reportPath = process.env.NEWS_PUBLICATION_QUALITY_REPORT || 'tmp/news-publication-quality-report.json';
@@ -45,12 +43,6 @@ function sourceSummary(item = {}) {
 
 function sourceUrl(item = {}) {
   return String(item.primaryUrl || item.url || '').trim();
-}
-
-function sourceIsRussian(item = {}) {
-  const title = sourceTitle(item);
-  const summary = sourceSummary(item);
-  return hasCyrillic(title) && (!summary || hasCyrillic(summary));
 }
 
 function productionInput(item = {}, articleText = '') {
@@ -168,10 +160,10 @@ const failures = [];
 let checked = 0;
 let machineDraftsChecked = 0;
 let passedWithoutRepair = 0;
+let reassessedWithArticle = 0;
 let repairAttempted = 0;
 let repaired = 0;
 let rejected = 0;
-let editorWarmed = false;
 
 for (const item of items) {
   if (!isPublic(item)) continue;
@@ -179,16 +171,12 @@ for (const item of items) {
   const machineDraft = isMachineLocalizedDraft(item);
   if (machineDraft) machineDraftsChecked += 1;
 
-  const initial = assess(
-    item,
-    String(item.titleRu || '').trim(),
-    String(item.summaryRu || item.editorialBriefRu || '').trim(),
-    '',
-    localizedNames
-  );
+  const currentTitleRu = String(item.titleRu || '').trim();
+  const currentSummaryRu = String(item.summaryRu || item.editorialBriefRu || '').trim();
+  const initial = assess(item, currentTitleRu, currentSummaryRu, '', localizedNames);
+  const sourceSnippetTruncated = sourceLooksTruncated(productionInput(item));
 
-  const needsRepair = !initial.ok || (!sourceIsRussian(item) && sourceLooksTruncated(productionInput(item)));
-  if (!needsRepair) {
+  if (initial.ok && !sourceSnippetTruncated) {
     approve(
       item,
       initial,
@@ -199,15 +187,6 @@ for (const item of items) {
     continue;
   }
 
-  if (sourceIsRussian(item)) {
-    reject(item, initial.reasons.length ? initial.reasons : ['Russian source failed final publication quality gate']);
-    rememberRejected(item, rejectedIds, rejectedUrls);
-    failures.push({ id: item.id, url: sourceUrl(item), reasons: item.publicationQualityReasons });
-    rejected += 1;
-    continue;
-  }
-
-  repairAttempted += 1;
   let articleText = '';
   let articleFetchError = '';
   try {
@@ -216,53 +195,52 @@ for (const item of items) {
     articleFetchError = error.message;
   }
 
-  try {
-    if (!editorWarmed) {
-      await warmNewsEditor();
-      editorWarmed = true;
-    }
-    const requiredEntities = sourceEntityCandidates(productionInput(item, articleText));
-    const edited = await editNewsToRussian({
-      title: sourceTitle(item),
-      summary: sourceSummary(item),
-      articleText,
-      url: sourceUrl(item),
-      source: item.primarySource || item.source || '',
-      requiredEntities
-    }, { maxAttempts: 2, maxNewTokens: 140 });
-
-    const repairedResult = assess(
+  reassessedWithArticle += 1;
+  const enriched = assess(item, currentTitleRu, currentSummaryRu, articleText, localizedNames);
+  if (enriched.ok) {
+    approve(
       item,
-      edited.titleRu || '',
-      edited.briefRu || '',
-      articleText,
-      localizedNames
+      enriched,
+      machineDraft ? 'validated-machine-draft-with-source-publication-gate' : String(item.editorialModel || 'publication-quality-source-gate'),
+      false
     );
+    passedWithoutRepair += 1;
+    continue;
+  }
 
-    if (edited.ok && repairedResult.ok) {
-      approve(item, repairedResult, edited.model || 'qwen-publication-repair', true);
-      item.editorialAttempts = edited.attempts;
+  repairAttempted += 1;
+  const requiredEntities = sourceEntityCandidates(productionInput(item, articleText));
+  const repair = await repairNewsPublicationCopy({
+    title: sourceTitle(item),
+    summary: sourceSummary(item),
+    articleText,
+    url: sourceUrl(item),
+    source: item.primarySource || item.source || '',
+    currentTitleRu,
+    currentSummaryRu,
+    failureReasons: enriched.reasons,
+    requiredEntities
+  });
+
+  if (repair.ok) {
+    const repairedResult = assess(item, repair.titleRu, repair.summaryRu, articleText, localizedNames);
+    if (repairedResult.ok) {
+      approve(item, repairedResult, repair.model || 'github-models-publication-repair', true);
       item.editorialRequiredEntities = requiredEntities;
       repaired += 1;
       console.log(`[news/publication-quality] repaired ${item.id}: ${item.titleRu}`);
       continue;
     }
-
-    const reasons = [...new Set([
-      ...initial.reasons,
-      ...(edited.reasons || []),
-      ...repairedResult.reasons,
-      ...(articleFetchError ? [`article fetch: ${articleFetchError}`] : [])
-    ])];
-    reject(item, reasons.length ? reasons : ['final semantic/editorial validation failed']);
-  } catch (error) {
-    reject(item, [...new Set([
-      ...initial.reasons,
-      error.message,
-      ...(articleFetchError ? [`article fetch: ${articleFetchError}`] : [])
-    ])]);
+    repair.reasons = repairedResult.reasons;
   }
 
+  const reasons = [...new Set([
+    ...enriched.reasons,
+    ...(repair.reasons || []),
+    ...(repair.reason ? [repair.reason] : []),
+    ...(articleFetchError ? [`article fetch: ${articleFetchError}`] : [])
+  ])];
+  reject(item, reasons.length ? reasons : ['final semantic/editorial validation failed']);
   rememberRejected(item, rejectedIds, rejectedUrls);
   failures.push({ id: item.id, url: sourceUrl(item), reasons: item.publicationQualityReasons });
   rejected += 1;
@@ -277,6 +255,7 @@ const nextPayload = Array.isArray(payload)
         checked,
         machineDraftsChecked,
         passedWithoutRepair,
+        reassessedWithArticle,
         repairAttempted,
         repaired,
         rejected,
@@ -291,13 +270,14 @@ for (const path of sourceFiles) filteredRawItems += await rewriteSourceFile(path
 
 await fs.mkdir('tmp', { recursive: true });
 await fs.writeFile(reportPath, `${JSON.stringify({
-  schemaVersion: 1,
+  schemaVersion: 2,
   generatedAt: new Date().toISOString(),
-  policy: 'Every public event is checked; suspicious machine drafts are repaired from source, otherwise only that item is excluded.',
+  policy: 'Every public event is checked. Existing copy is revalidated against available article text, then suspicious items are repaired with GitHub Models; only an item that still fails is excluded.',
   fixedPublicationCount: null,
   checked,
   machineDraftsChecked,
   passedWithoutRepair,
+  reassessedWithArticle,
   repairAttempted,
   repaired,
   rejected,
@@ -305,4 +285,4 @@ await fs.writeFile(reportPath, `${JSON.stringify({
   failures
 }, null, 2)}\n`);
 
-console.log(`[news/publication-quality] checked=${checked}; machine_drafts=${machineDraftsChecked}; passed=${passedWithoutRepair}; repair_attempted=${repairAttempted}; repaired=${repaired}; rejected=${rejected}; raw_filtered=${filteredRawItems}`);
+console.log(`[news/publication-quality] checked=${checked}; machine_drafts=${machineDraftsChecked}; passed=${passedWithoutRepair}; source_reassessed=${reassessedWithArticle}; repair_attempted=${repairAttempted}; repaired=${repaired}; rejected=${rejected}; raw_filtered=${filteredRawItems}`);
