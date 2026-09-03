@@ -14,6 +14,16 @@ const REMASTER = /\b(remaster(?:ed)?|definitive edition|hd collection|anniversar
 const REMAKE = /\b(remake|reimagined)\b/iu;
 const DLC = /\b(dlc|expansion|season pass|story pack|add[- ]?on)\b/iu;
 const EMBEDDED_KINDS = new Set(['edition', 'remaster', 'dlc', 'expansion']);
+const GENERIC_NON_TITLES = new Set(['a', 'an', 'the', 'game', 'games', 'gaming', 'video', 'play']);
+
+export function isCredibleQueuedGameIdentity({title, slug} = {}) {
+  const normalizedTitle = comparable(title);
+  const normalizedSlug = comparable(String(slug || '').replace(/-/gu, ' '));
+  if (!normalizedTitle || !normalizedSlug) return false;
+  if (GENERIC_NON_TITLES.has(normalizedTitle)) return false;
+  if (normalizedTitle.length < 2 || normalizedSlug.length < 2) return false;
+  return true;
+}
 
 export function safeQueuedGameKind(title) {
   const value = clean(title);
@@ -32,6 +42,7 @@ export function normalizeGamePageAssemblyRequest(input = {}, options = {}) {
   if (!gameId || gameId.startsWith('news_game_')) throw new Error('Queue request requires a canonical game_id.');
   if (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new Error(`Invalid queue slug: ${slug || '(empty)'}`);
   if (!title) throw new Error(`Queue request ${gameId} requires a title.`);
+  if (!isCredibleQueuedGameIdentity({title, slug})) throw new Error(`Queue request ${gameId} has a non-credible game identity.`);
   if (!identityVerified) throw new Error(`Queue request ${gameId} must be identity-verified.`);
   const now = options.now ?? new Date().toISOString();
   const newsId = clean(input.news_id ?? input.newsId);
