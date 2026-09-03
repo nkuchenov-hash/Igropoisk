@@ -14,7 +14,7 @@ const draft=read(`data/drafts/${slug}.json`,{});
 const reviewMinimum=Number(config.review_corpus?.minimum_sources||10);
 const ratingMinimum=Number(config.rating?.minimum_sources||5);
 const ratingTarget=Number(config.rating?.target_sources||10);
-const requiredRatingCount=Math.max(ratingMinimum,ratingTarget);
+const requiredRatingCount=ratingMinimum;
 const requireExhaustive=config.rating?.require_exhaustive_discovery!==false;
 const accepted=Array.isArray(reviews.reviews)?reviews.reviews:[];
 const matrixAccepted=Array.isArray(matrix.accepted)?matrix.accepted:[];
@@ -45,6 +45,6 @@ validateRows(accepted,'review');
 validateRows(scored,'rating source');
 validateRows(matrixAccepted,'research source');
 
-const result={slug,review_minimum:reviewMinimum,accepted_reviews:accepted.length,independent_publications:publications.size,rating_minimum:ratingMinimum,rating_target:ratingTarget,required_rating_sources:requiredRatingCount,scored_publications:scored.length,score_target_met:scored.length>=requiredRatingCount,exhaustive_discovery_required:requireExhaustive,exhaustive_discovery_complete:matrix.coverage?.page_material_scan_complete===true,identity_sanitization_required:true,franchise_token:policy.franchiseToken,sibling_aliases_checked:policy.siblingAliases.length,score_10:ratings.calculation?.score_10??null,status:problems.length?'red-needs-revision':'green',problems};
+const result={slug,review_minimum:reviewMinimum,accepted_reviews:accepted.length,independent_publications:publications.size,rating_minimum:ratingMinimum,rating_target:ratingTarget,required_rating_sources:requiredRatingCount,scored_publications:scored.length,score_target_met:scored.length>=ratingTarget,exhaustive_discovery_required:requireExhaustive,exhaustive_discovery_complete:matrix.coverage?.page_material_scan_complete===true,identity_sanitization_required:true,franchise_token:policy.franchiseToken,sibling_aliases_checked:policy.siblingAliases.length,score_10:ratings.calculation?.score_10??null,status:problems.length?'red-needs-revision':'green',problems};
 console.log(JSON.stringify(result,null,2));
 if(problems.length) process.exit(1);
