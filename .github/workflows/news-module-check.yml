@@ -28,6 +28,9 @@ on:
       - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
       - 'scripts/postprocess-industry-news.mjs'
+      - 'scripts/edit-news-russian.mjs'
+      - 'scripts/finalize-news-publication-quality.mjs'
+      - 'scripts/build-home-news.mjs'
       - 'scripts/resolve-news-game-context.mjs'
       - 'scripts/verify-news-game-identities.mjs'
       - 'scripts/normalize-news-game-hashtags.mjs'
@@ -36,6 +39,7 @@ on:
       - 'scripts/test-news-fail-open-publication.mjs'
       - 'scripts/test-news-fast-path-contract.mjs'
       - 'scripts/test-news-primary-game-refiner.mjs'
+      - 'scripts/test-news-publication-quality.mjs'
       - 'scripts/test-game-page-assembly-queue.mjs'
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
@@ -48,6 +52,8 @@ on:
       - 'scripts/lib/news-primary-game-refiner.mjs'
       - 'scripts/lib/news-game-title-cleanup.mjs'
       - 'scripts/lib/news-game-translation-guard.mjs'
+      - 'scripts/lib/news-publication-quality.mjs'
+      - 'scripts/lib/news-home-selector.mjs'
       - 'scripts/publish-news-storage.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/validate-news-boundary.mjs'
@@ -104,6 +110,7 @@ jobs:
           node scripts/test-news-fail-open-publication.mjs
           node scripts/test-news-fast-path-contract.mjs
           node scripts/test-news-primary-game-refiner.mjs
+          node scripts/test-news-publication-quality.mjs
           node scripts/test-game-page-assembly-queue.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/validate-news-pipeline.mjs --allow-stale-repository-fallback

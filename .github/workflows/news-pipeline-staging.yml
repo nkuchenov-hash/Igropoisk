@@ -1,5 +1,5 @@
 name: News pipeline staging network test
-# Fast commercial acceptance: native Russian + deterministic local translation.
+# Production-equivalent network acceptance for the complete eligible news set.
 
 on:
   pull_request:
@@ -58,6 +58,7 @@ jobs:
       - name: Run contract tests
         run: |
           node --check scripts/edit-news-russian.mjs
+          node --check scripts/finalize-news-publication-quality.mjs
           node --check scripts/merge-russian-news-feeds.mjs
           node --check scripts/lib/news-editor-qwen.mjs
           node --check scripts/lib/news-editor-production.mjs
@@ -65,6 +66,7 @@ jobs:
           node --check scripts/lib/news-content-policy.mjs
           node --check scripts/lib/news-editorial-summary.mjs
           node --check scripts/lib/news-home-selector.mjs
+          node --check scripts/lib/news-publication-quality.mjs
           node --check scripts/lib/news-primary-game-evidence.mjs
           node scripts/test-news-editor.mjs
           node scripts/test-news-commercial-quality.mjs
@@ -83,6 +85,7 @@ jobs:
           node scripts/test-news-image-fallback-contract.mjs
           node scripts/test-news-game-context-resolver.mjs
           node scripts/test-news-primary-game-refiner.mjs
+          node scripts/test-news-publication-quality.mjs
           node scripts/test-news-publication-gate.mjs
           node scripts/test-news-fast-path-contract.mjs
           node scripts/validate-news-module.mjs
@@ -93,10 +96,10 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           NEWS_PIPELINE_REPORT: tmp/news-pipeline-staging-report.json
           NEWS_EDITOR_REPORT: tmp/news-editor-report.json
+          NEWS_PUBLICATION_QUALITY_REPORT: tmp/news-publication-quality-report.json
           NEWS_LOCAL_TRANSLATION_RUNTIME: /tmp/igropoisk-news-translator-runtime
           NEWS_LOCAL_TRANSLATION_CACHE: /tmp/igropoisk-news-translation-models
           NEWS_EDITOR_QWEN_MAX_ITEMS: '0'
-          NEWS_HOMEPAGE_LIMIT: '12'
         run: |
           node scripts/run-news-pipeline.mjs --force
           git diff --check
@@ -125,6 +128,7 @@ jobs:
           const allowedTmp = new Set([
             'tmp/news-pipeline-staging-report.json',
             'tmp/news-editor-report.json',
+            'tmp/news-publication-quality-report.json',
             'tmp/news-game-identity-verification.json',
             'tmp/news-game-hashtag-normalization.json',
             'tmp/news-game-hashtag-audit.json'
@@ -145,6 +149,7 @@ jobs:
           path: |
             tmp/news-pipeline-staging-report.json
             tmp/news-editor-report.json
+            tmp/news-publication-quality-report.json
             tmp/news-game-identity-verification.json
             tmp/news-game-hashtag-normalization.json
             tmp/news-game-hashtag-audit.json

@@ -19,9 +19,15 @@ const requireText = (text, token, file) => {
   if (!text.includes(token)) fail(`${file} lost required stable-contract token: ${JSON.stringify(token)}`);
 };
 
+const forbidText = (text, token, file) => {
+  if (text.includes(token)) fail(`${file} reintroduced forbidden stable-contract token: ${JSON.stringify(token)}`);
+};
+
 const stableDocPath = 'docs/NEWS_MODULE_STABLE.md';
 const contractPath = 'docs/news-production-contract.md';
 const pipelinePath = '.github/workflows/news-pipeline.yml';
+const stagingPipelinePath = '.github/workflows/news-pipeline-staging.yml';
+const pipelineConfigPath = 'config/news-pipeline.json';
 const normalizePath = 'scripts/normalize-news-game-hashtags.mjs';
 const failOpenTestPath = 'scripts/test-news-fail-open-publication.mjs';
 const phaseGatePath = '.github/workflows/phase-a-validation.yml';
@@ -36,7 +42,8 @@ for (const token of [
   'pageReady: false',
   'assemblyRequired: true',
   'не создаёт игровые страницы и не ждёт их создания',
-  '12` карточек на главной — только текущий **UI display cap**',
+  'финальная проверка качества каждой публикуемой новости',
+  'не имеют фиксированной квоты количества новостей',
   'Housekeeping никогда не находится перед live switch'
 ]) requireText(stableDoc, token, stableDocPath);
 
@@ -49,11 +56,28 @@ for (const token of [
   'prune old snapshots/media после публикации'
 ]) requireText(contract, token, contractPath);
 
+const pipelineConfig = read(pipelineConfigPath);
+for (const token of [
+  '"homepage_exact_items": 0',
+  '"data/news-events.json": 0',
+  'node scripts/edit-news-russian.mjs',
+  'node scripts/finalize-news-publication-quality.mjs',
+  'node scripts/normalize-news-game-hashtags.mjs'
+]) requireText(pipelineConfig, token, pipelineConfigPath);
+const editorIndex = pipelineConfig.indexOf('node scripts/edit-news-russian.mjs');
+const qualityIndex = pipelineConfig.indexOf('node scripts/finalize-news-publication-quality.mjs');
+const hashtagIndex = pipelineConfig.indexOf('node scripts/normalize-news-game-hashtags.mjs');
+if (!(editorIndex >= 0 && qualityIndex > editorIndex && hashtagIndex > qualityIndex)) {
+  fail(`${pipelineConfigPath} lost final per-item quality gate ordering`);
+}
+
 const pipeline = read(pipelinePath);
 for (const token of [
   "cron: '23 * * * *'",
   'ref: staging',
   'cancel-in-progress: false',
+  'node scripts/run-news-pipeline.mjs',
+  'node scripts/test-news-publication-quality.mjs',
   'Put verified missing games into temporary page-assembly storage',
   'Continue news publication independently from page assembly',
   'Audit hashtag integrity without blocking publication',
@@ -62,6 +86,19 @@ for (const token of [
   'Expire news image cache older than seven days',
   'node scripts/publish-news-storage.mjs'
 ]) requireText(pipeline, token, pipelinePath);
+
+const stagingPipeline = read(stagingPipelinePath);
+for (const token of [
+  'node scripts/run-news-pipeline.mjs --force',
+  'node scripts/test-news-publication-quality.mjs',
+  'tmp/news-publication-quality-report.json'
+]) requireText(stagingPipeline, token, stagingPipelinePath);
+
+for (const [file, text] of [[pipelinePath, pipeline], [stagingPipelinePath, stagingPipeline]]) {
+  forbidText(text, 'NEWS_EDITOR_MIN_PUBLIC', file);
+  forbidText(text, "NEWS_HOMEPAGE_LIMIT: '12'", file);
+  forbidText(text, 'NEWS_HOMEPAGE_LIMIT: "12"', file);
+}
 
 const orderedSteps = [
   'Put verified missing games into temporary page-assembly storage',
@@ -121,4 +158,4 @@ if (process.exitCode) {
   process.exit(process.exitCode);
 }
 
-console.log('Stable news module contract is intact: fail-open publication, pending game route, independent page queue, hourly autonomous storage publication, post-publish cleanup.');
+console.log('Stable news module contract is intact: fail-open per-item publication, deterministic final public-copy quality gate, no fixed news quota, pending game route, independent page queue, hourly autonomous storage publication, post-publish cleanup.');

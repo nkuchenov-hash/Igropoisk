@@ -47,6 +47,7 @@ on:
       - 'scripts/fetch-youtube-signals.mjs'
       - 'scripts/build-news-events.mjs'
       - 'scripts/edit-news-russian.mjs'
+      - 'scripts/finalize-news-publication-quality.mjs'
       - 'scripts/resolve-news-game-context.mjs'
       - 'scripts/verify-news-game-identities.mjs'
       - 'scripts/normalize-news-game-hashtags.mjs'
@@ -64,6 +65,7 @@ on:
       - 'scripts/test-news-fail-open-publication.mjs'
       - 'scripts/test-news-fast-path-contract.mjs'
       - 'scripts/test-news-publication-gate.mjs'
+      - 'scripts/test-news-publication-quality.mjs'
       - 'scripts/test-news-pipeline-health.mjs'
       - 'scripts/test-news-editor.mjs'
       - 'scripts/test-news-commercial-quality.mjs'
@@ -88,6 +90,7 @@ on:
       - 'scripts/lib/news-editor-policy.mjs'
       - 'scripts/lib/news-editorial-summary.mjs'
       - 'scripts/lib/news-home-selector.mjs'
+      - 'scripts/lib/news-publication-quality.mjs'
       - 'scripts/lib/news-game-linker.mjs'
       - 'scripts/lib/news-game-registry-adapter.mjs'
       - 'scripts/lib/news-game-context-resolver.mjs'
@@ -154,6 +157,7 @@ jobs:
           node --check scripts/build-news-pipeline-health.mjs
           node --check scripts/validate-news-pipeline.mjs
           node --check scripts/edit-news-russian.mjs
+          node --check scripts/finalize-news-publication-quality.mjs
           node --check scripts/merge-russian-news-feeds.mjs
           node --check scripts/resolve-news-game-context.mjs
           node --check scripts/verify-news-game-identities.mjs
@@ -170,6 +174,7 @@ jobs:
           node --check scripts/lib/news-content-policy.mjs
           node --check scripts/lib/news-editorial-summary.mjs
           node --check scripts/lib/news-home-selector.mjs
+          node --check scripts/lib/news-publication-quality.mjs
           node --check scripts/lib/news-game-context-resolver.mjs
           node --check scripts/lib/news-primary-game-refiner.mjs
           node --check scripts/lib/news-publication-gate.mjs
@@ -192,6 +197,7 @@ jobs:
           node scripts/test-news-fail-open-publication.mjs
           node scripts/test-news-fast-path-contract.mjs
           node scripts/test-news-publication-gate.mjs
+          node scripts/test-news-publication-quality.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
           node scripts/test-news-storage-content-api.mjs
@@ -215,12 +221,12 @@ jobs:
           PIPELINE_FORCE: ${{ inputs.force || github.event.inputs.force || false }}
           NEWS_PIPELINE_REPORT: tmp/news-pipeline-report.json
           NEWS_EDITOR_REPORT: tmp/news-editor-report.json
+          NEWS_PUBLICATION_QUALITY_REPORT: tmp/news-publication-quality-report.json
           NEWS_GAME_CONTEXT_MAX_LOOKUPS: '1000'
           NEWS_GAME_VERIFY_BATCH: '8'
           NEWS_LOCAL_TRANSLATION_RUNTIME: /tmp/igropoisk-news-translator-runtime
           NEWS_LOCAL_TRANSLATION_CACHE: /tmp/igropoisk-news-translation-models
           NEWS_EDITOR_QWEN_MAX_ITEMS: '0'
-          NEWS_EDITOR_MIN_PUBLIC: '12'
         run: |
           args=()
           if [ "$PIPELINE_FORCE" = "true" ]; then
@@ -324,6 +330,7 @@ jobs:
           path: |
             tmp/news-pipeline-report.json
             tmp/news-editor-report.json
+            tmp/news-publication-quality-report.json
             tmp/news-history-hydration.json
             tmp/news-game-identity-verification.json
             tmp/news-game-hashtag-normalization.json

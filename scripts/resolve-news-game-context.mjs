@@ -98,7 +98,9 @@ for (const original of canonical) {
     continue;
   }
   externalLookups += 1;
-  const proposed = await resolveVerifiedExternalNewsGame(item);
+  // GitHub Models was retired on 2026-07-30. Keep identity resolution deterministic:
+  // registry first, then the resolver's source-grounded conservative fallback.
+  const proposed = await resolveVerifiedExternalNewsGame(item, { githubToken: '' });
   const game = cleanResolvedNewsGame(refineNewsPrimaryGame(item, proposed));
   if (game) {
     resolvedExternally += 1;
@@ -112,7 +114,7 @@ const generatedAt = new Date().toISOString();
 const output = Array.isArray(payload) ? items : {
   ...payload,
   generatedAt,
-  gameResolutionModel: 'canonical-registry-plus-primary-context-v4-primary-evidence',
+  gameResolutionModel: 'canonical-registry-plus-deterministic-primary-context-v5',
   gameResolutionStats: {
     alreadyResolved,
     sequelMismatches,
@@ -126,4 +128,4 @@ const output = Array.isArray(payload) ? items : {
 
 await fs.writeFile(eventsPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
 await fs.writeFile(reviewPath, `${JSON.stringify(buildGameReviewQueue(items, { generatedAt }), null, 2)}\n`, 'utf8');
-console.log(`[news/game-context] ${alreadyResolved} canonical primary links; ${sequelMismatches} base-game sequel mismatches reopened; ${secondaryOnlyCanonicalLinks} secondary-only canonical links reopened; ${resolvedExternally} primary-context links from ${externalLookups} public unmatched events; ${items.filter(item => isPublic(item) && !(Array.isArray(item.games) && item.games.length)).length} public events remain without a game.`);
+console.log(`[news/game-context] ${alreadyResolved} canonical primary links; ${sequelMismatches} base-game sequel mismatches reopened; ${secondaryOnlyCanonicalLinks} secondary-only canonical links reopened; ${resolvedExternally} deterministic primary-context links from ${externalLookups} public unmatched events; ${items.filter(item => isPublic(item) && !(Array.isArray(item.games) && item.games.length)).length} public events remain without a game.`);

@@ -7,7 +7,7 @@ const eventsPayload = JSON.parse(await fs.readFile('data/news-events.json','utf8
 const events = Array.isArray(eventsPayload) ? eventsPayload : (eventsPayload.items || []);
 
 const importanceWeight = { critical: 3, major: 2, normal: 1 };
-const homepageDisplayLimit = 12;
+const configuredHomepageDisplayLimit = Math.max(0, Number(process.env.NEWS_HOMEPAGE_LIMIT || 0));
 const preferredHomepageSources = 4;
 const unresolvedGameReasons = new Set([
   'ambiguous-primary-game-verification',
@@ -104,19 +104,22 @@ function passesFinalCommercialPolicy(item) {
   });
 }
 
-// Homepage is a bounded view over the complete news dataset, not a publication quota.
-// Every valid event remains in data/news-events.json and the archive. This file may
-// contain anywhere from 0 to homepageDisplayLimit cards depending on real news volume.
+// Homepage is a view over the complete current eligible dataset, not a publication quota.
+// By default there is no fixed card count. A positive NEWS_HOMEPAGE_LIMIT can be supplied
+// only as an explicit UI concern without changing publication semantics.
 const normalized = events
   .map(normalize)
   .filter(item => item.titleRu && item.summaryRu && item.primaryUrl && item.publicEligible && passesFinalCommercialPolicy(item))
   .sort(newestFirst);
 
+const effectiveDisplayLimit = configuredHomepageDisplayLimit > 0
+  ? configuredHomepageDisplayLimit
+  : Math.max(1, normalized.length);
 const selection = selectCommercialHomeNews(normalized, {
-  limit: homepageDisplayLimit,
+  limit: effectiveDisplayLimit,
   maxAgeHours: 168,
   recentHours: 72,
-  minRecent: 8,
+  minRecent: configuredHomepageDisplayLimit > 0 ? Math.min(8, effectiveDisplayLimit) : 0,
   maxPerTopic: 2,
   // Preferred concentration limit only. The selector may exceed it to fill otherwise
   // empty homepage slots; it never rejects the entire news publication because of it.
@@ -124,8 +127,8 @@ const selection = selectCommercialHomeNews(normalized, {
 });
 const items = selection.items;
 
-if (items.length < homepageDisplayLimit) {
-  console.warn(`[home-news] only ${items.length}/${homepageDisplayLimit} publishable homepage cards are currently available; publishing the available set without blocking the news pipeline.`);
+if (configuredHomepageDisplayLimit > 0 && items.length < configuredHomepageDisplayLimit) {
+  console.warn(`[home-news] only ${items.length}/${configuredHomepageDisplayLimit} publishable homepage cards are currently available; publishing the available set without blocking the news pipeline.`);
 }
 if (selection.diagnostics.uniqueSources < preferredHomepageSources && items.length) {
   console.warn(`[home-news] source mix currently has ${selection.diagnostics.uniqueSources} source(s); diversity is advisory and does not block publication.`);
@@ -134,7 +137,8 @@ if (selection.diagnostics.uniqueSources < preferredHomepageSources && items.leng
 await fs.writeFile('data/news-home-ru.json', `${JSON.stringify({
   generatedAt:new Date().toISOString(),
   model:'editorial-global-feed',
-  displayLimit:homepageDisplayLimit,
+  displayLimit:configuredHomepageDisplayLimit > 0 ? configuredHomepageDisplayLimit : null,
+  displayMode:configuredHomepageDisplayLimit > 0 ? 'configured-ui-cap' : 'all-eligible',
   commercialGate:{
     ...selection.diagnostics,
     preferredHomepageSources,
@@ -143,4 +147,4 @@ await fs.writeFile('data/news-home-ru.json', `${JSON.stringify({
   },
   items
 },null,2)}\n`);
-console.log(`[home-news] wrote ${items.length} commercially complete homepage cards from ${normalized.length} eligible events; recent=${selection.diagnostics.recentCount}; topics=${selection.diagnostics.uniqueTopics}; sources=${selection.diagnostics.uniqueSources}`);
+console.log(`[home-news] wrote ${items.length} commercially complete homepage cards from ${normalized.length} eligible events; display_mode=${configuredHomepageDisplayLimit > 0 ? 'configured-cap' : 'all-eligible'}; recent=${selection.diagnostics.recentCount}; topics=${selection.diagnostics.uniqueTopics}; sources=${selection.diagnostics.uniqueSources}`);

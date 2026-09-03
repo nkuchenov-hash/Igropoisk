@@ -5,9 +5,10 @@ import { isLikelyNewsContent, newsContentRejectionReasons } from './lib/news-con
 import { refineNewsPrimaryGame } from './lib/news-primary-game-refiner.mjs';
 import { cleanResolvedNewsGame } from './lib/news-game-title-cleanup.mjs';
 import { translatePreservingGameEntities } from './lib/news-game-translation-guard.mjs';
+import { decodeNewsSourceText, sourceEntityCandidates } from './lib/news-publication-quality.mjs';
 
 const file = 'data/news.json';
-const userAgent = 'IgropoiskNewsLocalizer/2.0 (+https://github.com/nkuchenov-hash/Igropoisk)';
+const userAgent = 'IgropoiskNewsLocalizer/2.1 (+https://github.com/nkuchenov-hash/Igropoisk)';
 const localModel = process.env.NEWS_LOCAL_TRANSLATION_MODEL || 'Xenova/opus-mt-en-ru';
 const localCacheDir = process.env.NEWS_LOCAL_TRANSLATION_CACHE || '/tmp/igropoisk-news-translation-models';
 const localRuntimeDir = process.env.NEWS_LOCAL_TRANSLATION_RUNTIME || '/tmp/igropoisk-news-translator-runtime';
@@ -115,11 +116,11 @@ async function translateMyMemory(text, source, target) {
   }
 }
 
-async function translateEnRu(text, protectedGameEntities = []) {
+async function translateEnRu(text, protectedEntities = []) {
   if (!text) return { text: '', provider: 'none' };
   const translateProtected = provider => translatePreservingGameEntities(
     text,
-    protectedGameEntities,
+    protectedEntities,
     provider,
     { localizedNames: localizedGameNames }
   );
@@ -146,35 +147,41 @@ let filteredNonNewsItems = 0;
 
 for (const item of payload.items || []) {
   try {
-    if (!isLikelyNewsContent({ title: item.title, summary: item.summary, url: item.url })) {
+    const cleanTitle = decodeNewsSourceText(item.title || '');
+    const cleanSummary = decodeNewsSourceText(item.summary || cleanTitle);
+    if (!isLikelyNewsContent({ title: cleanTitle, summary: cleanSummary, url: item.url })) {
       filteredNonNewsItems += 1;
-      console.log(`[industry/filter] ${item.source || 'source'}: ${item.title} -> ${newsContentRejectionReasons({ title: item.title, summary: item.summary, url: item.url }).join('; ')}`);
+      console.log(`[industry/filter] ${item.source || 'source'}: ${cleanTitle} -> ${newsContentRejectionReasons({ title: cleanTitle, summary: cleanSummary, url: item.url }).join('; ')}`);
       continue;
     }
 
-    const sourceIsRussian = item.language === 'ru' || /[А-Яа-яЁё]/.test(item.title || '');
-    const baseSummary = item.summary || item.title || '';
+    const sourceIsRussian = item.language === 'ru' || /[А-Яа-яЁё]/.test(cleanTitle);
     const sourceGame = sourceIsRussian ? null : cleanResolvedNewsGame(refineNewsPrimaryGame({
-      titleEn: item.title || '',
-      summaryEn: baseSummary,
+      titleEn: cleanTitle,
+      summaryEn: cleanSummary,
       primaryUrl: item.url || '',
       publicEligible: true,
       games: []
     }, null));
-    const protectedGameEntities = sourceGame?.title ? [sourceGame.title] : [];
+    const protectedEntities = sourceIsRussian ? [] : sourceEntityCandidates({
+      titleEn: cleanTitle,
+      summaryEn: cleanSummary,
+      primaryUrl: item.url || '',
+      games: sourceGame?.title ? [{ title: sourceGame.title }] : []
+    });
 
     let titleRu;
     let summaryRu;
     let localizationStatus;
 
     if (sourceIsRussian) {
-      titleRu = item.title || '';
-      summaryRu = baseSummary;
+      titleRu = cleanTitle;
+      summaryRu = cleanSummary;
       localizationStatus = 'source-ru';
       sourceRussianItems += 1;
     } else {
-      const titleTranslation = await translateEnRu(item.title || '', protectedGameEntities);
-      const summaryTranslation = await translateEnRu(baseSummary, protectedGameEntities);
+      const titleTranslation = await translateEnRu(cleanTitle, protectedEntities);
+      const summaryTranslation = await translateEnRu(cleanSummary, protectedEntities);
       titleRu = titleTranslation.text;
       summaryRu = summaryTranslation.text || titleRu;
       localizationStatus = titleTranslation.provider;
@@ -185,8 +192,8 @@ for (const item of payload.items || []) {
       else remoteTranslatedItems += 1;
     }
 
-    const titleEn = item.title || titleRu;
-    const summaryEn = baseSummary || titleEn;
+    const titleEn = cleanTitle || titleRu;
+    const summaryEn = cleanSummary || titleEn;
     if (!titleRu || !titleEn) throw new Error('usable bilingual metadata unavailable');
 
     const sourceCount = Number(item.sourceCount || item.mediaSourceCount || 1);
@@ -205,6 +212,8 @@ for (const item of payload.items || []) {
 
     processed.push({
       ...item,
+      title: cleanTitle || item.title,
+      summary: cleanSummary || item.summary,
       type: 'industry',
       official: false,
       titleRu,
@@ -212,6 +221,7 @@ for (const item of payload.items || []) {
       summaryRu,
       summaryEn,
       localizationStatus,
+      protectedSourceEntities: protectedEntities,
       regions,
       globalEligible,
       regionalEligible,
@@ -227,10 +237,6 @@ for (const item of payload.items || []) {
   }
 }
 
-if (processed.length < Math.min(12, (payload.items || []).length)) {
-  throw new Error(`Only ${processed.length} policy-compliant Russian-ready items produced; refusing to publish an undersized feed`);
-}
-
 await fs.writeFile(file, `${JSON.stringify({
   ...payload,
   generatedAt: new Date().toISOString(),
@@ -243,8 +249,9 @@ await fs.writeFile(file, `${JSON.stringify({
   remoteTranslatedItemCount: remoteTranslatedItems,
   sourceRussianItemCount: sourceRussianItems,
   filteredNonNewsItemCount: filteredNonNewsItems,
+  fixedPublicationCount: null,
   localTranslationModel: localModel,
   items: processed
 }, null, 2)}\n`);
 
-console.log(`[industry/localize] wrote ${processed.length} policy-compliant Russian-ready items; filtered=${filteredNonNewsItems}; local=${localTranslatedItems}; remote=${remoteTranslatedItems}; source-ru=${sourceRussianItems}`);
+console.log(`[industry/localize] wrote ${processed.length} policy-compliant Russian-ready drafts; filtered=${filteredNonNewsItems}; local=${localTranslatedItems}; remote=${remoteTranslatedItems}; source-ru=${sourceRussianItems}; fixed_count=none`);
