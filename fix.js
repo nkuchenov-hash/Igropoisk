@@ -41,6 +41,20 @@
   window.addEventListener('hashchange',cleanExplicitNonNewsRoute);
   window.addEventListener('popstate',cleanExplicitNonNewsRoute);
 
+  // The enhanced search uses a native <datalist>, which browsers render as a
+  // large white dropdown containing recent/catalog games. Keep live filtering,
+  // but detach the datalist from the search field so the dropdown never opens.
+  function disableGameSearchDropdown(){
+    document.querySelector('#search #query')?.removeAttribute('list');
+  }
+
+  function bindGameSearchDropdownGuard(){
+    const searchPage=document.querySelector('#search');
+    if(!searchPage)return;
+    disableGameSearchDropdown();
+    new MutationObserver(disableGameSearchDropdown).observe(searchPage,{childList:true,subtree:true});
+  }
+
   const arx = {
     slug:'arx-fatalis',
     title:'Arx Fatalis',
@@ -76,6 +90,7 @@
   }
 
   function bind(){
+    bindGameSearchDropdownGuard();
     const query=document.querySelector('#query');
     if(!query)return;
     ['input','change'].forEach(type=>document.addEventListener(type,event=>{
