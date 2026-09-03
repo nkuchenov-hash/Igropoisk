@@ -4,7 +4,7 @@
   "game_slug": "spore",
   "game_id": "game_cd7d60fd06bfd88019da",
   "canonical_title": "SPORE™",
-  "checked_at": "2026-09-03T11:34:53.051Z",
+  "checked_at": "2026-09-03T11:53:20.681Z",
   "status": "green",
   "green": true,
   "comments": [],
@@ -43,28 +43,19 @@
       "status": "completed",
       "exit_code": 0,
       "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"provider\": \"deterministic-source-evidence\",\n  \"model\": \"none\",\n  \"readable_sources\": 5,\n  \"professional_sources\": 3,\n  \"evidence_sources\": 5,\n  \"defining_claims\": 8,\n  \"game_essence\": \"Discovered by existing verified corpus; matched alias: spore At the heart of Spore, say some, lies a fascinating, amusing, baffling contradiction: you're the Creator in the ultimate God game, in which you can succeed by imposing your beliefs on others, and yet Maxis' universe - a convincing mishmash of procedural and many-user generated species - is, as the game puts it, \\\"an epic journey of evolution\\\". Creating an account is relatively simple when the game is first installed (you'll want an Internet connection to fully appreciate Spore ).\"\n}\n",
-      "stderr": ""
+      "stderr": "[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n"
     },
     {
       "attempt": 5,
       "label": "source-grounded-editorial-1",
       "script": "scripts/build-game-page.mjs",
-      "status": "revision-required",
-      "exit_code": 1,
-      "stdout": "",
-      "stderr": "file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/free-editorial-ai.mjs:114\n      if(!parsed)throw new Error(`Qwen/Ollama returned invalid JSON: ${error.message}`);\n                       ^\n\nError: Qwen/Ollama returned invalid JSON: Expected ',' or '}' after property value in JSON at position 527 (line 1 column 528)\n    at generateFreeEditorialJSON (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/free-editorial-ai.mjs:114:24)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async generateGamePageEditorialJSON (file:///home/runner/work/Igropoisk/Igropoisk/scripts/lib/game-page-editorial-ai.mjs:5:16)\n    at async makeText (file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:72:33)\n    at async file:///home/runner/work/Igropoisk/Igropoisk/scripts/build-game-page.mjs:99:16\n\nNode.js v22.23.2\n"
-    },
-    {
-      "attempt": 6,
-      "label": "source-grounded-fallback-1",
-      "script": "scripts/build-game-page-baseline-editorial.mjs",
       "status": "completed",
       "exit_code": 0,
       "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"completed_pending_qc\",\n  \"provider\": \"local-qwen-ollama\",\n  \"model\": \"qwen2.5:1.5b\",\n  \"paid_api\": false,\n  \"knowledge_sources\": 5,\n  \"defining_claims\": 6,\n  \"grounding_claim_ids\": [\n    \"claim-1\",\n    \"claim-4\",\n    \"claim-5\",\n    \"claim-6\",\n    \"claim-7\",\n    \"claim-8\"\n  ],\n  \"editorial_mode\": \"source_grounded_editorial\",\n  \"public_ready\": false\n}\n",
-      "stderr": ""
+      "stderr": "[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n"
     },
     {
-      "attempt": 7,
+      "attempt": 6,
       "label": "page-editorial-1",
       "script": "scripts/materialize-page-editorial.mjs",
       "status": "completed",
@@ -73,7 +64,7 @@
       "stderr": ""
     },
     {
-      "attempt": 8,
+      "attempt": 7,
       "label": "relations-1",
       "script": "scripts/enrich-game-relations.mjs",
       "status": "completed",
@@ -82,7 +73,7 @@
       "stderr": ""
     },
     {
-      "attempt": 9,
+      "attempt": 8,
       "label": "similarity-1",
       "script": "scripts/build-similarity-index.mjs",
       "status": "completed",
@@ -91,16 +82,16 @@
       "stderr": ""
     },
     {
-      "attempt": 10,
+      "attempt": 9,
       "label": "content-validation-1",
       "script": "scripts/validate-game-page-content.mjs",
-      "status": "completed",
-      "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"errors\": [],\n  \"warnings\": [\n    \"Отдельная система обзоров пока вернула мало прямых обзоров: 0. Это не блокирует готовую страницу игры.\"\n  ],\n  \"metrics\": {\n    \"canonical_editorial\": true,\n    \"source_grounded_mode\": true,\n    \"knowledge_green\": true,\n    \"readable_source_content\": 5,\n    \"defining_claims\": 6,\n    \"covered_defining_claims\": 6,\n    \"grounding_claim_ids\": 6,\n    \"multilingual_grounding\": true,\n    \"release_year\": 2008,\n    \"steam_listing_year\": 2008,\n    \"short_description_chars\": 272,\n    \"integrated_description_chars\": 928,\n    \"campaign_chars\": 534,\n    \"features\": 6,\n    \"developers\": 1,\n    \"publishers\": 1,\n    \"genres\": 6,\n    \"platforms\": 1,\n    \"direct_reviews\": 0,\n    \"scored_reviews\": 9\n  }\n}\n",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"red-needs-revision\",\n  \"errors\": [\n    \"Основное описание содержит повторённые предложения: В SPORE™ вы можете создавать и управлять всеми аспектами своего мира, и ваш статус остается под вопросом. | В SPORE™ вы можете создавать и управлять всеми аспектами своего мира, и ваш статус остается под вопросом.\",\n    \"Список особенностей содержит смысловые дубли: 2↔3, 2↔4, 2↔5, 2↔6, 2↔7, 2↔8, 3↔4, 3↔5, 3↔6, 3↔7, 3↔8, 4↔5, 4↔6, 4↔7, 4↔8, 5↔6, 5↔7, 5↔8, 6↔7, 6↔8, 7↔8\"\n  ],\n  \"warnings\": [\n    \"Отдельная система обзоров пока вернула мало прямых обзоров: 0. Это не блокирует готовую страницу игры.\"\n  ],\n  \"metrics\": {\n    \"canonical_editorial\": true,\n    \"source_grounded_mode\": true,\n    \"knowledge_green\": true,\n    \"readable_source_content\": 5,\n    \"defining_claims\": 6,\n    \"covered_defining_claims\": 6,\n    \"grounding_claim_ids\": 6,\n    \"multilingual_grounding\": true,\n    \"release_year\": 2008,\n    \"steam_listing_year\": 2008,\n    \"short_description_chars\": 301,\n    \"integrated_description_chars\": 1018,\n    \"campaign_chars\": 546,\n    \"features\": 8,\n    \"duplicate_integrated_sentences\": 3,\n    \"duplicate_campaign_sentences\": 0,\n    \"near_duplicate_feature_pairs\": 21,\n    \"developers\": 1,\n    \"publishers\": 1,\n    \"genres\": 6,\n    \"platforms\": 1,\n    \"direct_reviews\": 0,\n    \"scored_reviews\": 9\n  }\n}\n",
       "stderr": ""
     },
     {
-      "attempt": 11,
+      "attempt": 10,
       "label": "page-media-discovery-1",
       "script": "scripts/discover-review-media.mjs",
       "status": "completed",
@@ -109,8 +100,206 @@
       "stderr": ""
     },
     {
-      "attempt": 12,
+      "attempt": 11,
       "label": "media-validation-1",
+      "script": "scripts/validate-game-media-quality.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"release_year\": 2008,\n  \"media_profile\": \"historical\",\n  \"comments\": 0,\n  \"accepted_screenshots\": 11,\n  \"minimum_screenshots\": 5,\n  \"nominal_minimum_screenshots\": 5,\n  \"official_source_screenshots\": 11,\n  \"official_source_exhausted\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 12,
+      "label": "game-source-corpus-2",
+      "script": "scripts/collect-game-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"sources\": 11,\n  \"professional_reviews\": 10,\n  \"independent_publications\": 10,\n  \"scored\": 9,\n  \"source_scan_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 13,
+      "label": "page-rating-2",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"completed\",\n  \"material_links\": 10,\n  \"seed_rejected\": 0,\n  \"identity_rejected\": 0,\n  \"sources\": 9,\n  \"score_10\": 8.6,\n  \"use_all_discovered_scores\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 14,
+      "label": "game-source-corpus-score-refresh-2",
+      "script": "scripts/collect-game-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"sources\": 11,\n  \"professional_reviews\": 10,\n  \"independent_publications\": 10,\n  \"scored\": 9,\n  \"source_scan_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 15,
+      "label": "source-knowledge-2",
+      "script": "scripts/build-game-source-knowledge.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"provider\": \"deterministic-source-evidence\",\n  \"model\": \"none\",\n  \"readable_sources\": 5,\n  \"professional_sources\": 3,\n  \"evidence_sources\": 5,\n  \"defining_claims\": 8,\n  \"game_essence\": \"Discovered by existing verified corpus; matched alias: spore At the heart of Spore, say some, lies a fascinating, amusing, baffling contradiction: you're the Creator in the ultimate God game, in which you can succeed by imposing your beliefs on others, and yet Maxis' universe - a convincing mishmash of procedural and many-user generated species - is, as the game puts it, \\\"an epic journey of evolution\\\". Creating an account is relatively simple when the game is first installed (you'll want an Internet connection to fully appreciate Spore ).\"\n}\n",
+      "stderr": "[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n"
+    },
+    {
+      "attempt": 16,
+      "label": "source-grounded-editorial-2",
+      "script": "scripts/build-game-page.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"completed_pending_qc\",\n  \"provider\": \"local-qwen-ollama\",\n  \"model\": \"qwen2.5:1.5b\",\n  \"paid_api\": false,\n  \"knowledge_sources\": 5,\n  \"defining_claims\": 6,\n  \"grounding_claim_ids\": [\n    \"claim-1\",\n    \"claim-4\",\n    \"claim-5\",\n    \"claim-6\",\n    \"claim-7\",\n    \"claim-8\"\n  ],\n  \"editorial_mode\": \"source_grounded_editorial\",\n  \"public_ready\": false\n}\n",
+      "stderr": "[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n"
+    },
+    {
+      "attempt": 17,
+      "label": "page-editorial-2",
+      "script": "scripts/materialize-page-editorial.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"mode\": \"source_grounded_editorial\",\n  \"knowledge_claims\": 6,\n  \"grounding_claim_ids\": [\n    \"claim-1\",\n    \"claim-4\",\n    \"claim-5\",\n    \"claim-6\",\n    \"claim-7\",\n    \"claim-8\"\n  ],\n  \"output\": \"data/page-editorial/spore.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 18,
+      "label": "relations-2",
+      "script": "scripts/enrich-game-relations.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"provider\": \"ollama\",\n  \"model\": \"qwen2.5:1.5b\",\n  \"paid_api\": false,\n  \"franchise\": \"SPORE™\",\n  \"franchise_games\": 0,\n  \"queued\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 19,
+      "label": "similarity-2",
+      "script": "scripts/build-similarity-index.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 261,\n  \"profiles\": 263,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"year_proximity_used\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 20,
+      "label": "content-validation-2",
+      "script": "scripts/validate-game-page-content.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"red-needs-revision\",\n  \"errors\": [\n    \"Список особенностей содержит смысловые дубли: 5↔6, 5↔7, 5↔8, 6↔7, 6↔8, 7↔8\"\n  ],\n  \"warnings\": [\n    \"Отдельная система обзоров пока вернула мало прямых обзоров: 0. Это не блокирует готовую страницу игры.\"\n  ],\n  \"metrics\": {\n    \"canonical_editorial\": true,\n    \"source_grounded_mode\": true,\n    \"knowledge_green\": true,\n    \"readable_source_content\": 5,\n    \"defining_claims\": 6,\n    \"covered_defining_claims\": 6,\n    \"grounding_claim_ids\": 6,\n    \"multilingual_grounding\": true,\n    \"release_year\": 2008,\n    \"steam_listing_year\": 2008,\n    \"short_description_chars\": 318,\n    \"integrated_description_chars\": 894,\n    \"campaign_chars\": 526,\n    \"features\": 8,\n    \"duplicate_integrated_sentences\": 0,\n    \"duplicate_campaign_sentences\": 0,\n    \"near_duplicate_feature_pairs\": 6,\n    \"developers\": 1,\n    \"publishers\": 1,\n    \"genres\": 6,\n    \"platforms\": 1,\n    \"direct_reviews\": 0,\n    \"scored_reviews\": 9\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 21,
+      "label": "page-media-discovery-2",
+      "script": "scripts/discover-review-media.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"mode\": \"relevance_and_file_verified\",\n  \"screenshots\": 11,\n  \"artwork\": 2,\n  \"total\": 13,\n  \"required_screenshots\": 8\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 22,
+      "label": "media-validation-2",
+      "script": "scripts/validate-game-media-quality.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"release_year\": 2008,\n  \"media_profile\": \"historical\",\n  \"comments\": 0,\n  \"accepted_screenshots\": 11,\n  \"minimum_screenshots\": 5,\n  \"nominal_minimum_screenshots\": 5,\n  \"official_source_screenshots\": 11,\n  \"official_source_exhausted\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 23,
+      "label": "game-source-corpus-3",
+      "script": "scripts/collect-game-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"sources\": 11,\n  \"professional_reviews\": 10,\n  \"independent_publications\": 10,\n  \"scored\": 9,\n  \"source_scan_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 24,
+      "label": "page-rating-3",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"completed\",\n  \"material_links\": 10,\n  \"seed_rejected\": 0,\n  \"identity_rejected\": 0,\n  \"sources\": 9,\n  \"score_10\": 8.6,\n  \"use_all_discovered_scores\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 25,
+      "label": "game-source-corpus-score-refresh-3",
+      "script": "scripts/collect-game-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"sources\": 11,\n  \"professional_reviews\": 10,\n  \"independent_publications\": 10,\n  \"scored\": 9,\n  \"source_scan_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 26,
+      "label": "source-knowledge-3",
+      "script": "scripts/build-game-source-knowledge.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"provider\": \"deterministic-source-evidence\",\n  \"model\": \"none\",\n  \"readable_sources\": 5,\n  \"professional_sources\": 3,\n  \"evidence_sources\": 5,\n  \"defining_claims\": 8,\n  \"game_essence\": \"Discovered by existing verified corpus; matched alias: spore At the heart of Spore, say some, lies a fascinating, amusing, baffling contradiction: you're the Creator in the ultimate God game, in which you can succeed by imposing your beliefs on others, and yet Maxis' universe - a convincing mishmash of procedural and many-user generated species - is, as the game puts it, \\\"an epic journey of evolution\\\". Creating an account is relatively simple when the game is first installed (you'll want an Internet connection to fully appreciate Spore ).\"\n}\n",
+      "stderr": "[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n"
+    },
+    {
+      "attempt": 27,
+      "label": "source-grounded-editorial-3",
+      "script": "scripts/build-game-page.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"completed_pending_qc\",\n  \"provider\": \"local-qwen-ollama\",\n  \"model\": \"qwen2.5:1.5b\",\n  \"paid_api\": false,\n  \"knowledge_sources\": 5,\n  \"defining_claims\": 6,\n  \"grounding_claim_ids\": [\n    \"claim-1\",\n    \"claim-4\",\n    \"claim-5\",\n    \"claim-6\",\n    \"claim-7\",\n    \"claim-8\"\n  ],\n  \"editorial_mode\": \"source_grounded_editorial\",\n  \"public_ready\": false\n}\n",
+      "stderr": "[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n[game-page-editorial] GitHub Models unavailable, falling back to local Qwen: GitHub Models 410: {\"error\":{\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}}\n\n"
+    },
+    {
+      "attempt": 28,
+      "label": "page-editorial-3",
+      "script": "scripts/materialize-page-editorial.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"mode\": \"source_grounded_editorial\",\n  \"knowledge_claims\": 6,\n  \"grounding_claim_ids\": [\n    \"claim-1\",\n    \"claim-4\",\n    \"claim-5\",\n    \"claim-6\",\n    \"claim-7\",\n    \"claim-8\"\n  ],\n  \"output\": \"data/page-editorial/spore.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 29,
+      "label": "relations-3",
+      "script": "scripts/enrich-game-relations.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"provider\": \"ollama\",\n  \"model\": \"qwen2.5:1.5b\",\n  \"paid_api\": false,\n  \"franchise\": \"SPORE™\",\n  \"franchise_games\": 0,\n  \"queued\": 1\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 30,
+      "label": "similarity-3",
+      "script": "scripts/build-similarity-index.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 261,\n  \"profiles\": 263,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 1,\n  \"games_without_recommendations\": 1,\n  \"year_proximity_used\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 31,
+      "label": "content-validation-3",
+      "script": "scripts/validate-game-page-content.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"errors\": [],\n  \"warnings\": [\n    \"Отдельная система обзоров пока вернула мало прямых обзоров: 0. Это не блокирует готовую страницу игры.\"\n  ],\n  \"metrics\": {\n    \"canonical_editorial\": true,\n    \"source_grounded_mode\": true,\n    \"knowledge_green\": true,\n    \"readable_source_content\": 5,\n    \"defining_claims\": 6,\n    \"covered_defining_claims\": 6,\n    \"grounding_claim_ids\": 6,\n    \"multilingual_grounding\": true,\n    \"release_year\": 2008,\n    \"steam_listing_year\": 2008,\n    \"short_description_chars\": 269,\n    \"integrated_description_chars\": 1003,\n    \"campaign_chars\": 596,\n    \"features\": 6,\n    \"duplicate_integrated_sentences\": 0,\n    \"duplicate_campaign_sentences\": 0,\n    \"near_duplicate_feature_pairs\": 0,\n    \"developers\": 1,\n    \"publishers\": 1,\n    \"genres\": 6,\n    \"platforms\": 1,\n    \"direct_reviews\": 0,\n    \"scored_reviews\": 9\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 32,
+      "label": "page-media-discovery-3",
+      "script": "scripts/discover-review-media.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"mode\": \"relevance_and_file_verified\",\n  \"screenshots\": 11,\n  \"artwork\": 2,\n  \"total\": 13,\n  \"required_screenshots\": 8\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 33,
+      "label": "media-validation-3",
       "script": "scripts/validate-game-media-quality.mjs",
       "status": "completed",
       "exit_code": 0,
