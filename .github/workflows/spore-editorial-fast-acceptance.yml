@@ -27,6 +27,7 @@ jobs:
         run: |
           rm -rf /tmp/spore-base
           mkdir -p /tmp/spore-base
+          mkdir -p data/parser-output data/drafts data/game-sources data/ratings
           gh run download 33792902226 -n spore-full-pr-acceptance-33792902226-1 -D /tmp/spore-base
           cp -R /tmp/spore-base/data/parser-output/spore.json data/parser-output/spore.json
           cp -R /tmp/spore-base/data/drafts/spore.json data/drafts/spore.json
