@@ -196,7 +196,10 @@ function timestamp(value) {
 }
 
 export function selectCommercialHomeNews(input = [], options = {}) {
-  const limit = Math.max(1, Number(options.limit ?? 12));
+  const requestedLimit = Number(options.limit);
+  const limit = Number.isFinite(requestedLimit) && requestedLimit > 0
+    ? Math.max(1, Math.floor(requestedLimit))
+    : Math.max(1, input.length);
   const now = Number.isFinite(Number(options.now)) ? Number(options.now) : Date.now();
   const maxAgeHours = Math.max(1, Number(options.maxAgeHours || 168));
   const recentHours = Math.max(1, Number(options.recentHours || 72));
