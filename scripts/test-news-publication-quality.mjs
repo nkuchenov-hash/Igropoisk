@@ -47,4 +47,15 @@ const ordinary = publicationSemanticReasons({
 });
 assert.deepEqual(ordinary, []);
 
+const godOfWar = publicationSemanticReasons({
+  titleEn: 'God of War gets a new update',
+  summaryEn: 'Sony has released a new update for God of War on PC.',
+  primaryUrl: 'https://example.com/god-of-war-update',
+  games: [{ title: 'God of War' }]
+}, {
+  titleRu: 'God of War получила новое обновление',
+  summaryRu: 'Sony выпустила новое обновление для God of War на PC. Патч уже доступен игрокам.'
+});
+assert.deepEqual(godOfWar, []);
+
 console.log('News publication quality regressions passed.');
