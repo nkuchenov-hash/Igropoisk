@@ -4,32 +4,37 @@
 /* Search helper copy is intentionally hidden: it adds no value and creates visual noise. */
 .search-help{display:none!important;}
 
-/* Search filters: keep the full filter stack reachable on laptop-height screens. */
+/* Search filters: keep the whole filter stack reachable on laptop-height screens. */
 #search .search-layout--enhanced{align-items:start!important;}
 #search .search-layout--enhanced>*{min-height:0;}
 
-@media (min-width:1024px){
+@media (min-width:961px){
   #search .ig-search-filter-panel{
-    top:calc(var(--ig-header-height) + 14px)!important;
-    max-height:calc(100dvh - var(--ig-header-height) - 28px)!important;
+    box-sizing:border-box!important;
+    top:calc(var(--ig-header-height) + 10px)!important;
+    height:auto!important;
+    max-height:calc(100dvh - var(--ig-header-height) - 20px)!important;
     overflow-y:auto!important;
     overflow-x:hidden!important;
-    overscroll-behavior:contain;
+    overscroll-behavior-y:auto;
     scrollbar-gutter:stable;
     padding-right:12px!important;
+    padding-bottom:30px!important;
+    scroll-padding-bottom:30px;
   }
 
   #search .ig-search-filter-panel::-webkit-scrollbar{width:8px;}
 }
 
-/* Proximity: options inside one filter group belong visually together. */
-#search .ig-search-filter-panel .filter-section{margin-top:20px!important;}
+/* Proximity: options inside one filter group stay tight, groups stay clearly separated. */
+#search .ig-search-filter-panel .filter-section{margin-top:34px!important;}
 #search .ig-search-filter-panel .filter-section h3{margin-bottom:10px!important;}
-#search .ig-search-filter-panel .filter-option{padding:5px 0!important;}
-#search .ig-search-filter-panel .genre-options{gap:2px!important;}
+#search .ig-search-filter-panel .filter-option{padding:4px 0!important;}
+#search .ig-search-filter-panel .genre-options{gap:1px!important;}
 #search .ig-search-filter-panel .genre-option{
-  min-height:34px!important;
-  padding:3px 6px!important;
+  min-height:32px!important;
+  padding:2px 6px!important;
   gap:9px!important;
 }
-#search .ig-search-filter-panel .range-block{margin-top:20px!important;}
+#search .ig-search-filter-panel .range-block{margin-top:34px!important;}
+#search .ig-search-filter-panel .year-range-inputs{margin-bottom:8px!important;}
