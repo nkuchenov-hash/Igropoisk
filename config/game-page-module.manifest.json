@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "module": "game-page-assembly",
-  "module_version": "2026-09-03.1",
+  "module_version": "2026-09-03.2",
   "ownership": "game-page-module",
   "canonical_document": "docs/GAME_PAGE_MODULE_STABLE.md",
   "contract": {
@@ -18,7 +18,15 @@
     "game_specific_presentation_hardcode_forbidden": true,
     "runtime_monkey_patching_forbidden": true,
     "paid_ai_required": false,
-    "editorial_backend": "ollama:qwen2.5:3b",
+    "editorial_backend": "provider-router:zero-host-first",
+    "editorial_provider_order": [
+      "openrouter:kimi-k2.6-free",
+      "gigachat:3-ultra-with-2-max-fallback",
+      "gemini:2.5-pro",
+      "groq:qwen3.8-27b",
+      "ollama:qwen2.5:3b-fallback"
+    ],
+    "local_gpu_server_required": false,
     "failure_mode": "fail_closed"
   },
   "publication_boundary": {
@@ -123,7 +131,8 @@
     "scripts/collect-game-sources.mjs": ["discover-game-sources-web.mjs","discover-game-publication-hubs.mjs","coverage_blocks_page_publication:false"],
     "scripts/quality-control-loop.mjs": ["materialize-page-editorial.mjs","validate-game-page-content.mjs","validate-game-media-quality.mjs"],
     "scripts/run-content-pipeline.mjs": ["canonicalizePage","finalize-game-page-publication.mjs","published package is immutable","failed revision restored last published canonical page package"],
-    "scripts/run-game-catalog-enrichment.mjs": ["freePageAiAvailable","reviewAiAvailable","page_relations_paid_api:false","Free Qwen/Ollama unavailable"],
+    "scripts/run-game-catalog-enrichment.mjs": ["freePageAiAvailable","reviewAiAvailable","page_relations_paid_api:false","No zero-host/local editorial provider configured"],
+    "scripts/lib/free-editorial-ai.mjs": ["EDITORIAL_AI_PROVIDER_ORDER","OPENROUTER_API_KEY","moonshotai/kimi-k2.6:free","GIGACHAT_CREDENTIALS","GigaChat-3-Ultra","GigaChat-2-Max","GEMINI_API_KEY","gemini-2.5-pro","GROQ_API_KEY","qwen/qwen3.8-27b","OLLAMA_BASE_URL","qwen2.5:3b","All editorial AI providers failed"],
     "scripts/finalize-game-page-publication.mjs": ["data/catalog-visible.json","game-page-publication-finalizer","public_ready:true"],
     "scripts/build-game-page.mjs": ["free-editorial-ai.mjs","needs_revision","public_ready:false"],
     "scripts/build-game-page-basic.mjs": ["needs_revision","public_ready:false"],
@@ -146,11 +155,11 @@
     "game/_shared/game-page-v3.js": ["if(!dialog||!scale||!note||!dialogTitle||!rateGame||!rateInline||!close)return","if(articleUrl)","mergeGame(curatedFile?.games?.[slug]","rating-meter","game-hero__preview"],
     "game/_shared/game-page-v3-bootstrap.js": ["hydrateVerifiedPresentation","document.createElement('script')","game-runtime-error"],
     "game/_shared/game-page-integrity.js": ["if(!own?.url)","if(hydrated){clearInterval(timer)","if(attempts>=1200)clearInterval(timer)","guides-layout--single-column","ig-card__media"],
-    ".github/workflows/content-pipeline.yml": ["validate-game-page-module-integrity.mjs","hydrate-game-page-assembly-queue.mjs","ack-game-page-assembly-queue.mjs","run-content-pipeline.mjs"],
+    ".github/workflows/content-pipeline.yml": ["validate-game-page-module-integrity.mjs","hydrate-game-page-assembly-queue.mjs","ack-game-page-assembly-queue.mjs","run-content-pipeline.mjs","EDITORIAL_AI_PROVIDER_ORDER","OPENROUTER_API_KEY","GIGACHAT_CREDENTIALS","GEMINI_API_KEY","GROQ_API_KEY","Start local Qwen fallback only when no zero-host provider is configured"],
     ".github/workflows/game-page-quality.yml": ["validate-game-page-module-integrity.mjs"],
     ".github/workflows/phase-a-validation.yml": ["validate-game-page-module-integrity.mjs"],
     ".github/workflows/pages.yml": ["validate-game-page-module-integrity.mjs","validate-game-page-publication-state.mjs"],
-    "docs/GAME_PAGE_MODULE_STABLE.md": ["published canonical package","Queue-only adapters","Copy-only promoters","runtime monkey-patching","Coverage quota источников не является publication gate страницы"],
+    "docs/GAME_PAGE_MODULE_STABLE.md": ["published canonical package","Queue-only adapters","Copy-only promoters","runtime monkey-patching","Coverage quota источников не является publication gate страницы","zero-host editorial provider router"],
     "docs/SYSTEM_ARCHITECTURE.md": ["GAME PAGE ASSEMBLY MODULE","GAME_PAGE_MODULE_STABLE.md","config/game-page-module.manifest.json","собственный обзор Игропоиска — отдельная публикация","плохая новая ревизия не заменяет последнюю good public version"]
   }
 }
