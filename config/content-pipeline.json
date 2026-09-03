@@ -1,26 +1,12 @@
 {
-  "schema_version": 3,
+  "schema_version": 1,
   "id": "content-pipeline",
-  "title": "Контентный оркестратор Игропоиска",
+  "title": "Контентный конвейер Игропоиска",
   "status": "active",
-  "purpose": "Координировать страницу игры как каноническую базу фактов, медиа и источников, а также независимую review/editorial-подсистему, которая использует эту базу для создания собственного обзора.",
-  "module_boundaries": {
-    "game_page_module": {
-      "owns": ["game identity", "game facts", "canonical game source corpus", "professional review links as game sources", "source scores and provenance", "game media", "relations", "similarity data", "page quality", "shared page rendering", "page publication"],
-      "must_not_require": ["published editorial review", "review synthesis", "review article publication"],
-      "source_corpus_output": "data/game-sources/{slug}.json",
-      "source_corpus_consumers": ["game page", "Game DNA", "media enrichment", "short descriptions", "similarity", "rating", "review/editorial subsystem"],
-      "may_consume": ["published review", "calculated review score", "news", "guides", "other related content"]
-    },
-    "review_editorial_subsystem": {
-      "owns": ["editorial review synthesis", "review text quality", "review publication"],
-      "must_reuse": ["canonical game source corpus"],
-      "must_not_create_parallel_source_registry": true,
-      "links_to_page_by": ["canonical game_id", "slug"]
-    }
-  },
+  "purpose": "Автоматически обнаруживать игры, собирать проверенные страницы, ставить обзоры в очередь и поддерживать опубликованные материалы в актуальном состоянии.",
   "execution_limits": {
     "pages_per_run": 2,
+    "page_assembly_queue_per_run": 8,
     "reviews_per_run": 1
   },
   "page_gate": {
@@ -28,16 +14,11 @@
     "minimum_sources": 10,
     "minimum_features": 4,
     "minimum_screenshots": 6,
-    "require_source_corpus": true,
-    "require_complete_editorial_source_scan": true,
     "require_official_video_when_available": true,
-    "require_published_review": false,
     "publish_below_gate": false
   },
   "review_gate": {
     "policy_file": "config/parsers/review-synthesis.json",
-    "source_corpus_file": "data/game-sources/{slug}.json",
-    "independent_from_page_publication": true,
     "publish_below_gate": false
   },
   "refresh_cadence_days": {

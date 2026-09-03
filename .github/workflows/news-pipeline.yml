@@ -56,9 +56,8 @@ on:
       - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
       - 'scripts/prepare-news-game-page-requests.mjs'
-      - 'scripts/ensure-game-page.mjs'
-      - 'scripts/run-news-game-page-fast.mjs'
-      - 'scripts/materialize-news-game-pages-fast.mjs'
+      - 'scripts/publish-game-page-assembly-queue.mjs'
+      - 'scripts/test-game-page-assembly-queue.mjs'
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
       - 'scripts/test-news-pipeline-health.mjs'
@@ -84,6 +83,7 @@ on:
       - 'scripts/lib/news-editor-qwen.mjs'
       - 'scripts/lib/news-editor-production.mjs'
       - 'scripts/lib/news-editor-policy.mjs'
+      - 'scripts/lib/news-content-policy.mjs'
       - 'scripts/lib/news-editorial-summary.mjs'
       - 'scripts/lib/news-home-selector.mjs'
       - 'scripts/lib/news-game-linker.mjs'
@@ -94,12 +94,12 @@ on:
       - 'scripts/lib/news-game-registry-discovery.mjs'
       - 'scripts/lib/news-game-hashtag.mjs'
       - 'scripts/lib/news-media-policy.mjs'
+      - 'scripts/lib/game-page-assembly-queue.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/prune-news-storage.mjs'
       - 'scripts/prune-news-media-cache.mjs'
       - 'scripts/publish-news-storage.mjs'
       - '.github/workflows/news-commercial-preflight.yml'
-      - '.github/workflows/news-game-page-fast.yml'
       - '.github/workflows/news-pipeline.yml'
 
 permissions:
@@ -159,9 +159,8 @@ jobs:
           node --check scripts/preserve-news-history.mjs
           node --check scripts/audit-news-game-hashtags.mjs
           node --check scripts/prepare-news-game-page-requests.mjs
-          node --check scripts/ensure-game-page.mjs
-          node --check scripts/run-news-game-page-fast.mjs
-          node --check scripts/materialize-news-game-pages-fast.mjs
+          node --check scripts/publish-game-page-assembly-queue.mjs
+          node --check scripts/lib/game-page-assembly-queue.mjs
           node --check scripts/lib/news-editor-qwen.mjs
           node --check scripts/lib/news-editor-production.mjs
           node --check scripts/lib/news-editor-policy.mjs
@@ -178,6 +177,7 @@ jobs:
           node --check scripts/prune-news-storage.mjs
           node --check scripts/prune-news-media-cache.mjs
           node --check scripts/publish-news-storage.mjs
+          node scripts/test-game-page-assembly-queue.mjs
           node scripts/test-news-editor.mjs
           node scripts/test-news-commercial-quality.mjs
           node scripts/test-news-run287-regressions.mjs
@@ -246,28 +246,42 @@ jobs:
           node - <<'NODE' >> "$GITHUB_OUTPUT"
           const fs = require('fs');
           const result = JSON.parse(fs.readFileSync('tmp/news-game-page-requests.json', 'utf8'));
-          process.stdout.write(`count=${result.count}\nrequests_b64=${result.requests_b64}\n`);
+          process.stdout.write(`count=${result.count}\n`);
           NODE
 
-      - name: Create every verified missing game page through the shared Game Creator
+      - name: Put verified missing games into temporary page-assembly storage
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count != '0'
+        continue-on-error: true
         env:
-          GH_TOKEN: ${{ github.token }}
-          NEWS_GAME_REQUESTS_B64: ${{ steps.game_pages.outputs.requests_b64 }}
-        run: gh workflow run news-game-page-fast.yml --ref staging -f news_game_requests_b64="$NEWS_GAME_REQUESTS_B64"
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/publish-game-page-assembly-queue.mjs
 
-      - name: Defer snapshot publication until every verified game page is live
+      - name: Continue news publication independently from page assembly
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count != '0'
-        run: echo "Deferring news snapshot switch; ${COUNT} verified game page(s) are being created. The previous live snapshot remains active."
+        run: echo "Publishing fresh news now. ${COUNT} verified game(s) without pages were handed to temporary page-assembly storage; the page module will process them independently."
         env:
           COUNT: ${{ steps.game_pages.outputs.count }}
 
-      - name: Require canonical hashtag integrity without waiting for asynchronous page creation
+      - name: Require canonical hashtag integrity without waiting for page assembly
         if: steps.pipeline.outputs.status == 'success'
         run: node scripts/audit-news-game-hashtags.mjs --strict --allow-missing-pages --production-ref origin/main
 
-      - name: Reclaim redundant Object Storage snapshots
-        if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
+      - name: Publish compact live snapshot and stable monthly archive
+        if: steps.pipeline.outputs.status == 'success'
+        env:
+          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
+          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
+          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
+          YC_S3_REGION: ru-central1
+          YC_S3_ENDPOINT: https://storage.yandexcloud.net
+        run: node scripts/publish-news-storage.mjs
+
+      - name: Reclaim redundant Object Storage snapshots after publication
+        if: steps.pipeline.outputs.status == 'success'
         continue-on-error: true
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
@@ -277,18 +291,8 @@ jobs:
           YC_S3_ENDPOINT: https://storage.yandexcloud.net
         run: node scripts/prune-news-storage.mjs
 
-      - name: Publish compact live snapshot and stable monthly archive
-        if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
-        env:
-          YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
-          YC_S3_SECRET_ACCESS_KEY: ${{ secrets.YC_S3_SECRET_ACCESS_KEY }}
-          YC_S3_BUCKET: ${{ secrets.YC_S3_BUCKET }}
-          YC_S3_REGION: ru-central1
-          YC_S3_ENDPOINT: https://storage.yandexcloud.net
-        run: node scripts/publish-news-storage.mjs
-
       - name: Expire news image cache older than seven days
-        if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count == '0'
+        if: steps.pipeline.outputs.status == 'success'
         continue-on-error: true
         env:
           YC_S3_ACCESS_KEY_ID: ${{ secrets.YC_S3_ACCESS_KEY_ID }}
@@ -317,6 +321,7 @@ jobs:
             tmp/news-game-hashtag-normalization.json
             tmp/news-game-hashtag-audit.json
             tmp/news-game-page-requests.json
+            tmp/game-page-assembly-queue-publish.json
             tmp/news-storage-prune.json
             tmp/news-media-cache-prune.json
             data/news-pipeline-health.json
