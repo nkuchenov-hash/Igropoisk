@@ -13,10 +13,16 @@ import {
 } from './lib/news-game-linker.mjs';
 
 const root = await fs.mkdtemp(path.join(os.tmpdir(), 'ig-news-games-'));
-await fs.mkdir(path.join(root, 'data'), { recursive: true });
+await fs.mkdir(path.join(root, 'data', 'drafts'), { recursive: true });
 for (const slug of ['alpha-game', 'beta-game', 'control', 'marathon', 'doom']) {
   await fs.mkdir(path.join(root, 'game', slug), { recursive: true });
   await fs.writeFile(path.join(root, 'game', slug, 'index.html'), '<!doctype html>');
+  await fs.writeFile(path.join(root, 'data', 'drafts', `${slug}.json`), JSON.stringify({
+    publication: {
+      creator_source: 'game-page-assembly',
+      editorial_ready: true
+    }
+  }));
 }
 await fs.writeFile(path.join(root, 'data/catalog-visible.json'), JSON.stringify([
   { slug: 'alpha-game', title: 'Alpha Game', steam_appid: 101 },
