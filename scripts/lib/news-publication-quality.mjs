@@ -30,6 +30,10 @@ function cleanEntityCandidate(value = '') {
     .trim();
 }
 
+function unicodeTokenPattern(body) {
+  return new RegExp(`(?<![\\p{L}\\p{N}])(?:${body})(?![\\p{L}\\p{N}])`, 'iu');
+}
+
 export function decodeNewsSourceText(value = '') {
   return String(value)
     .replace(/&nbsp;/gi, ' ')
@@ -138,7 +142,7 @@ function repeatedParenthetical(value = '') {
 }
 
 function repeatedAdjacentWord(value = '') {
-  return /\b([А-Яа-яЁёA-Za-z]{4,})\s+\1\b/iu.test(String(value));
+  return /(?<![\p{L}\p{N}])([\p{L}]{4,})\s+\1(?![\p{L}\p{N}])/iu.test(String(value));
 }
 
 function htmlLeak(value = '') {
@@ -155,7 +159,7 @@ function requiresNoOneMeaning(source = '') {
 }
 
 function preservesNoOneMeaning(target = '') {
-  return /(?:\bникто\b|\bникого\b|\bникому\b|\bни\s+для\s+кого\b|\bни\s+у\s+кого\b)/iu.test(target);
+  return unicodeTokenPattern('(?:никто|никого|никому|ни\\s+для\\s+кого|ни\\s+у\\s+кого)').test(target);
 }
 
 function requiresNothingMeaning(source = '') {
@@ -163,7 +167,7 @@ function requiresNothingMeaning(source = '') {
 }
 
 function preservesNothingMeaning(target = '') {
-  return /\b(?:ничего|ничто)\b/iu.test(target);
+  return unicodeTokenPattern('(?:ничего|ничто)').test(target);
 }
 
 function requiresNeverMeaning(source = '') {
@@ -171,7 +175,7 @@ function requiresNeverMeaning(source = '') {
 }
 
 function preservesNeverMeaning(target = '') {
-  return /(?:\bникогда\b|\bни\s+разу\b)/iu.test(target);
+  return unicodeTokenPattern('(?:никогда|ни\\s+разу)').test(target);
 }
 
 function requiresWithoutMeaning(source = '') {
@@ -179,7 +183,7 @@ function requiresWithoutMeaning(source = '') {
 }
 
 function preservesWithoutMeaning(target = '') {
-  return /\bбез\b/iu.test(target);
+  return unicodeTokenPattern('без').test(target);
 }
 
 export function sourceLooksTruncated(input = {}) {
