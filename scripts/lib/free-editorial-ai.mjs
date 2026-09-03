@@ -6,6 +6,50 @@ const stripFence=value=>String(value||'').trim().replace(/^```(?:json)?\s*/i,'')
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 let bootstrapPromise=null;
 
+function decodeJsonStringPrefix(raw,start){
+  let value='';
+  for(let i=start;i<raw.length;i++){
+    const ch=raw[i];
+    if(ch==='"')return {value,closed:true,end:i+1};
+    if(ch!=='\\'){value+=ch;continue}
+    if(i+1>=raw.length)return {value,closed:false,end:raw.length};
+    const esc=raw[++i];
+    if(esc==='u'){
+      const hex=raw.slice(i+1,i+5);
+      if(!/^[0-9a-f]{4}$/i.test(hex))return {value,closed:false,end:raw.length};
+      value+=String.fromCharCode(parseInt(hex,16));i+=4;continue;
+    }
+    const escapes={n:'\n',r:'\r',t:'\t',b:'\b',f:'\f','"':'"','\\':'\\','/':'/'};
+    if(Object.prototype.hasOwnProperty.call(escapes,esc)){value+=escapes[esc];continue}
+    return {value,closed:false,end:raw.length};
+  }
+  return {value,closed:false,end:raw.length};
+}
+
+function recoverTruncatedEditorialJSON(raw,error){
+  const message=String(error?.message||'');
+  if(!/unterminated string|unexpected end/i.test(message))return null;
+  const textPrefix=/^\s*\{\s*"text"\s*:\s*"/i.exec(raw);
+  if(textPrefix){
+    const decoded=decodeJsonStringPrefix(raw,textPrefix[0].length);
+    if(decoded.value.trim().length>=40)return {text:decoded.value,_recovered_truncated_json:true};
+  }
+  const featuresPrefix=/^\s*\{\s*"features"\s*:\s*\[/i.exec(raw);
+  if(featuresPrefix){
+    const features=[];let i=featuresPrefix[0].length;
+    while(i<raw.length){
+      while(i<raw.length&&/[\s,]/.test(raw[i]))i++;
+      if(raw[i]!=="\"")break;
+      const decoded=decodeJsonStringPrefix(raw,i+1);
+      if(decoded.closed&&decoded.value.trim())features.push(decoded.value.trim());
+      if(!decoded.closed)break;
+      i=decoded.end;
+    }
+    if(features.length>=4)return {features,_recovered_truncated_json:true};
+  }
+  return null;
+}
+
 export function freeEditorialAIConfig(){
   return {
     baseUrl:trimSlash(process.env.OLLAMA_BASE_URL||'http://127.0.0.1:11434'),
@@ -64,7 +108,11 @@ export async function generateFreeEditorialJSON({system='',prompt,temperature=0.
     });
     if(!response.ok)throw new Error(`Ollama ${response.status}: ${(await response.text()).slice(0,1200)}`);
     const data=await response.json();const raw=stripFence(data?.message?.content||data?.response||'');if(!raw)throw new Error('Qwen/Ollama returned empty output');
-    let parsed;try{parsed=JSON.parse(raw)}catch(error){throw new Error(`Qwen/Ollama returned invalid JSON: ${error.message}`)}
+    let parsed;
+    try{parsed=JSON.parse(raw)}catch(error){
+      parsed=recoverTruncatedEditorialJSON(raw,error);
+      if(!parsed)throw new Error(`Qwen/Ollama returned invalid JSON: ${error.message}`);
+    }
     return {data:parsed,provider:'ollama',model,baseUrl};
   }catch(error){if(error?.name==='AbortError')throw new Error(`Qwen/Ollama timed out after ${timeoutMs} ms`);throw error}finally{clearTimeout(timer)}
 }
