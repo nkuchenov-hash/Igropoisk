@@ -120,3 +120,7 @@ jobs:
           name: igropoisk-staging-${{ github.sha }}
           path: |
             .
+            !.git/**
+            !.github/**
+          if-no-files-found: error
+          retention-days: 7
