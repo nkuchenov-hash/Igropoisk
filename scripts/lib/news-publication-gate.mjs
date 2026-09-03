@@ -14,7 +14,9 @@ function isSafeVerifiedGameIdentity({ title, slug }) {
 
 export function hasMissingGamePage(item = {}) {
   if (Array.isArray(item?.gameReviewReasons) && item.gameReviewReasons.includes('missing-game-page')) return true;
-  return (Array.isArray(item?.games) ? item.games : []).some(game => game && typeof game === 'object' && game.pageExists === false);
+  return (Array.isArray(item?.games) ? item.games : []).some(game => game && typeof game === 'object' && (
+    game.pageExists === false || game.pageReady === false || game.assemblyRequired === true
+  ));
 }
 
 export function collectMissingGamePageRequests(items = []) {
@@ -22,7 +24,9 @@ export function collectMissingGamePageRequests(items = []) {
   for (const item of items) {
     if (!hasMissingGamePage(item)) continue;
     for (const game of Array.isArray(item?.games) ? item.games : []) {
-      if (!game || typeof game !== 'object' || game.pageExists !== false) continue;
+      if (!game || typeof game !== 'object') continue;
+      const needsAssembly = game.pageExists === false || game.pageReady === false || game.assemblyRequired === true;
+      if (!needsAssembly) continue;
       const rawGameId = String(game.gameId || game.game_id || '').trim();
       const slug = String(game.slug || '').trim();
       const title = String(game.title || item.game || '').trim();

@@ -4,21 +4,26 @@ on:
   pull_request:
     branches: [staging]
     paths:
+      - 'game/pending/**'
       - 'scripts/merge-russian-news-feeds.mjs'
+      - 'scripts/normalize-news-game-hashtags.mjs'
+      - 'scripts/audit-news-game-hashtags.mjs'
       - 'scripts/lib/news-commercial-copy.mjs'
       - 'scripts/lib/news-content-policy.mjs'
       - 'scripts/lib/news-editorial-summary.mjs'
       - 'scripts/lib/news-editor-production.mjs'
       - 'scripts/lib/news-home-selector.mjs'
       - 'scripts/lib/news-primary-game-evidence.mjs'
-      - 'scripts/verify-news-game-identities.mjs'
-      - 'scripts/normalize-news-game-hashtags.mjs'
-      - 'scripts/prepare-news-game-page-requests.mjs'
+      - 'scripts/lib/news-publication-gate.mjs'
+      - 'scripts/lib/game-page-assembly-queue.mjs'
       - 'scripts/publish-game-page-assembly-queue.mjs'
-      - 'scripts/test-game-page-assembly-queue.mjs'
+      - 'scripts/verify-news-game-identities.mjs'
       - 'scripts/build-home-news.mjs'
       - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
+      - 'scripts/test-game-page-assembly-queue.mjs'
+      - 'scripts/test-news-fail-open-publication.mjs'
+      - 'scripts/test-news-publication-gate.mjs'
       - 'scripts/test-news-commercial-quality.mjs'
       - 'scripts/test-news-final-commercial-regressions.mjs'
       - 'scripts/test-news-run287-regressions.mjs'
@@ -32,21 +37,26 @@ on:
   push:
     branches: [staging, main]
     paths:
+      - 'game/pending/**'
       - 'scripts/merge-russian-news-feeds.mjs'
+      - 'scripts/normalize-news-game-hashtags.mjs'
+      - 'scripts/audit-news-game-hashtags.mjs'
       - 'scripts/lib/news-commercial-copy.mjs'
       - 'scripts/lib/news-content-policy.mjs'
       - 'scripts/lib/news-editorial-summary.mjs'
       - 'scripts/lib/news-editor-production.mjs'
       - 'scripts/lib/news-home-selector.mjs'
       - 'scripts/lib/news-primary-game-evidence.mjs'
-      - 'scripts/verify-news-game-identities.mjs'
-      - 'scripts/normalize-news-game-hashtags.mjs'
-      - 'scripts/prepare-news-game-page-requests.mjs'
+      - 'scripts/lib/news-publication-gate.mjs'
+      - 'scripts/lib/game-page-assembly-queue.mjs'
       - 'scripts/publish-game-page-assembly-queue.mjs'
-      - 'scripts/test-game-page-assembly-queue.mjs'
+      - 'scripts/verify-news-game-identities.mjs'
       - 'scripts/build-home-news.mjs'
       - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
+      - 'scripts/test-game-page-assembly-queue.mjs'
+      - 'scripts/test-news-fail-open-publication.mjs'
+      - 'scripts/test-news-publication-gate.mjs'
       - 'scripts/test-news-commercial-quality.mjs'
       - 'scripts/test-news-final-commercial-regressions.mjs'
       - 'scripts/test-news-run287-regressions.mjs'
@@ -82,7 +92,7 @@ jobs:
           node --check scripts/build-news-pipeline-health.mjs
           node --check scripts/run-news-pipeline.mjs
           node --check scripts/normalize-news-game-hashtags.mjs
-          node --check scripts/prepare-news-game-page-requests.mjs
+          node --check scripts/audit-news-game-hashtags.mjs
           node --check scripts/publish-game-page-assembly-queue.mjs
           node --check scripts/lib/news-commercial-copy.mjs
           node --check scripts/lib/news-content-policy.mjs
@@ -90,15 +100,19 @@ jobs:
           node --check scripts/lib/news-editor-production.mjs
           node --check scripts/lib/news-home-selector.mjs
           node --check scripts/lib/news-primary-game-evidence.mjs
+          node --check scripts/lib/news-publication-gate.mjs
+          node --check scripts/lib/game-page-assembly-queue.mjs
           node --check scripts/verify-news-game-identities.mjs
+          node scripts/test-game-page-assembly-queue.mjs
           node scripts/test-news-editor.mjs
           node scripts/test-news-commercial-quality.mjs
           node scripts/test-news-final-commercial-regressions.mjs
           node scripts/test-news-run287-regressions.mjs
           node scripts/test-news-run295-regressions.mjs
           node scripts/test-news-health-commercial-semantics.mjs
+          node scripts/test-news-fail-open-publication.mjs
           node scripts/test-news-fast-path-contract.mjs
-          node scripts/test-game-page-assembly-queue.mjs
+          node scripts/test-news-publication-gate.mjs
           node scripts/test-russian-news-feeds.mjs
           node scripts/test-news-home-selector.mjs
           node scripts/test-news-pipeline-health.mjs

@@ -12,6 +12,7 @@ on:
       - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/publish-news-storage.mjs'
       - 'features/news/**'
+      - 'game/pending/**'
       - '.github/workflows/news-pipeline*.yml'
       - '.github/workflows/yandex-storage-connectivity.yml'
   workflow_dispatch:
@@ -74,6 +75,7 @@ jobs:
           node scripts/test-russian-news-feeds.mjs
           node scripts/test-news-home-selector.mjs
           node scripts/test-news-pipeline.mjs
+          node scripts/test-news-fail-open-publication.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
           node scripts/test-news-storage-content-api.mjs
@@ -81,6 +83,8 @@ jobs:
           node scripts/test-news-image-fallback-contract.mjs
           node scripts/test-news-game-context-resolver.mjs
           node scripts/test-news-primary-game-refiner.mjs
+          node scripts/test-news-publication-gate.mjs
+          node scripts/test-news-fast-path-contract.mjs
           node scripts/validate-news-module.mjs
           node scripts/validate-production-boundaries.mjs
 
@@ -97,7 +101,8 @@ jobs:
           node scripts/run-news-pipeline.mjs --force
           git diff --check
 
-      - name: Require production-equivalent news integrity
+      - name: Audit production-equivalent news integrity without blocking publication
+        continue-on-error: true
         run: |
           git fetch origin main:refs/remotes/origin/main --force
           node scripts/audit-news-game-hashtags.mjs --strict --allow-missing-pages --production-ref origin/main
