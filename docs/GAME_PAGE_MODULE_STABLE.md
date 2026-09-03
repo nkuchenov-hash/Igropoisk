@@ -1,7 +1,7 @@
 # Игропоиск — стабильный модуль создания страниц игр
 
 **Статус:** STABLE MODULE CONTRACT  
-**Версия контракта:** 2026-09-03.1  
+**Версия контракта:** 2026-09-03.2  
 **Машиночитаемый состав:** `config/game-page-module.manifest.json`
 
 ## 1. Граница модуля
@@ -23,7 +23,7 @@ Game Registry / canonical identity
   → canonical source corpus
   → professional rating from currently confirmed direct reviews
   → media/content enrichment
-  → free local Qwen editorial repair
+  → zero-host editorial provider router
   → canonical page editorial
   → content QC + media QC + source validity QC + overall page QC
   → canonical identity normalization
@@ -64,11 +64,19 @@ Metacritic/OpenCritic и подобные агрегаторы могут исп
 
 Page editorial — не обзор. Это краткое описание, интегрированное описание, campaign/structure и features самой страницы.
 
-Для него используется бесплатный локальный backend `Ollama + qwen2.5:3b` через `scripts/lib/free-editorial-ai.mjs`. Paid OpenAI/API не является зависимостью page module.
+Для него используется `scripts/lib/free-editorial-ai.mjs` как **zero-host editorial provider router**. При наличии соответствующих credentials provider order по умолчанию такой:
+
+1. OpenRouter → `moonshotai/kimi-k2.6:free`;
+2. GigaChat → `GigaChat-3-Ultra`, с `GigaChat-2-Max` как fallback;
+3. Gemini → `gemini-2.5-pro`;
+4. Groq → `qwen/qwen3.8-27b`;
+5. только если ни одного zero-host provider не настроено — локальный `Ollama + qwen2.5:3b` как аварийный fallback.
+
+Для page module **не требуется собственный GPU-сервер** и **не требуется paid AI API**. Внешний provider может работать на free/freemium/provider plan; выбор тарифа не меняет publication contract. Credentials хранятся только в GitHub Secrets и не попадают в canonical artifacts.
 
 AI получает только уже собранные проверенные данные и текущий canonical source corpus. Его результат — candidate, а не source of truth. Он обязан пройти semantic/content QC и materialization в `data/page-editorial/<slug>.json`.
 
-Если Ollama/Qwen недоступен или результат не проходит QC, страница остаётся `needs_revision`; плохой fallback не публикуется.
+Если все настроенные providers недоступны или результат не проходит QC, страница остаётся `needs_revision`; плохой fallback не публикуется. Router может переключиться на следующий provider при технической ошибке, но не имеет права ослаблять content/QC gates.
 
 ## 6. Publication ownership
 
@@ -154,7 +162,7 @@ Runtime должен быть устойчив к независимому уд�
 - queue-only/copy-only/rollback-only/delegate/revision-safe границы;
 - фактические write targets public artifacts, а не простые упоминания путей;
 - отсутствие прямого `published/public_ready` writer вне finalizer;
-- бесплатный Ollama/Qwen backend без paid OpenAI dependency;
+- zero-host provider router, отсутствие обязательной paid AI dependency и сохранность локального Ollama/Qwen fallback;
 - наличие source/content/media/editorial gates;
 - отсутствие literal game-slug branching и runtime monkey-patching;
 - отсутствие синтетического собственного обзора;
@@ -187,7 +195,7 @@ Page module показывает все подтверждённые внешн�
 2. все обязательные module/page/runtime/staging gates green;
 3. builders, adapters, mutators, promoters и rollback физически не способны обойти sole finalizer или изменить published canonical package на месте;
 4. shared runtime не содержит game-specific presentation logic, runtime source rewriting или synthetic Review;
-5. бесплатный Ollama/Qwen backend реально отвечает структурированным JSON в CI без paid API;
+5. zero-host editorial provider router корректно выбирает настроенный provider, возвращает структурированный JSON, не требует собственного GPU-сервера и при отсутствии credentials сохраняет локальный Ollama/Qwen fallback;
 6. существующие finalized game pages проходят generic publication-state validation и реальный shared-runtime browser smoke;
 7. модуль безопасно проходит staging merge/promotion и production deployment/runtime gates.
 
