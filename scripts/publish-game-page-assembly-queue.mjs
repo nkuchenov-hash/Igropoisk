@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {createYandexObjectStorageClient} from './lib/yandex-object-storage.mjs';
+import {withStorageRetry} from './lib/storage-retry.mjs';
 import {
   gamePageAssemblyObjectKey,
   mergeGamePageAssemblyRequests,
@@ -19,6 +20,14 @@ const client = createYandexObjectStorageClient();
 const queued = [];
 const failed = [];
 
+const retryOptions = (operation, key) => ({
+  attempts: 3,
+  baseDelayMs: 200,
+  onRetry: ({attempt, nextAttempt, error}) => {
+    console.warn(`[game-page-assembly-queue] ${operation} ${key} transient failure on attempt ${attempt}; retrying attempt ${nextAttempt}: ${error.message}`);
+  }
+});
+
 for (const raw of requests) {
   let request;
   try {
@@ -30,7 +39,10 @@ for (const raw of requests) {
   const key = gamePageAssemblyObjectKey(request);
   let previous = null;
   try {
-    const response = await client.getObject(key);
+    const response = await withStorageRetry(
+      () => client.getObject(key),
+      retryOptions('read', key)
+    );
     previous = JSON.parse(await response.text());
   } catch (error) {
     if (!/failed with 404\b/.test(String(error?.message || error))) {
@@ -40,10 +52,13 @@ for (const raw of requests) {
   }
   const merged = mergeGamePageAssemblyRequests(previous, request);
   try {
-    await client.putObject(key, `${JSON.stringify(merged, null, 2)}\n`, {
-      contentType: 'application/json; charset=utf-8',
-      cacheControl: 'no-store'
-    });
+    await withStorageRetry(
+      () => client.putObject(key, `${JSON.stringify(merged, null, 2)}\n`, {
+        contentType: 'application/json; charset=utf-8',
+        cacheControl: 'no-store'
+      }),
+      retryOptions('write', key)
+    );
     queued.push({game_id: merged.game_id, slug: merged.slug, title: merged.title, key});
   } catch (error) {
     failed.push({game_id: merged.game_id, slug: merged.slug, reason: `write: ${error.message}`});
