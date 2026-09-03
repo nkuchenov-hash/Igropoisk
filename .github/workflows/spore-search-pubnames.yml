@@ -1,0 +1,26 @@
+name: Spore Publication Name Search Diagnostics
+on:
+  push:
+    branches: [diag/spore-search-results-20260903]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query publication names
+        run: |
+          node <<'NODE'
+          const pubs=['GameSpot','IGN','GameRevolution','WorthPlaying','Game Informer','GamesRadar','Gaming Nexus','Wired','Eurogamer','PC Gamer','GameSpy','Trusted Reviews','1UP','Edge'];
+          const decode=s=>String(s||'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#x27;|&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+          for(const pub of pubs){
+            const q=`"Spore Review" "${pub}" 2008`;
+            const u=new URL('https://www.bing.com/search');u.searchParams.set('format','rss');u.searchParams.set('count','20');u.searchParams.set('q',q);
+            const r=await fetch(u,{headers:{'user-agent':'Mozilla/5.0'},signal:AbortSignal.timeout(7000)}); const xml=await r.text();
+            console.log('\n### '+pub);let n=0;
+            for(const m of xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)){
+              const b=m[1],pick=t=>decode((b.match(new RegExp(`<${t}>([\\s\\S]*?)<\\/${t}>`,'i'))||[])[1]||'');
+              console.log(JSON.stringify({title:pick('title'),url:pick('link'),description:pick('description')})); if(++n>=5)break;
+            }
+          }
+          NODE
