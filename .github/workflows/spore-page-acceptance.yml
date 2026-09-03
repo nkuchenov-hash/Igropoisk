@@ -1,0 +1,157 @@
+name: Fresh Spore Game Page Acceptance
+
+on:
+  push:
+    branches:
+      - acceptance/spore-page-20260903
+
+permissions:
+  contents: write
+
+concurrency:
+  group: spore-page-acceptance
+  cancel-in-progress: false
+
+jobs:
+  build-spore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify module before fresh-game acceptance
+        run: node scripts/validate-game-page-module-integrity.mjs
+
+      - name: Register Spore as a canonical fresh game
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { GameRegistryApi } from './scripts/lib/game-registry.mjs';
+          const registryPath='data/game-registry/registry.transition.json';
+          const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+          const api=new GameRegistryApi(registry);
+          const registration=api.registerCandidate({
+            title:'Spore',
+            slug:'spore',
+            steamAppId:'17390',
+            kind:'game',
+            standalonePage:true,
+            releaseYear:2008,
+            source:{
+              type:'official_platform_store',
+              name:'Steam',
+              url:'https://store.steampowered.com/app/17390/Spore/'
+            },
+            discoveryReason:'explicit_fresh_game_acceptance',
+            status:'identified',
+            statusReason:'fresh Spore acceptance requested',
+            confidence:0.99
+          },{actor:'spore-acceptance'});
+          if(!registration.entity) throw new Error(`Spore identity unresolved: ${registration.decision}`);
+          fs.writeFileSync(registryPath,`${JSON.stringify(api.registry,null,2)}\n`);
+          fs.mkdirSync('tmp',{recursive:true});
+          fs.writeFileSync('tmp/spore-game-id.txt',registration.entity.id);
+          console.log(JSON.stringify({decision:registration.decision,game_id:registration.entity.id,slug:registration.entity.identity?.slug?.value,steam_appid:registration.entity.externalIds?.steamAppId},null,2));
+          NODE
+
+      - name: Parse official structured Spore data
+        run: node scripts/parse-game-data.mjs spore 17390 Spore
+
+      - name: Queue Spore into canonical Page Assembly
+        run: node scripts/ensure-game-page.mjs "$(cat tmp/spore-game-id.txt)"
+        env:
+          GAME_CREATOR_SOURCE: fresh-acceptance
+          GAME_SOURCE_URL: https://store.steampowered.com/app/17390/Spore/
+
+      - name: Cache free Qwen model
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama/models
+          key: ollama-qwen2.5-3b-v1-${{ runner.os }}
+
+      - name: Start free local Qwen editorial backend
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve > /tmp/ollama.log 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+          ollama pull qwen2.5:3b
+
+      - name: Build Spore through the canonical lifecycle
+        env:
+          GAME_TARGET_SLUG: spore
+          OLLAMA_BASE_URL: http://127.0.0.1:11434
+          OLLAMA_EDITORIAL_MODEL: qwen2.5:3b
+          OLLAMA_EDITORIAL_TIMEOUT_MS: '240000'
+          FREE_EDITORIAL_AI_ENABLED: '1'
+        run: node scripts/run-content-pipeline.mjs
+
+      - name: Require finalized Spore publication package
+        run: |
+          node scripts/validate-game-page-publication-state.mjs spore
+          node scripts/validate-game-shells.mjs spore
+          test -f game/spore/index.html
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const draft=JSON.parse(fs.readFileSync('data/drafts/spore.json','utf8'));
+          const editorial=JSON.parse(fs.readFileSync('data/page-editorial/spore.json','utf8'));
+          const sources=JSON.parse(fs.readFileSync('data/game-sources/spore.json','utf8'));
+          if(draft.publication?.status!=='published'||draft.publication?.public_ready!==true) throw new Error('Spore was not finalized as published/public_ready');
+          if(editorial.quality_status!=='green') throw new Error(`Spore editorial is not green: ${editorial.quality_status}`);
+          if(sources.discovery?.complete!==true) throw new Error('Spore source discovery is incomplete');
+          console.log(JSON.stringify({publication:draft.publication,editorial_quality:editorial.quality_status,source_discovery:sources.discovery},null,2));
+          NODE
+
+      - name: Commit fresh Spore acceptance output
+        run: |
+          git config user.name "igropoisk-acceptance[bot]"
+          git config user.email "igropoisk-acceptance[bot]@users.noreply.github.com"
+          git add -A -- \
+            data/game-registry/registry.transition.json \
+            data/parser-output/spore.json \
+            data/parser-runs \
+            data/drafts/spore.json \
+            data/page-editorial/spore.json \
+            data/game-sources/spore.json \
+            data/ratings/spore.json \
+            data/quality-control \
+            data/research \
+            data/media-candidates \
+            data/game-media \
+            data/content-pipeline \
+            data/catalog-visible.json \
+            data/game-content \
+            game/spore
+          if git diff --cached --quiet; then
+            echo "No Spore acceptance output changed."
+            exit 0
+          fi
+          git commit -m "test: materialize fresh Spore game page"
+          git push origin HEAD:acceptance/spore-page-20260903
+
+      - name: Preserve acceptance diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spore-page-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            tmp/spore-game-id.txt
+            data/parser-output/spore.json
+            data/drafts/spore.json
+            data/page-editorial/spore.json
+            data/game-sources/spore.json
+            data/ratings/spore.json
+            data/quality-control/*spore*.json
+            data/content-pipeline/execution-log.json
+            game/spore/index.html
+          if-no-files-found: warn
+          retention-days: 14
