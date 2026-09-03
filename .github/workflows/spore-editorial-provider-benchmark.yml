@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   benchmark:
@@ -23,6 +24,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Restore identical accepted Spore evidence corpus
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rm -rf /tmp/spore-benchmark-base
+          mkdir -p /tmp/spore-benchmark-base
+          mkdir -p data/parser-output data/drafts data/game-sources data/ratings
+          gh run download 33793623719 -n spore-full-pr-acceptance-33793623719-1 -D /tmp/spore-benchmark-base
+          cp /tmp/spore-benchmark-base/data/parser-output/spore.json data/parser-output/spore.json
+          cp /tmp/spore-benchmark-base/data/drafts/spore.json data/drafts/spore.json
+          cp /tmp/spore-benchmark-base/data/game-sources/spore.json data/game-sources/spore.json
+          cp /tmp/spore-benchmark-base/data/ratings/spore.json data/ratings/spore.json
       - name: Generate Spore editorial with ${{ matrix.provider }} only
         env:
           EDITORIAL_AI_PROVIDER_ORDER: ${{ matrix.provider }}
