@@ -44,10 +44,12 @@ jobs:
         env:
           EDITORIAL_AI_PROVIDER_ORDER: ${{ matrix.provider }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_EDITORIAL_MODEL: moonshotai/kimi-k2:free
           GIGACHAT_CREDENTIALS: ${{ secrets.GIGACHAT_CREDENTIALS }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GIGACHAT_SCOPE: GIGACHAT_API_PERS
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_EDITORIAL_MODEL: gemini-3.7-flash
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           if [ "${{ matrix.provider }}" = "gigachat" ]; then
             export NODE_EXTRA_CA_CERTS=/tmp/russian_trusted_root_ca_pem.crt
