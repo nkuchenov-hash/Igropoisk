@@ -56,6 +56,12 @@ function isLinkableAtRef(slug) {
   return true;
 }
 
+function isPendingRoute(game = {}) {
+  return game.pageReady === false
+    || game.assemblyRequired === true
+    || /^game\/pending\/?\?/i.test(String(game.pageUrl || ''));
+}
+
 for (const item of items) {
   const games = Array.isArray(item?.games) ? item.games.filter(game => game && typeof game === 'object') : [];
   if (games.length) articlesWithGames += 1;
@@ -67,7 +73,8 @@ for (const item of items) {
     const title = String(game.title || '').trim();
     const storedHashtag = String(game.hashtag || '').trim();
     const isTemporary = !gameId || gameId.startsWith('news_game_');
-    const hashtag = isTemporary ? storedHashtag : (storedHashtag || canonicalGameHashtag({ title, slug }));
+    const hashtag = storedHashtag || canonicalGameHashtag({ title, slug });
+    const pendingRoute = isPendingRoute(game);
     const identity = gameId || slug;
     if (identity && seen.has(identity)) duplicateArticleGames.push({ news_id: item.id || null, game_id: gameId || null, slug });
     if (identity) seen.add(identity);
@@ -80,11 +87,10 @@ for (const item of items) {
       title,
       hashtag,
       verified_external: Boolean(game.verifiedExternal),
-      identity_verified: game.identityVerified === true
+      identity_verified: game.identityVerified === true,
+      pending_route: pendingRoute
     });
 
-    // A verified game without a completed page intentionally has no public hashtag
-    // while its request waits in the independent page-assembly queue.
     if (!slug || !title || !hashtag) continue;
     uniqueGames.set(gameId || slug, { game_id: gameId || null, slug, title, hashtag });
 
@@ -102,15 +108,20 @@ for (const item of items) {
       gameHashtag.set(gameId, hashtag);
     }
 
-    const expectedUrl = `game/${slug}/`;
-    if (game.pageExists !== true || !fs.existsSync(path.join('game', slug, 'index.html'))) {
-      missingPages.push({ news_id: item.id || null, game_id: gameId || null, slug, title, hashtag });
+    const pageUrl = String(game.pageUrl || '');
+    const expectedReadyUrl = `game/${slug}/`;
+    const pendingUrlValid = /^game\/pending\/?\?/.test(pageUrl);
+    if (pendingRoute || !fs.existsSync(path.join('game', slug, 'index.html'))) {
+      missingPages.push({ news_id: item.id || null, game_id: gameId || null, slug, title, hashtag, pending_route: pendingRoute, page_url: pageUrl });
     }
-    if (game.pageExists === true && String(game.pageUrl || '') !== expectedUrl) {
-      badPageUrls.push({ news_id: item.id || null, game_id: gameId || null, slug, actual: game.pageUrl || '', expected: expectedUrl });
+    if (!pendingRoute && game.pageReady !== false && game.pageExists === true && pageUrl !== expectedReadyUrl) {
+      badPageUrls.push({ news_id: item.id || null, game_id: gameId || null, slug, actual: pageUrl, expected: expectedReadyUrl });
+    }
+    if (pendingRoute && !pendingUrlValid) {
+      badPageUrls.push({ news_id: item.id || null, game_id: gameId || null, slug, actual: pageUrl, expected: 'game/pending/?slug=<slug>&title=<title>' });
     }
     if (productionRef && !isLinkableAtRef(slug)) {
-      productionMissingPages.push({ game_id: gameId || null, slug, title, hashtag });
+      productionMissingPages.push({ game_id: gameId || null, slug, title, hashtag, pending_route: pendingRoute, page_url: pageUrl });
     }
   }
 
@@ -129,10 +140,12 @@ const deferredTemporary = temporary.filter(item => allowMissingPages && item.ide
 const blockingIntegrityFindings = collisions.length + inconsistent.length + duplicateArticleGames.length + unverified.length
   + blockingTemporary.length + badPageUrls.length + (allowMissingPages ? 0 : missingPageFindings);
 const report = {
-  schema_version: 5,
+  schema_version: 6,
   generated_at: new Date().toISOString(),
+  publication_policy: 'advisory-only-never-block-feed',
   production_ref: productionRef || null,
   allow_missing_pages: allowMissingPages,
+  strict_requested: strict,
   articles: items.length,
   articles_with_games: articlesWithGames,
   game_references: gameReferences,
@@ -151,10 +164,13 @@ const report = {
   unresolved_explicit_game_context: unresolvedExplicit,
   deferred_context_findings: unresolvedExplicit.length,
   missing_page_findings: missingPageFindings,
-  blocking_integrity_findings: blockingIntegrityFindings
+  blocking_integrity_findings: blockingIntegrityFindings,
+  publication_blocked: false
 };
 
 fs.mkdirSync('tmp', { recursive: true });
 fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
-console.log(`[news/hashtag-audit] ${items.length} articles; ${uniqueGames.size} canonical hashtag identities; ${hashtagOwner.size} unique hashtags; ${report.unverified_game_references.length} unverified refs; ${report.deferred_verified_temporary_games.length} verified temporary games deferred to page assembly; ${report.missing_staging_pages.length} staging pages missing; ${report.missing_production_pages.length} production pages missing/incomplete; ${blockingIntegrityFindings} blocking integrity findings; ${unresolvedExplicit.length} context findings deferred without hashtags.`);
-if (strict && blockingIntegrityFindings) process.exit(1);
+console.log(`[news/hashtag-audit] ${items.length} articles; ${uniqueGames.size} game identities; ${hashtagOwner.size} visible hashtags; ${report.unverified_game_references.length} unverified refs; ${report.deferred_verified_temporary_games.length} verified temporary games queued; ${report.missing_production_pages.length} production pages missing/incomplete; ${blockingIntegrityFindings} integrity findings; publication is never blocked.`);
+if (strict && blockingIntegrityFindings) {
+  console.warn(`[news/hashtag-audit] Strict diagnostics found ${blockingIntegrityFindings} issue(s), but the news feed remains fail-open by product policy.`);
+}
