@@ -1,6 +1,46 @@
 (()=>{
   'use strict';
 
+  const NEWS_QUERY_KEYS=['page','game','type','story','view'];
+  const NON_NEWS_PAGES=new Set(['home','what-to-play','search']);
+
+  function explicitPageFromHash(){
+    const page=decodeURIComponent(window.location.hash.replace(/^#/,''));
+    return NON_NEWS_PAGES.has(page)||page==='news'?page:'';
+  }
+
+  function clearNewsRouteState(page){
+    if(!NON_NEWS_PAGES.has(page))return;
+    const url=new URL(window.location.href);
+    const hasNewsState=url.searchParams.get('page')==='news'
+      ||url.searchParams.has('game')
+      ||url.searchParams.has('type')
+      ||url.searchParams.has('story')
+      ||url.searchParams.has('view');
+    if(!hasNewsState)return;
+    NEWS_QUERY_KEYS.forEach(key=>url.searchParams.delete(key));
+    url.hash=page==='home'?'':encodeURIComponent(page);
+    window.history.replaceState(window.history.state,'',url);
+  }
+
+  function cleanExplicitNonNewsRoute(){
+    const page=explicitPageFromHash();
+    if(page&&page!=='news')clearNewsRouteState(page);
+  }
+
+  // News filters are query parameters, while the main SPA section is a hash.
+  // Once the user leaves News, the news-only query state must not survive and
+  // reopen News on the next reload.
+  cleanExplicitNonNewsRoute();
+  document.addEventListener('click',event=>{
+    const pageButton=event.target.closest?.('[data-page]');
+    const page=pageButton?.dataset?.page||'';
+    if(!NON_NEWS_PAGES.has(page))return;
+    queueMicrotask(()=>clearNewsRouteState(page));
+  });
+  window.addEventListener('hashchange',cleanExplicitNonNewsRoute);
+  window.addEventListener('popstate',cleanExplicitNonNewsRoute);
+
   const arx = {
     slug:'arx-fatalis',
     title:'Arx Fatalis',
