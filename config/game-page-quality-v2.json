@@ -1,20 +1,14 @@
 {
-  "schema_version": 3,
-  "game_source_corpus": {
-    "minimum_professional_sources": 10,
-    "target_professional_sources": 20,
-    "maximum_professional_sources": null,
+  "schema_version": 2,
+  "review_corpus": {
+    "minimum_sources": 10,
+    "target_sources": 20,
+    "maximum_sources": 20,
     "candidate_target": 32,
     "minimum_contemporary_modern": 8,
     "minimum_contemporary_historical": 6,
-    "require_registry_scan": true,
-    "require_broad_web_discovery": true,
-    "collect_all_discovered": true,
-    "public_on_game_page": true,
-    "canonical_output": "data/game-sources/{slug}.json",
-    "consumers": ["game page", "Game DNA", "media", "short descriptions", "similarity", "rating", "review/editorial"],
     "forbidden_title_or_url_terms": ["walkthrough", "guide", "wiki", "tips", "build", "builds", "news", "preview", "interview", "how-to", "howto", "攻略", "прохождение", "гайд", "советы", "новости", "превью", "интервью"],
-    "forbidden_domains_as_professional_reviews": ["store.steampowered.com", "steamcommunity.com", "metacritic.com", "opencritic.com", "reddit.com", "youtube.com", "youtu.be", "fandom.com"]
+    "forbidden_domains": ["store.steampowered.com", "steamcommunity.com", "metacritic.com", "opencritic.com", "reddit.com", "youtube.com", "youtu.be", "fandom.com"]
   },
   "rating": {
     "minimum_sources": 5,
@@ -23,7 +17,6 @@
     "require_exhaustive_discovery": true,
     "use_all_discovered_scores": true,
     "method": "arithmetic_mean",
-    "source_corpus": "data/game-sources/{slug}.json",
     "output_scale": 10,
     "rounding_decimals": 1,
     "letter_grade_map": {"A+": 10, "A": 9.5, "A-": 9, "B+": 8.5, "B": 8, "B-": 7.5, "C+": 7, "C": 6.5, "C-": 6, "D+": 5.5, "D": 5, "D-": 4.5, "F": 2.5}
