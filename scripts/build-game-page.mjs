@@ -6,106 +6,104 @@ import {generateGamePageEditorialJSON} from './lib/game-page-editorial-ai.mjs';
 const root=process.cwd();
 const slug=String(process.argv[2]||'').trim();
 if(!slug)throw new Error('Usage: node scripts/build-game-page.mjs <slug>');
+
 const read=(p,f=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,p),'utf8'))}catch{return f}};
 const write=(p,v)=>{const t=path.join(root,p);fs.mkdirSync(path.dirname(t),{recursive:true});fs.writeFileSync(t,JSON.stringify(v,null,2)+'\n')};
 const clean=v=>String(v||'').replace(/\s+/g,' ').trim();
 const cyrillicRatio=v=>{const s=clean(v);const letters=(s.match(/[A-Za-zА-Яа-яЁё]/g)||[]).length;return letters?(s.match(/[А-Яа-яЁё]/g)||[]).length/letters:0};
-const stripNoise=v=>clean(v).replace(/^Discovered by existing verified corpus;\s*matched alias:\s*[^ ]+\s*/i,'').replace(/^matched alias:\s*[^ ]+\s*/i,'');
-const junk=/\b(add source|\d+[hm] ago|review filters|widget-maker|creating an account|sign in|privacy policy|cookie|subscriber|purchase this game|release date:|publisher:|developer:)\b/i;
-const semantic=/\b(creator|create|creation|build|editor|evol|species|creature|cell|tribe|civilization|space|galaxy|planet|world|explor|combat|fight|manage|player|play|progress|stage|level|quest|mission|story|vehicle|building|starship|universe|god|созда|стро|редактор|эволюц|вид|существ|клет|плем|цивилизац|космос|галак|планет|мир|исслед|бой|сраж|управ|игрок|игров|развит|этап|уров|мисси|сюжет)\w*/i;
-const boundNaturalText=(value,min,limit)=>{
-  const text=clean(value);
-  if(text.length<=limit)return text;
-  const sentences=text.match(/[^.!?…]+(?:[.!?…]+|$)/g)||[];
-  let prefix='';
-  for(const sentence of sentences){
-    const candidate=clean(`${prefix} ${sentence}`);
-    if(candidate.length>limit)break;
-    prefix=candidate;
-  }
-  if(prefix.length>=min)return prefix;
-  const punctuation=[...text.matchAll(/[;,—–:]\s+/g)].map(match=>match.index+1).filter(index=>index>=min&&index<=limit);
-  if(punctuation.length){
-    const cut=clean(text.slice(0,punctuation.at(-1)).replace(/[;,—–:]$/,''));
-    if(cut.length>=min)return `${cut}.`;
-  }
-  return text;
-};
+const stripNoise=v=>clean(v)
+  .replace(/^Discovered by existing verified corpus;\s*/i,'')
+  .replace(/^matched alias:\s*[^.;:]+[.;:]?\s*/i,'');
+const junk=/\b(add source|review filters|widget-maker|creating an account|sign in|privacy policy|cookie|subscriber|purchase this game|all rights reserved|advertisement|newsletter|release date:|publisher:|developer:)\b/i;
+const normalizeForDup=v=>clean(v).toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').trim();
+const wordSet=v=>new Set(normalizeForDup(v).split(/\s+/).filter(x=>x.length>=4));
+const similarity=(a,b)=>{const A=wordSet(a),B=wordSet(b);if(!A.size||!B.size)return 0;let hit=0;for(const x of A)if(B.has(x))hit++;return hit/Math.min(A.size,B.size)};
+const bound=(value,min,max)=>{const text=clean(value);if(text.length<=max)return text;const parts=text.match(/[^.!?…]+(?:[.!?…]+|$)/g)||[];let out='';for(const part of parts){const next=clean(`${out} ${part}`);if(next.length>max)break;out=next}return out.length>=min?out:text};
 
-const draft=read(`data/drafts/${slug}.json`),knowledge=read(`data/game-knowledge/${slug}.json`,{}),ratings=read(`data/ratings/${slug}.json`,{});
+const draft=read(`data/drafts/${slug}.json`);
+const knowledge=read(`data/game-knowledge/${slug}.json`,{});
+const ratings=read(`data/ratings/${slug}.json`,{});
 if(!draft?.identity?.title)throw new Error(`Missing draft for ${slug}`);
 if(knowledge?.status!=='green'||!Array.isArray(knowledge.defining_claims)||knowledge.defining_claims.length<4)throw new Error(`${slug}: green accumulated game knowledge is required before editorial writing`);
 
-const seen=new Set();
-const cleanClaims=[];
+const claims=[];const seen=new Set();
 for(const [index,item] of knowledge.defining_claims.entries()){
-  const claim=stripNoise(item?.claim);const key=claim.toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').slice(0,180);
-  if(claim.length<35||junk.test(claim)||!semantic.test(claim)||seen.has(key))continue;
-  seen.add(key);cleanClaims.push({...item,claim,claim_id:String(item?.claim_id||`claim-${index+1}`)});
+  const claim=stripNoise(item?.claim);const key=normalizeForDup(claim).slice(0,220);
+  if(claim.length<35||junk.test(claim)||seen.has(key))continue;
+  seen.add(key);claims.push({...item,claim,claim_id:String(item?.claim_id||`claim-${index+1}`)});
 }
-if(cleanClaims.length<4)throw new Error(`${slug}: only ${cleanClaims.length} clean source-grounded claims remain after evidence hygiene`);
-const pick=re=>cleanClaims.find(x=>re.test(x.claim))?.claim||'';
-const progression=pick(/\b(evol|single cell|stage|progress|species|tribe|civilization|space|interstellar|развит|эволюц|клет|этап|плем|цивилизац|космос)\w*/i);
-const role=pick(/\b(creator|architect|you |player|guide|control|созда|архитектор|игрок|управ|вед)\w*/i);
-const loop=pick(/\b(create|editor|build|explor|combat|manage|creation tools|созда|редактор|стро|исслед|бой|управ)\w*/i);
-const world=pick(/\b(universe|world|planet|galaxy|species become part|вселен|мир|планет|галак)\w*/i);
-const essenceParts=[progression,role,loop,world,...cleanClaims.map(x=>x.claim)].filter(Boolean);
-const essence=[...new Set(essenceParts)].slice(0,3).join(' ');
-knowledge.defining_claims=cleanClaims;
-knowledge.game_essence=essence;
-knowledge.player_role=role||cleanClaims[0].claim;
-knowledge.core_loop=loop||cleanClaims[1]?.claim||cleanClaims[0].claim;
-knowledge.progression_structure=progression||cleanClaims[0].claim;
-knowledge.world_structure=world||cleanClaims.find(x=>x.claim!==knowledge.progression_structure)?.claim||cleanClaims[0].claim;
-knowledge.mechanics=[...new Set([loop,...cleanClaims.map(x=>x.claim)].filter(Boolean))].slice(0,8);
-knowledge.distinctive_features=[...new Set(cleanClaims.map(x=>x.claim))].slice(0,8);
-knowledge.evidence_hygiene={version:1,clean_claims:cleanClaims.length,removed_claims:(knowledge.defining_claims_original_count||0)||Math.max(0,(knowledge.defining_claims?.length||0)-cleanClaims.length),search_boilerplate_forbidden:true,semantic_relevance_required:true};
+if(claims.length<4)throw new Error(`${slug}: only ${claims.length} clean source-grounded claims remain after evidence hygiene`);
+knowledge.defining_claims=claims;
+knowledge.evidence_hygiene={version:2,clean_claims:claims.length,boilerplate_forbidden:true,duplicate_claims_forbidden:true};
 knowledge.status='green';
 write(`data/game-knowledge/${slug}.json`,knowledge);
 
-const facts=cleanClaims.slice(0,7).map(x=>({claim_id:x.claim_id,fact:x.claim}));
-const factText=JSON.stringify(facts,null,2);
-const providers=[];
-async function makeText(kind,requirements,min,max,maxTokens){
-  let last='';
-  for(let attempt=1;attempt<=2;attempt++){
-    const {data,provider,model}=await generateGamePageEditorialJSON({
-      system:'Ты русскоязычный игровой редактор. Верни только JSON {"text":"..."}. Весь текст поля text обязан быть на естественном русском языке. Английские предложения из фактов нужно пересказать по-русски, а не копировать. Используй только переданные факты, ничего не добавляй из памяти.',
-      temperature:attempt===1?0.25:0.1,maxTokens,
-      prompt:`Игра: ${draft.identity.title}. Напиши ${kind}. ${requirements}\nДлина: ${min}-${max} символов. Не упоминай источники, claim_id, ИИ, оценки и процесс сбора. Не используй фразы «уникальный опыт» и «сочетает жанры» вместо конкретики.\nФакты:\n${factText}`
-    });
-    const text=clean(data?.text);last=text;providers.push({provider,model});
-    const bounded=boundNaturalText(text,min,max+120);
-    if(bounded.length>=min&&bounded.length<=max+120&&cyrillicRatio(bounded)>=0.6)return bounded;
-  }
-  throw new Error(`${kind}: automatic Russian writer failed quality bounds (${last.length} chars, cyr=${cyrillicRatio(last).toFixed(2)})`);
-}
-async function makeFeatures(){
-  let last=[];
-  for(let attempt=1;attempt<=2;attempt++){
-    const {data,provider,model}=await generateGamePageEditorialJSON({
-      system:'Ты русскоязычный игровой редактор. Верни только JSON {"features":["...", "..."]}. Все пункты обязаны быть на естественном русском. Английские факты пересказывазывай по-русски. Используй только переданные факты.',
-      temperature:attempt===1?0.25:0.1,maxTokens:520,
-      prompt:`Игра: ${draft.identity.title}. Составь 5-7 конкретных особенностей игры. Каждый пункт 35-130 символов и описывает реальную механику, структуру развития, роль игрока или устройство мира. Никаких оценок, рекламы, источников и общих жанровых формул.\nФакты:\n${factText}`
-    });
-    last=Array.isArray(data?.features)?data.features.map(clean).filter(Boolean).slice(0,8):[];providers.push({provider,model});
-    if(last.length>=4&&last.every(x=>x.length>=18&&cyrillicRatio(x)>=0.55))return last;
-  }
-  throw new Error(`features: automatic Russian writer failed quality bounds (${last.length} items)`);
+const facts=claims.slice(0,8).map(x=>({claim_id:x.claim_id,fact:x.claim}));
+const prompt=`Игра: ${draft.identity.title}.
+
+На основе ТОЛЬКО фактов ниже создай весь редакторский текст страницы игры за один проход. Ничего не добавляй из памяти. Английские факты перескажи естественным русским языком, не калькируй их.
+
+Верни только JSON:
+{
+  "short_description":"...",
+  "integrated_description":"...",
+  "campaign":"...",
+  "features":["..."],
+  "grounding_claim_ids":["claim-..."]
 }
 
-const short_description=await makeText('краткое описание, которое с первой фразы объясняет главную идею игры','1-2 предложения: что делает игрок и какой путь проходит.',100,240,260);
-const integrated_description=await makeText('основное описание страницы','5-7 связанных предложений: роль игрока, основной игровой цикл, развитие, масштаб и отличительные механики.',450,900,760);
-const campaign=await makeText('раздел о структуре прохождения','3-5 предложений: как меняется положение игрока и игра по мере продвижения, какие этапы или масштабы следуют друг за другом.',180,500,430);
-const features=await makeFeatures();
-const grounding_claim_ids=cleanClaims.slice(0,Math.min(6,cleanClaims.length)).map(x=>x.claim_id);
-const next={short_description,integrated_description,campaign,features};
-if(cyrillicRatio(short_description)<0.55||cyrillicRatio(integrated_description)<0.55||cyrillicRatio(campaign)<0.55)throw new Error('Automatic page editorial did not pass Russian-language gate');
+Требования:
+- short_description: 100–260 символов, 1–2 предложения, сразу объясняет главную идею и действие игрока;
+- integrated_description: 450–950 символов, 5–7 связанных предложений; роль игрока, игровой цикл, развитие/структура, масштаб и главное отличие игры;
+- campaign: 180–520 символов, 3–5 предложений о ходе прохождения/развития; не выдумывай сюжет, если его нет в фактах;
+- features: 5–7 конкретных, неповторяющихся пунктов по 35–150 символов;
+- grounding_claim_ids: 4–8 реально использованных claim_id;
+- не упоминай источники, ИИ, сбор данных, оценки, жанровые ярлыки вместо сути;
+- запрещены канцелярит, рекламные формулы, "уникальный опыт", "сочетает жанры", повторы одной мысли разными словами;
+- каждый блок должен добавлять новую информацию, а не пересказывать предыдущий.
 
-draft.editorial={...(draft.editorial||{}),...next,language:'ru',editorial_mode:'source_grounded_editorial',knowledge_source:`data/game-knowledge/${slug}.json`,knowledge_hash:knowledge.source_content_hash||'',grounding_claim_ids};
+Факты:
+${JSON.stringify(facts,null,2)}`;
+
+let lastError='';let generated=null;let providerInfo={};
+for(let attempt=1;attempt<=2;attempt++){
+  try{
+    const result=await generateGamePageEditorialJSON({
+      system:'Ты сильный русскоязычный редактор игрового издания. Пиши живо, конкретно и естественно. Используй только переданные проверенные факты. Верни только валидный JSON.',
+      prompt,
+      temperature:attempt===1?0.35:0.15,
+      maxTokens:1900
+    });
+    const data=result?.data||{};
+    const short_description=bound(data.short_description,100,280);
+    const integrated_description=bound(data.integrated_description,430,980);
+    const campaign=bound(data.campaign,170,550);
+    const features=(Array.isArray(data.features)?data.features:[]).map(clean).filter(Boolean).slice(0,7);
+    const grounding=[...new Set((Array.isArray(data.grounding_claim_ids)?data.grounding_claim_ids:[]).map(String))].filter(id=>claims.some(c=>c.claim_id===id));
+    const texts=[short_description,integrated_description,campaign,...features];
+    const russian=texts.every(x=>cyrillicRatio(x)>=0.55);
+    const lengths=short_description.length>=100&&integrated_description.length>=430&&campaign.length>=170&&features.length>=5&&features.every(x=>x.length>=28);
+    const duplicateFeatures=features.some((x,i)=>features.some((y,j)=>j>i&&similarity(x,y)>=0.72));
+    const crossDup=similarity(short_description,integrated_description)>=0.9||similarity(campaign,integrated_description)>=0.9;
+    const forbidden=texts.some(x=>/\b(?:ai|ии[- ]?систем|искусственн\w+ интеллект|создавательск\w*)\b/i.test(x));
+    if(!russian||!lengths||duplicateFeatures||crossDup||forbidden||grounding.length<4){
+      throw new Error(`quality bounds: russian=${russian} lengths=${lengths} duplicateFeatures=${duplicateFeatures} crossDup=${crossDup} forbidden=${forbidden} grounding=${grounding.length}`);
+    }
+    generated={short_description,integrated_description,campaign,features,grounding_claim_ids:grounding};
+    providerInfo={provider:result.provider,model:result.model};
+    break;
+  }catch(error){lastError=String(error?.message||error)}
+}
+if(!generated)throw new Error(`${slug}: single-pass editorial failed after 2 attempts: ${lastError}`);
+
+draft.editorial={...(draft.editorial||{}),...generated,language:'ru',editorial_mode:'source_grounded_editorial',knowledge_source:`data/game-knowledge/${slug}.json`,knowledge_hash:knowledge.source_content_hash||''};
 draft.publication={...(draft.publication||{}),status:'needs_revision',public_ready:false,quality_status:'source_grounded_editorial_pending_qc'};
 draft.updated_at=new Date().toISOString();
 write(`data/drafts/${slug}.json`,draft);
-const usedProvider=providers.at(-1)||{};
-write(`data/parser-runs/page-editorial-generation-${slug}.json`,{parser:'game-page-source-grounded-editorial-v4',status:'completed_pending_qc',game_slug:slug,checked_at:draft.updated_at,provider:usedProvider.provider||'ollama',model:usedProvider.model||null,paid_api:false,knowledge_source:`data/game-knowledge/${slug}.json`,knowledge_hash:knowledge.source_content_hash||'',source_count:knowledge.source_count||0,defining_claims:knowledge.defining_claims.length,grounding_claim_ids,rating_sources:(ratings.sources||[]).length,output:`data/drafts/${slug}.json`});
-console.log(JSON.stringify({slug,status:'completed_pending_qc',provider:usedProvider.provider||'ollama',model:usedProvider.model||null,paid_api:false,knowledge_sources:knowledge.source_count,defining_claims:knowledge.defining_claims.length,grounding_claim_ids,editorial_mode:draft.editorial.editorial_mode,public_ready:false},null,2));
+write(`data/parser-runs/page-editorial-generation-${slug}.json`,{
+  parser:'game-page-source-grounded-editorial-v5',status:'completed_pending_qc',game_slug:slug,checked_at:draft.updated_at,
+  provider:providerInfo.provider||'unknown',model:providerInfo.model||null,paid_api:false,
+  knowledge_source:`data/game-knowledge/${slug}.json`,knowledge_hash:knowledge.source_content_hash||'',source_count:knowledge.source_count||0,
+  defining_claims:claims.length,grounding_claim_ids:generated.grounding_claim_ids,rating_sources:(ratings.sources||[]).length,output:`data/drafts/${slug}.json`
+});
+console.log(JSON.stringify({slug,status:'completed_pending_qc',provider:providerInfo.provider,model:providerInfo.model,requests_max:2,defining_claims:claims.length,grounding_claim_ids:generated.grounding_claim_ids},null,2));
