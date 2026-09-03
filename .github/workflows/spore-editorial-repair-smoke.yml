@@ -1,0 +1,88 @@
+name: Spore Editorial Repair Smoke
+
+on:
+  push:
+    branches:
+      - fix/game-page-editorial-repair-loop
+    paths:
+      - scripts/build-game-page.mjs
+      - .github/workflows/spore-editorial-repair-smoke.yml
+
+permissions:
+  contents: read
+
+jobs:
+  editorial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Syntax check generic editorial builder
+        run: node --check scripts/build-game-page.mjs
+
+      - name: Bootstrap fresh Spore structured draft
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { GameRegistryApi } from './scripts/lib/game-registry.mjs';
+          const p='data/game-registry/registry.transition.json';
+          const api=new GameRegistryApi(JSON.parse(fs.readFileSync(p,'utf8')));
+          const r=api.registerCandidate({title:'Spore',slug:'spore',steamAppId:'17390',kind:'game',standalonePage:true,releaseYear:2008,source:{type:'official_platform_store',name:'Steam',url:'https://store.steampowered.com/app/17390/Spore/'},status:'identified',confidence:0.99},{actor:'editorial-repair-smoke'});
+          if(!r.entity) throw new Error('Spore registration failed');
+          fs.writeFileSync('/tmp/spore-id',r.entity.id);
+          fs.writeFileSync(p,JSON.stringify(api.registry,null,2)+'\n');
+          NODE
+          node scripts/parse-game-data.mjs spore 17390 Spore
+          node scripts/build-game-page-basic.mjs "$(cat /tmp/spore-id)"
+
+      - name: Provide already-verified source corpus fixture
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          fs.mkdirSync('data/game-sources',{recursive:true});
+          const now=new Date().toISOString();
+          const corpus={schema_version:10,game_slug:'spore',title:'SPORE™',generated_at:now,discovery:{complete:true,coverage_passed:false,coverage_blocks_page_publication:false},counts:{total:2,professional_reviews:1,scored:1,editorial_sources:0},sources:[
+            {id:'source-1',name:'Steam Store API',url:'https://store.steampowered.com/api/appdetails?appids=17390&l=english&cc=us',domain:'store.steampowered.com',kind:'structured-source',professional:false,roles:['identity','facts','requirements','media','description','dna'],checked_at:now},
+            {id:'source-2',name:'IGN',title:'Spore Review - IGN',url:'https://www.ign.com/articles/2008/09/04/spore-review',domain:'ign.com',kind:'professional-review',professional:true,roles:['description','dna','review','rating'],score:8.8,scale:10,score_eligible:true,checked_at:now}
+          ]};
+          fs.writeFileSync('data/game-sources/spore.json',JSON.stringify(corpus,null,2)+'\n');
+          fs.mkdirSync('data/ratings',{recursive:true});
+          fs.writeFileSync('data/ratings/spore.json',JSON.stringify({schema_version:6,game_slug:'spore',status:'insufficient-scores',sources:[],calculation:{source_count:0,score_10:null}},null,2)+'\n');
+          NODE
+
+      - name: Start local Qwen
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve >/tmp/ollama.log 2>&1 &
+          for i in {1..30}; do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+          ollama pull qwen2.5:3b
+
+      - name: Generate repair and materialize canonical editorial
+        env:
+          OLLAMA_BASE_URL: http://127.0.0.1:11434
+          OLLAMA_EDITORIAL_MODEL: qwen2.5:3b
+          OLLAMA_EDITORIAL_TIMEOUT_MS: '240000'
+          FREE_EDITORIAL_AI_ENABLED: '1'
+        run: |
+          node scripts/build-game-page.mjs spore
+          node scripts/materialize-page-editorial.mjs spore
+          node scripts/validate-game-page-content.mjs spore
+
+      - name: Print editorial diagnostics
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const run=JSON.parse(fs.readFileSync('data/parser-runs/page-editorial-generation-spore.json','utf8'));
+          const editorial=JSON.parse(fs.readFileSync('data/page-editorial/spore.json','utf8'));
+          const qc=JSON.parse(fs.readFileSync('data/quality-control/game-page-content-spore.json','utf8'));
+          console.log(JSON.stringify({status:qc.status,repair_attempts:run.repair_attempts,attempts:run.attempts,editorial:{short_description:editorial.short_description,integrated_description:editorial.integrated_description,campaign:editorial.campaign,features:editorial.features}},null,2));
+          if(qc.status!=='green') throw new Error('Editorial repair smoke is not green');
+          NODE
