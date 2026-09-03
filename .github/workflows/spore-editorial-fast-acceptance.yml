@@ -5,6 +5,7 @@ on:
     branches: [fix/game-page-module-contract-20260902]
     paths:
       - 'scripts/build-game-page.mjs'
+      - 'scripts/lib/free-editorial-ai.mjs'
       - 'scripts/materialize-page-editorial.mjs'
       - 'scripts/validate-game-page-content.mjs'
       - '.github/workflows/spore-editorial-fast-acceptance.yml'
@@ -16,6 +17,18 @@ permissions:
 jobs:
   editorial-spore:
     runs-on: ubuntu-latest
+    env:
+      EDITORIAL_AI_PROVIDER_ORDER: openrouter,gigachat,gemini,groq,ollama
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      OPENROUTER_EDITORIAL_MODEL: moonshotai/kimi-k2.6:free
+      GIGACHAT_CREDENTIALS: ${{ secrets.GIGACHAT_CREDENTIALS }}
+      GIGACHAT_SCOPE: GIGACHAT_API_PERS
+      GIGACHAT_EDITORIAL_MODEL: GigaChat-3-Ultra
+      GIGACHAT_EDITORIAL_FALLBACK_MODEL: GigaChat-2-Max
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_EDITORIAL_MODEL: gemini-2.5-pro
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      GROQ_EDITORIAL_MODEL: qwen/qwen3.8-27b
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -33,19 +46,28 @@ jobs:
           cp -R /tmp/spore-base/data/drafts/spore.json data/drafts/spore.json
           cp -R /tmp/spore-base/data/game-sources/spore.json data/game-sources/spore.json
           cp -R /tmp/spore-base/data/ratings/spore.json data/ratings/spore.json
-      - name: Start local Qwen
+      - name: Detect zero-host editorial provider
+        id: editorial_ai
+        shell: bash
+        run: |
+          if [ -n "${OPENROUTER_API_KEY}${GIGACHAT_CREDENTIALS}${GEMINI_API_KEY}${GROQ_API_KEY}" ]; then
+            echo "cloud=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "cloud=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Start local Qwen fallback only when no zero-host provider is configured
+        if: steps.editorial_ai.outputs.cloud != 'true'
         run: |
           curl -fsSL https://ollama.com/install.sh | sh
           ollama serve >/tmp/ollama.log 2>&1 &
           for i in {1..30}; do curl -fsS http://127.0.0.1:11434/api/tags >/dev/null && break || sleep 1; done
           curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
           ollama pull qwen2.5:3b
+          echo "OLLAMA_BASE_URL=http://127.0.0.1:11434" >> "$GITHUB_ENV"
+          echo "OLLAMA_EDITORIAL_MODEL=qwen2.5:3b" >> "$GITHUB_ENV"
+          echo "OLLAMA_EDITORIAL_TIMEOUT_MS=240000" >> "$GITHUB_ENV"
+          echo "FREE_EDITORIAL_AI_ENABLED=1" >> "$GITHUB_ENV"
       - name: Build and validate only page editorial
-        env:
-          OLLAMA_BASE_URL: http://127.0.0.1:11434
-          OLLAMA_EDITORIAL_MODEL: qwen2.5:3b
-          OLLAMA_EDITORIAL_TIMEOUT_MS: 240000
-          FREE_EDITORIAL_AI_ENABLED: 1
         run: |
           node scripts/build-game-page.mjs spore
           node scripts/materialize-page-editorial.mjs spore
@@ -54,8 +76,9 @@ jobs:
           import fs from 'node:fs';
           const e=JSON.parse(fs.readFileSync('data/page-editorial/spore.json','utf8'));
           const q=JSON.parse(fs.readFileSync('data/quality-control/game-page-content-spore.json','utf8'));
+          const g=JSON.parse(fs.readFileSync('data/parser-runs/page-editorial-generation-spore.json','utf8'));
           if(e.quality_status!=='green'||q.status!=='green') throw new Error(`Editorial acceptance failed: editorial=${e.quality_status} content=${q.status}`);
-          console.log(JSON.stringify({editorial:e.quality_status,content:q.status,short:e.short_description,integrated_chars:e.integrated_description.length,campaign_chars:e.campaign.length,features:e.features.length},null,2));
+          console.log(JSON.stringify({provider:g.provider,model:g.model,editorial:e.quality_status,content:q.status,short:e.short_description,integrated_chars:e.integrated_description.length,campaign_chars:e.campaign.length,features:e.features.length},null,2));
           NODE
       - name: Upload editorial diagnostics
         if: always()
