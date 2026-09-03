@@ -12,6 +12,7 @@ const WORKFLOW_PATH = '.github/workflows/phase-a-validation.yml';
 const REQUIRED = new Map([
   ['IGROPOISK_PROJECT_ROADMAP', 'docs/PROJECT_ROADMAP.md'],
   ['IGROPOISK_SYSTEM_ARCHITECTURE', 'docs/SYSTEM_ARCHITECTURE.md'],
+  ['IGROPOISK_STABLE_NEWS_MODULE', 'docs/NEWS_MODULE_STABLE.md'],
 ]);
 
 const fail = (message) => {
