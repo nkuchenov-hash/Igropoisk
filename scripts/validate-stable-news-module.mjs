@@ -76,8 +76,6 @@ for (const token of [
   "cron: '23 * * * *'",
   'ref: staging',
   'cancel-in-progress: false',
-  'models: read',
-  'GITHUB_TOKEN: ${{ github.token }}',
   'node scripts/run-news-pipeline.mjs',
   'node scripts/test-news-publication-quality.mjs',
   'Put verified missing games into temporary page-assembly storage',
@@ -91,8 +89,6 @@ for (const token of [
 
 const stagingPipeline = read(stagingPipelinePath);
 for (const token of [
-  'models: read',
-  'GITHUB_TOKEN: ${{ github.token }}',
   'node scripts/run-news-pipeline.mjs --force',
   'node scripts/test-news-publication-quality.mjs',
   'tmp/news-publication-quality-report.json'
@@ -162,4 +158,4 @@ if (process.exitCode) {
   process.exit(process.exitCode);
 }
 
-console.log('Stable news module contract is intact: fail-open per-item publication, final public-copy quality gate, no fixed news quota, pending game route, independent page queue, hourly autonomous storage publication, post-publish cleanup.');
+console.log('Stable news module contract is intact: fail-open per-item publication, deterministic final public-copy quality gate, no fixed news quota, pending game route, independent page queue, hourly autonomous storage publication, post-publish cleanup.');
