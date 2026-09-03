@@ -37,7 +37,7 @@ for (const token of [
   'assemblyRequired: true',
   'не создаёт игровые страницы и не ждёт их создания',
   '12` карточек на главной — только текущий **UI display cap**',
-  'Cleanup/GC запрещено возвращать перед live switch'
+  'Housekeeping никогда не находится перед live switch'
 ]) requireText(stableDoc, token, stableDocPath);
 
 const contract = read(contractPath);
