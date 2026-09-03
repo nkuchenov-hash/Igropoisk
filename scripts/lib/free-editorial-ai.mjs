@@ -39,7 +39,7 @@ function recoverTruncatedEditorialJSON(raw,error){
     const features=[];let i=featuresPrefix[0].length;
     while(i<raw.length){
       while(i<raw.length&&/[\s,]/.test(raw[i]))i++;
-      if(raw[i]!=="\"")break;
+      if(raw[i]!=='"')break;
       const decoded=decodeJsonStringPrefix(raw,i+1);
       if(decoded.closed&&decoded.value.trim())features.push(decoded.value.trim());
       if(!decoded.closed)break;
@@ -53,9 +53,9 @@ function recoverTruncatedEditorialJSON(raw,error){
 export function freeEditorialAIConfig(){
   return {
     baseUrl:trimSlash(process.env.OLLAMA_BASE_URL||'http://127.0.0.1:11434'),
-    model:String(process.env.OLLAMA_EDITORIAL_MODEL||process.env.OLLAMA_MODEL||'qwen2.5:1.5b').trim(),
-    timeoutMs:Number(process.env.OLLAMA_EDITORIAL_TIMEOUT_MS||180000),
-    numCtx:Number(process.env.OLLAMA_EDITORIAL_NUM_CTX||8192)
+    model:String(process.env.OLLAMA_EDITORIAL_MODEL||process.env.OLLAMA_MODEL||'qwen2.5:3b').trim(),
+    timeoutMs:Number(process.env.OLLAMA_EDITORIAL_TIMEOUT_MS||150000),
+    numCtx:Number(process.env.OLLAMA_EDITORIAL_NUM_CTX||6144)
   };
 }
 
@@ -98,8 +98,7 @@ export async function ensureFreeEditorialAI(){
 export async function generateFreeEditorialJSON({system='',prompt,temperature=0.25,maxTokens=1600}){
   await ensureFreeEditorialAI();
   const {baseUrl,model,timeoutMs,numCtx}=freeEditorialAIConfig();
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),timeoutMs);
+  const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),timeoutMs);
   const numPredict=Math.max(128,Math.min(Number(maxTokens)||1600,2400));
   try{
     const response=await fetch(`${baseUrl}/api/chat`,{
@@ -109,10 +108,7 @@ export async function generateFreeEditorialJSON({system='',prompt,temperature=0.
     if(!response.ok)throw new Error(`Ollama ${response.status}: ${(await response.text()).slice(0,1200)}`);
     const data=await response.json();const raw=stripFence(data?.message?.content||data?.response||'');if(!raw)throw new Error('Qwen/Ollama returned empty output');
     let parsed;
-    try{parsed=JSON.parse(raw)}catch(error){
-      parsed=recoverTruncatedEditorialJSON(raw,error);
-      if(!parsed)throw new Error(`Qwen/Ollama returned invalid JSON: ${error.message}`);
-    }
+    try{parsed=JSON.parse(raw)}catch(error){parsed=recoverTruncatedEditorialJSON(raw,error);if(!parsed)throw new Error(`Qwen/Ollama returned invalid JSON: ${error.message}`)}
     return {data:parsed,provider:'ollama',model,baseUrl};
   }catch(error){if(error?.name==='AbortError')throw new Error(`Qwen/Ollama timed out after ${timeoutMs} ms`);throw error}finally{clearTimeout(timer)}
 }
