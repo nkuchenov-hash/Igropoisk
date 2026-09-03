@@ -22,6 +22,11 @@ on:
       - 'scripts/discover-game-sources-web.mjs'
       - 'scripts/discover-game-publication-hubs.mjs'
       - 'scripts/collect-game-sources.mjs'
+      - 'scripts/collect-game-audience-evidence.mjs'
+      - 'scripts/build-game-audience-profile.mjs'
+      - 'scripts/validate-game-audience-profile-integrity.mjs'
+      - 'scripts/lib/game-audience-profile.mjs'
+      - 'scripts/lib/igropoisk-editorial-style.mjs'
       - 'scripts/validate-game-page-content.mjs'
       - 'scripts/prepare-guide-research.mjs'
       - 'scripts/build-game-page.mjs'
@@ -49,6 +54,8 @@ on:
       - 'config/game-page-module.manifest.json'
       - 'config/home-feeds-storage.json'
       - 'docs/GAME_PAGE_MODULE_STABLE.md'
+      - 'docs/IGROPOISK_AUDIENCE_PROFILE.md'
+      - 'docs/IGROPOISK_EDITORIAL_STYLE.md'
       - '.github/workflows/content-pipeline.yml'
 
 permissions:
@@ -72,7 +79,7 @@ jobs:
       GIGACHAT_EDITORIAL_MODEL: GigaChat-3-Ultra
       GIGACHAT_EDITORIAL_FALLBACK_MODEL: GigaChat-2-Max
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      GEMINI_EDITORIAL_MODEL: gemini-2.5-pro
+      GEMINI_EDITORIAL_MODEL: gemini-3.7-flash
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       GROQ_EDITORIAL_MODEL: qwen/qwen3.8-27b
     steps:
@@ -99,6 +106,11 @@ jobs:
           node --check scripts/discover-game-sources-web.mjs
           node --check scripts/discover-game-publication-hubs.mjs
           node --check scripts/collect-game-sources.mjs
+          node --check scripts/collect-game-audience-evidence.mjs
+          node --check scripts/build-game-audience-profile.mjs
+          node --check scripts/validate-game-audience-profile-integrity.mjs
+          node --check scripts/lib/game-audience-profile.mjs
+          node --check scripts/lib/igropoisk-editorial-style.mjs
           node --check scripts/validate-game-page-content.mjs
           node --check scripts/prepare-guide-research.mjs
           node --check scripts/build-game-page.mjs
@@ -127,6 +139,7 @@ jobs:
           node --check scripts/lib/system-game-registry-adapter.mjs
           node --check game/_shared/game-page-materialized-data.js
           node scripts/test-game-page-assembly-queue.mjs
+          node scripts/validate-game-audience-profile-integrity.mjs
       - name: Require complete game page assembly module
         run: node scripts/validate-game-page-module-integrity.mjs
       - name: Detect zero-host editorial provider
@@ -140,6 +153,11 @@ jobs:
             echo "cloud=false" >> "$GITHUB_OUTPUT"
             echo "No cloud editorial credentials found; enabling local Ollama fallback."
           fi
+      - name: Install GigaChat trusted root certificate
+        if: env.GIGACHAT_CREDENTIALS != ''
+        run: |
+          curl -fsSLk https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt -o /tmp/russian_trusted_root_ca_pem.crt
+          echo "NODE_EXTRA_CA_CERTS=/tmp/russian_trusted_root_ca_pem.crt" >> "$GITHUB_ENV"
       - name: Cache local Qwen fallback
         if: steps.editorial_ai.outputs.cloud != 'true'
         uses: actions/cache@v4
@@ -207,6 +225,7 @@ jobs:
             data/parser-runs
             data/drafts
             data/page-editorial
+            data/game-audience
             data/game-content
             data/catalog-visible.json
             data/research
@@ -291,6 +310,7 @@ jobs:
             data/content-pipeline/franchise-queue.json
             data/quality-control
             data/page-editorial
+            data/game-audience
             data/audits/review-publication.json
             data/audits/review-feed-materialization.json
           if-no-files-found: warn
