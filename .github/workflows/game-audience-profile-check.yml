@@ -1,0 +1,43 @@
+name: Game Audience Profile Check
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/collect-game-audience-evidence.mjs'
+      - 'scripts/build-game-audience-profile.mjs'
+      - 'scripts/lib/game-audience-profile.mjs'
+      - 'scripts/lib/igropoisk-editorial-style.mjs'
+      - 'scripts/build-game-page.mjs'
+      - 'scripts/test-game-audience-profile.mjs'
+      - 'scripts/validate-game-audience-profile-integrity.mjs'
+      - 'docs/IGROPOISK_AUDIENCE_PROFILE.md'
+      - 'docs/IGROPOISK_EDITORIAL_STYLE.md'
+      - '.github/workflows/game-audience-profile-check.yml'
+  push:
+    branches: [main, staging, fix/game-page-module-contract-20260902]
+    paths:
+      - 'scripts/collect-game-audience-evidence.mjs'
+      - 'scripts/build-game-audience-profile.mjs'
+      - 'scripts/lib/game-audience-profile.mjs'
+      - 'scripts/lib/igropoisk-editorial-style.mjs'
+      - 'scripts/build-game-page.mjs'
+      - 'scripts/test-game-audience-profile.mjs'
+      - 'scripts/validate-game-audience-profile-integrity.mjs'
+      - 'docs/IGROPOISK_AUDIENCE_PROFILE.md'
+      - 'docs/IGROPOISK_EDITORIAL_STYLE.md'
+      - '.github/workflows/game-audience-profile-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate Audience Profile contract
+        run: node scripts/validate-game-audience-profile-integrity.mjs
