@@ -45,8 +45,11 @@ const compactAsset=asset=>({
   rule:'Используй профиль только для выбора регистра, терминологии и акцентов. Не показывай профиль читателю и не придумывай демографию.'
 });
 
+const mtime=file=>{try{return fs.statSync(file).mtimeMs}catch{return 0}};
+const materializeAudienceAsset=slug=>{const root=process.cwd(),assetPath=path.join(root,'data','game-audience',`${slug}.json`),assetTime=mtime(assetPath),inputs=[path.join(root,'data','drafts',`${slug}.json`),path.join(root,'data','parser-output',`${slug}.json`),path.join(root,'data','game-sources',`${slug}.json`),path.join(root,'data','reviews',`${slug}.json`),path.join(root,'data','research',`${slug}-source-matrix.json`)];const stale=!assetTime||inputs.some(file=>mtime(file)>assetTime);if(stale){spawnSync(process.execPath,['scripts/collect-game-audience-evidence.mjs',slug],{cwd:root,encoding:'utf8',stdio:'pipe',env:process.env,maxBuffer:4*1024*1024});spawnSync(process.execPath,['scripts/build-game-audience-profile.mjs',slug],{cwd:root,encoding:'utf8',stdio:'pipe',env:process.env,maxBuffer:4*1024*1024})}try{return JSON.parse(fs.readFileSync(assetPath,'utf8'))}catch{return null}};
+
 export function buildEditorialAudienceContext(draft={},parser={},corpus={},audienceAsset=null){
-  if(!audienceAsset){const slug=clean(draft?.identity?.slug);if(slug){const assetPath=path.join(process.cwd(),'data','game-audience',`${slug}.json`);try{audienceAsset=JSON.parse(fs.readFileSync(assetPath,'utf8'))}catch{try{spawnSync(process.execPath,['scripts/collect-game-audience-evidence.mjs',slug],{cwd:process.cwd(),encoding:'utf8',stdio:'pipe',env:process.env,maxBuffer:4*1024*1024});spawnSync(process.execPath,['scripts/build-game-audience-profile.mjs',slug],{cwd:process.cwd(),encoding:'utf8',stdio:'pipe',env:process.env,maxBuffer:4*1024*1024});audienceAsset=JSON.parse(fs.readFileSync(assetPath,'utf8'))}catch{audienceAsset=null}}}}
+  if(!audienceAsset){const slug=clean(draft?.identity?.slug);if(slug)audienceAsset=materializeAudienceAsset(slug)}
   if(audienceAsset?.visibility==='internal_only'&&audienceAsset?.generation?.public_render_allowed===false)return compactAsset(audienceAsset);
   const classification=draft?.classification||{};
   const explicitAge=clean(classification.age_rating||classification.content_rating||classification.esrb||classification.pegi||draft?.age_rating||draft?.content_rating||parser?.age_rating||parser?.content_rating||'');
