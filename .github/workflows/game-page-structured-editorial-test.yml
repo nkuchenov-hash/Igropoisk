@@ -1,0 +1,28 @@
+name: Game page structured editorial fallback
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/build-game-page-baseline-editorial.mjs'
+      - 'scripts/test-game-page-baseline-editorial.mjs'
+      - 'scripts/validate-pre-review-materials.mjs'
+      - '.github/workflows/game-page-structured-editorial-test.yml'
+  push:
+    branches: [staging]
+    paths:
+      - 'scripts/build-game-page-baseline-editorial.mjs'
+      - 'scripts/test-game-page-baseline-editorial.mjs'
+      - 'scripts/validate-pre-review-materials.mjs'
+      - '.github/workflows/game-page-structured-editorial-test.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/build-game-page-baseline-editorial.mjs
+      - run: node --check scripts/validate-pre-review-materials.mjs
+      - run: node scripts/test-game-page-baseline-editorial.mjs
