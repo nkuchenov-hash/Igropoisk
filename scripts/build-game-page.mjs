@@ -26,11 +26,12 @@ const evidence=JSON.stringify({facts,official_editorial_seed:seed,review_index:s
 const requirements=`Пиши естественным русским языком. short_description 100–180 символов; integrated_description 320–500 символов; campaign 130–220 символов; features 4–6 конкретных русских фраз от 18 символов. official_editorial_seed — подтверждённый официальный текст: переводи и редакционно разворачивай только его факты. review_index и ratings подтверждают существование обзоров/оценок, но не разрешают придумывать детали их текста. Не используй знания модели. Не пиши о парсинге, источниках или работе ИИ.`;
 let prompt=`Собери редакционный блок страницы игры ${facts.title}. Верни только JSON с полями short_description, integrated_description, campaign, features. ${requirements}\nДАННЫЕ:${evidence}`;
 let next=null,provider='ollama',model=ai.model,issues=[],attemptLog=[];
-for(let attempt=1;attempt<=3;attempt++){
-  const repairFields=attempt===1?['short_description','integrated_description','campaign','features']:failedFields(issues);
+for(let attempt=1;attempt<=5;attempt++){
+  const pendingFields=attempt===1?['short_description','integrated_description','campaign','features']:failedFields(issues);
+  const repairFields=attempt===1?pendingFields:pendingFields.slice(0,1);
   if(!repairFields.length)break;
-  if(attempt>1)prompt=`Исправь ТОЛЬКО поля ${repairFields.join(', ')}. Остальные поля не возвращай. Верни JSON только с этими ключами. Ошибки: ${issues.join('; ')}. Текущий принятый кандидат:${JSON.stringify(next)}. ${requirements}\nДАННЫЕ:${evidence}`;
-  const generated=await generateFreeEditorialJSON({system:'Ты русскоязычный игровой редактор. Возвращай только валидный JSON без пояснений.',prompt,temperature:attempt===1?0.2:0.08,maxTokens:attempt===1?650:480,numCtx:3072});
+  if(attempt>1)prompt=`Исправь ТОЛЬКО поле ${repairFields[0]}. Остальные поля не возвращай. Верни JSON ровно с одним ключом ${repairFields[0]}. Ошибки этого поля: ${issues.filter(issue=>issue.startsWith(repairFields[0])||(repairFields[0]==='features'&&/^(features|feature #)/.test(issue))).join('; ')}. Текущий принятый кандидат:${JSON.stringify(next)}. ${requirements}\nДАННЫЕ:${evidence}`;
+  const generated=await generateFreeEditorialJSON({system:'Ты русскоязычный игровой редактор. Возвращай только валидный JSON без пояснений.',prompt,temperature:attempt===1?0.2:0.05,maxTokens:attempt===1?650:360,numCtx:3072});
   provider=generated.provider;model=generated.model;
   next=attempt===1?normalize(generated.data):mergeRepair(next,generated.data,repairFields);
   issues=issuesFor(next);attemptLog.push({attempt,repaired_fields:repairFields,issues:[...issues],metrics:{short_description_chars:next.short_description.length,integrated_description_chars:next.integrated_description.length,campaign_chars:next.campaign.length,features:next.features.length}});if(!issues.length)break;
