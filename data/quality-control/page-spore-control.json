@@ -1,0 +1,124 @@
+{
+  "schema_version": 12,
+  "type": "page",
+  "game_slug": "spore",
+  "game_id": "game_cd7d60fd06bfd88019da",
+  "canonical_title": "SPORE™",
+  "checked_at": "2026-09-03T09:29:31.039Z",
+  "status": "green",
+  "green": true,
+  "comments": [],
+  "revision_history": [
+    {
+      "attempt": 1,
+      "label": "game-source-corpus-1",
+      "script": "scripts/collect-game-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"prefetch\": \"review-searches\",\n  \"exhaustive_query_urls\": 315,\n  \"initial_warmed\": 262,\n  \"initial_failed\": 53,\n  \"retry_recovered\": 0,\n  \"exhausted_failures\": 53,\n  \"total_network_attempts\": 368,\n  \"concurrency\": 18,\n  \"timeout_ms\": 6000,\n  \"correctness_policy\": \"all URLs get initial attempt; every initial failure gets the same second attempt as before, concurrently; twice-failed statuses are replayed to canonical scanner without a third request\"\n}\n{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"aliases\": [\n    \"spore\"\n  ],\n  \"preferred_search_alias\": \"spore\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 0,\n  \"independent_publications\": 0,\n  \"scored_sources\": 0,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n{\n  \"slug\": \"spore\",\n  \"added_sources\": 12,\n  \"total_reviews\": 12,\n  \"independent_publications\": 12,\n  \"scored_sources\": 12,\n  \"diagnostics\": [\n    {\n      \"lang\": \"ru\",\n      \"status\": \"complete\",\n      \"page\": \"https://ru.wikipedia.org/wiki/Spore\",\n      \"review_rows\": 13,\n      \"accepted_new_sources\": 12\n    },\n    {\n      \"lang\": \"en\",\n      \"status\": \"complete\",\n      \"page\": \"https://en.wikipedia.org/wiki/Spore_(2008_video_game)\",\n      \"review_rows\": 11,\n      \"accepted_new_sources\": 0\n    }\n  ]\n}\n{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"sources\": 13,\n  \"professional_reviews\": 12,\n  \"independent_publications\": 12,\n  \"scored\": 12,\n  \"source_scan_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 2,
+      "label": "page-rating-1",
+      "script": "scripts/calculate-ratings-from-research.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"completed\",\n  \"material_links\": 10,\n  \"seed_rejected\": 0,\n  \"identity_rejected\": 2,\n  \"sources\": 10,\n  \"score_10\": 8.7,\n  \"use_all_discovered_scores\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 3,
+      "label": "game-source-corpus-score-refresh-1",
+      "script": "scripts/collect-game-sources.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"sources\": 11,\n  \"professional_reviews\": 10,\n  \"independent_publications\": 10,\n  \"scored\": 10,\n  \"source_scan_complete\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 4,
+      "label": "relations-1",
+      "script": "scripts/enrich-game-relations.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"needs_revision\",\n  \"preserved_existing\": true,\n  \"reason\": \"Free Qwen/Ollama unavailable: fetch failed. Existing relation data was preserved.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 5,
+      "label": "similarity-1",
+      "script": "scripts/build-similarity-index.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"catalog_games\": 261,\n  \"profiles\": 263,\n  \"similarity_files_written\": 1,\n  \"profiles_needing_enrichment\": 0,\n  \"games_without_recommendations\": 0,\n  \"year_proximity_used\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 6,
+      "label": "content-validation-1",
+      "script": "scripts/validate-game-page-content.mjs",
+      "status": "revision-required",
+      "exit_code": 2,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"red-needs-revision\",\n  \"errors\": [\n    \"Не материализован проверенный canonical page-editorial. Страница не может быть опубликована на baseline/fallback тексте.\",\n    \"Краткое описание должно быть полноценным русским текстом.\",\n    \"Основное описание слишком короткое: 178 символов.\",\n    \"Основное описание должно быть написано по-русски.\",\n    \"Раздел о кампании/структуре прохождения слишком пустой: 0 символов.\",\n    \"Раздел о кампании должен быть содержательным русским текстом.\",\n    \"Недостаточно конкретных особенностей игры: 3/4.\",\n    \"Особенность #1 слишком общая/короткая: Single-player\",\n    \"Особенность #3 слишком общая/короткая: Family Sharing\"\n  ],\n  \"warnings\": [\n    \"Отдельная система обзоров пока вернула мало прямых обзоров: 0. Это не блокирует готовую страницу игры.\"\n  ],\n  \"metrics\": {\n    \"canonical_editorial\": false,\n    \"release_year\": 2008,\n    \"steam_listing_year\": 2008,\n    \"short_description_chars\": 178,\n    \"integrated_description_chars\": 178,\n    \"campaign_chars\": 0,\n    \"features\": 3,\n    \"developers\": 1,\n    \"publishers\": 1,\n    \"genres\": 6,\n    \"platforms\": 1,\n    \"direct_reviews\": 0,\n    \"scored_reviews\": 10\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 7,
+      "label": "baseline-content-repair-1",
+      "script": "scripts/build-game-page-baseline-editorial.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green-structured-editorial\",\n  \"features\": 8,\n  \"paid_api\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 8,
+      "label": "content-validation-after-baseline-1",
+      "script": "scripts/validate-game-page-content.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"errors\": [],\n  \"warnings\": [\n    \"Отдельная система обзоров пока вернула мало прямых обзоров: 0. Это не блокирует готовую страницу игры.\"\n  ],\n  \"metrics\": {\n    \"canonical_editorial\": true,\n    \"release_year\": 2008,\n    \"steam_listing_year\": 2008,\n    \"short_description_chars\": 242,\n    \"integrated_description_chars\": 580,\n    \"campaign_chars\": 332,\n    \"features\": 8,\n    \"developers\": 1,\n    \"publishers\": 1,\n    \"genres\": 6,\n    \"platforms\": 1,\n    \"direct_reviews\": 0,\n    \"scored_reviews\": 10\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 9,
+      "label": "page-media-discovery-1",
+      "script": "scripts/discover-review-media.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"mode\": \"relevance_and_file_verified\",\n  \"screenshots\": 11,\n  \"artwork\": 2,\n  \"total\": 13,\n  \"required_screenshots\": 8\n}\n",
+      "stderr": ""
+    },
+    {
+      "attempt": 10,
+      "label": "media-validation-1",
+      "script": "scripts/validate-game-media-quality.mjs",
+      "status": "completed",
+      "exit_code": 0,
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"release_year\": 2008,\n  \"media_profile\": \"historical\",\n  \"comments\": 0,\n  \"accepted_screenshots\": 11,\n  \"minimum_screenshots\": 5,\n  \"nominal_minimum_screenshots\": 5,\n  \"official_source_screenshots\": 11,\n  \"official_source_exhausted\": false\n}\n",
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "page_ready_requires_source_corpus": true,
+    "page_ready_requires_complete_source_scan": true,
+    "page_ready_requires_review_article": false,
+    "page_ready_requires_media_validation": true,
+    "page_ready_requires_content_validation": true,
+    "page_ready_requires_canonical_editorial": true,
+    "page_content_requires_russian_editorial_text": true,
+    "page_content_requires_campaign_or_structure": true,
+    "page_content_requires_minimum_features": true,
+    "page_baseline_content_may_not_publish": true,
+    "page_editorial_ai_provider": "free-local-qwen-via-ollama",
+    "paid_editorial_api_forbidden": true,
+    "source_corpus_owned_by_game_page": true,
+    "review_pipeline_reuses_game_source_corpus": true,
+    "page_rating_derived_from_source_corpus": true,
+    "quality_never_terminally_blocks": true,
+    "red_means_revise_again": true,
+    "immediate_revision_attempts": 4,
+    "keep_queued_until_green": true
+  }
+}
