@@ -169,7 +169,7 @@
       const weekly = items.filter(item => new Date(item.publishedAt).getTime() >= weekAgo).length;
       const sourceCount = new Set(items.map(item => api.sourceName(item)).filter(Boolean)).size;
       const trendRows = games.length
-        ? games.map((game, index) => `<button class="ig-news-trend-row" type="button" data-news-game-filter="${api.escapeHtml(game.slug)}">
+        ? games.map((game, index) => `<button class="ig-button ig-news-trend-row" type="button" data-news-game-filter="${api.escapeHtml(game.slug)}">
             <span class="ig-news-trend-row__rank">${index + 1}</span>
             <span class="ig-news-trend-row__copy"><strong>${api.escapeHtml(game.title)}</strong><small>${api.escapeHtml(ui.newsCount(game.count))}</small></span>
             <span class="ig-news-trend-row__arrow" aria-hidden="true">↗</span>
@@ -179,15 +179,15 @@
         ? types.map(([type, count]) => `<button class="ig-filter-chip ig-news-topic-chip${type === activeType ? ' is-active' : ''}" type="button" data-news-type-filter="${api.escapeHtml(type)}" aria-pressed="${type === activeType ? 'true' : 'false'}">#${api.escapeHtml(type)} <span>${count}</span></button>`).join('')
         : '';
       return `<aside class="ig-news-sidebar" aria-label="${api.escapeHtml(lang === 'ru' ? 'Обзор новостей' : 'News overview')}">
-        <section class="ig-news-side-card">
+        <section class="ig-panel ig-news-side-card">
           <h2 class="ig-news-side-card__title"><span aria-hidden="true">ϟ</span>${api.escapeHtml(ui.trending)}</h2>
           <div class="ig-news-trend-list">${trendRows}</div>
         </section>
-        <section class="ig-news-side-card">
+        <section class="ig-panel ig-news-side-card">
           <h2 class="ig-news-side-card__title"><span aria-hidden="true">#</span>${api.escapeHtml(ui.popular)}</h2>
           <div class="ig-news-topic-list">${topicRows}</div>
         </section>
-        <section class="ig-news-side-card">
+        <section class="ig-panel ig-news-side-card">
           <h2 class="ig-news-side-card__title"><span aria-hidden="true">▥</span>${api.escapeHtml(ui.stats)}</h2>
           <div class="ig-news-stats">
             <div><strong>${items.length.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US')}</strong><span>${api.escapeHtml(ui.total)}</span></div>
@@ -289,7 +289,7 @@
             <button class="ig-filter-chip${activeView === 'tile' ? ' is-active' : ''}" type="button" data-news-view="tile" aria-pressed="${activeView === 'tile' ? 'true' : 'false'}">⊞ ${api.escapeHtml(ui.tile)}</button>
           </div>
           ${activeGame ? `<button class="ig-filter-chip is-active ig-news-active-game" type="button" data-news-clear-game title="${api.escapeHtml(lang === 'ru' ? 'Сбросить фильтр по игре' : 'Clear game filter')}">${api.escapeHtml(ui.activeGame)}: ${api.escapeHtml(activeGameTitle)} ×</button>` : ''}
-          <select class="ig-news-sort" data-news-sort aria-label="${api.escapeHtml(ui.sortLabel)}">
+          <select class="ig-input ig-news-sort" data-news-sort aria-label="${api.escapeHtml(ui.sortLabel)}">
             <option value="important"${activeSort === 'important' ? ' selected' : ''}>${api.escapeHtml(ui.important)}</option>
             <option value="new"${activeSort === 'new' ? ' selected' : ''}>${api.escapeHtml(ui.newest)}</option>
           </select>
