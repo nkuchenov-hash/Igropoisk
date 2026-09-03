@@ -107,6 +107,21 @@ assert.equal(groundedWitcher.slug, 'the-witcher-remake');
 assert.equal(sourceContextGameHasStrongIdentity(groundedWitcher), true);
 assert.equal(sourceContextGameHasStrongIdentity({ ...groundedWitcher, resolutionEvidence: { title: true, summary: false, url: false } }), false);
 
+const recomputedWitcher = cleanResolvedNewsGame({
+  gameId: 'news_game_bad_evidence',
+  slug: 'the-witcher-remake-is',
+  title: 'The Witcher Remake Is',
+  matchedBy: 'primary-game-context-v1',
+  resolutionConfidence: 0.9,
+  resolutionEvidence: { title: true, summary: false, url: false }
+}, {
+  titleEn: 'The Witcher Remake Is still in development',
+  summaryEn: 'The Witcher Remake remains one of CD Projekt’s announced projects.',
+  primaryUrl: 'https://example.com/news/the-witcher-remake-development'
+});
+assert.equal(recomputedWitcher.resolutionEvidence.summary, true);
+assert.equal(sourceContextGameHasStrongIdentity(recomputedWitcher), true);
+
 const localizedWitcher = await translatePreservingGameEntities(
   'The Witcher Remake Is getting a new trailer.',
   ['The Witcher Remake'],
