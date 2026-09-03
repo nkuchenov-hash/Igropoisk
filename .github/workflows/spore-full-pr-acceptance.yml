@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      EDITORIAL_AI_PROVIDER_ORDER: openrouter,gigachat,gemini,groq,ollama
+      EDITORIAL_AI_PROVIDER_ORDER: gigachat,gemini,groq,openrouter,ollama
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       OPENROUTER_EDITORIAL_MODEL: moonshotai/kimi-k2.6:free
       GIGACHAT_CREDENTIALS: ${{ secrets.GIGACHAT_CREDENTIALS }}
@@ -25,7 +25,7 @@ jobs:
       GIGACHAT_EDITORIAL_MODEL: GigaChat-3-Ultra
       GIGACHAT_EDITORIAL_FALLBACK_MODEL: GigaChat-2-Max
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      GEMINI_EDITORIAL_MODEL: gemini-2.5-pro
+      GEMINI_EDITORIAL_MODEL: gemini-3.7-flash
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       GROQ_EDITORIAL_MODEL: qwen/qwen3.8-27b
     steps:
@@ -75,6 +75,12 @@ jobs:
             echo "No cloud editorial credentials found; enabling local Ollama fallback."
           fi
 
+      - name: Install GigaChat trusted root certificate
+        if: env.GIGACHAT_CREDENTIALS != ''
+        run: |
+          curl -fsSLk https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt -o /tmp/russian_trusted_root_ca_pem.crt
+          echo "NODE_EXTRA_CA_CERTS=/tmp/russian_trusted_root_ca_pem.crt" >> "$GITHUB_ENV"
+
       - name: Cache local Qwen fallback
         if: steps.editorial_ai.outputs.cloud != 'true'
         uses: actions/cache@v4
@@ -104,6 +110,7 @@ jobs:
         run: |
           test -f data/research/spore-audience-evidence.json
           test -f data/game-audience/spore.json
+          test -f data/parser-runs/page-editorial-generation-spore.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const evidence=JSON.parse(fs.readFileSync('data/research/spore-audience-evidence.json','utf8'));
@@ -116,7 +123,7 @@ jobs:
           if(!(profile.evidence?.length>0))throw new Error('Spore Audience Profile has no evidence');
           if(editorialRun.audience_profile_used!==true)throw new Error('Page editorial did not record Audience Profile use');
           if(editorialRun.audience_profile_confidence!==profile.confidence)throw new Error('Editorial Audience Profile confidence does not match materialized profile');
-          console.log(JSON.stringify({steam_status:evidence.steam?.status,steam_tags:evidence.steam?.tags?.length||0,confidence:profile.confidence,reader_familiarity:profile.reader_familiarity,jargon_level:profile.jargon_level,register:profile.register,core_appeals:profile.core_appeals,evidence_count:profile.evidence?.length||0,editorial_profile_used:editorialRun.audience_profile_used},null,2));
+          console.log(JSON.stringify({steam_status:evidence.steam?.status,steam_tags:evidence.steam?.tags?.length||0,confidence:profile.confidence,reader_familiarity:profile.reader_familiarity,jargon_level:profile.jargon_level,register:profile.register,core_appeals:profile.core_appeals,evidence_count:profile.evidence?.length||0,editorial_profile_used:editorialRun.audience_profile_used,editorial_provider:editorialRun.provider,editorial_model:editorialRun.model},null,2));
           NODE
 
       - name: Require finalized Spore publication
