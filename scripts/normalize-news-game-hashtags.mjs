@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import { canonicalGameHashtag, hashtagKey } from './lib/news-game-hashtag.mjs';
 import { loadCanonicalNewsCatalog } from './lib/news-game-registry-adapter.mjs';
+import { newsGameTitleLooksGeneric } from './lib/news-game-title-cleanup.mjs';
 
 const eventsPath = 'data/news-events.json';
 const reportPath = 'tmp/news-game-hashtag-normalization.json';
@@ -18,6 +19,7 @@ let temporaryReferences = 0;
 let deferredTemporaryReferences = 0;
 let missingPageReferences = 0;
 let duplicateReferencesRemoved = 0;
+let invalidGenericReferencesRemoved = 0;
 
 function pendingGamePageUrl(game = {}) {
   const params = new URLSearchParams();
@@ -57,7 +59,19 @@ const normalizedItems = items.map(item => {
   for (const raw of Array.isArray(item?.games) ? item.games : []) {
     if (!raw || typeof raw !== 'object') continue;
     gameReferences += 1;
+    const rawIdentity = String(raw.title || raw.slug || '').trim();
+    if (newsGameTitleLooksGeneric(rawIdentity)) {
+      invalidGenericReferencesRemoved += 1;
+      reasons.add('invalid-generic-game-identity-removed');
+      continue;
+    }
+
     const { game, canonical } = canonicalizeGame(raw);
+    if (newsGameTitleLooksGeneric(game.title || game.slug || '')) {
+      invalidGenericReferencesRemoved += 1;
+      reasons.add('invalid-generic-game-identity-removed');
+      continue;
+    }
     const temporary = !canonical && String(game.gameId || '').startsWith('news_game_');
     if (canonical) canonicalReferences += 1;
 
@@ -117,7 +131,7 @@ const normalizedItems = items.map(item => {
 });
 
 const report = {
-  schema_version: 5,
+  schema_version: 6,
   generated_at: new Date().toISOString(),
   articles: normalizedItems.length,
   game_references: gameReferences,
@@ -128,6 +142,7 @@ const report = {
   preserved_temporary_references: deferredTemporaryReferences,
   unique_canonical_hashtags: hashtagOwners.size,
   duplicate_references_removed: duplicateReferencesRemoved,
+  invalid_generic_references_removed: invalidGenericReferencesRemoved,
   collisions
 };
 
@@ -135,4 +150,4 @@ await fs.mkdir('tmp', { recursive: true });
 await fs.writeFile(eventsPath, `${JSON.stringify(Array.isArray(payload) ? normalizedItems : { ...payload, items: normalizedItems }, null, 2)}\n`, 'utf8');
 await fs.writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
 if (collisions.length) console.warn(`[news/hashtags] ${collisions.length} hashtag collision(s) detected; publication remains fail-open and diagnostics will record them.`);
-console.log(`[news/hashtags] ${normalizedItems.length} articles; ${hashtagOwners.size} visible game hashtags; ${temporaryReferences} temporary game references routed to preparing pages; ${missingPageReferences} canonical games routed to preparing pages until assembly completes; ${duplicateReferencesRemoved} duplicates removed.`);
+console.log(`[news/hashtags] ${normalizedItems.length} articles; ${hashtagOwners.size} visible game hashtags; ${temporaryReferences} temporary game references routed to preparing pages; ${missingPageReferences} canonical games routed to preparing pages until assembly completes; ${invalidGenericReferencesRemoved} invalid generic game references removed; ${duplicateReferencesRemoved} duplicates removed.`);
