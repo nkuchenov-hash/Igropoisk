@@ -1,8 +1,11 @@
 const stableEntities = [
   'Ubisoft', 'EA', 'Electronic Arts', 'Steam', 'Steam Deck', 'Xbox', 'PlayStation', 'Nintendo', 'NVIDIA', 'AMD',
   'Microsoft', 'Konami', 'Capcom', 'SEGA', 'Bethesda', 'Valve', 'Rockstar', 'Activision', 'miHoYo', 'HoYoverse',
-  'Pearl Abyss', 'CD Projekt Red', 'Gamescom', 'QuakeCon', 'Epic Games', 'Bandai Namco', 'Frontier Developments'
+  'Pearl Abyss', 'CD Projekt Red', 'Gamescom', 'QuakeCon', 'Epic Games', 'Bandai Namco', 'Frontier Developments', 'Disney'
 ];
+const builtInLocalizedEntities = {
+  Disney: ['Дисней']
+};
 
 function escapeRegExp(value = '') {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -70,8 +73,15 @@ const properPhrase = `${properWord}(?:\\s+${properWord}){0,3}`;
 function relationBackedCandidates(value = '') {
   const text = decodeNewsSourceText(value);
   const candidates = [];
+  const listPattern = new RegExp(`\\b(?:team|studio|makers?|creators?|developers?)\\s+(?:of|behind)\\s+(${properPhrase})(?:\\s*,\\s*(${properPhrase}))?(?:\\s+(?:and|&)\\s+(${properPhrase}))?`, 'g');
+  for (const match of text.matchAll(listPattern)) {
+    for (const value of match.slice(1)) {
+      const candidate = cleanEntityCandidate(value);
+      if (candidate) candidates.push(candidate);
+    }
+  }
+
   const patterns = [
-    new RegExp(`\\b(?:team|studio|makers?|creators?|developers?)\\s+(?:of|behind)\\s+(${properPhrase})`, 'g'),
     new RegExp(`\\b(${properPhrase})['’]s\\s+(?:upcoming|new|next|latest|game|title|project)\\b`, 'g'),
     new RegExp(`\\b(?:studio|developer|publisher)\\s+(${properPhrase})\\b`, 'g')
   ];
@@ -111,12 +121,13 @@ export function sourceEntityCandidates(input = {}) {
     .slice(0, 20);
 }
 
-function localizedDisplay(entity, localizedNames = {}) {
+function localizedDisplays(entity, localizedNames = {}) {
   const wanted = canonical(entity);
+  const values = [...(builtInLocalizedEntities[entity] || [])];
   for (const [source, display] of Object.entries(localizedNames || {})) {
-    if (canonical(source) === wanted && String(display || '').trim()) return String(display).trim();
+    if (canonical(source) === wanted && String(display || '').trim()) values.push(String(display).trim());
   }
-  return '';
+  return [...new Set(values.filter(Boolean))];
 }
 
 function containsEntity(value = '', entity = '') {
@@ -128,8 +139,8 @@ function containsEntity(value = '', entity = '') {
 
 function entityMissing(target, entity, localizedNames = {}) {
   if (containsEntity(target, entity)) return false;
-  const display = localizedDisplay(entity, localizedNames);
-  return display ? !containsEntity(target, display) : true;
+  const displays = localizedDisplays(entity, localizedNames);
+  return displays.length ? !displays.some(display => containsEntity(target, display)) : true;
 }
 
 function repeatedParenthetical(value = '') {
