@@ -15,6 +15,7 @@ on:
       - 'assets/home-wide-rails.css'
       - 'assets/design-system.css'
       - 'data/news-pipeline-health.json'
+      - 'data/news-game-aliases.json'
       - 'fix.css'
       - 'config/news-pipeline.json'
       - 'docs/NEWS_MODULE_STABLE.md'
@@ -26,11 +27,15 @@ on:
       - 'scripts/smoke-news-browser.mjs'
       - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
+      - 'scripts/postprocess-industry-news.mjs'
+      - 'scripts/resolve-news-game-context.mjs'
+      - 'scripts/verify-news-game-identities.mjs'
       - 'scripts/normalize-news-game-hashtags.mjs'
       - 'scripts/publish-game-page-assembly-queue.mjs'
       - 'scripts/validate-stable-news-module.mjs'
       - 'scripts/test-news-fail-open-publication.mjs'
       - 'scripts/test-news-fast-path-contract.mjs'
+      - 'scripts/test-news-primary-game-refiner.mjs'
       - 'scripts/test-game-page-assembly-queue.mjs'
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
@@ -40,6 +45,9 @@ on:
       - 'scripts/check-yandex-storage.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/lib/game-page-assembly-queue.mjs'
+      - 'scripts/lib/news-primary-game-refiner.mjs'
+      - 'scripts/lib/news-game-title-cleanup.mjs'
+      - 'scripts/lib/news-game-translation-guard.mjs'
       - 'scripts/publish-news-storage.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/validate-news-boundary.mjs'
@@ -95,6 +103,7 @@ jobs:
           node scripts/test-news-pipeline.mjs
           node scripts/test-news-fail-open-publication.mjs
           node scripts/test-news-fast-path-contract.mjs
+          node scripts/test-news-primary-game-refiner.mjs
           node scripts/test-game-page-assembly-queue.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/validate-news-pipeline.mjs --allow-stale-repository-fallback
