@@ -1,0 +1,56 @@
+name: Game Source Discovery v10 Smoke
+on:
+  push:
+    branches: [diag/game-source-discovery-v10-smoke]
+permissions:
+  contents: read
+jobs:
+  spore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: node --check scripts/discover-game-sources-web.mjs
+      - name: Bootstrap fresh Spore draft
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { GameRegistryApi } from './scripts/lib/game-registry.mjs';
+          const p='data/game-registry/registry.transition.json';
+          const api=new GameRegistryApi(JSON.parse(fs.readFileSync(p,'utf8')));
+          const r=api.registerCandidate({title:'Spore',slug:'spore',steamAppId:'17390',kind:'game',standalonePage:true,releaseYear:2008,source:{type:'official_platform_store',name:'Steam',url:'https://store.steampowered.com/app/17390/Spore/'},status:'identified',confidence:0.99},{actor:'source-v10-smoke'});
+          fs.writeFileSync(p,JSON.stringify(api.registry,null,2)+'\n');
+          fs.writeFileSync('/tmp/spore-id',r.entity.id);
+          NODE
+          node scripts/parse-game-data.mjs spore 17390 Spore
+          node scripts/build-game-page-basic.mjs "$(cat /tmp/spore-id)"
+      - name: Discover direct professional sources
+        env:
+          IGROPOISK_SOURCE_DISCOVERY_REFRESH: '1'
+        run: node scripts/discover-game-sources-web.mjs spore
+      - name: Require valid Spore corpus and reject title collisions
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const x=JSON.parse(fs.readFileSync('data/research/spore-independent-web-sources.json','utf8'));
+          const bad=x.sources.filter(s=>/spore hero|spore wars|mushroom men/i.test(`${s.title} ${s.url}`));
+          console.log(JSON.stringify({coverage:x.coverage_passed,publications:x.publication_count,scored:x.scored,accepted:x.accepted,bad:bad.map(s=>({title:s.title,url:s.url})),sources:x.sources.map(s=>({publication:s.publication,title:s.title,score:s.score,scale:s.scale,url:s.url}))},null,2));
+          if(bad.length) throw new Error('Wrong-title Spore variants were accepted');
+          if(x.publication_count < 10) throw new Error(`Only ${x.publication_count} professional publications discovered`);
+          if(x.scored < 5) throw new Error(`Only ${x.scored} scored publications discovered`);
+          if(x.coverage_passed !== true) throw new Error('Coverage did not pass');
+          NODE
+      - name: Preserve result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-source-discovery-v10-${{ github.run_id }}
+          path: |
+            data/research/spore-independent-web-sources.json
+            data/parser-runs/independent-web-sources-spore.json
+          if-no-files-found: warn
+          retention-days: 7
