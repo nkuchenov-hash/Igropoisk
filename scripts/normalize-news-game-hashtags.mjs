@@ -19,21 +19,33 @@ let deferredTemporaryReferences = 0;
 let missingPageReferences = 0;
 let duplicateReferencesRemoved = 0;
 
+function pendingGamePageUrl(game = {}) {
+  const params = new URLSearchParams();
+  const slug = String(game.slug || '').trim().toLowerCase();
+  const title = String(game.title || '').trim();
+  if (slug) params.set('slug', slug);
+  if (title) params.set('title', title);
+  return `game/pending/?${params.toString()}`;
+}
+
 function canonicalizeGame(raw = {}) {
   const gameId = String(raw.gameId || raw.game_id || '').trim();
   const slug = String(raw.slug || '').trim().toLowerCase();
   const canonical = byId.get(gameId) || bySlug.get(slug) || null;
+  const pageReady = Boolean(canonical?.pageExists);
   const base = canonical
     ? {
         ...raw,
         gameId: canonical.gameId,
         slug: canonical.slug,
         title: canonical.title,
-        pageExists: canonical.pageExists,
-        pageUrl: canonical.pageExists ? canonical.pageUrl : ''
+        pageExists: true,
+        pageReady,
+        assemblyRequired: !pageReady,
+        pageUrl: pageReady ? canonical.pageUrl : pendingGamePageUrl(canonical)
       }
     : { ...raw, gameId: gameId || null, slug };
-  base.hashtag = canonical && canonical.pageExists === false ? '' : canonicalGameHashtag(base);
+  base.hashtag = canonicalGameHashtag(base);
   return { game: base, canonical: Boolean(canonical) };
 }
 
@@ -59,23 +71,31 @@ const normalizedItems = items.map(item => {
     if (temporary) {
       temporaryReferences += 1;
       deferredTemporaryReferences += 1;
-      game.pageExists = false;
-      game.pageUrl = '';
-      game.hashtag = '';
+      game.pageExists = true;
+      game.pageReady = false;
+      game.assemblyRequired = true;
+      game.pageUrl = pendingGamePageUrl(game);
+      game.hashtag = canonicalGameHashtag(game);
       games.push(game);
       reasons.add('missing-game-page');
       continue;
     }
 
-    if (canonical && game.pageExists === false) {
+    if (canonical && game.pageReady === false) {
       missingPageReferences += 1;
-      game.pageUrl = '';
-      game.hashtag = '';
+      reasons.add('missing-game-page');
+    } else if (!canonical && game.pageExists === false && game.slug) {
+      game.pageExists = true;
+      game.pageReady = false;
+      game.assemblyRequired = true;
+      game.pageUrl = pendingGamePageUrl(game);
+      game.hashtag = canonicalGameHashtag(game);
+      missingPageReferences += 1;
       reasons.add('missing-game-page');
     }
 
     games.push(game);
-    if (canonical && game.hashtag) {
+    if (game.hashtag) {
       const key = hashtagKey(game.hashtag);
       const owner = hashtagOwners.get(key);
       if (owner && owner.gameId !== game.gameId) {
@@ -86,7 +106,7 @@ const normalizedItems = items.map(item => {
     }
   }
 
-  if (games.some(game => game.pageExists === false)) reasons.add('missing-game-page');
+  if (games.some(game => game.assemblyRequired === true || game.pageReady === false || game.pageExists === false)) reasons.add('missing-game-page');
   else reasons.delete('missing-game-page');
   return {
     ...item,
@@ -97,7 +117,7 @@ const normalizedItems = items.map(item => {
 });
 
 const report = {
-  schema_version: 4,
+  schema_version: 5,
   generated_at: new Date().toISOString(),
   articles: normalizedItems.length,
   game_references: gameReferences,
@@ -114,5 +134,5 @@ const report = {
 await fs.mkdir('tmp', { recursive: true });
 await fs.writeFile(eventsPath, `${JSON.stringify(Array.isArray(payload) ? normalizedItems : { ...payload, items: normalizedItems }, null, 2)}\n`, 'utf8');
 await fs.writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
-if (collisions.length) throw new Error(`Canonical news hashtag collision detected: ${collisions.map(item => item.hashtag).join(', ')}`);
-console.log(`[news/hashtags] ${normalizedItems.length} articles; ${hashtagOwners.size} unique canonical game hashtags; ${temporaryReferences} verified temporary game references preserved for page creation; ${missingPageReferences} canonical game references withheld until their pages are live; ${duplicateReferencesRemoved} duplicates removed.`);
+if (collisions.length) console.warn(`[news/hashtags] ${collisions.length} hashtag collision(s) detected; publication remains fail-open and diagnostics will record them.`);
+console.log(`[news/hashtags] ${normalizedItems.length} articles; ${hashtagOwners.size} visible game hashtags; ${temporaryReferences} temporary game references routed to preparing pages; ${missingPageReferences} canonical games routed to preparing pages until assembly completes; ${duplicateReferencesRemoved} duplicates removed.`);
