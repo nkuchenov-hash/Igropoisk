@@ -1,7 +1,3 @@
-const commonCapitalizedWords = new Set([
-  'a','an','and','are','as','at','be','but','by','can','could','day','do','does','done','easy','everyone','expect','final','for','from','game','games','get','gets','getting','good','has','have','how','i','in','into','is','it','its','makers','more','my','new','news','no','not','of','on','one','out','ride','set','should','so','some','than','that','the','their','this','to','up','was','we','what','when','where','who','why','will','with','you','your'
-]);
-
 const stableEntities = [
   'Ubisoft', 'EA', 'Electronic Arts', 'Steam', 'Steam Deck', 'Xbox', 'PlayStation', 'Nintendo', 'NVIDIA', 'AMD',
   'Microsoft', 'Konami', 'Capcom', 'SEGA', 'Bethesda', 'Valve', 'Rockstar', 'Activision', 'miHoYo', 'HoYoverse',
@@ -25,7 +21,7 @@ function canonical(value = '') {
 function cleanEntityCandidate(value = '') {
   return String(value || '')
     .replace(/[’‘`´]/g, "'")
-    .replace(/'s\b/gi, '')
+    .replace(/^[\s:;,.!?–—-]+|[\s:;,.!?–—-]+$/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -49,40 +45,43 @@ export function decodeNewsSourceText(value = '') {
     .trim();
 }
 
+function sourceTitle(input = {}) {
+  return decodeNewsSourceText(input.titleEn || input.title || '');
+}
+
+function sourceSummary(input = {}) {
+  return decodeNewsSourceText(input.summaryEn || input.summary || '');
+}
+
 function sourceText(input = {}) {
-  return decodeNewsSourceText(`${input.titleEn || input.title || ''} ${input.summaryEn || input.summary || ''}`);
+  return `${sourceTitle(input)} ${sourceSummary(input)}`.trim();
 }
 
-function sourceUrl(input = {}) {
-  return String(input.primaryUrl || input.url || '').trim();
+function sourceContains(source = '', entity = '') {
+  const text = canonical(source);
+  const needle = canonical(entity);
+  if (!needle) return false;
+  return new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(needle)}(?![\\p{L}\\p{N}])`, 'iu').test(text);
 }
 
-function urlText(input = {}) {
-  try { return decodeURIComponent(new URL(sourceUrl(input)).pathname).toLowerCase(); }
-  catch { return ''; }
-}
+const properWord = "(?:[A-Z][A-Za-z0-9.-]{1,}|[A-Z]{2,})";
+const properPhrase = `${properWord}(?:\\s+${properWord}){0,3}`;
 
-function titleCaseMultiwordCandidates(value = '') {
-  const matches = String(value).match(/\b(?:[A-Z][A-Za-z0-9'’-]{2,}|[A-Z]{2,})(?:\s+(?:[A-Z][A-Za-z0-9'’-]{2,}|[A-Z]{2,})){1,3}\b/g) || [];
-  return matches
-    .map(cleanEntityCandidate)
-    .filter(candidate => {
-      const words = candidate.split(/\s+/).map(word => canonical(word));
-      return words.some(word => word && !commonCapitalizedWords.has(word));
-    });
-}
-
-function urlBackedSingleCandidates(value = '', input = {}) {
-  const path = urlText(input);
-  if (!path) return [];
-  const matches = String(value).match(/\b(?:[A-Z][A-Za-z0-9'’-]{3,}|[A-Z]{3,})\b/g) || [];
-  return matches
-    .map(cleanEntityCandidate)
-    .filter(candidate => {
-      const key = canonical(candidate);
-      if (!key || commonCapitalizedWords.has(key)) return false;
-      return new RegExp(`(?:^|[^a-z0-9])${escapeRegExp(key)}(?:[^a-z0-9]|$)`, 'i').test(path.replace(/[-_/]+/g, ' '));
-    });
+function relationBackedCandidates(value = '') {
+  const text = decodeNewsSourceText(value);
+  const candidates = [];
+  const patterns = [
+    new RegExp(`\\b(?:makers?|creators?|developers?)\\s+(?:of|behind)\\s+(${properPhrase})`, 'g'),
+    new RegExp(`\\b(${properPhrase})['’]s\\s+(?:upcoming|new|next|latest|game|title|project)\\b`, 'g'),
+    new RegExp(`\\b(?:studio|developer|publisher)\\s+(${properPhrase})\\b`, 'g')
+  ];
+  for (const pattern of patterns) {
+    for (const match of text.matchAll(pattern)) {
+      const candidate = cleanEntityCandidate(match[1]);
+      if (candidate) candidates.push(candidate);
+    }
+  }
+  return candidates;
 }
 
 function explicitGameEntities(input = {}) {
@@ -94,10 +93,10 @@ function explicitGameEntities(input = {}) {
 export function sourceEntityCandidates(input = {}) {
   const source = sourceText(input);
   const values = [
-    ...stableEntities.filter(entity => new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(entity)}(?![\\p{L}\\p{N}])`, 'iu').test(source)),
+    ...stableEntities.filter(entity => sourceContains(source, entity)),
     ...explicitGameEntities(input),
-    ...titleCaseMultiwordCandidates(source),
-    ...urlBackedSingleCandidates(source, input)
+    ...relationBackedCandidates(sourceTitle(input)),
+    ...relationBackedCandidates(sourceSummary(input))
   ];
   const seen = new Set();
   return values
