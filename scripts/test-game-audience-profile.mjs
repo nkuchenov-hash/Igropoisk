@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+import {buildGameAudienceProfile,neutralAudienceProfile,validateAudienceProfile} from './lib/game-audience-profile.mjs';
+const assert=(ok,msg)=>{if(!ok)throw new Error(msg)};
+const spore=buildGameAudienceProfile({slug:'spore',draft:{classification:{genres:['Simulation','Strategy'],tags:['Sandbox','Character Customization','Exploration'],themes:['Science Fiction'],game_modes:['Single-player']}},parser:{editorial:{short_description:'Create your own creatures and guide them from a cell to space.'}},reviews:{reviews:[{publication:'A',summary:'A creative sandbox built around creature creation and exploration.'},{publication:'B',summary:'Creation tools and exploration are the strongest parts of this simulation.'}]}});
+assert(spore.visibility==='internal_only','Spore profile leaked visibility');
+assert(spore.core_appeals.includes('creation'),'Spore must detect creation');
+assert(spore.core_appeals.includes('systems'),'Spore must detect systems');
+assert(spore.aggregate_demographics===null,'Demographics must not be inferred');
+assert(validateAudienceProfile(spore).length===0,'Spore profile invalid');
+const postal=buildGameAudienceProfile({slug:'postal',draft:{classification:{genres:['Action'],tags:['Dark Humor','Satire','Violent']}},reviews:{reviews:[{publication:'A',summary:'Black comedy and satire drive its deliberately abrasive tone.'},{publication:'B',summary:'Dark humor and absurd satire define the game more than its shooting.'}]}});
+assert(postal.core_appeals.includes('black_comedy'),'Postal must detect black comedy');
+assert(postal.confidence==='medium','Postal should be medium with independent tag+review evidence');
+assert(postal.register.includes('ironic')&&postal.register.includes('dry'),'Postal must adapt register');
+assert(postal.aggregate_demographics===null,'Postal demographics must not be stereotyped');
+const unknown=neutralAudienceProfile('unknown');
+assert(unknown.confidence==='low'&&unknown.register[0]==='neutral','Neutral fallback broken');
+assert(validateAudienceProfile(unknown).length===0,'Neutral fallback invalid');
+const explicit=buildGameAudienceProfile({slug:'x',corpus:{audience_signals:{aggregate_demographics:{source:'licensed-test',age_bands:{'25-34':0.4}},profile:{reader_familiarity:'hardcore',jargon_level:'high',register:['technical'],core_appeals:['mastery'],spoiler_sensitivity:'low'}}}});
+assert(explicit.confidence==='high','Explicit profile should be high confidence');
+assert(explicit.aggregate_demographics?.source==='licensed-test','Explicit demographics lost');
+console.log(JSON.stringify({status:'green',tests:4,spore:{confidence:spore.confidence,register:spore.register,appeals:spore.core_appeals},postal:{confidence:postal.confidence,register:postal.register,appeals:postal.core_appeals}},null,2));
