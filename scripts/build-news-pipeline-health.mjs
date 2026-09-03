@@ -149,18 +149,22 @@ export function buildNewsPipelineHealth({
 
   const official = payloads.get('data/publisher-news.json') || {};
   const report = Array.isArray(official.sourceReport) ? official.sourceReport : [];
-  const totalSources = Number(official.sourceCount || report.length || 0);
-  const successfulSources = Number(official.successfulSourceCount || report.filter(source => source.status === 'ok').length || 0);
-  const successRatio = totalSources ? successfulSources / totalSources : 0;
+  const configuredSources = Number(official.sourceCount || report.length || 0);
+  const supportedReport = report.filter(source => source?.status !== 'no-feed');
+  const supportedSources = supportedReport.length;
+  const successfulSources = supportedReport.filter(source => source?.status === 'ok').length;
+  const unsupportedSources = report.filter(source => source?.status === 'no-feed').length;
+  const successRatio = supportedSources ? successfulSources / supportedSources : 0;
   const sourceCheckedAt = generatedAt(official) || generatedAtIso;
   const history = sourceHistory(previous, report, checkedOfficial, sourceCheckedAt, persistentThreshold);
   const currentFailures = history.filter(source => source.status === 'error');
   const persistentFailures = history.filter(source => source.persistent_failure);
   const minimumRatio = Number(config.publication?.minimum_official_source_success_ratio || 0);
 
-  if (!totalSources) blocking.push('Реестр официальных источников пуст.');
+  if (!configuredSources) blocking.push('Реестр официальных источников пуст.');
+  else if (!supportedSources) blocking.push('Нет ни одного поддерживаемого официального источника для проверки live-публикации.');
   else if (successRatio < minimumRatio) {
-    blocking.push(`Работает только ${(successRatio * 100).toFixed(1)}% официальных источников при обязательном минимуме ${(minimumRatio * 100).toFixed(1)}%. Live snapshot не должен заменяться при деградации ниже contractual floor.`);
+    blocking.push(`Работает только ${(successRatio * 100).toFixed(1)}% поддерживаемых официальных источников при обязательном минимуме ${(minimumRatio * 100).toFixed(1)}%. Live snapshot не должен заменяться при деградации ниже contractual floor.`);
   }
   if (persistentFailures.length) warnings.push(`Систематически не работают источники: ${persistentFailures.map(source => source.id).join(', ')}.`);
 
@@ -179,7 +183,9 @@ export function buildNewsPipelineHealth({
     images,
     sources: {
       generated_at: sourceCheckedAt,
-      total: totalSources,
+      configured_total: configuredSources,
+      total: supportedSources,
+      unsupported: unsupportedSources,
       successful: successfulSources,
       success_ratio: Number(successRatio.toFixed(4)),
       status_counts: statusCounts(report),
@@ -217,5 +223,5 @@ function parseArguments(argv) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const health = buildNewsPipelineHealth(parseArguments(process.argv.slice(2)));
-  console.log(`News pipeline health: ${health.status}; ${health.sources.successful}/${health.sources.total} official sources.`);
+  console.log(`News pipeline health: ${health.status}; ${health.sources.successful}/${health.sources.total} supported official sources.`);
 }
