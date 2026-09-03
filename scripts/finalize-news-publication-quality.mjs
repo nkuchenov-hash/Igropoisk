@@ -1,0 +1,301 @@
+import fs from 'node:fs/promises';
+import {
+  editNewsToRussian,
+  fetchArticleText,
+  validateProductionNews,
+  warmNewsEditor
+} from './lib/news-editor-production.mjs';
+import {
+  NEWS_EDITORIAL_VERSION,
+  editorialSourceHash,
+  hasCyrillic
+} from './lib/news-editor-policy.mjs';
+import {
+  decodeNewsSourceText,
+  isMachineLocalizedDraft,
+  publicationSemanticReasons,
+  sourceEntityCandidates,
+  sourceLooksTruncated
+} from './lib/news-publication-quality.mjs';
+
+const eventsPath = 'data/news-events.json';
+const reportPath = process.env.NEWS_PUBLICATION_QUALITY_REPORT || 'tmp/news-publication-quality-report.json';
+const sourceFiles = ['data/news.json', 'data/publisher-news.json'];
+
+function isPublic(item = {}) {
+  return Boolean(item.publicEligible ?? item.globalEligible ?? item.regionalEligible);
+}
+
+function setPublic(item, value) {
+  item.publicEligible = value;
+  item.globalEligible = value;
+  if (!value) {
+    item.regionalEligible = false;
+    item.mainEligible = false;
+  }
+}
+
+function sourceTitle(item = {}) {
+  return decodeNewsSourceText(item.titleEn || item.title || '');
+}
+
+function sourceSummary(item = {}) {
+  return decodeNewsSourceText(item.summaryEn || item.summary || sourceTitle(item));
+}
+
+function sourceUrl(item = {}) {
+  return String(item.primaryUrl || item.url || '').trim();
+}
+
+function sourceIsRussian(item = {}) {
+  const title = sourceTitle(item);
+  const summary = sourceSummary(item);
+  return hasCyrillic(title) && (!summary || hasCyrillic(summary));
+}
+
+function productionInput(item = {}, articleText = '') {
+  return {
+    title: sourceTitle(item),
+    summary: sourceSummary(item),
+    articleText: decodeNewsSourceText(articleText),
+    url: sourceUrl(item),
+    primaryUrl: sourceUrl(item),
+    games: Array.isArray(item.games) ? item.games : []
+  };
+}
+
+function assess(item, titleRu, summaryRu, articleText = '', localizedNames = {}) {
+  const input = productionInput(item, articleText);
+  const validation = validateProductionNews(
+    { titleRu, briefRu: summaryRu },
+    input
+  );
+  const semanticReasons = publicationSemanticReasons(
+    input,
+    { titleRu: validation.titleRu, summaryRu: validation.briefRu },
+    { localizedNames }
+  );
+  return {
+    ok: validation.ok && semanticReasons.length === 0,
+    titleRu: validation.titleRu,
+    summaryRu: validation.briefRu,
+    reasons: [...new Set([...(validation.reasons || []), ...semanticReasons])]
+  };
+}
+
+function approve(item, result, model, repaired = false) {
+  item.titleRu = result.titleRu;
+  item.summaryRu = result.summaryRu;
+  item.editorialBriefRu = result.summaryRu;
+  item.editorialStatus = 'approved';
+  item.editorialVersion = NEWS_EDITORIAL_VERSION;
+  item.editorialSourceHash = editorialSourceHash(item);
+  item.editorialModel = model;
+  item.editorialGeneratedAt = new Date().toISOString();
+  item.publicationQualityStatus = repaired ? 'repaired-and-approved' : 'approved';
+  item.publicationQualityCheckedAt = new Date().toISOString();
+  delete item.publicationQualityReasons;
+  delete item.editorialReasons;
+  delete item.editorialRejectedAt;
+  return item;
+}
+
+function reject(item, reasons) {
+  setPublic(item, false);
+  item.editorialStatus = 'rejected-publication-quality';
+  item.editorialVersion = NEWS_EDITORIAL_VERSION;
+  item.editorialSourceHash = editorialSourceHash(item);
+  item.editorialRejectedAt = new Date().toISOString();
+  item.editorialReasons = reasons;
+  item.publicationQualityStatus = 'rejected';
+  item.publicationQualityCheckedAt = new Date().toISOString();
+  item.publicationQualityReasons = reasons;
+  return item;
+}
+
+async function readLocalizedNames() {
+  try {
+    const payload = JSON.parse(await fs.readFile('data/news-game-aliases.json', 'utf8'));
+    return payload?.localizedNames || {};
+  } catch {
+    return {};
+  }
+}
+
+async function rewriteSourceFile(path, rejectedIds, rejectedUrls) {
+  try {
+    const payload = JSON.parse(await fs.readFile(path, 'utf8'));
+    const items = Array.isArray(payload) ? payload : (payload.items || []);
+    const kept = items.filter(item => {
+      const id = String(item?.id || '');
+      const url = String(item?.primaryUrl || item?.url || '');
+      return !rejectedIds.has(id) && !rejectedUrls.has(url);
+    });
+    const removed = items.length - kept.length;
+    if (!removed) return 0;
+    if (Array.isArray(payload)) {
+      await fs.writeFile(path, `${JSON.stringify(kept, null, 2)}\n`);
+    } else {
+      await fs.writeFile(path, `${JSON.stringify({
+        ...payload,
+        publicationQualityFilteredAt: new Date().toISOString(),
+        publicationQualityRejectedCount: Number(payload.publicationQualityRejectedCount || 0) + removed,
+        items: kept
+      }, null, 2)}\n`);
+    }
+    return removed;
+  } catch (error) {
+    console.warn(`[news/publication-quality] could not filter ${path}: ${error.message}`);
+    return 0;
+  }
+}
+
+const payload = JSON.parse(await fs.readFile(eventsPath, 'utf8'));
+const items = Array.isArray(payload) ? payload : (payload.items || []);
+const localizedNames = await readLocalizedNames();
+const rejectedIds = new Set();
+const rejectedUrls = new Set();
+const failures = [];
+let checked = 0;
+let machineDraftsChecked = 0;
+let passedWithoutRepair = 0;
+let repairAttempted = 0;
+let repaired = 0;
+let rejected = 0;
+let editorWarmed = false;
+
+for (const item of items) {
+  if (!isPublic(item)) continue;
+  checked += 1;
+  const machineDraft = isMachineLocalizedDraft(item);
+  if (machineDraft) machineDraftsChecked += 1;
+
+  const initial = assess(
+    item,
+    String(item.titleRu || '').trim(),
+    String(item.summaryRu || item.editorialBriefRu || '').trim(),
+    '',
+    localizedNames
+  );
+
+  const needsRepair = !initial.ok || (!sourceIsRussian(item) && sourceLooksTruncated(productionInput(item)));
+  if (!needsRepair) {
+    approve(
+      item,
+      initial,
+      machineDraft ? 'validated-machine-draft-publication-gate' : String(item.editorialModel || 'publication-quality-gate'),
+      false
+    );
+    passedWithoutRepair += 1;
+    continue;
+  }
+
+  if (sourceIsRussian(item)) {
+    reject(item, initial.reasons.length ? initial.reasons : ['Russian source failed final publication quality gate']);
+    rejectedIds.add(String(item.id || ''));
+    rejectedUrls.add(sourceUrl(item));
+    failures.push({ id: item.id, url: sourceUrl(item), reasons: item.publicationQualityReasons });
+    rejected += 1;
+    continue;
+  }
+
+  repairAttempted += 1;
+  let articleText = '';
+  let articleFetchError = '';
+  try {
+    articleText = await fetchArticleText(sourceUrl(item), 9000, `${sourceTitle(item)} ${sourceSummary(item)}`);
+  } catch (error) {
+    articleFetchError = error.message;
+  }
+
+  try {
+    if (!editorWarmed) {
+      await warmNewsEditor();
+      editorWarmed = true;
+    }
+    const requiredEntities = sourceEntityCandidates(productionInput(item, articleText));
+    const edited = await editNewsToRussian({
+      title: sourceTitle(item),
+      summary: sourceSummary(item),
+      articleText,
+      url: sourceUrl(item),
+      source: item.primarySource || item.source || '',
+      requiredEntities
+    }, { maxAttempts: 2, maxNewTokens: 140 });
+
+    const repairedResult = assess(
+      item,
+      edited.titleRu || '',
+      edited.briefRu || '',
+      articleText,
+      localizedNames
+    );
+
+    if (edited.ok && repairedResult.ok) {
+      approve(item, repairedResult, edited.model || 'qwen-publication-repair', true);
+      item.editorialAttempts = edited.attempts;
+      item.editorialRequiredEntities = requiredEntities;
+      repaired += 1;
+      console.log(`[news/publication-quality] repaired ${item.id}: ${item.titleRu}`);
+      continue;
+    }
+
+    const reasons = [...new Set([
+      ...initial.reasons,
+      ...(edited.reasons || []),
+      ...repairedResult.reasons,
+      ...(articleFetchError ? [`article fetch: ${articleFetchError}`] : [])
+    ])];
+    reject(item, reasons.length ? reasons : ['final semantic/editorial validation failed']);
+  } catch (error) {
+    reject(item, [...new Set([
+      ...initial.reasons,
+      error.message,
+      ...(articleFetchError ? [`article fetch: ${articleFetchError}`] : [])
+    ])]);
+  }
+
+  rejectedIds.add(String(item.id || ''));
+  rejectedUrls.add(sourceUrl(item));
+  failures.push({ id: item.id, url: sourceUrl(item), reasons: item.publicationQualityReasons });
+  rejected += 1;
+}
+
+const keptItems = items.filter(item => !rejectedIds.has(String(item?.id || '')) && !rejectedUrls.has(sourceUrl(item)));
+const nextPayload = Array.isArray(payload)
+  ? keptItems
+  : {
+      ...payload,
+      publicationQuality: {
+        checked,
+        machineDraftsChecked,
+        passedWithoutRepair,
+        repairAttempted,
+        repaired,
+        rejected,
+        policy: 'per-item-fail-open-no-fixed-count'
+      },
+      items: keptItems
+    };
+await fs.writeFile(eventsPath, `${JSON.stringify(nextPayload, null, 2)}\n`);
+
+let filteredRawItems = 0;
+for (const path of sourceFiles) filteredRawItems += await rewriteSourceFile(path, rejectedIds, rejectedUrls);
+
+await fs.mkdir('tmp', { recursive: true });
+await fs.writeFile(reportPath, `${JSON.stringify({
+  schemaVersion: 1,
+  generatedAt: new Date().toISOString(),
+  policy: 'Every public event is checked; suspicious machine drafts are repaired from source, otherwise only that item is excluded.',
+  fixedPublicationCount: null,
+  checked,
+  machineDraftsChecked,
+  passedWithoutRepair,
+  repairAttempted,
+  repaired,
+  rejected,
+  filteredRawItems,
+  failures
+}, null, 2)}\n`);
+
+console.log(`[news/publication-quality] checked=${checked}; machine_drafts=${machineDraftsChecked}; passed=${passedWithoutRepair}; repair_attempted=${repairAttempted}; repaired=${repaired}; rejected=${rejected}; raw_filtered=${filteredRawItems}`);
