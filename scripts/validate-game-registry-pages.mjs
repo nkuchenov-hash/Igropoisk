@@ -6,9 +6,10 @@ const root = process.cwd();
 const gameRoot = path.join(root, 'game');
 const failures = [];
 const pages = [];
+const reservedRoutes = new Set(['_shared', 'pending']);
 if (!fs.existsSync(gameRoot)) throw new Error('game/ directory is missing');
 for (const entry of fs.readdirSync(gameRoot, {withFileTypes: true}).sort((a,b) => a.name.localeCompare(b.name))) {
-  if (!entry.isDirectory() || entry.name === '_shared') continue;
+  if (!entry.isDirectory() || reservedRoutes.has(entry.name)) continue;
   const indexPath = path.join(gameRoot, entry.name, 'index.html');
   if (!fs.existsSync(indexPath)) continue;
   const html = fs.readFileSync(indexPath, 'utf8');
