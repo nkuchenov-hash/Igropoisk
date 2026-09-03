@@ -63,7 +63,7 @@ function urlText(input = {}) {
 }
 
 function titleCaseMultiwordCandidates(value = '') {
-  const matches = String(value).match(/\b(?:[A-Z][A-Za-z0-9'’.-]{2,}|[A-Z]{2,})(?:\s+(?:[A-Z][A-Za-z0-9'’.-]{2,}|[A-Z]{2,})){1,3}\b/g) || [];
+  const matches = String(value).match(/\b(?:[A-Z][A-Za-z0-9'’-]{2,}|[A-Z]{2,})(?:\s+(?:[A-Z][A-Za-z0-9'’-]{2,}|[A-Z]{2,})){1,3}\b/g) || [];
   return matches
     .map(cleanEntityCandidate)
     .filter(candidate => {
@@ -75,7 +75,7 @@ function titleCaseMultiwordCandidates(value = '') {
 function urlBackedSingleCandidates(value = '', input = {}) {
   const path = urlText(input);
   if (!path) return [];
-  const matches = String(value).match(/\b(?:[A-Z][A-Za-z0-9'’.-]{3,}|[A-Z]{3,})\b/g) || [];
+  const matches = String(value).match(/\b(?:[A-Z][A-Za-z0-9'’-]{3,}|[A-Z]{3,})\b/g) || [];
   return matches
     .map(cleanEntityCandidate)
     .filter(candidate => {
