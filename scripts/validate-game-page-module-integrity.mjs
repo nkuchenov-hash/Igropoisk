@@ -19,7 +19,10 @@ if(manifest.schema_version!==1)fail('manifest schema_version must be 1');
 if(manifest.module!=='game-page-assembly')fail('manifest module must be game-page-assembly');
 for(const key of ['publication_finalizer_only','published_package_immutable','review_article_is_separate','game_specific_presentation_hardcode_forbidden','runtime_monkey_patching_forbidden'])if(manifest.contract?.[key]!==true)fail(`${key} must remain true`);
 if(manifest.contract?.paid_ai_required!==false)fail('paid_ai_required must remain false');
-if(manifest.contract?.editorial_backend!=='ollama:qwen2.5:3b')fail('editorial backend must remain free local ollama:qwen2.5:3b');
+if(manifest.contract?.editorial_backend!=='provider-router:zero-host-first')fail('editorial backend must remain provider-router:zero-host-first');
+if(manifest.contract?.local_gpu_server_required!==false)fail('local_gpu_server_required must remain false');
+const expectedEditorialProviders=['openrouter:kimi-k2.6-free','gigachat:3-ultra-with-2-max-fallback','gemini:2.5-pro','groq:qwen3.8-27b','ollama:qwen2.5:3b-fallback'];
+for(const provider of expectedEditorialProviders)if(!manifest.contract?.editorial_provider_order?.includes(provider))fail(`editorial provider contract lost ${provider}`);
 
 for(const group of ['required_files','required_workflows','required_docs']){
   const values=manifest[group];if(!Array.isArray(values)||!values.length){fail(`${group} must be a non-empty array`);continue}
@@ -62,8 +65,8 @@ const editorial=exists('scripts/build-game-page.mjs')?read('scripts/build-game-p
 for(const [name,text] of [['scripts/build-game-page-basic.mjs',basic],['scripts/build-game-page.mjs',editorial]])for(const token of ['data/catalog-visible.json','game/${slug}/index.html',"status:'published'",'status:"published"'])if(text.includes(token))fail(`${name} violates draft-only builder contract via ${JSON.stringify(token)}`);
 for(const token of ['OPENAI_API_KEY','api.openai.com','openai.com/v1'])if(editorial.includes(token))fail(`scripts/build-game-page.mjs must not require paid OpenAI: ${token}`);
 const freeAi=exists('scripts/lib/free-editorial-ai.mjs')?read('scripts/lib/free-editorial-ai.mjs'):'';
-for(const token of ['OLLAMA_BASE_URL','qwen2.5:3b','/api/chat'])if(!freeAi.includes(token))fail(`free editorial backend lost required token: ${token}`);
-for(const token of ['OPENAI_API_KEY','api.openai.com'])if(freeAi.includes(token))fail(`free editorial backend contains paid API dependency: ${token}`);
+for(const token of ['EDITORIAL_AI_PROVIDER_ORDER','OPENROUTER_API_KEY','moonshotai/kimi-k2.6:free','GIGACHAT_CREDENTIALS','GigaChat-3-Ultra','GigaChat-2-Max','GEMINI_API_KEY','gemini-2.5-pro','GROQ_API_KEY','qwen/qwen3.8-27b','OLLAMA_BASE_URL','qwen2.5:3b','/api/chat','All editorial AI providers failed'])if(!freeAi.includes(token))fail(`editorial provider router lost required token: ${token}`);
+for(const token of ['OPENAI_API_KEY','api.openai.com'])if(freeAi.includes(token))fail(`editorial provider router contains forbidden paid OpenAI dependency: ${token}`);
 
 const finalizer=exists(soleWriter)?read(soleWriter):'';
 for(const token of ['page QC is not green','content QC is not green','media QC is not green','source discovery is incomplete','canonical page editorial is not green','data/catalog-visible.json','public_ready:true'])if(!finalizer.includes(token))fail(`publication finalizer lost fail-closed/publication gate: ${token}`);
@@ -92,10 +95,10 @@ for(const token of ['GAME_PAGE_ASSEMBLY_QUEUE_PREFIX','tmp/game-page-assembly-in
 const queueAck=exists('scripts/ack-game-page-assembly-queue.mjs')?read('scripts/ack-game-page-assembly-queue.mjs'):'';
 for(const token of ['GAME_PAGE_ASSEMBLY_PRODUCTION_REF','deleteObject','production page not present yet'])if(!queueAck.includes(token))fail(`page assembly queue acknowledgement lost production-only token: ${token}`);
 const contentWorkflow=exists('.github/workflows/content-pipeline.yml')?read('.github/workflows/content-pipeline.yml'):'';
-for(const token of ['validate-game-page-module-integrity.mjs','hydrate-game-page-assembly-queue.mjs','ack-game-page-assembly-queue.mjs','run-content-pipeline.mjs'])if(!contentWorkflow.includes(token))fail(`content lifecycle lost canonical Page Assembly token: ${token}`);
+for(const token of ['validate-game-page-module-integrity.mjs','hydrate-game-page-assembly-queue.mjs','ack-game-page-assembly-queue.mjs','run-content-pipeline.mjs','EDITORIAL_AI_PROVIDER_ORDER','OPENROUTER_API_KEY','GIGACHAT_CREDENTIALS','GEMINI_API_KEY','GROQ_API_KEY'])if(!contentWorkflow.includes(token))fail(`content lifecycle lost canonical Page Assembly/editorial router token: ${token}`);
 
 const stableDoc=exists('docs/GAME_PAGE_MODULE_STABLE.md')?read('docs/GAME_PAGE_MODULE_STABLE.md'):'';
-for(const token of ['config/game-page-module.manifest.json','validate-game-page-module-integrity.mjs','Обзор игры не является частью модуля страницы игры','finalize-game-page-publication.mjs','published canonical package'])if(!stableDoc.includes(token))fail(`stable module documentation lost architecture token: ${token}`);
+for(const token of ['config/game-page-module.manifest.json','validate-game-page-module-integrity.mjs','Обзор игры не является частью модуля страницы игры','finalize-game-page-publication.mjs','published canonical package','zero-host editorial provider router'])if(!stableDoc.includes(token))fail(`stable module documentation lost architecture token: ${token}`);
 
-const result={schema_version:5,checked_at:new Date().toISOString(),module:manifest.module,module_version:manifest.module_version,status:errors.length?'red':'green',checked_files:[...new Set(checked)].length,required_files:(manifest.required_files||[]).length,required_workflows:(manifest.required_workflows||[]).length,required_docs:(manifest.required_docs||[]).length,boundary:{sole_public_state_writer:soleWriter,queue_only_adapters:queueOnly.size,copy_only_promoters:copyOnly.size,finalizer_delegates:delegates.size,revision_safe_mutators:revisionSafe.size,rollback_orchestrators:rollbackOnly.size,published_package_immutable:manifest.contract?.published_package_immutable===true,unclassified_public_writers:unclassifiedPublicWriters,writer_audit:writerAudit},contract:manifest.contract,errors};
+const result={schema_version:6,checked_at:new Date().toISOString(),module:manifest.module,module_version:manifest.module_version,status:errors.length?'red':'green',checked_files:[...new Set(checked)].length,required_files:(manifest.required_files||[]).length,required_workflows:(manifest.required_workflows||[]).length,required_docs:(manifest.required_docs||[]).length,boundary:{sole_public_state_writer:soleWriter,queue_only_adapters:queueOnly.size,copy_only_promoters:copyOnly.size,finalizer_delegates:delegates.size,revision_safe_mutators:revisionSafe.size,rollback_orchestrators:rollbackOnly.size,published_package_immutable:manifest.contract?.published_package_immutable===true,unclassified_public_writers:unclassifiedPublicWriters,writer_audit:writerAudit},contract:manifest.contract,errors};
 persist(result);console.log(JSON.stringify(result,null,2));if(errors.length)process.exit(1);
