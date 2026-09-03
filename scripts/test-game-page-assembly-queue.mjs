@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   gamePageAssemblyObjectKey,
+  isCredibleQueuedGameIdentity,
   normalizeGamePageAssemblyRequest,
   queueRequestToRegistryCandidate,
   reconcileQueuedCandidateWithRegistry,
@@ -13,6 +14,8 @@ import {
 assert.equal(safeQueuedGameKind('Super Smash Bros. Ultimate'), 'game');
 assert.equal(safeQueuedGameKind('Control Ultimate Edition'), 'edition');
 assert.equal(safeQueuedGameKind('Resident Evil 4 Remake'), 'remake');
+assert.equal(isCredibleQueuedGameIdentity({title: 'Bodycam', slug: 'bodycam'}), true);
+assert.equal(isCredibleQueuedGameIdentity({title: 'The', slug: 'the'}), false);
 
 const request = normalizeGamePageAssemblyRequest({
   game_id: 'game_smash_ultimate',
@@ -27,7 +30,8 @@ assert.equal(request.kind, 'game');
 assert.equal(gamePageAssemblyObjectKey(request), 'queues/game-page-assembly/pending/game_smash_ultimate.json');
 assert.equal(queueRequestToRegistryCandidate(request).kind, 'game');
 assert.throws(() => normalizeGamePageAssemblyRequest({game_id:'news_game_tmp',title:'Tmp',slug:'tmp',identity_verified:true}), /canonical game_id/);
-assert.throws(() => normalizeGamePageAssemblyRequest({game_id:'game_x',title:'X',slug:'x',identity_verified:false}), /identity-verified/);
+assert.throws(() => normalizeGamePageAssemblyRequest({game_id:'game_x',title:'X',slug:'x',identity_verified:false}), /non-credible game identity/);
+assert.throws(() => normalizeGamePageAssemblyRequest({game_id:'game_the',title:'The',slug:'the',identity_verified:true}), /non-credible game identity/);
 
 const falseEdition = {
   id: 'legacy_smash_id',
