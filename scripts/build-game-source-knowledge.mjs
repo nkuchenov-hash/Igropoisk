@@ -107,15 +107,20 @@ try{
     temperature:0.1,maxTokens:1500,
     prompt:`Собери структурированное понимание игры ${draft.identity.title} из коротких доказательных фрагментов. Не пиши обзор и не оценивай игру. Объедини повторы и привяжи каждое определяющее утверждение к source_ids. Никаких фактов вне evidence.\n\nВерни JSON с полями game_essence, player_role, core_loop, progression_structure, world_structure, mechanics, distinctive_features, consensus_praise, consensus_criticism, defining_claims ({claim,source_ids}). defining_claims: 4–8 конкретных утверждений. game_essence должна объяснять суть игры, а не жанры.\n\nМетаданные:\n${JSON.stringify({identity:draft.identity,release:draft.release,companies:draft.companies},null,2)}\n\nEvidence:\n${JSON.stringify(compact,null,2)}`
   });
-  if(generated?.data&&Array.isArray(generated.data.defining_claims)){data=generated.data;provider=generated.provider;model=generated.model}
+  const groundedGeneratedClaims=(Array.isArray(generated?.data?.defining_claims)?generated.data.defining_claims:[]).map(x=>({claim:clean(x?.claim),source_ids:[...new Set((x?.source_ids||[]).map(String).filter(id=>validIds.has(id)))]})).filter(x=>x.claim.length>=25&&x.source_ids.length);
+  if(generated?.data&&groundedGeneratedClaims.length>=4){
+    data={...generated.data,defining_claims:groundedGeneratedClaims};provider=generated.provider;model=generated.model;
+  }else{
+    write(`data/parser-runs/game-source-knowledge-ai-${slug}.json`,{parser:'game-source-knowledge-ai-v3',game_slug:slug,status:'fallback_used',checked_at:new Date().toISOString(),reason:`AI returned only ${groundedGeneratedClaims.length} grounded defining claims; preserving deterministic source evidence`,fallback:'deterministic-source-evidence'});
+  }
 }catch(error){
-  write(`data/parser-runs/game-source-knowledge-ai-${slug}.json`,{parser:'game-source-knowledge-ai-v2',game_slug:slug,status:'fallback_used',checked_at:new Date().toISOString(),error:String(error?.message||error).slice(0,2000),fallback:'deterministic-source-evidence'});
+  write(`data/parser-runs/game-source-knowledge-ai-${slug}.json`,{parser:'game-source-knowledge-ai-v3',game_slug:slug,status:'fallback_used',checked_at:new Date().toISOString(),error:String(error?.message||error).slice(0,2000),fallback:'deterministic-source-evidence'});
 }
 const claims=(Array.isArray(data?.defining_claims)?data.defining_claims:[]).map(x=>({claim:clean(x?.claim),source_ids:[...new Set((x?.source_ids||[]).map(String).filter(id=>validIds.has(id)))]})).filter(x=>x.claim.length>=25&&x.source_ids.length);
 const arr=k=>Array.isArray(data?.[k])?data[k].map(clean).filter(Boolean).slice(0,12):[];
 const knowledge={schema_version:2,game_slug:slug,game_id:draft.game_id||corpus.game_id||null,title:draft.identity.title,generated_at:new Date().toISOString(),status:claims.length>=4?'green':'needs_revision',provider,model,source_content:`data/game-source-content/${slug}.json`,source_content_hash:sourceContent.content_hash,source_count:readable.length,professional_source_count:readable.filter(x=>x.professional).length,evidence_source_count:compact.length,game_essence:clean(data?.game_essence),player_role:clean(data?.player_role),core_loop:clean(data?.core_loop),progression_structure:clean(data?.progression_structure),world_structure:clean(data?.world_structure),mechanics:arr('mechanics'),distinctive_features:arr('distinctive_features'),consensus_praise:arr('consensus_praise'),consensus_criticism:arr('consensus_criticism'),defining_claims:claims};
 if(knowledge.game_essence.length<80||claims.length<4)knowledge.status='needs_revision';
 write(`data/game-knowledge/${slug}.json`,knowledge);
-write(`data/parser-runs/game-source-knowledge-${slug}.json`,{parser:'game-source-knowledge-v2',game_slug:slug,status:knowledge.status,checked_at:knowledge.generated_at,provider,model,readable_sources:readable.length,professional_sources:knowledge.professional_source_count,evidence_sources:compact.length,defining_claims:claims.length,output:`data/game-knowledge/${slug}.json`});
+write(`data/parser-runs/game-source-knowledge-${slug}.json`,{parser:'game-source-knowledge-v3',game_slug:slug,status:knowledge.status,checked_at:knowledge.generated_at,provider,model,readable_sources:readable.length,professional_sources:knowledge.professional_source_count,evidence_sources:compact.length,defining_claims:claims.length,output:`data/game-knowledge/${slug}.json`});
 console.log(JSON.stringify({slug,status:knowledge.status,provider,model,readable_sources:readable.length,professional_sources:knowledge.professional_source_count,evidence_sources:compact.length,defining_claims:claims.length,game_essence:knowledge.game_essence},null,2));
 if(knowledge.status!=='green')process.exitCode=2;
