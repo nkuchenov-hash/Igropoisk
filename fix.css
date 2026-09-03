@@ -3,3 +3,38 @@
 
 /* Search helper copy is intentionally hidden: it adds no value and creates visual noise. */
 .search-help{display:none!important;}
+
+/* Search filters: keep the full filter stack reachable on laptop-height screens. */
+#search .search-layout--enhanced{align-items:start!important;}
+#search .search-layout--enhanced>*{min-height:0;}
+
+@media (min-width:1024px){
+  #search .ig-search-filter-panel{
+    top:calc(var(--ig-header-height) + 14px)!important;
+    max-height:calc(100dvh - var(--ig-header-height) - 28px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain;
+    scrollbar-gutter:stable;
+    padding-right:12px!important;
+  }
+
+  #search .ig-search-filter-panel::-webkit-scrollbar{width:8px;}
+  #search .ig-search-filter-panel::-webkit-scrollbar-track{background:transparent;}
+  #search .ig-search-filter-panel::-webkit-scrollbar-thumb{
+    border-radius:999px;
+    background:color-mix(in srgb,var(--ig-muted) 34%,transparent);
+  }
+}
+
+/* Proximity: options inside one filter group belong visually together. */
+#search .ig-search-filter-panel .filter-section{margin-top:20px!important;}
+#search .ig-search-filter-panel .filter-section h3{margin-bottom:10px!important;}
+#search .ig-search-filter-panel .filter-option{padding:5px 0!important;}
+#search .ig-search-filter-panel .genre-options{gap:2px!important;}
+#search .ig-search-filter-panel .genre-option{
+  min-height:34px!important;
+  padding:3px 6px!important;
+  gap:9px!important;
+}
+#search .ig-search-filter-panel .range-block{margin-top:20px!important;}
