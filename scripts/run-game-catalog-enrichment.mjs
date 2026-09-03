@@ -13,7 +13,7 @@ const technicalBatch=Math.max(1,Number(process.env.CATALOG_TECH_BATCH||20));
 const relationBatch=Math.max(1,Number(process.env.CATALOG_RELATION_BATCH||8));
 const reviewBatch=Math.max(1,Number(process.env.CATALOG_REVIEW_BATCH||6));
 const guideBatch=Math.max(1,Number(process.env.CATALOG_GUIDE_BATCH||8));
-const freePageAiAvailable=/^(1|true|yes|on)$/i.test(String(process.env.FREE_EDITORIAL_AI_ENABLED||''))||Boolean(process.env.OLLAMA_BASE_URL);
+const freePageAiAvailable=Boolean(process.env.OPENROUTER_API_KEY||process.env.GIGACHAT_CREDENTIALS||process.env.GEMINI_API_KEY||process.env.GROQ_API_KEY)||/^(1|true|yes|on)$/i.test(String(process.env.FREE_EDITORIAL_AI_ENABLED||''))||Boolean(process.env.OLLAMA_BASE_URL);
 const reviewAiAvailable=Boolean(process.env.OPENAI_API_KEY); // Separate Review/guide subsystem only; never gates Game Page relations.
 const now=new Date().toISOString();const results=[];
 function run(label,args){const child=spawnSync('node',args,{cwd:root,encoding:'utf8',stdio:'pipe',env:process.env,maxBuffer:32*1024*1024});results.push({label,status:child.status===0?'completed':'needs_revision',exit_code:child.status,stdout:(child.stdout||'').slice(-5000),stderr:(child.stderr||'').slice(-5000)});if(child.stdout)console.log(child.stdout);if(child.stderr)console.error(child.stderr);return child.status===0}
@@ -50,7 +50,7 @@ for(const game of catalog){
   if(!relationGreen||!similarityQuality.green)relationTasks.push(game);if(!(reviewGreen&&ratingGreen))reviewTasks.push(game);if(!guidesGreen)guideTasks.push(game);
 }
 
-// Game Page relation/similarity enrichment is free-local only and must never be gated by a paid API key.
+// Game Page relation/similarity enrichment uses the zero-host editorial router first and local Ollama only as fallback. A paid API is never required for publication.
 if(freePageAiAvailable){
   for(const game of sortTasks(relationTasks,'relations').slice(0,relationBatch)){
     if(!exists(`data/drafts/${game.slug}.json`)){queue.games[game.slug].relations='needs_revision';queue.games[game.slug].similarity='needs_revision';continue}
@@ -58,7 +58,7 @@ if(freePageAiAvailable){
   }
   run('similarity-all-after-relations',['scripts/build-similarity-index.mjs']);
   for(const game of relationTasks){const similarity=read(`data/similarity/${game.slug}.json`);const state=similarityState(similarity);queue.games[game.slug].similarity=state.green?'green':'needs_revision';queue.games[game.slug].similarity_profile_axes=state.populatedAxes;queue.games[game.slug].similarity_recommendations=state.recommendations;if(state.profileNeedsEnrichment)queue.games[game.slug].relations='needs_revision'}
-}else results.push({label:'page-relations-ai',status:'needs_revision',reason:'Free Qwen/Ollama unavailable; Game Page relation enrichment remains queued and no paid API fallback is permitted'});
+}else results.push({label:'page-relations-ai',status:'needs_revision',reason:'No zero-host/local editorial provider configured; Game Page relation enrichment remains queued and publication stays fail-closed'});
 
 // Own Review and guide research remain separate optional editorial subsystems.
 if(reviewAiAvailable){
