@@ -3,12 +3,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { collectMissingGamePageRequests } from './lib/news-publication-gate.mjs';
+import { isCredibleQueuedGameIdentity } from './lib/game-page-assembly-queue.mjs';
 
 const root = process.cwd();
 const productionRef = String(process.env.NEWS_PRODUCTION_GAME_REF || '').trim();
 const payload = JSON.parse(fs.readFileSync(path.join(root, 'data/news-events.json'), 'utf8'));
 const items = Array.isArray(payload) ? payload : (Array.isArray(payload?.items) ? payload.items : []);
-const requestsByGame = new Map(collectMissingGamePageRequests(items).map(request => [request.game_id || request.slug, request]));
+const requestsByGame = new Map(
+  collectMissingGamePageRequests(items)
+    .filter(request => isCredibleQueuedGameIdentity(request))
+    .map(request => [request.game_id || request.slug, request])
+);
 
 function existsAtProduction(relative) {
   if (!productionRef) return true;
@@ -57,6 +62,7 @@ if (productionRef) {
       const slug = String(game.slug || '').trim().toLowerCase();
       const title = String(game.title || item.game || '').trim();
       if (!slug || !title || !gameId || gameId.startsWith('news_game_')) continue;
+      if (!isCredibleQueuedGameIdentity({title, slug})) continue;
       if (isFullyAssembledAtProduction(slug)) continue;
       const key = gameId || slug;
       if (requestsByGame.has(key)) continue;
