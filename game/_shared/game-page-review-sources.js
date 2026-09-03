@@ -1,33 +1,24 @@
 (()=>{
 'use strict';
+
 const slug=document.body.dataset.slug||decodeURIComponent(location.pathname.split('/').filter(Boolean).at(-1)||'');
 if(!slug)return;
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const arr=value=>Array.isArray(value)?value:[];
+const scoreText=review=>{const score=Number(review?.score),scale=Number(review?.scale);if(!Number.isFinite(score))return String(review?.grade||'').trim()||'Без оценки';if(Number.isFinite(scale)&&scale>0)return `${score}/${scale}`;return String(score)};
+const reviewName=review=>String(review?.publication||review?.source_name||review?.source||review?.configured_source_id||'Источник');
+const reviewUrl=review=>String(review?.resolved_url||review?.url||'');
+const host=value=>{try{return new URL(value,location.href).hostname.replace(/^www\./,'').toLowerCase()}catch{return''}};
 const canonical=value=>{try{const u=new URL(value,location.href);u.hash='';for(const key of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','ysclid'])u.searchParams.delete(key);return `${u.origin}${u.pathname.replace(/\/$/,'')}${u.search}`}catch{return String(value||'').trim()}};
-const scoreText=item=>{const score=Number(item?.score),scale=Number(item?.scale);if(Number.isFinite(score)&&Number.isFinite(scale)&&scale>0)return `${score}/${scale}`;if(item?.original_score?.display)return item.original_score.display;if(item?.grade)return String(item.grade);if(Number.isFinite(Number(item?.normalized_10)))return `${Number(item.normalized_10).toFixed(1)}/10`;return '—'};
-const name=item=>String(item?.publication||item?.name||item?.source_name||item?.source||item?.domain||'Источник');
-const url=item=>String(item?.resolved_url||item?.url||item?.source_url||'');
-const key=item=>canonical(url(item))||`${name(item).toLowerCase()}|${scoreText(item)}`;
-const unique=list=>{const seen=new Set();return list.filter(item=>{const k=key(item);if(!k||seen.has(k))return false;seen.add(k);return true})};
-const fetchJson=async u=>{try{const r=await fetch(u,{cache:'no-store'});return r.ok?await r.json():null}catch{return null}};
-const isReview=item=>item?.professional===true||String(item?.kind||'')==='professional-review'||arr(item?.roles).includes('review');
-function unifiedReviews(reviews,scoreSources){return unique([...arr(reviews),...arr(scoreSources)]).filter(item=>url(item))}
-function row(item){const href=url(item);const content=`<span class="quality-review-source">${esc(name(item))}</span><b>${esc(item?.title||`Обзор ${document.body.dataset.title||slug}`)}</b><strong>${esc(scoreText(item))}</strong><span aria-hidden="true">${href?'↗':'—'}</span>`;return href?`<a class="quality-review-row" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${content}</a>`:`<div class="quality-review-row quality-review-row--no-link">${content}</div>`}
-function renderReviewsTab(reviews,scoreSources){
-  const grid=document.querySelector('#reviewGrid');if(!grid)return;
-  const all=unifiedReviews(reviews,scoreSources);
-  grid.classList.add('quality-review-table');grid.innerHTML=all.map(row).join('')||'<div class="ig-empty-state empty-state">Подтверждённые обзоры ещё собираются.</div>';
-  const count=document.querySelector('#externalReviewCount');if(count)count.textContent=`${all.length} источников`;
-  const heading=grid.previousElementSibling?.querySelector?.('h2');if(heading)heading.textContent='Обзоры и оценки изданий';
-  const sources=document.querySelector('#sources');if(sources){const existing=new Set([...sources.querySelectorAll('a[href]')].map(a=>canonical(a.href)));for(const item of all){const href=url(item),k=canonical(href);if(existing.has(k))continue;const div=document.createElement('div');div.innerHTML=`<a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(name(item))}</a><span>${esc(scoreText(item))}</span>`;sources.prepend(div);existing.add(k)}}
-}
-async function main(){
-  const [feed,ratings,corpus]=await Promise.all([fetchJson(`../../data/reviews/${encodeURIComponent(slug)}.json`),fetchJson(`../../data/ratings/${encodeURIComponent(slug)}.json`),fetchJson(`../../data/game-sources/${encodeURIComponent(slug)}.json`)]);
-  for(let i=0;i<100&&!document.querySelector('#reviewGrid');i++)await new Promise(r=>setTimeout(r,100));
-  const ratingByUrl=new Map(arr(ratings?.sources).map(item=>[canonical(item.url),item]));
-  const corpusReviews=arr(corpus?.sources).filter(isReview).map(item=>{const rating=ratingByUrl.get(canonical(item.url));return rating?{...item,publication:rating.publication,score:rating.original_score?.score,scale:rating.original_score?.scale,grade:rating.original_score?.grade,normalized_10:rating.normalized_10}:item});
-  renderReviewsTab([...corpusReviews,...arr(feed?.reviews)],arr(ratings?.sources));
-}
-main().catch(error=>console.warn('Игропоиск: review sources',error));
+const readableReview=review=>{const url=reviewUrl(review),h=host(url);if(!url)return false;if(h==='metacritic.com'||h.endsWith('.metacritic.com')||h==='opencritic.com'||h.endsWith('.opencritic.com'))return false;return !['score_index','rating_index','aggregate'].includes(String(review?.source_kind||''))};
+const keyFor=review=>{const name=reviewName(review).trim().toLowerCase();const url=canonical(reviewUrl(review));return url?`url:${url}`:`source:${name}|score:${scoreText(review)}`};
+const unique=list=>{const seen=new Set();return list.filter(item=>{const key=keyFor(item);if(!key||seen.has(key))return false;seen.add(key);return true})};
+async function fetchJson(url){try{const response=await fetch(url,{cache:'no-store'});return response.ok?await response.json():null}catch{return null}}
+async function fetchReviews(){const [main,seeds]=await Promise.all([fetchJson(`../../data/reviews/${encodeURIComponent(slug)}.json`),fetchJson(`../../data/review-discovery-seeds/${encodeURIComponent(slug)}.json`)]);if(!main&&!seeds)return null;return{main:main||{},reviews:unique([...arr(main?.reviews),...arr(seeds?.reviews)]),scoreSources:arr(main?.score_sources)}}
+function unifiedReviews(reviews,scoreSources){const direct=reviews.filter(readableReview);const directPublications=new Set(direct.map(item=>reviewName(item).trim().toLowerCase()));const scoredOnly=[];for(const item of [...reviews,...scoreSources]){const hasScore=Number.isFinite(Number(item?.score))||String(item?.grade||'').trim();if(!hasScore)continue;const pub=reviewName(item).trim().toLowerCase();if(directPublications.has(pub))continue;scoredOnly.push(item)}return unique([...direct,...scoredOnly])}
+function row(review){const url=reviewUrl(review);const title=String(review?.title||`Обзор ${document.body.dataset.title||slug}`);const content=`<span class="quality-review-source">${esc(reviewName(review))}</span><b>${esc(title)}</b><strong>${esc(scoreText(review))}</strong><span aria-hidden="true">${url?'↗':'—'}</span>`;return url?`<a class="quality-review-row" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${content}</a>`:`<div class="quality-review-row quality-review-row--no-link">${content}</div>`}
+function mergeIntoSourcesTab(reviews){const list=document.querySelector('#sources');if(!list)return;const existingUrls=new Set([...list.querySelectorAll('a[href]')].map(a=>canonical(a.href)));const fragment=document.createDocumentFragment();for(const review of reviews){const url=reviewUrl(review);if(!url)continue;const absolute=canonical(url);if(existingUrls.has(absolute))continue;const wrapper=document.createElement('div');wrapper.dataset.reviewSource=String(review?.configured_source_id||reviewName(review));wrapper.innerHTML=`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(reviewName(review))}</a><span>${esc(scoreText(review))}</span>`;fragment.appendChild(wrapper);existingUrls.add(absolute)}list.prepend(fragment);const count=document.querySelector('#sourceCount');if(count)count.textContent=String(list.querySelectorAll(':scope > div').length)}
+function renderReviewsTab(reviews,scoreSources){const tab=document.querySelector('#reviews');const grid=document.querySelector('#reviewGrid');if(!tab||!grid)return;tab.querySelectorAll('#externalReviewSourcesPanel').forEach(node=>node.remove());const headings=[...tab.querySelectorAll('h2')].filter(node=>node.textContent.trim()==='Обзоры других изданий');headings.slice(1).forEach(node=>node.closest('.section-title,.reviews-heading,section')?.remove());const all=unifiedReviews(reviews,scoreSources);grid.classList.add('quality-review-table');grid.innerHTML=all.map(row).join('')||'<div class="ig-empty-state empty-state">Подтверждённые профессиональные рецензии ещё собираются.</div>';const count=document.querySelector('#externalReviewCount');if(count)count.textContent=`${all.length} источников`;const heading=grid.previousElementSibling;if(heading?.classList?.contains('reviews-heading')){const h2=heading.querySelector('h2');if(h2)h2.textContent='Обзоры других изданий'}}
+async function install(){const data=await fetchReviews();if(!data)return;for(let attempt=0;attempt<100;attempt++){if(document.querySelector('#reviews')&&document.querySelector('#reviewGrid'))break;await new Promise(resolve=>setTimeout(resolve,100))}if(!document.querySelector('#reviews'))return;mergeIntoSourcesTab(data.reviews);renderReviewsTab(data.reviews,data.scoreSources);setTimeout(()=>renderReviewsTab(data.reviews,data.scoreSources),500);setTimeout(()=>renderReviewsTab(data.reviews,data.scoreSources),1600)}
+install();
 })();

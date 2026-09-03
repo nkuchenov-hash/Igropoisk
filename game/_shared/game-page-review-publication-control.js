@@ -3,8 +3,108 @@ const slug=document.body.dataset.slug||location.pathname.split('/').filter(Boole
 if(!slug)return;
 const json=async u=>{try{const r=await fetch(u,{cache:'no-store'});return r.ok?await r.json():null}catch{return null}};
 const fmt=v=>Number.isFinite(Number(v))?Number(v).toFixed(1).replace(/\.0$/,''):'—';
-const released=d=>{const s=String(d?.release?.status||'').toLowerCase();if(/upcoming|expected|announced|coming|tba|pre[-_ ]?release|ожида/i.test(s))return false;const x=Date.parse(String(d?.release?.date||''));if(Number.isFinite(x)&&x>Date.now())return false;return true};
-const decision=Promise.all([json(`../../data/ratings/${encodeURIComponent(slug)}.json`),json(`../../data/articles/${encodeURIComponent(slug)}.json`),json(`../../data/review-bootstrap/${encodeURIComponent(slug)}.json`),json(`../../data/drafts/${encodeURIComponent(slug)}.json`)]).then(([ratings,article,bootstrap,draft])=>{const canonical=Number(ratings?.calculation?.score_10);const full=String(article?.publication_status||'').toLowerCase()==='published'&&Number(article?.score)===canonical;const boot=String(bootstrap?.publication_status||'').toLowerCase()==='published'&&Number(bootstrap?.score)===canonical;return{canonical,ratings,editorialReady:full||boot,isReleased:released(draft)}});
-async function enforce(){const node=document.querySelector('#featuredReview');if(!node)return;const{canonical,ratings,editorialReady,isReleased}=await decision;const score=node.querySelector('.ig-review-feature__score'),meta=node.querySelector('.ig-review-feature__meta span'),body=node.querySelector('.ig-review-feature__body');node.querySelectorAll('.article-source-note').forEach(n=>n.remove());if(!isReleased){if(score)score.textContent='—';if(meta)meta.textContent='Оценка появится после выхода игры';node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());return}if(score)score.textContent=fmt(canonical);if(meta)meta.textContent='';if(!editorialReady){node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());return}let link=node.querySelector('.ig-review-link');if(!link&&body){link=document.createElement('a');link.className='ig-review-link';body.appendChild(link)}if(link){link.href=`../../article/${encodeURIComponent(slug)}/`;link.textContent='Читать обзор Игропоиска'}}
-async function boot(){await decision;for(let i=0;i<100&&!document.querySelector('#featuredReview');i++)await new Promise(r=>setTimeout(r,100));await enforce();setTimeout(enforce,600);setTimeout(enforce,1800)}boot().catch(e=>console.warn('Игропоиск: review publication control',e));
+const normalized=v=>String(v||'').toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').replace(/\s+/g,' ').trim();
+const released=d=>{const s=String(d?.release?.status||'').toLowerCase();if(/upcoming|expected|announced|coming|tba|pre[-_ ]?release|ожида/i.test(s))return false;const x=Date.parse(String(d?.release?.date||''));if(Number.isFinite(x)&&x>Date.now())return false;const y=Number(String(d?.release?.date_text||document.body.dataset.year||'').match(/(?:19|20)\d{2}/)?.[0]||0);return !y||y<=new Date().getFullYear()};
+const decisionPromise=Promise.all([
+  json(`../../data/reviews/${encodeURIComponent(slug)}.json`),
+  json(`../../data/ratings/${encodeURIComponent(slug)}.json`),
+  json(`../../data/research/${encodeURIComponent(slug)}-source-matrix.json`),
+  json('../../config/game-page-quality-v2.json'),
+  json(`../../data/articles/${encodeURIComponent(slug)}.json`),
+  json(`../../data/review-bootstrap/${encodeURIComponent(slug)}.json`),
+  json(`../../data/drafts/${encodeURIComponent(slug)}.json`)
+]).then(([feed,ratings,matrix,config,article,bootstrap,draft])=>{
+  const canonical=Number(ratings?.calculation?.score_10);
+  const ratingSources=Array.isArray(ratings?.sources)?ratings.sources:[];
+  const sourceCount=Number(ratings?.calculation?.source_count||ratingSources.length||0);
+  const accepted=Array.isArray(matrix?.accepted)?matrix.accepted:[];
+  const publicationCount=new Set(accepted.map(item=>normalized(item?.publication||item?.source)).filter(Boolean)).size;
+  const reviewMinimum=Number(config?.review_corpus?.minimum_sources||10);
+  const ratingMinimum=Number(config?.rating?.minimum_sources||5);
+  const requireExhaustive=config?.rating?.require_exhaustive_discovery!==false;
+  const reviewCount=Number(matrix?.coverage?.accepted_readable_articles??accepted.length);
+  const matrixReady=matrix?.source_registry_scan?.complete===true
+    &&(!requireExhaustive||matrix?.coverage?.page_material_scan_complete===true)
+    &&reviewCount>=reviewMinimum
+    &&publicationCount>=reviewMinimum;
+  const ratingReady=ratings?.status==='green'
+    &&Number.isFinite(canonical)
+    &&sourceCount>=ratingMinimum
+    &&ratingSources.length===sourceCount
+    &&ratings?.method?.use_all_discovered_scores===true;
+  const professionalReady=feed?.publication_gate?.status==='green'&&matrixReady&&ratingReady;
+  const fullReady=professionalReady
+    &&String(article?.publication_status||'').toLowerCase()==='published'
+    &&String(article?.game_slug||article?.slug||'')===slug
+    &&Number(article?.score)===canonical;
+  const bootstrapReady=professionalReady
+    &&feed?.igropoisk_article?.review_stage==='bootstrap'
+    &&String(bootstrap?.publication_status||'').toLowerCase()==='published'
+    &&bootstrap?.review_stage==='bootstrap'
+    &&String(bootstrap?.game_slug||bootstrap?.slug||'')===slug
+    &&Number(bootstrap?.score)===canonical
+    &&Array.isArray(bootstrap?.sources)
+    &&bootstrap.sources.length>=3;
+  const editorialReady=fullReady||bootstrapReady;
+  return{feed,ratings,matrix,config,article,bootstrap,draft,canonical,sourceCount,professionalReady,editorialReady,reviewStage:fullReady?'full':bootstrapReady?'bootstrap':null,isReleased:released(draft)};
+});
+let observer=null,scheduled=false,applying=false;
+const set=(node,value)=>{if(node&&node.textContent!==value)node.textContent=value};
+function suppressUnpublishedReviewRows(){
+  const grid=document.querySelector('#reviewGrid');
+  if(grid&&grid.querySelector('.quality-review-row'))grid.innerHTML='';
+  set(document.querySelector('#externalReviewCount'),'');
+}
+function schedule(){if(scheduled||applying)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;enforce().catch(e=>console.warn('Игропоиск: canonical review publication control',e))})}
+async function enforce(){
+  if(applying)return;
+  const node=document.querySelector('#featuredReview');
+  if(!node)return;
+  applying=true;
+  if(observer)observer.disconnect();
+  try{
+    const{canonical,sourceCount,professionalReady,editorialReady,isReleased}=await decisionPromise;
+    const score=node.querySelector('.ig-review-feature__score');
+    const meta=node.querySelector('.ig-review-feature__meta span');
+    const body=node.querySelector('.ig-review-feature__body');
+    node.querySelectorAll('.article-source-note').forEach(n=>n.remove());
+    if(!isReleased){
+      suppressUnpublishedReviewRows();
+      set(score,'—');
+      set(meta,'Оценка появится после выхода игры');
+      node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());
+      return;
+    }
+    if(!professionalReady){
+      suppressUnpublishedReviewRows();
+      set(score,'—');
+      set(meta,'Профессиональные оценки собираются и проверяются');
+      node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());
+      return;
+    }
+    set(score,fmt(canonical));
+    set(meta,`Среднее ${sourceCount} независимых профессиональных оценок`);
+    if(!editorialReady){
+      node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());
+      return;
+    }
+    let link=node.querySelector('.ig-review-link');
+    if(!link&&body){link=document.createElement('a');link.className='ig-review-link';body.appendChild(link)}
+    if(link){link.href=`../../article/${encodeURIComponent(slug)}/`;link.textContent='Читать обзор Игропоиска'}
+  }finally{
+    applying=false;
+    if(observer){const root=document.querySelector('#reviewsTabContent')||document.body;observer.observe(root,{childList:true,subtree:true,characterData:true})}
+  }
+}
+async function boot(){
+  await decisionPromise;
+  observer=new MutationObserver(schedule);
+  const root=document.querySelector('#reviewsTabContent')||document.body;
+  observer.observe(root,{childList:true,subtree:true,characterData:true});
+  schedule();
+  for(let i=0;i<40;i++){await new Promise(r=>setTimeout(r,100));if(document.querySelector('#featuredReview')){schedule();break}}
+  setTimeout(schedule,500);
+  setTimeout(schedule,1500);
+}
+boot().catch(e=>console.warn('Игропоиск: canonical review publication control',e));
 })();
