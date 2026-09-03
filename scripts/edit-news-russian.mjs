@@ -13,19 +13,20 @@ import {
   hasCyrillic,
   hasValidEditorialCache
 } from './lib/news-editor-policy.mjs';
+import { decodeNewsSourceText, sourceEntityCandidates } from './lib/news-publication-quality.mjs';
 
 const eventsPath = 'data/news-events.json';
 const reportPath = process.env.NEWS_EDITOR_REPORT || 'tmp/news-editor-report.json';
-const homepageDisplayLimit = Math.max(1, Number(process.env.NEWS_HOMEPAGE_LIMIT || 12));
+const configuredHomepageDisplayLimit = Math.max(0, Number(process.env.NEWS_HOMEPAGE_LIMIT || 0));
 const qwenMaxItems = Math.max(0, Math.min(4, Number(process.env.NEWS_EDITOR_QWEN_MAX_ITEMS || 3)));
 const qwenBudgetMs = Math.max(60_000, Number(process.env.NEWS_EDITOR_QWEN_BUDGET_MS || 6 * 60_000));
 const nativeConcurrency = Math.max(1, Math.min(8, Number(process.env.NEWS_EDITOR_NATIVE_CONCURRENCY || 6)));
 const startedAt = Date.now();
 const commercialPolicy = Object.freeze({
-  limit: homepageDisplayLimit,
+  limit: configuredHomepageDisplayLimit > 0 ? configuredHomepageDisplayLimit : Number.MAX_SAFE_INTEGER,
   maxAgeHours: 168,
   recentHours: 72,
-  minRecent: Math.min(homepageDisplayLimit, 8),
+  minRecent: configuredHomepageDisplayLimit > 0 ? Math.min(configuredHomepageDisplayLimit, 8) : 0,
   maxPerTopic: 2,
   maxPerSource: 3
 });
@@ -49,11 +50,11 @@ function setPublic(item, value) {
 }
 
 function sourceTitle(item) {
-  return String(item.titleEn || item.title || '').trim();
+  return decodeNewsSourceText(item.titleEn || item.title || '');
 }
 
 function sourceSummary(item) {
-  return String(item.summaryEn || item.summary || sourceTitle(item)).trim();
+  return decodeNewsSourceText(item.summaryEn || item.summary || sourceTitle(item));
 }
 
 function sourceUrl(item) {
@@ -115,26 +116,13 @@ function nativeArticleBrief(value = '') {
   return selected.length >= 2 ? selected.join(' ') : '';
 }
 
-function displayGameEntity(game = {}) {
-  const raw = String(game.title || game.slug || '').trim();
-  if (!raw) return '';
-  if (!raw.includes('-')) return raw;
-  return raw.split('-').filter(Boolean).map(part => {
-    if (/^(?:gta|rpg|vr|pc)$/i.test(part)) return part.toUpperCase();
-    if (/^[ivx]+$/i.test(part)) return part.toUpperCase();
-    return part.charAt(0).toUpperCase() + part.slice(1);
-  }).join(' ');
-}
-
 function requiredEntitiesForItem(item, title, summary) {
-  const source = `${title} ${summary}`.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ');
-  return [...new Set((Array.isArray(item.games) ? item.games : [])
-    .map(displayGameEntity)
-    .filter(Boolean)
-    .filter(entity => {
-      const needle = entity.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
-      return needle.length >= 4 && source.includes(needle);
-    }))].slice(0, 4);
+  return sourceEntityCandidates({
+    titleEn: title,
+    summaryEn: summary,
+    primaryUrl: sourceUrl(item),
+    games: Array.isArray(item.games) ? item.games : []
+  }).slice(0, 12);
 }
 
 function sourceKey(item) {
@@ -228,8 +216,9 @@ function currentCommercialSelection() {
 
 const nativeNeedsArticle = [];
 
-// Pass 1: zero-model work only. Accept native Russian and already-localized OPUS copy
-// through the same strict production validator used after Qwen.
+// Pass 1: zero-model work only. Native Russian and upstream machine drafts still pass
+// the production validator here, but every public item is checked again by the final
+// semantic publication-quality gate before it can remain in the published snapshot.
 for (const item of items) {
   if (!isPublic(item) || !gameIdentityEligible(item)) continue;
   const title = sourceTitle(item);
@@ -268,8 +257,6 @@ for (const item of items) {
     continue;
   }
 
-  // Upstream global/official ingestion already produced an offline local Russian
-  // translation. Validate and reuse it instead of spending minutes regenerating it.
   const translatedTitle = String(item.titleRu || '').trim();
   const translatedSummary = String(item.summaryRu || '').trim();
   if (translatedTitle && translatedSummary && hasCyrillic(translatedTitle) && hasCyrillic(translatedSummary)) {
@@ -283,8 +270,6 @@ for (const item of items) {
   }
 }
 
-// Pass 2: salvage every remaining native-Russian article. This pass deliberately does
-// not stop after enough homepage cards exist: editorial processing is volume-independent.
 await mapLimit(nativeNeedsArticle, nativeConcurrency, async item => {
   const title = sourceTitle(item);
   const summary = sourceSummary(item);
@@ -310,8 +295,8 @@ await mapLimit(nativeNeedsArticle, nativeConcurrency, async item => {
 
 const selectionBeforeQwen = currentCommercialSelection();
 
-// Pass 3: Qwen remains an optional bounded repair path for individual unapproved items.
-// It is not a homepage top-up and never decides whether the pipeline may publish.
+// Optional bounded repair here remains an optimization. The mandatory final quality
+// gate later checks every public event and may repair any remaining suspicious item.
 if (qwenMaxItems > 0) {
   const qwenStart = Date.now();
   const candidates = prioritizeCommercialCandidates(items.filter(item => {
@@ -384,13 +369,14 @@ const output = Array.isArray(payload) ? items : { ...payload, generatedAt: new D
 await fs.mkdir('tmp', { recursive: true });
 await fs.writeFile(eventsPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
 await fs.writeFile(reportPath, `${JSON.stringify({
-  schemaVersion: 8,
+  schemaVersion: 9,
   generatedAt: new Date().toISOString(),
   editorialVersion: NEWS_EDITORIAL_VERSION,
-  architecture: 'volume-independent-deterministic-russian-first-bounded-qwen-repair',
+  architecture: 'volume-independent-deterministic-russian-first-bounded-qwen-pre-repair-plus-final-semantic-gate',
   model: process.env.NEWS_EDITOR_MODEL || 'onnx-community/Qwen3-4B-Instruct-2507-ONNX',
   dtype: process.env.NEWS_EDITOR_DTYPE || 'q4',
-  homepageDisplayLimit,
+  homepageDisplayLimit: configuredHomepageDisplayLimit > 0 ? configuredHomepageDisplayLimit : null,
+  homepageDisplayMode: configuredHomepageDisplayLimit > 0 ? 'configured-ui-cap' : 'all-eligible',
   commercialPolicy,
   commercialSelection: commercialSelection.diagnostics,
   selectionBeforeQwen: selectionBeforeQwen.diagnostics,
@@ -414,4 +400,4 @@ await fs.writeFile(reportPath, `${JSON.stringify({
   failures
 }, null, 2)}\n`, 'utf8');
 
-console.log(`[news/editor] deterministic=${deterministicLocalized}; source-ru=${nativeRussian}; source-ru-article=${nativeArticleSalvaged}; qwen=${qwenApproved}/${qwenAttempted}; public-approved=${publicApproved}; homepage=${commercialSelection.items.length}/${homepageDisplayLimit}; elapsed=${((Date.now() - startedAt) / 1000).toFixed(1)}s`);
+console.log(`[news/editor] deterministic=${deterministicLocalized}; source-ru=${nativeRussian}; source-ru-article=${nativeArticleSalvaged}; qwen=${qwenApproved}/${qwenAttempted}; public-approved=${publicApproved}; homepage-view=${commercialSelection.items.length}; display_mode=${configuredHomepageDisplayLimit > 0 ? 'configured-cap' : 'all-eligible'}; elapsed=${((Date.now() - startedAt) / 1000).toFixed(1)}s`);
