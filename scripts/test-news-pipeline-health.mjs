@@ -124,12 +124,24 @@ officialPayload.sourceCount = 10;
 officialPayload.successfulSourceCount = 1;
 officialPayload.sourceReport = Array.from({ length: 10 }, (_, index) => index === 0
   ? { id: 'working', status: 'ok', items: 1 }
-  : { id: `missing-${index}`, status: 'no-feed', items: 0 });
+  : { id: `unsupported-${index}`, status: 'no-feed', items: 0 });
 fs.writeFileSync(path.join(root, 'data/publisher-news.json'), JSON.stringify(officialPayload));
-const belowFloor = buildNewsPipelineHealth({ root, now, dueGroups: ['official-sources'], runStartedAt: '2026-08-05T09:59:00.000Z' });
-assert.equal(belowFloor.status, 'error', 'Official source success ratio below contractual floor must block publication.');
+const unsupportedExcluded = buildNewsPipelineHealth({ root, now, dueGroups: ['official-sources'], runStartedAt: '2026-08-05T09:59:00.000Z' });
+assert.notEqual(unsupportedExcluded.status, 'error', 'Known no-feed sources must not dilute the live success ratio.');
+assert.equal(unsupportedExcluded.sources.configured_total, 10);
+assert.equal(unsupportedExcluded.sources.total, 1);
+assert.equal(unsupportedExcluded.sources.unsupported, 9);
+assert.equal(unsupportedExcluded.sources.success_ratio, 1);
+assert.equal(unsupportedExcluded.last_successful_run_at, '2026-08-05T09:59:00.000Z');
+
+officialPayload.sourceReport = Array.from({ length: 10 }, (_, index) => index === 0
+  ? { id: 'working', status: 'ok', items: 1 }
+  : { id: `broken-${index}`, status: 'error', error: 'fetch failed' });
+fs.writeFileSync(path.join(root, 'data/publisher-news.json'), JSON.stringify(officialPayload));
+const belowFloor = buildNewsPipelineHealth({ root, now, dueGroups: ['official-sources'], runStartedAt: '2026-08-05T09:59:30.000Z' });
+assert.equal(belowFloor.status, 'error', 'A real supported-source success ratio below the contractual floor must block publication.');
 assert.ok(belowFloor.blocking_errors.some(message => message.includes('обязательном минимуме')));
-assert.notEqual(belowFloor.last_successful_run_at, '2026-08-05T09:59:00.000Z', 'A blocked run must not advance last_successful_run_at.');
+assert.notEqual(belowFloor.last_successful_run_at, '2026-08-05T09:59:30.000Z', 'A blocked run must not advance last_successful_run_at.');
 
 officialPayload.sourceCount = 2;
 officialPayload.successfulSourceCount = 2;
