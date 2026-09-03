@@ -39,7 +39,7 @@ function canonicalizeGame(raw = {}) {
         gameId: canonical.gameId,
         slug: canonical.slug,
         title: canonical.title,
-        pageExists: pageReady,
+        pageExists: true,
         pageReady,
         assemblyRequired: !pageReady,
         pageUrl: pageReady ? canonical.pageUrl : pendingGamePageUrl(canonical)
@@ -71,7 +71,7 @@ const normalizedItems = items.map(item => {
     if (temporary) {
       temporaryReferences += 1;
       deferredTemporaryReferences += 1;
-      game.pageExists = false;
+      game.pageExists = true;
       game.pageReady = false;
       game.assemblyRequired = true;
       game.pageUrl = pendingGamePageUrl(game);
@@ -84,7 +84,8 @@ const normalizedItems = items.map(item => {
     if (canonical && game.pageReady === false) {
       missingPageReferences += 1;
       reasons.add('missing-game-page');
-    } else if (!canonical && game.pageExists === false && game.slug) {
+    } else if (!canonical && game.slug) {
+      game.pageExists = true;
       game.pageReady = false;
       game.assemblyRequired = true;
       game.pageUrl = pendingGamePageUrl(game);
@@ -105,7 +106,7 @@ const normalizedItems = items.map(item => {
     }
   }
 
-  if (games.some(game => game.assemblyRequired === true || game.pageReady === false || game.pageExists === false)) reasons.add('missing-game-page');
+  if (games.some(game => game.assemblyRequired === true || game.pageReady === false)) reasons.add('missing-game-page');
   else reasons.delete('missing-game-page');
   return {
     ...item,
