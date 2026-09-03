@@ -38,3 +38,42 @@
 }
 #search .ig-search-filter-panel .range-block{margin-top:34px!important;}
 #search .ig-search-filter-panel .year-range-inputs{margin-bottom:8px!important;}
+
+/* The left filter panel already contains these controls, so the duplicate quick filters are removed. */
+#search .quick-filters{display:none!important;}
+
+/* On desktop, sorting and view controls sit on the same baseline as the results count. */
+@media (min-width:961px){
+  #search .search-main{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-areas:
+      "title tools"
+      "query query"
+      "results results"!important;
+    column-gap:16px!important;
+  }
+
+  #search .search-title-row{
+    grid-area:title!important;
+    align-self:end!important;
+    margin-bottom:0!important;
+    min-width:0;
+  }
+
+  #search .search-toolbar{
+    grid-area:tools!important;
+    align-self:end!important;
+    width:auto!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+
+  #search .search-query{grid-area:query!important;}
+  #search .search-results{grid-area:results!important;}
+  #search .search-view-tools{margin:0!important;align-items:center!important;}
+}
