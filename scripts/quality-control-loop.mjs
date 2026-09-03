@@ -18,7 +18,7 @@ let status='red-needs-revision',comments=[];const canonicalTitle=normalizeCanoni
 for(let attempt=1;attempt<=attempts;attempt++){
  if(mode==='page'){
   run(`game-source-corpus-${attempt}`,'scripts/collect-game-sources.mjs',[slug]);
-  run(`page-rating-${attempt}`,'scripts/calculate-ratings-from-research.mjs',[slug]);
+  run(`page-rating-${attempt}`,'scripts/calculate-ratings-from-source-corpus.mjs',[slug]);
   run(`game-source-corpus-score-refresh-${attempt}`,'scripts/collect-game-sources.mjs',[slug]);
   run(`similarity-${attempt}`,'scripts/build-similarity-index.mjs',[slug]);
   run(`content-validation-${attempt}`,'scripts/validate-game-page-content.mjs',[slug]);
