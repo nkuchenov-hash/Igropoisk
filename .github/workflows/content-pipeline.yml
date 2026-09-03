@@ -34,14 +34,26 @@ on:
       - 'scripts/enrich-game-relations.mjs'
       - 'scripts/audit-review-publication.mjs'
       - 'scripts/validate-automation-publish-diff.mjs'
+      - 'scripts/collect-game-audience-evidence.mjs'
+      - 'scripts/build-game-audience-profile.mjs'
+      - 'scripts/test-game-audience-profile.mjs'
+      - 'scripts/validate-game-audience-profile-integrity.mjs'
+      - 'scripts/validate-game-page-module-integrity.mjs'
       - 'scripts/lib/game-page-assembly-queue.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
       - 'scripts/lib/free-editorial-ai.mjs'
+      - 'scripts/lib/game-audience-profile.mjs'
+      - 'scripts/lib/igropoisk-editorial-style.mjs'
+      - 'scripts/lib/game-page-editorial-ai.mjs'
       - 'scripts/lib/editorial-game-registry-adapter.mjs'
       - 'scripts/lib/system-game-registry-adapter.mjs'
       - 'config/content-pipeline.json'
       - 'config/game-page-quality-v2.json'
+      - 'config/game-page-module.manifest.json'
       - 'config/home-feeds-storage.json'
+      - 'docs/GAME_PAGE_MODULE_STABLE.md'
+      - 'docs/IGROPOISK_AUDIENCE_PROFILE.md'
+      - 'docs/game-page-module-acceptance.md'
       - '.github/workflows/content-pipeline.yml'
 
 permissions:
@@ -93,9 +105,17 @@ jobs:
           node --check scripts/validate-automation-publish-diff.mjs
           node --check scripts/materialize-review-publication-feed.mjs
           node --check scripts/audit-review-publication.mjs
+          node --check scripts/collect-game-audience-evidence.mjs
+          node --check scripts/build-game-audience-profile.mjs
+          node --check scripts/test-game-audience-profile.mjs
+          node --check scripts/validate-game-audience-profile-integrity.mjs
+          node --check scripts/validate-game-page-module-integrity.mjs
           node --check scripts/lib/game-page-assembly-queue.mjs
           node --check scripts/lib/yandex-object-storage.mjs
           node --check scripts/lib/free-editorial-ai.mjs
+          node --check scripts/lib/game-audience-profile.mjs
+          node --check scripts/lib/igropoisk-editorial-style.mjs
+          node --check scripts/lib/game-page-editorial-ai.mjs
           node --check scripts/lib/game-registry.mjs
           node --check scripts/lib/game-registry-migration.mjs
           node --check scripts/lib/game-registry-page-sections.mjs
@@ -103,6 +123,8 @@ jobs:
           node --check scripts/lib/system-game-registry-adapter.mjs
           node --check game/_shared/game-page-materialized-data.js
           node scripts/test-game-page-assembly-queue.mjs
+          node scripts/validate-game-audience-profile-integrity.mjs
+          node scripts/validate-game-page-module-integrity.mjs
       - name: Hydrate current Popular and Releases snapshots from Object Storage
         run: node scripts/hydrate-live-home-feeds.mjs
       - name: Hydrate temporary game-page assembly queue
@@ -169,6 +191,7 @@ jobs:
             data/parser-runs
             data/drafts
             data/page-editorial
+            data/game-audience
             data/game-content
             data/catalog-visible.json
             data/research
@@ -220,7 +243,7 @@ jobs:
             --base staging \
             --head "$branch" \
             --title "Automated game lifecycle ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" \
-            --body "Autonomous game lifecycle output. Page assembly is draft-first and publication is green-only: canonical editorial, source corpus, content and media must all pass before the public catalog or page shell is materialized. Red work remains revision state and never replaces the current public page. Game-page editorial and relation enrichment use free local Qwen through Ollama; no paid AI API is required for page publication.")"
+            --body "Autonomous game lifecycle output. Page assembly is draft-first and publication is green-only: canonical editorial, source corpus, content and media must all pass before the public catalog or page shell is materialized. Red work remains revision state and never replaces the current public page. Game-page editorial currently uses the configured free local backend; the specific model/provider is replaceable and is not part of the stable Game Page module contract.")"
           gh pr merge "$pr_url" --merge --delete-branch
       - name: Acknowledge temporary requests only after their production pages exist
         if: always()
@@ -253,6 +276,7 @@ jobs:
             data/content-pipeline/franchise-queue.json
             data/quality-control
             data/page-editorial
+            data/game-audience
             data/audits/review-publication.json
             data/audits/review-feed-materialization.json
           if-no-files-found: warn

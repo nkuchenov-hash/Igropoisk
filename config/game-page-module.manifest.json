@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "module": "game-page-assembly",
+  "module_version": "2026-09-03-final-lock",
+  "status": "stable",
+  "canonical_document": "docs/GAME_PAGE_MODULE_STABLE.md",
+  "acceptance_document": "docs/game-page-module-acceptance.md",
+  "contract": {
+    "universal_module": true,
+    "per_game_code_forbidden": true,
+    "review_subsystem_separate": true,
+    "all_discovered_verified_scores_used": true,
+    "rating_count_quota_blocks_publication": false,
+    "additional_source_coverage_can_continue_after_publication": true,
+    "audience_profile_internal_only": true,
+    "audience_profile_fail_open": true,
+    "audience_profile_blocks_publication": false,
+    "audience_profile_ai_required": false,
+    "demographic_stereotyping_forbidden": true,
+    "editorial_model_is_replaceable": true,
+    "specific_model_quality_is_module_gate": false,
+    "spore_is_structural_fixture_only": true,
+    "published_green_package_is_canonical": true
+  },
+  "required_files": [
+    "scripts/parse-game-data.mjs",
+    "scripts/collect-game-sources.mjs",
+    "scripts/calculate-ratings-from-research.mjs",
+    "scripts/build-game-page.mjs",
+    "scripts/lib/game-page-editorial-ai.mjs",
+    "scripts/quality-control-loop.mjs",
+    "scripts/finalize-game-page-publication.mjs",
+    "scripts/run-content-pipeline.mjs",
+    "scripts/ensure-game-page.mjs",
+    "scripts/publish-game-page-assembly-queue.mjs",
+    "scripts/hydrate-game-page-assembly-queue.mjs",
+    "scripts/ack-game-page-assembly-queue.mjs",
+    "scripts/collect-game-audience-evidence.mjs",
+    "scripts/build-game-audience-profile.mjs",
+    "scripts/lib/game-audience-profile.mjs",
+    "scripts/lib/igropoisk-editorial-style.mjs",
+    "scripts/test-game-audience-profile.mjs",
+    "scripts/validate-game-audience-profile-integrity.mjs",
+    "scripts/validate-game-page-module-integrity.mjs",
+    "docs/GAME_PAGE_MODULE_STABLE.md",
+    "docs/game-page-module-acceptance.md",
+    "docs/IGROPOISK_AUDIENCE_PROFILE.md"
+  ],
+  "protected_tokens": {
+    "scripts/lib/game-page-editorial-ai.mjs": [
+      "buildEditorialAudienceContext",
+      "INTERNAL AUDIENCE PROFILE",
+      "audience_profile_used",
+      "audience_profile_confidence"
+    ],
+    "scripts/lib/game-audience-profile.mjs": [
+      "stereotype_demographics_forbidden:true",
+      "ai_required:false",
+      "fail_open:true",
+      "public_render_allowed:false"
+    ],
+    "docs/game-page-module-acceptance.md": [
+      "never block page publication merely because an arbitrary minimum number",
+      "AI model/provider is a replaceable editorial backend",
+      "spore` is a structural acceptance fixture only"
+    ],
+    "docs/GAME_PAGE_MODULE_STABLE.md": [
+      "STABLE / CANONICAL",
+      "An arbitrary count of professional reviews/ratings is not a page-publication quota",
+      "Audience Profile is deterministic, evidence-backed, internal-only, AI-independent and fail-open",
+      "editorial model/provider is replaceable configuration"
+    ]
+  },
+  "forbidden_contract_text": [
+    "require at least the configured rating minimum",
+    "Spore profile is not evidence-backed enough"
+  ]
+}

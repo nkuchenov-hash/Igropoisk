@@ -1,0 +1,87 @@
+name: Game Page Module Contract Check
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'config/game-page-module.manifest.json'
+      - 'docs/GAME_PAGE_MODULE_STABLE.md'
+      - 'docs/game-page-module-acceptance.md'
+      - 'docs/game-page-module-status.md'
+      - 'docs/IGROPOISK_AUDIENCE_PROFILE.md'
+      - 'scripts/collect-game-audience-evidence.mjs'
+      - 'scripts/build-game-audience-profile.mjs'
+      - 'scripts/lib/game-audience-profile.mjs'
+      - 'scripts/lib/igropoisk-editorial-style.mjs'
+      - 'scripts/lib/game-page-editorial-ai.mjs'
+      - 'scripts/test-game-audience-profile.mjs'
+      - 'scripts/validate-game-audience-profile-integrity.mjs'
+      - 'scripts/validate-game-page-module-integrity.mjs'
+      - '.github/workflows/game-page-module-contract-check.yml'
+  push:
+    branches: [staging, fix/game-page-module-final-lock-20260903]
+    paths:
+      - 'config/game-page-module.manifest.json'
+      - 'docs/GAME_PAGE_MODULE_STABLE.md'
+      - 'docs/game-page-module-acceptance.md'
+      - 'docs/game-page-module-status.md'
+      - 'docs/IGROPOISK_AUDIENCE_PROFILE.md'
+      - 'scripts/collect-game-audience-evidence.mjs'
+      - 'scripts/build-game-audience-profile.mjs'
+      - 'scripts/lib/game-audience-profile.mjs'
+      - 'scripts/lib/igropoisk-editorial-style.mjs'
+      - 'scripts/lib/game-page-editorial-ai.mjs'
+      - 'scripts/test-game-audience-profile.mjs'
+      - 'scripts/validate-game-audience-profile-integrity.mjs'
+      - 'scripts/validate-game-page-module-integrity.mjs'
+      - '.github/workflows/game-page-module-contract-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  structural-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check module additions
+        run: |
+          node --check scripts/collect-game-audience-evidence.mjs
+          node --check scripts/build-game-audience-profile.mjs
+          node --check scripts/lib/game-audience-profile.mjs
+          node --check scripts/lib/igropoisk-editorial-style.mjs
+          node --check scripts/lib/game-page-editorial-ai.mjs
+          node --check scripts/test-game-audience-profile.mjs
+          node --check scripts/validate-game-audience-profile-integrity.mjs
+          node --check scripts/validate-game-page-module-integrity.mjs
+      - name: Validate stable Game Page contract
+        run: node scripts/validate-game-page-module-integrity.mjs
+      - name: Build real Spore Audience Profile without making it a quality gate
+        run: |
+          node scripts/collect-game-audience-evidence.mjs spore
+          node scripts/build-game-audience-profile.mjs spore
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const profile=JSON.parse(fs.readFileSync('data/game-audience/spore.json','utf8'));
+          if(profile.visibility!=='internal_only')throw new Error('Audience Profile became public');
+          if(profile.generation?.fail_open!==true)throw new Error('Audience Profile lost fail-open behavior');
+          if(profile.generation?.public_render_allowed!==false)throw new Error('Audience Profile became public-renderable');
+          if(profile.generation?.ai_required!==false)throw new Error('Audience Profile became AI-dependent');
+          console.log(JSON.stringify({fixture:'spore',confidence:profile.confidence,register:profile.register,core_appeals:profile.core_appeals,evidence_count:profile.evidence?.length||0,note:'confidence and prose quality are diagnostics, not module gates'},null,2));
+          NODE
+      - name: Preserve Audience Profile diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-page-module-contract-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            data/research/spore-audience-evidence.json
+            data/game-audience/spore.json
+            data/parser-runs/game-audience-evidence-spore.json
+            data/parser-runs/game-audience-spore.json
+          if-no-files-found: warn
+          retention-days: 7
