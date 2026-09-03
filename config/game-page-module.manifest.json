@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "module": "game-page-assembly",
-  "module_version": "2026-09-02.6",
+  "module_version": "2026-09-03.1",
   "ownership": "game-page-module",
   "canonical_document": "docs/GAME_PAGE_MODULE_STABLE.md",
   "contract": {
@@ -9,6 +9,9 @@
     "publication_finalizer_only": true,
     "published_package_immutable": true,
     "canonical_source_corpus_required": true,
+    "source_discovery_completion_required": true,
+    "source_coverage_quota_blocks_page_publication": false,
+    "source_coverage_can_continue_after_publication": true,
     "canonical_editorial_required": true,
     "professional_rating_direct_reviews_only": true,
     "review_article_is_separate": true,
@@ -32,9 +35,7 @@
       "scripts/publish-game-page-staging-conflict-safe.mjs",
       "scripts/publish-green-game-page-production.mjs"
     ],
-    "rollback_orchestrators": [
-      "scripts/run-content-pipeline.mjs"
-    ],
+    "rollback_orchestrators": ["scripts/run-content-pipeline.mjs"],
     "finalizer_delegates": [
       "scripts/materialize-green-game-page.mjs",
       "scripts/materialize-game-shells.mjs",
@@ -110,23 +111,16 @@
     ".github/workflows/pages.yml",
     ".github/workflows/phase-a-validation.yml"
   ],
-  "required_docs": [
-    "docs/GAME_PAGE_MODULE_STABLE.md",
-    "docs/SYSTEM_ARCHITECTURE.md"
-  ],
+  "required_docs": ["docs/GAME_PAGE_MODULE_STABLE.md","docs/SYSTEM_ARCHITECTURE.md"],
   "forbidden_legacy_references": [
     "discover-publication-review-hubs.mjs",
     "run-news-game-page-fast.mjs",
     "materialize-news-game-pages-fast.mjs",
     "news-game-page-fast.yml"
   ],
-  "forbidden_runtime_tokens": [
-    "publicDisplayOverrides",
-    "Function(corrected)",
-    "applyPublicLocalization"
-  ],
+  "forbidden_runtime_tokens": ["publicDisplayOverrides","Function(corrected)","applyPublicLocalization"],
   "contract_probes": {
-    "scripts/collect-game-sources.mjs": ["discover-game-sources-web.mjs","discover-game-publication-hubs.mjs"],
+    "scripts/collect-game-sources.mjs": ["discover-game-sources-web.mjs","discover-game-publication-hubs.mjs","coverage_blocks_page_publication:false"],
     "scripts/quality-control-loop.mjs": ["materialize-page-editorial.mjs","validate-game-page-content.mjs","validate-game-media-quality.mjs"],
     "scripts/run-content-pipeline.mjs": ["canonicalizePage","finalize-game-page-publication.mjs","published package is immutable","failed revision restored last published canonical page package"],
     "scripts/run-game-catalog-enrichment.mjs": ["freePageAiAvailable","reviewAiAvailable","page_relations_paid_api:false","Free Qwen/Ollama unavailable"],
@@ -156,7 +150,7 @@
     ".github/workflows/game-page-quality.yml": ["validate-game-page-module-integrity.mjs"],
     ".github/workflows/phase-a-validation.yml": ["validate-game-page-module-integrity.mjs"],
     ".github/workflows/pages.yml": ["validate-game-page-module-integrity.mjs","validate-game-page-publication-state.mjs"],
-    "docs/GAME_PAGE_MODULE_STABLE.md": ["published canonical package","Queue-only adapters","Copy-only promoters","runtime monkey-patching"],
+    "docs/GAME_PAGE_MODULE_STABLE.md": ["published canonical package","Queue-only adapters","Copy-only promoters","runtime monkey-patching","Coverage quota источников не является publication gate страницы"],
     "docs/SYSTEM_ARCHITECTURE.md": ["GAME PAGE ASSEMBLY MODULE","GAME_PAGE_MODULE_STABLE.md","config/game-page-module.manifest.json","собственный обзор Игропоиска — отдельная публикация","плохая новая ревизия не заменяет последнюю good public version"]
   }
 }
