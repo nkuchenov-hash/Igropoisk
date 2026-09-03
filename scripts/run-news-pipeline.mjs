@@ -82,30 +82,45 @@ export function runPipeline({
   const config = readJson(configPath);
   const startedAt = new Date(now).toISOString();
   const report = {
-    schema_version: 1,
+    schema_version: 2,
     pipeline: 'news',
+    publication_policy: 'fail-open-item-filtered',
     started_at: startedAt,
     finished_at: null,
     status: 'running',
     forced: force,
     health_initialization: false,
     due_groups: [],
-    stages: []
+    stages: [],
+    failed_stages: [],
+    warnings: []
   };
 
   const execute = (scope, command) => {
     const stageStarted = Date.now();
-    const result = commandRunner(command);
+    let result;
+    try {
+      result = commandRunner(command) || { status: 1, signal: null };
+    } catch (error) {
+      result = { status: 1, signal: null, error: error?.message || String(error) };
+    }
     const stage = {
       scope,
       command,
       status: result.status === 0 ? 'success' : 'error',
       exit_code: result.status,
-      signal: result.signal,
+      signal: result.signal || null,
+      error: result.error || null,
       duration_ms: Date.now() - stageStarted
     };
     report.stages.push(stage);
-    if (result.status !== 0) throw new Error(`${scope} failed: ${command}`);
+    if (result.status !== 0) {
+      report.failed_stages.push({ scope, command, exit_code: result.status, error: result.error || null });
+      report.warnings.push(`${scope} failed but publication remains fail-open: ${command}`);
+      console.warn(`[news/fail-open] ${scope} failed; continuing pipeline: ${command}`);
+      return false;
+    }
+    return true;
   };
 
   try {
@@ -140,16 +155,21 @@ export function runPipeline({
           source_success_ratio: health.sources?.success_ratio ?? null,
           warnings: health.warnings?.length || 0
         };
-      } catch {}
+      } catch (error) {
+        report.warnings.push(`Health report unreadable; publication remains fail-open: ${error.message}`);
+      }
     }
 
     report.status = 'success';
+    report.degraded = report.failed_stages.length > 0;
+    report.publication_eligible = true;
     report.finished_at = new Date().toISOString();
     writeReport(reportPath, report);
-    console.log(`News pipeline completed: ${report.due_groups.join(', ')}`);
+    console.log(`News pipeline completed${report.degraded ? ' with warnings' : ''}: ${report.due_groups.join(', ')}`);
     return report;
   } catch (error) {
     report.status = 'error';
+    report.publication_eligible = false;
     report.error = error.message;
     report.finished_at = new Date().toISOString();
     writeReport(reportPath, report);
