@@ -1,7 +1,11 @@
-name: Emergency Pages publish (manual only)
+name: Emergency Pages publish
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/emergency-pages-publish.yml'
 
 permissions:
   contents: read
