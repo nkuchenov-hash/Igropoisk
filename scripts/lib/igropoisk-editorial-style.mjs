@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 const clean=value=>String(value||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
 const list=value=>Array.isArray(value)?value.map(item=>clean(typeof item==='object'?(item.name||item.label||item.value||''):item)).filter(Boolean):[];
 const uniq=value=>[...new Set(value.filter(Boolean))];
@@ -27,47 +30,30 @@ Audience adapter:
 
 Возвращай только валидный JSON без пояснений.`;
 
-export function buildEditorialAudienceContext(draft={},parser={},corpus={}){
+const compactAsset=asset=>({
+  visibility:'internal_only',
+  confidence:['high','medium','low'].includes(asset?.confidence)?asset.confidence:'low',
+  reader_familiarity:clean(asset?.reader_familiarity)||'unknown',
+  jargon_level:clean(asset?.jargon_level)||'medium',
+  register:list(asset?.register).slice(0,8),
+  core_appeals:list(asset?.core_appeals).slice(0,12),
+  spoiler_sensitivity:clean(asset?.spoiler_sensitivity)||'unknown',
+  content_context:list(asset?.content_context).slice(0,12),
+  aggregate_demographics:asset?.aggregate_demographics&&typeof asset.aggregate_demographics==='object'?asset.aggregate_demographics:null,
+  evidence:Array.isArray(asset?.evidence)?asset.evidence.slice(0,20):[],
+  rule:'Используй профиль только для выбора регистра, терминологии и акцентов. Не показывай профиль читателю и не придумывай демографию.'
+});
+
+export function buildEditorialAudienceContext(draft={},parser={},corpus={},audienceAsset=null){
+  if(!audienceAsset){const slug=clean(draft?.identity?.slug);if(slug){try{audienceAsset=JSON.parse(fs.readFileSync(path.join(process.cwd(),'data','game-audience',`${slug}.json`),'utf8'))}catch{audienceAsset=null}}}
+  if(audienceAsset?.visibility==='internal_only'&&audienceAsset?.generation?.public_render_allowed===false)return compactAsset(audienceAsset);
   const classification=draft?.classification||{};
-  const explicitAge=clean(
-    classification.age_rating||classification.content_rating||classification.esrb||classification.pegi||
-    draft?.age_rating||draft?.content_rating||parser?.age_rating||parser?.content_rating||''
-  );
-  const tags=uniq([
-    ...list(classification.tags),...list(parser?.tags),...list(corpus?.tags),...list(corpus?.audience_signals?.tags),
-    ...list(classification.themes),...list(parser?.themes),...list(corpus?.themes)
-  ]).slice(0,30);
-  const perspectives=uniq([
-    ...list(classification.player_perspectives),...list(parser?.player_perspectives),...list(corpus?.player_perspectives)
-  ]).slice(0,12);
-  const modes=uniq([
-    ...list(classification.game_modes),...list(parser?.game_modes),...list(corpus?.game_modes)
-  ]).slice(0,12);
-  const official=[
-    parser?.editorial?.short_description,
-    parser?.editorial?.integrated_description,
-    draft?.editorial?.short_description,
-    draft?.editorial?.integrated_description
-  ].map(clean).filter(Boolean).join(' ').slice(0,1200);
-  const explicitAudience=corpus?.audience_profile||corpus?.audience_signals?.profile||draft?.internal?.audience_profile||null;
-  const aggregateDemographics=corpus?.audience_signals?.aggregate_demographics||draft?.internal?.aggregate_demographics||null;
-  const sourceSignals=Array.isArray(corpus?.audience_signals?.evidence)?corpus.audience_signals.evidence.slice(0,20):[];
-  const hasStrongSignal=Boolean(explicitAudience||aggregateDemographics||tags.length>=5||sourceSignals.length);
-  return {
-    visibility:'internal_only',
-    confidence:explicitAudience||aggregateDemographics?'high':hasStrongSignal?'medium':'low',
-    explicit_audience_profile:explicitAudience,
-    aggregate_demographics:aggregateDemographics,
-    genres:list(classification.genres),
-    tags,
-    themes:uniq([...list(classification.themes),...list(parser?.themes),...list(corpus?.themes)]).slice(0,20),
-    player_perspectives:perspectives,
-    game_modes:modes,
-    explicit_age_rating:explicitAge||null,
-    tone_evidence:official||null,
-    evidence:sourceSignals,
-    rule:'Используй профиль только для выбора регистра, терминологии и акцентов. Не показывай профиль читателю и не придумывай демографию. Возрастной рейтинг — только дополнительный content signal, а не определение аудитории.'
-  };
+  const explicitAge=clean(classification.age_rating||classification.content_rating||classification.esrb||classification.pegi||draft?.age_rating||draft?.content_rating||parser?.age_rating||parser?.content_rating||'');
+  const tags=uniq([...list(classification.tags),...list(parser?.tags),...list(corpus?.tags),...list(corpus?.audience_signals?.tags),...list(classification.themes),...list(parser?.themes),...list(corpus?.themes)]).slice(0,30);
+  const perspectives=uniq([...list(classification.player_perspectives),...list(parser?.player_perspectives),...list(corpus?.player_perspectives)]).slice(0,12);
+  const modes=uniq([...list(classification.game_modes),...list(parser?.game_modes),...list(corpus?.game_modes)]).slice(0,12);
+  const official=[parser?.editorial?.short_description,parser?.editorial?.integrated_description,draft?.editorial?.short_description,draft?.editorial?.integrated_description].map(clean).filter(Boolean).join(' ').slice(0,1200);
+  return {visibility:'internal_only',confidence:'low',reader_familiarity:'unknown',jargon_level:'medium',register:['neutral'],core_appeals:[],spoiler_sensitivity:'unknown',aggregate_demographics:null,genres:list(classification.genres),tags,themes:uniq([...list(classification.themes),...list(parser?.themes),...list(corpus?.themes)]).slice(0,20),player_perspectives:perspectives,game_modes:modes,explicit_age_rating:explicitAge||null,tone_evidence:official||null,evidence:[],rule:'Полноценный audience profile недоступен: используй нейтральный регистр Игропоиска. Не угадывай демографию.'};
 }
 
 export function editorialSurfaceRule(surface){
