@@ -2,6 +2,9 @@ import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import { isLikelyNewsContent, newsContentRejectionReasons } from './lib/news-content-policy.mjs';
+import { refineNewsPrimaryGame } from './lib/news-primary-game-refiner.mjs';
+import { cleanResolvedNewsGame } from './lib/news-game-title-cleanup.mjs';
+import { translatePreservingGameEntities } from './lib/news-game-translation-guard.mjs';
 
 const file = 'data/news.json';
 const userAgent = 'IgropoiskNewsLocalizer/2.0 (+https://github.com/nkuchenov-hash/Igropoisk)';
@@ -12,6 +15,11 @@ let googleUnavailable = false;
 let memoryUnavailable = false;
 let localTranslatorPromise = null;
 let localTranslatorUnavailable = false;
+let localizedGameNames = {};
+try {
+  const rules = JSON.parse(await fs.readFile('data/news-game-aliases.json', 'utf8'));
+  localizedGameNames = rules?.localizedNames || {};
+} catch {}
 
 async function fetchText(url, timeout = 20000) {
   const controller = new AbortController();
@@ -107,16 +115,22 @@ async function translateMyMemory(text, source, target) {
   }
 }
 
-async function translateEnRu(text) {
+async function translateEnRu(text, protectedGameEntities = []) {
   if (!text) return { text: '', provider: 'none' };
+  const translateProtected = provider => translatePreservingGameEntities(
+    text,
+    protectedGameEntities,
+    provider,
+    { localizedNames: localizedGameNames }
+  );
 
-  const local = await translateLocalEnRu(text);
+  const local = await translateProtected(translateLocalEnRu);
   if (local) return { text: local, provider: 'local-opus' };
 
-  const google = await translateGoogle(text, 'ru');
+  const google = await translateProtected(value => translateGoogle(value, 'ru'));
   if (google) return { text: google, provider: 'google-fallback' };
 
-  const memory = await translateMyMemory(text, 'en', 'ru');
+  const memory = await translateProtected(value => translateMyMemory(value, 'en', 'ru'));
   if (memory) return { text: memory, provider: 'mymemory-fallback' };
 
   return { text: '', provider: 'unavailable' };
@@ -140,6 +154,14 @@ for (const item of payload.items || []) {
 
     const sourceIsRussian = item.language === 'ru' || /[А-Яа-яЁё]/.test(item.title || '');
     const baseSummary = item.summary || item.title || '';
+    const sourceGame = sourceIsRussian ? null : cleanResolvedNewsGame(refineNewsPrimaryGame({
+      titleEn: item.title || '',
+      summaryEn: baseSummary,
+      primaryUrl: item.url || '',
+      publicEligible: true,
+      games: []
+    }, null));
+    const protectedGameEntities = sourceGame?.title ? [sourceGame.title] : [];
 
     let titleRu;
     let summaryRu;
@@ -151,8 +173,8 @@ for (const item of payload.items || []) {
       localizationStatus = 'source-ru';
       sourceRussianItems += 1;
     } else {
-      const titleTranslation = await translateEnRu(item.title || '');
-      const summaryTranslation = await translateEnRu(baseSummary);
+      const titleTranslation = await translateEnRu(item.title || '', protectedGameEntities);
+      const summaryTranslation = await translateEnRu(baseSummary, protectedGameEntities);
       titleRu = titleTranslation.text;
       summaryRu = summaryTranslation.text || titleRu;
       localizationStatus = titleTranslation.provider;
@@ -173,9 +195,6 @@ for (const item of payload.items || []) {
     const regions = Array.isArray(item.regions) ? [...new Set(item.regions.filter(Boolean))] : [];
     const ageHours = Math.max(0, (now - new Date(item.publishedAt).getTime()) / 36e5);
 
-    // fetch-news has already globally ranked and source-capped this compact set.
-    // Once feature/opinion/guide material is removed above, a selected media item is a valid
-    // global news candidate even when a second publication or Reddit signal has not arrived yet.
     const globalEligible = true;
     const regionalEligible = Boolean(item.regionalEligible) && regions.length > 0;
     const globalScore = Math.round(150 + trendScore + sourceCount * 90 + discussionMentions * 35);
