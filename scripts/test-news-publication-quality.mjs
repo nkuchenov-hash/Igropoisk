@@ -5,6 +5,8 @@ import {
   sourceEntityCandidates,
   sourceLooksTruncated
 } from './lib/news-publication-quality.mjs';
+import { refineNewsPrimaryGame } from './lib/news-primary-game-refiner.mjs';
+import { newsGameTitleLooksGeneric, sourceContextGameHasStrongIdentity } from './lib/news-game-title-cleanup.mjs';
 
 const carcassInput = {
   titleEn: '"A game for everyone is a game for no one": Don\'t expect an easy ride in Carcass Clad, the co-op tank horror game from the makers of Mouthwashing',
@@ -50,6 +52,19 @@ const brokenDisney = publicationSemanticReasons(disneyInput, {
 assert.ok(brokenDisney.some(reason => reason.includes('untranslated English grammar fragment')));
 assert.ok(brokenDisney.some(reason => reason.includes('Planet Coaster')));
 assert.ok(sourceEntityCandidates(disneyInput).includes('Planet Coaster'));
+assert.equal(newsGameTitleLooksGeneric('the'), true);
+assert.equal(newsGameTitleLooksGeneric('The Witcher'), false);
+
+const bogusTheIdentity = {
+  gameId: 'game_52651675bf5dda52d41b',
+  slug: 'the',
+  title: 'the',
+  matchedBy: 'context-evidence-resolver',
+  resolutionConfidence: 0.99,
+  resolutionEvidence: { title: true, summary: true, url: true }
+};
+assert.equal(sourceContextGameHasStrongIdentity(bogusTheIdentity), false);
+assert.equal(refineNewsPrimaryGame(disneyInput, bogusTheIdentity), null);
 
 const cleanDisney = publicationSemanticReasons(disneyInput, {
   titleRu: 'Disney может получить собственный симулятор парка от авторов Planet Coaster',
