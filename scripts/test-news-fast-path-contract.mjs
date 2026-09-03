@@ -38,7 +38,10 @@ assert.match(pendingPage, /location\.replace\(target\.href\)/,
 
 assert.match(audit, /blockingIntegrityFindings/,
   'hashtag diagnostics must remain observable');
-assert.doesNotMatch(production, /audit-news-game-hashtags\.mjs --strict(?![^\n]*\|\| true)/,
-  'hashtag diagnostics must never be a global production publication blocker');
+const auditStep = production.match(/- name: Audit hashtag integrity without blocking publication[\s\S]*?(?=\n      - name:|$)/)?.[0] || '';
+assert.match(auditStep, /continue-on-error:\s*true/,
+  'hashtag diagnostics must be advisory and never block publication');
+assert.match(auditStep, /audit-news-game-hashtags\.mjs --strict --allow-missing-pages --production-ref origin\/main/,
+  'the advisory integrity audit must still run');
 
 console.log('Fail-open hourly news publication, page queue and always-clickable hashtag contract passed.');
