@@ -130,9 +130,14 @@ function validateHealth(health, payloads, itemCounts, config, errors, { enforceF
   const supportedSources = report.filter(source => source?.status !== 'no-feed').length;
   const unsupportedSources = report.filter(source => source?.status === 'no-feed').length;
   const successfulSources = report.filter(source => source?.status === 'ok').length;
-  if (Number(health.sources?.configured_total) !== configuredSources) errors.push(`${healthFile} official configured source total is inconsistent.`);
-  if (Number(health.sources?.total) !== supportedSources) errors.push(`${healthFile} supported official source total is inconsistent.`);
-  if (Number(health.sources?.unsupported) !== unsupportedSources) errors.push(`${healthFile} unsupported official source count is inconsistent.`);
+  const hasSupportedSourceContract = Object.prototype.hasOwnProperty.call(health.sources || {}, 'configured_total');
+  if (hasSupportedSourceContract) {
+    if (Number(health.sources?.configured_total) !== configuredSources) errors.push(`${healthFile} official configured source total is inconsistent.`);
+    if (Number(health.sources?.total) !== supportedSources) errors.push(`${healthFile} supported official source total is inconsistent.`);
+    if (Number(health.sources?.unsupported) !== unsupportedSources) errors.push(`${healthFile} unsupported official source count is inconsistent.`);
+  } else if (Number(health.sources?.total) !== configuredSources) {
+    errors.push(`${healthFile} official source total is inconsistent.`);
+  }
   if (Number(health.sources?.successful) !== successfulSources) errors.push(`${healthFile} official source success count is inconsistent.`);
   if (!Array.isArray(health.sources?.history)) errors.push(`${healthFile} has no source history.`);
   if (!Array.isArray(health.sources?.persistent_failures)) errors.push(`${healthFile} has no persistent failure list.`);
