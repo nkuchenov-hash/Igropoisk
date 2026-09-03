@@ -29,7 +29,9 @@ jobs:
           node-version: '22'
 
       - name: Protect canonical roadmap and architecture
-        run: node scripts/validate-canonical-project-docs.mjs
+        run: |
+          node scripts/validate-canonical-project-docs.mjs
+          node scripts/validate-stable-news-module.mjs
 
       - name: Verify immutable source and branch boundaries
         run: |
@@ -118,7 +120,3 @@ jobs:
           name: igropoisk-staging-${{ github.sha }}
           path: |
             .
-            !.git/**
-            !.github/**
-          if-no-files-found: error
-          retention-days: 7
