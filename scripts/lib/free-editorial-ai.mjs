@@ -6,7 +6,7 @@ const stripFence=value=>String(value||'').trim().replace(/^```(?:json)?\s*/i,'')
 const truthy=value=>/^(1|true|yes|on)$/i.test(String(value||''));
 const parseOrder=value=>[...new Set(String(value||'openrouter,gigachat,gemini,groq,ollama').split(',').map(x=>x.trim().toLowerCase()).filter(Boolean))];
 const timeoutFor=name=>Number(process.env[`EDITORIAL_${name.toUpperCase()}_TIMEOUT_MS`]||process.env.EDITORIAL_AI_TIMEOUT_MS||process.env.OLLAMA_EDITORIAL_TIMEOUT_MS||120000);
-const parseJSON=(raw,label)=>{const text=stripFence(raw);if(!text)throw new Error(`${label} returned empty output`);try{return JSON.parse(text)}catch(error){throw new Error(`${label} returned invalid JSON: ${error.message}`)}};
+const parseJSON=(raw,label)=>{const text=stripFence(raw);if(!text)throw new Error(`${label} returned empty output`);try{return JSON.parse(text)}catch(first){const repaired=text.replace(/,\s*([}\]])/g,'$1');try{return JSON.parse(repaired)}catch(error){throw new Error(`${label} returned invalid JSON: ${error.message}`)}}};
 const textFromOpenAI=data=>{const content=data?.choices?.[0]?.message?.content;if(typeof content==='string')return content;if(Array.isArray(content))return content.map(part=>typeof part==='string'?part:part?.text||'').join('');return''};
 
 function providerConfigs(){
@@ -14,7 +14,7 @@ function providerConfigs(){
   return {
     openrouter:{provider:'openrouter',enabled:Boolean(process.env.OPENROUTER_API_KEY),apiKey:String(process.env.OPENROUTER_API_KEY||''),baseUrl:trimSlash(process.env.OPENROUTER_BASE_URL||'https://openrouter.ai/api/v1'),model:String(process.env.OPENROUTER_EDITORIAL_MODEL||'moonshotai/kimi-k2.6:free').trim(),timeoutMs:timeoutFor('openrouter')},
     gigachat:{provider:'gigachat',enabled:Boolean(process.env.GIGACHAT_CREDENTIALS),credentials:String(process.env.GIGACHAT_CREDENTIALS||''),scope:gigaScope,baseUrl:trimSlash(process.env.GIGACHAT_BASE_URL||'https://api.giga.chat/v1'),authUrl:String(process.env.GIGACHAT_AUTH_URL||'https://ngw.devices.sberbank.ru:9443/api/v2/oauth').trim(),model:String(process.env.GIGACHAT_EDITORIAL_MODEL||(gigaScope==='GIGACHAT_API_PERS'?'GigaChat-3-Ultra':'GigaChat-2-Max')).trim(),fallbackModel:String(process.env.GIGACHAT_EDITORIAL_FALLBACK_MODEL||'GigaChat-2-Max').trim(),timeoutMs:timeoutFor('gigachat')},
-    gemini:{provider:'gemini',enabled:Boolean(process.env.GEMINI_API_KEY),apiKey:String(process.env.GEMINI_API_KEY||''),baseUrl:trimSlash(process.env.GEMINI_BASE_URL||'https://generativelanguage.googleapis.com/v1beta'),model:String(process.env.GEMINI_EDITORIAL_MODEL||'gemini-3.1-pro-preview').trim(),timeoutMs:timeoutFor('gemini')},
+    gemini:{provider:'gemini',enabled:Boolean(process.env.GEMINI_API_KEY),apiKey:String(process.env.GEMINI_API_KEY||''),baseUrl:trimSlash(process.env.GEMINI_BASE_URL||'https://generativelanguage.googleapis.com/v1beta'),model:String(process.env.GEMINI_EDITORIAL_MODEL||'gemini-3.7-flash').trim(),timeoutMs:timeoutFor('gemini')},
     groq:{provider:'groq',enabled:Boolean(process.env.GROQ_API_KEY),apiKey:String(process.env.GROQ_API_KEY||''),baseUrl:trimSlash(process.env.GROQ_BASE_URL||'https://api.groq.com/openai/v1'),model:String(process.env.GROQ_EDITORIAL_MODEL||'qwen/qwen3.8-27b').trim(),timeoutMs:timeoutFor('groq')},
     ollama:{provider:'ollama',enabled:truthy(process.env.FREE_EDITORIAL_AI_ENABLED)||Boolean(process.env.OLLAMA_BASE_URL)||!['OPENROUTER_API_KEY','GIGACHAT_CREDENTIALS','GEMINI_API_KEY','GROQ_API_KEY'].some(key=>process.env[key]),baseUrl:trimSlash(process.env.OLLAMA_BASE_URL||'http://127.0.0.1:11434'),model:String(process.env.OLLAMA_EDITORIAL_MODEL||process.env.OLLAMA_MODEL||'qwen2.5:3b').trim(),timeoutMs:Number(process.env.OLLAMA_EDITORIAL_TIMEOUT_MS||240000)}
   };
@@ -39,7 +39,6 @@ async function generateOpenAICompatible(config,{system,prompt,temperature,maxTok
   const headers={'content-type':'application/json','authorization':`Bearer ${config.apiKey}`};
   if(config.provider==='openrouter'){
     headers['HTTP-Referer']=String(process.env.OPENROUTER_HTTP_REFERER||'https://nkuchenov-hash.github.io/Igropoisk/');
-    // Fetch/Undici requires header values representable as ByteString. Keep the default ASCII-only.
     headers['X-Title']=String(process.env.OPENROUTER_X_TITLE||'Igropoisk').replace(/[^\x20-\x7E]/g,'');
   }
   const response=await fetchWithTimeout(`${config.baseUrl}/chat/completions`,{method:'POST',headers,body:JSON.stringify({model:config.model,stream:false,temperature,max_tokens:Number(maxTokens)||700,response_format:{type:'json_object'},messages:[...(system?[{role:'system',content:system}]:[]),{role:'user',content:String(prompt||'')} ]})},config.timeoutMs,config.provider);
@@ -67,7 +66,7 @@ async function generateGigaChat(config,{system,prompt,temperature,maxTokens}){
 
 async function generateGemini(config,{system,prompt,temperature,maxTokens}){
   const endpoint=`${config.baseUrl}/models/${encodeURIComponent(config.model)}:generateContent?key=${encodeURIComponent(config.apiKey)}`;
-  const body={contents:[{role:'user',parts:[{text:String(prompt||'')}]}],generationConfig:{temperature,maxOutputTokens:Number(maxTokens)||700,responseMimeType:'application/json'}};
+  const body={contents:[{role:'user',parts:[{text:String(prompt||'')}]}],generationConfig:{temperature,maxOutputTokens:Number(maxTokens)||700,responseMimeType:'application/json',thinkingConfig:{thinkingLevel:'low'}}};
   if(system)body.systemInstruction={parts:[{text:String(system)}]};
   const response=await fetchWithTimeout(endpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)},config.timeoutMs,'gemini');
   if(!response.ok)throw new Error(`gemini ${response.status}: ${(await response.text()).slice(0,800)}`);
