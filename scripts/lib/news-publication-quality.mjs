@@ -1,7 +1,7 @@
 const stableEntities = [
   'Ubisoft', 'EA', 'Electronic Arts', 'Steam', 'Steam Deck', 'Xbox', 'PlayStation', 'Nintendo', 'NVIDIA', 'AMD',
   'Microsoft', 'Konami', 'Capcom', 'SEGA', 'Bethesda', 'Valve', 'Rockstar', 'Activision', 'miHoYo', 'HoYoverse',
-  'Pearl Abyss', 'CD Projekt Red', 'Gamescom', 'QuakeCon', 'Epic Games', 'Bandai Namco'
+  'Pearl Abyss', 'CD Projekt Red', 'Gamescom', 'QuakeCon', 'Epic Games', 'Bandai Namco', 'Frontier Developments'
 ];
 
 function escapeRegExp(value = '') {
@@ -71,7 +71,7 @@ function relationBackedCandidates(value = '') {
   const text = decodeNewsSourceText(value);
   const candidates = [];
   const patterns = [
-    new RegExp(`\\b(?:makers?|creators?|developers?)\\s+(?:of|behind)\\s+(${properPhrase})`, 'g'),
+    new RegExp(`\\b(?:team|studio|makers?|creators?|developers?)\\s+(?:of|behind)\\s+(${properPhrase})`, 'g'),
     new RegExp(`\\b(${properPhrase})['’]s\\s+(?:upcoming|new|next|latest|game|title|project)\\b`, 'g'),
     new RegExp(`\\b(?:studio|developer|publisher)\\s+(${properPhrase})\\b`, 'g')
   ];
@@ -153,6 +153,12 @@ function orphanLatinFragment(value = '') {
     && /[А-Яа-яЁё]/u.test(String(value));
 }
 
+function untranslatedEnglishGrammarFragment(value = '') {
+  const text = String(value || '');
+  if (!/[А-Яа-яЁё]/u.test(text)) return false;
+  return /(?:^|\s)(?:the|a|an|this|that|these|those)\s+(?=[А-Яа-яЁё])/iu.test(text);
+}
+
 function requiresNoOneMeaning(source = '') {
   return /\b(?:no one|nobody)\b/i.test(source);
 }
@@ -204,6 +210,7 @@ export function publicationSemanticReasons(input = {}, output = {}, { localizedN
   if (repeatedParenthetical(target)) reasons.push('machine translation repeated the same word in parentheses');
   if (repeatedAdjacentWord(target)) reasons.push('machine translation repeated the same adjacent word');
   if (orphanLatinFragment(summaryRu)) reasons.push('orphan Latin fragment leaked into Russian summary');
+  if (untranslatedEnglishGrammarFragment(titleRu) || untranslatedEnglishGrammarFragment(summaryRu)) reasons.push('untranslated English grammar fragment mixed into Russian publication copy');
 
   if (requiresNoOneMeaning(source) && !preservesNoOneMeaning(target)) reasons.push('source meaning lost: no one/nobody');
   if (requiresNothingMeaning(source) && !preservesNothingMeaning(target)) reasons.push('source meaning lost: nothing');
