@@ -43,8 +43,8 @@
   window.addEventListener('popstate',cleanExplicitNonNewsRoute);
 
   // The enhanced search uses a native <datalist>, which browsers render as a
-  // large white dropdown. Search-page.js builds the field synchronously before
-  // this file runs, so one direct detach is enough; no broad DOM observer needed.
+  // large white dropdown. Search-page.js builds the field asynchronously after
+  // the basic page, so detach it both now and after that enhanced render.
   function disableGameSearchDropdown(){
     document.querySelector('#search #query')?.removeAttribute('list');
   }
@@ -130,6 +130,26 @@
     observer.observe(to,{attributes:true,attributeFilter:['min','max']});
   }
 
+  function watchEnhancedSearchRender(){
+    const searchPage=document.querySelector('#search');
+    if(!searchPage)return;
+    if(searchPage.querySelector('.search-layout--enhanced #yearFrom')){
+      disableGameSearchDropdown();
+      bindHistoricalYearGuard();
+      return;
+    }
+
+    // home-page.js loads search-page.js only after the catalog request finishes.
+    // Watch this page only until that one enhanced render occurs, then disconnect.
+    const observer=new MutationObserver(()=>{
+      if(!searchPage.querySelector('.search-layout--enhanced #yearFrom'))return;
+      observer.disconnect();
+      disableGameSearchDropdown();
+      bindHistoricalYearGuard();
+    });
+    observer.observe(searchPage,{childList:true,subtree:true});
+  }
+
   const arx = {
     slug:'arx-fatalis',
     title:'Arx Fatalis',
@@ -167,6 +187,7 @@
   function bind(){
     disableGameSearchDropdown();
     bindHistoricalYearGuard();
+    watchEnhancedSearchRender();
     const query=document.querySelector('#query');
     if(!query)return;
     ['input','change'].forEach(type=>document.addEventListener(type,event=>{
