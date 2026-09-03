@@ -28,6 +28,7 @@ assert.ok(entities.includes('Carcass Clad'));
 assert.ok(entities.includes('Wrong Organ'));
 assert.ok(entities.includes('Mouthwashing'));
 assert.ok(entities.includes('Gamescom'));
+assert.ok(!entities.includes('Mouthwashing Set'));
 assert.equal(sourceLooksTruncated(carcassInput), true);
 assert.equal(decodeNewsSourceText('Wrong Organ&rsquo;s game'), "Wrong Organ's game");
 
@@ -57,5 +58,14 @@ const godOfWar = publicationSemanticReasons({
   summaryRu: 'Sony выпустила новое обновление для God of War на PC. Патч уже доступен игрокам.'
 });
 assert.deepEqual(godOfWar, []);
+
+const sentenceBoundaryInput = {
+  titleEn: 'A real-life romance inspired a classic NES remake',
+  summaryEn: 'The game keeps the spirit of the Classic NES remake. But this story focuses on the people behind it.',
+  primaryUrl: 'https://example.com/classic-nes-remake'
+};
+const sentenceBoundaryEntities = sourceEntityCandidates(sentenceBoundaryInput);
+assert.ok(!sentenceBoundaryEntities.some(entity => /Classic NES Remake But/i.test(entity)));
+assert.ok(!sentenceBoundaryEntities.some(entity => /More Games Members/i.test(entity)));
 
 console.log('News publication quality regressions passed.');
