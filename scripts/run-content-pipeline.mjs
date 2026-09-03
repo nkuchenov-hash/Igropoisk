@@ -28,7 +28,7 @@ if(targetSlug&&!pageSlugs.has(targetSlug)){const game=catalog.find(item=>item.sl
 if(targetSlug){plan.pages=plan.pages.filter(item=>item.slug===targetSlug);plan.reviews=plan.reviews.filter(item=>item.slug===targetSlug)}
 
 const startedAt=new Date().toISOString();const results=[];
-const freePageAiConfigured=/^(1|true|yes|on)$/i.test(String(process.env.FREE_EDITORIAL_AI_ENABLED||''))||Boolean(process.env.OLLAMA_BASE_URL);
+const freePageAiConfigured=/^(1|true|yes|on)$/i.test(String(process.env.FREE_EDITORIAL_AI_ENABLED||''))||Boolean(process.env.OLLAMA_BASE_URL)||Boolean(process.env.OPENROUTER_API_KEY)||Boolean(process.env.GIGACHAT_CREDENTIALS)||Boolean(process.env.GEMINI_API_KEY)||Boolean(process.env.GROQ_API_KEY);
 const reviewAiAvailable=Boolean(process.env.OPENAI_API_KEY); // Separate Review subsystem only; never used by Game Page Assembly.
 function run(label,command,args,env={}){const started=Date.now();const child=spawnSync(command,args,{cwd:root,encoding:'utf8',stdio:'pipe',env:{...process.env,...env},maxBuffer:24*1024*1024});const record={label,command:[command,...args].join(' '),status:child.status===0?'completed':'revision_required',exit_code:child.status,duration_ms:Date.now()-started,stdout:(child.stdout||'').slice(-12000),stderr:(child.stderr||'').slice(-12000)};results.push(record);console.log(`\n[${record.status}] ${record.command}`);if(record.stdout)console.log(record.stdout);if(record.stderr)console.error(record.stderr);return child.status===0}
 function qualityStatus(type,slug){return readJSON(`data/quality-control/${type}-${slug}-control.json`,{status:'red-needs-revision',green:false})}
