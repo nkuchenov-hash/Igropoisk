@@ -1,0 +1,61 @@
+name: Spore Source Discovery Diagnostics
+
+on:
+  push:
+    branches:
+      - diag/spore-source-discovery-20260903
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Register and bootstrap fresh Spore draft
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { GameRegistryApi } from './scripts/lib/game-registry.mjs';
+          const p='data/game-registry/registry.transition.json';
+          const api=new GameRegistryApi(JSON.parse(fs.readFileSync(p,'utf8')));
+          const r=api.registerCandidate({title:'Spore',slug:'spore',steamAppId:'17390',kind:'game',standalonePage:true,releaseYear:2008,source:{type:'official_platform_store',name:'Steam',url:'https://store.steampowered.com/app/17390/Spore/'},status:'identified',confidence:0.99},{actor:'spore-source-diagnostics'});
+          fs.writeFileSync(p,JSON.stringify(api.registry,null,2)+'\n');
+          fs.writeFileSync('/tmp/spore-id',r.entity.id);
+          NODE
+          node scripts/parse-game-data.mjs spore 17390 Spore
+          node scripts/build-game-page-basic.mjs "$(cat /tmp/spore-id)"
+      - name: Run fresh direct-review discovery
+        env:
+          IGROPOISK_SOURCE_DISCOVERY_REFRESH: '1'
+        run: |
+          node scripts/discover-game-sources-web.mjs spore || true
+          node scripts/discover-game-publication-hubs.mjs spore || true
+          node scripts/collect-game-sources.mjs spore || true
+      - name: Print discovery diagnostics
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          for (const p of ['data/research/spore-independent-web-sources.json','data/research/spore-publication-hubs.json','data/game-sources/spore.json']) {
+            console.log('\n===== '+p+' =====');
+            if (!fs.existsSync(p)) { console.log('MISSING'); continue; }
+            const x=JSON.parse(fs.readFileSync(p,'utf8'));
+            console.log(JSON.stringify(x,null,2));
+          }
+          NODE
+      - name: Preserve diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: spore-source-discovery-${{ github.run_id }}
+          path: |
+            data/research/spore-independent-web-sources.json
+            data/research/spore-publication-hubs.json
+            data/game-sources/spore.json
+            data/drafts/spore.json
+          if-no-files-found: error
+          retention-days: 7
