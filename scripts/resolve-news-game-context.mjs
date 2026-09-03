@@ -3,6 +3,7 @@ import { buildGameReviewQueue, enrichNewsItems } from './lib/news-game-linker.mj
 import { applyResolvedExternalGame, resolveVerifiedExternalNewsGame } from './lib/news-game-context-resolver.mjs';
 import { canonicalGameIsPrimary } from './lib/news-primary-game-evidence.mjs';
 import { refineNewsPrimaryGame } from './lib/news-primary-game-refiner.mjs';
+import { cleanResolvedNewsGame } from './lib/news-game-title-cleanup.mjs';
 
 const eventsPath = 'data/news-events.json';
 const reviewPath = 'data/news-game-review.json';
@@ -82,9 +83,6 @@ for (const original of canonical) {
       continue;
     }
 
-    // A known game that appears only in the summary is contextual evidence, not proof
-    // that it is the primary game. Reopen the item so the primary resolver can identify
-    // the actual headline game (e.g. Haunted Chocolatier vs. a Stardew Valley mention).
     secondaryOnlyCanonicalLinks += 1;
     item = {
       ...item,
@@ -101,7 +99,7 @@ for (const original of canonical) {
   }
   externalLookups += 1;
   const proposed = await resolveVerifiedExternalNewsGame(item);
-  const game = refineNewsPrimaryGame(item, proposed);
+  const game = cleanResolvedNewsGame(refineNewsPrimaryGame(item, proposed));
   if (game) {
     resolvedExternally += 1;
     items.push(applyResolvedExternalGame(item, game));
