@@ -13,6 +13,24 @@ const cyrillicRatio=v=>{const s=clean(v);const letters=(s.match(/[A-Za-zА-Яа-
 const stripNoise=v=>clean(v).replace(/^Discovered by existing verified corpus;\s*matched alias:\s*[^ ]+\s*/i,'').replace(/^matched alias:\s*[^ ]+\s*/i,'');
 const junk=/\b(add source|\d+[hm] ago|review filters|widget-maker|creating an account|sign in|privacy policy|cookie|subscriber|purchase this game|release date:|publisher:|developer:)\b/i;
 const semantic=/\b(creator|create|creation|build|editor|evol|species|creature|cell|tribe|civilization|space|galaxy|planet|world|explor|combat|fight|manage|player|play|progress|stage|level|quest|mission|story|vehicle|building|starship|universe|god|созда|стро|редактор|эволюц|вид|существ|клет|плем|цивилизац|космос|галак|планет|мир|исслед|бой|сраж|управ|игрок|игров|развит|этап|уров|мисси|сюжет)\w*/i;
+const boundNaturalText=(value,min,limit)=>{
+  const text=clean(value);
+  if(text.length<=limit)return text;
+  const sentences=text.match(/[^.!?…]+(?:[.!?…]+|$)/g)||[];
+  let prefix='';
+  for(const sentence of sentences){
+    const candidate=clean(`${prefix} ${sentence}`);
+    if(candidate.length>limit)break;
+    prefix=candidate;
+  }
+  if(prefix.length>=min)return prefix;
+  const punctuation=[...text.matchAll(/[;,—–:]\s+/g)].map(match=>match.index+1).filter(index=>index>=min&&index<=limit);
+  if(punctuation.length){
+    const cut=clean(text.slice(0,punctuation.at(-1)).replace(/[;,—–:]$/,''));
+    if(cut.length>=min)return `${cut}.`;
+  }
+  return text;
+};
 
 const draft=read(`data/drafts/${slug}.json`),knowledge=read(`data/game-knowledge/${slug}.json`,{}),ratings=read(`data/ratings/${slug}.json`,{});
 if(!draft?.identity?.title)throw new Error(`Missing draft for ${slug}`);
@@ -57,7 +75,8 @@ async function makeText(kind,requirements,min,max,maxTokens){
       prompt:`Игра: ${draft.identity.title}. Напиши ${kind}. ${requirements}\nДлина: ${min}-${max} символов. Не упоминай источники, claim_id, ИИ, оценки и процесс сбора. Не используй фразы «уникальный опыт» и «сочетает жанры» вместо конкретики.\nФакты:\n${factText}`
     });
     const text=clean(data?.text);last=text;providers.push({provider,model});
-    if(text.length>=min&&text.length<=max+120&&cyrillicRatio(text)>=0.6)return text;
+    const bounded=boundNaturalText(text,min,max+120);
+    if(bounded.length>=min&&bounded.length<=max+120&&cyrillicRatio(bounded)>=0.6)return bounded;
   }
   throw new Error(`${kind}: automatic Russian writer failed quality bounds (${last.length} chars, cyr=${cyrillicRatio(last).toFixed(2)})`);
 }
@@ -65,7 +84,7 @@ async function makeFeatures(){
   let last=[];
   for(let attempt=1;attempt<=2;attempt++){
     const {data,provider,model}=await generateGamePageEditorialJSON({
-      system:'Ты русскоязычный игровой редактор. Верни только JSON {"features":["...", "..."]}. Все пункты обязаны быть на естественном русском. Английские факты пересказывай по-русски. Используй только переданные факты.',
+      system:'Ты русскоязычный игровой редактор. Верни только JSON {"features":["...", "..."]}. Все пункты обязаны быть на естественном русском. Английские факты пересказывазывай по-русски. Используй только переданные факты.',
       temperature:attempt===1?0.25:0.1,maxTokens:520,
       prompt:`Игра: ${draft.identity.title}. Составь 5-7 конкретных особенностей игры. Каждый пункт 35-130 символов и описывает реальную механику, структуру развития, роль игрока или устройство мира. Никаких оценок, рекламы, источников и общих жанровых формул.\nФакты:\n${factText}`
     });
