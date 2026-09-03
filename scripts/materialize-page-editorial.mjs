@@ -18,14 +18,17 @@ if(!String(editorial.editorial_mode||'').startsWith('source_grounded_'))throw ne
 const short=clean(editorial.short_description),integrated=clean(editorial.integrated_description),campaign=clean(editorial.campaign);
 const features=(editorial.features||[]).map(clean).filter(Boolean),genres=(draft.classification?.genres||[]).map(clean).filter(Boolean);
 const developer=clean(draft.companies?.developers?.[0]),releaseYear=yearOf(draft.release?.date||draft.release?.date_text);
+const knownClaimIds=new Set((knowledge.defining_claims||[]).map((x,i)=>String(x?.claim_id||`claim-${i+1}`)));
+const groundingClaimIds=[...new Set((editorial.grounding_claim_ids||[]).map(String).filter(id=>knownClaimIds.has(id)))];
 const errors=[];const require=(ok,msg)=>{if(!ok)errors.push(msg)};
 require(short.length>=90,'short_description is too short');require(cyrillicRatio(short)>=0.55,'short_description is not natural Russian');
 require(integrated.length>=350,'integrated_description is too short');require(cyrillicRatio(integrated)>=0.55,'integrated_description is not natural Russian');
 require(campaign.length>=130,'campaign is too short');require(cyrillicRatio(campaign)>=0.55,'campaign is not natural Russian');
-require(features.length>=4,'at least four features are required');require(features.every(x=>x.length>=18),'features are too generic');
+require(features.length>=4,'at least four features are required');require(features.every(x=>x.length>=18&&cyrillicRatio(x)>=0.45),'features are too generic or not Russian');
+require(groundingClaimIds.length>=Math.min(3,knownClaimIds.size),'at least three valid source-grounded claim IDs are required');
 require(Boolean(developer),'developer is required');require(Boolean(releaseYear),'release year is required');require(genres.length>0,'genres are required');
 if(errors.length){console.error(JSON.stringify({slug,status:'needs_revision',errors},null,2));process.exit(2)}
 const corpus=read(`data/game-sources/${slug}.json`,{});
-const out={schema_version:2,game_slug:slug,title:clean(draft.identity.title),release_year:releaseYear,developer,genres,short_description:short,integrated_description:integrated,campaign,features,source_corpus:`data/game-sources/${slug}.json`,source_count:Number(corpus?.counts?.total||corpus?.sources?.length||0),knowledge_source:`data/game-knowledge/${slug}.json`,knowledge_hash:knowledge.source_content_hash,knowledge_claims:knowledge.defining_claims?.length||0,generation_mode:editorial.editorial_mode,generated_at:new Date().toISOString(),quality_status:'green'};
+const out={schema_version:3,game_slug:slug,title:clean(draft.identity.title),release_year:releaseYear,developer,genres,short_description:short,integrated_description:integrated,campaign,features,source_corpus:`data/game-sources/${slug}.json`,source_count:Number(corpus?.counts?.total||corpus?.sources?.length||0),knowledge_source:`data/game-knowledge/${slug}.json`,knowledge_hash:knowledge.source_content_hash,knowledge_claims:knowledge.defining_claims?.length||0,grounding_claim_ids:groundingClaimIds,generation_mode:editorial.editorial_mode,generated_at:new Date().toISOString(),quality_status:'green'};
 write(`data/page-editorial/${slug}.json`,out);
-console.log(JSON.stringify({slug,status:'green',mode:out.generation_mode,knowledge_claims:out.knowledge_claims,output:`data/page-editorial/${slug}.json`},null,2));
+console.log(JSON.stringify({slug,status:'green',mode:out.generation_mode,knowledge_claims:out.knowledge_claims,grounding_claim_ids:out.grounding_claim_ids,output:`data/page-editorial/${slug}.json`},null,2));
