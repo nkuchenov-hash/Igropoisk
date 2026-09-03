@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { refineNewsPrimaryGame } from './lib/news-primary-game-refiner.mjs';
+import { cleanResolvedNewsGame, cleanResolvedNewsGameTitle, sourceContextGameHasStrongIdentity } from './lib/news-game-title-cleanup.mjs';
+import { translatePreservingGameEntities } from './lib/news-game-translation-guard.mjs';
 
 const contextGame = title => ({ title, matchedBy: 'context-evidence-resolver', pageExists: false, pageUrl: '' });
 const detect = (item, proposed = null) => refineNewsPrimaryGame({ publicEligible: true, games: [], ...item }, proposed)?.title || null;
@@ -87,5 +89,43 @@ assert.equal(detect({
   summaryEn: 'One Magic designer hopes the forgotten card rises again. Vengeful Pharaoh tells a mummy story through its mechanics.',
   primaryUrl: 'https://www.polygon.com/mtg-vengeful-pharaoh-card-mummy-horror-story-magic-2012/'
 }), null);
+
+assert.equal(cleanResolvedNewsGameTitle('The Witcher Remake Is'), 'The Witcher Remake');
+assert.equal(cleanResolvedNewsGameTitle('The Witcher Remake Is Getting'), 'The Witcher Remake');
+assert.equal(cleanResolvedNewsGameTitle('Life Is Strange'), 'Life Is Strange');
+
+const groundedWitcher = cleanResolvedNewsGame({
+  gameId: 'news_game_bad',
+  slug: 'the-witcher-remake-is',
+  title: 'The Witcher Remake Is',
+  matchedBy: 'primary-game-context-v1',
+  resolutionConfidence: 0.9,
+  resolutionEvidence: { title: true, summary: true, url: false }
+});
+assert.equal(groundedWitcher.title, 'The Witcher Remake');
+assert.equal(groundedWitcher.slug, 'the-witcher-remake');
+assert.equal(sourceContextGameHasStrongIdentity(groundedWitcher), true);
+assert.equal(sourceContextGameHasStrongIdentity({ ...groundedWitcher, resolutionEvidence: { title: true, summary: false, url: false } }), false);
+
+const localizedWitcher = await translatePreservingGameEntities(
+  'The Witcher Remake Is getting a new trailer.',
+  ['The Witcher Remake'],
+  async value => value
+    .replace('ZXQGAME0QXZ', 'ZXQGAME0QXZ')
+    .replace('Is getting a new trailer.', 'получит новый трейлер.'),
+  { localizedNames: { 'The Witcher Remake': 'ремейк «Ведьмака»' } }
+);
+assert.equal(localizedWitcher, 'ремейк «Ведьмака» получит новый трейлер.');
+assert.equal(/колдун/iu.test(localizedWitcher), false);
+
+const unknownCanonical = await translatePreservingGameEntities(
+  'Tomb Raider: Catalyst Is coming next year.',
+  ['Tomb Raider: Catalyst'],
+  async value => value
+    .replace('ZXQGAME0QXZ', 'ZXQGAME0QXZ')
+    .replace('Is coming next year.', 'выйдет в следующем году.'),
+  { localizedNames: {} }
+);
+assert.equal(unknownCanonical, 'Tomb Raider: Catalyst выйдет в следующем году.');
 
 console.log('News primary-game hashtag refinement regressions passed.');
