@@ -3,6 +3,8 @@
 
   const NEWS_QUERY_KEYS=['page','game','type','story','view'];
   const NON_NEWS_PAGES=new Set(['home','what-to-play','search']);
+  const SEARCH_YEAR_SENTINEL=1990;
+  const SEARCH_RENDER_TARGETS='#query,#sort,#yearFrom,#yearTo,#ratingFrom,#ratingTo,#ratingFromNumber,#ratingToNumber,#userRatingFrom,#userRatingTo,#userRatingFromNumber,#userRatingToNumber,#quickPlatform,#quickGenre,#quickYear,#quickRating,.f-platform,.f-genre,.view-switch button,#resetFilters';
 
   function explicitPageFromHash(){
     const page=decodeURIComponent(window.location.hash.replace(/^#/,''));
@@ -48,11 +50,67 @@
     document.querySelector('#search #query')?.removeAttribute('list');
   }
 
-  function bindGameSearchDropdownGuard(){
+  // The visible year scale starts at a compact 1990 sentinel. At that floor the
+  // label means "all games before 1990 too", rather than pretending older games
+  // do not exist. Moving the handle right switches back to an exact lower year.
+  function syncSearchYearUx(){
+    const from=document.querySelector('#search #yearFrom');
+    const to=document.querySelector('#search #yearTo');
+    if(!from||!to)return;
+
+    const previousMin=Number(from.min);
+    const currentFrom=Number(from.value);
+    const wasAtPreviousFloor=Number.isFinite(previousMin)&&currentFrom<=previousMin;
+
+    if(previousMin!==SEARCH_YEAR_SENTINEL){
+      from.min=String(SEARCH_YEAR_SENTINEL);
+      to.min=String(SEARCH_YEAR_SENTINEL);
+      if(wasAtPreviousFloor||currentFrom<SEARCH_YEAR_SENTINEL)from.value=String(SEARCH_YEAR_SENTINEL);
+    }else if(currentFrom<SEARCH_YEAR_SENTINEL){
+      from.value=String(SEARCH_YEAR_SENTINEL);
+    }
+
+    if(Number(to.value)<SEARCH_YEAR_SENTINEL)to.value=String(SEARCH_YEAR_SENTINEL);
+
+    const label=document.querySelector('#search #yearFromLabel');
+    if(label)label.textContent=Number(from.value)<=SEARCH_YEAR_SENTINEL?`до ${SEARCH_YEAR_SENTINEL}`:from.value;
+  }
+
+  // Search-page.js treats the visible slider minimum as a literal year whenever
+  // the upper bound is changed. During a render event, translate the 1990
+  // sentinel into a temporary unbounded floor so pre-1990 games stay included.
+  function expandYearSentinelForRender(event){
+    const target=event.target;
+    if(!(target instanceof Element)||!target.matches(SEARCH_RENDER_TARGETS))return;
+
+    syncSearchYearUx();
+    const from=document.querySelector('#search #yearFrom');
+    if(!from||Number(from.value)>SEARCH_YEAR_SENTINEL)return;
+
+    const label=document.querySelector('#search #yearFromLabel');
+    from.min='0';
+    from.value='0';
+    queueMicrotask(()=>{
+      from.min=String(SEARCH_YEAR_SENTINEL);
+      from.value=String(SEARCH_YEAR_SENTINEL);
+      if(label)label.textContent=`до ${SEARCH_YEAR_SENTINEL}`;
+    });
+  }
+
+  function maintainSearchUiGuards(){
+    disableGameSearchDropdown();
+    syncSearchYearUx();
+  }
+
+  function bindSearchUiGuards(){
     const searchPage=document.querySelector('#search');
     if(!searchPage)return;
-    disableGameSearchDropdown();
-    new MutationObserver(disableGameSearchDropdown).observe(searchPage,{childList:true,subtree:true});
+    maintainSearchUiGuards();
+    new MutationObserver(maintainSearchUiGuards).observe(searchPage,{childList:true,subtree:true});
+    [100,350,900,1800,3500].forEach(delay=>window.setTimeout(maintainSearchUiGuards,delay));
+    document.addEventListener('input',expandYearSentinelForRender,true);
+    document.addEventListener('change',expandYearSentinelForRender,true);
+    document.addEventListener('click',expandYearSentinelForRender,true);
   }
 
   const arx = {
@@ -90,7 +148,7 @@
   }
 
   function bind(){
-    bindGameSearchDropdownGuard();
+    bindSearchUiGuards();
     const query=document.querySelector('#query');
     if(!query)return;
     ['input','change'].forEach(type=>document.addEventListener(type,event=>{
