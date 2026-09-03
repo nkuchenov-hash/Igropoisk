@@ -1,0 +1,27 @@
+name: Spore Deep Search Diagnostics
+on:
+  push:
+    branches: [diag/spore-search-results-20260903]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deep search once per provider
+        run: |
+          node <<'NODE'
+          const q='"Spore" review 2008 PC';
+          const headers={'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/127 Safari/537.36','accept-language':'en-US,en;q=.9'};
+          const decode=s=>String(s||'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#x27;|&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+          const canonical=v=>{try{const u=new URL(v,'https://www.google.com');if(u.hostname.includes('google.')&&u.pathname==='/url'){const x=u.searchParams.get('q')||u.searchParams.get('url');if(x)return canonical(x)}if(u.hostname.endsWith('duckduckgo.com')&&u.pathname.startsWith('/l/')){const x=u.searchParams.get('uddg');if(x)return canonical(decodeURIComponent(x))}if(u.hostname.includes('yandex.')){const x=u.searchParams.get('url');if(x&&x.startsWith('http'))return canonical(x)}return u.href}catch{return''}};
+          async function grab(name,url,exclude){
+            console.log('\n===== '+name+' =====');
+            try{const r=await fetch(url,{headers,redirect:'follow',signal:AbortSignal.timeout(10000)});console.log('status',r.status);const html=await r.text();let n=0,seen=new Set();for(const m of html.matchAll(/<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)){const u=canonical(m[1]),t=decode(m[2]);if(!u||exclude.test(u)||seen.has(u)||!/^https?:/.test(u))continue;seen.add(u);console.log(JSON.stringify({title:t.slice(0,220),url:u}));if(++n>=40)break}}catch(e){console.log('ERR',String(e))}}
+          const g=new URL('https://www.google.com/search');g.searchParams.set('q',q);g.searchParams.set('num','100');g.searchParams.set('filter','0');
+          const d=new URL('https://html.duckduckgo.com/html/');d.searchParams.set('q',q);
+          const y=new URL('https://yandex.ru/search/');y.searchParams.set('text',q);y.searchParams.set('lr','2');
+          await grab('GOOGLE',g,/(google\.|gstatic|googleusercontent)/i);
+          await grab('DDG',d,/(duckduckgo\.com)/i);
+          await grab('YANDEX',y,/(yandex\.|yastatic|ya\.ru)/i);
+          NODE
