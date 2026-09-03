@@ -1,6 +1,5 @@
-# Acceptance run for one ordinary game through the current universal Game Page module.
-# Spore is only the input fixture; no Spore-specific page data is hard-coded here.
-# Acceptance retrigger: 2026-09-03 final live verification; obsolete attempts may be cancelled.
+# Acceptance run for one ordinary game through the universal Game Page module.
+# Spore is only the input fixture; no Spore-specific editorial text or game facts are hard-coded here.
 name: Spore complete page-module run
 
 on:
@@ -9,12 +8,19 @@ on:
     paths:
       - '.github/workflows/spore-page-module-run.yml'
       - 'scripts/collect-game-sources.mjs'
+      - 'scripts/build-game-source-knowledge.mjs'
+      - 'scripts/build-game-page.mjs'
+      - 'scripts/build-game-page-baseline-editorial.mjs'
+      - 'scripts/validate-game-page-content.mjs'
+      - 'scripts/quality-control-loop.mjs'
+      - 'scripts/lib/game-page-editorial-ai.mjs'
   workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
   actions: write
+  models: read
 
 concurrency:
   group: spore-page-module-acceptance
@@ -23,7 +29,10 @@ concurrency:
 jobs:
   build-spore:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout current staging
         uses: actions/checkout@v4
@@ -58,15 +67,10 @@ jobs:
         run: node scripts/ensure-game-page.mjs spore
 
       - name: Persist canonical identity so later rebuilds do not depend on this runner
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git add -A -- data/game-registry data/parser-output/spore.json
-          if git diff --cached --quiet; then
-            echo 'Canonical Spore identity already exists on staging.'
-            exit 0
-          fi
+          if git diff --cached --quiet; then echo 'Canonical Spore identity already exists on staging.'; exit 0; fi
           branch="automation/spore-registry-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git config user.name "igropoisk-content[bot]"
           git config user.email "igropoisk-content[bot]@users.noreply.github.com"
@@ -76,49 +80,54 @@ jobs:
           pr_url="$(gh pr create --base staging --head "$branch" --title "Register Spore for Game Page creation" --body "Canonical identity produced by the normal parser/registry path before the universal page module continues enrichment.")"
           gh pr merge "$pr_url" --merge --delete-branch
 
-      - name: Refresh the universal page plan
-        run: node scripts/orchestrate-content.mjs --finalize
-
-      - name: Run the complete AI-independent Game Page cycle for Spore
-        env:
-          GAME_TARGET_SLUG: spore
-          EDITORIAL_AI_ENABLED: 'false'
-        run: node scripts/run-content-pipeline.mjs
-
-      - name: Refresh complete professional source and rating materials
+      - name: Refresh complete source and rating evidence
         run: |
           node scripts/prepare-review-research.mjs spore
           node scripts/recover-historical-review-scores.mjs spore
           node scripts/calculate-ratings-from-research.mjs spore
           node scripts/collect-game-sources.mjs spore
 
-      - name: Require the finished page to be green
+      - name: Refresh the universal page plan
+        run: node scripts/orchestrate-content.mjs --finalize
+
+      - name: Run complete source-grounded Game Page cycle
+        env:
+          GAME_TARGET_SLUG: spore
+          EDITORIAL_AI_ENABLED: 'false'
+        run: node scripts/run-content-pipeline.mjs
+
+      - name: Require the finished source-grounded page to be green
         run: |
           node scripts/validate-game-shells.mjs spore
           node scripts/validate-pre-review-materials.mjs spore
           node - <<'NODE'
-          const fs=require('fs');
-          const must=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+          const fs=require('fs');const must=p=>JSON.parse(fs.readFileSync(p,'utf8'));
           const page=must('data/quality-control/page-spore-control.json');
           const media=must('data/quality-control/game-page-spore.json');
           const content=must('data/quality-control/game-page-content-spore.json');
           const sources=must('data/game-sources/spore.json');
+          const sourceContent=must('data/game-source-content/spore.json');
+          const knowledge=must('data/game-knowledge/spore.json');
+          const editorial=must('data/page-editorial/spore.json');
           const draft=must('data/drafts/spore.json');
           const ratings=must('data/ratings/spore.json');
           if(page.green!==true) throw new Error(`page QC is red: ${(page.comments||[]).join(' | ')}`);
           if(media.status!=='green' && media.green!==true) throw new Error(`media QC=${media.status||'red'}`);
           if(content.status!=='green') throw new Error(`content QC=${content.status||'red'}`);
           if(sources.discovery?.complete!==true) throw new Error('source scan incomplete');
-          if(ratings.status!=='green' || !Number.isFinite(Number(ratings.calculation?.score_10))) throw new Error('professional rating is not green');
+          if(sourceContent.readable_sources<3) throw new Error(`readable source content=${sourceContent.readable_sources}`);
+          if(knowledge.status!=='green' || (knowledge.defining_claims||[]).length<4) throw new Error('source-grounded game knowledge is not green');
+          if(!String(editorial.generation_mode||'').startsWith('source_grounded_')) throw new Error(`wrong editorial mode: ${editorial.generation_mode}`);
+          if(!String(draft.editorial?.editorial_mode||'').startsWith('source_grounded_')) throw new Error(`wrong draft editorial mode: ${draft.editorial?.editorial_mode}`);
+          if(ratings.status!=='green'||!Number.isFinite(Number(ratings.calculation?.score_10))) throw new Error('professional rating is not green');
           if(!fs.existsSync('game/spore/index.html')) throw new Error('public Spore page shell missing');
-          console.log(JSON.stringify({title:draft.identity?.title,release:draft.release?.date_text,professional_reviews:sources.counts?.professional_reviews,score_sources:ratings.calculation?.source_count,rating:ratings.calculation?.score_10,screenshots:(draft.media?.screenshots||[]).length,page_qc:page.status,media_qc:media.status,content_qc:content.status},null,2));
+          console.log(JSON.stringify({title:draft.identity?.title,source_content:sourceContent.readable_sources,knowledge_claims:knowledge.defining_claims.length,game_essence:knowledge.game_essence,editorial_mode:draft.editorial.editorial_mode,short_description:draft.editorial.short_description,integrated_description:draft.editorial.integrated_description,professional_reviews:sources.counts?.professional_reviews,score_sources:ratings.calculation?.source_count,rating:ratings.calculation?.score_10,screenshots:(draft.media?.screenshots||[]).length,page_qc:page.status,media_qc:media.status,content_qc:content.status},null,2));
           NODE
           git diff --check
 
       - name: Publish verified Spore page to staging
         id: staging_publish
         env:
-          GH_TOKEN: ${{ github.token }}
           GAME_TARGET_SLUG: spore
           GAME_PAGE_STAGING_REPORT: ${{ runner.temp }}/spore-staging.json
         run: |
@@ -131,7 +140,6 @@ jobs:
       - name: Publish the same green page to production
         id: production
         env:
-          GH_TOKEN: ${{ github.token }}
           GAME_TARGET_SLUG: spore
           STAGING_SHA: ${{ steps.staging_publish.outputs.staging_sha }}
           GAME_PAGE_PRODUCTION_REPORT: ${{ runner.temp }}/spore-production.json
@@ -144,7 +152,6 @@ jobs:
 
       - name: Deploy the exact production snapshot
         env:
-          GH_TOKEN: ${{ github.token }}
           PRODUCTION_SHA: ${{ steps.production.outputs.production_sha }}
         run: |
           set -euo pipefail
@@ -157,6 +164,26 @@ jobs:
           npm install --no-save puppeteer-core@24
           node scripts/verify-live-game-page-pre-review.mjs spore
 
+      - name: Verify live source-grounded editorial artifacts
+        run: |
+          set -euo pipefail
+          BASE='https://nkuchenov-hash.github.io/Igropoisk'
+          for i in $(seq 1 30); do
+            if curl -fsSL "$BASE/data/game-knowledge/spore.json" -o /tmp/knowledge.json && curl -fsSL "$BASE/data/drafts/spore.json" -o /tmp/draft.json; then
+              if node - <<'NODE'
+          const fs=require('fs');const k=JSON.parse(fs.readFileSync('/tmp/knowledge.json'));const d=JSON.parse(fs.readFileSync('/tmp/draft.json'));
+          if(k.status!=='green'||(k.defining_claims||[]).length<4)process.exit(1);
+          if(!String(d.editorial?.editorial_mode||'').startsWith('source_grounded_'))process.exit(1);
+          if(String(d.editorial?.integrated_description||'').length<350)process.exit(1);
+          console.log(JSON.stringify({knowledge_claims:k.defining_claims.length,game_essence:k.game_essence,editorial_mode:d.editorial.editorial_mode,integrated_description:d.editorial.integrated_description},null,2));
+          NODE
+              then exit 0; fi
+            fi
+            sleep 5
+          done
+          echo 'Live source-grounded editorial did not converge' >&2
+          exit 1
+
       - name: Preserve the acceptance evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -166,6 +193,9 @@ jobs:
             data/parser-output/spore.json
             data/drafts/spore.json
             data/game-sources/spore.json
+            data/game-source-content/spore.json
+            data/game-knowledge/spore.json
+            data/page-editorial/spore.json
             data/reviews/spore.json
             data/ratings/spore.json
             data/research/spore-source-matrix.json
