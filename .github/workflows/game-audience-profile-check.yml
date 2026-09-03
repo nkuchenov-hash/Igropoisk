@@ -41,3 +41,32 @@ jobs:
           node-version: 22
       - name: Validate Audience Profile contract
         run: node scripts/validate-game-audience-profile-integrity.mjs
+      - name: Build real Spore Audience Evidence
+        run: node scripts/collect-game-audience-evidence.mjs spore
+      - name: Build real Spore Audience Profile
+        run: node scripts/build-game-audience-profile.mjs spore
+      - name: Verify real Spore profile is internal and usable
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const evidence=JSON.parse(fs.readFileSync('data/research/spore-audience-evidence.json','utf8'));
+          const profile=JSON.parse(fs.readFileSync('data/game-audience/spore.json','utf8'));
+          if(profile.visibility!=='internal_only')throw new Error('Audience Profile became public');
+          if(profile.generation?.public_render_allowed!==false)throw new Error('Audience Profile can be rendered publicly');
+          if(profile.generation?.fail_open!==true)throw new Error('Audience Profile lost fail-open behavior');
+          if(profile.aggregate_demographics!==null)throw new Error('Spore demographics were inferred without an explicit aggregate source');
+          if(!['high','medium','low'].includes(profile.confidence))throw new Error('Invalid Audience Profile confidence');
+          console.log(JSON.stringify({steam_status:evidence.steam?.status,steam_tags:evidence.steam?.tags?.map(x=>x.name)||[],review_signals:evidence.review_signals||[],profile:{confidence:profile.confidence,reader_familiarity:profile.reader_familiarity,jargon_level:profile.jargon_level,register:profile.register,core_appeals:profile.core_appeals,evidence_count:profile.evidence?.length||0}},null,2));
+          NODE
+      - name: Upload Spore Audience diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spore-audience-profile-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            data/research/spore-audience-evidence.json
+            data/game-audience/spore.json
+            data/parser-runs/game-audience-evidence-spore.json
+            data/parser-runs/game-audience-spore.json
+          if-no-files-found: warn
+          retention-days: 7
