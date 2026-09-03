@@ -1,117 +1,180 @@
 # Автономный новостной pipeline
 
+## Статус
+
+**READY / STABLE с 2026-09-03.** Полный freeze-контракт: `docs/NEWS_MODULE_STABLE.md`. Production-инварианты: `docs/news-production-contract.md`.
+
+Дальнейшие изменения должны быть хирургическими и не менять orchestration/fail-open/storage/page-assembly boundaries без отдельной прямой задачи.
+
 ## Назначение
 
-Pipeline автономно собирает новости, локализует их, проверяет целостность и публикует атомарный snapshot в Yandex Object Storage. Production-сайт читает опубликованные данные через `IgropoiskNewsContent`; новостной pipeline не коммитит сгенерированную ленту в `main`.
+Pipeline автономно собирает новости, нормализует и дедуплицирует события, оценивает значимость каждого события, формирует русскую версию, связывает новости с играми и публикует атомарный snapshot в Yandex Object Storage.
 
-Обязательные production-инварианты зафиксированы отдельно в `docs/news-production-contract.md`.
+Production-сайт читает опубликованные данные через `IgropoiskNewsContent`; pipeline не коммитит сгенерированную live-ленту в `main`.
 
 ## Поток данных
 
 ```text
-Глобальные игровые медиа ─┐
-Региональные события ─────┼─> data/news.json ───────────────┐
-Официальные источники ────┼─> data/publisher-news.json ─────┼─> data/news-events.json
-YouTube-сигналы ──────────┘   data/youtube-signals.json      └─> data/news-home-ru.json
-                                       │                              │
-                                       └──────────────┬───────────────┘
-                                                      ▼
-                                      data/news-pipeline-health.json
-                                                      │
-                                           publication gate
-                                                      │
-                                                      ▼
-                                  Yandex Object Storage snapshot
-                                                      │
-                                           live manifest switch
-                                                      │
-                                                      ▼
-                                           IgropoiskNewsContent
+источники
+  ↓
+сбор / нормализация
+  ↓
+дедупликация событий
+  ↓
+оценка значимости каждого события
+  ↓
+русская редакционная версия
+  ↓
+news-events + home selection
+  ↓
+resolve game identities / hashtags
+  ├─ готовая page → canonical game URL
+  └─ нет page → pending route + temporary page-assembly queue
+  ↓
+ПУБЛИКАЦИЯ НОВОСТЕЙ БЕЗ ОЖИДАНИЯ PAGE ASSEMBLY
+  ↓
+Object Storage snapshot + monthly archive
+  ↓
+live manifest
+  ↓
+IgropoiskNewsContent
+  ↓
+главная / раздел Новости
 ```
 
 ## Cadence
 
-Канонический workflow `.github/workflows/news-pipeline.yml` запускается автоматически каждый час. Расписание определяется default branch `main`; production-run при этом checkout-ит актуальный `staging`.
+Канонический workflow `.github/workflows/news-pipeline.yml` запускается автоматически каждый час:
 
-Orchestrator обновляет группы по их cadence:
+```text
+23 * * * *
+```
 
-- `global-media` — как минимум суточный цикл общей новостной ленты;
-- `official-sources` — почасовая проверка;
-- принудительный запуск обновляет все нужные группы.
+Schedule хранится в `main`; run checkout-ит актуальный `staging`. `cancel-in-progress: false`, поэтому новый запуск не отменяет уже выполняющийся production cycle.
 
-Временная недоступность отдельных endpoints не должна замораживать весь pipeline.
+## Главное правило: fail-open
+
+Внутренняя ошибка не имеет права остановить всю здоровую ленту.
+
+- Отбор происходит на уровне отдельного события.
+- Событие может не пройти публикационный порог по значимости/популярности.
+- Отказ отдельного source, image, hashtag, game page, queue, optional AI/refinement, diagnostics или cleanup не блокирует остальные события.
+- Ошибки остаются видимыми в health/report.
+- Pipeline продолжает следующие стадии после неблокирующего failure.
+
+Регрессионная проверка: `scripts/test-news-fail-open-publication.mjs`.
+
+## Значимость и объём
+
+Нет фиксированного количества итоговых событий. Pipeline публикует естественное количество событий, прошедших порог.
+
+Сигналы:
+
+- независимые источники;
+- авторитет источника;
+- свежесть;
+- скорость распространения;
+- обсуждаемость;
+- сильный официальный первоисточник.
+
+Cross-source count имеет нелинейный вклад с убывающей отдачей. 4 независимых источника — сильный ориентир, но не обязательный blocker. Крупный официальный первоисточник может дать достаточный сигнал раньше вторичных публикаций.
+
+`data/news-home-ru.json` сейчас содержит максимум 12 карточек только из-за UI presentation cap. Это не редакционная квота pipeline.
 
 ## Локализация
 
-Русская версия работает fail-closed относительно английского fallback:
+Основной EN→RU перевод выполняет локальная модель `Xenova/opus-mt-en-ru`. Runtime/model восстанавливаются из Actions cache; remote translation допустим как резерв.
 
-- основной EN→RU перевод выполняет локальная модель `Xenova/opus-mt-en-ru`;
-- runtime и модель восстанавливаются из Actions cache;
-- удалённые переводчики допустимы только как аварийный резерв;
-- непереведённый английский заголовок не публикуется на русской версии;
-- если конкретный материал нельзя корректно локализовать, он пропускается без остановки всей ленты.
+Проблема отдельного текста не может остановить остальные материалы. Source/provenance сохраняется независимо от локализации.
+
+## Игры, хэштеги и временная очередь
+
+News не является page builder.
+
+1. News resolve-ит упомянутую игру через Game Registry.
+2. Хэштег подтверждённой игры остаётся видимым и кликабельным.
+3. Если полноценная страница готова — ссылка ведёт на неё.
+4. Если страницы ещё нет — ссылка ведёт на `game/pending/?slug=...&title=...`.
+5. `game/pending/` — служебный route «Материал готовится», не canonical game page.
+6. Для игры сохраняется `pageReady: false`, `assemblyRequired: true`.
+7. Игра записывается во временную page-assembly queue в Object Storage.
+8. Отдельный модуль страниц забирает queue и собирает полноценную страницу.
+9. News publication продолжается сразу и ничего не ждёт.
+
+Ошибка queue или hashtag audit является диагностикой и не блокирует live snapshot.
 
 ## История
 
-Перед новым сбором pipeline гидратирует полную существующую историю из live monthly archive. После обработки формируется новый компактный live snapshot и обновляются месячные архивы. Очистка старых snapshot/media не должна удалять исторические записи.
+Перед сбором pipeline гидратирует существующую live history из monthly archive. После обработки публикуются новый компактный snapshot и стабильные месячные архивы.
 
 ## Изображения
 
-Изображения — временный ускоряющий кэш, а не публикационный gate.
+Изображение — временный ускоряющий кэш, а не gate.
 
-- Свежая картинка по возможности один раз копируется в Yandex Object Storage.
-- Публичная страница использует first-party cached URL.
+- По возможности копируется в Yandex Object Storage.
+- Публичная карточка использует cached first-party URL.
 - Кэш хранится 7 дней.
-- Ошибка загрузки/кэширования картинки не блокирует новость.
-- После истечения срока или при ошибке используется фирменная заглушка.
-- GC изображений является housekeeping и не влияет на публикацию текста.
-
-Подробности: `docs/news-media-cache-policy.md`.
-
-## Publication gate
-
-Gate проверяет целостность самой ленты:
-
-- обязательные JSON-файлы;
-- достаточное количество итоговых записей;
-- 12 русских карточек главной;
-- корректные URL и даты;
-- отсутствие английского source-language fallback на русской версии;
-- защиту от катастрофического обнуления/сокращения ленты;
-- целостность игровых ссылок и хэштегов;
-- внутреннее соответствие health snapshot публикационным данным.
-
-Отдельные 403/404/429/500 источников, низкая доля доступных official endpoints при достаточном итоговом контенте, отсутствие изображения и необязательный semantic refinement не являются самостоятельной причиной остановки всей публикации.
-
-Статус `degraded` публикуется и служит диагностикой. Только реальная блокирующая ошибка целостности переводит gate в `error`.
+- Ошибка media не блокирует текст.
+- При ошибке/отсутствии используется фирменная заглушка.
 
 ## Атомарная публикация
 
-После успешного gate workflow:
+Порядок зафиксирован:
 
-1. безопасно очищает лишние Object Storage snapshots/media без удаления истории;
-2. загружает компактные JSON и доступные cached media;
-3. обновляет monthly archive;
-4. переключает live manifest только после готовности snapshot;
-5. проверяет, что pipeline не писал production-контент в GitHub;
-6. сохраняет diagnostic artifact.
+1. collect/process/select;
+2. prepare page requests;
+3. best-effort enqueue missing games;
+4. advisory hashtag audit;
+5. **publish snapshot and switch live manifest**;
+6. prune redundant snapshots;
+7. expire old media cache;
+8. сохранить diagnostic artifact.
 
-Если публикация нового snapshot не удалась, сайт продолжает читать предыдущий успешный live snapshot.
+Cleanup/GC запрещено возвращать перед live switch как обязательную зависимость.
 
-## Health snapshot
+Если Object Storage недоступен, сайт продолжает читать предыдущий успешный snapshot; новый run повторит попытку позже.
 
-`data/news-pipeline-health.json` содержит состояние групп, свежесть данных, доступность источников, warnings и blocking errors. Временные проблемы источников должны отражаться как диагностика и `degraded`, а не автоматически как остановка публикации.
+## Repository fallback
+
+Repository JSON — аварийный fallback. Он не является основным production backend и его stale state не должен блокировать свежий сетевой сбор или unrelated Pages deploy.
+
+## Health и диагностика
+
+`data/news-pipeline-health.json` и `tmp/news-pipeline-report.json` фиксируют состояние источников, warnings, degraded stages и другие проблемы. `degraded` — допустимый рабочий статус и не означает остановку ленты.
 
 ## Regression checks
 
-При изменении pipeline должны проходить contract tests, storage/retention tests, media fallback tests, hashtag integrity audit и production publication gate. Для критических изменений завершением считается не только dry-run, но и успешный настоящий scheduled production-run.
+При изменении pipeline обязательны:
 
-Эталон и полный список инвариантов: `docs/news-production-contract.md`.
+- `scripts/test-news-pipeline.mjs`;
+- `scripts/test-news-fail-open-publication.mjs`;
+- `scripts/test-news-fast-path-contract.mjs`;
+- `scripts/test-game-page-assembly-queue.mjs`;
+- content/storage/retention/media tests;
+- game-context/linking tests;
+- `scripts/validate-stable-news-module.mjs`;
+- production news browser smoke;
+- реальный autonomous production-run после critical pipeline change.
 
-## Отчётность
+## Production baseline
 
-Каждый запуск формирует `tmp/news-pipeline-report.json` и связанные diagnostic JSON. Workflow сохраняет их как artifact. Эти файлы не являются публичным runtime-контентом.
+На момент freeze автономный run `33735886496` успешно прошёл page-assembly handoff, независимую публикацию новостей, advisory hashtag audit, live snapshot switch и post-publication cleanup.
 
-## Изменение pipeline
+Live version: `20260903T090817Z-5e464685d904-33735886496`.
 
-Новый источник или новая группа не должны менять DOM/CSS/HTML экранов. Любой новый output должен быть включён в соответствующие validation contracts. Нельзя вводить новый обязательный dependency, из-за отказа которого вся новостная лента перестанет публиковаться, если этот dependency не критичен для целостности текста и данных.
+Production Pages commit `9077734ccdb650c42441e85f236c9decbfa994d5` задеплоен; news production smoke подтвердил Object Storage backend и рабочие card/game hashtag interactions.
+
+## Правило изменений
+
+Нельзя без отдельной задачи на архитектурное изменение:
+
+- вводить global logical blocker всей ленты;
+- запускать game page creation прямо из News;
+- ждать page assembly перед публикацией;
+- убирать pending route для missing game page;
+- вводить фиксированную квоту новостей;
+- переставлять cleanup перед publication;
+- создавать второй production news pipeline;
+- делать repository основной production storage.
+
+Обычная дальнейшая работа — только отдельные изменения источников, ranking weights, dedupe, текстов, картинок, identity/linking и diagnostics.
