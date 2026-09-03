@@ -4,7 +4,7 @@
   "game_slug": "spore",
   "game_id": "game_cd7d60fd06bfd88019da",
   "canonical_title": "SPORE™",
-  "checked_at": "2026-09-03T09:29:31.039Z",
+  "checked_at": "2026-09-03T09:41:30.811Z",
   "status": "green",
   "green": true,
   "comments": [],
@@ -15,7 +15,7 @@
       "script": "scripts/collect-game-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"spore\",\n  \"prefetch\": \"review-searches\",\n  \"exhaustive_query_urls\": 315,\n  \"initial_warmed\": 262,\n  \"initial_failed\": 53,\n  \"retry_recovered\": 0,\n  \"exhausted_failures\": 53,\n  \"total_network_attempts\": 368,\n  \"concurrency\": 18,\n  \"timeout_ms\": 6000,\n  \"correctness_policy\": \"all URLs get initial attempt; every initial failure gets the same second attempt as before, concurrently; twice-failed statuses are replayed to canonical scanner without a third request\"\n}\n{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"aliases\": [\n    \"spore\"\n  ],\n  \"preferred_search_alias\": \"spore\",\n  \"registered_sources\": 33,\n  \"registry_scan_complete\": true,\n  \"external_search_complete\": true,\n  \"accepted_readable_articles\": 0,\n  \"independent_publications\": 0,\n  \"scored_sources\": 0,\n  \"rejected\": 0,\n  \"ai_required\": false\n}\n{\n  \"slug\": \"spore\",\n  \"added_sources\": 12,\n  \"total_reviews\": 12,\n  \"independent_publications\": 12,\n  \"scored_sources\": 12,\n  \"diagnostics\": [\n    {\n      \"lang\": \"ru\",\n      \"status\": \"complete\",\n      \"page\": \"https://ru.wikipedia.org/wiki/Spore\",\n      \"review_rows\": 13,\n      \"accepted_new_sources\": 12\n    },\n    {\n      \"lang\": \"en\",\n      \"status\": \"complete\",\n      \"page\": \"https://en.wikipedia.org/wiki/Spore_(2008_video_game)\",\n      \"review_rows\": 11,\n      \"accepted_new_sources\": 0\n    }\n  ]\n}\n{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"sources\": 13,\n  \"professional_reviews\": 12,\n  \"independent_publications\": 12,\n  \"scored\": 12,\n  \"source_scan_complete\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"sources\": 11,\n  \"professional_reviews\": 10,\n  \"independent_publications\": 10,\n  \"scored\": 9,\n  \"source_scan_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -24,7 +24,7 @@
       "script": "scripts/calculate-ratings-from-research.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"completed\",\n  \"material_links\": 10,\n  \"seed_rejected\": 0,\n  \"identity_rejected\": 2,\n  \"sources\": 10,\n  \"score_10\": 8.7,\n  \"use_all_discovered_scores\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"completed\",\n  \"material_links\": 10,\n  \"seed_rejected\": 0,\n  \"identity_rejected\": 0,\n  \"sources\": 9,\n  \"score_10\": 8.6,\n  \"use_all_discovered_scores\": true\n}\n",
       "stderr": ""
     },
     {
@@ -33,7 +33,7 @@
       "script": "scripts/collect-game-sources.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"sources\": 11,\n  \"professional_reviews\": 10,\n  \"independent_publications\": 10,\n  \"scored\": 10,\n  \"source_scan_complete\": true\n}\n",
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"sources\": 11,\n  \"professional_reviews\": 10,\n  \"independent_publications\": 10,\n  \"scored\": 9,\n  \"source_scan_complete\": true\n}\n",
       "stderr": ""
     },
     {
@@ -60,7 +60,7 @@
       "script": "scripts/validate-game-page-content.mjs",
       "status": "revision-required",
       "exit_code": 2,
-      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"red-needs-revision\",\n  \"errors\": [\n    \"Не материализован проверенный canonical page-editorial. Страница не может быть опубликована на baseline/fallback тексте.\",\n    \"Краткое описание должно быть полноценным русским текстом.\",\n    \"Основное описание слишком короткое: 178 символов.\",\n    \"Основное описание должно быть написано по-русски.\",\n    \"Раздел о кампании/структуре прохождения слишком пустой: 0 символов.\",\n    \"Раздел о кампании должен быть содержательным русским текстом.\",\n    \"Недостаточно конкретных особенностей игры: 3/4.\",\n    \"Особенность #1 слишком общая/короткая: Single-player\",\n    \"Особенность #3 слишком общая/короткая: Family Sharing\"\n  ],\n  \"warnings\": [\n    \"Отдельная система обзоров пока вернула мало прямых обзоров: 0. Это не блокирует готовую страницу игры.\"\n  ],\n  \"metrics\": {\n    \"canonical_editorial\": false,\n    \"release_year\": 2008,\n    \"steam_listing_year\": 2008,\n    \"short_description_chars\": 178,\n    \"integrated_description_chars\": 178,\n    \"campaign_chars\": 0,\n    \"features\": 3,\n    \"developers\": 1,\n    \"publishers\": 1,\n    \"genres\": 6,\n    \"platforms\": 1,\n    \"direct_reviews\": 0,\n    \"scored_reviews\": 10\n  }\n}\n",
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"red-needs-revision\",\n  \"errors\": [\n    \"Не материализован проверенный canonical page-editorial. Страница не может быть опубликована на baseline/fallback тексте.\",\n    \"Краткое описание должно быть полноценным русским текстом.\",\n    \"Основное описание слишком короткое: 178 символов.\",\n    \"Основное описание должно быть написано по-русски.\",\n    \"Раздел о кампании/структуре прохождения слишком пустой: 0 символов.\",\n    \"Раздел о кампании должен быть содержательным русским текстом.\",\n    \"Недостаточно конкретных особенностей игры: 3/4.\",\n    \"Особенность #1 слишком общая/короткая: Single-player\",\n    \"Особенность #3 слишком общая/короткая: Family Sharing\"\n  ],\n  \"warnings\": [\n    \"Отдельная система обзоров пока вернула мало прямых обзоров: 0. Это не блокирует готовую страницу игры.\"\n  ],\n  \"metrics\": {\n    \"canonical_editorial\": false,\n    \"release_year\": 2008,\n    \"steam_listing_year\": 2008,\n    \"short_description_chars\": 178,\n    \"integrated_description_chars\": 178,\n    \"campaign_chars\": 0,\n    \"features\": 3,\n    \"developers\": 1,\n    \"publishers\": 1,\n    \"genres\": 6,\n    \"platforms\": 1,\n    \"direct_reviews\": 0,\n    \"scored_reviews\": 9\n  }\n}\n",
       "stderr": ""
     },
     {
@@ -78,7 +78,7 @@
       "script": "scripts/validate-game-page-content.mjs",
       "status": "completed",
       "exit_code": 0,
-      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"errors\": [],\n  \"warnings\": [\n    \"Отдельная система обзоров пока вернула мало прямых обзоров: 0. Это не блокирует готовую страницу игры.\"\n  ],\n  \"metrics\": {\n    \"canonical_editorial\": true,\n    \"release_year\": 2008,\n    \"steam_listing_year\": 2008,\n    \"short_description_chars\": 242,\n    \"integrated_description_chars\": 580,\n    \"campaign_chars\": 332,\n    \"features\": 8,\n    \"developers\": 1,\n    \"publishers\": 1,\n    \"genres\": 6,\n    \"platforms\": 1,\n    \"direct_reviews\": 0,\n    \"scored_reviews\": 10\n  }\n}\n",
+      "stdout": "{\n  \"slug\": \"spore\",\n  \"status\": \"green\",\n  \"errors\": [],\n  \"warnings\": [\n    \"Отдельная система обзоров пока вернула мало прямых обзоров: 0. Это не блокирует готовую страницу игры.\"\n  ],\n  \"metrics\": {\n    \"canonical_editorial\": true,\n    \"release_year\": 2008,\n    \"steam_listing_year\": 2008,\n    \"short_description_chars\": 242,\n    \"integrated_description_chars\": 580,\n    \"campaign_chars\": 332,\n    \"features\": 8,\n    \"developers\": 1,\n    \"publishers\": 1,\n    \"genres\": 6,\n    \"platforms\": 1,\n    \"direct_reviews\": 0,\n    \"scored_reviews\": 9\n  }\n}\n",
       "stderr": ""
     },
     {
