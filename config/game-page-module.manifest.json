@@ -15,6 +15,10 @@
     "canonical_editorial_required": true,
     "professional_rating_direct_reviews_only": true,
     "review_article_is_separate": true,
+    "audience_profile_internal_only": true,
+    "audience_profile_fail_open": true,
+    "audience_profile_blocks_page_publication": false,
+    "audience_profile_ai_required": false,
     "game_specific_presentation_hardcode_forbidden": true,
     "runtime_monkey_patching_forbidden": true,
     "paid_ai_required": false,
@@ -69,6 +73,12 @@
     "scripts/discover-game-publication-hubs.mjs",
     "scripts/collect-game-sources.mjs",
     "scripts/calculate-ratings-from-research.mjs",
+    "scripts/collect-game-audience-evidence.mjs",
+    "scripts/build-game-audience-profile.mjs",
+    "scripts/lib/game-audience-profile.mjs",
+    "scripts/lib/igropoisk-editorial-style.mjs",
+    "scripts/test-game-audience-profile.mjs",
+    "scripts/validate-game-audience-profile-integrity.mjs",
     "scripts/build-game-page.mjs",
     "scripts/materialize-page-editorial.mjs",
     "scripts/validate-game-page-content.mjs",
@@ -116,10 +126,16 @@
   "required_workflows": [
     ".github/workflows/content-pipeline.yml",
     ".github/workflows/game-page-quality.yml",
+    ".github/workflows/game-audience-profile-check.yml",
     ".github/workflows/pages.yml",
     ".github/workflows/phase-a-validation.yml"
   ],
-  "required_docs": ["docs/GAME_PAGE_MODULE_STABLE.md","docs/SYSTEM_ARCHITECTURE.md"],
+  "required_docs": [
+    "docs/GAME_PAGE_MODULE_STABLE.md",
+    "docs/SYSTEM_ARCHITECTURE.md",
+    "docs/IGROPOISK_AUDIENCE_PROFILE.md",
+    "docs/IGROPOISK_EDITORIAL_STYLE.md"
+  ],
   "forbidden_legacy_references": [
     "discover-publication-review-hubs.mjs",
     "run-news-game-page-fast.mjs",
@@ -132,9 +148,14 @@
     "scripts/quality-control-loop.mjs": ["materialize-page-editorial.mjs","validate-game-page-content.mjs","validate-game-media-quality.mjs"],
     "scripts/run-content-pipeline.mjs": ["canonicalizePage","finalize-game-page-publication.mjs","published package is immutable","failed revision restored last published canonical page package"],
     "scripts/run-game-catalog-enrichment.mjs": ["freePageAiAvailable","reviewAiAvailable","page_relations_paid_api:false","No zero-host/local editorial provider configured"],
+    "scripts/collect-game-audience-evidence.mjs": ["steam-store-popular-tags","review_signals","aggregate_demographics","fail_open:true","public_render_allowed:false"],
+    "scripts/build-game-audience-profile.mjs": ["neutralAudienceProfile","validateAudienceProfile","data/game-audience","fail_open:true","public_render_allowed:false"],
+    "scripts/lib/game-audience-profile.mjs": ["stereotype_demographics_forbidden:true","aggregate_demographics","neutralAudienceProfile","ai_required:false","fail_open:true","public_render_allowed:false"],
+    "scripts/lib/igropoisk-editorial-style.mjs": ["collect-game-audience-evidence.mjs","build-game-audience-profile.mjs","internal_only","Полноценный audience profile недоступен: используй нейтральный регистр Игропоиска"],
+    "scripts/validate-game-audience-profile-integrity.mjs": ["fail_open_contract:true","internal_only_contract:true","test-game-audience-profile.mjs"],
     "scripts/lib/free-editorial-ai.mjs": ["EDITORIAL_AI_PROVIDER_ORDER","OPENROUTER_API_KEY","moonshotai/kimi-k2.6:free","GIGACHAT_CREDENTIALS","GigaChat-3-Ultra","GigaChat-2-Max","GEMINI_API_KEY","gemini-2.5-pro","GROQ_API_KEY","qwen/qwen3.8-27b","OLLAMA_BASE_URL","qwen2.5:3b","All editorial AI providers failed"],
     "scripts/finalize-game-page-publication.mjs": ["data/catalog-visible.json","game-page-publication-finalizer","public_ready:true"],
-    "scripts/build-game-page.mjs": ["free-editorial-ai.mjs","needs_revision","public_ready:false"],
+    "scripts/build-game-page.mjs": ["free-editorial-ai.mjs","buildEditorialAudienceContext","internal_audience_profile","audience_profile_used:true","audience_profile_confidence","needs_revision","public_ready:false"],
     "scripts/build-game-page-basic.mjs": ["needs_revision","public_ready:false"],
     "scripts/ensure-game-page.mjs": ["status:'queued'","public_ready:false","finalize-game-page-publication.mjs"],
     "scripts/publish-game-page-assembly-queue.mjs": ["gamePageAssemblyObjectKey","queued_count","public_ready"],
@@ -157,9 +178,12 @@
     "game/_shared/game-page-integrity.js": ["if(!own?.url)","if(hydrated){clearInterval(timer)","if(attempts>=1200)clearInterval(timer)","guides-layout--single-column","ig-card__media"],
     ".github/workflows/content-pipeline.yml": ["validate-game-page-module-integrity.mjs","hydrate-game-page-assembly-queue.mjs","ack-game-page-assembly-queue.mjs","run-content-pipeline.mjs","EDITORIAL_AI_PROVIDER_ORDER","OPENROUTER_API_KEY","GIGACHAT_CREDENTIALS","GEMINI_API_KEY","GROQ_API_KEY","Start local Qwen fallback only when no zero-host provider is configured"],
     ".github/workflows/game-page-quality.yml": ["validate-game-page-module-integrity.mjs"],
+    ".github/workflows/game-audience-profile-check.yml": ["Validate Audience Profile contract","Build real Spore Audience Evidence","Build real Spore Audience Profile","internal and evidence-backed"],
     ".github/workflows/phase-a-validation.yml": ["validate-game-page-module-integrity.mjs"],
     ".github/workflows/pages.yml": ["validate-game-page-module-integrity.mjs","validate-game-page-publication-state.mjs"],
     "docs/GAME_PAGE_MODULE_STABLE.md": ["published canonical package","Queue-only adapters","Copy-only promoters","runtime monkey-patching","Coverage quota источников не является publication gate страницы","zero-host editorial provider router"],
-    "docs/SYSTEM_ARCHITECTURE.md": ["GAME PAGE ASSEMBLY MODULE","GAME_PAGE_MODULE_STABLE.md","config/game-page-module.manifest.json","собственный обзор Игропоиска — отдельная публикация","плохая новая ревизия не заменяет последнюю good public version"]
+    "docs/SYSTEM_ARCHITECTURE.md": ["GAME PAGE ASSEMBLY MODULE","GAME_PAGE_MODULE_STABLE.md","config/game-page-module.manifest.json","собственный обзор Игропоиска — отдельная публикация","плохая новая ревизия не заменяет последнюю good public version"],
+    "docs/IGROPOISK_AUDIENCE_PROFILE.md": ["CANONICAL / INTERNAL","NEVER rendered as a public game-page block","Missing audience data must never block page publication","Changing the model must not change the intended audience voice"],
+    "docs/IGROPOISK_EDITORIAL_STYLE.md": ["Главный принцип","Audience & Tone Adapter","High-impact editorial","Обзор Игропоиска"]
   }
 }
