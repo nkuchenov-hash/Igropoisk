@@ -29,7 +29,7 @@ concurrency:
 jobs:
   build-spore:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     env:
       GITHUB_TOKEN: ${{ github.token }}
       GH_TOKEN: ${{ github.token }}
@@ -80,21 +80,31 @@ jobs:
           pr_url="$(gh pr create --base staging --head "$branch" --title "Register Spore for Game Page creation" --body "Canonical identity produced by the normal parser/registry path before the universal page module continues enrichment.")"
           gh pr merge "$pr_url" --merge --delete-branch
 
-      - name: Refresh complete source and rating evidence
+      - name: Refresh complete source and rating evidence once
         run: |
           node scripts/prepare-review-research.mjs spore
           node scripts/recover-historical-review-scores.mjs spore
           node scripts/calculate-ratings-from-research.mjs spore
           node scripts/collect-game-sources.mjs spore
 
-      - name: Refresh the universal page plan
-        run: node scripts/orchestrate-content.mjs --finalize
-
-      - name: Run complete source-grounded Game Page cycle
-        env:
-          GAME_TARGET_SLUG: spore
-          EDITORIAL_AI_ENABLED: 'false'
-        run: node scripts/run-content-pipeline.mjs
+      - name: Run efficient source-grounded Game Page QC
+        run: |
+          set -euo pipefail
+          GAME_ID="$(node - <<'NODE'
+          const fs=require('fs');
+          const d=JSON.parse(fs.readFileSync('data/drafts/spore.json','utf8'));
+          process.stdout.write(String(d.game_id||d.publication?.gate?.canonical_game_id||''));
+          NODE
+          )"
+          test -n "$GAME_ID"
+          node scripts/quality-control-loop.mjs page spore "$GAME_ID"
+          node - <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('data/quality-control/page-spore-control.json','utf8'));
+          if(q.green!==true) throw new Error(`page QC is red: ${(q.comments||[]).join(' | ')}`);
+          NODE
+          node scripts/canonicalize-editorial-game-id.mjs spore
+          node scripts/materialize-green-game-page.mjs spore
 
       - name: Require the finished source-grounded page to be green
         run: |
