@@ -24,7 +24,7 @@ function walk(directory, files = []) {
 
 const homepage = read('index.html');
 assert(count(homepage, '<link rel="stylesheet" href="fix.css">') === 1, 'index.html must contain exactly one explicit fix.css link.');
-assert(count(homepage, '<script src="fix.js"></script>') === 1, 'index.html must contain exactly one explicit fix.js script.');
+assert((homepage.match(/<script src="fix\.js(?:\?v=[0-9-]+)?"><\/script>/g) || []).length === 1, 'index.html must contain exactly one explicit fix.js script.');
 assert(homepage.includes('class="ig-button account-action" data-auth-link'), 'Homepage account action is not materialized.');
 assert(homepage.includes('data-ig-release-nav'), 'Homepage release calendar navigation is missing.');
 assert(homepage.includes('data-ig-home-editorial="section"'), 'Homepage editorial/release section is missing.');
