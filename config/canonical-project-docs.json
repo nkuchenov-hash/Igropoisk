@@ -27,6 +27,22 @@
         "Architecture change protocol"
       ],
       "minimumBytes": 12000
+    },
+    {
+      "id": "IGROPOISK_STABLE_NEWS_MODULE",
+      "path": "docs/NEWS_MODULE_STABLE.md",
+      "role": "stable-module-contract",
+      "requiredText": [
+        "**Статус:** READY / STABLE",
+        "только хирургические",
+        "Весь блок новостей не может быть остановлен",
+        "game/pending/?slug=...&title=...",
+        "pageReady: false",
+        "assemblyRequired: true",
+        "не создаёт игровые страницы и не ждёт их создания",
+        "Housekeeping никогда не находится перед live switch"
+      ],
+      "minimumBytes": 5000
     }
   ],
   "entrypoints": [
@@ -34,12 +50,14 @@
       "path": "README.md",
       "requiredText": [
         "docs/PROJECT_ROADMAP.md",
-        "docs/SYSTEM_ARCHITECTURE.md"
+        "docs/SYSTEM_ARCHITECTURE.md",
+        "docs/NEWS_MODULE_STABLE.md"
       ]
     }
   ],
   "protectedSupportFiles": [
     "config/canonical-project-docs.json",
-    "scripts/validate-canonical-project-docs.mjs"
+    "scripts/validate-canonical-project-docs.mjs",
+    "scripts/validate-stable-news-module.mjs"
   ]
 }

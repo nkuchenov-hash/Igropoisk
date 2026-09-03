@@ -17,18 +17,29 @@ on:
       - 'data/news-pipeline-health.json'
       - 'fix.css'
       - 'config/news-pipeline.json'
+      - 'docs/NEWS_MODULE_STABLE.md'
+      - 'docs/NEWS_POLICY.md'
+      - 'docs/news-content-api.md'
+      - 'docs/news-pipeline.md'
+      - 'docs/news-production-contract.md'
       - 'scripts/migrate-news-isolation.mjs'
       - 'scripts/smoke-news-browser.mjs'
       - 'scripts/build-news-pipeline-health.mjs'
       - 'scripts/run-news-pipeline.mjs'
+      - 'scripts/normalize-news-game-hashtags.mjs'
+      - 'scripts/publish-game-page-assembly-queue.mjs'
+      - 'scripts/validate-stable-news-module.mjs'
+      - 'scripts/test-news-fail-open-publication.mjs'
+      - 'scripts/test-news-fast-path-contract.mjs'
+      - 'scripts/test-game-page-assembly-queue.mjs'
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
       - 'scripts/test-news-pipeline-health.mjs'
-      - 'scripts/test-news-static-fallback-validation.mjs'
       - 'scripts/test-news-content-api.mjs'
       - 'scripts/test-news-storage-content-api.mjs'
       - 'scripts/check-yandex-storage.mjs'
       - 'scripts/lib/yandex-object-storage.mjs'
+      - 'scripts/lib/game-page-assembly-queue.mjs'
       - 'scripts/publish-news-storage.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/validate-news-boundary.mjs'
@@ -69,6 +80,9 @@ jobs:
           find features/news scripts -type f \( -name '*.js' -o -name '*.mjs' \) -print0 \
             | xargs -0 -n1 node --check
 
+      - name: Protect stable news architecture
+        run: node scripts/validate-stable-news-module.mjs
+
       - name: Prove news isolation is fully materialized
         run: |
           node scripts/migrate-news-isolation.mjs
@@ -79,8 +93,10 @@ jobs:
           node scripts/test-news-content-api.mjs
           node scripts/test-news-storage-content-api.mjs
           node scripts/test-news-pipeline.mjs
+          node scripts/test-news-fail-open-publication.mjs
+          node scripts/test-news-fast-path-contract.mjs
+          node scripts/test-game-page-assembly-queue.mjs
           node scripts/test-news-pipeline-health.mjs
-          node scripts/test-news-static-fallback-validation.mjs
           node scripts/validate-news-pipeline.mjs --allow-stale-repository-fallback
           node scripts/validate-production-boundaries.mjs
 
