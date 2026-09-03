@@ -8,6 +8,7 @@ on:
       - '.github/workflows/free-page-ai-check.yml'
       - 'scripts/lib/free-editorial-ai.mjs'
       - 'scripts/build-game-page.mjs'
+      - 'scripts/build-game-source-knowledge.mjs'
 
 permissions:
   contents: read
@@ -27,11 +28,12 @@ jobs:
         run: |
           node --check scripts/lib/free-editorial-ai.mjs
           node --check scripts/build-game-page.mjs
+          node --check scripts/build-game-source-knowledge.mjs
       - name: Cache Qwen model
         uses: actions/cache@v4
         with:
           path: ~/.ollama/models
-          key: ollama-qwen2.5-3b-v1-${{ runner.os }}
+          key: ollama-qwen2.5-1.5b-v1-${{ runner.os }}
       - name: Start Ollama and install free Qwen
         run: |
           curl -fsSL https://ollama.com/install.sh | sh
@@ -41,12 +43,13 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
-          ollama pull qwen2.5:3b
-      - name: Verify structured editorial response without paid API
+          ollama pull qwen2.5:1.5b
+      - name: Verify bounded structured editorial response without paid API
         env:
           OLLAMA_BASE_URL: http://127.0.0.1:11434
-          OLLAMA_EDITORIAL_MODEL: qwen2.5:3b
-          OLLAMA_EDITORIAL_TIMEOUT_MS: '240000'
+          OLLAMA_EDITORIAL_MODEL: qwen2.5:1.5b
+          OLLAMA_EDITORIAL_TIMEOUT_MS: '180000'
+          OLLAMA_EDITORIAL_NUM_CTX: '8192'
         run: |
           node --input-type=module <<'NODE'
           import {assertFreeEditorialAI,generateFreeEditorialJSON} from './scripts/lib/free-editorial-ai.mjs';
@@ -54,7 +57,8 @@ jobs:
           const result=await generateFreeEditorialJSON({
             system:'Return only valid JSON.',
             prompt:'Return exactly one JSON object with keys status and paid_api. status must be "ok" and paid_api must be false.',
-            temperature:0
+            temperature:0,
+            maxTokens:128
           });
           if(result.data?.status!=='ok'||result.data?.paid_api!==false)throw new Error(`Unexpected free AI output: ${JSON.stringify(result.data)}`);
           if(result.provider!=='ollama')throw new Error(`Unexpected provider: ${result.provider}`);
