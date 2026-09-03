@@ -122,15 +122,24 @@ async function readLocalizedNames() {
   }
 }
 
+function matchesRejected(item, rejectedIds, rejectedUrls) {
+  const id = String(item?.id || '').trim();
+  const url = sourceUrl(item);
+  return Boolean((id && rejectedIds.has(id)) || (url && rejectedUrls.has(url)));
+}
+
+function rememberRejected(item, rejectedIds, rejectedUrls) {
+  const id = String(item?.id || '').trim();
+  const url = sourceUrl(item);
+  if (id) rejectedIds.add(id);
+  if (url) rejectedUrls.add(url);
+}
+
 async function rewriteSourceFile(path, rejectedIds, rejectedUrls) {
   try {
     const payload = JSON.parse(await fs.readFile(path, 'utf8'));
     const items = Array.isArray(payload) ? payload : (payload.items || []);
-    const kept = items.filter(item => {
-      const id = String(item?.id || '');
-      const url = String(item?.primaryUrl || item?.url || '');
-      return !rejectedIds.has(id) && !rejectedUrls.has(url);
-    });
+    const kept = items.filter(item => !matchesRejected(item, rejectedIds, rejectedUrls));
     const removed = items.length - kept.length;
     if (!removed) return 0;
     if (Array.isArray(payload)) {
@@ -192,8 +201,7 @@ for (const item of items) {
 
   if (sourceIsRussian(item)) {
     reject(item, initial.reasons.length ? initial.reasons : ['Russian source failed final publication quality gate']);
-    rejectedIds.add(String(item.id || ''));
-    rejectedUrls.add(sourceUrl(item));
+    rememberRejected(item, rejectedIds, rejectedUrls);
     failures.push({ id: item.id, url: sourceUrl(item), reasons: item.publicationQualityReasons });
     rejected += 1;
     continue;
@@ -255,13 +263,12 @@ for (const item of items) {
     ])]);
   }
 
-  rejectedIds.add(String(item.id || ''));
-  rejectedUrls.add(sourceUrl(item));
+  rememberRejected(item, rejectedIds, rejectedUrls);
   failures.push({ id: item.id, url: sourceUrl(item), reasons: item.publicationQualityReasons });
   rejected += 1;
 }
 
-const keptItems = items.filter(item => !rejectedIds.has(String(item?.id || '')) && !rejectedUrls.has(sourceUrl(item)));
+const keptItems = items.filter(item => !matchesRejected(item, rejectedIds, rejectedUrls));
 const nextPayload = Array.isArray(payload)
   ? keptItems
   : {
