@@ -51,7 +51,13 @@ const brokenDisney = publicationSemanticReasons(disneyInput, {
 });
 assert.ok(brokenDisney.some(reason => reason.includes('untranslated English grammar fragment')));
 assert.ok(brokenDisney.some(reason => reason.includes('Planet Coaster')));
-assert.ok(sourceEntityCandidates(disneyInput).includes('Planet Coaster'));
+assert.ok(brokenDisney.some(reason => reason.includes('Planet Zoo')));
+assert.ok(brokenDisney.some(reason => reason.includes('Jurassic World Evolution')));
+const disneyEntities = sourceEntityCandidates(disneyInput);
+assert.ok(disneyEntities.includes('Disney'));
+assert.ok(disneyEntities.includes('Planet Coaster'));
+assert.ok(disneyEntities.includes('Planet Zoo'));
+assert.ok(disneyEntities.includes('Jurassic World Evolution'));
 assert.equal(newsGameTitleLooksGeneric('the'), true);
 assert.equal(newsGameTitleLooksGeneric('The Witcher'), false);
 
@@ -67,8 +73,8 @@ assert.equal(sourceContextGameHasStrongIdentity(bogusTheIdentity), false);
 assert.equal(refineNewsPrimaryGame(disneyInput, bogusTheIdentity), null);
 
 const cleanDisney = publicationSemanticReasons(disneyInput, {
-  titleRu: 'Disney может получить собственный симулятор парка от авторов Planet Coaster',
-  summaryRu: 'Команда, создавшая Planet Coaster, разрабатывает новую игру по лицензии Disney. Проект использует опыт студии в жанре симуляторов управления тематическими парками.'
+  titleRu: 'Disney может получить собственный симулятор парка',
+  summaryRu: 'Студия, создавшая Planet Coaster, Planet Zoo и Jurassic World Evolution, разрабатывает новую игру по лицензии Дисней. Проект использует опыт команды в жанре симуляторов управления тематическими парками.'
 });
 assert.deepEqual(cleanDisney, []);
 
