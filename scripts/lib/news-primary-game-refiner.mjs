@@ -4,7 +4,7 @@ import { newsGameTitleLooksGeneric } from './news-game-title-cleanup.mjs';
 const NON_GAME = new Set([
   'xbox','xbox insiders','xbox game pass','game pass','playstation','playstation plus','ps5','ps4','steam','microsoft','sony','nintendo','nintendo switch','nintendo switch 2',
   'thq nordic','halo studios','id software','bioware','capcom','bethesda','take two','take-two','ign','pc gamer','gamespot','eurogamer','polygon','fanfest','fan fest',
-  'indie selects','indie select hub','magic'
+  'disney','frontier','frontier developments','indie selects','indie select hub','magic'
 ]);
 const ACTION_START = /^(?:how|keep|available|coming|celebrating|indie selects?|magic designer)\b/i;
 const COLLECTION_WORD = /\b(?:triptych|collection|franchise|series|insiders?|anniversary|fanfest)\b/i;
