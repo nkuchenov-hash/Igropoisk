@@ -11,14 +11,14 @@ export function freeEditorialAIConfig(){
   };
 }
 
-export async function generateFreeEditorialJSON({system='',prompt,temperature=0.25}){
+export async function generateFreeEditorialJSON({system='',prompt,temperature=0.25,maxTokens=700,numCtx=4096}){
   const {baseUrl,model,timeoutMs}=freeEditorialAIConfig();
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),timeoutMs);
   try{
     const response=await fetch(`${baseUrl}/api/chat`,{
       method:'POST',headers:{'content-type':'application/json'},signal:controller.signal,
-      body:JSON.stringify({model,stream:false,format:'json',options:{temperature},messages:[...(system?[{role:'system',content:system}]:[]),{role:'user',content:String(prompt||'')} ]})
+      body:JSON.stringify({model,stream:false,format:'json',options:{temperature,num_predict:Number(maxTokens)||700,num_ctx:Number(numCtx)||4096},messages:[...(system?[{role:'system',content:system}]:[]),{role:'user',content:String(prompt||'')} ]})
     });
     if(!response.ok)throw new Error(`Ollama ${response.status}: ${(await response.text()).slice(0,1200)}`);
     const data=await response.json();const raw=stripFence(data?.message?.content||data?.response||'');if(!raw)throw new Error('Qwen/Ollama returned empty output');
