@@ -22,6 +22,14 @@ function canonical(value = '') {
     .toLowerCase();
 }
 
+function cleanEntityCandidate(value = '') {
+  return String(value || '')
+    .replace(/[’‘`´]/g, "'")
+    .replace(/'s\b/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export function decodeNewsSourceText(value = '') {
   return String(value)
     .replace(/&nbsp;/gi, ' ')
@@ -52,26 +60,30 @@ function urlText(input = {}) {
 
 function titleCaseMultiwordCandidates(value = '') {
   const matches = String(value).match(/\b(?:[A-Z][A-Za-z0-9'’.-]{2,}|[A-Z]{2,})(?:\s+(?:[A-Z][A-Za-z0-9'’.-]{2,}|[A-Z]{2,})){1,3}\b/g) || [];
-  return matches.filter(candidate => {
-    const words = candidate.split(/\s+/).map(word => canonical(word));
-    return words.some(word => word && !commonCapitalizedWords.has(word));
-  });
+  return matches
+    .map(cleanEntityCandidate)
+    .filter(candidate => {
+      const words = candidate.split(/\s+/).map(word => canonical(word));
+      return words.some(word => word && !commonCapitalizedWords.has(word));
+    });
 }
 
 function urlBackedSingleCandidates(value = '', input = {}) {
   const path = urlText(input);
   if (!path) return [];
   const matches = String(value).match(/\b(?:[A-Z][A-Za-z0-9'’.-]{3,}|[A-Z]{3,})\b/g) || [];
-  return matches.filter(candidate => {
-    const key = canonical(candidate);
-    if (!key || commonCapitalizedWords.has(key)) return false;
-    return new RegExp(`(?:^|[^a-z0-9])${escapeRegExp(key)}(?:[^a-z0-9]|$)`, 'i').test(path.replace(/[-_/]+/g, ' '));
-  });
+  return matches
+    .map(cleanEntityCandidate)
+    .filter(candidate => {
+      const key = canonical(candidate);
+      if (!key || commonCapitalizedWords.has(key)) return false;
+      return new RegExp(`(?:^|[^a-z0-9])${escapeRegExp(key)}(?:[^a-z0-9]|$)`, 'i').test(path.replace(/[-_/]+/g, ' '));
+    });
 }
 
 function explicitGameEntities(input = {}) {
   return (Array.isArray(input.games) ? input.games : [])
-    .map(game => String(game?.title || '').trim())
+    .map(game => cleanEntityCandidate(game?.title || ''))
     .filter(Boolean);
 }
 
@@ -85,7 +97,7 @@ export function sourceEntityCandidates(input = {}) {
   ];
   const seen = new Set();
   return values
-    .map(value => String(value || '').trim())
+    .map(cleanEntityCandidate)
     .filter(value => value.length >= 2)
     .filter(value => {
       const key = canonical(value);
