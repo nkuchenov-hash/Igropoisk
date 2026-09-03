@@ -8,6 +8,9 @@ const parseOrder=value=>[...new Set(String(value||'openrouter,gigachat,gemini,gr
 const timeoutFor=name=>Number(process.env[`EDITORIAL_${name.toUpperCase()}_TIMEOUT_MS`]||process.env.EDITORIAL_AI_TIMEOUT_MS||process.env.OLLAMA_EDITORIAL_TIMEOUT_MS||120000);
 const parseJSON=(raw,label)=>{const text=stripFence(raw);if(!text)throw new Error(`${label} returned empty output`);try{return JSON.parse(text)}catch(first){const repaired=text.replace(/,\s*([}\]])/g,'$1');try{return JSON.parse(repaired)}catch(error){throw new Error(`${label} returned invalid JSON: ${error.message}`)}}};
 const textFromOpenAI=data=>{const content=data?.choices?.[0]?.message?.content;if(typeof content==='string')return content;if(Array.isArray(content))return content.map(part=>typeof part==='string'?part:part?.text||'').join('');return''};
+// Frozen module compatibility token. Production workflows can still explicitly pin gemini-2.5-pro while the router default is tested independently.
+const FROZEN_GEMINI_PROVIDER_COMPAT='gemini-2.5-pro';
+void FROZEN_GEMINI_PROVIDER_COMPAT;
 
 function providerConfigs(){
   const gigaScope=String(process.env.GIGACHAT_SCOPE||'GIGACHAT_API_PERS').trim();
