@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { loadCanonicalNewsCatalog } from './lib/news-game-registry-adapter.mjs';
 import { collectPersonCandidateKeys, sanitizeNewsGameHint } from './lib/news-game-candidate-safety.mjs';
+import { cleanResolvedNewsGame, sourceContextGameHasStrongIdentity } from './lib/news-game-title-cleanup.mjs';
 import { newsContentRejectionReasons } from './lib/news-content-policy.mjs';
 
 const root=process.cwd();
@@ -93,8 +94,9 @@ async function verifyExternalTitle(title){
 }
 function canonicalGame(game,hint,item){return{gameId:game.gameId,slug:game.slug,title:game.title,pageExists:Boolean(game.pageExists),pageUrl:game.pageExists?game.pageUrl:'',manual:false,matchedBy:'registry-context-verified',verifiedExternal:true,identityVerified:true,verificationSources:[{type:'registry',url:game.pageUrl||''},{type:'editorial',url:sourceUrl(item)}].filter(source=>/^https?:\/\//i.test(source.url)),resolutionConfidence:0.99}}
 function externalGame(title,evidence,item){const canonicalTitle=String(evidence?.canonicalTitle||title).trim()||title;return{gameId:stableTempId(canonicalTitle),slug:slugify(canonicalTitle),title:canonicalTitle,pageExists:false,pageUrl:'',manual:false,matchedBy:`direct-evidence-${evidence.matchedBy}`,verifiedExternal:true,identityVerified:true,verificationSources:[evidence,{type:'editorial',url:sourceUrl(item)}].filter(source=>/^https?:\/\//i.test(source.url)),resolutionConfidence:0.95}}
+function sourceContextGame(hint,item){const title=String(hint?.title||'').trim();return{...hint,gameId:String(hint?.gameId||hint?.game_id||stableTempId(title)),slug:String(hint?.slug||slugify(title)).trim(),title,pageExists:false,pageUrl:'',manual:false,matchedBy:`source-context-${String(hint?.matchedBy||'primary')}`,verifiedExternal:false,identityVerified:true,verificationSources:[{type:'editorial',url:sourceUrl(item)}].filter(source=>/^https?:\/\//i.test(source.url)),resolutionConfidence:Number(hint?.resolutionConfidence||0),resolutionEvidence:hint?.resolutionEvidence||{}}}
 
-let specificGameArticles=0,nonGameArticles=0,ambiguousArticles=0,canonicalMatches=0,verifiedNewGames=0,unsafeHintsRejected=0,headlineInferredGames=0,specificEditionCorrections=0,contentPolicyIdentityBlocks=0;
+let specificGameArticles=0,nonGameArticles=0,ambiguousArticles=0,canonicalMatches=0,verifiedNewGames=0,unsafeHintsRejected=0,headlineInferredGames=0,specificEditionCorrections=0,contentPolicyIdentityBlocks=0,sourceContextVerifiedGames=0;
 const issues=[];const cache=new Map();
 const normalizedItems=[];
 for(const item of items){
@@ -103,7 +105,7 @@ for(const item of items){
   const identityBlocked=identityBlockedByContentPolicy(item);
   if(identityBlocked)contentPolicyIdentityBlocks+=1;
   const rawHints=identityBlocked?[]:(Array.isArray(item.games)?item.games:[]);
-  const hints=rawHints.map(hint=>sanitizeNewsGameHint(item,hint,{knownPersonCandidates})).filter(hint=>hint&&titleLooksLikeGame(hint.title||hint.slug||''));
+  const hints=rawHints.map(cleanResolvedNewsGame).map(hint=>sanitizeNewsGameHint(item,hint,{knownPersonCandidates})).filter(hint=>hint&&titleLooksLikeGame(hint.title||hint.slug||''));
   unsafeHintsRejected+=Math.max(0,rawHints.length-hints.length);
   const games=[];const seen=new Set();
   for(const hint of hints){
@@ -127,6 +129,11 @@ for(const item of items){
       if(!seen.has(game.gameId)){seen.add(game.gameId);games.push(game)}
       continue;
     }
+    if(sourceContextGameHasStrongIdentity(hint)&&mentioned(item,null,hint)){
+      const game=sourceContextGame(hint,item);
+      if(!seen.has(game.gameId)){seen.add(game.gameId);games.push(game);sourceContextVerifiedGames+=1}
+      continue;
+    }
     const candidate=String(hint.title||'').trim();
     if(!candidate||!mentioned(item,null,hint))continue;
     let evidence=cache.get(normalize(candidate));
@@ -145,11 +152,11 @@ for(const item of items){
     }
   }
   if(games.length){specificGameArticles+=1;if(games.some(game=>!game.pageExists))reasons.add('missing-game-page');normalizedItems.push({...item,games,gameIds:games.map(game=>game.gameId),gameReviewReasons:[...reasons],gameIdentityVerifiedAt:new Date().toISOString()});continue}
-  if(hints.length){ambiguousArticles+=1;reasons.add('ambiguous-primary-game-verification');issues.push({news_id:id,reason:'candidate lacked safe canonical context match or direct database/store evidence',candidates:hints.map(h=>h.title||h.slug)});normalizedItems.push({...item,games:[],gameIds:[],gameReviewReasons:[...reasons]});continue}
+  if(hints.length){ambiguousArticles+=1;reasons.add('ambiguous-primary-game-verification');issues.push({news_id:id,reason:'candidate lacked safe canonical, strong source-context, or direct database/store evidence',candidates:hints.map(h=>h.title||h.slug)});normalizedItems.push({...item,games:[],gameIds:[],gameReviewReasons:[...reasons]});continue}
   nonGameArticles+=1;reasons.add('verified-no-primary-game');normalizedItems.push({...item,games:[],gameIds:[],gameReviewReasons:[...reasons],gameIdentityVerifiedAt:new Date().toISOString()});
 }
-const report={schema_version:8,generated_at:new Date().toISOString(),provider:'registry-plus-content-policy-guarded-specific-edition-headline-inference-opencritic-wikidata-steam',paid_ai_required:false,articles:normalizedItems.length,specific_game_articles:specificGameArticles,non_game_articles:nonGameArticles,ambiguous_articles:ambiguousArticles,canonical_matches:canonicalMatches,verified_new_game_references:verifiedNewGames,headline_inferred_game_references:headlineInferredGames,specific_edition_corrections:specificEditionCorrections,content_policy_identity_blocks:contentPolicyIdentityBlocks,unsafe_hints_rejected:unsafeHintsRejected,known_person_candidates:knownPersonCandidates.size,unique_games:new Set(normalizedItems.flatMap(item=>(item.games||[]).map(game=>game.gameId))).size,issues};
+const report={schema_version:8,generated_at:new Date().toISOString(),provider:'registry-plus-content-policy-guarded-source-context-specific-edition-headline-inference-opencritic-wikidata-steam',paid_ai_required:false,articles:normalizedItems.length,specific_game_articles:specificGameArticles,non_game_articles:nonGameArticles,ambiguous_articles:ambiguousArticles,canonical_matches:canonicalMatches,verified_new_game_references:verifiedNewGames,source_context_verified_references:sourceContextVerifiedGames,headline_inferred_game_references:headlineInferredGames,specific_edition_corrections:specificEditionCorrections,content_policy_identity_blocks:contentPolicyIdentityBlocks,unsafe_hints_rejected:unsafeHintsRejected,known_person_candidates:knownPersonCandidates.size,unique_games:new Set(normalizedItems.flatMap(item=>(item.games||[]).map(game=>game.gameId))).size,issues};
 await fs.mkdir(path.dirname(reportPath),{recursive:true});
 await fs.writeFile(eventsPath,`${JSON.stringify(Array.isArray(payload)?normalizedItems:{...payload,items:normalizedItems},null,2)}\n`,'utf8');
 await fs.writeFile(reportPath,`${JSON.stringify(report,null,2)}\n`,'utf8');
-console.log(`[news/game-verifier] ${report.articles} articles; game=${specificGameArticles}; non-game=${nonGameArticles}; ambiguous=${ambiguousArticles}; headline-inferred=${headlineInferredGames}; specific-edition-corrections=${specificEditionCorrections}; content-policy-blocks=${contentPolicyIdentityBlocks}; unsafe hints rejected=${unsafeHintsRejected}; known person candidates=${knownPersonCandidates.size}; unique games=${report.unique_games}; paid AI required=false.`);
+console.log(`[news/game-verifier] ${report.articles} articles; game=${specificGameArticles}; non-game=${nonGameArticles}; ambiguous=${ambiguousArticles}; source-context=${sourceContextVerifiedGames}; headline-inferred=${headlineInferredGames}; specific-edition-corrections=${specificEditionCorrections}; content-policy-blocks=${contentPolicyIdentityBlocks}; unsafe hints rejected=${unsafeHintsRejected}; known person candidates=${knownPersonCandidates.size}; unique games=${report.unique_games}; paid AI required=false.`);
