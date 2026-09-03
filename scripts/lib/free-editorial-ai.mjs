@@ -9,8 +9,9 @@ let bootstrapPromise=null;
 export function freeEditorialAIConfig(){
   return {
     baseUrl:trimSlash(process.env.OLLAMA_BASE_URL||'http://127.0.0.1:11434'),
-    model:String(process.env.OLLAMA_EDITORIAL_MODEL||process.env.OLLAMA_MODEL||'qwen2.5:3b').trim(),
-    timeoutMs:Number(process.env.OLLAMA_EDITORIAL_TIMEOUT_MS||240000)
+    model:String(process.env.OLLAMA_EDITORIAL_MODEL||process.env.OLLAMA_MODEL||'qwen2.5:1.5b').trim(),
+    timeoutMs:Number(process.env.OLLAMA_EDITORIAL_TIMEOUT_MS||180000),
+    numCtx:Number(process.env.OLLAMA_EDITORIAL_NUM_CTX||8192)
   };
 }
 
@@ -29,7 +30,7 @@ async function bootstrapFreeEditorialAI(){
   const allowed=String(process.env.OLLAMA_AUTO_BOOTSTRAP||'').toLowerCase()==='true'||String(process.env.GITHUB_ACTIONS||'').toLowerCase()==='true';
   if(!allowed)throw new Error('Local Ollama is unavailable and automatic bootstrap is disabled outside CI');
   if(process.platform!=='linux')throw new Error(`Automatic Ollama bootstrap is only supported on Linux CI, got ${process.platform}`);
-  let which=spawnSync('bash',['-lc','command -v ollama'],{encoding:'utf8'});
+  const which=spawnSync('bash',['-lc','command -v ollama'],{encoding:'utf8'});
   if(which.status!==0){
     const install=spawnSync('bash',['-lc','curl -fsSL https://ollama.com/install.sh | sh'],{encoding:'utf8',timeout:180000,maxBuffer:16*1024*1024});
     if(install.status!==0)throw new Error(`Ollama install failed: ${(install.stderr||install.stdout||'unknown error').slice(-4000)}`);
@@ -50,15 +51,16 @@ export async function ensureFreeEditorialAI(){
   return await bootstrapPromise;
 }
 
-export async function generateFreeEditorialJSON({system='',prompt,temperature=0.25}){
+export async function generateFreeEditorialJSON({system='',prompt,temperature=0.25,maxTokens=1600}){
   await ensureFreeEditorialAI();
-  const {baseUrl,model,timeoutMs}=freeEditorialAIConfig();
+  const {baseUrl,model,timeoutMs,numCtx}=freeEditorialAIConfig();
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),timeoutMs);
+  const numPredict=Math.max(128,Math.min(Number(maxTokens)||1600,2400));
   try{
     const response=await fetch(`${baseUrl}/api/chat`,{
       method:'POST',headers:{'content-type':'application/json'},signal:controller.signal,
-      body:JSON.stringify({model,stream:false,format:'json',options:{temperature,num_ctx:Number(process.env.OLLAMA_EDITORIAL_NUM_CTX||32768)},messages:[...(system?[{role:'system',content:system}]:[]),{role:'user',content:String(prompt||'')} ]})
+      body:JSON.stringify({model,stream:false,format:'json',options:{temperature,num_ctx:numCtx,num_predict:numPredict},messages:[...(system?[{role:'system',content:system}]:[]),{role:'user',content:String(prompt||'')} ]})
     });
     if(!response.ok)throw new Error(`Ollama ${response.status}: ${(await response.text()).slice(0,1200)}`);
     const data=await response.json();const raw=stripFence(data?.message?.content||data?.response||'');if(!raw)throw new Error('Qwen/Ollama returned empty output');
