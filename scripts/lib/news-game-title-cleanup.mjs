@@ -22,6 +22,29 @@ function slugify(value = '') {
   return normalize(value).replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '');
 }
 
+function exactContains(haystack, needle) {
+  return Boolean(needle) && ` ${haystack} `.includes(` ${needle} `);
+}
+
+function sourceEvidence(item = {}, title = '') {
+  const identity = normalize(title);
+  if (!identity) return {};
+  let url = '';
+  try {
+    const parsed = new URL(item.primaryUrl || item.url || '');
+    url = normalize(decodeURIComponent(`${parsed.pathname} ${parsed.search}`));
+  } catch {
+    url = normalize(item.primaryUrl || item.url || '');
+  }
+  const headline = normalize([item.titleEn, item.title, item.titleRu].filter(Boolean).join(' · '));
+  const summary = normalize([item.summaryEn, item.summary, item.summaryRu].filter(Boolean).join(' · '));
+  return {
+    title: exactContains(headline, identity),
+    summary: exactContains(summary, identity),
+    url: exactContains(url, identity)
+  };
+}
+
 export function cleanResolvedNewsGameTitle(value = '') {
   const original = String(value || '').replace(/\s+/g, ' ').trim();
   if (!original) return '';
@@ -42,7 +65,7 @@ function repairedTempId(game, title) {
   return `news_game_${crypto.createHash('sha1').update(`${prefix}${normalize(title)}`).digest('hex').slice(0, 16)}`;
 }
 
-export function cleanResolvedNewsGame(game = null) {
+export function cleanResolvedNewsGame(game = null, item = null) {
   if (!game || typeof game !== 'object') return game;
   const title = cleanResolvedNewsGameTitle(game.title || '');
   if (!title || title === String(game.title || '').trim()) return game;
@@ -52,6 +75,7 @@ export function cleanResolvedNewsGame(game = null) {
     ...(gameId ? { gameId } : {}),
     slug: slugify(title) || game.slug,
     title,
+    resolutionEvidence: item ? { ...(game.resolutionEvidence || {}), ...sourceEvidence(item, title) } : (game.resolutionEvidence || {}),
     titleCleanupApplied: true
   };
 }
