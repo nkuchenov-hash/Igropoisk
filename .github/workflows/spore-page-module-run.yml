@@ -1,6 +1,6 @@
 # Acceptance run for one ordinary game through the current universal Game Page module.
 # Spore is only the input fixture; no Spore-specific page data is hard-coded here.
-# Acceptance retrigger: 2026-09-03 aligned live rating gate verification.
+# Acceptance retrigger: 2026-09-03 final live verification; obsolete attempts may be cancelled.
 name: Spore complete page-module run
 
 on:
@@ -18,7 +18,7 @@ permissions:
 
 concurrency:
   group: spore-page-module-acceptance
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build-spore:
