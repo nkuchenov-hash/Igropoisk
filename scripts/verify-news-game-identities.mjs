@@ -105,7 +105,7 @@ for(const item of items){
   const identityBlocked=identityBlockedByContentPolicy(item);
   if(identityBlocked)contentPolicyIdentityBlocks+=1;
   const rawHints=identityBlocked?[]:(Array.isArray(item.games)?item.games:[]);
-  const hints=rawHints.map(cleanResolvedNewsGame).map(hint=>sanitizeNewsGameHint(item,hint,{knownPersonCandidates})).filter(hint=>hint&&titleLooksLikeGame(hint.title||hint.slug||''));
+  const hints=rawHints.map(hint=>cleanResolvedNewsGame(hint,item)).map(hint=>sanitizeNewsGameHint(item,hint,{knownPersonCandidates})).filter(hint=>hint&&titleLooksLikeGame(hint.title||hint.slug||''));
   unsafeHintsRejected+=Math.max(0,rawHints.length-hints.length);
   const games=[];const seen=new Set();
   for(const hint of hints){
