@@ -93,7 +93,7 @@ jobs:
           node scripts/validate-game-v3.mjs
           BASE="$(git rev-parse HEAD^ 2>/dev/null || true)"
           if [ -n "$BASE" ]; then
-            CHANGED_SLUGS="$(git diff --name-only "$BASE" HEAD | awk -F/ '/^data\/drafts\/[^/]+\.json$/ { sub(/\.json$/, "", $3); print $3 } /^data\/page-editorial\/[^/]+\.json$/ { sub(/\.json$/, "", $3); print $3 } /^game\/[^/]+\/index\.html$/ { print $2 }' | sort -u | tr '\n' ' ')"
+            CHANGED_SLUGS="$(git diff --name-only "$BASE" HEAD | awk -F/ '/^data\/drafts\/[^/]+\.json$/ { sub(/\.json$/, "", $3); print $3 } /^data\/page-editorial\/[^/]+\.json$/ { sub(/\.json$/, "", $3); print $3 } /^game\/[^/]+\/index\.html$/ && $2 != "pending" { print $2 }' | sort -u | tr '\n' ' ')"
           else CHANGED_SLUGS=""; fi
           if [ -n "$CHANGED_SLUGS" ]; then
             node scripts/validate-game-page-publication-state.mjs $CHANGED_SLUGS
