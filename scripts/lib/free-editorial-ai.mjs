@@ -14,7 +14,7 @@ function providerConfigs(){
   return {
     openrouter:{provider:'openrouter',enabled:Boolean(process.env.OPENROUTER_API_KEY),apiKey:String(process.env.OPENROUTER_API_KEY||''),baseUrl:trimSlash(process.env.OPENROUTER_BASE_URL||'https://openrouter.ai/api/v1'),model:String(process.env.OPENROUTER_EDITORIAL_MODEL||'moonshotai/kimi-k2.6:free').trim(),timeoutMs:timeoutFor('openrouter')},
     gigachat:{provider:'gigachat',enabled:Boolean(process.env.GIGACHAT_CREDENTIALS),credentials:String(process.env.GIGACHAT_CREDENTIALS||''),scope:gigaScope,baseUrl:trimSlash(process.env.GIGACHAT_BASE_URL||'https://api.giga.chat/v1'),authUrl:String(process.env.GIGACHAT_AUTH_URL||'https://ngw.devices.sberbank.ru:9443/api/v2/oauth').trim(),model:String(process.env.GIGACHAT_EDITORIAL_MODEL||(gigaScope==='GIGACHAT_API_PERS'?'GigaChat-3-Ultra':'GigaChat-2-Max')).trim(),fallbackModel:String(process.env.GIGACHAT_EDITORIAL_FALLBACK_MODEL||'GigaChat-2-Max').trim(),timeoutMs:timeoutFor('gigachat')},
-    gemini:{provider:'gemini',enabled:Boolean(process.env.GEMINI_API_KEY),apiKey:String(process.env.GEMINI_API_KEY||''),baseUrl:trimSlash(process.env.GEMINI_BASE_URL||'https://generativelanguage.googleapis.com/v1beta'),model:String(process.env.GEMINI_EDITORIAL_MODEL||'gemini-2.5-pro').trim(),timeoutMs:timeoutFor('gemini')},
+    gemini:{provider:'gemini',enabled:Boolean(process.env.GEMINI_API_KEY),apiKey:String(process.env.GEMINI_API_KEY||''),baseUrl:trimSlash(process.env.GEMINI_BASE_URL||'https://generativelanguage.googleapis.com/v1beta'),model:String(process.env.GEMINI_EDITORIAL_MODEL||'gemini-3.1-pro-preview').trim(),timeoutMs:timeoutFor('gemini')},
     groq:{provider:'groq',enabled:Boolean(process.env.GROQ_API_KEY),apiKey:String(process.env.GROQ_API_KEY||''),baseUrl:trimSlash(process.env.GROQ_BASE_URL||'https://api.groq.com/openai/v1'),model:String(process.env.GROQ_EDITORIAL_MODEL||'qwen/qwen3.8-27b').trim(),timeoutMs:timeoutFor('groq')},
     ollama:{provider:'ollama',enabled:truthy(process.env.FREE_EDITORIAL_AI_ENABLED)||Boolean(process.env.OLLAMA_BASE_URL)||!['OPENROUTER_API_KEY','GIGACHAT_CREDENTIALS','GEMINI_API_KEY','GROQ_API_KEY'].some(key=>process.env[key]),baseUrl:trimSlash(process.env.OLLAMA_BASE_URL||'http://127.0.0.1:11434'),model:String(process.env.OLLAMA_EDITORIAL_MODEL||process.env.OLLAMA_MODEL||'qwen2.5:3b').trim(),timeoutMs:Number(process.env.OLLAMA_EDITORIAL_TIMEOUT_MS||240000)}
   };
@@ -28,12 +28,20 @@ export function freeEditorialAIConfig(){
 
 async function fetchWithTimeout(url,options,timeoutMs,label){
   const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),timeoutMs);
-  try{return await fetch(url,{...options,signal:controller.signal})}catch(error){if(error?.name==='AbortError')throw new Error(`${label} timed out after ${timeoutMs} ms`);throw error}finally{clearTimeout(timer)}
+  try{return await fetch(url,{...options,signal:controller.signal})}catch(error){
+    if(error?.name==='AbortError')throw new Error(`${label} timed out after ${timeoutMs} ms`);
+    const cause=error?.cause;const details=[cause?.code,cause?.message].filter(Boolean).join(': ');
+    throw new Error(`${label} fetch failed${details?`: ${details}`:''}`);
+  }finally{clearTimeout(timer)}
 }
 
 async function generateOpenAICompatible(config,{system,prompt,temperature,maxTokens}){
   const headers={'content-type':'application/json','authorization':`Bearer ${config.apiKey}`};
-  if(config.provider==='openrouter'){headers['HTTP-Referer']=String(process.env.OPENROUTER_HTTP_REFERER||'https://nkuchenov-hash.github.io/Igropoisk/');headers['X-Title']=String(process.env.OPENROUTER_X_TITLE||'Игропоиск')}
+  if(config.provider==='openrouter'){
+    headers['HTTP-Referer']=String(process.env.OPENROUTER_HTTP_REFERER||'https://nkuchenov-hash.github.io/Igropoisk/');
+    // Fetch/Undici requires header values representable as ByteString. Keep the default ASCII-only.
+    headers['X-Title']=String(process.env.OPENROUTER_X_TITLE||'Igropoisk').replace(/[^\x20-\x7E]/g,'');
+  }
   const response=await fetchWithTimeout(`${config.baseUrl}/chat/completions`,{method:'POST',headers,body:JSON.stringify({model:config.model,stream:false,temperature,max_tokens:Number(maxTokens)||700,response_format:{type:'json_object'},messages:[...(system?[{role:'system',content:system}]:[]),{role:'user',content:String(prompt||'')} ]})},config.timeoutMs,config.provider);
   if(!response.ok)throw new Error(`${config.provider} ${response.status}: ${(await response.text()).slice(0,800)}`);
   const payload=await response.json();return parseJSON(textFromOpenAI(payload),config.provider);
