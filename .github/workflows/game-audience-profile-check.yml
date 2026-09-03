@@ -30,6 +30,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   validate:
@@ -41,11 +42,23 @@ jobs:
           node-version: 22
       - name: Validate Audience Profile contract
         run: node scripts/validate-game-audience-profile-integrity.mjs
+      - name: Restore accepted Spore evidence corpus
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rm -rf /tmp/spore-audience-base
+          mkdir -p /tmp/spore-audience-base
+          mkdir -p data/parser-output data/drafts data/game-sources data/ratings
+          gh run download 33793623719 -n spore-full-pr-acceptance-33793623719-1 -D /tmp/spore-audience-base
+          cp /tmp/spore-audience-base/data/parser-output/spore.json data/parser-output/spore.json
+          cp /tmp/spore-audience-base/data/drafts/spore.json data/drafts/spore.json
+          cp /tmp/spore-audience-base/data/game-sources/spore.json data/game-sources/spore.json
+          cp /tmp/spore-audience-base/data/ratings/spore.json data/ratings/spore.json
       - name: Build real Spore Audience Evidence
         run: node scripts/collect-game-audience-evidence.mjs spore
       - name: Build real Spore Audience Profile
         run: node scripts/build-game-audience-profile.mjs spore
-      - name: Verify real Spore profile is internal and usable
+      - name: Verify real Spore profile is internal and evidence-backed
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -55,8 +68,9 @@ jobs:
           if(profile.generation?.public_render_allowed!==false)throw new Error('Audience Profile can be rendered publicly');
           if(profile.generation?.fail_open!==true)throw new Error('Audience Profile lost fail-open behavior');
           if(profile.aggregate_demographics!==null)throw new Error('Spore demographics were inferred without an explicit aggregate source');
-          if(!['high','medium','low'].includes(profile.confidence))throw new Error('Invalid Audience Profile confidence');
-          console.log(JSON.stringify({steam_status:evidence.steam?.status,steam_tags:evidence.steam?.tags?.map(x=>x.name)||[],review_signals:evidence.review_signals||[],profile:{confidence:profile.confidence,reader_familiarity:profile.reader_familiarity,jargon_level:profile.jargon_level,register:profile.register,core_appeals:profile.core_appeals,evidence_count:profile.evidence?.length||0}},null,2));
+          if(!['high','medium'].includes(profile.confidence))throw new Error(`Spore profile is not evidence-backed enough: ${profile.confidence}`);
+          if(!(profile.evidence?.length>0))throw new Error('Spore Audience Profile has no evidence');
+          console.log(JSON.stringify({steam_status:evidence.steam?.status,steam_tags:evidence.steam?.tags?.map(x=>x.name)||[],review_signals:evidence.review_signals||[],profile:{confidence:profile.confidence,reader_familiarity:profile.reader_familiarity,jargon_level:profile.jargon_level,register:profile.register,core_appeals:profile.core_appeals,evidence_count:profile.evidence?.length||0,source_families:profile.generation?.source_families||0}},null,2));
           NODE
       - name: Upload Spore Audience diagnostics
         if: always()
