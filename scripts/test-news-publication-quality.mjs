@@ -5,6 +5,8 @@ import {
   sourceEntityCandidates,
   sourceLooksTruncated
 } from './lib/news-publication-quality.mjs';
+import { refineNewsPrimaryGame } from './lib/news-primary-game-refiner.mjs';
+import { newsGameTitleLooksGeneric, sourceContextGameHasStrongIdentity } from './lib/news-game-title-cleanup.mjs';
 
 const carcassInput = {
   titleEn: '"A game for everyone is a game for no one": Don\'t expect an easy ride in Carcass Clad, the co-op tank horror game from the makers of Mouthwashing',
@@ -38,6 +40,44 @@ const clean = publicationSemanticReasons(carcassInput, {
 });
 assert.deepEqual(clean, []);
 
+const disneyInput = {
+  titleEn: "The official Disney 'RollerCoaster Tycoon' might be real",
+  summaryEn: 'The team behind Planet Coaster, Planet Zoo and Jurassic World Evolution is making a new Disney game as the theme park sim prepares for a return.',
+  primaryUrl: 'https://www.polygon.com/gaming/disney-rollercoaster-tycoon-frontier-new-game'
+};
+const brokenDisney = publicationSemanticReasons(disneyInput, {
+  titleRu: "The Официальный Дисней 'RollerCoaster Tycoon' может быть правдой",
+  summaryRu: 'The за планетой Побережье, Планетой Зооо и Юрской эволюционной компанией делает новую игру Дисней как тематический парк, готовящийся к возвращению.'
+});
+assert.ok(brokenDisney.some(reason => reason.includes('untranslated English grammar fragment')));
+assert.ok(brokenDisney.some(reason => reason.includes('Planet Coaster')));
+assert.ok(brokenDisney.some(reason => reason.includes('Planet Zoo')));
+assert.ok(brokenDisney.some(reason => reason.includes('Jurassic World Evolution')));
+const disneyEntities = sourceEntityCandidates(disneyInput);
+assert.ok(disneyEntities.includes('Disney'));
+assert.ok(disneyEntities.includes('Planet Coaster'));
+assert.ok(disneyEntities.includes('Planet Zoo'));
+assert.ok(disneyEntities.includes('Jurassic World Evolution'));
+assert.equal(newsGameTitleLooksGeneric('the'), true);
+assert.equal(newsGameTitleLooksGeneric('The Witcher'), false);
+
+const bogusTheIdentity = {
+  gameId: 'game_52651675bf5dda52d41b',
+  slug: 'the',
+  title: 'the',
+  matchedBy: 'context-evidence-resolver',
+  resolutionConfidence: 0.99,
+  resolutionEvidence: { title: true, summary: true, url: true }
+};
+assert.equal(sourceContextGameHasStrongIdentity(bogusTheIdentity), false);
+assert.equal(refineNewsPrimaryGame(disneyInput, bogusTheIdentity), null);
+
+const cleanDisney = publicationSemanticReasons(disneyInput, {
+  titleRu: 'Disney может получить собственный симулятор парка',
+  summaryRu: 'Студия, создавшая Planet Coaster, Planet Zoo и Jurassic World Evolution, разрабатывает новую игру по лицензии Дисней. Проект использует опыт команды в жанре симуляторов управления тематическими парками.'
+});
+assert.deepEqual(cleanDisney, []);
+
 const ordinary = publicationSemanticReasons({
   titleEn: 'Valve updates Steam families',
   summaryEn: 'Valve has updated Steam Families with new account controls.',
@@ -58,6 +98,17 @@ const godOfWar = publicationSemanticReasons({
   summaryRu: 'Sony выпустила новое обновление для God of War на PC. Патч уже доступен игрокам.'
 });
 assert.deepEqual(godOfWar, []);
+
+const witcherMixedName = publicationSemanticReasons({
+  titleEn: 'The Witcher 4 gets a development update',
+  summaryEn: 'CD Projekt Red shared new details about The Witcher 4.',
+  primaryUrl: 'https://example.com/the-witcher-4-update',
+  games: [{ title: 'The Witcher 4' }]
+}, {
+  titleRu: 'The Witcher 4 получила новое обновление разработки',
+  summaryRu: 'CD Projekt Red рассказала новые подробности о The Witcher 4.'
+});
+assert.deepEqual(witcherMixedName, []);
 
 const sentenceBoundaryInput = {
   titleEn: 'A real-life romance inspired a classic NES remake',

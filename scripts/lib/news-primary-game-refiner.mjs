@@ -1,9 +1,10 @@
 import crypto from 'node:crypto';
+import { newsGameTitleLooksGeneric } from './news-game-title-cleanup.mjs';
 
 const NON_GAME = new Set([
   'xbox','xbox insiders','xbox game pass','game pass','playstation','playstation plus','ps5','ps4','steam','microsoft','sony','nintendo','nintendo switch','nintendo switch 2',
   'thq nordic','halo studios','id software','bioware','capcom','bethesda','take two','take-two','ign','pc gamer','gamespot','eurogamer','polygon','fanfest','fan fest',
-  'indie selects','indie select hub','magic'
+  'disney','frontier','frontier developments','indie selects','indie select hub','magic'
 ]);
 const ACTION_START = /^(?:how|keep|available|coming|celebrating|indie selects?|magic designer)\b/i;
 const COLLECTION_WORD = /\b(?:triptych|collection|franchise|series|insiders?|anniversary|fanfest)\b/i;
@@ -40,7 +41,7 @@ function cleanCandidate(value = '') {
 
 function invalidCandidate(value = '') {
   const normalized = normalizePrimaryGame(value);
-  if (!normalized || normalized.length < 3 || /^\d+$/.test(normalized) || NON_GAME.has(normalized)) return true;
+  if (!normalized || normalized.length < 3 || /^\d+$/.test(normalized) || NON_GAME.has(normalized) || newsGameTitleLooksGeneric(value)) return true;
   if (COLLECTION_WORD.test(value)) return true;
   return /\b(?:studio|studios|software|publisher|publishing|entertainment)\b$/i.test(value);
 }
@@ -164,7 +165,7 @@ function detectCandidate(item = {}) {
   ranked.sort((a, b) => b.score - a.score || a.index - b.index || b.title.length - a.title.length);
 
   const best = ranked[0];
-  if (!best || best.score < 230 || best.comparison || best.updateName) return null;
+  if (!best || best.score < 230 || best.comparison || best.updateName || newsGameTitleLooksGeneric(best.title)) return null;
   const wordCount = best.normalized.split(' ').filter(Boolean).length;
   if (wordCount === 1 && !best.evidence.url && !best.strong) return null;
   if (!best.evidence.summary && !best.strong) return null;
@@ -173,7 +174,7 @@ function detectCandidate(item = {}) {
 }
 
 function existingContextGameIsValid(item, game) {
-  if (!game?.title || invalidCandidate(game.title) || ACTION_START.test(game.title)) return false;
+  if (!game?.title || invalidCandidate(game.title) || ACTION_START.test(game.title) || newsGameTitleLooksGeneric(game.title)) return false;
   const evidence = evidenceFor(item, game.title);
   const normalized = normalizePrimaryGame(game.title);
   if (normalized.split(' ').length === 1 && GENERIC_SINGLE.has(normalized)) return false;

@@ -6,6 +6,12 @@ const SOURCE_CONTEXT_METHODS = new Set([
   'github-model-context'
 ]);
 const HEADLINE_AUXILIARY_SUFFIX = /\s+(?:Is|Are|Was|Were|Has|Have|Will|Would|Can|Could|May|Might)(?:\s+(?:Getting|Coming|Still|Now|Finally|Reportedly|Expected|Planned|Delayed|Launching|Releasing|Returning|Adding|Receiving|Being|Already|Apparently|Set|Years?|Months?|Weeks?|Days?))*$/i;
+const GENERIC_NEWS_GAME_TITLES = new Set([
+  'a', 'an', 'the', 'this', 'that', 'these', 'those',
+  'game', 'new game', 'official', 'official game',
+  'project', 'new project', 'untitled', 'untitled game',
+  'unannounced', 'unannounced game', 'news', 'report', 'update'
+]);
 
 function normalize(value = '') {
   return String(value)
@@ -24,6 +30,15 @@ function slugify(value = '') {
 
 function exactContains(haystack, needle) {
   return Boolean(needle) && ` ${haystack} `.includes(` ${needle} `);
+}
+
+export function newsGameTitleLooksGeneric(value = '') {
+  const normalized = normalize(value);
+  if (!normalized) return true;
+  if (GENERIC_NEWS_GAME_TITLES.has(normalized)) return true;
+  const words = normalized.split(' ').filter(Boolean);
+  if (words.length !== 1) return false;
+  return /^(?:a|an|the|this|that|these|those|game|official|project|untitled|unannounced|news|report|update)$/i.test(words[0]);
 }
 
 function sourceEvidence(item = {}, title = '') {
@@ -81,6 +96,8 @@ export function cleanResolvedNewsGame(game = null, item = null) {
 }
 
 export function sourceContextGameHasStrongIdentity(game = {}) {
+  const title = String(game?.title || game?.slug || '').trim();
+  if (newsGameTitleLooksGeneric(title)) return false;
   const method = String(game?.matchedBy || '').trim();
   if (!SOURCE_CONTEXT_METHODS.has(method)) return false;
   const confidence = Number(game?.resolutionConfidence || 0);
