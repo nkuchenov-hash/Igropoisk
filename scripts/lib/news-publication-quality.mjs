@@ -134,7 +134,8 @@ function htmlLeak(value = '') {
 }
 
 function orphanLatinFragment(value = '') {
-  return /(?:^|\s)[a-z]{1,2}(?:\s|[.!?,;:]|$)/u.test(String(value)) && /[А-Яа-яЁё]/u.test(String(value));
+  return /(?:^|\s)[a-z]{1,2}\s*[.!?…»”)]*$/u.test(String(value).trim())
+    && /[А-Яа-яЁё]/u.test(String(value));
 }
 
 function requiresNoOneMeaning(source = '') {
