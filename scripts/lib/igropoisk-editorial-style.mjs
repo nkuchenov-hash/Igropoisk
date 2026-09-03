@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 
 const clean=value=>String(value||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
 const list=value=>Array.isArray(value)?value.map(item=>clean(typeof item==='object'?(item.name||item.label||item.value||''):item)).filter(Boolean):[];
@@ -45,7 +46,7 @@ const compactAsset=asset=>({
 });
 
 export function buildEditorialAudienceContext(draft={},parser={},corpus={},audienceAsset=null){
-  if(!audienceAsset){const slug=clean(draft?.identity?.slug);if(slug){try{audienceAsset=JSON.parse(fs.readFileSync(path.join(process.cwd(),'data','game-audience',`${slug}.json`),'utf8'))}catch{audienceAsset=null}}}
+  if(!audienceAsset){const slug=clean(draft?.identity?.slug);if(slug){const assetPath=path.join(process.cwd(),'data','game-audience',`${slug}.json`);try{audienceAsset=JSON.parse(fs.readFileSync(assetPath,'utf8'))}catch{try{spawnSync(process.execPath,['scripts/collect-game-audience-evidence.mjs',slug],{cwd:process.cwd(),encoding:'utf8',stdio:'pipe',env:process.env,maxBuffer:4*1024*1024});spawnSync(process.execPath,['scripts/build-game-audience-profile.mjs',slug],{cwd:process.cwd(),encoding:'utf8',stdio:'pipe',env:process.env,maxBuffer:4*1024*1024});audienceAsset=JSON.parse(fs.readFileSync(assetPath,'utf8'))}catch{audienceAsset=null}}}}
   if(audienceAsset?.visibility==='internal_only'&&audienceAsset?.generation?.public_render_allowed===false)return compactAsset(audienceAsset);
   const classification=draft?.classification||{};
   const explicitAge=clean(classification.age_rating||classification.content_rating||classification.esrb||classification.pegi||draft?.age_rating||draft?.content_rating||parser?.age_rating||parser?.content_rating||'');
