@@ -141,7 +141,7 @@
     desc:'Мрачная подземная RPG от Arkane с рисуемой мышью магией, свободным исследованием и системным взаимодействием с миром.'
   };
 
-  const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+  const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
   function renderArxIfNeeded(){
     const query=document.querySelector('#query');
