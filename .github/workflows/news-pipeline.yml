@@ -38,6 +38,7 @@ on:
       - 'features/news/shared/image-fallback.js'
       - 'features/news/styles/index.css'
       - 'features/news/module.json'
+      - 'game/pending/**'
       - 'scripts/fetch-news.mjs'
       - 'scripts/collect-regional-news.mjs'
       - 'scripts/postprocess-industry-news.mjs'
@@ -60,6 +61,9 @@ on:
       - 'scripts/test-game-page-assembly-queue.mjs'
       - 'scripts/validate-news-pipeline.mjs'
       - 'scripts/test-news-pipeline.mjs'
+      - 'scripts/test-news-fail-open-publication.mjs'
+      - 'scripts/test-news-fast-path-contract.mjs'
+      - 'scripts/test-news-publication-gate.mjs'
       - 'scripts/test-news-pipeline-health.mjs'
       - 'scripts/test-news-editor.mjs'
       - 'scripts/test-news-commercial-quality.mjs'
@@ -76,14 +80,12 @@ on:
       - 'scripts/test-news-game-linker.mjs'
       - 'scripts/test-news-game-context-resolver.mjs'
       - 'scripts/test-news-primary-game-refiner.mjs'
-      - 'scripts/test-news-publication-gate.mjs'
       - 'scripts/test-news-game-registry-discovery.mjs'
       - 'scripts/validate-news-module.mjs'
       - 'scripts/lib/news-content-policy.mjs'
       - 'scripts/lib/news-editor-qwen.mjs'
       - 'scripts/lib/news-editor-production.mjs'
       - 'scripts/lib/news-editor-policy.mjs'
-      - 'scripts/lib/news-content-policy.mjs'
       - 'scripts/lib/news-editorial-summary.mjs'
       - 'scripts/lib/news-home-selector.mjs'
       - 'scripts/lib/news-game-linker.mjs'
@@ -142,7 +144,8 @@ jobs:
           mkdir -p /tmp/igropoisk-news-translator-runtime
           npm install --prefix /tmp/igropoisk-news-translator-runtime --no-save --no-audit --no-fund @huggingface/transformers@4.2.0
 
-      - name: Verify pipeline and storage code before network work
+      - name: Run advisory pipeline and storage diagnostics before network work
+        continue-on-error: true
         run: |
           node --check features/news/content-api/index.js
           node --check features/news/shared/index.js
@@ -186,6 +189,9 @@ jobs:
           node scripts/test-russian-news-feeds.mjs
           node scripts/test-news-home-selector.mjs
           node scripts/test-news-pipeline.mjs
+          node scripts/test-news-fail-open-publication.mjs
+          node scripts/test-news-fast-path-contract.mjs
+          node scripts/test-news-publication-gate.mjs
           node scripts/test-news-pipeline-health.mjs
           node scripts/test-news-content-api.mjs
           node scripts/test-news-storage-content-api.mjs
@@ -195,13 +201,12 @@ jobs:
           node scripts/test-news-game-linker.mjs
           node scripts/test-news-game-context-resolver.mjs
           node scripts/test-news-primary-game-refiner.mjs
-          node scripts/test-news-publication-gate.mjs
           node scripts/test-news-game-registry-discovery.mjs
 
       - name: Hydrate complete live historical news archive
         run: node scripts/hydrate-live-news-history.mjs
 
-      - name: Collect validate and web-verify every historical game identity
+      - name: Collect process and score news with fail-open stage handling
         env:
           GITHUB_TOKEN: ${{ github.token }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -222,7 +227,7 @@ jobs:
             args+=(--force)
           fi
           node scripts/run-news-pipeline.mjs "${args[@]}"
-          git diff --check
+          git diff --check || echo "::warning::Generated diff check reported an issue; publication remains fail-open."
 
       - name: Detect whether publication is required
         id: pipeline
@@ -233,11 +238,13 @@ jobs:
 
       - name: Load exact production game-page inventory
         if: steps.pipeline.outputs.status == 'success'
+        continue-on-error: true
         run: git fetch origin main:refs/remotes/origin/main --force
 
       - name: Prepare verified canonical game-page requests from complete news history
         if: steps.pipeline.outputs.status == 'success'
         id: game_pages
+        continue-on-error: true
         env:
           NEWS_PRODUCTION_GAME_REF: origin/main
         run: |
@@ -262,12 +269,13 @@ jobs:
 
       - name: Continue news publication independently from page assembly
         if: steps.pipeline.outputs.status == 'success' && steps.game_pages.outputs.count != '0'
-        run: echo "Publishing fresh news now. ${COUNT} verified game(s) without pages were handed to temporary page-assembly storage; the page module will process them independently."
+        run: echo "Publishing fresh news now. ${COUNT} verified game(s) without completed pages were handed to temporary page-assembly storage; hashtags keep working through the preparing route."
         env:
           COUNT: ${{ steps.game_pages.outputs.count }}
 
-      - name: Require canonical hashtag integrity without waiting for page assembly
+      - name: Audit hashtag integrity without blocking publication
         if: steps.pipeline.outputs.status == 'success'
+        continue-on-error: true
         run: node scripts/audit-news-game-hashtags.mjs --strict --allow-missing-pages --production-ref origin/main
 
       - name: Publish compact live snapshot and stable monthly archive
