@@ -25,9 +25,44 @@
 
     const lang = api.language();
     const copy = api.labels(lang);
-    const viewCopy = lang === 'ru'
-      ? { label: 'Вид новостей', list: 'Список', tile: 'Плитка' }
-      : { label: 'News view', list: 'List', tile: 'Grid' };
+    const ui = lang === 'ru'
+      ? {
+          search: 'Поиск по новостям',
+          viewLabel: 'Вид новостей',
+          list: 'Список',
+          tile: 'Плитка',
+          sortLabel: 'Сортировка новостей',
+          important: 'Сначала важные',
+          newest: 'Сначала новые',
+          featured: 'Главная новость',
+          trending: 'Сейчас в тренде',
+          popular: 'Популярные темы',
+          stats: 'Новости в цифрах',
+          total: 'Всего новостей',
+          week: 'За неделю',
+          sources: 'Источников',
+          newsCount: count => `${count} ${count === 1 ? 'новость' : count >= 2 && count <= 4 ? 'новости' : 'новостей'}`,
+          activeGame: 'Игра'
+        }
+      : {
+          search: 'Search news',
+          viewLabel: 'News view',
+          list: 'List',
+          tile: 'Grid',
+          sortLabel: 'Sort news',
+          important: 'Most important',
+          newest: 'Newest first',
+          featured: 'Top story',
+          trending: 'Trending now',
+          popular: 'Popular topics',
+          stats: 'News by numbers',
+          total: 'Total stories',
+          week: 'This week',
+          sources: 'Sources',
+          newsCount: count => `${count} ${count === 1 ? 'story' : 'stories'}`,
+          activeGame: 'Game'
+        };
+
     const initialParams = new URLSearchParams(window.location.search);
     let items = [];
     let homeItems = [];
@@ -35,6 +70,7 @@
     let activeType = initialParams.get('type') || '';
     let activeStory = initialParams.get('story') || '';
     let activeView = initialParams.get('view') === 'tile' ? 'tile' : 'list';
+    let activeSort = initialParams.get('sort') === 'new' ? 'new' : 'important';
 
     function openArchiveForDirectLink() {
       const params = new URLSearchParams(window.location.search);
@@ -42,48 +78,72 @@
       document.querySelector('[data-page="news"]')?.click();
     }
 
-    function updateUrl({ game = activeGame, type = activeType, story = activeStory, view = activeView } = {}) {
+    function updateUrl({
+      game = activeGame,
+      type = activeType,
+      story = activeStory,
+      view = activeView,
+      sort = activeSort
+    } = {}) {
       const url = new URL(window.location.href);
       url.searchParams.set('page', 'news');
       if (game) url.searchParams.set('game', game); else url.searchParams.delete('game');
       if (type) url.searchParams.set('type', type); else url.searchParams.delete('type');
       if (story) url.searchParams.set('story', story); else url.searchParams.delete('story');
       if (view === 'tile') url.searchParams.set('view', 'tile'); else url.searchParams.delete('view');
+      if (sort === 'new') url.searchParams.set('sort', 'new'); else url.searchParams.delete('sort');
       window.history.replaceState({}, '', url);
-    }
-
-    function gameFilterUrl(slug) {
-      const url = new URL(window.location.href);
-      url.searchParams.set('page', 'news');
-      url.searchParams.set('game', slug);
-      url.searchParams.delete('story');
-      return url.href;
     }
 
     function availableGames(source) {
       const games = new Map();
       source.forEach(item => api.resolvedGames(item).forEach(game => {
-        if (!game.pageExists) return;
-        games.set(game.slug, game);
+        const current = games.get(game.slug) || { ...game, count: 0 };
+        current.count += 1;
+        games.set(game.slug, current);
       }));
-      return [...games.values()].sort((a, b) => a.title.localeCompare(b.title, lang));
+      return [...games.values()].sort((a, b) => b.count - a.count || a.title.localeCompare(b.title, lang));
     }
 
     function availableTypes(source) {
       const counts = new Map();
       source.forEach(item => api.deriveTypeTags(item, lang).forEach(tag => counts.set(tag, (counts.get(tag) || 0) + 1)));
-      return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+      return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], lang));
+    }
+
+    function queryValue() {
+      return (toolbar.querySelector('[data-news-search]')?.value || '').trim().toLocaleLowerCase(lang);
     }
 
     function filteredItems() {
-      const query = (toolbar.querySelector('[data-news-search]')?.value || '').trim().toLocaleLowerCase(lang);
+      const query = queryValue();
       return model.filterByGame(items, activeGame).filter(item => {
         if (activeType && !api.deriveTypeTags(item, lang).includes(activeType)) return false;
         if (!query) return true;
         const gameTitles = api.resolvedGames(item).map(game => game.title).join(' ');
-        const haystack = `${api.text(item, 'title', lang)} ${api.text(item, 'summary', lang)} ${gameTitles}`.toLocaleLowerCase(lang);
+        const typeTags = api.deriveTypeTags(item, lang).join(' ');
+        const source = api.sourceName(item);
+        const haystack = `${api.text(item, 'title', lang)} ${api.text(item, 'summary', lang)} ${gameTitles} ${typeTags} ${source}`.toLocaleLowerCase(lang);
         return haystack.includes(query);
+      }).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    }
+
+    function groupItems(source) {
+      const groups = model.groupByCalendarDay(source);
+      groups.forEach(group => {
+        group.items.sort((a, b) => activeSort === 'important'
+          ? api.score(b) - api.score(a) || new Date(b.publishedAt) - new Date(a.publishedAt)
+          : new Date(b.publishedAt) - new Date(a.publishedAt));
       });
+      return groups;
+    }
+
+    function pickFeatured(source) {
+      if (!source.length || queryValue() || activeGame || activeType) return null;
+      const candidates = source.slice(0, 24);
+      return activeSort === 'important'
+        ? [...candidates].sort((a, b) => api.score(b) - api.score(a) || new Date(b.publishedAt) - new Date(a.publishedAt))[0]
+        : candidates[0];
     }
 
     function renderStory() {
@@ -102,15 +162,61 @@
       return true;
     }
 
+    function sidebarMarkup() {
+      const games = availableGames(items).slice(0, 5);
+      const types = availableTypes(items).slice(0, 8);
+      const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const weekly = items.filter(item => new Date(item.publishedAt).getTime() >= weekAgo).length;
+      const sourceCount = new Set(items.map(item => api.sourceName(item)).filter(Boolean)).size;
+      const trendRows = games.length
+        ? games.map((game, index) => `<button class="ig-news-trend-row" type="button" data-news-game-filter="${api.escapeHtml(game.slug)}">
+            <span class="ig-news-trend-row__rank">${index + 1}</span>
+            <span class="ig-news-trend-row__copy"><strong>${api.escapeHtml(game.title)}</strong><small>${api.escapeHtml(ui.newsCount(game.count))}</small></span>
+            <span class="ig-news-trend-row__arrow" aria-hidden="true">↗</span>
+          </button>`).join('')
+        : `<div class="ig-muted">${api.escapeHtml(copy.empty)}</div>`;
+      const topicRows = types.length
+        ? types.map(([type, count]) => `<button class="ig-filter-chip ig-news-topic-chip${type === activeType ? ' is-active' : ''}" type="button" data-news-type-filter="${api.escapeHtml(type)}" aria-pressed="${type === activeType ? 'true' : 'false'}">#${api.escapeHtml(type)} <span>${count}</span></button>`).join('')
+        : '';
+      return `<aside class="ig-news-sidebar" aria-label="${api.escapeHtml(lang === 'ru' ? 'Обзор новостей' : 'News overview')}">
+        <section class="ig-news-side-card">
+          <h2 class="ig-news-side-card__title"><span aria-hidden="true">ϟ</span>${api.escapeHtml(ui.trending)}</h2>
+          <div class="ig-news-trend-list">${trendRows}</div>
+        </section>
+        <section class="ig-news-side-card">
+          <h2 class="ig-news-side-card__title"><span aria-hidden="true">#</span>${api.escapeHtml(ui.popular)}</h2>
+          <div class="ig-news-topic-list">${topicRows}</div>
+        </section>
+        <section class="ig-news-side-card">
+          <h2 class="ig-news-side-card__title"><span aria-hidden="true">▥</span>${api.escapeHtml(ui.stats)}</h2>
+          <div class="ig-news-stats">
+            <div><strong>${items.length.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US')}</strong><span>${api.escapeHtml(ui.total)}</span></div>
+            <div><strong>${weekly.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US')}</strong><span>${api.escapeHtml(ui.week)}</span></div>
+            <div><strong>${sourceCount.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US')}</strong><span>${api.escapeHtml(ui.sources)}</span></div>
+          </div>
+        </section>
+      </aside>`;
+    }
+
     function renderFeed() {
       if (activeStory && renderStory()) return;
       toolbar.hidden = false;
       if (pageTitle) pageTitle.hidden = false;
       root.dataset.newsView = 'archive';
       root.dataset.newsLayout = activeView;
+      root.dataset.newsSort = activeSort;
+
       const filtered = filteredItems();
-      const groups = model.groupByCalendarDay(filtered);
-      feed.innerHTML = groups.length
+      const featured = pickFeatured(filtered);
+      const remaining = featured ? filtered.filter(item => item !== featured) : filtered;
+      const groups = groupItems(remaining);
+      const featuredMarkup = featured
+        ? `<section class="ig-news-featured" aria-label="${api.escapeHtml(ui.featured)}">
+            <span class="ig-news-featured-badge">${api.escapeHtml(ui.featured)}</span>
+            ${api.renderArchiveItem(featured, { lang })}
+          </section>`
+        : '';
+      const daysMarkup = groups.length
         ? groups.map((group, index) => `<section class="ig-news-day" data-news-day="${api.escapeHtml(group.key)}" aria-labelledby="news-day-${api.escapeHtml(group.key)}">
             <header class="ig-news-day__header">
               <h2 id="news-day-${api.escapeHtml(group.key)}">${api.escapeHtml(model.formatDayHeading(group.key, { currentYear: new Date().getFullYear(), lang }))}</h2>
@@ -119,59 +225,29 @@
             <div class="ig-news-day__items">${group.items.map(item => api.renderArchiveItem(item, { lang })).join('')}</div>
             ${index < groups.length - 1 ? '<div class="ig-tabs ig-news-day__divider" aria-hidden="true"></div>' : ''}
           </section>`).join('')
-        : `<div class="ig-empty-state">${api.escapeHtml(copy.empty)}</div>`;
+        : (featured ? '' : `<div class="ig-empty-state">${api.escapeHtml(copy.empty)}</div>`);
+
+      feed.innerHTML = `<div class="ig-news-archive-shell">
+        <div class="ig-news-main-column">${featuredMarkup}${daysMarkup}</div>
+        ${sidebarMarkup()}
+      </div>`;
       root.dataset.newsVisibleCount = String(filtered.length);
       root.dataset.newsDayCount = String(groups.length);
-    }
-
-    function hideGameSuggestions() {
-      const panel = toolbar.querySelector('[data-news-game-suggestions]');
-      const input = toolbar.querySelector('[data-news-game-search]');
-      if (panel) panel.hidden = true;
-      if (input) input.setAttribute('aria-expanded', 'false');
-    }
-
-    function renderGameSuggestions(query) {
-      const panel = toolbar.querySelector('[data-news-game-suggestions]');
-      const input = toolbar.querySelector('[data-news-game-search]');
-      if (!panel || !input) return;
-      const needle = String(query || '').trim().toLocaleLowerCase(lang);
-      if (!needle) {
-        hideGameSuggestions();
-        return;
-      }
-      const games = availableGames(items);
-      const matches = games
-        .map(game => ({ game, title: game.title.toLocaleLowerCase(lang) }))
-        .filter(({ title }) => title.includes(needle))
-        .sort((a, b) => Number(b.title.startsWith(needle)) - Number(a.title.startsWith(needle)) || a.game.title.localeCompare(b.game.title, lang))
-        .slice(0, 7)
-        .map(({ game }) => game);
-      panel.innerHTML = matches.map(game => `<a class="ig-button ig-text-link ig-news-game-suggestion" role="option" href="${api.escapeHtml(gameFilterUrl(game.slug))}" data-news-game-suggestion="${api.escapeHtml(game.slug)}">${api.escapeHtml(game.title)}</a>`).join('');
-      panel.hidden = matches.length === 0;
-      input.setAttribute('aria-expanded', matches.length ? 'true' : 'false');
     }
 
     function setGameFilter(slug) {
       activeGame = model.normalizeSlug(slug);
       activeStory = '';
-      const games = availableGames(items);
-      const input = toolbar.querySelector('[data-news-game-search]');
-      const selected = games.find(game => game.slug === activeGame);
-      if (input) input.value = selected?.title || '';
-      hideGameSuggestions();
       updateUrl({ game: activeGame, story: '' });
+      buildToolbar();
       renderFeed();
     }
 
     function setTypeFilter(type) {
       activeType = String(type || '');
       activeStory = '';
-      toolbar.querySelectorAll('[data-news-type-filter]').forEach(button => {
-        button.classList.toggle('is-active', button.dataset.newsTypeFilter === activeType);
-        button.setAttribute('aria-pressed', button.dataset.newsTypeFilter === activeType ? 'true' : 'false');
-      });
       updateUrl({ type: activeType, story: '' });
+      buildToolbar();
       renderFeed();
     }
 
@@ -186,68 +262,54 @@
       renderFeed();
     }
 
+    function setSort(sort) {
+      activeSort = sort === 'new' ? 'new' : 'important';
+      updateUrl({ sort: activeSort });
+      renderFeed();
+    }
+
     function buildToolbar() {
       const games = availableGames(items);
       const types = availableTypes(items);
       if (activeGame && !games.some(game => game.slug === activeGame)) activeGame = '';
       if (activeType && !types.some(([tag]) => tag === activeType)) activeType = '';
-      const activeGameTitle = games.find(game => game.slug === activeGame)?.title || '';
-      toolbar.innerHTML = `<div class="ig-news-controls__game-search">
-          <label class="ig-muted" for="news-game-search">${api.escapeHtml(copy.gameFilter)}</label>
-          <div class="ig-news-game-search">
-            <input class="ig-input ig-input--search" id="news-game-search" type="search" data-news-game-search value="${api.escapeHtml(activeGameTitle)}" placeholder="${api.escapeHtml(copy.gameSearchPlaceholder)}" autocomplete="off" aria-autocomplete="list" aria-controls="news-game-suggestions" aria-expanded="false">
-            <div class="ig-panel ig-news__game-suggestions" id="news-game-suggestions" data-news-game-suggestions role="listbox" hidden></div>
-          </div>
+      const activeGameTitle = games.find(game => game.slug === activeGame)?.title || activeGame;
+      const existingQuery = toolbar.querySelector('[data-news-search]')?.value || '';
+
+      toolbar.innerHTML = `<div class="ig-news-controls__search-primary">
+          <input class="ig-input ig-input--search" type="search" data-news-search value="${api.escapeHtml(existingQuery)}" placeholder="${api.escapeHtml(ui.search)}" aria-label="${api.escapeHtml(ui.search)}">
         </div>
         <div class="ig-filter-list ig-news-controls__types" aria-label="${api.escapeHtml(copy.typeFilter)}">
-          <button class="ig-filter-chip${activeType ? '' : ' is-active'}" type="button" data-news-type-filter="" aria-pressed="${activeType ? 'false' : 'true'}">${api.escapeHtml(copy.allTypes)}</button>
+          <button class="ig-filter-chip${activeType ? '' : ' is-active'}" type="button" data-news-type-filter="" aria-pressed="${activeType ? 'false' : 'true'}">${api.escapeHtml(copy.allTypes)} <span>${items.length}</span></button>
           ${types.map(([tag, count]) => `<button class="ig-filter-chip${tag === activeType ? ' is-active' : ''}" type="button" data-news-type-filter="${api.escapeHtml(tag)}" aria-pressed="${tag === activeType ? 'true' : 'false'}">${api.escapeHtml(tag)} <span>${count}</span></button>`).join('')}
         </div>
         <div class="ig-news-controls__secondary">
-          <div class="ig-filter-list ig-news-controls__view" aria-label="${api.escapeHtml(viewCopy.label)}">
-            <button class="ig-filter-chip${activeView === 'list' ? ' is-active' : ''}" type="button" data-news-view="list" aria-pressed="${activeView === 'list' ? 'true' : 'false'}">${api.escapeHtml(viewCopy.list)}</button>
-            <button class="ig-filter-chip${activeView === 'tile' ? ' is-active' : ''}" type="button" data-news-view="tile" aria-pressed="${activeView === 'tile' ? 'true' : 'false'}">${api.escapeHtml(viewCopy.tile)}</button>
+          <div class="ig-filter-list ig-news-controls__view" aria-label="${api.escapeHtml(ui.viewLabel)}">
+            <button class="ig-filter-chip${activeView === 'list' ? ' is-active' : ''}" type="button" data-news-view="list" aria-pressed="${activeView === 'list' ? 'true' : 'false'}">☷ ${api.escapeHtml(ui.list)}</button>
+            <button class="ig-filter-chip${activeView === 'tile' ? ' is-active' : ''}" type="button" data-news-view="tile" aria-pressed="${activeView === 'tile' ? 'true' : 'false'}">⊞ ${api.escapeHtml(ui.tile)}</button>
           </div>
-          <div class="ig-news-controls__search"><input class="ig-input ig-input--search" type="search" data-news-search placeholder="${api.escapeHtml(copy.search)}"></div>
+          ${activeGame ? `<button class="ig-filter-chip is-active ig-news-active-game" type="button" data-news-clear-game title="${api.escapeHtml(lang === 'ru' ? 'Сбросить фильтр по игре' : 'Clear game filter')}">${api.escapeHtml(ui.activeGame)}: ${api.escapeHtml(activeGameTitle)} ×</button>` : ''}
+          <select class="ig-news-sort" data-news-sort aria-label="${api.escapeHtml(ui.sortLabel)}">
+            <option value="important"${activeSort === 'important' ? ' selected' : ''}>${api.escapeHtml(ui.important)}</option>
+            <option value="new"${activeSort === 'new' ? ' selected' : ''}>${api.escapeHtml(ui.newest)}</option>
+          </select>
         </div>`;
 
-      const gameSearch = toolbar.querySelector('[data-news-game-search]');
-      gameSearch.addEventListener('input', event => {
-        const value = event.target.value;
-        if (!value.trim() && activeGame) {
-          activeGame = '';
-          activeStory = '';
-          updateUrl({ game: '', story: '' });
-          renderFeed();
-        }
-        renderGameSuggestions(value);
-      });
-      gameSearch.addEventListener('keydown', event => {
-        if (event.key === 'Escape') {
-          hideGameSuggestions();
-          return;
-        }
-        if (event.key === 'Enter') {
-          const first = toolbar.querySelector('[data-news-game-suggestion]');
-          if (!first) return;
-          event.preventDefault();
-          setGameFilter(first.dataset.newsGameSuggestion || '');
-        }
-      });
       toolbar.querySelector('[data-news-search]').addEventListener('input', renderFeed);
       toolbar.querySelectorAll('[data-news-type-filter]').forEach(button => button.addEventListener('click', () => setTypeFilter(button.dataset.newsTypeFilter || '')));
       toolbar.querySelectorAll('[data-news-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.newsView || 'list')));
+      toolbar.querySelector('[data-news-sort]')?.addEventListener('change', event => setSort(event.target.value));
+      toolbar.querySelector('[data-news-clear-game]')?.addEventListener('click', () => setGameFilter(''));
     }
 
     root.addEventListener('click', event => {
-      const suggestion = event.target.closest('[data-news-game-suggestion]');
-      if (!suggestion) return;
-      event.preventDefault();
-      setGameFilter(suggestion.dataset.newsGameSuggestion || '');
-    });
-
-    document.addEventListener('click', event => {
-      if (!toolbar.contains(event.target)) hideGameSuggestions();
+      const gameButton = event.target.closest('[data-news-game-filter]');
+      if (gameButton) {
+        setGameFilter(gameButton.dataset.newsGameFilter || '');
+        return;
+      }
+      const typeButton = event.target.closest('.ig-news-sidebar [data-news-type-filter]');
+      if (typeButton) setTypeFilter(typeButton.dataset.newsTypeFilter || '');
     });
 
     window.addEventListener('popstate', () => {
@@ -256,6 +318,7 @@
       activeType = params.get('type') || '';
       activeStory = params.get('story') || '';
       activeView = params.get('view') === 'tile' ? 'tile' : 'list';
+      activeSort = params.get('sort') === 'new' ? 'new' : 'important';
       buildToolbar();
       renderFeed();
     });
@@ -270,7 +333,15 @@
         renderFeed();
         root.dataset.newsStatus = items.length ? 'ready' : 'empty';
         root.dispatchEvent(new CustomEvent('ig:news:archive-ready', {
-          detail: { count: items.length, game: activeGame, type: activeType, story: activeStory, view: activeView, days: Number(root.dataset.newsDayCount || 0) }
+          detail: {
+            count: items.length,
+            game: activeGame,
+            type: activeType,
+            story: activeStory,
+            view: activeView,
+            sort: activeSort,
+            days: Number(root.dataset.newsDayCount || 0)
+          }
         }));
       } catch (error) {
         console.warn('News archive failed.', error);
