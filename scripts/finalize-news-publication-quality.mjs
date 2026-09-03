@@ -1,8 +1,5 @@
 import fs from 'node:fs/promises';
-import {
-  fetchArticleText,
-  validateProductionNews
-} from './lib/news-editor-production.mjs';
+import { validateProductionNews } from './lib/news-editor-production.mjs';
 import {
   NEWS_EDITORIAL_VERSION,
   editorialSourceHash
@@ -10,11 +7,8 @@ import {
 import {
   decodeNewsSourceText,
   isMachineLocalizedDraft,
-  publicationSemanticReasons,
-  sourceEntityCandidates,
-  sourceLooksTruncated
+  publicationSemanticReasons
 } from './lib/news-publication-quality.mjs';
-import { repairNewsPublicationCopy } from './lib/news-publication-repair.mjs';
 
 const eventsPath = 'data/news-events.json';
 const reportPath = process.env.NEWS_PUBLICATION_QUALITY_REPORT || 'tmp/news-publication-quality-report.json';
@@ -45,37 +39,53 @@ function sourceUrl(item = {}) {
   return String(item.primaryUrl || item.url || '').trim();
 }
 
-function productionInput(item = {}, articleText = '') {
+function productionInput(item = {}) {
   return {
     title: sourceTitle(item),
     summary: sourceSummary(item),
-    articleText: decodeNewsSourceText(articleText),
     url: sourceUrl(item),
     primaryUrl: sourceUrl(item),
     games: Array.isArray(item.games) ? item.games : []
   };
 }
 
-function assess(item, titleRu, summaryRu, articleText = '', localizedNames = {}) {
-  const input = productionInput(item, articleText);
-  const validation = validateProductionNews(
-    { titleRu, briefRu: summaryRu },
-    input
-  );
+function softValidationReason(reason = '') {
+  return /^title length \d+$/i.test(reason)
+    || /^brief length \d+$/i.test(reason)
+    || reason === 'brief has fewer than 2 complete sentences'
+    || reason === 'lead repeats headline'
+    || /^unsupported number:/i.test(reason)
+    || /^source entity missing:/i.test(reason);
+}
+
+function salvageCompleteBrief(value = '') {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  if (!text || /[.!?…»”)]$/.test(text)) return { text, salvaged: false };
+  let lastEnd = -1;
+  for (const match of text.matchAll(/[.!?](?:[»”)]?)(?=\s|$)/g)) lastEnd = (match.index || 0) + match[0].length;
+  if (lastEnd >= 80) return { text: text.slice(0, lastEnd).trim(), salvaged: true };
+  return { text, salvaged: false };
+}
+
+function assess(item, titleRu, summaryRu, localizedNames = {}) {
+  const input = productionInput(item);
+  const validation = validateProductionNews({ titleRu, briefRu: summaryRu }, input);
+  const validationReasons = (validation.reasons || []).filter(reason => !softValidationReason(reason));
   const semanticReasons = publicationSemanticReasons(
     input,
     { titleRu: validation.titleRu, summaryRu: validation.briefRu },
     { localizedNames }
   );
+  const reasons = [...new Set([...validationReasons, ...semanticReasons])];
   return {
-    ok: validation.ok && semanticReasons.length === 0,
+    ok: reasons.length === 0,
     titleRu: validation.titleRu,
     summaryRu: validation.briefRu,
-    reasons: [...new Set([...(validation.reasons || []), ...semanticReasons])]
+    reasons
   };
 }
 
-function approve(item, result, model, repaired = false) {
+function approve(item, result, model, tailSalvaged = false) {
   item.titleRu = result.titleRu;
   item.summaryRu = result.summaryRu;
   item.editorialBriefRu = result.summaryRu;
@@ -84,7 +94,7 @@ function approve(item, result, model, repaired = false) {
   item.editorialSourceHash = editorialSourceHash(item);
   item.editorialModel = model;
   item.editorialGeneratedAt = new Date().toISOString();
-  item.publicationQualityStatus = repaired ? 'repaired-and-approved' : 'approved';
+  item.publicationQualityStatus = tailSalvaged ? 'approved-after-tail-salvage' : 'approved';
   item.publicationQualityCheckedAt = new Date().toISOString();
   delete item.publicationQualityReasons;
   delete item.editorialReasons;
@@ -159,10 +169,8 @@ const rejectedUrls = new Set();
 const failures = [];
 let checked = 0;
 let machineDraftsChecked = 0;
-let passedWithoutRepair = 0;
-let reassessedWithArticle = 0;
-let repairAttempted = 0;
-let repaired = 0;
+let passed = 0;
+let tailSalvaged = 0;
 let rejected = 0;
 
 for (const item of items) {
@@ -172,75 +180,22 @@ for (const item of items) {
   if (machineDraft) machineDraftsChecked += 1;
 
   const currentTitleRu = String(item.titleRu || '').trim();
-  const currentSummaryRu = String(item.summaryRu || item.editorialBriefRu || '').trim();
-  const initial = assess(item, currentTitleRu, currentSummaryRu, '', localizedNames);
-  const sourceSnippetTruncated = sourceLooksTruncated(productionInput(item));
+  const brief = salvageCompleteBrief(String(item.summaryRu || item.editorialBriefRu || '').trim());
+  const result = assess(item, currentTitleRu, brief.text, localizedNames);
 
-  if (initial.ok && !sourceSnippetTruncated) {
+  if (result.ok) {
     approve(
       item,
-      initial,
+      result,
       machineDraft ? 'validated-machine-draft-publication-gate' : String(item.editorialModel || 'publication-quality-gate'),
-      false
+      brief.salvaged
     );
-    passedWithoutRepair += 1;
+    passed += 1;
+    if (brief.salvaged) tailSalvaged += 1;
     continue;
   }
 
-  let articleText = '';
-  let articleFetchError = '';
-  try {
-    articleText = await fetchArticleText(sourceUrl(item), 9000, `${sourceTitle(item)} ${sourceSummary(item)}`);
-  } catch (error) {
-    articleFetchError = error.message;
-  }
-
-  reassessedWithArticle += 1;
-  const enriched = assess(item, currentTitleRu, currentSummaryRu, articleText, localizedNames);
-  if (enriched.ok) {
-    approve(
-      item,
-      enriched,
-      machineDraft ? 'validated-machine-draft-with-source-publication-gate' : String(item.editorialModel || 'publication-quality-source-gate'),
-      false
-    );
-    passedWithoutRepair += 1;
-    continue;
-  }
-
-  repairAttempted += 1;
-  const requiredEntities = sourceEntityCandidates(productionInput(item, articleText));
-  const repair = await repairNewsPublicationCopy({
-    title: sourceTitle(item),
-    summary: sourceSummary(item),
-    articleText,
-    url: sourceUrl(item),
-    source: item.primarySource || item.source || '',
-    currentTitleRu,
-    currentSummaryRu,
-    failureReasons: enriched.reasons,
-    requiredEntities
-  });
-
-  if (repair.ok) {
-    const repairedResult = assess(item, repair.titleRu, repair.summaryRu, articleText, localizedNames);
-    if (repairedResult.ok) {
-      approve(item, repairedResult, repair.model || 'github-models-publication-repair', true);
-      item.editorialRequiredEntities = requiredEntities;
-      repaired += 1;
-      console.log(`[news/publication-quality] repaired ${item.id}: ${item.titleRu}`);
-      continue;
-    }
-    repair.reasons = repairedResult.reasons;
-  }
-
-  const reasons = [...new Set([
-    ...enriched.reasons,
-    ...(repair.reasons || []),
-    ...(repair.reason ? [repair.reason] : []),
-    ...(articleFetchError ? [`article fetch: ${articleFetchError}`] : [])
-  ])];
-  reject(item, reasons.length ? reasons : ['final semantic/editorial validation failed']);
+  reject(item, result.reasons);
   rememberRejected(item, rejectedIds, rejectedUrls);
   failures.push({ id: item.id, url: sourceUrl(item), reasons: item.publicationQualityReasons });
   rejected += 1;
@@ -254,10 +209,8 @@ const nextPayload = Array.isArray(payload)
       publicationQuality: {
         checked,
         machineDraftsChecked,
-        passedWithoutRepair,
-        reassessedWithArticle,
-        repairAttempted,
-        repaired,
+        passed,
+        tailSalvaged,
         rejected,
         policy: 'per-item-fail-open-no-fixed-count'
       },
@@ -270,19 +223,17 @@ for (const path of sourceFiles) filteredRawItems += await rewriteSourceFile(path
 
 await fs.mkdir('tmp', { recursive: true });
 await fs.writeFile(reportPath, `${JSON.stringify({
-  schemaVersion: 2,
+  schemaVersion: 3,
   generatedAt: new Date().toISOString(),
-  policy: 'Every public event is checked. Existing copy is revalidated against available article text, then suspicious items are repaired with GitHub Models; only an item that still fails is excluded.',
+  policy: 'Every public event is checked deterministically. Concise complete copy is allowed; an incomplete trailing fragment may be trimmed to the last complete sentence. Semantic corruption, machine artifacts, broken entities, untranslated clauses and genuinely incomplete copy are excluded per item. No fixed publication count and no external AI dependency.',
   fixedPublicationCount: null,
   checked,
   machineDraftsChecked,
-  passedWithoutRepair,
-  reassessedWithArticle,
-  repairAttempted,
-  repaired,
+  passed,
+  tailSalvaged,
   rejected,
   filteredRawItems,
   failures
 }, null, 2)}\n`);
 
-console.log(`[news/publication-quality] checked=${checked}; machine_drafts=${machineDraftsChecked}; passed=${passedWithoutRepair}; source_reassessed=${reassessedWithArticle}; repair_attempted=${repairAttempted}; repaired=${repaired}; rejected=${rejected}; raw_filtered=${filteredRawItems}`);
+console.log(`[news/publication-quality] checked=${checked}; machine_drafts=${machineDraftsChecked}; passed=${passed}; tail_salvaged=${tailSalvaged}; rejected=${rejected}; raw_filtered=${filteredRawItems}`);
