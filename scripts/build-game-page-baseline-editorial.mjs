@@ -1,17 +1,20 @@
 #!/usr/bin/env node
-import fs from 'node:fs';
-import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 
-const root=process.cwd();const slug=String(process.argv[2]||'').trim();if(!slug)throw new Error('Usage: node scripts/build-game-page-baseline-editorial.mjs <slug>');
-const read=(p,f=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,p),'utf8'))}catch{return f}};const write=(p,v)=>{const t=path.join(root,p);fs.mkdirSync(path.dirname(t),{recursive:true});fs.writeFileSync(t,JSON.stringify(v,null,2)+'\n')};const clean=v=>String(v||'').replace(/\s+/g,' ').trim();
-const draft=read(`data/drafts/${slug}.json`),knowledge=read(`data/game-knowledge/${slug}.json`,{}),sourceContent=read(`data/game-source-content/${slug}.json`,{}),corpus=read(`data/game-sources/${slug}.json`,{});
-if(!draft?.identity?.title)throw new Error(`Missing draft for ${slug}`);if(knowledge?.status!=='green'||knowledge?.source_content_hash!==sourceContent?.content_hash)throw new Error(`${slug}: source-grounded knowledge is required before fallback editorial`);
-const claims=(knowledge.defining_claims||[]).map(x=>clean(x.claim)).filter(Boolean);const essence=clean(knowledge.game_essence);const role=clean(knowledge.player_role);const loop=clean(knowledge.core_loop);const progression=clean(knowledge.progression_structure);const world=clean(knowledge.world_structure);
-const sentence=v=>{const s=clean(v);return s&&!/[.!?]$/.test(s)?`${s}.`:s};
-let short=sentence(essence);if(short.length>240)short=short.slice(0,236).replace(/\s+\S*$/,'')+'…';if(short.length<90)short=sentence([essence,claims[0]].filter(Boolean).join(' '));
-let integrated=[essence,role,loop,progression,world,...claims.slice(0,3)].map(sentence).filter(Boolean).join(' ');if(integrated.length>1000)integrated=integrated.slice(0,996).replace(/\s+\S*$/,'')+'…';
-let campaign=[role,progression,loop,claims[1],claims[2]].map(sentence).filter(Boolean).join(' ');if(campaign.length>600)campaign=campaign.slice(0,596).replace(/\s+\S*$/,'')+'…';
-const features=[...(knowledge.distinctive_features||[]),...(knowledge.mechanics||[]),...claims].map(sentence).map(clean).filter(x=>x.length>=18);const unique=[...new Set(features)].slice(0,8);
-if(short.length<90||integrated.length<350||campaign.length<130||unique.length<4)throw new Error(`${slug}: accumulated knowledge is too thin for a publishable fallback`);
-const editorial={short_description:short,integrated_description:integrated,campaign,features:unique};draft.editorial={...(draft.editorial||{}),...editorial,language:'ru',editorial_mode:'source_grounded_structured_fallback',knowledge_source:`data/game-knowledge/${slug}.json`,knowledge_hash:knowledge.source_content_hash};draft.publication={...(draft.publication||{}),status:'needs_revision',public_ready:false,quality_status:'source_grounded_fallback_pending_qc'};draft.updated_at=new Date().toISOString();write(`data/drafts/${slug}.json`,draft);
-write(`data/parser-runs/page-editorial-generation-${slug}.json`,{parser:'game-page-source-grounded-fallback-v2',status:'completed_pending_qc',game_slug:slug,checked_at:draft.updated_at,paid_api:false,knowledge_source:`data/game-knowledge/${slug}.json`,knowledge_hash:knowledge.source_content_hash,source_count:knowledge.source_count||0,defining_claims:claims.length,output:`data/drafts/${slug}.json`});console.log(JSON.stringify({slug,status:'source-grounded-fallback',features:unique.length,sources:knowledge.source_count||0,claims:claims.length,paid_api:false},null,2));
+const slug=String(process.argv[2]||'').trim();
+if(!slug)throw new Error('Usage: node scripts/build-game-page-baseline-editorial.mjs <slug>');
+
+// The old fallback concatenated English source evidence while labelling it Russian.
+// A fallback is still automatic, but it must use the same source-grounded Russian
+// writer and quality bounds as the primary path. If that writer cannot produce a
+// valid Russian page, fail closed instead of publishing source fragments.
+const child=spawnSync('node',['scripts/build-game-page.mjs',slug],{
+  cwd:process.cwd(),
+  env:{...process.env,GAME_PAGE_EDITORIAL_RETRY:'fallback'},
+  encoding:'utf8',
+  stdio:'pipe',
+  maxBuffer:32*1024*1024
+});
+if(child.stdout)process.stdout.write(child.stdout);
+if(child.stderr)process.stderr.write(child.stderr);
+if(child.status!==0)throw new Error(`${slug}: automatic source-grounded Russian fallback failed; page remains in revision state`);
