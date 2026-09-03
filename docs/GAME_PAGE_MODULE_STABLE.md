@@ -1,7 +1,7 @@
 # Игропоиск — стабильный модуль создания страниц игр
 
 **Статус:** STABLE MODULE CONTRACT  
-**Версия контракта:** 2026-09-02.3  
+**Версия контракта:** 2026-09-03.1  
 **Машиночитаемый состав:** `config/game-page-module.manifest.json`
 
 ## 1. Граница модуля
@@ -21,11 +21,11 @@ Game Registry / canonical identity
   → independent source discovery
   → publication-hub discovery
   → canonical source corpus
-  → professional rating from confirmed direct reviews
+  → professional rating from currently confirmed direct reviews
   → media/content enrichment
   → free local Qwen editorial repair
   → canonical page editorial
-  → content QC + media QC + source/rating QC + overall page QC
+  → content QC + media QC + source validity QC + overall page QC
   → canonical identity normalization
   → finalize-game-page-publication.mjs
   → catalog + public shell + runtime page
@@ -38,7 +38,7 @@ Game Registry / canonical identity
 - identity: Game Registry / постоянный `game_id`;
 - structured parser result: `data/parser-output/<slug>.json`;
 - working revision draft: `data/drafts/<slug>.json`;
-- полный evidence/source corpus: `data/game-sources/<slug>.json`;
+- evidence/source corpus: `data/game-sources/<slug>.json`;
 - calculated rating evidence: `data/ratings/<slug>.json`;
 - canonical editorial страницы: `data/page-editorial/<slug>.json`;
 - page/content/media QC: `data/quality-control/*<slug>*.json`;
@@ -56,7 +56,9 @@ Game Registry / canonical identity
 
 Metacritic/OpenCritic и подобные агрегаторы могут использоваться как discovery index, но не как подмена прямой профессиональной рецензии для рейтинга. В professional source count и rating допускаются только подтверждённые прямые материалы изданий.
 
-Страница не проходит publication gate, если minimum professional/scored source contract не выполнен.
+**Количество найденных профессиональных обзоров не блокирует публикацию страницы игры.** `discovery.complete` означает, что текущий проход discovery фактически выполнен и canonical corpus собран; оно не означает, что достигнута произвольная квота источников. Все корректно найденные на текущий момент источники и оценки публикуются на странице.
+
+Минимумы professional/scored sources сохраняются как отдельный `coverage_passed` для оценки полноты корпуса, собственного обзора Игропоиска и последующего enrichment. Если coverage ниже целевого, поиск источников должен продолжаться и может создать новую revision страницы с расширенным corpus/рейтингом, но уже опубликованная корректная страница не блокируется и не снимается с публикации.
 
 ## 5. Editorial/AI contract
 
@@ -64,7 +66,7 @@ Page editorial — не обзор. Это краткое описание, ин
 
 Для него используется бесплатный локальный backend `Ollama + qwen2.5:3b` через `scripts/lib/free-editorial-ai.mjs`. Paid OpenAI/API не является зависимостью page module.
 
-AI получает только уже собранные данные и canonical source corpus. Его результат — candidate, а не source of truth. Он обязан пройти semantic/content QC и materialization в `data/page-editorial/<slug>.json`.
+AI получает только уже собранные проверенные данные и текущий canonical source corpus. Его результат — candidate, а не source of truth. Он обязан пройти semantic/content QC и materialization в `data/page-editorial/<slug>.json`.
 
 Если Ollama/Qwen недоступен или результат не проходит QC, страница остаётся `needs_revision`; плохой fallback не публикуется.
 
@@ -80,14 +82,16 @@ Finalizer обязан fail closed, если хотя бы одно из усл�
 - overall page QC;
 - content QC;
 - media QC;
-- source discovery completeness;
+- текущий source discovery проход не завершён технически / corpus не сформирован;
 - canonical page editorial.
+
+**Coverage quota источников не является publication gate страницы.**
 
 ### Published package immutability
 
 После finalizer набор `draft + page-editorial + source corpus + QC + catalog entry + game-content + public shell` считается **published canonical package** и не может редактироваться enrichment-скриптами на месте.
 
-Любое новое media/relation/identity/catalog enrichment после публикации создаёт или ставит в очередь **новую revision**, которая снова обязана пройти всю цепочку QC и finalizer. Если revision не проходит, предыдущий published canonical package восстанавливается без изменений.
+Любое новое media/relation/identity/catalog/source enrichment после публикации создаёт или ставит в очередь **новую revision**, которая снова обязана пройти применимые QC и finalizer. Если revision не проходит, предыдущий published canonical package восстанавливается без изменений.
 
 ## 7. Контракт клиентов Page Assembly
 
@@ -116,7 +120,7 @@ Lifecycle orchestrator может физически восстановить б
 
 ### Revision-safe mutators
 
-Media/relations enrichment имеет право менять только незавершённый revision draft. Если обнаружен published package, он сохраняется неизменным, а enrichment переводится в новую page revision.
+Media/relations/source enrichment имеет право менять только незавершённый revision draft/corpus. Если обнаружен published package, он сохраняется неизменным, а enrichment переводится в новую page revision.
 
 Точный список каждого класса находится в `config/game-page-module.manifest.json` и проверяется CI.
 
@@ -164,11 +168,12 @@ Runtime должен быть устойчив к независимому уд�
 
 Внешние профессиональные рецензии как evidence принадлежат source corpus страницы. **Собственный обзор Игропоиска остаётся отдельным модулем.**
 
-Page module может показать опубликованный обзор, если он существует, но:
+Page module показывает все подтверждённые внешние источники, найденные на текущий момент, и может показать опубликованный обзор Игропоиска, если он существует. При этом он:
 
-- не пишет его;
+- не пишет собственный обзор Игропоиска;
 - не имитирует его из page editorial;
-- не требует его для существования страницы;
+- не требует готовности собственного обзора для существования страницы;
+- не требует достижения review coverage quota для публикации страницы;
 - не создаёт параллельный review-source registry;
 - не получает от review subsystem разрешение на публикацию самой game page.
 
@@ -198,7 +203,8 @@ Page module может показать опубликованный обзор,
 - обходить finalizer;
 - мутировать published canonical package enrichment-скриптом;
 - давать News/Top/Popular/Releases отдельный механизм публичной страницы;
-- ослаблять source/content/media/editorial QC для конкретной игры;
+- ослаблять source validity/content/media/editorial QC для конкретной игры;
+- превращать arbitrary source-count quota в блокер публикации страницы;
 - возвращать generic placeholder как green editorial;
 - вводить paid AI как обязательную зависимость;
 - заводить второй механизм страниц;
