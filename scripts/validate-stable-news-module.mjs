@@ -76,20 +76,24 @@ for (const token of [
   "cron: '23 * * * *'",
   'ref: staging',
   'cancel-in-progress: false',
+  'models: read',
+  'GITHUB_TOKEN: ${{ github.token }}',
+  'node scripts/run-news-pipeline.mjs',
+  'node scripts/test-news-publication-quality.mjs',
   'Put verified missing games into temporary page-assembly storage',
   'Continue news publication independently from page assembly',
   'Audit hashtag integrity without blocking publication',
   'Publish compact live snapshot and stable monthly archive',
   'Reclaim redundant Object Storage snapshots after publication',
   'Expire news image cache older than seven days',
-  'node scripts/finalize-news-publication-quality.mjs',
-  'node scripts/test-news-publication-quality.mjs',
   'node scripts/publish-news-storage.mjs'
 ]) requireText(pipeline, token, pipelinePath);
 
 const stagingPipeline = read(stagingPipelinePath);
 for (const token of [
-  'node scripts/finalize-news-publication-quality.mjs',
+  'models: read',
+  'GITHUB_TOKEN: ${{ github.token }}',
+  'node scripts/run-news-pipeline.mjs --force',
   'node scripts/test-news-publication-quality.mjs',
   'tmp/news-publication-quality-report.json'
 ]) requireText(stagingPipeline, token, stagingPipelinePath);
