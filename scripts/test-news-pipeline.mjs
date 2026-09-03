@@ -125,8 +125,12 @@ for (const item of [...news, ...official, ...events, ...home]) {
   fs.writeFileSync(file, 'image');
 }
 const generatedAt = '2026-08-05T00:00:00.000Z';
+const sourceReport = Array.from({ length: 10 }, (_, index) => ({
+  id: `official-${index + 1}`,
+  status: index < 5 ? 'ok' : 'error'
+}));
 fs.writeFileSync(path.join(root, 'data/news.json'), JSON.stringify({ generatedAt, items: news }));
-fs.writeFileSync(path.join(root, 'data/publisher-news.json'), JSON.stringify({ generatedAt, sourceCount: 10, successfulSourceCount: 5, sourceReport: [], items: official }));
+fs.writeFileSync(path.join(root, 'data/publisher-news.json'), JSON.stringify({ generatedAt, sourceCount: 10, successfulSourceCount: 5, sourceReport, items: official }));
 const youtubeSignals = [
   { id: 'first', title: 'Video one', publishedAt: generatedAt, url: 'https://youtube.com/watch?v=first' },
   { id: 'second', title: 'Video two', publishedAt: generatedAt, url: 'https://youtube.com/watch?v=second' }
