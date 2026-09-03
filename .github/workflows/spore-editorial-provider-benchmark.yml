@@ -1,0 +1,42 @@
+name: Spore editorial provider benchmark
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/game-page-module-contract-20260902]
+    paths:
+      - '.github/workflows/spore-editorial-provider-benchmark.yml'
+      - 'scripts/benchmark-spore-editorial-provider.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [openrouter, gigachat, gemini, groq]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate Spore editorial with ${{ matrix.provider }} only
+        env:
+          EDITORIAL_AI_PROVIDER_ORDER: ${{ matrix.provider }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GIGACHAT_CREDENTIALS: ${{ secrets.GIGACHAT_CREDENTIALS }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GIGACHAT_SCOPE: GIGACHAT_API_PERS
+        run: node scripts/benchmark-spore-editorial-provider.mjs "${{ matrix.provider }}"
+      - name: Upload ${{ matrix.provider }} result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spore-editorial-benchmark-${{ matrix.provider }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: data/benchmarks/spore-${{ matrix.provider }}.json
+          if-no-files-found: warn
+          retention-days: 7
