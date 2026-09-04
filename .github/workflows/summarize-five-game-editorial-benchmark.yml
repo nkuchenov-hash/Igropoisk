@@ -1,0 +1,61 @@
+name: Summarize five-game editorial benchmark
+
+on:
+  push:
+    branches: [benchmark/five-games-editorial-20260904]
+    paths: ['.github/workflows/summarize-five-game-editorial-benchmark.yml']
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: nkuchenov-hash/Igropoisk
+          run-id: 33856934139
+          pattern: editorial-result-*
+          path: benchmark-results-all
+      - name: Build aggregate matrix
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const root='benchmark-results-all';
+          const files=[];
+          const walk=d=>{for(const e of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,e.name);e.isDirectory()?walk(p):e.name==='result.json'&&files.push(p)}};
+          walk(root);
+          const rows=files.map(f=>{try{return JSON.parse(fs.readFileSync(f,'utf8'))}catch{return null}}).filter(Boolean);
+          const byModel=new Map();
+          for(const r of rows){const k=r.label||r.id;const a=byModel.get(k)||[];a.push(r);byModel.set(k,a)}
+          const models=[];
+          const median=a=>{const b=[...a].sort((x,y)=>x-y);return b.length?(b.length%2?b[(b.length-1)/2]:(b[b.length/2-1]+b[b.length/2])/2):0};
+          for(const [label,rs] of byModel){
+            const ok=rs.filter(r=>r.status==='ok');
+            const partial=rs.filter(r=>r.status==='partial');
+            const errs=rs.filter(r=>r.status==='error');
+            const words=ok.concat(partial).map(r=>Number(r.review_words||0)).filter(Boolean);
+            const sections=ok.concat(partial).map(r=>Number(r.review_sections||0)).filter(Boolean);
+            const latency=ok.concat(partial).map(r=>Number(r.elapsed_ms||0)).filter(Boolean);
+            models.push({label,id:rs[0]?.id,provider:rs[0]?.provider,model:rs[0]?.model,games:rs.length,ok:ok.length,partial:partial.length,error:errs.length,format_ok:rs.filter(r=>r.format_ok).length,short_contract_ok:rs.filter(r=>r.short_contract_ok).length,review_length_ok:rs.filter(r=>r.review_length_ok).length,avg_review_words:words.length?Math.round(words.reduce((a,b)=>a+b,0)/words.length):0,median_review_words:Math.round(median(words)),avg_sections:sections.length?Number((sections.reduce((a,b)=>a+b,0)/sections.length).toFixed(1)):0,avg_latency_ms:latency.length?Math.round(latency.reduce((a,b)=>a+b,0)/latency.length):0,errors:errs.map(r=>String(r.error||'').split('\n')[0]).filter(Boolean),per_game:rs.map(r=>({game:r.game_slug,status:r.status,short_chars:r.short_chars,short_sentences:r.short_sentences,review_words:r.review_words,review_sections:r.review_sections,format_ok:r.format_ok,short_contract_ok:r.short_contract_ok,review_length_ok:r.review_length_ok,elapsed_ms:r.elapsed_ms,error:r.error?String(r.error).split('\n')[0]:null}))});
+          }
+          models.sort((a,b)=>b.ok-a.ok||b.avg_review_words-a.avg_review_words);
+          const out={source_run:33856934139,generated_at:new Date().toISOString(),result_rows:rows.length,models};
+          fs.mkdirSync('benchmark-summary',{recursive:true});
+          fs.writeFileSync('benchmark-summary/summary.json',JSON.stringify(out,null,2));
+          let md='# Five-game free-model benchmark — aggregate\n\n';
+          md+='| Model | OK | Partial | Error | Short OK | Review 2000+ | Avg words | Median | Avg sections | Avg latency |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n';
+          for(const m of models)md+=`| ${m.label} | ${m.ok}/${m.games} | ${m.partial} | ${m.error} | ${m.short_contract_ok}/${m.games} | ${m.review_length_ok}/${m.games} | ${m.avg_review_words} | ${m.median_review_words} | ${m.avg_sections} | ${(m.avg_latency_ms/1000).toFixed(1)}s |\n`;
+          fs.writeFileSync('benchmark-summary/summary.md',md);
+          console.log(md);
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: editorial-five-games-summary
+          path: benchmark-summary
+          retention-days: 14
