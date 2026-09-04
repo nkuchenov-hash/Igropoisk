@@ -1,0 +1,51 @@
+name: Fix five-game live benchmark layout contract
+
+on:
+  push:
+    branches: [benchmark/five-games-editorial-20260904]
+    paths: ['.github/workflows/fix-five-game-live-layout-contract.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Inject canonical shared layout scripts
+        run: |
+          python3 scripts/enforce_layout_contract.py --write
+          python3 scripts/enforce_layout_contract.py --check
+          git diff --name-only > /tmp/changed.txt
+          cat /tmp/changed.txt
+          test -s /tmp/changed.txt
+          if grep -Ev '^benchmark/five-games-models/.*\.html$' /tmp/changed.txt; then
+            echo 'Unexpected non-benchmark layout changes' >&2
+            exit 1
+          fi
+      - name: Publish surgical fix branch
+        id: publish
+        env:
+          RESULT_BRANCH: fix/five-game-live-layout-contract-20260904
+        run: |
+          set -euo pipefail
+          git config user.name 'igropoisk-benchmark[bot]'
+          git config user.email 'igropoisk-benchmark[bot]@users.noreply.github.com'
+          git switch -c "$RESULT_BRANCH"
+          git add benchmark/five-games-models
+          git commit -m 'Fix five-game benchmark shared layout contract'
+          git push --force origin "$RESULT_BRANCH"
+          echo "branch=$RESULT_BRANCH" >> "$GITHUB_OUTPUT"
+      - name: Open surgical PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT_BRANCH: ${{ steps.publish.outputs.branch }}
+        run: |
+          gh pr create --base main --head "$RESULT_BRANCH" --title 'Fix live five-game benchmark shared layout contract' --body 'Benchmark-only canonical shared-header/layout script injection using the repository layout-contract tool. No model text or production module logic changed.' || true
