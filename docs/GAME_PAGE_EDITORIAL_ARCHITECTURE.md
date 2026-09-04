@@ -20,10 +20,12 @@
 Game Registry / game_id
         │
         ▼
-Game Page source assembly
+Existing Game Page source assembly
+ scripts/collect-game-sources.mjs
         │
         ├─ data/game-sources/<slug>.json
-        └─ data/game-source-content/<slug>.json
+        └─ full-text materialization
+           → data/game-source-content/<slug>.json
         │
         ▼
 Canonical Evidence Package + SHA-256
@@ -47,6 +49,21 @@ Canonical Evidence Package + SHA-256
                                     optional linked review
 ```
 
+## 0. Не создаём второй source pipeline
+
+Канонический список источников уже собирает существующий Game Page pipeline:
+
+- `scripts/collect-game-sources.mjs`;
+- при необходимости он использует `scripts/discover-game-sources-web.mjs`;
+- также использует `scripts/discover-game-publication-hubs.mjs`;
+- итоговый registry сохраняется в `data/game-sources/<slug>.json`.
+
+Новые Subtitle/Description/Features skills и Review Skill **не выполняют отдельный discovery**. Они получают только результаты этого канонического слоя.
+
+Отдельный обязательный этап — **full-text materialization**: для каждого принятого источника нужно сохранить весь реально доступный readable-текст в `data/game-source-content/<slug>.json` вместе с provenance/coverage. Это продолжение существующего source assembly, а не второй сборщик источников.
+
+На момент фиксации архитектуры именно постоянная материализация полного текста для каждой игры является недостающим инфраструктурным условием для финального model benchmark. Сам source registry/discovery уже существует и не требует замены.
+
 ## 1. Canonical Evidence Package
 
 Перед любой редакционной генерацией собирается один неизменяемый пакет доказательств конкретной ревизии игры.
@@ -56,7 +73,7 @@ Canonical Evidence Package + SHA-256
 - canonical `game_id`, title, year and version markers;
 - explicit excluded/remake/remaster/sequel identities;
 - полный список источников и provenance;
-- весь readable-текст, сохранённый source collector;
+- весь readable-текст, сохранённый full-text materializer;
 - подтверждённые структурированные facts;
 - доступные professional scores и publication metadata;
 - media/source metadata, если они нужны конкретному skill;
@@ -134,6 +151,7 @@ AI не должен владеть identity или фактами.
 
 - game identity;
 - source discovery/storage;
+- full-text materialization;
 - version filtering rules;
 - structured factual fields;
 - media metadata;
@@ -171,7 +189,8 @@ Review не обязан автоматически переписываться
 
 ```text
 identify game
-→ collect facts + all sources + source texts + media
+→ existing collect-game-sources pipeline
+→ materialize complete readable source texts
 → validate exact identity/version
 → freeze Evidence Package
 → [Subtitle || Description || Features] in parallel
