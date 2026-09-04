@@ -19,9 +19,26 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Inject canonical shared layout scripts
+      - name: Inject canonical shared scripts only into benchmark HTML
         run: |
-          python3 scripts/enforce_layout_contract.py --write
+          node - <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const root='benchmark/five-games-models';
+          const header='<script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>';
+          const layout='<script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>';
+          const files=[];
+          const walk=d=>{for(const e of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,e.name);e.isDirectory()?walk(p):e.name.endsWith('.html')&&files.push(p)}};
+          walk(root);
+          for(const f of files){
+            let s=fs.readFileSync(f,'utf8');
+            s=s.replace(/\s*<script\b[^>]*data-ig-shared-header=["']script["'][^>]*>\s*<\/script>\s*/gi,'');
+            s=s.replace(/\s*<script\b[^>]*data-ig-layout-contract=["']script["'][^>]*>\s*<\/script>\s*/gi,'');
+            if(!/<\/body>/i.test(s)) throw new Error(`missing </body>: ${f}`);
+            s=s.replace(/<\/body>/i,`${header}${layout}</body>`);
+            fs.writeFileSync(f,s);
+          }
+          console.log(`patched ${files.length} benchmark HTML files`);
+          NODE
           python3 scripts/enforce_layout_contract.py --check
           git diff --name-only > /tmp/changed.txt
           cat /tmp/changed.txt
@@ -33,7 +50,7 @@ jobs:
       - name: Publish surgical fix branch
         id: publish
         env:
-          RESULT_BRANCH: fix/five-game-live-layout-contract-20260904
+          RESULT_BRANCH: fix/five-game-live-layout-contract-20260904-v2
         run: |
           set -euo pipefail
           git config user.name 'igropoisk-benchmark[bot]'
@@ -48,4 +65,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RESULT_BRANCH: ${{ steps.publish.outputs.branch }}
         run: |
-          gh pr create --base main --head "$RESULT_BRANCH" --title 'Fix live five-game benchmark shared layout contract' --body 'Benchmark-only canonical shared-header/layout script injection using the repository layout-contract tool. No model text or production module logic changed.' || true
+          gh pr create --base main --head "$RESULT_BRANCH" --title 'Fix live five-game benchmark shared layout contract' --body 'Benchmark-only canonical shared-header/layout script injection. No model text or production module logic changed.' || true
