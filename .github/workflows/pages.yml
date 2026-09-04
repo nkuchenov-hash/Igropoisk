@@ -3,6 +3,9 @@ name: Deploy Igropoisk to GitHub Pages
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   repository_dispatch:
     types: [production-pages]
   workflow_call:
@@ -49,8 +52,12 @@ jobs:
           test -z "$(git status --porcelain)"
       - name: Verify JavaScript syntax and feed quality regressions
         run: |
-          find assets scripts features -type f \( -name '*.js' -o -name '*.mjs' \) -print0 | xargs -0 -n1 node --check
+          find assets scripts features game/_shared -type f \( -name '*.js' -o -name '*.mjs' \) -print0 | xargs -0 -n1 node --check
           node scripts/test-home-feed-quality.mjs
+      - name: Verify approved game module in a real browser before deployment
+        run: |
+          npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+          node scripts/smoke-game-runtime.mjs
       - name: Verify News Content API pipeline health and module boundary
         run: |
           node scripts/test-news-content-api.mjs
