@@ -1,0 +1,32 @@
+name: Wolfenstein 3D Groq extras exact prompt
+
+on:
+  push:
+    branches: [benchmark/wolf3d-all-free-models-20260904]
+    paths:
+      - '.github/workflows/wolf3d-groq-extras-fair.yml'
+      - 'scripts/run-wolf3d-groq-extras-fair.mjs'
+      - 'benchmarks/wolfenstein-3d-1992/source-pack.json'
+  workflow_dispatch:
+
+jobs:
+  extras:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run exact shared prompt
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: node scripts/run-wolf3d-groq-extras-fair.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wolf3d-groq-extras-fair-${{ github.run_id }}
+          path: |
+            benchmarks/wolfenstein-3d-1992/groq-extra-results-fair.json
+            benchmarks/wolfenstein-3d-1992/models/qwen3-6-27b.*
+            benchmarks/wolfenstein-3d-1992/models/gpt-oss-20b.*
+          retention-days: 14
