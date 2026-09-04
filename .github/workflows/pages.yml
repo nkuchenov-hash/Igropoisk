@@ -56,7 +56,7 @@ jobs:
           node scripts/test-home-feed-quality.mjs
       - name: Verify approved game module in a real browser before deployment
         run: |
-          npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+          npm install --no-save --ignore-scripts --package-lock=false puppeteer-core@24.16.0
           node scripts/smoke-game-runtime.mjs
       - name: Verify News Content API pipeline health and module boundary
         run: |
@@ -146,7 +146,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+      - run: npm install --no-save --ignore-scripts --package-lock=false puppeteer-core@24.16.0
       - name: Verify deployed news uses Object Storage and read-only health works
         env:
           NEWS_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
@@ -162,7 +162,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+      - run: npm install --no-save --ignore-scripts --package-lock=false puppeteer-core@24.16.0
       - name: Verify deployed popular and release blocks
         env:
           HOME_FEEDS_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
@@ -178,7 +178,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+      - run: npm install --no-save --ignore-scripts --package-lock=false puppeteer-core@24.16.0
       - name: Verify deployed game pages and protected shared runtime
         env:
           GAME_RUNTIME_SMOKE_BASE_URL: ${{ needs.deploy.outputs.page_url }}
