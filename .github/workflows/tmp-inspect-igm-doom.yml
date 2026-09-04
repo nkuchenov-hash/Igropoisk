@@ -1,0 +1,76 @@
+name: Inspect IGM DOOM trailer
+
+on:
+  push:
+    branches:
+      - tmp/inspect-igm-doom-video
+    paths:
+      - '.github/workflows/tmp-inspect-igm-doom.yml'
+      - 'tmp/igm-inspect-trigger.txt'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install puppeteer
+        run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+      - name: Inspect IGM page network
+        run: |
+          node <<'NODE'
+          const puppeteer = require('puppeteer-core');
+          const fs = require('fs');
+          const candidates = ['/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'];
+          const executablePath = candidates.find(p => fs.existsSync(p));
+          if (!executablePath) throw new Error('Chromium/Chrome not found');
+          (async()=>{
+            const browser = await puppeteer.launch({headless:true, executablePath, args:['--no-sandbox','--disable-setuid-sandbox','--autoplay-policy=no-user-gesture-required']});
+            const page = await browser.newPage();
+            await page.setViewport({width:1440,height:1000});
+            const all=[];
+            page.on('request', req => all.push({kind:'request', type:req.resourceType(), url:req.url()}));
+            page.on('response', res => all.push({kind:'response', status:res.status(), url:res.url()}));
+            page.on('console', msg => console.log('BROWSER', msg.type(), msg.text()));
+            await page.goto('https://igm.gg/game/doom-dark-ages', {waitUntil:'networkidle2', timeout:90000});
+            console.log('TITLE', await page.title());
+            console.log('URL', page.url());
+            const candidatesEls = await page.$$('button,a,[role="button"]');
+            let clicked=false;
+            for (const el of candidatesEls) {
+              const txt = (await page.evaluate(e => (e.innerText || e.textContent || '').trim(), el)).replace(/\s+/g,' ');
+              if (/^Трейлер$/i.test(txt) || /Трейлер/i.test(txt)) {
+                console.log('CLICKING', txt);
+                try { await el.click(); clicked=true; break; } catch(e) { console.log('CLICK_ERR', e.message); }
+              }
+            }
+            console.log('CLICKED', clicked);
+            await new Promise(r=>setTimeout(r,8000));
+            const frames = await page.evaluate(() => Array.from(document.querySelectorAll('iframe')).map(x=>({src:x.src,title:x.title,allow:x.allow})));
+            const videos = await page.evaluate(() => Array.from(document.querySelectorAll('video')).map(v=>({src:v.src,currentSrc:v.currentSrc,poster:v.poster,autoplay:v.autoplay,loop:v.loop,muted:v.muted})));
+            console.log('IFRAMES', JSON.stringify(frames,null,2));
+            console.log('VIDEOS', JSON.stringify(videos,null,2));
+            const interesting = all.filter(x => /(vimeo|youtube|youtu\.be|mp4|webm|m3u8|\.mpd|player|video)/i.test(x.url));
+            console.log('INTERESTING_NETWORK_START');
+            for (const x of interesting) console.log(JSON.stringify(x));
+            console.log('INTERESTING_NETWORK_END');
+            const html = await page.content();
+            fs.writeFileSync('igm-doom-rendered.html', html);
+            fs.writeFileSync('igm-doom-network.json', JSON.stringify(all,null,2));
+            await page.screenshot({path:'igm-doom.png',fullPage:true});
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: igm-doom-inspection
+          path: |
+            igm-doom-rendered.html
+            igm-doom-network.json
+            igm-doom.png
