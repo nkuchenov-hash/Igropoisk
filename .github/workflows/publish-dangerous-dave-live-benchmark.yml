@@ -1,0 +1,145 @@
+name: Publish Dangerous Dave live benchmark
+
+on:
+  push:
+    branches: [benchmark/dangerous-dave-editorial-20260904]
+    paths: ['.github/workflows/publish-dangerous-dave-live-benchmark.yml']
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      SOURCE_RUN: '33864493715'
+      RESULT_BRANCH: benchmark-results/dangerous-dave-live-20260904
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Wait for authoritative Dangerous Dave run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch "$SOURCE_RUN" --repo "$GITHUB_REPOSITORY" --exit-status
+      - name: Download authoritative artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rm -rf /tmp/dd-artifacts
+          mkdir -p /tmp/dd-artifacts
+          gh run download "$SOURCE_RUN" --repo "$GITHUB_REPOSITORY" --dir /tmp/dd-artifacts
+          find /tmp/dd-artifacts -name result.json -print
+      - name: Replace wrong Haunted Mansion with eligible Dangerous Dave outputs
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, re, html
+
+          root=Path('benchmark/five-games-models')
+          slug='dangerous-dave-in-the-haunted-mansion'
+          title='Dangerous Dave in the Haunted Mansion'
+          old_slug='disneys-the-haunted-mansion'
+          out=root/slug
+          if (root/old_slug).exists():
+              import shutil; shutil.rmtree(root/old_slug)
+          if out.exists():
+              import shutil; shutil.rmtree(out)
+          out.mkdir(parents=True,exist_ok=True)
+
+          results=[]
+          for p in Path('/tmp/dd-artifacts').rglob('result.json'):
+              try: d=json.loads(p.read_text(encoding='utf-8'))
+              except Exception: continue
+              if d.get('game_slug')==slug and d.get('status')=='ok' and d.get('review') and d.get('short_description'):
+                  results.append(d)
+          results.sort(key=lambda d:d.get('label',''))
+          if not results:
+              raise SystemExit('No eligible Dangerous Dave outputs')
+
+          def esc(x): return html.escape(str(x or ''),quote=True)
+          def md(text):
+              chunks=[]; para=[]
+              def flush():
+                  nonlocal para
+                  if para:
+                      chunks.append('<p>'+esc(' '.join(para).strip())+'</p>'); para=[]
+              for raw in str(text or '').replace('\r','').split('\n'):
+                  t=raw.strip()
+                  if not t: flush(); continue
+                  m=re.match(r'^(#{1,4})\s+(.+)$',t)
+                  if m:
+                      flush(); n=min(4,len(m.group(1))+1); chunks.append(f'<h{n}>{esc(m.group(2))}</h{n}>')
+                  elif re.match(r'^[-*]\s+',t):
+                      flush(); chunks.append('<p>• '+esc(re.sub(r'^[-*]\s+','',t))+'</p>')
+                  else: para.append(t)
+              flush(); return ''.join(chunks)
+
+          def shell(page_title,body):
+              return f'''<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>{esc(page_title)} | Игропоиск</title><link rel="stylesheet" href="../../../assets/design-system.css"><link rel="stylesheet" href="../styles.css"><link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style"><link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style"></head><body><main class="wrap">{body}</main><script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script><script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script></body></html>'''
+
+          cards=[]; opts=[]; eligible=[]
+          for d in results:
+              mid=d['id']; label=d['label']; words=int(d.get('review_words') or 0); sections=int(d.get('review_sections') or 0)
+              eligible.append(label); opts.append(f'<option value="{esc(mid)}.html">{esc(label)}</option>')
+              body=f'''<div class="topbar"><a class="ig-button" href="index.html">← {esc(title)}</a><a class="ig-button" href="../index.html">Все игры</a></div><header class="hero"><div class="ig-kicker">{esc(d.get('provider','model benchmark'))}</div><h1 class="ig-page-title ig-display">{esc(title)} — {esc(label)}</h1><div class="chips"><span class="ig-chip">{esc(d.get('model',''))}</span><span class="ig-chip"><span class="ig-rating">ok</span></span><span class="ig-chip">{words} слов</span><span class="ig-chip">{sections} разделов</span></div></header><div class="bench-article-layout"><article class="article"><section class="ig-card copy-block"><div class="ig-kicker">Короткое описание страницы</div><h2>Описание</h2><p class="short-copy">{esc(d.get('short_description',''))}</p></section><section class="copy review-copy"><div class="ig-kicker">Полный обзор</div>{md(d.get('review',''))}</section></article><aside class="ig-panel sidebar"><b>Условия теста</b><p class="ig-muted">Текст получен после source assembly. Один identity-clean frozen evidence pack для всех моделей этой игры. Failed/partial результаты исключены.</p><div class="row"><span>Статус</span><b>ok</b></div><div class="row"><span>Слов</span><b>{words}</b></div><div class="row"><span>Разделов</span><b>{sections}</b></div></aside></div>'''
+              (out/f'{mid}.html').write_text(shell(f'{title} — {label}',body),encoding='utf-8')
+              short=esc(d.get('short_description',''))
+              cards.append(f'<article class="ig-card bench-card"><div class="ig-kicker"><span class="ig-rating">ok</span></div><h2>{esc(label)}</h2><div class="metrics"><div class="ig-panel metric"><b>{words}</b><span>слов</span></div><div class="ig-panel metric"><b>{sections}</b><span>разделов</span></div></div><p class="ig-muted excerpt">{short}</p><a class="ig-button" href="{esc(mid)}.html">Открыть результат</a></article>')
+
+          options=''.join(opts)
+          body=f'''<div class="topbar"><a class="ig-button" href="../index.html">← Все 5 игр</a><div class="ig-logo brand">ИГРО<b>ПОИСК</b></div></div><header class="hero"><div class="ig-kicker">Production-realistic editorial benchmark</div><h1 class="ig-page-title ig-display">{esc(title)}</h1><p>Короткое описание страницы + обзор после реальной сборки source corpus. Показаны только пригодные ответы со статусом ok.</p><div class="chips"><span class="ig-chip">{len(results)} пригодных результатов</span><span class="ig-chip">noindex</span></div></header><section class="grid">{''.join(cards)}</section><section class="section"><div class="ig-kicker">Side-by-side</div><h2>Сравнить две модели</h2><div class="compare"><div class="ig-card compare-pane"><select class="ig-input" id="left">{options}</select><iframe class="frame" id="leftFrame" title="Левая модель"></iframe></div><div class="ig-card compare-pane"><select class="ig-input" id="right">{options}</select><iframe class="frame" id="rightFrame" title="Правая модель"></iframe></div></div></section><script>const l=document.getElementById('left'),r=document.getElementById('right'),lf=document.getElementById('leftFrame'),rf=document.getElementById('rightFrame');if(r.options.length>1)r.selectedIndex=1;function go(){{lf.src=l.value;rf.src=r.value}}l.onchange=go;r.onchange=go;go();</script>'''
+          (out/'index.html').write_text(shell(title,body),encoding='utf-8')
+
+          index=root/'index.html'
+          txt=index.read_text(encoding='utf-8')
+          txt=txt.replace('<span class="ig-chip">The Haunted Mansion</span>', '<span class="ig-chip">Dangerous Dave</span>')
+          articles=re.findall(r'<article class="ig-card bench-card">.*?</article>',txt,re.S)
+          new_card=f'<article class="ig-card bench-card"><div class="ig-kicker">{len(results)} пригодных результатов</div><h2>{esc(title)}</h2><p class="ig-muted excerpt">Открыть успешные результаты моделей для этой игры и сравнить любые две рядом.</p><a class="ig-button" href="{slug}/index.html">Открыть игру</a></article>'
+          replaced=False
+          for a in articles:
+              if f'href="{old_slug}/index.html"' in a:
+                  txt=txt.replace(a,new_card); replaced=True; break
+          if not replaced:
+              raise SystemExit('Old Haunted Mansion card not found')
+          index.write_text(txt,encoding='utf-8')
+
+          eligibility_path=root/'rating-eligibility.json'
+          eligibility=json.loads(eligibility_path.read_text(encoding='utf-8')) if eligibility_path.exists() else {'policy':{},'games':{}}
+          eligibility.setdefault('policy',{})['eligible_status']='ok'
+          eligibility['policy']['failed_or_partial']='excluded'
+          eligibility['policy']['rating_rule']='Only status=ok result pairs may receive a rating or contribute to an average. Error and partial runs are excluded from both score and denominator.'
+          games=eligibility.setdefault('games',{})
+          games.pop(old_slug,None)
+          games[slug]={'eligible_count':len(results),'eligible_models':eligible}
+          eligibility_path.write_text(json.dumps(eligibility,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('Eligible Dangerous Dave:',len(results),eligible)
+          PY
+      - name: Validate benchmark shell
+        run: |
+          test ! -d benchmark/five-games-models/disneys-the-haunted-mansion
+          test -f benchmark/five-games-models/dangerous-dave-in-the-haunted-mansion/index.html
+          ! grep -R '>error<\|>partial<' benchmark/five-games-models/dangerous-dave-in-the-haunted-mansion --include='*.html'
+          node scripts/validate-central-design-system.mjs
+          python3 scripts/enforce_layout_contract.py --check
+      - name: Publish clean branch from current main
+        run: |
+          set -euo pipefail
+          git config user.name 'igropoisk-benchmark[bot]'
+          git config user.email 'igropoisk-benchmark[bot]@users.noreply.github.com'
+          git switch -c "$RESULT_BRANCH"
+          git add benchmark/five-games-models
+          git commit -m 'Replace Haunted Mansion benchmark with Dangerous Dave'
+          git push --force origin "$RESULT_BRANCH"
+      - name: Open PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create --base main --head "$RESULT_BRANCH" \
+            --title 'Replace benchmark game with Dangerous Dave in the Haunted Mansion' \
+            --body 'Corrects the intended benchmark game. Removes Disney The Haunted Mansion from the live noindex benchmark, adds only status=ok Dangerous Dave outputs from authoritative run 33864493715, and updates rating eligibility. Benchmark-only change.'
