@@ -67,10 +67,8 @@ function rightRail(article,stats){
 }
 
 function verdict(article){
-  const best=article.verdict?.best_for||[];
-  const notFor=article.verdict?.not_for||[];
   const score=Number.isFinite(Number(article.score))?`${esc(article.score)} / 10`:'Без числовой оценки';
-  return `<section class="article-verdict"><div class="article-kicker">Вердикт</div><h2>${score}</h2><p>${esc(article.verdict?.summary||'')}</p>${best.length||notFor.length?`<div class="article-verdict__grid">${best.length?`<div class="article-verdict__group"><h3>Подойдёт</h3><ul>${best.map(item=>`<li>${esc(item)}</li>`).join('')}</ul></div>`:''}${notFor.length?`<div class="article-verdict__group"><h3>Не подойдёт</h3><ul>${notFor.map(item=>`<li>${esc(item)}</li>`).join('')}</ul></div>`:''}</div>`:''}</section>`;
+  return `<section class="article-verdict"><div class="article-kicker">Вердикт</div><h2>${score}</h2><p>${esc(article.verdict?.summary||'')}</p></section>`;
 }
 
 function page(article,stats){
