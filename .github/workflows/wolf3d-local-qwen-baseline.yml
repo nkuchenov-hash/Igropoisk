@@ -1,0 +1,35 @@
+name: Wolfenstein 3D local Qwen baseline
+
+on:
+  push:
+    branches: [benchmark/wolf3d-all-free-models-20260904]
+    paths:
+      - '.github/workflows/wolf3d-local-qwen-baseline.yml'
+      - 'scripts/run-wolf3d-local-qwen-baseline.mjs'
+      - 'benchmarks/wolfenstein-3d-1992/source-pack.json'
+  workflow_dispatch:
+
+jobs:
+  local:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install and start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve >/tmp/ollama.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 1; done
+          ollama pull qwen2.5:3b
+      - name: Generate local baseline with exact shared prompt
+        run: node scripts/run-wolf3d-local-qwen-baseline.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wolf3d-local-qwen-${{ github.run_id }}
+          path: benchmark-local
+          if-no-files-found: warn
+          retention-days: 14
