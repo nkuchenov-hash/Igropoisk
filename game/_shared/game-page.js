@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const moduleVersion='20260904-3';
+const moduleVersion='20260904-4';
 window.__IG_GAME_PAGE_MODULE_VERSION__=moduleVersion;
 const addStyle=(href)=>{
   const style=document.createElement('link');
