@@ -4,18 +4,20 @@ import path from 'node:path';
 import puppeteer from 'puppeteer-core';
 
 const root=process.cwd();
+const skipArticles=/^(1|true|yes)$/i.test(String(process.env.GAME_PAGE_SMOKE_SKIP_ARTICLES||''));
 const mime=new Map([['.html','text/html; charset=utf-8'],['.css','text/css; charset=utf-8'],['.js','text/javascript; charset=utf-8'],['.json','application/json; charset=utf-8'],['.svg','image/svg+xml'],['.png','image/png'],['.jpg','image/jpeg'],['.jpeg','image/jpeg'],['.webp','image/webp']]);
 const browserPath=()=>[process.env.CHROME_PATH,'/usr/bin/google-chrome-stable','/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'].filter(Boolean).find(fs.existsSync);
 function safePath(raw){const decoded=decodeURIComponent(String(raw||'/').split('?')[0]);const normalized=decoded.replace(/^\/Igropoisk(?=\/|$)/,'')||'/';const requested=normalized.endsWith('/')?`${normalized}index.html`:normalized;const absolute=path.resolve(root,`.${requested}`);return absolute.startsWith(root)?absolute:null}
 const server=http.createServer((request,response)=>{const file=safePath(request.url);if(!file||!fs.existsSync(file)||!fs.statSync(file).isFile()){response.writeHead(404).end('Not found');return}response.setHeader('Content-Type',mime.get(path.extname(file).toLowerCase())||'application/octet-stream');response.setHeader('Cache-Control','no-store');fs.createReadStream(file).pipe(response)});
 await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(4175,'127.0.0.1',resolve)});
 const executablePath=browserPath();if(!executablePath){server.close();throw new Error('Chrome/Chromium executable was not found.')}
-const browser=await puppeteer.launch({executablePath,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+const browser=await puppeteer.launch({executablePath,headless:true,protocolTimeout:60000,args:['--no-sandbox','--disable-dev-shm-usage']});
 const errors=[];const assert=(condition,message)=>{if(!condition)errors.push(message)};
 const games=[['elden-ring',1245620],['the-witcher-3-wild-hunt',292030],['doom',379720],['control',870780],['hades',1145360]];
 const diagnostics=[];
 try{
   for(const [slug,appid] of games){
+    console.log(`[game-page-smoke] game:start ${slug}`);
     const page=await browser.newPage();await page.setViewport({width:1440,height:1000,deviceScaleFactor:1});
     const pageErrors=[];page.on('pageerror',error=>pageErrors.push(String(error?.stack||error)));
     await page.goto(`http://127.0.0.1:4175/game/${slug}/?smoke=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:30000});
@@ -38,7 +40,10 @@ try{
     assert(state.reviewContainers===1,`${slug}: external reviews are not inside one list card`);
     assert(!pageErrors.length,`${slug}: browser errors: ${pageErrors.slice(0,3).join(' | ')}`);
     await page.close();
+    console.log(`[game-page-smoke] game:done ${slug}`);
 
+    if(skipArticles)continue;
+    console.log(`[game-page-smoke] article:start ${slug}`);
     const article=await browser.newPage();await article.setViewport({width:1440,height:1000,deviceScaleFactor:1});
     const articleErrors=[];article.on('pageerror',error=>articleErrors.push(String(error?.stack||error)));
     await article.goto(`http://127.0.0.1:4175/article/${slug}/?smoke=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:30000});
@@ -66,14 +71,17 @@ try{
     }
     assert(!articleErrors.length,`${slug} article: browser errors: ${articleErrors.slice(0,3).join(' | ')}`);
     await article.close();
+    console.log(`[game-page-smoke] article:done ${slug}`);
   }
 
+  console.log('[game-page-smoke] game:start 3-japan-stigmatized-property');
   const japan=await browser.newPage();await japan.setViewport({width:1440,height:1000});await japan.goto(`http://127.0.0.1:4175/game/3-japan-stigmatized-property/?smoke=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:30000});try{await japan.waitForFunction(()=>document.querySelector('#gameTitle')?.textContent?.trim(),{timeout:10000})}catch{};
   const japanState=await japan.evaluate(()=>({title:document.querySelector('#gameTitle')?.textContent||'',details:document.querySelector('#details')?.textContent||'',bodyStart:document.body.textContent.trim().slice(0,220)}));
   assert(japanState.title==='Japan Stigmatized Property 3',`Japan public title is wrong: ${japanState.title||japanState.bodyStart}`);
   assert(!/[\u3040-\u30ff\u3400-\u9fff]/.test(japanState.title+japanState.details),`Japan public page still exposes Japanese metadata: ${japanState.title} ${japanState.details}`);
   await japan.close();
+  console.log('[game-page-smoke] game:done 3-japan-stigmatized-property');
 
-  console.log(JSON.stringify({checked_games:games.map(([slug])=>slug),diagnostics,japan:japanState,errors},null,2));
-  if(errors.length)throw new Error(`Game/article QA smoke failed:\n- ${errors.join('\n- ')}`);
+  console.log(JSON.stringify({checked_games:games.map(([slug])=>slug),articles_checked:!skipArticles,diagnostics,japan:japanState,errors},null,2));
+  if(errors.length)throw new Error(`${skipArticles?'Game':'Game/article'} QA smoke failed:\n- ${errors.join('\n- ')}`);
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
