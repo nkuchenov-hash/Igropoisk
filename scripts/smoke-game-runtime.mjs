@@ -116,8 +116,8 @@ try {
       if (!navigationError && slug === 'control') {
         try {
           await page.waitForFunction(() => {
-            const failed = /Не удалось открыть страницу игры|Не удалось загрузить страницу игры/i.test(document.body?.textContent || '');
-            return document.querySelectorAll('#reviewGrid .quality-review-row').length >= 20 || failed;
+            const grid = document.querySelector('#reviewGrid');
+            return grid?.dataset.reviewSourcesReady === '1' && grid.querySelectorAll('.quality-review-row').length >= 20;
           }, { timeout: 10000 });
         } catch (error) {
           hydrationError = String(error?.message || error);
@@ -131,6 +131,7 @@ try {
         body: (document.body?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 1000),
         tabs: document.querySelectorAll('.game-tabs [data-tab]').length,
         reviewRows: document.querySelectorAll('#reviewGrid .quality-review-row').length,
+        reviewSourcesReady: document.querySelector('#reviewGrid')?.dataset.reviewSourcesReady || '',
       }));
       const errors = [];
       if (navigationError) errors.push(`navigation: ${navigationError}`);
@@ -141,6 +142,7 @@ try {
       if (!state.moduleVersion) errors.push('approved module version marker missing');
       if (!state.networkGuard) errors.push('runtime network guard missing');
       if (state.tabs < 7) errors.push(`incomplete tab shell: ${state.tabs}`);
+      if (slug === 'control' && state.reviewSourcesReady !== '1') errors.push('control review-source module did not signal readiness');
       if (slug === 'control' && state.reviewRows < 20) errors.push(`control review stress fixture incomplete: ${state.reviewRows}/20`);
       if (/Не удалось открыть страницу игры|Не удалось загрузить страницу игры/i.test(state.body)) errors.push('visible runtime failure');
       if (pageErrors.length) errors.push(`page errors: ${pageErrors.slice(0, 3).join(' | ')}`);
