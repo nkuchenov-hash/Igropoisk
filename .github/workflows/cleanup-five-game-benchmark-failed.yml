@@ -1,0 +1,153 @@
+name: Cleanup failed five-game benchmark results
+
+on:
+  push:
+    branches: [automation/cleanup-five-game-benchmark-failed-20260904]
+    paths: ['.github/workflows/cleanup-five-game-benchmark-failed.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Remove failed and partial benchmark entries
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, re
+
+          root = Path('benchmark/five-games-models')
+          game_dirs = sorted(p for p in root.iterdir() if p.is_dir())
+          eligibility = {
+              'policy': {
+                  'eligible_status': 'ok',
+                  'failed_or_partial': 'excluded',
+                  'rating_rule': 'Only status=ok result pairs may receive a rating or contribute to an average. Error and partial runs are excluded from both score and denominator.'
+              },
+              'games': {}
+          }
+
+          for game_dir in game_dirs:
+              index = game_dir / 'index.html'
+              html = index.read_text(encoding='utf-8')
+              match = re.search(r'(<section class="grid">)(.*?)(</section><section class="section">)', html, re.S)
+              if not match:
+                  raise SystemExit(f'grid not found: {index}')
+
+              articles = re.findall(r'<article class="ig-card bench-card">.*?</article>', match.group(2), re.S)
+              kept = []
+              eligible_models = []
+              options = []
+              removed_pages = []
+
+              for article in articles:
+                  model_match = re.search(r'<h2>(.*?)</h2>', article, re.S)
+                  model = re.sub(r'<.*?>', '', model_match.group(1)).strip() if model_match else 'Unknown'
+                  is_ok = '<span class="ig-rating">ok</span>' in article
+                  href_match = re.search(r'<a class="ig-button" href="([^"]+)">Открыть результат</a>', article)
+                  href = href_match.group(1) if href_match else None
+
+                  if is_ok:
+                      if not href:
+                          raise SystemExit(f'ok result has no page: {game_dir.name} / {model}')
+                      kept.append(article)
+                      eligible_models.append(model)
+                      options.append((href, model))
+                  else:
+                      if href:
+                          target = game_dir / href
+                          if target.exists():
+                              target.unlink()
+                              removed_pages.append(href)
+
+              new_grid = match.group(1) + ''.join(kept) + match.group(3)
+              html = html[:match.start()] + new_grid + html[match.end():]
+              html = re.sub(
+                  r'<span class="ig-chip">15 моделей</span><span class="ig-chip">\d+ текстов</span>',
+                  f'<span class="ig-chip">{len(kept)} пригодных результатов</span>',
+                  html,
+                  count=1,
+              )
+              option_html = ''.join(f'<option value="{href}">{model}</option>' for href, model in options)
+              html = re.sub(r'(<select class="ig-input" id="left">).*?(</select>)', lambda m: m.group(1) + option_html + m.group(2), html, count=1, flags=re.S)
+              html = re.sub(r'(<select class="ig-input" id="right">).*?(</select>)', lambda m: m.group(1) + option_html + m.group(2), html, count=1, flags=re.S)
+              index.write_text(html, encoding='utf-8')
+
+              eligibility['games'][game_dir.name] = {
+                  'eligible_count': len(eligible_models),
+                  'eligible_models': eligible_models,
+              }
+              print(game_dir.name, 'eligible=', len(eligible_models), 'deleted_partial_pages=', removed_pages)
+
+          root_index = root / 'index.html'
+          html = root_index.read_text(encoding='utf-8')
+          html = html.replace('5 игр × 15 AI-моделей | Игропоиск', '5 игр × AI-модели — только пригодные результаты | Игропоиск')
+          html = html.replace('5 игр × 15 AI-моделей', '5 игр × AI-модели: только пригодные результаты')
+          html = html.replace(
+              'Реальные тексты после source assembly Игропоиска: короткое описание страницы и полный обзор. Для каждой игры модели получают один и тот же frozen evidence pack.',
+              'Реальные тексты после source assembly Игропоиска: короткое описание страницы и полный обзор. В стенде оставлены только пригодные результаты со статусом ok; error и partial полностью исключены из сравнения и рейтингов.'
+          )
+
+          def root_card_repl(m):
+              article = m.group(0)
+              href_match = re.search(r'href="([^/]+)/index\.html"', article)
+              if not href_match:
+                  return article
+              slug = href_match.group(1)
+              count = eligibility['games'][slug]['eligible_count']
+              return re.sub(r'<div class="ig-kicker">\d+/15 результатов</div>', f'<div class="ig-kicker">{count} пригодных результатов</div>', article, count=1)
+
+          html = re.sub(r'<article class="ig-card bench-card">.*?</article>', root_card_repl, html, flags=re.S)
+          root_index.write_text(html, encoding='utf-8')
+
+          (root / 'rating-eligibility.json').write_text(json.dumps(eligibility, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+          # Acceptance: public game indexes contain no failed/partial cards and selectors contain only ok pages.
+          for game_dir in game_dirs:
+              text = (game_dir / 'index.html').read_text(encoding='utf-8')
+              if '>error<' in text or '>partial<' in text or '15 моделей' in text:
+                  raise SystemExit(f'failed/partial residue in {game_dir}/index.html')
+              for href in re.findall(r'<option value="([^"]+)">', text):
+                  if not (game_dir / href).exists():
+                      raise SystemExit(f'missing eligible page: {game_dir}/{href}')
+          PY
+
+          node scripts/validate-central-design-system.mjs
+          python3 scripts/enforce_layout_contract.py --check
+          git diff --name-only
+          if git diff --name-only | grep -Ev '^benchmark/five-games-models/'; then
+            echo 'Unexpected non-benchmark change' >&2
+            exit 1
+          fi
+
+      - name: Publish cleanup branch
+        id: publish
+        env:
+          RESULT_BRANCH: fix/five-game-benchmark-eligible-only-20260904
+        run: |
+          set -euo pipefail
+          git config user.name 'igropoisk-benchmark[bot]'
+          git config user.email 'igropoisk-benchmark[bot]@users.noreply.github.com'
+          git switch -c "$RESULT_BRANCH"
+          git add benchmark/five-games-models
+          git commit -m 'Keep only eligible five-game benchmark results'
+          git push --force origin "$RESULT_BRANCH"
+          echo "branch=$RESULT_BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Open cleanup PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT_BRANCH: ${{ steps.publish.outputs.branch }}
+        run: |
+          gh pr create --base main --head "$RESULT_BRANCH" \
+            --title 'Exclude failed five-game benchmark runs from comparison and ratings' \
+            --body 'Removes error/partial cards from the live benchmark, deletes partial result pages, restricts comparators to status=ok outputs, and adds an explicit rating eligibility manifest. Benchmark-only change.'
