@@ -14,7 +14,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Apply central component classes
+      - name: Apply central components and layout contract
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -37,14 +37,22 @@ jobs:
           }
           for old,new in replacements.items(): s=s.replace(old,new)
           s=s.replace(' style="grid-template-columns:1fr"','')
+          header_style='<link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">'
+          layout_style='<link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">'
+          header_script='<script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>'
+          layout_script='<script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>'
+          for token in (header_style,layout_style,header_script,layout_script):
+              s=s.replace(token,'')
+          s=s.replace('</head>',f'{header_style}\n{layout_style}\n</head>')
+          s=s.replace('</body>',f'{header_script}\n{layout_script}\n</body>')
           p.write_text(s,encoding='utf-8')
           PY
-      - name: Verify design-system guard against current main
-        run: node scripts/validate-central-design-system.mjs --base HEAD
+      - name: Verify complete layout/header contract
+        run: python3 scripts/enforce_layout_contract.py --check
       - name: Commit to main
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add preview/doom-dark-ages-alt/index.html
-          git commit -m "Fix DOOM preview design-system compliance"
+          git commit -m "Fix DOOM preview layout contract"
           git push origin HEAD:main
