@@ -1,0 +1,125 @@
+name: Wolfenstein 3D free-model editorial benchmark
+
+on:
+  push:
+    branches: [benchmark/wolf3d-all-free-models-20260904]
+    paths:
+      - '.github/workflows/wolf3d-model-benchmark.yml'
+      - 'scripts/run-wolf3d-model-benchmark.mjs'
+      - 'benchmarks/wolfenstein-3d-1992/source-pack.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  BENCHMARK_DIR: benchmarks/wolfenstein-3d-1992
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout benchmark harness
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate benchmark harness
+        run: |
+          node --check scripts/run-wolf3d-model-benchmark.mjs
+          node -e "JSON.parse(require('fs').readFileSync('benchmarks/wolfenstein-3d-1992/source-pack.json','utf8')); console.log('source pack valid')"
+
+      - name: Provision local Qwen baseline best-effort
+        continue-on-error: true
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve >/tmp/ollama.log 2>&1 &
+          for i in $(seq 1 20); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null && break
+            sleep 1
+          done
+          ollama pull qwen2.5:3b
+
+      - name: Run all free editorial candidates on identical input
+        id: run
+        continue-on-error: true
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_AI_API_KEY: ${{ secrets.GOOGLE_AI_API_KEY }}
+          GOOGLE_GEMINI_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
+          GIGACHAT_AUTH_KEY: ${{ secrets.GIGACHAT_AUTH_KEY }}
+          GIGACHAT_CREDENTIALS: ${{ secrets.GIGACHAT_CREDENTIALS }}
+          GIGACHAT_API_KEY: ${{ secrets.GIGACHAT_API_KEY }}
+          GIGACHAT_AUTHORIZATION_KEY: ${{ secrets.GIGACHAT_AUTHORIZATION_KEY }}
+          GIGACHAT_KEY: ${{ secrets.GIGACHAT_KEY }}
+          OLLAMA_BASE_URL: http://127.0.0.1:11434
+        run: node scripts/run-wolf3d-model-benchmark.mjs
+
+      - name: Show benchmark summary
+        if: always()
+        run: |
+          test -f "$BENCHMARK_DIR/SUMMARY.txt" && cat "$BENCHMARK_DIR/SUMMARY.txt" || true
+          if [ -f "$BENCHMARK_DIR/results.json" ]; then
+            node - <<'NODE'
+          const fs=require('fs');
+          const p=JSON.parse(fs.readFileSync('benchmarks/wolfenstein-3d-1992/results.json','utf8'));
+          console.log(JSON.stringify(p.models.map(x=>({label:x.label,status:x.status,description_words:x.description_words,review_words:x.review_words,elapsed_ms:x.elapsed_ms,error:x.error})),null,2));
+          NODE
+          fi
+
+      - name: Upload standalone HTML benchmark
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wolfenstein-3d-model-benchmark-${{ github.run_id }}-${{ github.run_attempt }}
+          path: benchmarks/wolfenstein-3d-1992
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish generated pages to clean results branch
+        id: publish
+        if: always()
+        env:
+          RESULT_BRANCH: benchmark-results/wolf3d-${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          test -f "$BENCHMARK_DIR/index.html"
+          rm -rf /tmp/wolf3d-benchmark
+          mkdir -p /tmp/wolf3d-benchmark
+          cp -a "$BENCHMARK_DIR/." /tmp/wolf3d-benchmark/
+          git fetch origin main:refs/remotes/origin/main --force
+          git switch --force-create "$RESULT_BRANCH" origin/main
+          rm -rf "$BENCHMARK_DIR"
+          mkdir -p "$BENCHMARK_DIR"
+          cp -a /tmp/wolf3d-benchmark/. "$BENCHMARK_DIR/"
+          git config user.name 'igropoisk-benchmark[bot]'
+          git config user.email 'igropoisk-benchmark[bot]@users.noreply.github.com'
+          git add "$BENCHMARK_DIR"
+          git commit -m 'Add temporary Wolfenstein 3D model comparison pages'
+          git push --force origin "$RESULT_BRANCH"
+          echo "result_branch=$RESULT_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "### Result branch" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`$RESULT_BRANCH\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open temporary benchmark PR
+        if: always() && steps.publish.outputs.result_branch != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT_BRANCH: ${{ steps.publish.outputs.result_branch }}
+        run: |
+          gh pr create \
+            --base main \
+            --head "$RESULT_BRANCH" \
+            --title 'Temporary Wolfenstein 3D model benchmark pages' \
+            --body 'Hidden/noindex comparison pages only. Same Wolfenstein 3D (1992) source pack and prompt for every model; each model independently writes both the description and review. No production Game Page module code is changed.' \
+          || true
