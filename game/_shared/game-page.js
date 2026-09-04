@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const moduleVersion='20260904-2';
+const moduleVersion='20260904-3';
 window.__IG_GAME_PAGE_MODULE_VERSION__=moduleVersion;
 const addStyle=(href)=>{
   const style=document.createElement('link');
@@ -41,8 +41,8 @@ const failVisible=error=>{
     '../_shared/game-media-sanitize.js?v=20260902-3',
     '../_shared/game-page-quality.js?v=20260902-3',
     '../_shared/game-page-similarity.js?v=20260812-2',
-    '../_shared/game-page-review-publication-control.js?v=20260902-3',
-    '../_shared/game-page-review-sources.js?v=20260902-3',
+    `../_shared/game-page-review-publication-control.js?v=${moduleVersion}`,
+    `../_shared/game-page-review-sources.js?v=${moduleVersion}`,
     '../_shared/game-page-source-corpus.js?v=20260902-3',
     '../_shared/game-page-materialized-data.js?v=20260902-3',
     `../_shared/game-page-integrity.js?v=${moduleVersion}`,
