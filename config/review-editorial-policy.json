@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "id": "review-skill-v1",
+  "status": "active",
+  "source_policy": {
+    "canonical_corpus": "data/game-sources/{slug}.json",
+    "use_all_available_professional_reviews": true,
+    "fixed_source_count_is_publication_gate": false,
+    "minimum_usable_evidence_sources": 1,
+    "require_completed_source_discovery_when_corpus_exposes_status": true,
+    "legacy_research_fallback_allowed_during_migration": true,
+    "exact_game_version_required": true
+  },
+  "article": {
+    "minimum_words": 1800,
+    "target_words_min": 2000,
+    "target_words_max": 2600,
+    "maximum_words_without_editor_approval": 3200,
+    "minimum_sections": 7,
+    "target_sections": 8,
+    "maximum_sections": 10,
+    "normal_paragraphs_required": true,
+    "short_paragraphs_are_rare_accents_only": true,
+    "structure_is_game_specific": true,
+    "conclusion_is_editorial_landing_not_recap": true
+  },
+  "evergreen": {
+    "write_about_game_not_current_year": true,
+    "mechanics_use_present_tense_by_default": true,
+    "historical_context_only_when_explanatory": true,
+    "mandatory_ageing_section_forbidden": true,
+    "relative_present_day_framing_forbidden": true
+  },
+  "evidence_categories": [
+    "central_fantasy",
+    "story_and_characters",
+    "core_mechanics",
+    "world_or_level_structure",
+    "mission_or_campaign_structure",
+    "controls",
+    "ai_and_system_behavior",
+    "interface_hud_navigation",
+    "visual_feedback",
+    "audio_feedback",
+    "visual_style",
+    "music_and_sound",
+    "memorable_specific_details",
+    "strengths",
+    "concrete_problems",
+    "historical_context_when_useful",
+    "version_identity"
+  ],
+  "language_blacklist": [
+    "состарилось плохо",
+    "состарилась плохо",
+    "выдаёт свой возраст",
+    "выдает свой возраст",
+    "сегодня ощущается",
+    "сегодня воспринимается",
+    "по современным меркам",
+    "по современным стандартам",
+    "для современного игрока",
+    "что потеряла за",
+    "что потерял за",
+    "что потеряло за",
+    "современную пригодность",
+    "игрово"
+  ],
+  "generic_heading_blacklist": [
+    "что устарело",
+    "что состарилось",
+    "что сегодня мешает",
+    "плюсы и минусы",
+    "геймплей",
+    "графика",
+    "сюжет",
+    "итоги"
+  ],
+  "process_leakage_blacklist": [
+    "по данным корпуса",
+    "источники утверждают",
+    "в evidence",
+    "source_id",
+    "source ids",
+    "по данным источников"
+  ],
+  "golden_reference": {
+    "primary": "docs/review-golden/mafia-the-city-of-lost-heaven.md",
+    "index": "docs/review-golden/README.md"
+  }
+}
