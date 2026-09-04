@@ -10,7 +10,7 @@
 :root{--bg:#070909;--panel:#0f1314;--panel2:#131819;--text:#f3f5f1;--muted:#9da69f;--line:rgba(255,255,255,.10);--acid:#c8ef3f;--violet:#9d75ff;--max:1560px}
 *{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,"Segoe UI",sans-serif;overflow-x:hidden}a{color:inherit;text-decoration:none}button{font:inherit}
 .header{position:fixed;z-index:60;top:0;left:0;right:0;height:68px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(7,9,9,.70);backdrop-filter:blur(18px)}.header__inner{height:100%;width:min(calc(100% - 56px),var(--max));margin:auto;display:flex;align-items:center;gap:34px}.brand{font-size:23px;font-weight:950;letter-spacing:-.055em}.brand b{color:var(--acid)}.nav{display:flex;gap:25px;color:#c8cfca;font-size:13px}.nav a{opacity:.74}.nav a:hover{opacity:1}.header__actions{margin-left:auto;display:flex;gap:8px}.header-btn{height:38px;padding:0 13px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.04);color:#fff}
-.hero{position:relative;min-height:900px;overflow:hidden;isolation:isolate;background:#050606}.hero__poster{position:absolute;inset:0;z-index:-7;background:url('/Igropoisk/assets/covers/popular/doom-the-dark-ages.jpg') center 25%/cover no-repeat;filter:saturate(.85) brightness(.40);transform:scale(1.05)}.hero__video{position:absolute;z-index:-6;left:50%;top:50%;width:max(100vw,177.78vh);height:max(56.25vw,100vh);transform:translate(-50%,-50%) scale(1.07);border:0;pointer-events:none;opacity:0;transition:opacity .9s ease}.hero.video-ready .hero__video{opacity:1}.hero__shade{position:absolute;inset:0;z-index:-4;background:linear-gradient(90deg,rgba(4,6,7,.99) 0%,rgba(4,6,7,.92) 24%,rgba(4,6,7,.57) 48%,rgba(4,6,7,.17) 73%,rgba(4,6,7,.42) 100%),linear-gradient(0deg,#070909 0%,rgba(7,9,9,.78) 12%,rgba(7,9,9,.05) 60%,rgba(7,9,9,.26) 100%)}.hero__shade:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 38%,rgba(200,239,63,.07),transparent 28%),radial-gradient(circle at 88% 70%,rgba(157,117,255,.05),transparent 25%)}
+.hero{position:relative;min-height:900px;overflow:hidden;isolation:isolate;background:#050606}.hero__poster{position:absolute;inset:0;z-index:-7;background:url('/Igropoisk/assets/covers/popular/doom-the-dark-ages.jpg') center 25%/cover no-repeat;filter:saturate(.85) brightness(.40);transform:scale(1.05)}.hero__video{position:absolute;z-index:-6;left:50%;top:50%;width:max(100vw,177.78vh);height:max(56.25vw,100vh);transform:translate(-50%,-50%) scale(1.07);border:0;pointer-events:none;opacity:0;transition:opacity 0s}.hero.video-ready .hero__video{opacity:1;transition:opacity .65s ease}.hero__shade{position:absolute;inset:0;z-index:-4;background:linear-gradient(90deg,rgba(4,6,7,.99) 0%,rgba(4,6,7,.92) 24%,rgba(4,6,7,.57) 48%,rgba(4,6,7,.17) 73%,rgba(4,6,7,.42) 100%),linear-gradient(0deg,#070909 0%,rgba(7,9,9,.78) 12%,rgba(7,9,9,.05) 60%,rgba(7,9,9,.26) 100%)}.hero__shade:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 38%,rgba(200,239,63,.07),transparent 28%),radial-gradient(circle at 88% 70%,rgba(157,117,255,.05),transparent 25%)}
 .hero__inner{width:min(calc(100% - 72px),var(--max));min-height:900px;margin:auto;padding:112px 0 74px;display:grid;grid-template-columns:220px minmax(0,1fr) 330px;grid-template-rows:auto 1fr auto;gap:24px 34px;align-items:end}.breadcrumbs{grid-column:1/-1;align-self:start;color:#9aa39d;font-size:12px}.cover{width:220px;aspect-ratio:2/3;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.16);box-shadow:0 32px 95px rgba(0,0,0,.56);background:#111}.cover img{width:100%;height:100%;object-fit:cover;display:block}.hero__copy{padding-bottom:4px}.eyebrow{color:var(--acid);font-size:11px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;margin-bottom:15px}.hero h1{margin:0;font-size:clamp(54px,6.5vw,108px);line-height:.84;letter-spacing:-.072em}.hero__meta{margin-top:18px;color:#d1d6d2;font-size:14px}.hero__desc{max-width:820px;margin:18px 0 0;color:#d8dcd8;font-size:17px;line-height:1.62}.hero__actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:25px}.btn{height:48px;padding:0 16px;border:1px solid rgba(255,255,255,.16);border-radius:11px;background:rgba(255,255,255,.055);color:#fff;font-weight:800;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.30)}.btn.acid{background:var(--acid);border-color:var(--acid);color:#111509}.btn.play{display:flex;align-items:center;gap:9px}.play-dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#111;font-size:10px;padding-left:2px}
 .scores{align-self:end;border:1px solid rgba(255,255,255,.13);border-radius:16px;background:rgba(11,14,14,.60);backdrop-filter:blur(18px);overflow:hidden}.score{display:flex;align-items:center;gap:14px;padding:17px;border-bottom:1px solid var(--line)}.score:last-child{border-bottom:0}.score strong{font-size:35px;line-height:1;color:var(--acid);min-width:68px}.score.violet strong{color:#b79aff}.score small{display:block;color:#8d9790;font-size:10px;letter-spacing:.09em;text-transform:uppercase}.score b{display:block;margin-top:4px;font-size:13px}.hero__rail{grid-column:2/-1;display:flex;gap:9px;overflow:auto;scrollbar-width:none;padding-top:6px}.thumb{position:relative;flex:0 0 185px;aspect-ratio:16/9;border:1px solid rgba(255,255,255,.12);border-radius:11px;overflow:hidden;background:#111;cursor:pointer}.thumb img{width:100%;height:100%;object-fit:cover;display:block}.thumb.video:after{content:"▶";position:absolute;left:11px;bottom:9px;width:29px;height:29px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#111;font-size:10px;padding-left:2px}.hero__controls{position:absolute;right:23px;bottom:21px;z-index:5;display:flex;gap:7px}.control{width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(7,9,9,.56);backdrop-filter:blur(14px);color:#fff;cursor:pointer}
 .tabs-shell{position:sticky;top:68px;z-index:40;border-bottom:1px solid var(--line);background:rgba(8,10,10,.94);backdrop-filter:blur(16px)}.tabs{width:min(calc(100% - 72px),var(--max));margin:auto;display:flex;gap:24px;overflow:auto;scrollbar-width:none}.tab{height:54px;border:0;border-bottom:2px solid transparent;background:transparent;color:#9ca59f;white-space:nowrap;font-weight:760;cursor:pointer}.tab.active{color:#fff;border-bottom-color:var(--acid)}
@@ -57,28 +57,23 @@ dialog{width:min(1160px,calc(100vw - 28px));max-width:none;border:0;border-radiu
 const VIDEO_ID='S7IEg0_qNXs';
 const hero=document.getElementById('hero');
 const heroVideo=document.getElementById('heroVideo');
+const pauseBg=document.getElementById('pauseBg');
 let paused=false;
 let heroPlayer=null;
 let heroPlayerReady=false;
 let heroLoopWatch=null;
-function videoSrc(){return `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&mute=1&controls=0&loop=1&playlist=${VIDEO_ID}&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1`;}
+function videoSrc(){return `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;}
 function clearHeroWatch(){if(heroLoopWatch){clearInterval(heroLoopWatch);heroLoopWatch=null;}}
-function hardRestartHero(){
-  if(paused)return;
-  heroPlayerReady=false;
-  heroPlayer=null;
-  clearHeroWatch();
-  hero.classList.remove('video-ready');
-  heroVideo.onload=()=>hero.classList.add('video-ready');
-  heroVideo.src='about:blank';
-  setTimeout(()=>{if(!paused){heroVideo.src=videoSrc();attachHeroPlayer();}},80);
+function hideHeroVideo(){hero.classList.remove('video-ready');}
+function revealHeroVideo(){if(!paused)hero.classList.add('video-ready');}
+function safeHeroPlay(){
+  if(paused||!heroPlayer||!heroPlayerReady)return;
+  try{heroPlayer.mute();heroPlayer.playVideo();startHeroWatch();}catch(error){hideHeroVideo();}
 }
 function loopHeroNow(){
-  if(paused)return;
-  try{
-    if(heroPlayer&&heroPlayerReady){heroPlayer.seekTo(0,true);heroPlayer.mute();heroPlayer.playVideo();return;}
-  }catch(error){}
-  hardRestartHero();
+  if(paused||!heroPlayer||!heroPlayerReady)return;
+  hideHeroVideo();
+  try{heroPlayer.mute();heroPlayer.seekTo(0,true);heroPlayer.playVideo();}catch(error){hideHeroVideo();}
 }
 function startHeroWatch(){
   clearHeroWatch();
@@ -88,25 +83,39 @@ function startHeroWatch(){
       const duration=Number(heroPlayer.getDuration())||0;
       const current=Number(heroPlayer.getCurrentTime())||0;
       const state=heroPlayer.getPlayerState();
-      if(state===0){loopHeroNow();return;}
-      if(duration>5&&current>=duration-1.25){loopHeroNow();}
-    }catch(error){}
-  },500);
+      if(state===YT.PlayerState.PLAYING)revealHeroVideo();
+      else if(state===YT.PlayerState.BUFFERING||state===YT.PlayerState.UNSTARTED||state===YT.PlayerState.CUED)hideHeroVideo();
+      if(state===YT.PlayerState.ENDED){loopHeroNow();return;}
+      if(duration>5&&current>=duration-.9)loopHeroNow();
+    }catch(error){hideHeroVideo();}
+  },250);
 }
 function attachHeroPlayer(){
+  if(heroPlayer)return;
   if(!window.YT||!YT.Player){setTimeout(attachHeroPlayer,120);return;}
   try{
     heroPlayer=new YT.Player('heroVideo',{
       events:{
-        onReady:event=>{heroPlayerReady=true;event.target.mute();event.target.playVideo();hero.classList.add('video-ready');startHeroWatch();},
-        onStateChange:event=>{if(event.data===YT.PlayerState.ENDED)loopHeroNow();},
-        onError:()=>{hero.classList.remove('video-ready');setTimeout(hardRestartHero,1200);}
+        onReady:event=>{heroPlayerReady=true;event.target.mute();event.target.playVideo();startHeroWatch();},
+        onStateChange:event=>{
+          if(event.data===YT.PlayerState.PLAYING)revealHeroVideo();
+          else if(event.data===YT.PlayerState.BUFFERING||event.data===YT.PlayerState.UNSTARTED||event.data===YT.PlayerState.CUED||event.data===YT.PlayerState.ENDED)hideHeroVideo();
+          if(event.data===YT.PlayerState.ENDED)loopHeroNow();
+        },
+        onError:()=>{heroPlayerReady=false;clearHeroWatch();hideHeroVideo();}
       }
     });
-  }catch(error){setTimeout(attachHeroPlayer,250);}
+  }catch(error){heroPlayer=null;hideHeroVideo();}
 }
-function startHero(){paused=false;document.getElementById('pauseBg').textContent='Ⅱ';hardRestartHero();}
-window.onYouTubeIframeAPIReady=()=>{if(heroVideo.src&&heroVideo.src!=='about:blank')attachHeroPlayer();};
+function startHero(){
+  paused=false;
+  pauseBg.textContent='Ⅱ';
+  hideHeroVideo();
+  if(!heroVideo.src||heroVideo.src==='about:blank')heroVideo.src=videoSrc();
+  if(heroPlayer&&heroPlayerReady)safeHeroPlay();
+  else if(window.YT&&YT.Player)attachHeroPlayer();
+}
+window.onYouTubeIframeAPIReady=attachHeroPlayer;
 if(!document.querySelector('script[data-youtube-iframe-api]')){
   const api=document.createElement('script');
   api.src='https://www.youtube.com/iframe_api';
@@ -114,21 +123,25 @@ if(!document.querySelector('script[data-youtube-iframe-api]')){
   document.head.appendChild(api);
 }
 window.addEventListener('pageshow',startHero);
-document.getElementById('restartBg').addEventListener('click',startHero);
-document.getElementById('pauseBg').addEventListener('click',e=>{
+document.getElementById('restartBg').addEventListener('click',()=>{
+  paused=false;
+  pauseBg.textContent='Ⅱ';
+  if(heroPlayer&&heroPlayerReady)loopHeroNow();
+  else startHero();
+});
+pauseBg.addEventListener('click',e=>{
   if(!paused){
     paused=true;
     clearHeroWatch();
+    hideHeroVideo();
     try{heroPlayer?.pauseVideo();}catch(error){}
-    hero.classList.remove('video-ready');
     e.currentTarget.textContent='▶';
   }else{
     paused=false;
     e.currentTarget.textContent='Ⅱ';
-    try{
-      if(heroPlayer&&heroPlayerReady){heroPlayer.mute();heroPlayer.playVideo();hero.classList.add('video-ready');startHeroWatch();}
-      else{hardRestartHero();}
-    }catch(error){hardRestartHero();}
+    hideHeroVideo();
+    if(heroPlayer&&heroPlayerReady)safeHeroPlay();
+    else startHero();
   }
 });
 document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===btn));document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('active',x.id===btn.dataset.tab));window.scrollTo({top:document.querySelector('.tabs-shell').offsetTop-68,behavior:'smooth'});}));
