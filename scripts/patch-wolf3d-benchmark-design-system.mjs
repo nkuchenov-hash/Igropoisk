@@ -29,6 +29,11 @@ const compositionCss = `.wrap{max-width:1280px;margin:0 auto;padding:42px 24px 8
 `;
 fs.writeFileSync(path.join(root, 'styles.css'), compositionCss, 'utf8');
 
+const HEADER_STYLE = '<link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">';
+const LAYOUT_STYLE = '<link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">';
+const HEADER_SCRIPT = '<script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>';
+const LAYOUT_SCRIPT = '<script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>';
+
 const htmlFiles = [];
 function walk(dir) {
   for (const ent of fs.readdirSync(dir, {withFileTypes:true})) {
@@ -47,6 +52,17 @@ function addCentralAssets(html, file) {
   html = html.replace(/<link rel="stylesheet" href="(?:\.\.\/)?styles\.css">/g, '');
   const links = `<link rel="stylesheet" href="${central}"><link rel="stylesheet" href="${local}">`;
   return html.replace('</head>', `${links}</head>`);
+}
+
+function addLayoutContract(html) {
+  html = html
+    .replace(/\s*<link\b[^>]*data-ig-shared-header="style"[^>]*>\s*/gi, '')
+    .replace(/\s*<link\b[^>]*data-ig-layout-contract="style"[^>]*>\s*/gi, '')
+    .replace(/\s*<script\b[^>]*data-ig-shared-header="script"[^>]*>\s*<\/script>\s*/gi, '')
+    .replace(/\s*<script\b[^>]*data-ig-layout-contract="script"[^>]*>\s*<\/script>\s*/gi, '');
+  html = html.replace('</head>', `${HEADER_STYLE}${LAYOUT_STYLE}</head>`);
+  html = html.replace('</body>', `${HEADER_SCRIPT}${LAYOUT_SCRIPT}</body>`);
+  return html;
 }
 
 function patchMarkup(html) {
@@ -86,7 +102,8 @@ for (const file of htmlFiles) {
   let html = fs.readFileSync(file, 'utf8');
   html = addCentralAssets(html, file);
   html = patchMarkup(html);
+  html = addLayoutContract(html);
   fs.writeFileSync(file, html, 'utf8');
 }
 
-console.log(`Patched ${htmlFiles.length} benchmark HTML files to use the central design system.`);
+console.log(`Patched ${htmlFiles.length} benchmark HTML files for central design + shared layout contracts.`);
