@@ -4,7 +4,7 @@ const slug=document.body.dataset.slug||decodeURIComponent(location.pathname.spli
 if(!slug)return;
 window.__IG_GAME_PAGE_INTEGRITY__={loaded:true,dataReady:false,applied:false,draft:false,editorial:false};
 const arr=v=>Array.isArray(v)?v:[];
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fetchJSON=async u=>{try{const r=await fetch(u,{cache:'no-store'});return r.ok?await r.json():null}catch{return null}};
 const canon=u=>{try{const x=new URL(String(u||''),location.href);x.hash='';for(const k of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','ysclid'])x.searchParams.delete(k);return `${x.origin}${x.pathname.replace(/\/$/,'')}${x.search}`}catch{return String(u||'').trim()}};
 const mediaUrl=x=>typeof x==='string'?x:String(x?.url||x?.src||'');
@@ -50,10 +50,7 @@ function renderReviewSummaryCard(draft,ratings,editorial){
   if(legacy){legacy.hidden=true;legacy.setAttribute('aria-hidden','true')}
   const reviewReady=draft?.publication?.review_ready===true;
   let card=document.querySelector('#reviewSummaryCard');
-  if(!reviewReady){
-    card?.remove();
-    return;
-  }
+  if(!reviewReady){card?.remove();return}
   if(!card){
     card=document.createElement('article');
     card.id='reviewSummaryCard';
@@ -116,16 +113,8 @@ function renderFranchise(franchise){
   const overview=document.querySelector('#overview .lower-grid');
   if(!overview)return;
   let panel=document.querySelector('#franchisePanel');
-  if(!panel){
-    panel=document.createElement('section');
-    panel.id='franchisePanel';
-    panel.className='ig-panel game-panel franchise-panel';
-    overview.appendChild(panel);
-  }
-  const card=game=>{
-    const body=`<b>${esc(game.title)}</b><span>${esc(game.release_year||game.year||'')}</span>`;
-    return game.page_available===true?`<a class="ig-card franchise-game" href="../${encodeURIComponent(game.slug)}/">${body}</a>`:`<div class="ig-card franchise-game franchise-game--unavailable" aria-disabled="true">${body}</div>`;
-  };
+  if(!panel){panel=document.createElement('section');panel.id='franchisePanel';panel.className='ig-panel game-panel franchise-panel';overview.appendChild(panel)}
+  const card=game=>{const body=`<b>${esc(game.title)}</b><span>${esc(game.release_year||game.year||'')}</span>`;return game.page_available===true?`<a class="ig-card franchise-game" href="../${encodeURIComponent(game.slug)}/">${body}</a>`:`<div class="ig-card franchise-game franchise-game--unavailable" aria-disabled="true">${body}</div>`};
   panel.innerHTML=`<div class="ig-toolbar franchise-panel__head"><div><h2>Игры серии</h2><span>${esc(franchise.name)}</span></div></div><div class="franchise-row">${games.map(card).join('')}</div>`;
 }
 
