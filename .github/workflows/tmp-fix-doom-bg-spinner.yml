@@ -1,0 +1,145 @@
+name: Temporary fix DOOM background video spinner
+
+on:
+  push:
+    paths:
+      - '.github/workflows/tmp-fix-doom-bg-spinner.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Make background video fail-open and hide buffering UI
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('preview/doom-dark-ages-alt/index.html')
+          text = path.read_text(encoding='utf-8')
+
+          old_css = ".hero__video{position:absolute;z-index:-6;left:50%;top:50%;width:max(100vw,177.78vh);height:max(56.25vw,100vh);transform:translate(-50%,-50%) scale(1.07);border:0;pointer-events:none;opacity:0;transition:opacity .9s ease}.hero.video-ready .hero__video{opacity:1}"
+          new_css = ".hero__video{position:absolute;z-index:-6;left:50%;top:50%;width:max(100vw,177.78vh);height:max(56.25vw,100vh);transform:translate(-50%,-50%) scale(1.07);border:0;pointer-events:none;opacity:0;transition:opacity 0s}.hero.video-ready .hero__video{opacity:1;transition:opacity .65s ease}"
+          if old_css not in text:
+              raise SystemExit('Expected hero video CSS block not found')
+          text = text.replace(old_css, new_css, 1)
+
+          replacement = r'''const VIDEO_ID='S7IEg0_qNXs';
+          const hero=document.getElementById('hero');
+          const heroVideo=document.getElementById('heroVideo');
+          const pauseBg=document.getElementById('pauseBg');
+          let paused=false;
+          let heroPlayer=null;
+          let heroPlayerReady=false;
+          let heroLoopWatch=null;
+          function videoSrc(){return `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;}
+          function clearHeroWatch(){if(heroLoopWatch){clearInterval(heroLoopWatch);heroLoopWatch=null;}}
+          function hideHeroVideo(){hero.classList.remove('video-ready');}
+          function revealHeroVideo(){if(!paused)hero.classList.add('video-ready');}
+          function safeHeroPlay(){
+            if(paused||!heroPlayer||!heroPlayerReady)return;
+            try{heroPlayer.mute();heroPlayer.playVideo();startHeroWatch();}catch(error){hideHeroVideo();}
+          }
+          function loopHeroNow(){
+            if(paused||!heroPlayer||!heroPlayerReady)return;
+            hideHeroVideo();
+            try{heroPlayer.mute();heroPlayer.seekTo(0,true);heroPlayer.playVideo();}catch(error){hideHeroVideo();}
+          }
+          function startHeroWatch(){
+            clearHeroWatch();
+            heroLoopWatch=setInterval(()=>{
+              if(paused||!heroPlayer||!heroPlayerReady)return;
+              try{
+                const duration=Number(heroPlayer.getDuration())||0;
+                const current=Number(heroPlayer.getCurrentTime())||0;
+                const state=heroPlayer.getPlayerState();
+                if(state===YT.PlayerState.PLAYING)revealHeroVideo();
+                else if(state===YT.PlayerState.BUFFERING||state===YT.PlayerState.UNSTARTED||state===YT.PlayerState.CUED)hideHeroVideo();
+                if(state===YT.PlayerState.ENDED){loopHeroNow();return;}
+                if(duration>5&&current>=duration-.9)loopHeroNow();
+              }catch(error){hideHeroVideo();}
+            },250);
+          }
+          function attachHeroPlayer(){
+            if(heroPlayer)return;
+            if(!window.YT||!YT.Player){setTimeout(attachHeroPlayer,120);return;}
+            try{
+              heroPlayer=new YT.Player('heroVideo',{
+                events:{
+                  onReady:event=>{heroPlayerReady=true;event.target.mute();event.target.playVideo();startHeroWatch();},
+                  onStateChange:event=>{
+                    if(event.data===YT.PlayerState.PLAYING)revealHeroVideo();
+                    else if(event.data===YT.PlayerState.BUFFERING||event.data===YT.PlayerState.UNSTARTED||event.data===YT.PlayerState.CUED||event.data===YT.PlayerState.ENDED)hideHeroVideo();
+                    if(event.data===YT.PlayerState.ENDED)loopHeroNow();
+                  },
+                  onError:()=>{heroPlayerReady=false;clearHeroWatch();hideHeroVideo();}
+                }
+              });
+            }catch(error){heroPlayer=null;hideHeroVideo();}
+          }
+          function startHero(){
+            paused=false;
+            pauseBg.textContent='Ⅱ';
+            hideHeroVideo();
+            if(!heroVideo.src||heroVideo.src==='about:blank')heroVideo.src=videoSrc();
+            if(heroPlayer&&heroPlayerReady)safeHeroPlay();
+            else if(window.YT&&YT.Player)attachHeroPlayer();
+          }
+          window.onYouTubeIframeAPIReady=attachHeroPlayer;
+          if(!document.querySelector('script[data-youtube-iframe-api]')){
+            const api=document.createElement('script');
+            api.src='https://www.youtube.com/iframe_api';
+            api.dataset.youtubeIframeApi='';
+            document.head.appendChild(api);
+          }
+          window.addEventListener('pageshow',startHero);
+          document.getElementById('restartBg').addEventListener('click',()=>{
+            paused=false;
+            pauseBg.textContent='Ⅱ';
+            if(heroPlayer&&heroPlayerReady)loopHeroNow();
+            else startHero();
+          });
+          pauseBg.addEventListener('click',e=>{
+            if(!paused){
+              paused=true;
+              clearHeroWatch();
+              hideHeroVideo();
+              try{heroPlayer?.pauseVideo();}catch(error){}
+              e.currentTarget.textContent='▶';
+            }else{
+              paused=false;
+              e.currentTarget.textContent='Ⅱ';
+              hideHeroVideo();
+              if(heroPlayer&&heroPlayerReady)safeHeroPlay();
+              else startHero();
+            }
+          });
+          '''
+
+          pattern = re.compile(r"const VIDEO_ID='S7IEg0_qNXs';.*?(?=document\.querySelectorAll\('\.tab'\))", re.S)
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit(f'Expected one hero JS block, replaced {count}')
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit fix and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/tmp-fix-doom-bg-spinner.yml
+          git add preview/doom-dark-ages-alt/index.html
+          git commit -m 'Hide DOOM background video buffering UI'
+          git push origin HEAD:main
