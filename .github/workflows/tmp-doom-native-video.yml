@@ -1,0 +1,32 @@
+name: Patch DOOM preview native video
+
+on:
+  push:
+    paths:
+      - 'preview/doom-dark-ages-alt/.native-video-trigger'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch preview hero video
+        run: python3 scripts/patch-doom-native-video.py
+      - name: Validate patch
+        run: |
+          git diff --check
+          grep -q '<video class="hero__video"' preview/doom-dark-ages-alt/index.html
+          grep -q 'video.fastly.steamstatic.com/store_trailers/3017860/' preview/doom-dark-ages-alt/index.html
+          ! grep -q 'youtube.com/iframe_api' preview/doom-dark-ages-alt/index.html
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add preview/doom-dark-ages-alt/index.html
+          git commit -m 'Use native Steam video for DOOM hero background'
+          git push
