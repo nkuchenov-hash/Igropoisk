@@ -56,7 +56,8 @@ jobs:
           if(p.assembly?.source_scan_complete!==true) throw new Error('source scan incomplete');
           if(Number(p.assembly?.defining_claims||0)<4) throw new Error('fewer than 4 defining claims');
           if(Number(p.assembly?.readable_sources||0)<3) throw new Error('fewer than 3 readable sources');
-          const text=JSON.stringify({game:p.game,knowledge:p.game_knowledge,material:p.readable_source_material});
+          const identityText=JSON.stringify({display_title:p.game?.display_title,identity_title:p.game?.identity_title,knowledge:p.game_knowledge,material:p.readable_source_material});
+          const corpusText=JSON.stringify({knowledge:p.game_knowledge,material:p.readable_source_material});
           const required={
             mafia:/mafia|tommy|salieri|lost\s+heaven/i,
             'dangerous-dave-in-the-haunted-mansion':/dangerous\s+dave|haunted\s+mansion|delbert|shotgun/i,
@@ -64,8 +65,8 @@ jobs:
             'jack-orlando-a-cinematic-adventure-1997':/jack\s+orlando|detective|adventure/i,
             'mass-effect-2007':/mass\s+effect|shepard|citadel|bioware/i
           };
-          if(!required[slug]?.test(text)) throw new Error(`identity not established for ${slug}`);
-          if(slug==='dangerous-dave-in-the-haunted-mansion'&&/doom\s*64|munchkin/i.test(text)) throw new Error('Dangerous Dave cross-game contamination');
+          if(!required[slug]?.test(identityText)) throw new Error(`identity not established for ${slug}`);
+          if(slug==='dangerous-dave-in-the-haunted-mansion'&&/doom\s*64|munchkin/i.test(corpusText)) throw new Error('Dangerous Dave cross-game contamination');
           const sha=crypto.createHash('sha256').update(raw).digest('hex');
           fs.writeFileSync(`benchmark-packs/${slug}/PACK_SHA256.txt`,sha+'\n');
           console.log(JSON.stringify({game:slug,readable_sources:p.assembly.readable_sources,defining_claims:p.assembly.defining_claims,pack_sha256:sha},null,2));
