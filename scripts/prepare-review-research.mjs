@@ -6,41 +6,72 @@ const slug=String(process.argv[2]||'').trim();
 if(!slug){console.error('Usage: node scripts/prepare-review-research.mjs <game-slug>');process.exit(1)}
 const read=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(path.join(root,file),'utf8'))}catch{return fallback}};
 const write=(file,value)=>{const target=path.join(root,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n')};
-const reviewConfig=read('config/parsers/review-synthesis.json',{}),quality=read('config/game-page-quality-v2.json',{}),corpus=quality.game_source_corpus||quality.review_corpus||{};
-const draft=read(`data/drafts/${slug}.json`);if(!draft)throw new Error(`Missing data/drafts/${slug}.json`);
-const seed=read(`data/reviews/${slug}.json`,{}),seeds=Array.isArray(seed.reviews)?seed.reviews:[];
-const title=String(draft.identity?.title||slug),year=Number(String(draft.release?.date||draft.release?.date_text||'').match(/(?:19|20)\d{2}/)?.[0]||0),checkedAt=new Date().toISOString();
-const minimum=Number(corpus.minimum_professional_sources??corpus.minimum_sources??10),target=Number(corpus.target_professional_sources??corpus.target_sources??20);
-const extras=[
- {id:'dtf',name:'DTF',url:'https://dtf.ru/games'},{id:'dzen',name:'Дзен',url:'https://dzen.ru/'},{id:'vgtimes',name:'VGTimes',url:'https://vgtimes.ru/games/'},{id:'vk-play',name:'VK Play Media',url:'https://media.vkplay.ru/'},{id:'ixbt-games',name:'iXBT.games',url:'https://ixbt.games/'},{id:'gamemag',name:'GameMAG.ru',url:'https://gamemag.ru/'},{id:'shazoo',name:'Shazoo',url:'https://shazoo.ru/'}
-];
-const registry=(reviewConfig.sources||[]).filter(s=>s.enabled!==false&&s.family==='editorial').map(s=>({id:String(s.id||s.name),name:String(s.name||s.id),url:String(s.url||'')}));
-for(const x of extras)if(!registry.some(s=>s.id===x.id||s.name.toLowerCase()===x.name.toLowerCase()))registry.push(x);
-const decode=v=>String(v||'').replace(/<!\[CDATA\[|\]\]>/g,'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
-const canonical=v=>{try{const u=new URL(v);u.hash='';for(const k of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','ysclid'])u.searchParams.delete(k);return `${u.origin}${u.pathname.replace(/\/$/,'')}${u.search}`}catch{return String(v||'').trim()}};
-const host=v=>{try{return new URL(v).hostname.replace(/^www\./,'').toLowerCase()}catch{return''}};
-const sourceDomain=s=>{try{const h=host(s.url);return h==='web.archive.org'?'':h}catch{return''}};
-const titleTokens=title.toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ').trim().split(/\s+/).filter(Boolean);
-const identityTokens=titleTokens.filter(t=>/^\d+$/.test(t)||t.length>1);
-const identityMatches=v=>{const hay=` ${String(v||'').toLowerCase().replace(/[^a-z0-9а-яё]+/gi,' ')} `;return identityTokens.every(t=>hay.includes(` ${t} `))};
-const reviewSignal=v=>/(review|retro(?:spective|view)?|opinion|longread|recenz|реценз|обзор|ретро|мнение|вердикт|reviewed)/i.test(String(v||''));
-const badSignal=v=>/(walkthrough|guide|wiki|tips|cheat|news|preview|interview|how to|прохожд|гайд|новост|превью|интервью|steamcommunity|reddit\.com)/i.test(String(v||''));
-const aggregator=v=>/(metacritic\.com|opencritic\.com)/i.test(host(v));
-const parseRss=xml=>{const out=[];for(const m of String(xml||'').matchAll(/<item>([\s\S]*?)<\/item>/gi)){const body=m[1],pick=tag=>decode((body.match(new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`,'i'))||[])[1]||'');const url=pick('link'),name=pick('title'),description=pick('description');if(url)out.push({url,title:name,description})}return out};
-async function bing(query){const u=new URL('https://www.bing.com/search');u.searchParams.set('format','rss');u.searchParams.set('count','50');u.searchParams.set('q',query);try{const r=await fetch(u,{redirect:'follow',signal:AbortSignal.timeout(12000),headers:{'user-agent':'Mozilla/5.0 (compatible; IgropoiskSourceDiscovery/6.1)','accept-language':'en-US,en;q=.9,ru;q=.8'}});if(!r.ok)return{ok:false,status:r.status,items:[]};return{ok:true,status:r.status,items:parseRss(await r.text())}}catch(error){return{ok:false,status:0,error:error.message,items:[]}}}
-async function probe(url){try{const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(12000),headers:{'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/127 Safari/537.36','accept-language':'en-US,en;q=.9,ru;q=.8'}});if(!r.ok)return{ok:false,status:r.status,url:r.url||url,html:''};const type=(r.headers.get('content-type')||'').toLowerCase();const html=/html|text/.test(type)?await r.text():'';return{ok:true,status:r.status,url:r.url||url,html}}catch(error){return{ok:false,status:0,url,error:error.message,html:''}}}
-function scoreFromHtml(html){const text=decode(html);const json=html.match(/"ratingValue"\s*:\s*"?([0-9]+(?:\.[0-9]+)?)"?[\s\S]{0,120}?"bestRating"\s*:\s*"?([0-9]+(?:\.[0-9]+)?)"?/i);if(json)return{score:Number(json[1]),scale:Number(json[2])};for(const rx of [/(?:score|rating|grade)\s*[:\-]?\s*([0-9]+(?:\.[0-9]+)?)\s*\/\s*(10|100)/i,/\b([0-9]+(?:\.[0-9]+)?)\s*\/\s*(10|100)\b/i]){const m=text.match(rx);if(m){const score=Number(m[1]),scale=Number(m[2]);if(score>=0&&score<=scale)return{score,scale}}}return{score:null,scale:null}}
-function kindFor(v){const s=String(v||'').toLowerCase();if(/retro|ретро/.test(s))return'retrospective_review';if(/opinion|мнение/.test(s))return'opinion';if(/longread|лонгрид/.test(s))return'longread';return'review'}
-const candidateMap=new Map();
-function addCandidate(raw,source=null,origin='search'){const url=canonical(raw.url);if(!url||aggregator(url)||badSignal(`${raw.title} ${url}`)||!identityMatches(`${raw.title} ${raw.description||''} ${url}`)||!reviewSignal(`${raw.title} ${url} ${raw.description||''}`))return;const key=url.toLowerCase();if(candidateMap.has(key))return;candidateMap.set(key,{publication:source?.name||raw.publication||host(url),configured_source_id:source?.id||raw.configured_source_id||'',title:raw.title||`${title} review`,url,source_kind:kindFor(`${raw.title} ${url}`),platform:'',version_context:'',published_at:'',author:'',score:Number.isFinite(Number(raw.score))?Number(raw.score):null,scale:Number.isFinite(Number(raw.scale))?Number(raw.scale):null,grade:String(raw.grade||''),identity_evidence:`Discovered by ${origin}`})}
-for(const item of seeds){if(item?.url&&!aggregator(item.url)&&identityMatches(`${item.title||''} ${item.url}`))addCandidate(item,{id:item.configured_source_id||'',name:item.publication||item.source||host(item.url)},'existing verified corpus')}
-const checks=[];
-for(const source of registry){const domain=sourceDomain(source),queries=[];if(domain){queries.push(`"${title}" review site:${domain}`,`"${title}" retrospective site:${domain}`,`"${title}" обзор site:${domain}`)}else{queries.push(`"${title}" review "${source.name}"`,`"${title}" обзор "${source.name}"`)}let searchAvailable=false,before=candidateMap.size;for(const q of queries){const result=await bing(q);if(result.ok)searchAvailable=true;for(const item of result.items){if(domain&&host(item.url)!==domain&&!host(item.url).endsWith(`.${domain}`))continue;addCandidate(item,source,`registered-source search: ${q}`)}}checks.push({source_id:source.id,source_name:source.name,status:candidateMap.size>before?'found':searchAvailable?'not_found':'unavailable',notes:candidateMap.size>before?`${candidateMap.size-before} candidate(s) discovered`:(searchAvailable?'search completed; no matching direct editorial material':'search provider unavailable')})}
-let externalSearchAvailable=false;for(const q of [`"${title}" review`,`"${title}" retrospective`,`"${title}" opinion`,`"${title}" обзор`,`"${title}" рецензия`,`"${title}" ретро обзор`,`"${title}" мнение`,year?`"${title}" review ${year}`:`"${title}" game review`]){const result=await bing(q);if(result.ok)externalSearchAvailable=true;for(const item of result.items)addCandidate(item,null,`broad web search: ${q}`)}
-const accepted=[],rejected=[];
-for(const raw of candidateMap.values()){const live=await probe(raw.url);if(!live.ok){rejected.push({publication:raw.publication,title:raw.title,url:raw.url,reasons:[`URL unavailable to verifier: ${live.status||live.error||'network error'}`]});continue}const resolved=canonical(live.url),extracted=scoreFromHtml(live.html),score=raw.score??extracted.score,scale=raw.scale??extracted.scale;accepted.push({...raw,id:`source-${accepted.length+1}`,url:raw.url,resolved_url:resolved,domain:host(resolved),score,scale,score_eligible:Number.isFinite(Number(score))&&Number.isFinite(Number(scale))&&Number(scale)>0,validation:{status:'accepted-readable-link',checked_at:checkedAt,http_status:live.status,method:'registered-search-plus-live-http-v6.1'}})}
-const scoreSources=[],scoreSeen=new Set();for(const item of [...seeds,...accepted]){const score=Number(item.score),scale=Number(item.scale),grade=String(item.grade||'').trim();if(!(Number.isFinite(score)&&Number.isFinite(scale)&&scale>0)&&!grade)continue;const publication=String(item.publication||item.source||'').trim(),key=publication.toLowerCase();if(!publication||scoreSeen.has(key))continue;scoreSeen.add(key);scoreSources.push({publication,title:item.title||'',url:canonical(item.resolved_url||item.url),score:Number.isFinite(score)?score:null,scale:Number.isFinite(scale)?scale:null,grade,source_kind:item.source_kind||'review'})}
-const registryComplete=checks.length===registry.length,searchComplete=registryComplete&&externalSearchAvailable;
-const matrix={schema_version:9,game_slug:slug,generated_at:checkedAt,ownership:'game-page-source-discovery',policy:{maximum_readable_articles:null,collect_all_discovered:true,mandatory_registry_scan:true,broad_web_discovery:true,ai_required:false,minimum_professional_sources:minimum,target_professional_sources:target,exact_identity_includes_numeric_tokens:true},source_registry_scan:{registered_sources:registry.length,settled_sources:checks.length,complete:registryComplete,checks},external_search:{complete:externalSearchAvailable,provider:'Bing RSS',queries:8},accepted,rejected,score_sources:scoreSources,coverage:{accepted_readable_articles:accepted.length,scored_sources:scoreSources.length,page_material_scan_complete:searchComplete}};
-write(`data/research/${slug}-source-matrix.json`,matrix);write(`data/reviews/${slug}.json`,{schema_version:18,game_slug:slug,game_id:draft.identity?.game_id||seed.game_id||null,updated_at:checkedAt,derived_from_game_source_discovery:true,publication_gate:{minimum:0,target:null,maximum:null,accepted:accepted.length,status:searchComplete?'green':'red-needs-revision',criterion:'mandatory_registry_plus_broad_web_scan_complete',full_registry_scan:registryComplete,checked_registered_sources:registry.length},source_registry_scan:matrix.source_registry_scan,external_search:matrix.external_search,reviews:accepted,score_sources:scoreSources,rejected});write(`data/parser-runs/review-research-${slug}.json`,{parser:'professional-game-source-discovery-v6.2-exact-identity',status:searchComplete?'green':'needs_revision',game_slug:slug,checked_at:checkedAt,registered_sources:registry.length,registry_scan_complete:registryComplete,external_search_complete:externalSearchAvailable,accepted_readable_articles:accepted.length,scored_sources:scoreSources.length,rejected:rejected.length,collect_all_discovered:true,canonical_owner:'game-page-module'});
-console.log(JSON.stringify({slug,status:searchComplete?'green':'red-needs-revision',registered_sources:registry.length,registry_scan_complete:registryComplete,external_search_complete:externalSearchAvailable,accepted_readable_articles:accepted.length,scored_sources:scoreSources.length,rejected:rejected.length,ai_required:false,canonical_owner:'game-page-module'},null,2));if(!searchComplete)process.exitCode=2;
+const checkedAt=new Date().toISOString();
+const corpusPath=`data/game-sources/${slug}.json`;
+const corpus=read(corpusPath);
+if(!corpus){
+  console.error(`Missing canonical game source corpus: ${corpusPath}`);
+  console.error('Review Module does not perform independent source discovery. Build/refresh the Game Page source corpus first.');
+  process.exit(2);
+}
+const draft=read(`data/drafts/${slug}.json`,{});
+const raw=Array.isArray(corpus.sources)?corpus.sources:[];
+const canonical=value=>{try{const u=new URL(value);u.hash='';for(const key of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','ysclid'])u.searchParams.delete(key);return `${u.origin}${u.pathname.replace(/\/$/,'')}${u.search}`}catch{return String(value||'').trim()}};
+const sources=raw.map((source,index)=>({
+  ...source,
+  id:source.id||`source-${index+1}`,
+  publication:source.publication||source.name||source.source||`Источник ${index+1}`,
+  title:source.title||source.name||'',
+  url:canonical(source.resolved_url||source.url||''),
+  resolved_url:canonical(source.resolved_url||source.url||''),
+  source_kind:source.source_kind||source.role||source.type||'editorial',
+  canonical_owner:'game-page-module'
+})).filter(source=>source.url||source.title||source.publication);
+const scoreSources=sources.filter(source=>{
+  const score=Number(source.score),scale=Number(source.scale);
+  return (Number.isFinite(score)&&Number.isFinite(scale)&&scale>0)||String(source.grade||'').trim();
+}).map(source=>({publication:source.publication,title:source.title,url:source.resolved_url,score:Number.isFinite(Number(source.score))?Number(source.score):null,scale:Number.isFinite(Number(source.scale))?Number(source.scale):null,grade:String(source.grade||''),source_kind:source.source_kind}));
+const discoveryComplete=corpus.source_scan_complete!==false&&corpus.discovery?.complete!==false;
+const gameId=corpus.game_id||draft.identity?.game_id||null;
+const matrix={
+  schema_version:10,
+  game_slug:slug,
+  game_id:gameId,
+  generated_at:checkedAt,
+  ownership:'game-page-canonical-corpus-adapter',
+  canonical_source:corpusPath,
+  policy:{independent_review_discovery:false,fixed_source_count_required:false,collect_all_available_from_canonical_corpus:true,exact_game_version_required:true},
+  source_registry_scan:{registered_sources:null,settled_sources:sources.length,complete:discoveryComplete,checks:[]},
+  external_search:{complete:discoveryComplete,provider:'game-page-module',queries:0},
+  accepted:sources,
+  rejected:[],
+  score_sources:scoreSources,
+  coverage:{accepted_readable_articles:sources.length,scored_sources:scoreSources.length,page_material_scan_complete:discoveryComplete}
+};
+write(`data/research/${slug}-source-matrix.json`,matrix);
+write(`data/reviews/${slug}.json`,{
+  schema_version:19,
+  game_slug:slug,
+  game_id:gameId,
+  updated_at:checkedAt,
+  derived_from_canonical_game_source_corpus:true,
+  canonical_source:corpusPath,
+  publication_gate:{fixed_count_required:false,minimum:0,target:null,maximum:null,accepted:sources.length,status:discoveryComplete?'green':'red-needs-revision',criterion:'canonical_game_source_corpus_available_and_discovery_not_explicitly_incomplete'},
+  reviews:sources,
+  score_sources:scoreSources,
+  rejected:[]
+});
+write(`data/parser-runs/review-research-${slug}.json`,{
+  parser:'review-source-corpus-adapter-v1',
+  status:discoveryComplete?'green':'needs_revision',
+  game_slug:slug,
+  checked_at:checkedAt,
+  accepted_sources:sources.length,
+  scored_sources:scoreSources.length,
+  independent_review_discovery:false,
+  fixed_source_count_required:false,
+  canonical_owner:'game-page-module',
+  canonical_source:corpusPath
+});
+console.log(JSON.stringify({slug,status:discoveryComplete?'green':'red-needs-revision',accepted_sources:sources.length,scored_sources:scoreSources.length,independent_review_discovery:false,canonical_owner:'game-page-module'},null,2));
+if(!discoveryComplete)process.exitCode=2;
