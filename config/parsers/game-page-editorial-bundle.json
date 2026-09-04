@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "id": "game-page-editorial-bundle",
+  "title": "Game Page Editorial Bundle v1 — Игропоиск",
+  "status": "architecture_contract",
+  "inputs": {
+    "subtitle": "game-page-subtitle-skill",
+    "description": "game-page-description-skill",
+    "features": "game-page-features-skill"
+  },
+  "required_consistency": {
+    "same_game_id": true,
+    "same_evidence_hash": true,
+    "all_skill_qc_passed": true,
+    "exact_version_match": true
+  },
+  "publication": {
+    "new_page": "publish bundle atomically after all three page skills pass",
+    "existing_page_regeneration_failure": "keep previous approved bundle",
+    "review_required": false
+  },
+  "review_boundary": {
+    "review_is_part_of_bundle": false,
+    "review_module_is_independent": true,
+    "game_page_may_link_published_review": true,
+    "review_failure_blocks_game_page": false
+  },
+  "runtime": {
+    "llm_calls_in_browser_request_path": false,
+    "serve_materialized_approved_content": true
+  }
+}
