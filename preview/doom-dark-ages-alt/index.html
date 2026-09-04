@@ -19,6 +19,8 @@ dialog{width:min(1160px,calc(100vw - 28px));max-width:none;border:0;border-radiu
 @media(max-width:1100px){.hero__inner{grid-template-columns:180px 1fr;min-height:940px}.cover{width:180px}.scores{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}.hero__rail{grid-column:1/-1}.grid{grid-template-columns:1fr}.gallery{grid-template-columns:1fr 1fr}.shot:first-child{grid-column:1/-1;grid-row:auto}.store-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.header__inner,.hero__inner,.tabs,main{width:calc(100% - 30px)}.nav{display:none}.hero__inner{grid-template-columns:1fr;min-height:auto;padding-top:104px}.cover{width:150px}.scores{grid-template-columns:1fr}.hero__rail{grid-column:1}.hero h1{font-size:52px}.features,.req-grid,.store-grid,.gallery{grid-template-columns:1fr}.shot:first-child{grid-column:auto}.hero__controls{display:none}}
 </style>
+<link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">
+<link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">
 </head>
 <body>
 <header class="header"><div class="header__inner"><a class="brand" href="/Igropoisk/"><b>И</b>ГРОПОИСК</a><nav class="nav"><a href="/Igropoisk/">Главное</a><a href="/Igropoisk/#search">Поиск игр</a><a href="/Igropoisk/#news">Новости</a><a href="/Igropoisk/#top250">Топ-250</a><a href="/Igropoisk/#releases">Релизы</a></nav><div class="header__actions"><button class="ig-button header-btn">⌕</button><button class="ig-button header-btn">Войти</button></div></div></header>
@@ -60,5 +62,7 @@ document.getElementById('pauseBg').addEventListener('click',e=>{if(!paused){hero
 document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===btn));document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('active',x.id===btn.dataset.tab));window.scrollTo({top:document.querySelector('.tabs-shell').offsetTop-68,behavior:'smooth'});}));
 const dialog=document.getElementById('trailerDialog');const modal=document.getElementById('modalPlayer');function openTrailer(){modal.src=`https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&rel=0&modestbranding=1`;dialog.showModal()};document.querySelectorAll('[data-trailer]').forEach(x=>x.addEventListener('click',openTrailer));document.getElementById('closeTrailer').addEventListener('click',()=>{dialog.close();modal.src='about:blank'});dialog.addEventListener('click',e=>{if(e.target===dialog){dialog.close();modal.src='about:blank'}});
 </script>
+<script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>
+<script src="/Igropoisk/assets/layout-contract.js?v=20260803-1" data-ig-layout-contract="script" defer></script>
 </body>
 </html>
