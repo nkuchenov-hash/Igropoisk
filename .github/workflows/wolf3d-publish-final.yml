@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/wolf3d-publish-final.yml'
       - 'scripts/assemble-wolf3d-final-benchmark.mjs'
+      - 'scripts/patch-wolf3d-benchmark-design-system.mjs'
       - 'benchmarks/wolfenstein-3d-1992/source-pack.json'
   workflow_dispatch:
 
@@ -54,10 +55,13 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/assemble-wolf3d-final-benchmark.mjs
+          node scripts/patch-wolf3d-benchmark-design-system.mjs
           cat "$WOLF3D_PUBLIC_OUT/SUMMARY.txt"
           test -f "$WOLF3D_PUBLIC_OUT/index.html"
           test "$(find "$WOLF3D_PUBLIC_OUT/models" -name '*.html' | wc -l | tr -d ' ')" -eq 16
           grep -q 'noindex,nofollow' "$WOLF3D_PUBLIC_OUT/index.html"
+          grep -q '../../assets/design-system.css' "$WOLF3D_PUBLIC_OUT/index.html"
+          ! grep -Eq '(^|[;{])[[:space:]]*(color|background|border|box-shadow|font-size|font-weight|line-height|letter-spacing)[[:space:]]*:' "$WOLF3D_PUBLIC_OUT/styles.css"
 
       - name: Publish only static stand on clean branch from current main
         id: publish
@@ -76,7 +80,7 @@ jobs:
           git config user.name 'igropoisk-benchmark[bot]'
           git config user.email 'igropoisk-benchmark[bot]@users.noreply.github.com'
           git add "$PUBLIC_PATH"
-          git commit -m 'Publish temporary Wolfenstein 3D model comparison stand'
+          git commit -m 'Align Wolfenstein 3D comparison with central design system'
           git push --force origin "$RESULT_BRANCH"
           echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
@@ -91,8 +95,8 @@ jobs:
               --repo "$GITHUB_REPOSITORY" \
               --base main \
               --head "$RESULT_BRANCH" \
-              --title 'Publish temporary Wolfenstein 3D 16-model comparison' \
-              --body 'Static noindex comparison stand only. Contains the final exact-prompt Wolfenstein 3D (1992) outputs for 16 models, individual model pages, source pack, and side-by-side comparison. No benchmark runners, model integrations, or Game Page Module code are included.'
+              --title 'Align Wolfenstein 3D benchmark with central design system' \
+              --body 'Static noindex comparison stand only. Replaces local visual component styling with central Игропоиск ig-card / ig-button / ig-chip / ig-panel / ig-input components so the production Pages design-system guard can pass. Model texts and benchmark results are unchanged.'
           else
             echo "PR #$existing already open"
           fi
