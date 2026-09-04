@@ -1,0 +1,49 @@
+name: Full Wolfenstein 3D source corpus extraction
+
+on:
+  push:
+    branches: [benchmark/full-source-corpus-seven-games-20260904]
+    paths:
+      - '.github/workflows/full-source-corpus-wolfenstein.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  NODE_NO_WARNINGS: '1'
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/patch-benchmark-game-knowledge-vocabulary.mjs
+      - run: node scripts/build-editorial-benchmark-pack.mjs wolfenstein-3d
+      - name: Verify complete raw corpus
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const slug='wolfenstein-3d';
+          const c=JSON.parse(fs.readFileSync(`data/game-source-content/${slug}.json`,'utf8'));
+          const s=JSON.parse(fs.readFileSync(`data/game-sources/${slug}.json`,'utf8'));
+          if(c.source_scan_complete!==true) throw new Error('source content scan incomplete');
+          if(s.discovery?.complete!==true) throw new Error('source discovery incomplete');
+          console.log(JSON.stringify({total_candidates:c.total_candidates,readable_sources:c.readable_sources,source_counts:s.counts},null,2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: full-source-corpus-wolfenstein-3d
+          path: |
+            data/game-source-content/wolfenstein-3d.json
+            data/game-sources/wolfenstein-3d.json
+            data/game-knowledge/wolfenstein-3d.json
+            data/research/wolfenstein-3d-source-matrix.json
+            data/reviews/wolfenstein-3d.json
+            data/drafts/wolfenstein-3d.json
+          if-no-files-found: error
+          retention-days: 14
