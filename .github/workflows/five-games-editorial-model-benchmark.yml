@@ -8,6 +8,7 @@ on:
       - 'benchmarks/editorial-five-games/games.json'
       - 'scripts/build-editorial-benchmark-pack.mjs'
       - 'scripts/run-editorial-benchmark-one-model.mjs'
+      - 'scripts/patch-benchmark-game-knowledge-vocabulary.mjs'
   workflow_dispatch:
 
 permissions:
@@ -38,6 +39,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Broaden universal semantic game vocabulary
+        run: node scripts/patch-benchmark-game-knowledge-vocabulary.mjs
       - name: Build frozen post-assembly pack
         run: node scripts/build-editorial-benchmark-pack.mjs "${{ matrix.game }}"
       - name: Validate frozen pack
