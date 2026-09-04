@@ -41,11 +41,11 @@ jobs:
           if(p.assembly?.source_scan_complete!==true) throw new Error('source scan incomplete');
           if(Number(p.assembly?.defining_claims||0)<4) throw new Error('fewer than 4 defining claims');
           if(Number(p.assembly?.readable_sources||0)<3) throw new Error('fewer than 3 readable sources');
-          const essence=String(p.game_knowledge?.essence||'');
-          if(!/(dangerous\s+dave|haunted\s+mansion|dave)/i.test(essence)) throw new Error(`identity essence mismatch: ${essence}`);
+          const claimText=JSON.stringify(p.game_knowledge?.defining_claims||[]);
+          if(!/(dangerous\s+dave|haunted\s+mansion|delbert|shotgun)/i.test(claimText)) throw new Error('defining claims do not establish Dangerous Dave identity');
           const frozenText=JSON.stringify({knowledge:p.game_knowledge,material:p.readable_source_material});
           if(/doom\s*64|munchkin/i.test(frozenText)) throw new Error('cross-game contamination detected');
-          console.log(JSON.stringify({game:p.game,assembly:p.assembly,essence},null,2));
+          console.log(JSON.stringify({game:p.game,assembly:p.assembly,identity_claims_ok:true},null,2));
           NODE
       - uses: actions/upload-artifact@v4
         with:
