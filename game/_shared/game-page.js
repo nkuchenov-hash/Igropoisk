@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const moduleVersion='20260904-1';
+const moduleVersion='20260904-2';
 window.__IG_GAME_PAGE_MODULE_VERSION__=moduleVersion;
 const addStyle=(href)=>{
   const style=document.createElement('link');
@@ -45,7 +45,7 @@ const failVisible=error=>{
     '../_shared/game-page-review-sources.js?v=20260902-3',
     '../_shared/game-page-source-corpus.js?v=20260902-3',
     '../_shared/game-page-materialized-data.js?v=20260902-3',
-    '../_shared/game-page-integrity.js?v=20260902-10',
+    `../_shared/game-page-integrity.js?v=${moduleVersion}`,
     '../_shared/game-editions.js?v=20260807-1',
     '../_shared/game-media-categories.js?v=20260808-1',
     '../_shared/game-media-recovery.js?v=20260810-1',
