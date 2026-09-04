@@ -46,4 +46,8 @@
   const mediaRecovery=document.createElement('script');
   mediaRecovery.src='../_shared/game-media-recovery.js?v=20260810-1';
   document.head.appendChild(mediaRecovery);
+  const cinematicHero=document.createElement('script');
+  cinematicHero.src='../_shared/game-cinematic-hero.js?v=20260903-1';
+  cinematicHero.defer=true;
+  document.head.appendChild(cinematicHero);
 })();
