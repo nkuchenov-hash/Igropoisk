@@ -58,7 +58,7 @@ const basePrompt=`Игра: ${draft.identity.title}.
 {"short_description":"...","integrated_description":"...","campaign":"...","features":["..."],"grounding_claim_ids":["claim-..."]}
 
 Требования:
-- short_description: ровно 2 русских предложения, 100–240 символов; сразу объясни центральную идею игры и путь игрока;
+- short_description: 100–320 символов; сразу объясни центральную идею игры и путь игрока; количество предложений не фиксировано — используй столько коротких фраз, сколько нужно для лёгкого чтения; обычно 2–4, но не склеивай мысли ради формального числа;
 - integrated_description: 450–850 символов, 5–7 русских предложений; конкретно расскажи, что делает игрок, как развивается игра, как меняется масштаб и какие инструменты создания важны;
 - campaign: 180–450 символов, 3–5 русских предложений только о структуре прохождения/развития; не повторяй формулировки short/integrated;
 - features: 5–7 разных конкретных особенностей по 35–140 символов, каждая по-русски;
@@ -77,7 +77,7 @@ ${JSON.stringify(facts,null,2)}`;
 function normalizeCandidate(data={},previous=null){
   const merged=previous?{...previous,...data}:data;
   return dedupeCrossBlocks({
-    short_description:bound(sanitizeRussianText(merged.short_description),80,270),
+    short_description:bound(sanitizeRussianText(merged.short_description),80,340),
     integrated_description:bound(sanitizeRussianText(merged.integrated_description),330,900),
     campaign:bound(sanitizeRussianText(merged.campaign),130,500),
     features:sanitizeRussianFeatures(merged.features).slice(0,7),
@@ -88,7 +88,7 @@ function failedFields(c){
   const failed=new Set();
   const narrative=[['short_description',c.short_description],['integrated_description',c.integrated_description],['campaign',c.campaign]];
   for(const [field,value] of narrative)if(!value||cyrillicRatio(value)<0.55)failed.add(field);
-  if(c.short_description.length<90||splitSentences(c.short_description).length<2)failed.add('short_description');
+  if(c.short_description.length<90||c.short_description.length>340)failed.add('short_description');
   if(c.integrated_description.length<350)failed.add('integrated_description');
   if(c.campaign.length<130)failed.add('campaign');
   if(c.features.length<5||c.features.some(x=>x.length<28||cyrillicRatio(x)<0.55)||c.features.some((x,i)=>c.features.some((y,j)=>j>i&&similarity(x,y)>=0.74)))failed.add('features');
@@ -100,7 +100,7 @@ function failedFields(c){
 }
 function problemsFor(c){
   const failed=failedFields(c);const problems=[];
-  if(failed.includes('short_description'))problems.push('short_description: два естественных русских предложения минимум 90 символов');
+  if(failed.includes('short_description'))problems.push('short_description: компактный естественный русский текст 100–320 символов; количество предложений свободное, приоритет — короткие читаемые фразы');
   if(failed.includes('integrated_description'))problems.push('integrated_description: естественный русский текст без повторов, минимум 350 символов');
   if(failed.includes('campaign'))problems.push('campaign: естественный русский текст о структуре прохождения без повторов, минимум 130 символов');
   if(failed.includes('features'))problems.push('features: минимум 5 разных содержательных русских пунктов');
