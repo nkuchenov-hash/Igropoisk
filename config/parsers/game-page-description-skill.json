@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "id": "game-page-description-skill",
+  "title": "Game Page Description Skill v1 — Игропоиск",
+  "status": "ready_for_model_benchmark",
+  "purpose": "Создавать полноценное вводное описание игры: что это за игра, кем является игрок, что он делает, как устроен игровой процесс и какие системы делают игру именно этой игрой.",
+  "canonical_source_contract": {
+    "metadata": "data/game-sources/{slug}.json",
+    "full_text": "data/game-source-content/{slug}.json",
+    "owner": "game-page-source-pipeline",
+    "discover_sources": false,
+    "use_all_readable_stored_sources": true,
+    "benchmark_truncation_allowed": false,
+    "exact_version_required": true
+  },
+  "model_policy": {
+    "approved_model": null,
+    "one_approved_model_for_this_skill": true,
+    "same_model_attempts": 3,
+    "cross_model_fallback": false
+  },
+  "output_contract": {
+    "field": "description",
+    "language": "ru",
+    "target_words": "130-190",
+    "soft_max_words": 220,
+    "paragraphs": "1-3",
+    "bullets": false
+  },
+  "workflow": [
+    "Прочитать весь доступный канонический корпус и зафиксировать точную версию игры.",
+    "Извлечь premise, роль/цель игрока, core loop, структуру мира или кампании, ключевые системы и характерные детали.",
+    "Отделить центральные для понимания игры сведения от справочной мелочи и исторического шума.",
+    "Собрать текст вокруг опыта игрока: что происходит, что он делает и почему эта игра отличается от соседних игр жанра.",
+    "Проверить факты, полноту портрета, естественность русского и отсутствие review-вердикта."
+  ],
+  "content_priorities": [
+    "центральная игровая фантазия",
+    "роль и цель игрока",
+    "основные действия игрока",
+    "структура уровней/мира/кампании",
+    "2-4 отличительные системы или детали",
+    "сеттинг и конфликт, если они определяют опыт"
+  ],
+  "editorial_policy": {
+    "encyclopedic_lead": false,
+    "press_release_rewrite": false,
+    "plot_synopsis_only": false,
+    "review_verdict": false,
+    "numeric_score": false,
+    "source_process_language": false,
+    "evergreen": true,
+    "historical_context_only_when_it_explains_the_game": true,
+    "mechanics_use_present_tense": true,
+    "specific_details_over_generic_adjectives": true,
+    "avoid_repeating_subtitle_word_for_word": true
+  },
+  "acceptance_tests": [
+    "После чтения должно быть понятно, кем или чем управляет игрок и что он в основном делает.",
+    "Должны присутствовать конкретные особенности, по которым игру можно отличить от обычного представителя жанра.",
+    "Текст не должен быть только пересказом завязки сюжета.",
+    "Текст не должен превращаться в обзор с оценкой качества или итоговым вердиктом.",
+    "Все материальные факты должны подтверждаться каноническим корпусом.",
+    "Нельзя смешивать оригинал, ремастер, ремейк, порт или продолжение."
+  ],
+  "anti_patterns": [
+    "Игра предлагает захватывающее приключение, красивую графику и увлекательный геймплей.",
+    "Сначала длинно пересказать сюжет, а механику упомянуть одной фразой в конце.",
+    "Начинать старую игру с обязательного рассуждения о её возрасте или современности."
+  ]
+}
