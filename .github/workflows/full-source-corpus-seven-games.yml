@@ -1,0 +1,66 @@
+name: Full source corpus extraction for seven-game editorial test
+
+on:
+  push:
+    branches: [benchmark/full-source-corpus-seven-games-20260904]
+    paths:
+      - '.github/workflows/full-source-corpus-seven-games.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  NODE_NO_WARNINGS: '1'
+
+jobs:
+  assemble:
+    name: Full corpus — ${{ matrix.game }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        game:
+          - dangerous-dave-in-the-haunted-mansion
+          - far-cry
+          - jack-orlando-a-cinematic-adventure-1997
+          - mafia
+          - mass-effect-2007
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare benchmark source assembly
+        run: |
+          node scripts/patch-benchmark-game-knowledge-vocabulary.mjs
+          if [ "${{ matrix.game }}" = "dangerous-dave-in-the-haunted-mansion" ]; then
+            node scripts/patch-dangerous-dave-benchmark-source-seeds.mjs
+          fi
+      - name: Run normal Game Page source assembly
+        run: node scripts/build-editorial-benchmark-pack.mjs "${{ matrix.game }}"
+      - name: Verify complete raw corpus exists
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const slug='${{ matrix.game }}';
+          const c=JSON.parse(fs.readFileSync(`data/game-source-content/${slug}.json`,'utf8'));
+          const s=JSON.parse(fs.readFileSync(`data/game-sources/${slug}.json`,'utf8'));
+          if(c.source_scan_complete!==true) throw new Error('source content scan incomplete');
+          if(s.discovery?.complete!==true) throw new Error('source discovery incomplete');
+          console.log(JSON.stringify({slug,total_candidates:c.total_candidates,readable_sources:c.readable_sources,source_counts:s.counts},null,2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: full-source-corpus-${{ matrix.game }}
+          path: |
+            data/game-source-content/${{ matrix.game }}.json
+            data/game-sources/${{ matrix.game }}.json
+            data/game-knowledge/${{ matrix.game }}.json
+            data/research/${{ matrix.game }}-source-matrix.json
+            data/reviews/${{ matrix.game }}.json
+            data/drafts/${{ matrix.game }}.json
+          if-no-files-found: error
+          retention-days: 14
