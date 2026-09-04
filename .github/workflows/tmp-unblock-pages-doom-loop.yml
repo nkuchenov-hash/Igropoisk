@@ -32,6 +32,7 @@ jobs:
           s=s.replace('.bench-error{color:#d86b6b}', '.bench-error{}')
           css.write_text(s,encoding='utf-8')
           PY
+          python3 scripts/enforce_layout_contract.py --write
       - name: Verify design and layout contracts
         run: |
           node scripts/test-central-design-system.mjs
@@ -46,6 +47,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No benchmark compliance changes needed."
           else
-            git commit -m "Fix five-game benchmark design-system compliance"
+            git commit -m "Fix five-game benchmark production contracts"
             git push origin HEAD:main
           fi
