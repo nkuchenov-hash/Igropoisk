@@ -1,0 +1,57 @@
+name: Fix reserve player preview governance
+
+on:
+  push:
+    branches:
+      - tmp/inspect-igm-doom-video
+    paths:
+      - '.github/workflows/tmp-fix-reserve-player-preview.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Patch preview and remove temporary placeholders
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('preview/doom-dark-ages-player-fallback/index.html')
+          s = p.read_text(encoding='utf-8')
+          replacements = {
+              'class="player-card__top"': 'class="ig-panel player-card__top"',
+              'class="player-card__title"': 'class="ig-panel player-card__title"',
+              'class="player-card__body"': 'class="ig-panel player-card__body"',
+              'class="player-toolbar"': 'class="ig-panel player-toolbar"',
+              'class="modal-head"': 'class="ig-panel modal-head"',
+              'class="modal-head__title"': 'class="ig-panel modal-head__title"',
+              'class="modal-body"': 'class="ig-panel modal-body"',
+              'class="modal-foot"': 'class="ig-panel modal-foot"',
+          }
+          for old, new in replacements.items():
+              if old not in s:
+                  raise SystemExit(f'missing marker: {old}')
+              s = s.replace(old, new)
+          p.write_text(s, encoding='utf-8')
+          for name in ['placeholder','placeholder2','placeholder3','placeholder4','placeholder5','placeholder6','placeholder7']:
+              q = Path('tmp') / name
+              if q.exists(): q.unlink()
+          PY
+      - name: Validate design system and layout contract
+        run: |
+          node scripts/validate-central-design-system.mjs --base HEAD
+          python3 scripts/enforce_layout_contract.py --check
+          git diff --check
+      - name: Commit and push main
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A preview/doom-dark-ages-player-fallback/index.html tmp
+          git commit -m 'Fix reserve trailer player preview governance'
+          git push origin HEAD:main
