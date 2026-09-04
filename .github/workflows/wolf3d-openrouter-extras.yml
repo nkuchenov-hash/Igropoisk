@@ -1,0 +1,40 @@
+name: Wolfenstein 3D OpenRouter free extras
+
+on:
+  push:
+    branches: [benchmark/wolf3d-all-free-models-20260904]
+    paths:
+      - '.github/workflows/wolf3d-openrouter-extras.yml'
+      - 'scripts/run-wolf3d-openrouter-extras.mjs'
+      - 'benchmarks/wolfenstein-3d-1992/source-pack.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extras:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run MiniMax M3 and Gemma 4 free candidates
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+        run: node scripts/run-wolf3d-openrouter-extras.mjs
+      - name: Upload extra pages
+        uses: actions/upload-artifact@v4
+        with:
+          name: wolf3d-openrouter-extras-${{ github.run_id }}
+          path: |
+            benchmarks/wolfenstein-3d-1992/extra-results.json
+            benchmarks/wolfenstein-3d-1992/models/minimax-m3-free.*
+            benchmarks/wolfenstein-3d-1992/models/gemma-4-31b-free.*
+            benchmarks/wolfenstein-3d-1992/models/gemma-4-26b-a4b-free.*
+          retention-days: 14
