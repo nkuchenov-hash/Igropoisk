@@ -1,0 +1,111 @@
+name: Wolfenstein 3D short-copy model benchmark
+
+on:
+  push:
+    branches: [benchmark/five-games-short-copy-20260904]
+    paths:
+      - '.github/workflows/wolf3d-short-copy-benchmark.yml'
+      - 'scripts/build-wolf3d-short-copy-pack.mjs'
+      - 'scripts/run-short-copy-benchmark-one-model.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  NODE_NO_WARNINGS: '1'
+  GAME: wolfenstein-3d-1992
+
+jobs:
+  assemble:
+    name: Freeze Wolfenstein 3D pack
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/patch-benchmark-game-knowledge-vocabulary.mjs
+      - run: node scripts/patch-dangerous-dave-benchmark-source-seeds.mjs
+      - run: node scripts/build-wolf3d-short-copy-pack.mjs
+      - name: Validate pack
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');const raw=fs.readFileSync('benchmark-packs/wolfenstein-3d-1992/pack.json'),p=JSON.parse(raw);
+          if(p.assembly?.source_scan_complete!==true)throw new Error('source scan incomplete');
+          if(Number(p.assembly?.defining_claims||0)<4)throw new Error('fewer than 4 defining claims');
+          if(Number(p.assembly?.readable_sources||0)<3)throw new Error('fewer than 3 readable sources');
+          const t=JSON.stringify({game:p.game,knowledge:p.game_knowledge,material:p.readable_source_material});
+          if(!/wolfenstein|b\.j\.|blazkowicz|id software/i.test(t))throw new Error('Wolfenstein identity not established');
+          console.log(JSON.stringify({assembly:p.assembly,sha256:crypto.createHash('sha256').update(raw).digest('hex')},null,2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: short-copy-pack-wolfenstein-3d-1992
+          path: benchmark-packs/wolfenstein-3d-1992
+          if-no-files-found: error
+          retention-days: 14
+
+  model:
+    name: Wolfenstein 3D — ${{ matrix.candidate.label }}
+    needs: assemble
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        candidate:
+          - { id: gigachat-3-ultra, label: 'GigaChat 3 Ultra', provider: gigachat, model: 'GigaChat-3-Ultra' }
+          - { id: gemini-3-8-flash, label: 'Gemini 3.8 Flash', provider: gemini, model: 'gemini-3.8-flash' }
+          - { id: gemini-3-7-flash, label: 'Gemini 3.7 Flash', provider: gemini, model: 'gemini-3.7-flash' }
+          - { id: qwen3-8-27b, label: 'Qwen 3.8 27B', provider: groq, model: 'qwen/qwen3.8-27b' }
+          - { id: qwen3-6-27b, label: 'Qwen 3.6 27B', provider: groq, model: 'qwen/qwen3.6-27b' }
+          - { id: gpt-oss-120b, label: 'GPT-OSS 120B', provider: groq, model: 'openai/gpt-oss-120b' }
+          - { id: gpt-oss-20b, label: 'GPT-OSS 20B', provider: groq, model: 'openai/gpt-oss-20b' }
+          - { id: glm-5-2-free, label: 'GLM 5.2 Free', provider: openrouter, model: 'z-ai/glm-5.2:free' }
+          - { id: nemotron-3-ultra-free, label: 'Nemotron 3 Ultra Free', provider: openrouter, model: 'nvidia/nemotron-3-ultra-550b-a55b:free' }
+          - { id: nemotron-3-super-free, label: 'Nemotron 3 Super Free', provider: openrouter, model: 'nvidia/nemotron-3-super-120b-a12b:free' }
+          - { id: minimax-m2-7-free, label: 'MiniMax M2.7 Free', provider: openrouter, model: 'minimax/minimax-m2.7:free' }
+          - { id: minimax-m3-free, label: 'MiniMax M3 Free', provider: openrouter, model: 'minimax/minimax-m3:free' }
+          - { id: dots3-note-free, label: 'Dots3-Note Preview Free', provider: openrouter, model: 'dots-studio/dots-3-note-preview:free' }
+          - { id: gemma-4-31b-free, label: 'Gemma 4 31B Free', provider: openrouter, model: 'google/gemma-4-31b-it:free' }
+          - { id: gemma-4-26b-a4b-free, label: 'Gemma 4 26B A4B Free', provider: openrouter, model: 'google/gemma-4-26b-a4b-it:free' }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          name: short-copy-pack-wolfenstein-3d-1992
+          path: benchmark-packs/wolfenstein-3d-1992
+      - name: Generate real short description
+        env:
+          SHORT_COPY_ATTEMPTS: '3'
+          BENCH_GAME: wolfenstein-3d-1992
+          BENCH_ID: ${{ matrix.candidate.id }}
+          BENCH_LABEL: ${{ matrix.candidate.label }}
+          BENCH_PROVIDER: ${{ matrix.candidate.provider }}
+          BENCH_MODEL: ${{ matrix.candidate.model }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_AI_API_KEY: ${{ secrets.GOOGLE_AI_API_KEY }}
+          GOOGLE_GEMINI_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
+          GIGACHAT_AUTH_KEY: ${{ secrets.GIGACHAT_AUTH_KEY }}
+          GIGACHAT_CREDENTIALS: ${{ secrets.GIGACHAT_CREDENTIALS }}
+          GIGACHAT_API_KEY: ${{ secrets.GIGACHAT_API_KEY }}
+          GIGACHAT_AUTHORIZATION_KEY: ${{ secrets.GIGACHAT_AUTHORIZATION_KEY }}
+          GIGACHAT_KEY: ${{ secrets.GIGACHAT_KEY }}
+        run: node scripts/run-short-copy-benchmark-one-model.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: short-copy-result-wolfenstein-3d-1992-${{ matrix.candidate.id }}
+          path: short-copy-result
+          if-no-files-found: error
+          retention-days: 14
