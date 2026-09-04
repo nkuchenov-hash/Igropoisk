@@ -29,7 +29,7 @@ const waitForBasePage=(timeoutMs=9000)=>new Promise((resolve,reject)=>{
 const failVisible=error=>{
   console.error('Игропоиск: общий модуль страницы игры',error);
   if(document.querySelector('#gameTitle')?.textContent?.trim())return;
-  document.body.innerHTML='<main style="padding:40px;font:16px sans-serif"><h1>Не удалось открыть страницу игры</h1><p>Общий модуль страницы не завершил загрузку. Обновите страницу.</p></main>';
+  document.body.innerHTML='<main class="ig-container game-runtime-failure"><h1>Не удалось открыть страницу игры</h1><p>Общий модуль страницы не завершил загрузку. Обновите страницу.</p></main>';
 };
 (async()=>{
   addStyle(`../_shared/game-page-quality.css?v=${moduleVersion}`);
