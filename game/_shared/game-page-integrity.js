@@ -20,9 +20,40 @@ const mediaUrl=x=>typeof x==='string'?x:String(x?.url||x?.src||'');
 const forbiddenMedia=u=>/storepagebackground\//i.test(String(u||''));
 function row(s){const u=sourceUrl(s);return `<a class="quality-review-row" href="${esc(u)}" target="_blank" rel="noopener noreferrer"><span class="quality-review-source">${esc(sourceName(s))}</span><b>${esc(s.title||'Обзор')}</b><strong>${esc(score(s))}</strong><span aria-hidden="true">↗</span></a>`}
 let reviewRenderLock=false;
+let reviewObserver=null;
+const reviewSignature=list=>list.map(item=>[canon(sourceUrl(item)),sourceName(item),String(item?.title||''),score(item)].join('\u001f')).join('\u001e');
+const observeReviewGrid=grid=>{if(!reviewObserver)return;reviewObserver.observe(grid,{childList:true,subtree:true,characterData:true})};
 function reviewPool(corpus,legacyReviews){return unique([...arr(corpus?.sources),...normalizeLegacyReviews(legacyReviews)].filter(directReview))}
-function renderAllReviews(corpus,ratings,legacyReviews){const grid=document.querySelector('#reviewGrid');if(!grid)return;const ratingMap=new Map(arr(ratings?.sources).map(s=>[canon(s.url),s]));const all=reviewPool(corpus,legacyReviews).map(s=>{const r=ratingMap.get(canon(sourceUrl(s)));return r?{...s,publication:r.publication||sourceName(s),score:r.original_score?.score??s.score,scale:r.original_score?.scale??s.scale,normalized_10:r.normalized_10}:s});const html=all.length?all.map(row).join(''):'<div class="ig-empty-state empty-state">Обзоры пока не найдены.</div>';reviewRenderLock=true;grid.classList.add('quality-review-table');if(grid.innerHTML!==html)grid.innerHTML=html;grid.dataset.canonicalReviewCount=String(all.length);const count=document.querySelector('#externalReviewCount');if(count)count.textContent=`${all.length} источников`;const heading=grid.previousElementSibling?.querySelector?.('h2');if(heading)heading.textContent='Обзоры и оценки изданий';reviewRenderLock=false}
-function ownReviewGrid(corpus,ratings,legacyReviews){const grid=document.querySelector('#reviewGrid');if(!grid||grid.dataset.canonicalReviewOwner==='1')return;grid.dataset.canonicalReviewOwner='1';const observer=new MutationObserver(()=>{if(reviewRenderLock)return;queueMicrotask(()=>renderAllReviews(corpus,ratings,legacyReviews))});observer.observe(grid,{childList:true,subtree:true,characterData:true});renderAllReviews(corpus,ratings,legacyReviews)}
+function renderAllReviews(corpus,ratings,legacyReviews){
+  const grid=document.querySelector('#reviewGrid');if(!grid)return;
+  const ratingMap=new Map(arr(ratings?.sources).map(s=>[canon(s.url),s]));
+  const all=reviewPool(corpus,legacyReviews).map(s=>{const r=ratingMap.get(canon(sourceUrl(s)));return r?{...s,publication:r.publication||sourceName(s),score:r.original_score?.score??s.score,scale:r.original_score?.scale??s.scale,normalized_10:r.normalized_10}:s});
+  const html=all.length?all.map(row).join(''):'<div class="ig-empty-state empty-state">Обзоры пока не найдены.</div>';
+  const signature=reviewSignature(all);
+  reviewRenderLock=true;
+  grid.classList.add('quality-review-table');
+  if(grid.dataset.canonicalReviewSignature!==signature){
+    reviewObserver?.disconnect();
+    grid.dataset.canonicalReviewSignature=signature;
+    grid.innerHTML=html;
+    observeReviewGrid(grid);
+  }
+  grid.dataset.canonicalReviewCount=String(all.length);
+  const count=document.querySelector('#externalReviewCount');if(count)count.textContent=`${all.length} источников`;
+  const heading=grid.previousElementSibling?.querySelector?.('h2');if(heading)heading.textContent='Обзоры и оценки изданий';
+  reviewRenderLock=false;
+}
+function ownReviewGrid(corpus,ratings,legacyReviews){
+  const grid=document.querySelector('#reviewGrid');if(!grid||grid.dataset.canonicalReviewOwner==='1')return;
+  grid.dataset.canonicalReviewOwner='1';
+  reviewObserver=new MutationObserver(()=>{
+    if(reviewRenderLock)return;
+    grid.dataset.canonicalReviewSignature='';
+    queueMicrotask(()=>renderAllReviews(corpus,ratings,legacyReviews));
+  });
+  observeReviewGrid(grid);
+  renderAllReviews(corpus,ratings,legacyReviews);
+}
 function applyPresentation(draft,editorial){const title=document.querySelector('#gameTitle');if(!title)return;const short=String(editorial?.short_description||draft?.editorial?.short_description||'').trim();const long=String(editorial?.integrated_description||draft?.editorial?.integrated_description||'').trim();const genres=arr(editorial?.genres).length?arr(editorial.genres):arr(draft?.classification?.genres);const developer=String(editorial?.developer||draft?.companies?.developers?.[0]||'').trim();const year=String(editorial?.release_year||draft?.release?.date||draft?.release?.date_text||'').match(/(?:19|20)\d{2}/)?.[0]||String(draft?.release?.date_text||'').trim();const meta=document.querySelector('#gameMeta');if(meta)meta.textContent=[year,...genres,developer].filter(Boolean).join(' · ');let pitch=document.querySelector('.hero-pitch');if(short){if(!pitch){pitch=document.createElement('p');pitch.className='hero-pitch';title.closest('.hero-copy')?.insertBefore(pitch,title.nextSibling)}pitch.textContent=short}if(long){const description=document.querySelector('#description');if(description)description.textContent=long}const tags=document.querySelector('#genreTags');if(tags&&genres.length)tags.innerHTML=genres.map(x=>`<span class="game-chip">${esc(x)}</span>`).join('');const note=document.querySelector('#editorialNote');if(note){note.textContent='';note.hidden=true}const shots=arr(draft?.media?.screenshots).map(mediaUrl).filter(Boolean).filter(u=>!forbiddenMedia(u));const hero=document.querySelector('#gameHero');if(hero&&shots.length&&forbiddenMedia(getComputedStyle(hero).backgroundImage))hero.style.backgroundImage=`url("${String(shots[0]).replace(/"/g,'%22')}")`;document.querySelectorAll('img').forEach(img=>{if(forbiddenMedia(img.currentSrc||img.src))img.closest('article,figure,button,.media-card,.ig-media-card')?.remove()})}
 function renderReviewSummaryCard(draft,ratings,editorial){const reviewsMain=document.querySelector('#reviews .reviews-main');const heading=document.querySelector('#reviews .reviews-heading');if(!reviewsMain||!heading)return;let card=document.querySelector('#reviewSummaryCard');if(!card){card=document.createElement('article');card.id='reviewSummaryCard';card.className='game-panel review-summary-card';reviewsMain.insertBefore(card,heading)}const legacy=document.querySelector('#featuredReview');if(legacy){legacy.hidden=true;legacy.setAttribute('aria-hidden','true')}const title=document.querySelector('#gameTitle')?.textContent?.trim()||draft?.identity?.title||'Игра';const description=String(editorial?.integrated_description||document.querySelector('#description')?.textContent?.trim()||draft?.editorial?.integrated_description||draft?.editorial?.short_description||'').trim();const shots=arr(draft?.media?.screenshots).map(mediaUrl).filter(Boolean).filter(u=>!forbiddenMedia(u));const image=shots[0]||(!forbiddenMedia(draft?.media?.cover)?String(draft?.media?.cover||''):'');const rating=Number(ratings?.calculation?.score_10);const ratingText=Number.isFinite(rating)?rating.toFixed(1).replace(/\.0$/,''):'—';card.hidden=false;card.innerHTML=`<div class="review-summary-card__media">${image?`<img src="${esc(image)}" alt="${esc(title)}" loading="lazy">`:'<div class="media-placeholder">${esc(title.slice(0,2).toUpperCase())}</div>'}</div><div class="review-summary-card__body"><small>ОБЗОР ИГРОПОИСКА</small><h2>Обзор ${esc(title)}</h2><p>${esc(description)}</p><div class="review-summary-card__meta"><strong>${esc(ratingText)}${ratingText==='—'?'':'/10'}</strong></div></div>`}
 function fixOfficialLinks(draft){const box=document.querySelector('#officialLinks');if(!box)return;const official=String(draft?.links?.official||'').trim();const store=String(draft?.links?.store||'').trim();const links=[];if(official&&/^https?:\/\//i.test(official))links.push(['Официальный сайт',official]);if(store&&/^https?:\/\//i.test(store)&&canon(store)!==canon(official))links.push(['Страница магазина',store]);box.innerHTML=links.length?links.map(([n,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer"><span>${esc(n)}</span><b>Открыть ↗</b></a>`).join(''):'<div class="ig-muted">Подтверждённая официальная ссылка не найдена.</div>'}
