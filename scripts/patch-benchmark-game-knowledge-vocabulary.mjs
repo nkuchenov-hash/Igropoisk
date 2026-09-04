@@ -31,4 +31,27 @@ for(const [from,to] of replacements){
   else if(!text.includes(to)) throw new Error(`Expected game-knowledge definition not found: ${from.slice(0,90)}…`);
 }
 if(changed)fs.writeFileSync(file,text,'utf8');
-console.log(JSON.stringify({file,changed,vocabulary:'genre-neutral-v1',role_compatibility:'role-and-roles-v1'},null,2));
+
+const packFile='scripts/build-editorial-benchmark-pack.mjs';
+let packText=fs.readFileSync(packFile,'utf8');
+const packReplacements=[
+  [
+    "const readable=prioritized.slice(0,8).map(s=>({id:s.id,name:s.name,title:s.title,url:s.url,resolved_url:s.resolved_url,kind:s.kind,professional:Boolean(s.professional),roles:s.roles||[],evidence:(s.evidence||[]).slice(0,4),text:String(s.text||'').slice(0,1200)}));",
+    "const readable=prioritized.slice(0,6).map(s=>({id:s.id,name:s.name,title:s.title,kind:s.kind,professional:Boolean(s.professional),roles:s.roles||[],evidence:(s.evidence||[]).slice(0,3),text:String(s.text||'').slice(0,650)}));"
+  ],
+  [
+    "const accepted=(matrix.accepted||reviews.reviews||[]).map(s=>({id:s.id,publication:s.publication,title:s.title,url:s.resolved_url||s.url,source_kind:s.source_kind,score:s.score,scale:s.scale,grade:s.grade,matched_identity_alias:s.matched_identity_alias,identity_evidence:s.identity_evidence,validation:s.validation}));",
+    "const accepted=(matrix.accepted||reviews.reviews||[]).slice(0,12).map(s=>({id:s.id,publication:s.publication||s.source,title:s.title||'',source_kind:s.source_kind,score:s.score,scale:s.scale,grade:s.grade}));"
+  ],
+  [
+    "audience_profile:audienceProfile||{},audience_evidence:{descriptors:audienceEvidence?.descriptors||{},review_signals:audienceEvidence?.review_signals||[],explicit_age_rating:audienceEvidence?.explicit_age_rating||null,content_descriptors:audienceEvidence?.content_descriptors||[]},professional_review_corpus:accepted,readable_source_material:readable,ratings:{status:ratings?.status||null,calculation:ratings?.calculation||null,sources:(ratings?.sources||[]).slice(0,30)}};",
+    "audience_profile:{confidence:audienceProfile?.confidence||'low',tone:audienceProfile?.tone||audienceProfile?.editorial_tone||null,style:audienceProfile?.style||audienceProfile?.writing_style||null,guidance:audienceProfile?.guidance||audienceProfile?.writing_guidance||null},audience_evidence:{descriptors:audienceEvidence?.descriptors||{},review_signals:(audienceEvidence?.review_signals||[]).slice(0,4),explicit_age_rating:audienceEvidence?.explicit_age_rating||null,content_descriptors:(audienceEvidence?.content_descriptors||[]).slice(0,8)},professional_review_corpus:accepted,readable_source_material:readable,ratings:{status:ratings?.status||null,calculation:ratings?.calculation||null,sources:(ratings?.sources||[]).slice(0,12).map(s=>({publication:s.publication||s.source,score:s.score,scale:s.scale,grade:s.grade}))}};"
+  ]
+];
+let packChanged=0;
+for(const [from,to] of packReplacements){
+  if(packText.includes(from)){packText=packText.replace(from,to);packChanged++;}
+  else if(!packText.includes(to)) throw new Error(`Expected benchmark pack definition not found: ${from.slice(0,100)}…`);
+}
+if(packChanged)fs.writeFileSync(packFile,packText,'utf8');
+console.log(JSON.stringify({file,changed,vocabulary:'genre-neutral-v1',role_compatibility:'role-and-roles-v1',pack_file:packFile,pack_changed:packChanged,free_tier_payload:'compact-v1'},null,2));
