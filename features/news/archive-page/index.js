@@ -34,7 +34,6 @@
           sortLabel: 'Сортировка новостей',
           important: 'Сначала важные',
           newest: 'Сначала новые',
-          featured: 'Главная новость',
           trending: 'Сейчас в тренде',
           popular: 'Популярные темы',
           stats: 'Новости в цифрах',
@@ -52,7 +51,6 @@
           sortLabel: 'Sort news',
           important: 'Most important',
           newest: 'Newest first',
-          featured: 'Top story',
           trending: 'Trending now',
           popular: 'Popular topics',
           stats: 'News by numbers',
@@ -138,14 +136,6 @@
       return groups;
     }
 
-    function pickFeatured(source) {
-      if (!source.length || queryValue() || activeGame || activeType) return null;
-      const candidates = source.slice(0, 24);
-      return activeSort === 'important'
-        ? [...candidates].sort((a, b) => api.score(b) - api.score(a) || new Date(b.publishedAt) - new Date(a.publishedAt))[0]
-        : candidates[0];
-    }
-
     function renderStory() {
       const item = [...items, ...homeItems].find(candidate => String(candidate.id || '') === activeStory);
       if (!item) {
@@ -207,15 +197,7 @@
       root.dataset.newsSort = activeSort;
 
       const filtered = filteredItems();
-      const featured = pickFeatured(filtered);
-      const remaining = featured ? filtered.filter(item => item !== featured) : filtered;
-      const groups = groupItems(remaining);
-      const featuredMarkup = featured
-        ? `<section class="ig-news-featured" aria-label="${api.escapeHtml(ui.featured)}">
-            <span class="ig-news-featured-badge">${api.escapeHtml(ui.featured)}</span>
-            ${api.renderArchiveItem(featured, { lang })}
-          </section>`
-        : '';
+      const groups = groupItems(filtered);
       const daysMarkup = groups.length
         ? groups.map((group, index) => `<section class="ig-news-day" data-news-day="${api.escapeHtml(group.key)}" aria-labelledby="news-day-${api.escapeHtml(group.key)}">
             <header class="ig-news-day__header">
@@ -225,10 +207,10 @@
             <div class="ig-news-day__items">${group.items.map(item => api.renderArchiveItem(item, { lang })).join('')}</div>
             ${index < groups.length - 1 ? '<div class="ig-tabs ig-news-day__divider" aria-hidden="true"></div>' : ''}
           </section>`).join('')
-        : (featured ? '' : `<div class="ig-empty-state">${api.escapeHtml(copy.empty)}</div>`);
+        : `<div class="ig-empty-state">${api.escapeHtml(copy.empty)}</div>`;
 
       feed.innerHTML = `<div class="ig-news-archive-shell">
-        <div class="ig-news-main-column">${featuredMarkup}${daysMarkup}</div>
+        <div class="ig-news-main-column">${daysMarkup}</div>
         ${sidebarMarkup()}
       </div>`;
       root.dataset.newsVisibleCount = String(filtered.length);
