@@ -1,0 +1,93 @@
+name: Fix five-game live benchmark design guard
+
+on:
+  push:
+    branches: [benchmark/five-games-editorial-20260904]
+    paths: ['.github/workflows/fix-five-game-live-design-guard.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Patch central field classes and composition-only CSS
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'), path=require('path');
+          const root='benchmark/five-games-models';
+          for(const e of fs.readdirSync(root,{withFileTypes:true})){
+            if(!e.isDirectory()) continue;
+            const f=path.join(root,e.name,'index.html');
+            if(!fs.existsSync(f)) continue;
+            let s=fs.readFileSync(f,'utf8');
+            s=s.replaceAll('<select id="left">','<select class="ig-input" id="left">');
+            s=s.replaceAll('<select id="right">','<select class="ig-input" id="right">');
+            s=s.replaceAll('class="bench-error"','class="ig-muted"');
+            fs.writeFileSync(f,s);
+          }
+          const css=path.join(root,'styles.css');
+          let s=fs.readFileSync(css,'utf8');
+          s=s.replaceAll('border:0','');
+          s=s.replaceAll('.short-copy{font-size:1.18rem}','');
+          s=s.replaceAll('.bench-error{color:#d86b6b}','');
+          fs.writeFileSync(css,s);
+          NODE
+      - name: Verify exact design-system guard before PR
+        run: |
+          git fetch origin main:refs/remotes/origin/main --force
+          node scripts/test-central-design-system.mjs
+          node scripts/validate-central-design-system.mjs --base origin/main
+          test "$(grep -R '<select class=\"ig-input\"' benchmark/five-games-models/*/index.html | wc -l)" -eq 10
+          ! grep -R 'bench-error\|font-size:1.18rem\|color:#d86b6b\|border:0' benchmark/five-games-models
+      - name: Publish surgical fix branch
+        id: publish
+        env:
+          RESULT_BRANCH: fix/five-game-live-design-guard-20260904
+        run: |
+          set -euo pipefail
+          git switch --force-create "$RESULT_BRANCH" origin/main
+          node - <<'NODE'
+          const fs=require('fs'), path=require('path');
+          const root='benchmark/five-games-models';
+          for(const e of fs.readdirSync(root,{withFileTypes:true})){
+            if(!e.isDirectory()) continue;
+            const f=path.join(root,e.name,'index.html');
+            if(!fs.existsSync(f)) continue;
+            let s=fs.readFileSync(f,'utf8');
+            s=s.replaceAll('<select id="left">','<select class="ig-input" id="left">');
+            s=s.replaceAll('<select id="right">','<select class="ig-input" id="right">');
+            s=s.replaceAll('class="bench-error"','class="ig-muted"');
+            fs.writeFileSync(f,s);
+          }
+          const css=path.join(root,'styles.css');
+          let s=fs.readFileSync(css,'utf8');
+          s=s.replaceAll('border:0','');
+          s=s.replaceAll('.short-copy{font-size:1.18rem}','');
+          s=s.replaceAll('.bench-error{color:#d86b6b}','');
+          fs.writeFileSync(css,s);
+          NODE
+          node scripts/validate-central-design-system.mjs --base origin/main
+          git config user.name 'igropoisk-benchmark[bot]'
+          git config user.email 'igropoisk-benchmark[bot]@users.noreply.github.com'
+          git add benchmark/five-games-models
+          git commit -m 'Fix five-game benchmark design-system contract'
+          git push --force origin "$RESULT_BRANCH"
+          echo "branch=$RESULT_BRANCH" >> "$GITHUB_OUTPUT"
+      - name: Open surgical PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT_BRANCH: ${{ steps.publish.outputs.branch }}
+        run: |
+          gh pr create --base main --head "$RESULT_BRANCH" --title 'Fix live five-game benchmark design-system contract' --body 'Surgical benchmark-only fix: central ig-input classes on compare selectors and removal of forbidden local visual CSS. No model text or production module logic changed.' || true
