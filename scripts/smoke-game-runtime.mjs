@@ -1,18 +1,17 @@
-const rawBase = String(process.env.GAME_RUNTIME_SMOKE_BASE_URL || '').trim();
-if (!rawBase) {
-  throw new Error('GAME_RUNTIME_SMOKE_BASE_URL is required.');
-}
+import fs from 'node:fs';
+import puppeteer from 'puppeteer-core';
 
+const rawBase = String(process.env.GAME_RUNTIME_SMOKE_BASE_URL || '').trim();
+if (!rawBase) throw new Error('GAME_RUNTIME_SMOKE_BASE_URL is required.');
 const baseUrl = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
-const cacheBust = `smoke=${Date.now()}`;
+const cacheBust = () => `smoke=${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function fetchWithRetry(url, options, attempts = 4) {
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
-    try {
-      return await fetch(url, options);
-    } catch (error) {
+    try { return await fetch(url, options); }
+    catch (error) {
       lastError = error;
       if (attempt < attempts) await sleep(500 * attempt);
     }
@@ -20,99 +19,97 @@ async function fetchWithRetry(url, options, attempts = 4) {
   throw lastError;
 }
 
-const checks = [
-  {
-    path: 'game/_shared/game-page-v3.js',
-    type: /javascript/i,
-    markers: ['function renderHero(', 'function hydrateSimilarGames(', 'function renderReviews('],
-  },
-  {
-    path: 'game/_shared/game-page-v3.css',
-    type: /css/i,
-    markers: ['.hero-media-shell', '.lower-grid', '.similar-row'],
-  },
-  {
-    path: 'game/_shared/game-shell.js',
-    type: /javascript/i,
-    markers: ['game-page.css', 'game-page.js'],
-  },
-  {
-    path: 'game/_shared/game-page.js',
-    type: /javascript/i,
-    markers: ['game-page-v3-bootstrap.js', 'game-page-review-sources.js'],
-  },
-  {
-    path: 'game/_shared/game-page-review-sources.js',
-    type: /javascript/i,
-    markers: ['function unifiedReviews(', 'function renderReviewsTab(', 'quality-review-row'],
-  },
-  {
-    path: 'game/the-witcher-3-wild-hunt/',
-    type: /html/i,
-    markers: [
-      'data-slug="the-witcher-3-wild-hunt"',
-      '../_shared/game-page.css',
-      '../_shared/game-shell.js',
-    ],
-  },
-  {
-    path: 'game/elden-ring/',
-    type: /html/i,
-    markers: ['data-slug="elden-ring"', '../_shared/game-shell.js'],
-  },
-  {
-    path: 'game/fallout-2/',
-    type: /html/i,
-    markers: ['data-slug="fallout-2"', '../_shared/game-shell.js'],
-  },
-  {
-    path: 'data/reviews/fallout-2.json',
-    type: /json|text\/plain|octet-stream/i,
-    markers: ['"reviews"'],
-  },
+const assetChecks = [
+  { path: 'game/_shared/game-page-v3.js', type: /javascript/i, markers: ['function renderHero(', 'function renderReviews('] },
+  { path: 'game/_shared/game-page-v3.css', type: /css/i, markers: ['.hero-media-shell', '.similar-row'] },
+  { path: 'game/_shared/game-shell.js', type: /javascript/i, markers: ['game-page.css', 'game-page.js'] },
+  { path: 'game/_shared/game-page.js', type: /javascript/i, markers: ['__IG_GAME_PAGE_MODULE_VERSION__', 'game-runtime-network-guard.js', 'game-page-v3-bootstrap.js'] },
+  { path: 'game/_shared/game-runtime-network-guard.js', type: /javascript/i, markers: ['__IG_GAME_RUNTIME_NETWORK_GUARD__', 'timeoutMs=7000'] },
+  { path: 'data/reviews/fallout-2.json', type: /json|text\/plain|octet-stream/i, markers: ['"reviews"'] },
 ];
 
-const results = [];
-for (const check of checks) {
+const assetResults = [];
+for (const check of assetChecks) {
   const url = new URL(check.path, baseUrl);
-  url.search = cacheBust;
+  url.search = cacheBust();
   const response = await fetchWithRetry(url, {
     cache: 'no-store',
-    headers: {
-      'Cache-Control': 'no-cache, no-store, max-age=0',
-      Pragma: 'no-cache',
-    },
+    headers: { 'Cache-Control': 'no-cache, no-store, max-age=0', Pragma: 'no-cache' },
     redirect: 'follow',
   });
   const body = await response.text();
   const contentType = response.headers.get('content-type') || '';
   const errors = [];
-
   if (!response.ok) errors.push(`HTTP ${response.status}`);
   if (!check.type.test(contentType)) errors.push(`unexpected content-type ${contentType || '(missing)'}`);
-  if (/<!doctype html>|<html/i.test(body) && !/html/i.test(contentType)) {
-    errors.push('asset request returned HTML');
-  }
-  for (const marker of check.markers) {
-    if (!body.includes(marker)) errors.push(`missing marker ${JSON.stringify(marker)}`);
-  }
-
-  results.push({
-    path: check.path,
-    status: response.status,
-    contentType,
-    bytes: Buffer.byteLength(body),
-    errors,
-  });
+  if (/<!doctype html>|<html/i.test(body) && !/html/i.test(contentType)) errors.push('asset request returned HTML');
+  for (const marker of check.markers) if (!body.includes(marker)) errors.push(`missing marker ${JSON.stringify(marker)}`);
+  assetResults.push({ path: check.path, status: response.status, contentType, bytes: Buffer.byteLength(body), errors });
 }
 
-const failures = results.filter(result => result.errors.length);
-if (failures.length) {
-  throw new Error(
-    `Game runtime production smoke failed:\n${failures
-      .map(result => `- ${result.path}: ${result.errors.join('; ')}`)
-      .join('\n')}`,
-  );
+const executablePath = [
+  process.env.CHROME_PATH,
+  '/usr/bin/google-chrome-stable',
+  '/usr/bin/google-chrome',
+  '/usr/bin/chromium',
+  '/usr/bin/chromium-browser',
+].filter(Boolean).find(fs.existsSync);
+if (!executablePath) throw new Error('Chrome/Chromium executable was not found.');
+
+const browser = await puppeteer.launch({ executablePath, headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
+const pageChecks = [
+  ['spore', /spore/i],
+  ['fallout-2', /fallout\s*2/i],
+  ['the-witcher-3-wild-hunt', /witcher/i],
+  ['elden-ring', /elden\s*ring/i],
+];
+const browserResults = [];
+try {
+  for (const [slug, titlePattern] of pageChecks) {
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1440, height: 1000 });
+    const pageErrors = [];
+    const consoleErrors = [];
+    page.on('pageerror', error => pageErrors.push(String(error?.stack || error)));
+    page.on('console', message => { if (message.type() === 'error') consoleErrors.push(message.text()); });
+    const started = Date.now();
+    let navigationError = null;
+    try {
+      await page.goto(`${baseUrl}game/${slug}/?${cacheBust()}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await page.waitForFunction(() => {
+        const title = document.querySelector('#gameTitle')?.textContent?.trim();
+        const failed = /Не удалось открыть страницу игры|Не удалось загрузить страницу игры/i.test(document.body?.textContent || '');
+        return Boolean(title) || failed;
+      }, { timeout: 15000 });
+    } catch (error) { navigationError = String(error?.message || error); }
+    const state = await page.evaluate(() => ({
+      title: document.querySelector('#gameTitle')?.textContent?.trim() || '',
+      designSystem: document.documentElement.dataset.designSystem || '',
+      moduleVersion: window.__IG_GAME_PAGE_MODULE_VERSION__ || '',
+      networkGuard: Boolean(window.__IG_GAME_RUNTIME_NETWORK_GUARD__),
+      body: (document.body?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 1000),
+      tabs: document.querySelectorAll('.game-tabs [data-tab]').length,
+    }));
+    const errors = [];
+    if (navigationError) errors.push(`navigation: ${navigationError}`);
+    if (!state.title) errors.push('game title did not render');
+    if (state.title && !titlePattern.test(state.title)) errors.push(`unexpected title ${JSON.stringify(state.title)}`);
+    if (state.designSystem !== 'igropoisk-game-v3') errors.push(`design system not active: ${state.designSystem || '(empty)'}`);
+    if (!state.moduleVersion) errors.push('approved module version marker missing');
+    if (!state.networkGuard) errors.push('runtime network guard missing');
+    if (state.tabs < 7) errors.push(`incomplete tab shell: ${state.tabs}`);
+    if (/Не удалось открыть страницу игры|Не удалось загрузить страницу игры/i.test(state.body)) errors.push('visible runtime failure');
+    if (pageErrors.length) errors.push(`page errors: ${pageErrors.slice(0, 3).join(' | ')}`);
+    browserResults.push({ slug, elapsedMs: Date.now() - started, state, pageErrors, consoleErrors: consoleErrors.slice(0, 5), errors });
+    await page.close();
+  }
+} finally {
+  await browser.close();
 }
 
-console.log(JSON.stringify({ baseUrl, checks: results }, null, 2));
+const failures = [
+  ...assetResults.filter(result => result.errors.length).map(result => `asset ${result.path}: ${result.errors.join('; ')}`),
+  ...browserResults.filter(result => result.errors.length).map(result => `page ${result.slug}: ${result.errors.join('; ')}`),
+];
+console.log(JSON.stringify({ baseUrl, assets: assetResults, pages: browserResults }, null, 2));
+if (failures.length) throw new Error(`Game runtime production smoke failed:\n- ${failures.join('\n- ')}`);
