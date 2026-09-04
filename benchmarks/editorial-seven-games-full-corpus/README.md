@@ -26,4 +26,10 @@ This wording is deliberate: the test guarantees complete use of the source mater
 4. Write a new Subtitle, Description and Features block from that evidence.
 5. Do not reuse the earlier quick drafts as source material.
 
-`results.json` contains the final source-grounded copy.
+## Block format
+
+- **Subtitle** — a short one-line essence of the game. It must not expand into a miniature description or a long sentence.
+- **Description** — the full introductory block: premise, what the player actually does, major systems and the details that distinguish the game.
+- **Features** — compact thesis-like feature labels. Each item should be scannable at a glance and should not become an explanatory sentence.
+
+`results.json` contains the current source-grounded copy.
