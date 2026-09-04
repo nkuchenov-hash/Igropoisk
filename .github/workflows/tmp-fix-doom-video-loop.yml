@@ -15,7 +15,9 @@ jobs:
           ref: main
           fetch-depth: 0
       - name: Apply video loop patch
-        run: python3 tmp/fix_doom_video_loop.py
+        run: |
+          git show origin/tmp/fix-doom-video-loop:tmp/fix_doom_video_loop.py > /tmp/fix_doom_video_loop.py
+          python3 /tmp/fix_doom_video_loop.py
       - name: Verify layout contract
         run: python3 scripts/enforce_layout_contract.py --check
       - name: Commit to main
