@@ -49,6 +49,36 @@
 .ig-news--archive .ig-news-story .ig-chip,
 .ig-news--archive .ig-news-story .ig-hashtag{font-size:14px}
 
+/* List-date context: dates remain visible while scrolling through long news groups. */
+.ig-news--archive[data-news-layout="list"] .ig-news-day__header{
+  display:flex;
+  position:sticky;
+  top:calc(var(--ig-header-height,64px) + 8px);
+  z-index:8;
+  align-items:center;
+  margin:16px 0 8px;
+  padding:8px 12px;
+  border:1px solid color-mix(in srgb,var(--ig-accent) 18%,var(--ig-line));
+  border-radius:10px;
+  background:color-mix(in srgb,var(--ig-surface) 92%,transparent);
+  box-shadow:0 8px 24px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.025);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.ig-news--archive[data-news-layout="list"] .ig-news-day:first-child .ig-news-day__header{margin-top:0}
+.ig-news--archive[data-news-layout="list"] .ig-news-day__header h2{
+  font-size:16px;
+  line-height:1.25;
+  font-weight:850;
+  letter-spacing:-.015em;
+}
+.ig-news--archive[data-news-layout="list"] .ig-news-day__header .ig-muted{font-size:12.5px;line-height:1.3}
+.ig-news--archive[data-news-layout="list"] .ig-news-day__divider{display:none}
+html[data-theme="light"] .ig-news--archive[data-news-layout="list"] .ig-news-day__header{
+  background:color-mix(in srgb,var(--ig-surface) 96%,transparent);
+  box-shadow:0 8px 22px rgba(28,35,44,.09),inset 0 1px 0 rgba(255,255,255,.65);
+}
+
 @media(max-width:760px){
   .ig-news--home .ig-news-card .ig-card__title{font-size:18px}
   .ig-news--home .ig-news-card .ig-card__summary{font-size:15px}
@@ -64,4 +94,10 @@
   .ig-news--archive .ig-news-story{padding:22px}
   .ig-news--archive .ig-news-story__title{font-size:34px}
   .ig-news--archive .ig-news-story__lead{font-size:18px;line-height:1.58}
+  .ig-news--archive[data-news-layout="list"] .ig-news-day__header{
+    top:calc(var(--ig-header-height,64px) + 6px);
+    margin:12px 0 7px;
+    padding:7px 10px;
+  }
+  .ig-news--archive[data-news-layout="list"] .ig-news-day__header h2{font-size:15px}
 }
