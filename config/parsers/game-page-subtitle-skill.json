@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "game-page-subtitle-skill",
+  "title": "Game Page Subtitle Skill v1 — Игропоиск",
+  "status": "ready_for_model_benchmark",
+  "purpose": "Создавать короткий узнаваемый портрет конкретной игры для subtitle страницы: не жанровую подпись и не мини-описание, а сжатую формулу, которая передаёт несколько главных черт игры.",
+  "canonical_source_contract": {
+    "metadata": "data/game-sources/{slug}.json",
+    "full_text": "data/game-source-content/{slug}.json",
+    "owner": "game-page-source-pipeline",
+    "discover_sources": false,
+    "use_all_readable_stored_sources": true,
+    "benchmark_truncation_allowed": false,
+    "exact_version_required": true
+  },
+  "model_policy": {
+    "approved_model": null,
+    "one_approved_model_for_this_skill": true,
+    "same_model_attempts": 3,
+    "cross_model_fallback": false
+  },
+  "output_contract": {
+    "field": "subtitle",
+    "language": "ru",
+    "target_words": "7-15",
+    "soft_max_words": 18,
+    "one_line": true,
+    "period_required": false
+  },
+  "workflow": [
+    "Прочитать весь доступный канонический корпус и точно зафиксировать версию игры.",
+    "Выделить 3-6 identity-bearing признаков: мир/сеттинг, противники или конфликт, роль игрока, центральная фантазия, необычная механика, структура, тон.",
+    "Выбрать минимальный набор признаков, без которого образ игры становится заметно неправильным или слишком общим.",
+    "Собрать одну короткую естественную формулу без перечисления ради перечисления.",
+    "Проверить subtitle тестом узнаваемости и тестом потери существенной черты."
+  ],
+  "editorial_policy": {
+    "miniature_game_portrait": true,
+    "genre_alone_is_insufficient": true,
+    "single_mechanic_alone_is_insufficient_when_it_distorts_identity": true,
+    "two_or_three_major_identity_signals_preferred_when_needed": true,
+    "not_every_game_requires_same_axes": true,
+    "title_repetition_not_required": true,
+    "marketing_copy": false,
+    "review_verdict": false,
+    "source_process_language": false,
+    "evergreen": true,
+    "mechanics_use_present_tense": true
+  },
+  "acceptance_tests": [
+    "После удаления названия игры subtitle не должен подходить десяткам неродственных игр.",
+    "Если убрать из subtitle один из identity-bearing элементов и образ игры существенно искажается, исходный элемент должен остаться.",
+    "Subtitle должен создавать узнаваемый образ игры, а не просто сообщать жанр.",
+    "Нельзя выдумывать факт ради более яркой формулировки.",
+    "Строка должна читаться быстро и не превращаться в полноценное описание."
+  ],
+  "anti_patterns": [
+    "Космическая RPG о выборе и команде",
+    "Открытые тропические перестрелки",
+    "Платформер с необычной стрельбой",
+    "Увлекательное приключение с красивым миром"
+  ],
+  "reference_patterns": [
+    "От клетки до космической цивилизации",
+    "Особняк с монстрами, где отдача дробовика меняет прыжки",
+    "Тропические острова, наёмники и мутанты со свободным выбором пути к бою"
+  ]
+}
