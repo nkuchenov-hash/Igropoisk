@@ -3,7 +3,7 @@
 
 const slug=document.body.dataset.slug||decodeURIComponent(location.pathname.split('/').filter(Boolean).at(-1)||'');
 if(!slug)return;
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const arr=value=>Array.isArray(value)?value:[];
 const scoreText=review=>{const score=Number(review?.score),scale=Number(review?.scale);if(!Number.isFinite(score))return String(review?.grade||'').trim()||'Без оценки';if(Number.isFinite(scale)&&scale>0)return `${score}/${scale}`;return String(score)};
 const reviewName=review=>String(review?.publication||review?.source_name||review?.source||review?.configured_source_id||'Источник');
