@@ -1,0 +1,66 @@
+name: Publish five-game benchmark live site
+
+on:
+  push:
+    branches: [benchmark/five-games-editorial-20260904]
+    paths:
+      - '.github/workflows/publish-five-game-live-site.yml'
+      - 'scripts/build-five-game-benchmark-site.mjs'
+      - 'benchmarks/editorial-five-games/results/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build static live benchmark
+        run: node scripts/build-five-game-benchmark-site.mjs
+      - name: Verify benchmark shell contract
+        run: |
+          test -f benchmark/five-games-models/index.html
+          grep -q 'data-ig-layout-contract="style"' benchmark/five-games-models/index.html
+          grep -q 'assets/design-system.css' benchmark/five-games-models/index.html
+          grep -q 'noindex,nofollow' benchmark/five-games-models/index.html
+          find benchmark/five-games-models -name '*.html' | wc -l
+      - name: Publish clean result branch from main
+        id: publish
+        env:
+          RESULT_BRANCH: benchmark-results/five-games-live-20260904
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/five-games-live
+          mkdir -p /tmp/five-games-live
+          cp -a benchmark/five-games-models/. /tmp/five-games-live/
+          git fetch origin main:refs/remotes/origin/main --force
+          git switch --force-create "$RESULT_BRANCH" origin/main
+          rm -rf benchmark/five-games-models
+          mkdir -p benchmark/five-games-models
+          cp -a /tmp/five-games-live/. benchmark/five-games-models/
+          git config user.name 'igropoisk-benchmark[bot]'
+          git config user.email 'igropoisk-benchmark[bot]@users.noreply.github.com'
+          git add benchmark/five-games-models
+          git commit -m 'Add live five-game AI model benchmark'
+          git push --force origin "$RESULT_BRANCH"
+          echo "result_branch=$RESULT_BRANCH" >> "$GITHUB_OUTPUT"
+      - name: Open clean temporary PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT_BRANCH: ${{ steps.publish.outputs.result_branch }}
+        run: |
+          gh pr create \
+            --base main \
+            --head "$RESULT_BRANCH" \
+            --title 'Temporary live five-game AI model benchmark' \
+            --body 'Hidden/noindex static comparison site only. Contains the five-game editorial benchmark texts and no benchmark runner code or production module changes.' \
+          || true
