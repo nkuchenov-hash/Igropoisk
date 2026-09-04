@@ -1,0 +1,44 @@
+name: Game Page Working Module
+
+on:
+  push:
+    branches: [game-page-working]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'game/_shared/**'
+      - 'game/*/index.html'
+      - 'assets/design-system*.css'
+      - 'assets/layout-contract.css'
+      - 'data/game-content/**'
+      - 'data/drafts/**'
+      - 'data/game-sources/**'
+      - 'data/page-editorial/**'
+      - 'config/game-page-module.json'
+      - 'scripts/smoke-game-runtime.mjs'
+      - '.github/workflows/game-page-working.yml'
+      - '.github/workflows/pages.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  working-module-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify game runtime syntax
+        run: find game/_shared scripts -type f \( -name '*.js' -o -name '*.mjs' \) -print0 | xargs -0 -n1 node --check
+      - name: Verify page/data contracts
+        run: |
+          node scripts/validate-game-v3.mjs
+          node scripts/validate-game-shells.mjs spore fallout-2 the-witcher-3-wild-hunt elden-ring
+      - name: Open representative published pages in a real browser
+        run: |
+          npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+          node scripts/smoke-game-runtime.mjs
