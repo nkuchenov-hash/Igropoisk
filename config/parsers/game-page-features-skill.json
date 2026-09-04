@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "game-page-features-skill",
+  "title": "Game Page Features Skill v1 — Игропоиск",
+  "status": "ready_for_model_benchmark",
+  "purpose": "Выбирать и формулировать 4-6 самых характерных особенностей игры как короткий сканируемый список тезисов, а не набор рекламных предложений.",
+  "canonical_source_contract": {
+    "metadata": "data/game-sources/{slug}.json",
+    "full_text": "data/game-source-content/{slug}.json",
+    "owner": "game-page-source-pipeline",
+    "discover_sources": false,
+    "use_all_readable_stored_sources": true,
+    "benchmark_truncation_allowed": false,
+    "exact_version_required": true
+  },
+  "model_policy": {
+    "approved_model": null,
+    "one_approved_model_for_this_skill": true,
+    "same_model_attempts": 3,
+    "cross_model_fallback": false
+  },
+  "output_contract": {
+    "field": "features",
+    "language": "ru",
+    "items": "4-6",
+    "target_words_per_item": "2-7",
+    "soft_max_words_per_item": 10,
+    "full_sentences": false,
+    "terminal_periods": false
+  },
+  "workflow": [
+    "Прочитать весь доступный канонический корпус и зафиксировать точную версию игры.",
+    "Собрать кандидаты особенностей из механик, структуры, взаимодействия, AI, мира, интерфейса, прогрессии и действительно характерных деталей.",
+    "Отбросить общие достоинства и маркетинговые формулы, которые подходят почти любой игре.",
+    "Выбрать 4-6 неповторяющихся особенностей, которые вместе быстро дают представление о характере игры.",
+    "Сжать каждый пункт до короткого тезиса без потери конкретного смысла."
+  ],
+  "editorial_policy": {
+    "player_facing": true,
+    "distinctive_over_generic": true,
+    "neutral_or_unusual_features_allowed": true,
+    "pure_flaws_only_if_identity_defining": true,
+    "marketing_benefits": false,
+    "duplicate_concepts": false,
+    "review_verdict": false,
+    "source_process_language": false,
+    "mechanics_use_present_tense": true
+  },
+  "acceptance_tests": [
+    "Каждый пункт должен быть понятен за один быстрый взгляд.",
+    "Пункт не должен требовать второй половины предложения для объяснения того, что это за особенность.",
+    "В списке не должно быть двух формулировок про одну и ту же систему.",
+    "Как минимум большинство пунктов должны быть специфичнее обычных жанровых характеристик.",
+    "Список в целом должен помогать узнать конкретную игру, а не рекламировать её.",
+    "Все пункты должны подтверждаться каноническим корпусом."
+  ],
+  "anti_patterns": [
+    "Захватывающий сюжет",
+    "Красивая графика",
+    "Увлекательный геймплей",
+    "Большой открытый мир, который позволяет игроку выбирать множество различных маршрутов для прохождения каждой миссии"
+  ],
+  "reference_patterns": [
+    "Дробовик с физической отдачей",
+    "Полиция и дорожные правила",
+    "Выборы Paragon и Renegade",
+    "Пять стадий развития",
+    "Секретные стены и комнаты"
+  ]
+}
