@@ -57,7 +57,8 @@ const assetChecks = [
   { path: 'game/_shared/game-page-v3.js', type: /javascript/i, markers: ['function renderHero(', 'function renderReviews('] },
   { path: 'game/_shared/game-page-v3.css', type: /css/i, markers: ['.hero-media-shell', '.similar-row'] },
   { path: 'game/_shared/game-shell.js', type: /javascript/i, markers: ['game-page.css', 'game-page.js'] },
-  { path: 'game/_shared/game-page.js', type: /javascript/i, markers: ['__IG_GAME_PAGE_MODULE_VERSION__', 'game-runtime-network-guard.js', 'game-page-v3-bootstrap.js'] },
+  { path: 'game/_shared/game-page.js', type: /javascript/i, markers: ['__IG_GAME_PAGE_MODULE_VERSION__', '__IG_GAME_PAGE_ENHANCEMENTS__', 'game-runtime-network-guard.js', 'game-page-v3-bootstrap.js'] },
+  { path: 'game/_shared/game-page-integrity.js', type: /javascript/i, markers: ['__IG_GAME_PAGE_INTEGRITY__', 'dataReady', 'applied'] },
   { path: 'game/_shared/game-runtime-network-guard.js', type: /javascript/i, markers: ['__IG_GAME_RUNTIME_NETWORK_GUARD__', 'timeoutMs=7000'] },
   { path: 'data/reviews/fallout-2.json', type: /json|text\/plain|octet-stream/i, markers: ['"reviews"'] },
   { path: 'data/game-sources/arx-fatalis.json', type: /json|text\/plain|octet-stream/i, markers: ['"professional_reviews": 10'] },
@@ -108,6 +109,7 @@ try {
       const started = Date.now();
       let navigationError = null;
       let hydrationError = null;
+      let integrityError = null;
       try {
         await page.goto(`${baseUrl}game/${slug}/?${cacheBust()}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
         await page.waitForFunction(() => {
@@ -127,11 +129,20 @@ try {
           hydrationError = String(error?.message || error);
         }
       }
+      if (!navigationError) {
+        try {
+          await page.waitForFunction(() => window.__IG_GAME_PAGE_INTEGRITY__?.applied === true || Boolean(window.__IG_GAME_PAGE_INTEGRITY__?.error), { timeout: 12000 });
+        } catch (error) {
+          integrityError = String(error?.message || error);
+        }
+      }
       const state = await page.evaluate(() => ({
         title: document.querySelector('#gameTitle')?.textContent?.trim() || '',
         designSystem: document.documentElement.dataset.designSystem || '',
         moduleVersion: window.__IG_GAME_PAGE_MODULE_VERSION__ || '',
         networkGuard: Boolean(window.__IG_GAME_RUNTIME_NETWORK_GUARD__),
+        enhancements: window.__IG_GAME_PAGE_ENHANCEMENTS__ || null,
+        integrity: window.__IG_GAME_PAGE_INTEGRITY__ || null,
         body: (document.body?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 1000),
         tabs: document.querySelectorAll('.game-tabs [data-tab]').length,
         reviewRows: document.querySelectorAll('#reviewGrid .quality-review-row').length,
@@ -140,17 +151,22 @@ try {
       const errors = [];
       if (navigationError) errors.push(`navigation: ${navigationError}`);
       if (hydrationError) errors.push(`review hydration: ${hydrationError}`);
+      if (integrityError) errors.push(`integrity hydration: ${integrityError}`);
       if (!state.title) errors.push('game title did not render');
       if (state.title && !titlePattern.test(state.title)) errors.push(`unexpected title ${JSON.stringify(state.title)}`);
       if (state.designSystem !== 'igropoisk-game-v3') errors.push(`design system not active: ${state.designSystem || '(empty)'}`);
       if (!state.moduleVersion) errors.push('approved module version marker missing');
       if (!state.networkGuard) errors.push('runtime network guard missing');
+      if (!state.integrity?.loaded) errors.push('integrity submodule did not load');
+      if (!state.integrity?.dataReady) errors.push('integrity submodule did not finish data loading');
+      if (!state.integrity?.applied) errors.push(`integrity submodule did not apply${state.integrity?.error ? `: ${state.integrity.error}` : ''}`);
+      if (state.enhancements?.failed?.length) errors.push(`enhancement loads failed: ${state.enhancements.failed.join(', ')}`);
       if (state.tabs < 7) errors.push(`incomplete tab shell: ${state.tabs}`);
       if (expectedReviewRows && state.reviewSourcesReady !== '1') errors.push(`${slug} review-source module did not signal readiness`);
       if (expectedReviewRows && state.reviewRows < expectedReviewRows) errors.push(`${slug} review regression fixture incomplete: ${state.reviewRows}/${expectedReviewRows}`);
       if (/Не удалось открыть страницу игры|Не удалось загрузить страницу игры/i.test(state.body)) errors.push('visible runtime failure');
       if (pageErrors.length) errors.push(`page errors: ${pageErrors.slice(0, 3).join(' | ')}`);
-      browserResults.push({ slug, elapsedMs: Date.now() - started, state, pageErrors, consoleErrors: consoleErrors.slice(0, 5), errors });
+      browserResults.push({ slug, elapsedMs: Date.now() - started, state, pageErrors, consoleErrors: consoleErrors.slice(0, 8), errors });
       await page.close();
     } finally {
       await browser.close();
