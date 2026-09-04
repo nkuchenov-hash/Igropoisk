@@ -1,0 +1,62 @@
+name: Apply universal game source knowledge fix
+
+on:
+  push:
+    branches: [fix/game-source-knowledge-genre-neutral-20260904]
+    paths: ['.github/workflows/apply-game-source-knowledge-genre-neutral-fix.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/game-source-knowledge-genre-neutral-20260904
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Patch universal source knowledge extractor
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const file='scripts/build-game-source-knowledge.mjs';
+          let text=fs.readFileSync(file,'utf8');
+          const replacements=[
+            ["const action=/\\b(?:player|players|you|your|gameplay|play|control|create|build|craft|explor|combat|fight|manage|custom|editor|design|collect|choose|move|attack|charm|survive|игрок|игров|управ|созда|стро|исслед|бой|сраж|редактор|собира|выбира|атак|выжив)\\w*/i;","const action=/\\b(?:player|players|you|your|gameplay|play|control|create|build|craft|explor|combat|fight|manage|custom|editor|design|collect|choose|move|attack|charm|survive|interact|inspect|examine|talk|speak|dialog|conversation|use|combine|solve|investigat|search|drive|shoot|stealth|sneak|command|select|navigate|trade|quest|игрок|игров|управ|созда|стро|исслед|бой|сраж|редактор|собира|выбира|атак|выжив|взаимод|осматр|изуча|говор|диалог|использ|комбинир|реша|головолом|расслед|искать|поиск|водить|стрел|скрыт|краст|команд|выбира|навигац|торгов|задан)\\w*/i;"],
+            ["const progression=/\\b(?:object of the game|goal|objective|start(?:s|ing)? with|from .+ to|progress|stage|phase|level|evol|advance|develop|cell|creature|tribe|civilization|spacefar|interstellar|начина|цель|развит|этап|фаз|уров|эволюц|клет|существ|плем|цивилизац|космос|межзв)\\w*/i;","const progression=/\\b(?:object of the game|goal|objective|start(?:s|ing)? with|from .+ to|progress|stage|phase|level|evol|advance|develop|cell|creature|tribe|civilization|spacefar|interstellar|chapter|mission|case|episode|act|quest|story|plot|investigation|mystery|campaign|assignment|начина|цель|развит|этап|фаз|уров|эволюц|клет|существ|плем|цивилизац|космос|межзв|глав|мисси|дело|эпизод|акт|квест|сюжет|истори|расслед|тайн|кампан|задан)\\w*/i;"],
+            ["const world=/\\b(?:world|universe|planet|galaxy|species|city|base|starship|мир|вселен|планет|галак|вид|город|баз|корабл)\\w*/i;","const world=/\\b(?:world|universe|planet|galaxy|species|city|base|starship|location|area|room|house|mansion|island|street|district|station|ship|castle|town|village|space|мир|вселен|планет|галак|вид|город|баз|корабл|локац|мест|комнат|дом|особняк|остров|улиц|район|станц|замок|городок|деревн|космос)\\w*/i;"],
+            ["const mechanics=/\\b(?:editor|create|build|custom|body part|vehicle|building|creature|combat|attack|charm|collect|resource|редактор|созда|стро|част.*тел|транспорт|здан|существ|бой|атак|собира|ресурс)\\w*/i;","const mechanics=/\\b(?:editor|create|build|custom|body part|vehicle|building|creature|combat|attack|charm|collect|resource|puzzle|inventory|item|object|dialog|conversation|choice|decision|point[- ]and[- ]click|interface|camera|weapon|shoot|stealth|driving|vehicle|squad|party|ability|skill|cover|exploration|investigation|clue|quest|редактор|созда|стро|част.*тел|транспорт|здан|существ|бой|атак|собира|ресурс|головолом|инвентар|предмет|объект|диалог|разговор|выбор|решен|интерфейс|камер|оруж|стрел|скрыт|вожд|отряд|групп|способност|навык|укрыт|исслед|расслед|улик|квест)\\w*/i;"],
+            ["roles:[...new Set([...(old.roles||[]),...(raw.roles||[])])],semantic:","roles:[...new Set([...(old.roles||[]),...(raw.roles||[]),...[raw.role,raw.type].map(r=>({structured_fact_source:'facts',professional_review:'review',official_source:'facts',store_source:'description'}[String(r||'')]||String(r||'')).trim()).filter(Boolean)])],semantic:"]
+          ];
+          let changed=0;
+          for(const [a,b] of replacements){if(text.includes(a)){text=text.replace(a,b);changed++}else if(!text.includes(b))throw new Error('expected source fragment missing')}
+          if(changed!==5)throw new Error(`expected 5 changes, got ${changed}`);
+          fs.writeFileSync(file,text);
+          console.log({changed});
+          NODE
+      - name: Add regression contract
+        run: |
+          cat > scripts/test-game-source-knowledge-genre-neutral.mjs <<'NODE'
+          #!/usr/bin/env node
+          import fs from 'node:fs';
+          const text=fs.readFileSync('scripts/build-game-source-knowledge.mjs','utf8');
+          const required=['puzzle','inventory','dialog','investigat','point[- ]and[- ]click','structured_fact_source:\'facts\'','professional_review:\'review\'','raw.role,raw.type'];
+          const missing=required.filter(token=>!text.includes(token));
+          if(missing.length)throw new Error(`Genre-neutral source knowledge regression: missing ${missing.join(', ')}`);
+          if(!text.includes("['facts','description','dna','review']"))throw new Error('Canonical semantic roles gate missing');
+          console.log(JSON.stringify({status:'green',contract:'genre-neutral-role-compatible-v1',checks:required.length+1}));
+          NODE
+          node scripts/test-game-source-knowledge-genre-neutral.mjs
+          node scripts/validate-game-page-module-integrity.mjs
+      - name: Commit surgical fix
+        run: |
+          git config user.name 'igropoisk-automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add scripts/build-game-source-knowledge.mjs scripts/test-game-source-knowledge-genre-neutral.mjs
+          git rm .github/workflows/apply-game-source-knowledge-genre-neutral-fix.yml
+          git commit -m 'Make game source knowledge genre-neutral and role-compatible'
+          git push origin HEAD:fix/game-source-knowledge-genre-neutral-20260904
