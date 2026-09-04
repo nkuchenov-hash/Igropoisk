@@ -19,12 +19,16 @@ const replacements=[
   [
     "const mechanics=/\\b(?:editor|create|build|custom|body part|vehicle|building|creature|combat|attack|charm|collect|resource|редактор|созда|стро|част.*тел|транспорт|здан|существ|бой|атак|собира|ресурс)\\w*/i;",
     "const mechanics=/\\b(?:editor|create|build|custom|body part|vehicle|building|creature|combat|attack|charm|collect|resource|puzzle|inventory|item|object|dialog|conversation|choice|decision|point[- ]and[- ]click|interface|camera|weapon|shoot|stealth|driving|vehicle|squad|party|ability|skill|cover|exploration|investigation|clue|quest|редактор|созда|стро|част.*тел|транспорт|здан|существ|бой|атак|собира|ресурс|головолом|инвентар|предмет|объект|диалог|разговор|выбор|решен|интерфейс|камер|оруж|стрел|скрыт|вожд|отряд|групп|способност|навык|укрыт|исслед|расслед|улик|квест)\\w*/i;"
+  ],
+  [
+    "roles:[...new Set([...(old.roles||[]),...(raw.roles||[])])],semantic:",
+    "roles:[...new Set([...(old.roles||[]),...(raw.roles||[]),...[raw.role,raw.type].map(r=>({structured_fact_source:'facts',professional_review:'review',official_source:'facts',store_source:'description'}[String(r||'')]||String(r||'')).trim()).filter(Boolean)])],semantic:"
   ]
 ];
 let changed=0;
 for(const [from,to] of replacements){
   if(text.includes(from)){text=text.replace(from,to);changed++;}
-  else if(!text.includes(to)) throw new Error(`Expected vocabulary definition not found: ${from.slice(0,70)}…`);
+  else if(!text.includes(to)) throw new Error(`Expected game-knowledge definition not found: ${from.slice(0,90)}…`);
 }
 if(changed)fs.writeFileSync(file,text,'utf8');
-console.log(JSON.stringify({file,changed,vocabulary:'genre-neutral-v1'},null,2));
+console.log(JSON.stringify({file,changed,vocabulary:'genre-neutral-v1',role_compatibility:'role-and-roles-v1'},null,2));
