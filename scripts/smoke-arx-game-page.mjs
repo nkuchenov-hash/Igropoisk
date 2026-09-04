@@ -6,16 +6,19 @@ import puppeteer from 'puppeteer-core';
 const root=process.cwd();
 const remote=String(process.env.ARX_SMOKE_BASE_URL||'').trim().replace(/\/+$/,'');
 const corpus=JSON.parse(fs.readFileSync('data/game-sources/arx-fatalis.json','utf8'));
+const draft=JSON.parse(fs.readFileSync('data/drafts/arx-fatalis.json','utf8'));
+const expectedReviewReady=draft?.publication?.review_ready===true;
 const arr=v=>Array.isArray(v)?v:[];
 const url=s=>String(s?.resolved_url||s?.url||s?.source_url||'');
 const host=u=>{try{return new URL(u).hostname.toLowerCase()}catch{return''}};
 const pathOf=u=>{try{return new URL(u).pathname.replace(/\/$/,'')}catch{return''}};
 const blockedReviewDomain=u=>/(?:^|\.)gamerankings\.com$|(?:^|\.)metacritic\.com$|(?:^|\.)opencritic\.com$/i.test(host(u));
 const hubLike=u=>{const p=pathOf(u);return !p||p==='/'||/^\/(?:games?|title)\/[^/]+$/i.test(p)};
-const direct=s=>{const roles=arr(s?.roles).map(String);const kind=String(s?.kind||'');const u=url(s),t=String(s?.title||'');if(!u||blockedReviewDomain(u)||hubLike(u))return false;if(!roles.includes('review')&&kind!=='professional-review')return false;if(/пользовательские отзывы|user reviews?/i.test(t))return false;return true};
+const direct=s=>{const roles=arr(s?.roles).map(String);const kind=String(s?.kind||'');const u=url(s),t=String(s?.title||'');if(s?.professional!==true)return false;if(!u||blockedReviewDomain(u)||hubLike(u))return false;if(kind!=='professional-review'&&!roles.includes('review'))return false;if(/пользовательские отзывы|user reviews?/i.test(t))return false;return true};
 const canon=u=>{try{const x=new URL(String(u||''));x.hash='';for(const k of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','ysclid'])x.searchParams.delete(k);return `${x.origin}${x.pathname.replace(/\/$/,'')}${x.search}`}catch{return String(u||'').replace(/\/$/,'')}};
 const expectedReviewLinks=[...new Set(arr(corpus.sources).filter(direct).map(s=>canon(url(s))))];
 const expectedReviews=expectedReviewLinks.length;
+if(expectedReviews!==Number(corpus?.counts?.professional_reviews||0))throw new Error(`Arx canonical professional-review count mismatch: expected ${corpus?.counts?.professional_reviews}, derived ${expectedReviews}`);
 const mime=new Map([['.html','text/html; charset=utf-8'],['.css','text/css; charset=utf-8'],['.js','text/javascript; charset=utf-8'],['.json','application/json; charset=utf-8'],['.jpg','image/jpeg'],['.jpeg','image/jpeg'],['.png','image/png'],['.webp','image/webp']]);
 const browserPath=()=>[process.env.CHROME_PATH,'/usr/bin/google-chrome-stable','/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'].filter(Boolean).find(fs.existsSync);
 let server=null,base=remote;
@@ -27,7 +30,8 @@ try{
  await page.goto(`${base}/game/arx-fatalis/?acceptance=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45000});
  await page.waitForFunction(()=>document.querySelector('#gameTitle')?.textContent?.trim()==='Arx Fatalis',{timeout:30000});
  await page.waitForFunction(expected=>document.querySelectorAll('#reviewGrid .quality-review-row').length>=expected,{timeout:30000},expectedReviews);
- await page.waitForFunction(()=>Boolean(document.querySelector('#reviewSummaryCard img')),{timeout:30000});
+ await page.waitForFunction(()=>/RPG/i.test(document.querySelector('#gameMeta')?.textContent||'')&&/Arkane/i.test(document.querySelector('.hero-pitch')?.textContent||'')&&/руны|заклинан/i.test(document.querySelector('#description')?.textContent||''),{timeout:30000});
+ if(expectedReviewReady)await page.waitForFunction(()=>Boolean(document.querySelector('#reviewSummaryCard img')),{timeout:30000});
  await page.evaluate(()=>document.querySelector('[data-tab="reviews"]')?.click());
  await new Promise(r=>setTimeout(r,800));
  const state=await page.evaluate(()=>{const rows=[...document.querySelectorAll('#reviewGrid .quality-review-row')];const titleXs=rows.map(r=>Math.round(r.querySelector('b')?.getBoundingClientRect().left||0));const card=document.querySelector('#reviewSummaryCard');return{
@@ -64,9 +68,10 @@ try{
  if(/Arx Fatalis построена как ролевая игра с видом от первого лица/i.test(state.body))errors.push('Forbidden generic Arx text is still visible.');
  if(state.reviewRows<expectedReviews)errors.push(`Review corpus incomplete: ${state.reviewRows}/${expectedReviews}`);
  if(missingExpected.length)errors.push(`Canonical review links missing: ${missingExpected.join(', ')}`);
- if(!state.reviewCardVisible)errors.push('Review summary card is missing.');
- if(!state.reviewCardImage)errors.push('Review summary card has no screenshot.');
- if(!/Обзор Arx Fatalis/i.test(state.reviewCardText)||state.reviewCardText.length<250)errors.push(`Review summary card is incomplete: ${state.reviewCardText}`);
+ if(expectedReviewReady&&!state.reviewCardVisible)errors.push('Published review summary card is missing.');
+ if(expectedReviewReady&&!state.reviewCardImage)errors.push('Published review summary card has no screenshot.');
+ if(expectedReviewReady&&(!/Обзор Arx Fatalis/i.test(state.reviewCardText)||state.reviewCardText.length<250))errors.push(`Published review summary card is incomplete: ${state.reviewCardText}`);
+ if(!expectedReviewReady&&state.reviewCardVisible)errors.push('Review summary card is visible although review_ready is false.');
  if(new Set(state.reviewTitleXs).size!==1||state.reviewTitleXs[0]<=0)errors.push(`Review title column is not aligned: ${state.reviewTitleXs.join(', ')}`);
  if(state.reviewEmpty)errors.push('Review section still says sources are being collected.');
  if(state.blue.length||state.blueBg)errors.push(`Forbidden blue store background visible: ${state.blue.length} img / ${state.blueBg} bg`);
@@ -77,6 +82,6 @@ try{
  if(state.ownGuide)errors.push('Own/featured guide is still rendered.');
  if(state.guideLinks.some(h=>h.includes('/Igropoisk/article/')))errors.push('Guides contain an internal Игропоиск guide.');
  if(pageErrors.length)errors.push(`Browser errors: ${pageErrors.slice(0,4).join(' | ')}`);
- console.log(JSON.stringify({base,expectedReviews,state,pageErrors,errors},null,2));
+ console.log(JSON.stringify({base,expectedReviews,expectedReviewReady,state,pageErrors,errors},null,2));
  if(errors.length)throw new Error(`Arx Fatalis live page failed:\n- ${errors.join('\n- ')}`);
 }finally{await browser.close();if(server)await new Promise(r=>server.close(r))}

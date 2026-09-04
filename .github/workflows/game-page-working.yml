@@ -16,6 +16,7 @@ on:
       - 'data/page-editorial/**'
       - 'config/game-page-module.json'
       - 'scripts/smoke-game-runtime.mjs'
+      - 'scripts/smoke-arx-game-page.mjs'
       - '.github/workflows/game-page-working.yml'
       - '.github/workflows/pages.yml'
 
@@ -42,3 +43,4 @@ jobs:
         run: |
           npm install --no-save --ignore-scripts puppeteer-core@24.16.0
           node scripts/smoke-game-runtime.mjs
+          node scripts/smoke-arx-game-page.mjs
