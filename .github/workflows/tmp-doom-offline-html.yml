@@ -1,0 +1,28 @@
+name: Temporary DOOM offline HTML build
+on:
+  push:
+    branches:
+      - tmp/doom-html-offline-build
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build self-contained HTML
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64
+          image = base64.b64encode(Path('assets/covers/popular/doom-the-dark-ages.jpg').read_bytes()).decode('ascii')
+          template = Path('tmp/doom-dark-ages-template.html').read_text(encoding='utf-8')
+          out = template.replace('__IMG__', image)
+          Path('igropoisk_doom_dark_ages_real_offline.html').write_text(out, encoding='utf-8')
+          assert 'https://' not in out and 'http://' not in out and 'youtube' not in out.lower() and 'fetch(' not in out.lower()
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: doom-dark-ages-real-offline-html
+          path: igropoisk_doom_dark_ages_real_offline.html
+          if-no-files-found: error
+          retention-days: 1
