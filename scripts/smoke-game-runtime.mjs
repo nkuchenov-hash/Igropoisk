@@ -1,11 +1,45 @@
 import fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
 import puppeteer from 'puppeteer-core';
 
-const rawBase = String(process.env.GAME_RUNTIME_SMOKE_BASE_URL || '').trim();
-if (!rawBase) throw new Error('GAME_RUNTIME_SMOKE_BASE_URL is required.');
-const baseUrl = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
+const root = process.cwd();
+const requestedBase = String(process.env.GAME_RUNTIME_SMOKE_BASE_URL || '').trim().replace(/\/+$/, '');
 const cacheBust = () => `smoke=${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const mime = new Map([
+  ['.html', 'text/html; charset=utf-8'], ['.css', 'text/css; charset=utf-8'], ['.js', 'text/javascript; charset=utf-8'],
+  ['.mjs', 'text/javascript; charset=utf-8'], ['.json', 'application/json; charset=utf-8'], ['.jpg', 'image/jpeg'],
+  ['.jpeg', 'image/jpeg'], ['.png', 'image/png'], ['.webp', 'image/webp'], ['.svg', 'image/svg+xml'],
+]);
+
+let server = null;
+let baseUrl = requestedBase;
+if (!baseUrl) {
+  const safePath = raw => {
+    const decoded = decodeURIComponent(String(raw || '/').split('?')[0]);
+    const normalized = decoded.replace(/^\/Igropoisk(?=\/|$)/, '') || '/';
+    const requested = normalized.endsWith('/') ? `${normalized}index.html` : normalized;
+    const absolute = path.resolve(root, `.${requested}`);
+    return absolute.startsWith(root) ? absolute : null;
+  };
+  server = http.createServer((request, response) => {
+    const file = safePath(request.url);
+    if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
+      response.writeHead(404).end('Not found');
+      return;
+    }
+    response.setHeader('Content-Type', mime.get(path.extname(file).toLowerCase()) || 'application/octet-stream');
+    response.setHeader('Cache-Control', 'no-store');
+    fs.createReadStream(file).pipe(response);
+  });
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(4181, '127.0.0.1', resolve);
+  });
+  baseUrl = 'http://127.0.0.1:4181';
+}
+baseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
 
 async function fetchWithRetry(url, options, attempts = 4) {
   let lastError;
@@ -33,9 +67,7 @@ for (const check of assetChecks) {
   const url = new URL(check.path, baseUrl);
   url.search = cacheBust();
   const response = await fetchWithRetry(url, {
-    cache: 'no-store',
-    headers: { 'Cache-Control': 'no-cache, no-store, max-age=0', Pragma: 'no-cache' },
-    redirect: 'follow',
+    cache: 'no-store', headers: { 'Cache-Control': 'no-cache, no-store, max-age=0', Pragma: 'no-cache' }, redirect: 'follow',
   });
   const body = await response.text();
   const contentType = response.headers.get('content-type') || '';
@@ -47,13 +79,8 @@ for (const check of assetChecks) {
   assetResults.push({ path: check.path, status: response.status, contentType, bytes: Buffer.byteLength(body), errors });
 }
 
-const executablePath = [
-  process.env.CHROME_PATH,
-  '/usr/bin/google-chrome-stable',
-  '/usr/bin/google-chrome',
-  '/usr/bin/chromium',
-  '/usr/bin/chromium-browser',
-].filter(Boolean).find(fs.existsSync);
+const executablePath = [process.env.CHROME_PATH, '/usr/bin/google-chrome-stable', '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser']
+  .filter(Boolean).find(fs.existsSync);
 if (!executablePath) throw new Error('Chrome/Chromium executable was not found.');
 
 const browser = await puppeteer.launch({ executablePath, headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
@@ -105,6 +132,7 @@ try {
   }
 } finally {
   await browser.close();
+  if (server) await new Promise(resolve => server.close(resolve));
 }
 
 const failures = [
@@ -112,4 +140,4 @@ const failures = [
   ...browserResults.filter(result => result.errors.length).map(result => `page ${result.slug}: ${result.errors.join('; ')}`),
 ];
 console.log(JSON.stringify({ baseUrl, assets: assetResults, pages: browserResults }, null, 2));
-if (failures.length) throw new Error(`Game runtime production smoke failed:\n- ${failures.join('\n- ')}`);
+if (failures.length) throw new Error(`Game runtime smoke failed:\n- ${failures.join('\n- ')}`);
