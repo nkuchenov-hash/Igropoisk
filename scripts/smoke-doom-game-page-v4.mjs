@@ -8,6 +8,9 @@ const root=process.cwd();
 const requestedBase=String(process.env.DOOM_SMOKE_BASE_URL||'').trim().replace(/\/+$/,'');
 const mime=new Map([['.html','text/html; charset=utf-8'],['.css','text/css; charset=utf-8'],['.js','text/javascript; charset=utf-8'],['.json','application/json; charset=utf-8'],['.jpg','image/jpeg'],['.jpeg','image/jpeg'],['.png','image/png'],['.webp','image/webp']]);
 const browserPath=()=>[process.env.CHROME_PATH,'/usr/bin/google-chrome-stable','/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'].filter(Boolean).find(fs.existsSync);
+const ratings=JSON.parse(fs.readFileSync(path.join(root,'data/ratings/doom.json'),'utf8'));
+const canonicalScore=ratings?.status==='green'?Number(ratings?.calculation?.score_10):NaN;
+const canonicalScoreText=Number.isFinite(canonicalScore)?`${canonicalScore.toFixed(1).replace(/\.0$/,'')}/10`:'—';
 let server=null;let base=requestedBase;
 if(!base){
   const safePath=raw=>{const decoded=decodeURIComponent(String(raw||'/').split('?')[0]);const normalized=decoded.replace(/^\/Igropoisk(?=\/|$)/,'')||'/';const requested=normalized.endsWith('/')?`${normalized}index.html`:normalized;const absolute=path.resolve(root,`.${requested}`);return absolute.startsWith(root)?absolute:null};
@@ -20,7 +23,7 @@ try{
   const page=await browser.newPage();await page.setViewport({width:1440,height:1100});const pageErrors=[];page.on('pageerror',error=>pageErrors.push(String(error?.stack||error)));
   await page.goto(`${base}/game/doom/?acceptance=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45000});
   await page.waitForFunction(()=>document.querySelector('#gameTitle')?.textContent?.trim()==='DOOM',{timeout:30000});
-  await page.waitForFunction(()=>document.querySelectorAll('#reviewGrid .quality-review-row').length>=10&&document.querySelectorAll('#similarGames [data-similarity-score]').length>=1,{timeout:30000});
+  await page.waitForFunction(({scoreText})=>document.querySelectorAll('#reviewGrid .quality-review-row').length>=10&&document.querySelectorAll('#similarGames [data-similarity-score]').length>=1&&document.querySelector('#featuredReview .ig-review-feature__score')?.textContent?.trim()===scoreText,{timeout:30000},{scoreText:canonicalScoreText});
   await new Promise(resolve=>setTimeout(resolve,1200));
   const state=await page.evaluate(()=>({
     title:document.querySelector('#gameTitle')?.textContent?.trim()||'',
@@ -51,11 +54,11 @@ try{
   if(!/Windows/i.test(state.platforms))errors.push(`Windows platform missing: ${state.platforms}`);
   if(state.similar<1||state.similarReasons.length!==state.similar)errors.push(`Similarity missing/reasons incomplete: ${state.similar}/${state.similarReasons.length}`);
   if(state.reviewRows<10||state.reviewScores.length<10)errors.push(`Scored professional reviews incomplete: ${state.reviewRows}/${state.reviewScores.length}`);
-  if(Number(state.featuredScore)!==8.7)errors.push(`Calculated DOOM rating is wrong: ${state.featuredScore}`);
+  if(state.featuredScore!==canonicalScoreText)errors.push(`Calculated DOOM rating is wrong: ${state.featuredScore}; expected ${canonicalScoreText}`);
   if(state.guides<6)errors.push(`DOOM guides incomplete: ${state.guides}`);
   if(state.franchise<2)errors.push(`DOOM franchise card incomplete: ${state.franchise}`);
   if(/Страница готовится/i.test(state.body))errors.push('Forbidden “page preparing” note is visible.');
   if(pageErrors.length)errors.push(`Browser errors: ${pageErrors.slice(0,3).join(' | ')}`);
-  console.log(JSON.stringify({base,state,pageErrors,errors},null,2));
+  console.log(JSON.stringify({base,canonicalScoreText,state,pageErrors,errors},null,2));
   if(errors.length)throw new Error(`DOOM Game Page v4 smoke failed:\n- ${errors.join('\n- ')}`);
 }finally{await browser.close();if(server)await new Promise(resolve=>server.close(resolve))}

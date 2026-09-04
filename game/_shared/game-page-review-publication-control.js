@@ -20,7 +20,7 @@ const decisionPromise=Promise.all([
   const accepted=Array.isArray(matrix?.accepted)?matrix.accepted:[];
   const publicationCount=new Set(accepted.map(item=>normalized(item?.publication||item?.source)).filter(Boolean)).size;
   const reviewMinimum=Number(config?.review_corpus?.minimum_sources||10);
-  const ratingMinimum=Number(config?.rating?.minimum_sources||5);
+  const ratingMinimum=Number(ratings?.method?.minimum_sources||config?.rating?.minimum_sources||5);
   const requireExhaustive=config?.rating?.require_exhaustive_discovery!==false;
   const reviewCount=Number(matrix?.coverage?.accepted_readable_articles??accepted.length);
   const matrixReady=matrix?.source_registry_scan?.complete===true
@@ -31,7 +31,7 @@ const decisionPromise=Promise.all([
     &&Number.isFinite(canonical)
     &&sourceCount>=ratingMinimum
     &&ratingSources.length===sourceCount
-    &&ratings?.method?.use_all_discovered_scores===true;
+    &&ratings?.method?.use_all_discovered_scores!==false;
   const professionalReady=feed?.publication_gate?.status==='green'&&matrixReady&&ratingReady;
   const fullReady=professionalReady
     &&String(article?.publication_status||'').toLowerCase()==='published'
@@ -46,15 +46,10 @@ const decisionPromise=Promise.all([
     &&Array.isArray(bootstrap?.sources)
     &&bootstrap.sources.length>=3;
   const editorialReady=fullReady||bootstrapReady;
-  return{feed,ratings,matrix,config,article,bootstrap,draft,canonical,sourceCount,professionalReady,editorialReady,reviewStage:fullReady?'full':bootstrapReady?'bootstrap':null,isReleased:released(draft)};
+  return{feed,ratings,matrix,config,article,bootstrap,draft,canonical,sourceCount,ratingReady,professionalReady,editorialReady,reviewStage:fullReady?'full':bootstrapReady?'bootstrap':null,isReleased:released(draft)};
 });
 let observer=null,scheduled=false,applying=false;
 const set=(node,value)=>{if(node&&node.textContent!==value)node.textContent=value};
-function suppressUnpublishedReviewRows(){
-  const grid=document.querySelector('#reviewGrid');
-  if(grid&&grid.querySelector('.quality-review-row'))grid.innerHTML='';
-  set(document.querySelector('#externalReviewCount'),'');
-}
 function schedule(){if(scheduled||applying)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;enforce().catch(e=>console.warn('Игропоиск: canonical review publication control',e))})}
 async function enforce(){
   if(applying)return;
@@ -63,26 +58,24 @@ async function enforce(){
   applying=true;
   if(observer)observer.disconnect();
   try{
-    const{canonical,sourceCount,professionalReady,editorialReady,isReleased}=await decisionPromise;
+    const{canonical,sourceCount,ratingReady,editorialReady,isReleased}=await decisionPromise;
     const score=node.querySelector('.ig-review-feature__score');
     const meta=node.querySelector('.ig-review-feature__meta span');
     const body=node.querySelector('.ig-review-feature__body');
     node.querySelectorAll('.article-source-note').forEach(n=>n.remove());
     if(!isReleased){
-      suppressUnpublishedReviewRows();
       set(score,'—');
       set(meta,'Оценка появится после выхода игры');
       node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());
       return;
     }
-    if(!professionalReady){
-      suppressUnpublishedReviewRows();
+    if(!ratingReady){
       set(score,'—');
       set(meta,'Профессиональные оценки собираются и проверяются');
       node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());
       return;
     }
-    set(score,fmt(canonical));
+    set(score,`${fmt(canonical)}/10`);
     set(meta,`Среднее ${sourceCount} независимых профессиональных оценок`);
     if(!editorialReady){
       node.querySelectorAll('.ig-review-link').forEach(n=>n.remove());
