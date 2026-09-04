@@ -49,7 +49,7 @@ jobs:
           git fetch origin main:refs/remotes/origin/main --force
           node scripts/test-central-design-system.mjs
           node scripts/validate-central-design-system.mjs --base origin/main
-          test "$(grep -R '<select class=\"ig-input\"' benchmark/five-games-models/*/index.html | wc -l)" -eq 10
+          test "$(grep -Rho '<select class=\"ig-input\"' benchmark/five-games-models/*/index.html | wc -l)" -eq 10
           ! grep -R 'bench-error\|font-size:1.18rem\|color:#d86b6b\|border:0' benchmark/five-games-models
       - name: Publish surgical fix branch
         id: publish
