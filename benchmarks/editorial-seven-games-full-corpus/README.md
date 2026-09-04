@@ -28,8 +28,10 @@ This wording is deliberate: the test guarantees complete use of the source mater
 
 ## Block format
 
-- **Subtitle** — a short one-line essence of the game. It must not expand into a miniature description or a long sentence.
+- **Subtitle** — a compact identifying essence of the game, usually around 6–12 words. It must contain at least one game-specific hook: distinctive fantasy, structure, mechanic, setting or tension. A generic genre label is not sufficient. It also must not expand into a miniature Description.
 - **Description** — the full introductory block: premise, what the player actually does, major systems and the details that distinguish the game.
 - **Features** — compact thesis-like feature labels. Each item should be scannable at a glance and should not become an explanatory sentence.
+
+A useful Subtitle test: if the line could describe dozens of unrelated games after removing the title, it is too generic.
 
 `results.json` contains the current source-grounded copy.
