@@ -21,6 +21,8 @@ dialog{width:min(1160px,calc(100vw - 28px));max-width:none;border:0;border-radiu
 </style>
 
 
+
+
 <link rel="stylesheet" href="/Igropoisk/assets/site-header.css?v=20260803-2" data-ig-shared-header="style">
 <link rel="stylesheet" href="/Igropoisk/assets/layout-contract.css?v=20260803-1" data-ig-layout-contract="style">
 </head>
@@ -64,6 +66,8 @@ document.getElementById('pauseBg').addEventListener('click',e=>{if(!paused){hero
 document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===btn));document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('active',x.id===btn.dataset.tab));window.scrollTo({top:document.querySelector('.tabs-shell').offsetTop-68,behavior:'smooth'});}));
 const dialog=document.getElementById('trailerDialog');const modal=document.getElementById('modalPlayer');function openTrailer(){modal.src=`https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&rel=0&modestbranding=1`;dialog.showModal()};document.querySelectorAll('[data-trailer]').forEach(x=>x.addEventListener('click',openTrailer));document.getElementById('closeTrailer').addEventListener('click',()=>{dialog.close();modal.src='about:blank'});dialog.addEventListener('click',e=>{if(e.target===dialog){dialog.close();modal.src='about:blank'}});
 </script>
+
+
 
 
 <script src="/Igropoisk/assets/site-header.js?v=20260803-2" data-ig-shared-header="script" defer></script>
