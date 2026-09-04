@@ -61,9 +61,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Detect media-affecting changes
+        id: scope
+        shell: bash
+        run: |
+          git fetch origin "$GITHUB_BASE_REF:refs/remotes/origin/$GITHUB_BASE_REF" --force
+          CHANGED="$(git diff --name-only "origin/$GITHUB_BASE_REF...HEAD")"
+          printf '%s\n' "$CHANGED"
+          if printf '%s\n' "$CHANGED" | grep -Eq '^(data/(drafts|game-media|game-content|parser-output|article-media)/|config/game-media-|scripts/(repair-game-media-from-steam|validate-game-media-quality|run-game-catalog-enrichment)\.mjs$)'; then
+            echo 'media=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'media=false' >> "$GITHUB_OUTPUT"
+          fi
       - name: Install browser validation dependency
         run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
       - name: Verify shared runtime and quality-controller syntax
@@ -111,9 +125,14 @@ jobs:
       - name: Exercise canonical catalog materialization
         run: node scripts/materialize-catalog-game-data.mjs
       - name: Exercise verified Steam media repair
+        if: steps.scope.outputs.media == 'true'
         run: node scripts/repair-game-media-from-steam.mjs
       - name: Produce media quality diagnoses
+        if: steps.scope.outputs.media == 'true'
         run: node scripts/validate-game-media-quality.mjs
+      - name: Skip full external media probe for module-only changes
+        if: steps.scope.outputs.media != 'true'
+        run: echo 'No media-affecting files changed; full-catalog external image probing is not relevant to this PR.'
       - name: Rebuild similarity reasons for the full catalog
         run: node scripts/build-similarity-index.mjs
       - name: Verify target game pages and review rendering in browser
