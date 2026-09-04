@@ -66,7 +66,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Detect media-affecting changes
+      - name: Detect affected QA scopes
         id: scope
         shell: bash
         run: |
@@ -77,6 +77,11 @@ jobs:
             echo 'media=true' >> "$GITHUB_OUTPUT"
           else
             echo 'media=false' >> "$GITHUB_OUTPUT"
+          fi
+          if printf '%s\n' "$CHANGED" | grep -Eq '^(article/|data/articles/|data/article-media/|scripts/(materialize-review-publication-feed|synthesize-review-adaptive|prepare-review-research)\.mjs$)'; then
+            echo 'article=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'article=false' >> "$GITHUB_OUTPUT"
           fi
       - name: Install browser validation dependency
         run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
@@ -135,7 +140,9 @@ jobs:
         run: echo 'No media-affecting files changed; full-catalog external image probing is not relevant to this PR.'
       - name: Rebuild similarity reasons for the full catalog
         run: node scripts/build-similarity-index.mjs
-      - name: Verify target game pages and review rendering in browser
+      - name: Verify target game pages in browser
+        env:
+          GAME_PAGE_SMOKE_SKIP_ARTICLES: ${{ steps.scope.outputs.article != 'true' }}
         run: node scripts/smoke-game-page-browser.mjs
       - name: Verify representative published pages survive shared module changes
         run: node scripts/smoke-game-runtime.mjs
