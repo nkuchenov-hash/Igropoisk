@@ -60,6 +60,7 @@ const assetChecks = [
   { path: 'game/_shared/game-page.js', type: /javascript/i, markers: ['__IG_GAME_PAGE_MODULE_VERSION__', 'game-runtime-network-guard.js', 'game-page-v3-bootstrap.js'] },
   { path: 'game/_shared/game-runtime-network-guard.js', type: /javascript/i, markers: ['__IG_GAME_RUNTIME_NETWORK_GUARD__', 'timeoutMs=7000'] },
   { path: 'data/reviews/fallout-2.json', type: /json|text\/plain|octet-stream/i, markers: ['"reviews"'] },
+  { path: 'data/game-sources/arx-fatalis.json', type: /json|text\/plain|octet-stream/i, markers: ['"professional_reviews": 10'] },
 ];
 
 const assetResults = [];
@@ -90,7 +91,9 @@ const pageChecks = [
   ['the-witcher-3-wild-hunt', /witcher/i],
   ['elden-ring', /elden\s*ring/i],
   ['control', /^control$/i],
+  ['arx-fatalis', /^arx\s*fatalis$/i],
 ];
+const requiredReviewRows = new Map([['control', 20], ['arx-fatalis', 10]]);
 const browserResults = [];
 try {
   for (const [slug, titlePattern] of pageChecks) {
@@ -113,12 +116,13 @@ try {
           return Boolean(title) || failed;
         }, { timeout: 15000 });
       } catch (error) { navigationError = String(error?.message || error); }
-      if (!navigationError && slug === 'control') {
+      const expectedReviewRows = requiredReviewRows.get(slug) || 0;
+      if (!navigationError && expectedReviewRows) {
         try {
-          await page.waitForFunction(() => {
+          await page.waitForFunction(expected => {
             const grid = document.querySelector('#reviewGrid');
-            return grid?.dataset.reviewSourcesReady === '1' && grid.querySelectorAll('.quality-review-row').length >= 20;
-          }, { timeout: 10000 });
+            return grid?.dataset.reviewSourcesReady === '1' && grid.querySelectorAll('.quality-review-row').length >= expected;
+          }, { timeout: 10000 }, expectedReviewRows);
         } catch (error) {
           hydrationError = String(error?.message || error);
         }
@@ -142,8 +146,8 @@ try {
       if (!state.moduleVersion) errors.push('approved module version marker missing');
       if (!state.networkGuard) errors.push('runtime network guard missing');
       if (state.tabs < 7) errors.push(`incomplete tab shell: ${state.tabs}`);
-      if (slug === 'control' && state.reviewSourcesReady !== '1') errors.push('control review-source module did not signal readiness');
-      if (slug === 'control' && state.reviewRows < 20) errors.push(`control review stress fixture incomplete: ${state.reviewRows}/20`);
+      if (expectedReviewRows && state.reviewSourcesReady !== '1') errors.push(`${slug} review-source module did not signal readiness`);
+      if (expectedReviewRows && state.reviewRows < expectedReviewRows) errors.push(`${slug} review regression fixture incomplete: ${state.reviewRows}/${expectedReviewRows}`);
       if (/Не удалось открыть страницу игры|Не удалось загрузить страницу игры/i.test(state.body)) errors.push('visible runtime failure');
       if (pageErrors.length) errors.push(`page errors: ${pageErrors.slice(0, 3).join(' | ')}`);
       browserResults.push({ slug, elapsedMs: Date.now() - started, state, pageErrors, consoleErrors: consoleErrors.slice(0, 5), errors });
