@@ -30,7 +30,9 @@ dialog{width:min(1160px,calc(100vw - 28px));max-width:none;border:0;border-radiu
 <header class="header game-header"><div class="header__inner"><a class="brand" href="/Igropoisk/"><b>И</b>ГРОПОИСК</a><nav class="nav"><a href="/Igropoisk/">Главное</a><a href="/Igropoisk/#search">Поиск игр</a><a href="/Igropoisk/#news">Новости</a><a href="/Igropoisk/#top250">Топ-250</a><a href="/Igropoisk/#releases">Релизы</a></nav><div class="header__actions"><button class="ig-button header-btn">⌕</button><button class="ig-button header-btn">Войти</button></div></div></header>
 <section class="hero" id="hero">
 <div class="hero__poster"></div>
-<iframe class="hero__video" id="heroVideo" title="DOOM: The Dark Ages — Official Launch Trailer" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<video class="hero__video" id="heroVideo" autoplay muted loop playsinline preload="auto" poster="/Igropoisk/assets/covers/popular/doom-the-dark-ages.jpg" aria-hidden="true">
+<source src="https://video.fastly.steamstatic.com/store_trailers/3017860/1768853770/2b6ad8e1a92a17da1e2a2900aef053ae14e73074/1748584906/microtrailer.mp4" type="video/mp4">
+</video>
 <div class="hero__shade"></div>
 <div class="hero__inner">
 <div class="breadcrumbs">Главное / Игры / DOOM: The Dark Ages</div>
@@ -59,89 +61,45 @@ const hero=document.getElementById('hero');
 const heroVideo=document.getElementById('heroVideo');
 const pauseBg=document.getElementById('pauseBg');
 let paused=false;
-let heroPlayer=null;
-let heroPlayerReady=false;
-let heroLoopWatch=null;
-function videoSrc(){return `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;}
-function clearHeroWatch(){if(heroLoopWatch){clearInterval(heroLoopWatch);heroLoopWatch=null;}}
 function hideHeroVideo(){hero.classList.remove('video-ready');}
 function revealHeroVideo(){if(!paused)hero.classList.add('video-ready');}
-function safeHeroPlay(){
-  if(paused||!heroPlayer||!heroPlayerReady)return;
-  try{heroPlayer.mute();heroPlayer.playVideo();startHeroWatch();}catch(error){hideHeroVideo();}
-}
-function loopHeroNow(){
-  if(paused||!heroPlayer||!heroPlayerReady)return;
-  hideHeroVideo();
-  try{heroPlayer.mute();heroPlayer.seekTo(0,true);heroPlayer.playVideo();}catch(error){hideHeroVideo();}
-}
-function startHeroWatch(){
-  clearHeroWatch();
-  heroLoopWatch=setInterval(()=>{
-    if(paused||!heroPlayer||!heroPlayerReady)return;
-    try{
-      const duration=Number(heroPlayer.getDuration())||0;
-      const current=Number(heroPlayer.getCurrentTime())||0;
-      const state=heroPlayer.getPlayerState();
-      if(state===YT.PlayerState.PLAYING)revealHeroVideo();
-      else if(state===YT.PlayerState.BUFFERING||state===YT.PlayerState.UNSTARTED||state===YT.PlayerState.CUED)hideHeroVideo();
-      if(state===YT.PlayerState.ENDED){loopHeroNow();return;}
-      if(duration>5&&current>=duration-.9)loopHeroNow();
-    }catch(error){hideHeroVideo();}
-  },250);
-}
-function attachHeroPlayer(){
-  if(heroPlayer)return;
-  if(!window.YT||!YT.Player){setTimeout(attachHeroPlayer,120);return;}
+async function playHero(){
+  if(paused)return;
+  heroVideo.muted=true;
   try{
-    heroPlayer=new YT.Player('heroVideo',{
-      events:{
-        onReady:event=>{heroPlayerReady=true;event.target.mute();event.target.playVideo();startHeroWatch();},
-        onStateChange:event=>{
-          if(event.data===YT.PlayerState.PLAYING)revealHeroVideo();
-          else if(event.data===YT.PlayerState.BUFFERING||event.data===YT.PlayerState.UNSTARTED||event.data===YT.PlayerState.CUED||event.data===YT.PlayerState.ENDED)hideHeroVideo();
-          if(event.data===YT.PlayerState.ENDED)loopHeroNow();
-        },
-        onError:()=>{heroPlayerReady=false;clearHeroWatch();hideHeroVideo();}
-      }
-    });
-  }catch(error){heroPlayer=null;hideHeroVideo();}
+    await heroVideo.play();
+    if(heroVideo.readyState>=3)revealHeroVideo();
+  }catch(error){hideHeroVideo();}
 }
-function startHero(){
+heroVideo.addEventListener('playing',revealHeroVideo);
+heroVideo.addEventListener('canplay',()=>{if(!paused)playHero();});
+heroVideo.addEventListener('waiting',hideHeroVideo);
+heroVideo.addEventListener('stalled',hideHeroVideo);
+heroVideo.addEventListener('error',hideHeroVideo);
+window.addEventListener('pageshow',()=>{
   paused=false;
   pauseBg.textContent='Ⅱ';
   hideHeroVideo();
-  if(!heroVideo.src||heroVideo.src==='about:blank')heroVideo.src=videoSrc();
-  if(heroPlayer&&heroPlayerReady)safeHeroPlay();
-  else if(window.YT&&YT.Player)attachHeroPlayer();
-}
-window.onYouTubeIframeAPIReady=attachHeroPlayer;
-if(!document.querySelector('script[data-youtube-iframe-api]')){
-  const api=document.createElement('script');
-  api.src='https://www.youtube.com/iframe_api';
-  api.dataset.youtubeIframeApi='';
-  document.head.appendChild(api);
-}
-window.addEventListener('pageshow',startHero);
+  try{heroVideo.currentTime=0;}catch(error){}
+  playHero();
+});
 document.getElementById('restartBg').addEventListener('click',()=>{
   paused=false;
   pauseBg.textContent='Ⅱ';
-  if(heroPlayer&&heroPlayerReady)loopHeroNow();
-  else startHero();
+  hideHeroVideo();
+  try{heroVideo.currentTime=0;}catch(error){}
+  playHero();
 });
 pauseBg.addEventListener('click',e=>{
   if(!paused){
     paused=true;
-    clearHeroWatch();
+    heroVideo.pause();
     hideHeroVideo();
-    try{heroPlayer?.pauseVideo();}catch(error){}
     e.currentTarget.textContent='▶';
   }else{
     paused=false;
     e.currentTarget.textContent='Ⅱ';
-    hideHeroVideo();
-    if(heroPlayer&&heroPlayerReady)safeHeroPlay();
-    else startHero();
+    playHero();
   }
 });
 document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===btn));document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('active',x.id===btn.dataset.tab));window.scrollTo({top:document.querySelector('.tabs-shell').offsetTop-68,behavior:'smooth'});}));
