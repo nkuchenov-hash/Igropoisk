@@ -36,9 +36,8 @@ function applyPresentation(draft,editorial){
   if(tags&&genres.length)tags.innerHTML=genres.map(x=>`<span class="game-chip">${esc(x)}</span>`).join('');
   const note=document.querySelector('#editorialNote');
   if(note){note.textContent='';note.hidden=true}
-  const shots=arr(draft?.media?.screenshots).map(mediaUrl).filter(Boolean).filter(u=>!forbiddenMedia(u));
   const hero=document.querySelector('#gameHero');
-  if(hero&&shots.length&&forbiddenMedia(getComputedStyle(hero).backgroundImage))hero.style.backgroundImage=`url("${String(shots[0]).replace(/"/g,'%22')}")`;
+  if(hero&&forbiddenMedia(getComputedStyle(hero).backgroundImage))hero.classList.add('ig-game-hero-sanitized');
   document.querySelectorAll('img').forEach(img=>{if(forbiddenMedia(img.currentSrc||img.src))img.closest('article,figure,button,.media-card,.ig-media-card')?.remove()});
 }
 
@@ -57,7 +56,7 @@ function renderReviewSummaryCard(draft,ratings,editorial){
   if(!card){
     card=document.createElement('article');
     card.id='reviewSummaryCard';
-    card.className='game-panel review-summary-card';
+    card.className='ig-card game-panel review-summary-card';
     reviewsMain.insertBefore(card,heading);
   }
   const title=document.querySelector('#gameTitle')?.textContent?.trim()||draft?.identity?.title||'Игра';
@@ -67,7 +66,7 @@ function renderReviewSummaryCard(draft,ratings,editorial){
   const rating=Number(ratings?.calculation?.score_10);
   const ratingText=Number.isFinite(rating)?rating.toFixed(1).replace(/\.0$/,''):'—';
   card.hidden=false;
-  card.innerHTML=`<div class="review-summary-card__media">${image?`<img src="${esc(image)}" alt="${esc(title)}" loading="lazy">`:`<div class="media-placeholder">${esc(title.slice(0,2).toUpperCase())}</div>`}</div><div class="review-summary-card__body"><small>ОБЗОР ИГРОПОИСКА</small><h2>Обзор ${esc(title)}</h2><p>${esc(description)}</p><div class="review-summary-card__meta"><strong>${esc(ratingText)}${ratingText==='—'?'':'/10'}</strong></div></div>`;
+  card.innerHTML=`<div class="ig-card__media review-summary-card__media">${image?`<img src="${esc(image)}" alt="${esc(title)}" loading="lazy">`:`<div class="media-placeholder">${esc(title.slice(0,2).toUpperCase())}</div>`}</div><div class="ig-card__body review-summary-card__body"><small>ОБЗОР ИГРОПОИСКА</small><h2>Обзор ${esc(title)}</h2><p>${esc(description)}</p><div class="ig-card__meta review-summary-card__meta"><strong>${esc(ratingText)}${ratingText==='—'?'':'/10'}</strong></div></div>`;
 }
 
 function fixOfficialLinks(draft){
@@ -78,7 +77,7 @@ function fixOfficialLinks(draft){
   const links=[];
   if(official&&/^https?:\/\//i.test(official))links.push(['Официальный сайт',official]);
   if(store&&/^https?:\/\//i.test(store)&&canon(store)!==canon(official))links.push(['Страница магазина',store]);
-  box.innerHTML=links.length?links.map(([n,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer"><span>${esc(n)}</span><b>Открыть ↗</b></a>`).join(''):'<div class="ig-muted">Подтверждённая официальная ссылка не найдена.</div>';
+  box.innerHTML=links.length?links.map(([n,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer"><span>${esc(n)}</span><b>Открыть ↗</b></a>`).join(''):'<div class="ig-empty-state ig-muted">Подтверждённая официальная ссылка не найдена.</div>';
 }
 
 function hideOwnGuidePresentation(){
@@ -88,8 +87,7 @@ function hideOwnGuidePresentation(){
   if(quick){quick.hidden=true;quick.setAttribute('aria-hidden','true')}
   const updated=document.querySelector('#guideUpdated')?.closest('section');
   if(updated){updated.hidden=true;updated.setAttribute('aria-hidden','true')}
-  const layout=document.querySelector('#guides .guides-layout');
-  if(layout)layout.style.gridTemplateColumns='1fr';
+  document.querySelector('#guides .guides-layout')?.classList.add('ig-guides-external-only');
 }
 
 let ratingControlsRemovalScheduled=false;
