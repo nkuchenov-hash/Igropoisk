@@ -1,136 +1,100 @@
 {
-  "schema_version": 5,
+  "schema_version": 8,
   "id": "review-synthesis",
-  "title": "Конструктор обзоров Игропоиска",
+  "title": "Review Skill v1 — Игропоиск",
   "status": "active",
-  "schedule": "После обновления данных игры, рейтинга или медиакорпуса",
-  "purpose": "Собирать цельные визуально насыщенные обзоры: меньше повторяющегося текста, больше качественных скриншотов с осмысленными комментариями.",
+  "schedule": "После обновления канонического пакета источников, данных игры или медиакорпуса",
+  "purpose": "Собирать evergreen-журнальные обзоры конкретной игры из канонического source pack Game Page Module без собственного поиска источников, шаблонной структуры и временных редакционных штампов.",
+  "canonical_source_contract": {
+    "path": "data/game-sources/{slug}.json",
+    "owner": "game-page-source-pipeline",
+    "review_module_discovers_sources": false,
+    "source_count_policy": "use_all_available_verified_sources",
+    "fixed_editorial_source_quota": null,
+    "sources_define_evidence_not_structure": true
+  },
+  "model_policy": {
+    "owner": "single_model_per_review_task",
+    "same_model_attempts": 3,
+    "cross_model_fallback": false,
+    "technical_failure_policy": "retry_same_assigned_model"
+  },
   "publication_gate": {
-    "editorial_reviews_required": 20,
-    "independent_publications_required": 20,
     "minimum_sections": 7,
     "maximum_sections": 9,
-    "minimum_article_words": 1300,
-    "target_article_words": 1600,
-    "maximum_article_words_without_editor_approval": 2200,
-    "media_candidates_required": 30,
-    "media_candidates_quality_passed_required": 18,
-    "independent_media_sources_required": 3,
-    "minimum_total_article_images": 18,
-    "minimum_unique_article_images": 12,
-    "minimum_images_per_section": 2,
-    "target_images_per_section": 3,
-    "maximum_images_per_section": 5,
-    "publish_below_gate": false
+    "minimum_article_words": 1600,
+    "target_article_words": 2200,
+    "maximum_article_words_without_editor_approval": 3200,
+    "minimum_words_per_section": 170,
+    "publish_below_editorial_qc": false
   },
-  "research_policy": {
-    "candidate_target": 36,
-    "historical_before_year": 2010,
-    "historical_minimum_contemporary": 12,
-    "modern_minimum_contemporary": 16,
-    "allow_professional_retrospectives": true,
-    "allow_port_reviews_for_platform_context": true,
-    "allow_source_expansion": true,
-    "resolve_dead_links_with_internet_archive": true,
-    "url_timeout_ms": 15000
-  },
-  "media_quality_policy": {
-    "policy_file": "config/parsers/review-media-policy.json",
-    "minimum_candidates": 30,
-    "minimum_approved_candidates": 18,
-    "minimum_media_sources": 3,
-    "minimum_total_article_images": 18,
-    "minimum_unique_article_images": 12,
-    "minimum_images_per_section": 2,
-    "target_images_per_section": 3,
-    "maximum_images_per_section": 5,
-    "minimum_quality_confidence": 0.78,
-    "minimum_semantic_confidence": 0.78,
-    "reject_single_source_media_set": true,
-    "reject_thumbnails": true,
-    "reject_blur": true,
-    "reject_heavy_compression": true,
-    "reject_visible_upscale": true,
-    "reject_wrong_game_version": true,
-    "reject_duplicate_scene": true
-  },
-  "method": {
-    "formula": "20 источников критики + 30 медиакандидатов из 3+ источников → фильтр качества → план 7–9 разделов → обзор 1300–2200 слов → 2–5 кадров в каждой карточке → vision-аудит → публикация.",
-    "normalization": "Текстовые и медиa-источники учитываются отдельно. Официальные страницы, магазины, агрегаторы и пользовательские отзывы не заменяют 20 профессиональных обзоров. Один медиa-источник не может формировать весь визуальный ряд статьи.",
-    "steps": [
-      "Точно определить игру, год, разработчика, платформу и исключённые версии.",
-      "Найти и проверить не менее 20 независимых профессиональных обзоров.",
-      "Собрать минимум 30 скриншотов-кандидатов как минимум из трёх независимых медиa-источников.",
-      "Для каждого изображения сохранить URL, источник, разрешение, версию игры, визуальные теги и хеш сцены.",
-      "Отклонить миниатюры, размытые, пережатые, искусственно увеличенные изображения, дубли и кадры другой версии игры.",
-      "Оставить минимум 18 качественных кандидатов и минимум 12 различных сцен.",
-      "Построить динамический план из 7–9 разделов по конкретной игре.",
-      "Написать 1300–2200 содержательных слов без повторов и искусственного растягивания.",
-      "Создать одну карточку скриншотов на каждый раздел и поместить внутрь неё 2–5 релевантных кадров.",
-      "Для каждого кадра написать отдельный комментарий: что видно и как это подтверждает тезис раздела.",
-      "Проверить каждый кадр моделью зрения по качеству и смысловому соответствию.",
-      "Показать внутри карточки стрелки, свайп, счётчик, точки, меняющуюся подпись и ссылку на источник.",
-      "Связать существенные тезисы с проверенными source_id и вывести источники в конце статьи.",
-      "Заблокировать публикацию при нехватке текста, источников, качественных кадров, разных сцен или медиa-источников."
+  "editorial_workflow": [
+    {
+      "pass": "evidence_extraction",
+      "goal": "Извлечь подтверждённые механики, сильные стороны, проблемы, спорные моменты, исторический контекст, интерфейсные решения и запоминающиеся конкретные детали."
+    },
+    {
+      "pass": "editorial_angle_and_structure",
+      "goal": "Определить характер игры, главный редакционный угол и структуру, которая возникает из самой игры, а не из универсального шаблона."
+    },
+    {
+      "pass": "draft",
+      "goal": "Написать цельный журнальный текст, органично связывая доказательства, конкретные детали, достоинства и недостатки."
+    },
+    {
+      "pass": "anti_generic_evergreen_audit",
+      "goal": "Убрать временные привязки, AI-формулировки, шаблонные разделы, искусственные выводы и проверить, не пропущены ли характерные детали и интерфейсная обратная связь."
+    }
+  ],
+  "editorial_policy": {
+    "evergreen": true,
+    "dynamic_game_specific_structure": true,
+    "headings_must_identify_aspect": true,
+    "encyclopedic_intro": false,
+    "required_ageing_section": false,
+    "required_modern_suitability_section": false,
+    "historical_context_only_when_explanatory": true,
+    "mechanics_use_present_tense": true,
+    "characteristic_details_are_high_priority": true,
+    "interface_feedback_pass_required": true,
+    "interface_feedback_topics": [
+      "HUD",
+      "карта",
+      "индикаторы здоровья",
+      "инвентарь",
+      "сохранения",
+      "управление",
+      "звуковые сигналы"
     ],
-    "article_structure": [
-      "Hero с названием, тезисом, оценкой и временем чтения.",
-      "Короткий lead без рекламных формулировок.",
-      "Оглавление из 7–9 разделов.",
-      "Каждый раздел содержит компактный разбор и одну карточку с 2–5 прокручиваемыми скриншотами.",
-      "Каждый скриншот имеет самостоятельную содержательную подпись и ссылку на источник.",
-      "Отдельный вердикт: кому игра подходит и кому нет.",
-      "Удобный возврат к странице игры сверху и в конце обзора.",
-      "Полный список реально использованных источников в конце статьи."
+    "weaknesses_discussed_in_relevant_system_context": true,
+    "separate_cons_section_required": false,
+    "select_material_by_game_character": true,
+    "material_selection_question": "Помогает ли эта деталь понять, почему именно эта игра такая?",
+    "sources_define_evidence_not_structure": true,
+    "public_best_for_not_for_checklist": false,
+    "authorial_verdict": true,
+    "finale_is_not_section_summary": true,
+    "finale_should_leave_aftertaste": true,
+    "evergreen_blacklist": [
+      "игрово",
+      "состарилось плохо",
+      "состарилась плохо",
+      "выдаёт свой возраст",
+      "сегодня ощущается",
+      "по нынешним меркам",
+      "по современным меркам",
+      "по современным стандартам",
+      "для современного игрока",
+      "современному игроку",
+      "положенное на рельсы путешествие"
     ]
   },
-  "sources": [
-    {"id":"pc-gamer","enabled":true,"family":"editorial","name":"PC Gamer","type":"review-search","url":"https://www.pcgamer.com/games/reviews/","weight":1,"trust":0.9},
-    {"id":"gamespot","enabled":true,"family":"editorial","name":"GameSpot","type":"review-search","url":"https://www.gamespot.com/game-reviews/","weight":1,"trust":0.9},
-    {"id":"ign","enabled":true,"family":"editorial","name":"IGN","type":"review-search","url":"https://www.ign.com/reviews/games","weight":1,"trust":0.9},
-    {"id":"eurogamer","enabled":true,"family":"editorial","name":"Eurogamer","type":"review-search","url":"https://www.eurogamer.net/reviews","weight":1,"trust":0.9},
-    {"id":"game-informer","enabled":true,"family":"editorial","name":"Game Informer","type":"review-search","url":"https://gameinformer.com/reviews","weight":0.95,"trust":0.88},
-    {"id":"gamesradar","enabled":true,"family":"editorial","name":"GamesRadar+","type":"review-search","url":"https://www.gamesradar.com/reviews/","weight":0.95,"trust":0.87},
-    {"id":"polygon","enabled":true,"family":"editorial","name":"Polygon","type":"review-search","url":"https://www.polygon.com/reviews","weight":0.9,"trust":0.87},
-    {"id":"rock-paper-shotgun","enabled":true,"family":"editorial","name":"Rock Paper Shotgun","type":"review-search","url":"https://www.rockpapershotgun.com/reviews","weight":0.9,"trust":0.87},
-    {"id":"game-revolution","enabled":true,"family":"editorial","name":"GameRevolution","type":"review-search","url":"https://www.gamerevolution.com/review","weight":0.9,"trust":0.84},
-    {"id":"ars-technica","enabled":true,"family":"editorial","name":"Ars Technica","type":"review-search","url":"https://arstechnica.com/gaming/","weight":0.9,"trust":0.88},
-    {"id":"gamespy-archive","enabled":true,"family":"editorial","name":"GameSpy","type":"archive-search","url":"https://web.archive.org/web/*/http://pc.gamespy.com/","weight":0.85,"trust":0.82},
-    {"id":"gamezone","enabled":true,"family":"editorial","name":"GameZone","type":"review-search","url":"https://www.gamezone.com/reviews/","weight":0.82,"trust":0.8},
-    {"id":"gamepressure","enabled":true,"family":"editorial","name":"Gamepressure","type":"review-search","url":"https://www.gamepressure.com/games/reviews.asp","weight":0.85,"trust":0.84},
-    {"id":"gry-online","enabled":true,"family":"editorial","name":"GRYOnline","type":"review-search","url":"https://www.gry-online.pl/recenzje.asp","weight":0.85,"trust":0.84},
-    {"id":"worthplaying","enabled":true,"family":"editorial","name":"WorthPlaying","type":"review-search","url":"https://worthplaying.com/reviews/","weight":0.82,"trust":0.8},
-    {"id":"rpgfan","enabled":true,"family":"editorial","name":"RPGFan","type":"review-search","url":"https://www.rpgfan.com/reviews/","weight":0.82,"trust":0.82},
-    {"id":"rpgamer","enabled":true,"family":"editorial","name":"RPGamer","type":"review-search","url":"https://rpgamer.com/reviews/","weight":0.82,"trust":0.82},
-    {"id":"destructoid","enabled":true,"family":"editorial","name":"Destructoid","type":"review-search","url":"https://www.destructoid.com/category/reviews/","weight":0.82,"trust":0.82},
-    {"id":"shacknews","enabled":true,"family":"editorial","name":"Shacknews","type":"review-search","url":"https://www.shacknews.com/topic/review","weight":0.82,"trust":0.82},
-    {"id":"pcworld","enabled":true,"family":"editorial","name":"PCWorld","type":"review-search","url":"https://www.pcworld.com/gaming/","weight":0.82,"trust":0.84},
-    {"id":"guardian-games","enabled":true,"family":"editorial","name":"The Guardian","type":"review-search","url":"https://www.theguardian.com/games","weight":0.82,"trust":0.86},
-    {"id":"igromania","enabled":true,"family":"editorial","name":"Игромания","type":"review-search","url":"https://www.igromania.ru/reviews/","weight":0.9,"trust":0.86},
-    {"id":"stopgame","enabled":true,"family":"editorial","name":"StopGame","type":"review-search","url":"https://stopgame.ru/review","weight":0.9,"trust":0.86},
-    {"id":"kanobu","enabled":true,"family":"editorial","name":"Канобу","type":"review-search","url":"https://kanobu.ru/reviews/","weight":0.84,"trust":0.82},
-    {"id":"playground","enabled":true,"family":"editorial","name":"PlayGround.ru","type":"review-search","url":"https://www.playground.ru/","weight":0.84,"trust":0.82},
-    {"id":"absolute-games-archive","enabled":true,"family":"editorial","name":"Absolute Games","type":"archive-search","url":"https://web.archive.org/web/*/http://www.ag.ru/reviews/","weight":0.84,"trust":0.84},
-    {"id":"steam-media","enabled":true,"family":"media","name":"Steam / официальный CDN","type":"media-api","url":"https://store.steampowered.com/api/appdetails?appids={steam_appid}","weight":1,"trust":0.98},
-    {"id":"official-press-kit","enabled":true,"family":"media","name":"Официальный press kit","type":"media-search","url":"{official_url}","weight":1,"trust":1},
-    {"id":"gamespot-media","enabled":true,"family":"media","name":"GameSpot screenshots","type":"media-search","url":"https://www.gamespot.com/games/{slug}/images/","weight":0.9,"trust":0.88},
-    {"id":"ign-media","enabled":true,"family":"media","name":"IGN screenshots","type":"media-search","url":"https://www.ign.com/games/{slug}/images","weight":0.9,"trust":0.88},
-    {"id":"mobygames-media","enabled":true,"family":"media","name":"MobyGames screenshots","type":"media-search","url":"https://www.mobygames.com/game/{mobygames_id}/screenshots/","weight":0.82,"trust":0.82},
-    {"id":"old-games-media","enabled":true,"family":"media","name":"Old-Games.RU screenshots","type":"media-search","url":"https://www.old-games.ru/game/{oldgames_id}.html","weight":0.82,"trust":0.8},
-    {"id":"gog-media","enabled":true,"family":"media","name":"GOG gallery","type":"media-search","url":"https://www.gog.com/game/{gog_slug}","weight":0.9,"trust":0.9}
-  ],
+  "media_quality_policy": {
+    "policy_file": "config/parsers/review-media-policy.json"
+  },
   "outputs": [
-    "data/research/{slug}-source-matrix.json",
-    "data/reviews/{slug}.json",
-    "data/media-candidates/{slug}.json",
-    "data/article-media/{slug}.json",
-    "data/articles/{slug}.json",
     "data/article-drafts/{slug}.json",
-    "data/parser-runs/review-synthesis-{slug}.json",
-    "data/parser-runs/review-media-{slug}.json"
-  ],
-  "examples": [
-    {"label":"Обзор The Witcher 3","url":"../../../article/the-witcher-3-wild-hunt/"},
-    {"label":"Обзор Mafia: The City of Lost Heaven","url":"../../../article/mafia/"}
+    "data/articles/{slug}.json",
+    "data/parser-runs/review-synthesis-{slug}.json"
   ]
 }
