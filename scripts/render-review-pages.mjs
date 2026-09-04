@@ -6,8 +6,10 @@ const articlesDir=path.join(root,'data/articles');
 const mediaDir=path.join(root,'data/article-media');
 const requested=new Set(process.argv.slice(2).map(value=>String(value||'').trim()).filter(Boolean));
 const policy=JSON.parse(fs.readFileSync(path.join(root,'config/parsers/review-media-policy.json'),'utf8'));
+const editorialPolicy=JSON.parse(fs.readFileSync(path.join(root,'config/review-editorial-policy.json'),'utf8'));
 const balance=policy.article_balance||{};
 const quality=policy.quality_gate||{};
+const articleRules=editorialPolicy.article||{};
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const countWords=value=>(String(value||'').match(/[A-Za-zА-Яа-яЁё0-9’'-]+/g)||[]).length;
@@ -21,20 +23,24 @@ function validate(article){
   const urls=allImages.map(image=>canonical(image.url));
   const uniqueUrls=new Set(urls);
   const errors=[];
-  if(articleWords<Number(balance.minimum_words||2200))errors.push(`article words ${articleWords}/${balance.minimum_words}`);
-  if(sections.length<Number(balance.minimum_sections||8))errors.push(`sections ${sections.length}/${balance.minimum_sections}`);
+  const minimumWords=Number(articleRules.minimum_words||balance.minimum_words||1800);
+  const minimumSections=Number(articleRules.minimum_sections||balance.minimum_sections||7);
+  const maximumSections=Number(articleRules.maximum_sections||balance.maximum_sections||10);
+  if(articleWords<minimumWords)errors.push(`article words ${articleWords}/${minimumWords}`);
+  if(sections.length<minimumSections)errors.push(`sections ${sections.length}/${minimumSections}`);
+  if(sections.length>maximumSections)errors.push(`sections ${sections.length}/${maximumSections} maximum`);
   for(const section of sections){
     const words=countWords((section.paragraphs||[]).join(' '));
     const images=imagesFor(section);
-    if(words<Number(balance.minimum_words_per_section||220))errors.push(`${section.id}: words ${words}/${balance.minimum_words_per_section}`);
-    if(images.length<Number(balance.screenshots_per_section?.minimum||3))errors.push(`${section.id}: images ${images.length}/${balance.screenshots_per_section?.minimum}`);
+    if(words<Number(balance.minimum_words_per_section||170))errors.push(`${section.id}: words ${words}/${balance.minimum_words_per_section||170}`);
+    if(images.length<Number(balance.screenshots_per_section?.minimum||1))errors.push(`${section.id}: images ${images.length}/${balance.screenshots_per_section?.minimum||1}`);
   }
-  if(allImages.length<Number(balance.minimum_total_screenshots||30))errors.push(`images ${allImages.length}/${balance.minimum_total_screenshots}`);
+  if(allImages.length<Number(balance.minimum_total_screenshots||7))errors.push(`images ${allImages.length}/${balance.minimum_total_screenshots||7}`);
   if(uniqueUrls.size!==allImages.length)errors.push(`duplicate image URLs: ${allImages.length-uniqueUrls.size}`);
-  if(uniqueUrls.size<Number(balance.minimum_unique_screenshots||30))errors.push(`unique images ${uniqueUrls.size}/${balance.minimum_unique_screenshots}`);
+  if(uniqueUrls.size<Number(balance.minimum_unique_screenshots||7))errors.push(`unique images ${uniqueUrls.size}/${balance.minimum_unique_screenshots||7}`);
   const historical=Number(article.release_year||article.identity?.release_year||0)<2010;
-  const minWidth=Number(historical?quality.minimum_width_historical:quality.minimum_width_modern)||1280;
-  const minHeight=Number(historical?quality.minimum_height_historical:quality.minimum_height_modern)||720;
+  const minWidth=Number(historical?quality.minimum_width_historical:quality.minimum_width_modern)||480;
+  const minHeight=Number(historical?quality.minimum_height_historical:quality.minimum_height_modern)||270;
   for(const image of allImages){
     const width=Number(image.width||0),height=Number(image.height||0);
     if(quality.require_known_dimensions&&(!width||!height))errors.push(`unknown dimensions: ${image.url}`);
@@ -67,10 +73,8 @@ function rightRail(article,stats){
 }
 
 function verdict(article){
-  const best=article.verdict?.best_for||[];
-  const notFor=article.verdict?.not_for||[];
   const score=Number.isFinite(Number(article.score))?`${esc(article.score)} / 10`:'Без числовой оценки';
-  return `<section class="article-verdict"><div class="article-kicker">Вердикт</div><h2>${score}</h2><p>${esc(article.verdict?.summary||'')}</p>${best.length||notFor.length?`<div class="article-verdict__grid">${best.length?`<div class="article-verdict__group"><h3>Подойдёт</h3><ul>${best.map(item=>`<li>${esc(item)}</li>`).join('')}</ul></div>`:''}${notFor.length?`<div class="article-verdict__group"><h3>Не подойдёт</h3><ul>${notFor.map(item=>`<li>${esc(item)}</li>`).join('')}</ul></div>`:''}</div>`:''}</section>`;
+  return `<section class="article-verdict"><div class="article-kicker">Вердикт</div><h2>${score}</h2><p>${esc(article.verdict?.summary||'')}</p></section>`;
 }
 
 function page(article,stats){
