@@ -1,7 +1,8 @@
 (()=>{
 'use strict';
-const moduleVersion='20260904-5';
+const moduleVersion='20260904-6';
 window.__IG_GAME_PAGE_MODULE_VERSION__=moduleVersion;
+window.__IG_GAME_PAGE_ENHANCEMENTS__={loaded:[],failed:[]};
 const addStyle=(href)=>{
   const style=document.createElement('link');
   style.rel='stylesheet';
@@ -50,7 +51,15 @@ const failVisible=error=>{
     '../_shared/game-media-categories.js?v=20260808-1',
     '../_shared/game-media-recovery.js?v=20260810-1',
   ];
-  for(const src of enhancements)await loadScript(src);
-  window.dispatchEvent(new CustomEvent('igropoisk:game-page-module-ready',{detail:{version:moduleVersion}}));
+  for(const src of enhancements){
+    try{
+      await loadScript(src);
+      window.__IG_GAME_PAGE_ENHANCEMENTS__.loaded.push(src);
+    }catch(error){
+      window.__IG_GAME_PAGE_ENHANCEMENTS__.failed.push(src);
+      console.warn('Игропоиск: дополнительный подмодуль пропущен',src,error);
+    }
+  }
+  window.dispatchEvent(new CustomEvent('igropoisk:game-page-module-ready',{detail:{version:moduleVersion,failed:[...window.__IG_GAME_PAGE_ENHANCEMENTS__.failed]}}));
 })().catch(failVisible);
 })();
