@@ -1,4 +1,4 @@
-name: Fix reserve player preview governance
+name: Fix DOOM preview media and trailer players
 
 on:
   push:
@@ -18,32 +18,157 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Patch preview and remove temporary placeholders
+      - name: Repair media design and player sources
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
+
           p = Path('preview/doom-dark-ages-player-fallback/index.html')
           s = p.read_text(encoding='utf-8')
-          replacements = {
-              'class="player-card__top"': 'class="ig-panel player-card__top"',
-              'class="player-card__title"': 'class="ig-panel player-card__title"',
-              'class="player-card__body"': 'class="ig-panel player-card__body"',
-              'class="player-toolbar"': 'class="ig-panel player-toolbar"',
-              'class="modal-head"': 'class="ig-panel modal-head"',
-              'class="modal-head__title"': 'class="ig-panel modal-head__title"',
-              'class="modal-body"': 'class="ig-panel modal-body"',
-              'class="modal-foot"': 'class="ig-panel modal-foot"',
-          }
-          for old, new in replacements.items():
-              if old not in s:
-                  raise SystemExit(f'missing marker: {old}')
-              s = s.replace(old, new)
+
+          # Remove the two confirmed broken Steam screenshot URLs everywhere.
+          s = s.replace('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3017860/ss_3a699b01e9f48c98f3596d24499c2c7c83fd8ef9.jpg',
+                        'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257137103/44fab7fbaa09581f8127161c8388ad1c348a6d94/movie_full.jpg')
+          s = s.replace('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3017860/ss_c1fc570ee3c05f9406ec8f94aa89384c908a5678.jpg',
+                        'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257128825/47399d49c86a13ec9dedd94bf1bec18350bb8015/movie_full.jpg')
+
+          # Use the same verified Steam trailer art in the hero rail rather than a Google thumbnail.
+          s = s.replace('https://i.ytimg.com/vi/S7IEg0_qNXs/maxresdefault.jpg',
+                        'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257137103/44fab7fbaa09581f8127161c8388ad1c348a6d94/movie_full.jpg')
+
+          # Replace the giant always-loaded player with a clean media showcase. The player opens only on demand.
+          new_media = '''<section class="pane" id="media"><h2 class="pane-title">Медиа</h2>
+<div class="media-feature">
+<article class="ig-card media-trailer" data-trailer tabindex="0" role="button" aria-label="Смотреть трейлер DOOM: The Dark Ages">
+<img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257137103/44fab7fbaa09581f8127161c8388ad1c348a6d94/movie_full.jpg" alt="DOOM: The Dark Ages — Official Launch Trailer" onerror="this.onerror=null;this.src='/Igropoisk/assets/covers/popular/doom-the-dark-ages.jpg'">
+<div class="ig-panel media-trailer-overlay"></div>
+<div class="ig-panel media-trailer-copy"><span class="media-kicker">OFFICIAL LAUNCH TRAILER</span><h3>DOOM: The Dark Ages</h3><p>Полный трейлер открывается поверх страницы. Источник можно сменить в плеере.</p><button class="ig-button media-play" type="button"><span>▶</span> Смотреть трейлер</button></div>
+</article>
+<aside class="ig-card media-side"><span class="media-kicker">ИСТОЧНИКИ ВИДЕО</span><h3>Резервные плееры</h3><p>Vimeo — основной. RUTUBE — резерв для РФ. Steam — короткое превью. YouTube — дополнительный вариант.</p><div class="media-source-row"><span>Vimeo</span><span>RUTUBE</span><span>Steam</span><span>YouTube</span></div></aside>
+</div>
+<div class="gallery"><figure class="shot"><img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257128825/47399d49c86a13ec9dedd94bf1bec18350bb8015/movie_full.jpg" alt="DOOM: The Dark Ages — Official Trailer 2" onerror="this.onerror=null;this.src='/Igropoisk/assets/covers/popular/doom-the-dark-ages.jpg'"><figcaption>Official Trailer 2</figcaption></figure><figure class="shot"><img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3017860/ss_bbb5ead71b9321c6ba9bfc8941917136f9961fdb.jpg" alt="DOOM: The Dark Ages screenshot" onerror="this.onerror=null;this.src='/Igropoisk/assets/covers/popular/doom-the-dark-ages.jpg'"><figcaption>Скриншот</figcaption></figure><figure class="shot"><img src="/Igropoisk/assets/covers/popular/doom-the-dark-ages.jpg" alt="DOOM: The Dark Ages key art"><figcaption>Key Art</figcaption></figure></div>
+</section>'''
+          s, n = re.subn(r'<section class="pane" id="media">.*?</section>\n(?=<section class="pane" id="news">)', new_media + '\n', s, count=1, flags=re.S)
+          if n != 1:
+              raise SystemExit(f'media section replacement failed: {n}')
+
+          # Replace modal markup: no permanent loading screen, poster is always available behind the selected player.
+          new_dialog = '''<dialog id="trailerDialog"><div class="ig-panel modal-shell"><button class="ig-button close" id="closeTrailer" aria-label="Закрыть">×</button><div class="ig-panel modal-head"><div class="ig-panel modal-head__title"><b>DOOM: The Dark Ages — Official Launch Trailer</b><span id="modalProviderNote">Vimeo · полный трейлер</span></div><div class="provider-tabs" data-provider-tabs></div></div><div class="ig-panel modal-body" id="modalPlayerHost"></div><div class="ig-panel modal-foot"><div class="player-status" id="modalStatus">Источник: <b>Vimeo</b></div><div class="spacer"></div><button class="ig-button mini-btn" data-next-source>Другой источник</button><button class="ig-button mini-btn" data-open-external>Открыть источник ↗</button></div></div></dialog>'''
+          s, n = re.subn(r'<dialog id="trailerDialog">.*?</dialog>\n<script>', new_dialog + '\n<script>', s, count=1, flags=re.S)
+          if n != 1:
+              raise SystemExit(f'dialog replacement failed: {n}')
+
+          # Replace the previous auto-player logic. A stale saved YouTube choice can no longer hijack the page.
+          new_script = r'''<script>
+const TRAILER_POSTER='https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257137103/44fab7fbaa09581f8127161c8388ad1c348a6d94/movie_full.jpg';
+const PROVIDERS={
+  vimeo:{label:'Vimeo',note:'Vimeo · полный трейлер',kind:'iframe',src:'https://player.vimeo.com/video/1051435272?autoplay=1&title=0&byline=0&portrait=0&playsinline=1',external:'https://vimeo.com/1051435272'},
+  rutube:{label:'RUTUBE',note:'RUTUBE · резерв для РФ',kind:'iframe',src:'https://rutube.ru/play/embed/b43340c9c8de1f09f11065cbc4cced18/?autoplay=1',external:'https://rutube.ru/video/b43340c9c8de1f09f11065cbc4cced18/'},
+  steam:{label:'Steam preview',note:'Steam · короткое превью',kind:'video',src:'https://video.fastly.steamstatic.com/store_trailers/3017860/1768853770/2b6ad8e1a92a17da1e2a2900aef053ae14e73074/1748584906/microtrailer.mp4',external:'https://store.steampowered.com/app/3017860/'},
+  youtube:{label:'YouTube',note:'YouTube · может быть недоступен в РФ',kind:'iframe',src:'https://www.youtube-nocookie.com/embed/S7IEg0_qNXs?autoplay=1&rel=0&modestbranding=1&playsinline=1',external:'https://www.youtube.com/watch?v=S7IEg0_qNXs'}
+};
+const ORDER=['vimeo','rutube','steam','youtube'];
+const savedProvider=localStorage.getItem('igropoisk-trailer-provider-v2');
+let currentProvider=PROVIDERS[savedProvider]?savedProvider:'vimeo';
+
+function renderProviderTabs(){
+  document.querySelectorAll('[data-provider-tabs]').forEach(host=>{
+    host.innerHTML='';
+    ORDER.forEach(key=>{
+      const b=document.createElement('button');
+      b.className='ig-button provider';
+      b.type='button';
+      b.dataset.provider=key;
+      b.textContent=PROVIDERS[key].label;
+      b.addEventListener('click',()=>selectProvider(key,true));
+      host.appendChild(b);
+    });
+  });
+}
+function updateProviderUI(){
+  document.querySelectorAll('.provider').forEach(b=>b.classList.toggle('active',b.dataset.provider===currentProvider));
+  const p=PROVIDERS[currentProvider];
+  document.getElementById('modalStatus').innerHTML=`Источник: <b>${p.label}</b>`;
+  document.getElementById('modalProviderNote').textContent=p.note;
+}
+function mountProvider(){
+  const host=document.getElementById('modalPlayerHost');
+  host.innerHTML='';
+  const poster=document.createElement('img');
+  poster.className='modal-poster';
+  poster.src=TRAILER_POSTER;
+  poster.alt='DOOM: The Dark Ages — Official Launch Trailer';
+  poster.onerror=()=>{poster.onerror=null;poster.src='/Igropoisk/assets/covers/popular/doom-the-dark-ages.jpg';};
+  host.appendChild(poster);
+  const p=PROVIDERS[currentProvider];
+  if(p.kind==='video'){
+    const v=document.createElement('video');
+    v.src=p.src;
+    v.controls=true;
+    v.autoplay=true;
+    v.playsInline=true;
+    v.preload='metadata';
+    v.poster=TRAILER_POSTER;
+    host.appendChild(v);
+    const attempt=v.play();
+    if(attempt&&attempt.catch)attempt.catch(()=>{});
+    return;
+  }
+  const f=document.createElement('iframe');
+  f.src=p.src;
+  f.title=`DOOM: The Dark Ages — ${p.label}`;
+  f.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';
+  f.allowFullscreen=true;
+  f.referrerPolicy='strict-origin-when-cross-origin';
+  host.appendChild(f);
+}
+function selectProvider(key,manual=false){
+  if(!PROVIDERS[key])return;
+  currentProvider=key;
+  if(manual)localStorage.setItem('igropoisk-trailer-provider-v2',key);
+  updateProviderUI();
+  if(document.getElementById('trailerDialog').open)mountProvider();
+}
+function nextProvider(){
+  const i=ORDER.indexOf(currentProvider);
+  selectProvider(ORDER[(i+1)%ORDER.length],true);
+}
+function openExternal(){window.open(PROVIDERS[currentProvider].external,'_blank','noopener,noreferrer');}
+
+renderProviderTabs();
+updateProviderUI();
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===btn));
+  document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('active',x.id===btn.dataset.tab));
+  window.scrollTo({top:document.querySelector('.tabs-shell').offsetTop-68,behavior:'smooth'});
+}));
+const dialog=document.getElementById('trailerDialog');
+function openTrailer(){dialog.showModal();mountProvider();}
+document.querySelectorAll('[data-trailer]').forEach(x=>{
+  x.addEventListener('click',openTrailer);
+  x.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openTrailer();}});
+});
+document.getElementById('closeTrailer').addEventListener('click',()=>{dialog.close();document.getElementById('modalPlayerHost').innerHTML='';});
+dialog.addEventListener('click',e=>{if(e.target===dialog)document.getElementById('closeTrailer').click();});
+document.querySelectorAll('[data-next-source]').forEach(x=>x.addEventListener('click',nextProvider));
+document.querySelectorAll('[data-open-external]').forEach(x=>x.addEventListener('click',openExternal));
+</script>'''
+          s, n = re.subn(r'<script>\nconst PROVIDERS=.*?</script>', new_script, s, count=1, flags=re.S)
+          if n != 1:
+              raise SystemExit(f'script replacement failed: {n}')
+
+          # Add visual overrides after the existing preview CSS without touching the shared design system.
+          extra_css = r'''
+.media-feature{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(300px,.55fr);gap:16px;margin-bottom:16px}.media-trailer{position:relative;min-height:440px;padding:0;overflow:hidden;cursor:pointer;background:#090b0b}.media-trailer>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease,filter .45s ease}.media-trailer:hover>img{transform:scale(1.018);filter:brightness(1.06)}.media-trailer-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,6,6,.92) 0%,rgba(4,6,6,.62) 42%,rgba(4,6,6,.12) 78%),linear-gradient(0deg,rgba(4,6,6,.72),transparent 52%);pointer-events:none}.media-trailer-copy{position:absolute;z-index:2;left:30px;bottom:28px;max-width:520px;background:transparent!important;border:0!important;padding:0!important}.media-kicker{display:block;color:var(--acid);font-size:10px;font-weight:900;letter-spacing:.14em}.media-trailer-copy h3,.media-side h3{margin:9px 0 8px;font-size:27px;letter-spacing:-.035em}.media-trailer-copy p,.media-side p{margin:0;color:#c5ccc7;line-height:1.55;font-size:13px}.media-play{display:inline-flex;align-items:center;gap:9px;margin-top:18px;height:44px;padding:0 15px;border:0;border-radius:10px;background:#fff;color:#0a0d0b;font-weight:900;cursor:pointer}.media-play span{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#111;color:#fff;font-size:9px}.media-side{display:flex;flex-direction:column;justify-content:flex-end;min-height:440px;background:radial-gradient(circle at 78% 18%,rgba(157,117,255,.12),transparent 38%),linear-gradient(145deg,#121718,#0b0e0f)}.media-source-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px}.media-source-row span{padding:7px 9px;border:1px solid var(--line);border-radius:999px;color:#bec6c1;font-size:11px;font-weight:800}.provider-tabs{flex-wrap:wrap}.provider{transition:.18s ease}.provider:hover{border-color:rgba(255,255,255,.3);color:#fff}.modal-body{overflow:hidden;background:#050606}.modal-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.48) saturate(.82)}.modal-body iframe,.modal-body video{z-index:2}.modal-foot .spacer{flex:1}.modal-head__title span{max-width:360px}.gallery{grid-auto-rows:230px}.gallery .shot:first-child{grid-row:auto}.gallery .shot{min-height:230px}
+@media(max-width:900px){.media-feature{grid-template-columns:1fr}.media-side{min-height:auto}.media-trailer{min-height:360px}}@media(max-width:620px){.media-trailer{min-height:300px}.media-trailer-copy{left:18px;right:18px;bottom:18px}.media-trailer-copy h3{font-size:22px}.provider-tabs{padding-right:42px}.modal-head{padding-right:54px}}
+'''
+          if extra_css.strip() not in s:
+              s = s.replace('</style>', extra_css + '</style>', 1)
+
           p.write_text(s, encoding='utf-8')
-          for name in ['placeholder','placeholder2','placeholder3','placeholder4','placeholder5','placeholder6','placeholder7']:
-              q = Path('tmp') / name
-              if q.exists(): q.unlink()
           PY
-      - name: Validate design system and layout contract
+      - name: Validate preview
         run: |
           node scripts/validate-central-design-system.mjs --base HEAD
           python3 scripts/enforce_layout_contract.py --check
@@ -52,6 +177,6 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A preview/doom-dark-ages-player-fallback/index.html tmp
-          git commit -m 'Fix reserve trailer player preview governance'
+          git add preview/doom-dark-ages-player-fallback/index.html
+          git commit -m 'Repair DOOM trailer players and broken media'
           git push origin HEAD:main
