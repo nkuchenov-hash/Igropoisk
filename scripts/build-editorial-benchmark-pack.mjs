@@ -30,6 +30,19 @@ if(target.steam_appid){
   write(`data/drafts/${slug}.json`,draft);
 }
 
+// Sparse historical games sometimes have valid direct reviews that broad search misses.
+// These are discovery seeds only: prepare-review-research still fetches each URL live,
+// applies its review signal and identity checks, and can reject the candidate.
+if(Array.isArray(target.review_seeds)&&target.review_seeds.length){
+  const previous=read(`data/reviews/${slug}.json`,{});
+  const byUrl=new Map((Array.isArray(previous.reviews)?previous.reviews:[]).map(item=>[String(item.url||item.resolved_url||''),item]));
+  for(const [index,item] of target.review_seeds.entries()){
+    const url=String(item.url||'').trim();if(!url)continue;
+    byUrl.set(url,{id:item.id||`benchmark-seed-${index+1}`,source:item.publication||item.source||'',publication:item.publication||item.source||'',title:item.title||`${target.display_title} Review`,url,source_kind:item.source_kind||'professional_review',platform:item.platform||'PC',benchmark_seed_candidate:true});
+  }
+  write(`data/reviews/${slug}.json`,{...previous,schema_version:Math.max(Number(previous.schema_version||0),3),game_slug:slug,updated_at:now,reviews:[...byUrl.values()]});
+}
+
 const discovery=run('scripts/prepare-review-research.mjs',[slug],{allowFailure:true});
 run('scripts/recover-historical-review-scores.mjs',[slug],{allowFailure:true});
 run('scripts/calculate-ratings-from-research.mjs',[slug],{allowFailure:true});
