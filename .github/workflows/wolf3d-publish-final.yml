@@ -1,0 +1,98 @@
+name: Publish final Wolfenstein 3D model comparison
+
+on:
+  push:
+    branches: [benchmark/wolf3d-all-free-models-20260904]
+    paths:
+      - '.github/workflows/wolf3d-publish-final.yml'
+      - 'scripts/assemble-wolf3d-final-benchmark.mjs'
+      - 'benchmarks/wolfenstein-3d-1992/source-pack.json'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      REMOTE_RUN: '33821490889'
+      LOCAL_RUN: '33821531837'
+      RESULT_BRANCH: 'benchmark-results/wolf3d-final-20260904'
+      PUBLIC_PATH: 'benchmark/wolfenstein-3d-models'
+      WOLF3D_ARTIFACT_ROOT: '/tmp/wolf3d-artifacts'
+      WOLF3D_PUBLIC_OUT: '/tmp/wolf3d-final/benchmark/wolfenstein-3d-models'
+    steps:
+      - name: Checkout benchmark harness
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download all exact-prompt benchmark artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf "$WOLF3D_ARTIFACT_ROOT"
+          mkdir -p "$WOLF3D_ARTIFACT_ROOT/parallel" "$WOLF3D_ARTIFACT_ROOT/local"
+          gh run download "$REMOTE_RUN" --repo "$GITHUB_REPOSITORY" --dir "$WOLF3D_ARTIFACT_ROOT/parallel"
+          gh run download "$LOCAL_RUN" --repo "$GITHUB_REPOSITORY" --dir "$WOLF3D_ARTIFACT_ROOT/local"
+          echo "Downloaded result.json files:"
+          find "$WOLF3D_ARTIFACT_ROOT" -name result.json -print | sort
+          count="$(find "$WOLF3D_ARTIFACT_ROOT" -name result.json | wc -l | tr -d ' ')"
+          test "$count" -eq 16
+
+      - name: Assemble clean noindex comparison stand
+        run: |
+          set -euo pipefail
+          node scripts/assemble-wolf3d-final-benchmark.mjs
+          cat "$WOLF3D_PUBLIC_OUT/SUMMARY.txt"
+          test -f "$WOLF3D_PUBLIC_OUT/index.html"
+          test "$(find "$WOLF3D_PUBLIC_OUT/models" -name '*.html' | wc -l | tr -d ' ')" -eq 16
+          grep -q 'noindex,nofollow' "$WOLF3D_PUBLIC_OUT/index.html"
+
+      - name: Publish only static stand on clean branch from current main
+        id: publish
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/wolf3d-public-copy
+          mkdir -p /tmp/wolf3d-public-copy
+          cp -a "$WOLF3D_PUBLIC_OUT/." /tmp/wolf3d-public-copy/
+
+          git fetch origin main --force
+          git switch -C "$RESULT_BRANCH" origin/main
+          rm -rf "$PUBLIC_PATH"
+          mkdir -p "$PUBLIC_PATH"
+          cp -a /tmp/wolf3d-public-copy/. "$PUBLIC_PATH/"
+
+          git config user.name 'igropoisk-benchmark[bot]'
+          git config user.email 'igropoisk-benchmark[bot]@users.noreply.github.com'
+          git add "$PUBLIC_PATH"
+          git commit -m 'Publish temporary Wolfenstein 3D model comparison stand'
+          git push --force origin "$RESULT_BRANCH"
+          echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update clean publication PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          existing="$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$RESULT_BRANCH" --base main --state open --json number --jq '.[0].number // empty')"
+          if [ -z "$existing" ]; then
+            gh pr create \
+              --repo "$GITHUB_REPOSITORY" \
+              --base main \
+              --head "$RESULT_BRANCH" \
+              --title 'Publish temporary Wolfenstein 3D 16-model comparison' \
+              --body 'Static noindex comparison stand only. Contains the final exact-prompt Wolfenstein 3D (1992) outputs for 16 models, individual model pages, source pack, and side-by-side comparison. No benchmark runners, model integrations, or Game Page Module code are included.'
+          else
+            echo "PR #$existing already open"
+          fi
