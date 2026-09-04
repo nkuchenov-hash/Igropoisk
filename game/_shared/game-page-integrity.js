@@ -2,8 +2,9 @@
 'use strict';
 const slug=document.body.dataset.slug||decodeURIComponent(location.pathname.split('/').filter(Boolean).at(-1)||'');
 if(!slug)return;
+window.__IG_GAME_PAGE_INTEGRITY__={loaded:true,dataReady:false,applied:false,draft:false,editorial:false};
 const arr=v=>Array.isArray(v)?v:[];
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
 const fetchJSON=async u=>{try{const r=await fetch(u,{cache:'no-store'});return r.ok?await r.json():null}catch{return null}};
 const canon=u=>{try{const x=new URL(String(u||''),location.href);x.hash='';for(const k of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','ysclid'])x.searchParams.delete(k);return `${x.origin}${x.pathname.replace(/\/$/,'')}${x.search}`}catch{return String(u||'').trim()}};
 const mediaUrl=x=>typeof x==='string'?x:String(x?.url||x?.src||'');
@@ -135,6 +136,7 @@ async function main(){
     fetchJSON(`../../data/page-editorial/${encodeURIComponent(slug)}.json`),
     fetchJSON(`../../data/franchises/${encodeURIComponent(slug)}.json`)
   ]);
+  Object.assign(window.__IG_GAME_PAGE_INTEGRITY__,{dataReady:true,draft:Boolean(draft),editorial:Boolean(editorial)});
   const apply=()=>{
     applyPresentation(draft,editorial);
     renderReviewSummaryCard(draft,ratings,editorial);
@@ -142,6 +144,8 @@ async function main(){
     hideOwnGuidePresentation();
     scheduleDisabledRatingControlsRemoval();
     renderFranchise(franchise);
+    window.__IG_GAME_PAGE_INTEGRITY__.applied=true;
+    window.__IG_GAME_PAGE_INTEGRITY__.appliedAt=Date.now();
   };
   apply();
   setTimeout(apply,400);
@@ -150,5 +154,5 @@ async function main(){
   setTimeout(apply,5000);
 }
 
-main().catch(e=>console.warn('Игропоиск: page integrity',e));
+main().catch(e=>{window.__IG_GAME_PAGE_INTEGRITY__.error=String(e?.message||e);console.warn('Игропоиск: page integrity',e)});
 })();
