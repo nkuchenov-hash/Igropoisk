@@ -1,34 +1,38 @@
 # Editorial Model Selection Protocol
 
-Status: CANONICAL TEST PLAN
-Date fixed: 2026-09-04
+**Status:** CANONICAL TEST PLAN v2  
+**Updated:** 2026-09-04
 
 ## Goal
 
-Select the production model for each Igropoisk editorial task using a repeatable benchmark that separates text quality from provider/API availability.
+Select the production model independently for each Igropoisk editorial skill using a repeatable benchmark that separates text quality from provider/API availability.
 
-A task has exactly one approved model. There is no fallback to another model for the same task.
+There are now **four different editorial tasks**:
 
-If the approved model fails technically, that text is not published. The same model may be retried later. Another model must never silently replace it.
+1. Game Page Subtitle Skill.
+2. Game Page Description Skill.
+3. Game Page Features Skill.
+4. Full Review Skill.
 
-The two editorial tasks are evaluated separately:
+Each task gets exactly one approved production model after testing. The same model may win several tasks, but this is never assumed in advance.
 
-1. Game-page short description.
-2. Full game review.
+There is no silent cross-model fallback. Technical failure causes retry of the same assigned model; if it cannot produce an accepted artifact, that artifact waits.
 
-A different model may win each task because these are different tasks, but each task must have one fixed production model after approval.
+## Why the old “short description” benchmark is retired
 
-## Previous benchmarks
+Subtitle, Description and Features are not three lengths of the same text.
 
-The previous Wolfenstein, five-game full-review, and five-game short-description benchmark pages are withdrawn and deleted from the production repository.
+- Subtitle compresses the identity of the game into a miniature portrait.
+- Description explains premise, player activity and distinctive systems.
+- Features selects 4–6 scannable characteristic traits.
 
-Reason: they mixed model quality with free/shared endpoint availability, changed the effective participant set between runs, and therefore cannot be used as final evidence for model selection.
+A model that is best at one can be mediocre at another. Therefore a combined “short text” winner is methodologically invalid.
 
-Old results may inform which models deserve another test, but they must not be used as the final ranking.
+Previous Wolfenstein/five-game benchmarks remain historical experiments only. They cannot be final evidence because participant availability, effective input size and source truncation changed between runs.
 
-## Shortlist for the final benchmark
+## Candidate model shortlist
 
-Keep:
+Initial final-benchmark shortlist:
 
 1. Gemini 3.7 Flash
 2. Gemini 3.8 Flash
@@ -37,123 +41,188 @@ Keep:
 5. Qwen 3.6 27B
 6. MiniMax M2.7
 
-Do not continue testing for final selection:
-
-- GigaChat 3 Ultra — artificial/performative prose, factual embellishment, format reliability issues.
-- GPT-OSS 120B — reliable endpoint but long-form writing too shallow/short for the review standard.
-- GPT-OSS 20B — materially weaker writing and factual errors.
-- Nemotron 3 Ultra — unstable and hallucination-prone in observed runs.
-- Nemotron 3 Super — source/process leakage and weaker editorial voice.
-- Dots3-Note Preview — code-switching/garbled output and weak grounding discipline.
-- MiniMax M3 — no convincing usable result from the tested route.
-- Gemma 4 31B — no convincing usable result from the tested route.
-- Gemma 4 26B A4B — no convincing usable result from the tested route.
-- local Qwen 2.5 3B — clearly below the required editorial quality ceiling.
-
-The shortlist can only be expanded later if a new model is intentionally nominated and tested under this exact protocol. It must not expand automatically because a provider happens to expose another free model.
-
-## Golden standard
-
-The existing Igropoisk Mafia: The City of Lost Heaven review becomes the provisional editorial reference.
-
-Before the final benchmark, it will be polished into `GOLDEN MAFIA`:
-
-- preserve the current factual discipline and readable structure;
-- add a stronger atmospheric conclusion;
-- add slightly more authorial charm and texture without theatrical over-writing;
-- keep the article natural, concrete, engaging and recognizably editorial;
-- do not add unsupported facts merely to create atmosphere.
-
-The golden article is a quality floor and style reference, not text for models to imitate sentence-by-sentence.
+The shortlist must not change automatically because another provider exposes a free model. A new candidate is added only intentionally and must run the complete comparable matrix.
 
 ## Frozen evidence rule
 
 For every benchmark game:
 
-1. Run the real Game Page / Review source assembly.
-2. Freeze the resulting evidence package once.
-3. Compute and store its SHA-256.
-4. Give the exact same frozen package to every candidate model for that game.
-5. Never rebuild or alter the package between candidate runs.
-6. Exact-version filtering is mandatory. Ports, remasters, remakes, sequels and similarly named games must not contaminate the package unless explicitly relevant and tagged.
+1. Run the real Game Page source assembly.
+2. Resolve exact game identity/version through Game Registry.
+3. Store the complete readable source corpus used by production.
+4. Materialize one immutable Evidence Package.
+5. Compute and store SHA-256.
+6. Give the same Evidence Package revision to every candidate model for that game.
+7. Store `game_id`, evidence hash, skill version, model ID and generation settings with every sample.
 
-If the evidence hash differs between candidates, that game's comparison is invalid.
+If evidence hashes differ between candidates, the comparison is invalid.
 
-## Benchmark game set
+### No benchmark-only truncation
 
-Use a deliberately mixed set of 10 games for short descriptions. It must include:
+Do not take only the first N sources or first N characters of each source.
 
-- famous and obscure games;
-- old and modern games;
-- action and non-action genres;
-- games with rich source coverage and games with sparse but sufficient coverage;
-- at least one identity-sensitive title where version confusion is possible.
+If the full package fits the context window, use it directly.
 
-The first locked candidates include:
+If it does not fit, process all source-aware chunks with the **same candidate model that performs the skill**, record 100% chunk coverage, then generate the result from its task-specific evidence notes. Do not put an untested summarizer model in front of every candidate.
 
-- Mafia: The City of Lost Heaven (2002)
-- Dangerous Dave in the Haunted Mansion (1991)
-- Far Cry (2004)
-- Jack Orlando: A Cinematic Adventure (1997 original)
-- Mass Effect (2007 original)
+## Locked ten-game page benchmark set
 
-Five additional games must be selected before the final benchmark starts, then the set is frozen.
+The page-skills benchmark uses these 10 games:
 
-For full reviews, advance only the strongest 3 models from the short-description/source-discipline stage and test them on 5 representative games, including Mafia.
+1. Dangerous Dave in the Haunted Mansion (1991)
+2. Far Cry (2004)
+3. Jack Orlando: A Cinematic Adventure (1997 original)
+4. Mafia: The City of Lost Heaven (2002)
+5. Mass Effect (2007 original)
+6. Wolfenstein 3D (1992)
+7. Spore (2008)
+8. Fallout 2 (1998)
+9. The Witcher 3: Wild Hunt (2015)
+10. Elden Ring (2022)
 
-## Short-description test
+This set deliberately contains famous and obscure games, several eras, action and non-action structures, sparse and rich source coverage, and titles where version confusion matters.
 
-Run each shortlisted model on all 10 frozen game packs.
+Once frozen evidence packages are created, do not replace games during a benchmark because one model/provider has trouble.
 
-Generate two independent samples per model/game under the same production prompt and settings. This tests consistency without changing the evidence.
+## Page benchmark matrix
 
-Requirements:
+For each of the three page skills:
 
-- roughly 100-320 characters;
-- sentence count is not fixed;
-- clear, natural Russian;
-- immediately communicates the central fantasy, player role/goal and main action where supported;
-- no review verdict or numeric score;
-- no source/process language;
-- no facts outside the frozen evidence package.
+- 6 models;
+- 10 games;
+- 2 independent samples per model/game;
+- identical production skill contract and generation settings;
+- identical evidence hash per game.
+
+That is:
+
+- 120 Subtitle samples;
+- 120 Description samples;
+- 120 Features samples;
+- **360 page-editorial generations total**.
+
+Provider 429/503/timeouts are recorded separately and are not quality scores.
+
+## Subtitle benchmark
+
+Production contract: `config/parsers/game-page-subtitle-skill.json`.
 
 Scoring per sample:
 
-- factual grounding: 30
-- natural Russian/readability: 25
-- captures game essence: 20
-- editorial voice/charm: 15
-- concision/usefulness on the page: 10
+- factual grounding/version discipline: 30
+- miniature portrait completeness: 25
+- specificity/recognizability: 20
+- natural Russian: 15
+- concision/page usefulness: 10
 
 Hard failures:
 
 - wrong game/version;
 - invented material fact;
+- generic genre line that does not identify the game;
+- omission of a major identity-bearing element when that omission materially distorts the game portrait;
 - source/process leakage;
-- unusable or empty text.
+- unusable/empty text.
 
-A provider 429/503/timeout is not a quality score. It is recorded under availability and retried using the same model.
+## Description benchmark
 
-## Full-review test
+Production contract: `config/parsers/game-page-description-skill.json`.
 
-Only the top 3 candidates from the first stage advance.
+Scoring per sample:
 
-The production review workflow must use ONE model end-to-end. No cross-model co-authoring and no fallback model.
+- factual grounding/version discipline: 30
+- completeness of premise/role/core activity: 25
+- game-specific systems/details: 20
+- natural Russian/readability: 15
+- usefulness as game-page introduction: 10
 
-Recommended production-realistic generation sequence:
+Hard failures:
 
-1. One frozen evidence package.
-2. Same model creates the review plan/section map.
-3. Same model writes all sections in grounded passes.
-4. Same model performs the final editorial synthesis/polish.
-5. Synthesis is not allowed to introduce new facts.
-6. Grounding validation runs before publication.
+- wrong game/version;
+- invented material fact;
+- pure plot synopsis with no real player activity;
+- generic marketing copy;
+- review verdict/score instead of description;
+- source/process leakage;
+- unusable/empty text.
 
-This avoids one-shot output limits while preserving one author/model for the entire assignment.
+## Features benchmark
 
-Target: approximately 2,000-2,600 words unless the final Review Module contract sets a different editorial target.
+Production contract: `config/parsers/game-page-features-skill.json`.
 
-Scoring:
+Scoring per sample:
+
+- factual grounding/version discipline: 30
+- quality/distinctiveness of selected features: 25
+- scannability and compact format: 20
+- non-redundancy/coverage of different aspects: 15
+- natural Russian: 10
+
+Hard failures:
+
+- invented feature;
+- wrong game/version;
+- long explanatory sentences instead of feature theses;
+- mostly generic marketing labels (`красивый мир`, `увлекательный сюжет` etc.);
+- repeated variants of the same feature;
+- source/process leakage;
+- unusable/empty list.
+
+## Selecting page models
+
+Scores are calculated independently for Subtitle, Description and Features.
+
+There is no required combined page-model winner.
+
+Example valid production outcome:
+
+```text
+Subtitle    → Model A
+Description → Model B
+Features    → Model A
+Review      → Model C
+```
+
+Operational simplicity may be considered only after quality. A slightly worse model does not win merely because it already won another skill.
+
+## Full Review benchmark
+
+Review uses `config/parsers/review-synthesis.json` and `docs/REVIEW_MODULE_WORKING.md`.
+
+Review selection is **not** derived from page-skill ranking. Short-copy performance is not a reliable proxy for long-form editorial writing.
+
+### Review qualification
+
+All 6 candidates first generate full production-style reviews for two very different frozen games:
+
+1. Mafia: The City of Lost Heaven
+2. Spore
+
+Use one model end-to-end for each review:
+
+1. full evidence coverage;
+2. evidence extraction;
+3. editorial angle/section map;
+4. grounded section writing;
+5. final synthesis/polish;
+6. anti-generic/evergreen audit;
+7. grounding validation.
+
+Select the strongest 3 review candidates from these two-game results.
+
+### Final review round
+
+The top 3 then generate reviews for three more games:
+
+- Far Cry (2004)
+- Jack Orlando: A Cinematic Adventure (1997 original)
+- Mass Effect (2007 original)
+
+The final review decision therefore uses five genres/structures across the two stages rather than using page-copy scores as a gate.
+
+Target length follows the current Review Skill contract (normally around 2,000–2,600 words unless updated there).
+
+Review scoring:
 
 - factual grounding/version discipline: 30
 - insight and synthesis: 20
@@ -168,69 +237,83 @@ Hard failures:
 - cross-version contamination;
 - source/process language in the article;
 - broken/garbled prose;
-- review materially below the `GOLDEN MAFIA` quality floor.
+- materially below the approved Review quality floor.
+
+## GOLDEN MAFIA
+
+Before final Review selection, the existing Mafia review must be frozen as `GOLDEN MAFIA` quality reference:
+
+- factual discipline preserved;
+- strong readable structure;
+- stronger atmospheric conclusion;
+- restrained authorial charm, not theatrical prose;
+- no unsupported atmosphere/facts.
+
+`GOLDEN MAFIA` is required for the Review benchmark, **not** for the three page-skills benchmark.
 
 ## Availability and retries
 
-Quality and availability are separate dimensions.
+Quality and provider availability are separate dimensions.
 
-For each candidate record:
+For every candidate record:
 
-- successful generations / attempts;
-- number and class of 429/503/timeouts;
-- attempts needed for successful same-model generation;
+- successful generations / requested generations;
+- 429/503/timeouts by class;
+- attempts required for same-model success;
 - latency;
-- approximate cost where applicable.
+- approximate cost where available.
 
-Production rule after selection:
+A final production model must meet both:
 
-- the approved model is retried according to the Review/Page module retry policy;
-- if it still cannot produce a valid result, publication of that text waits;
-- another model does not substitute for it.
+1. editorial quality floor;
+2. sufficient same-model availability for production.
 
-The final model must therefore satisfy BOTH:
+Do not convert provider errors into zero editorial scores.
 
-1. editorial quality at or above the accepted floor;
-2. sufficient same-model availability for production use.
+## When we may run the next tests
 
-## Free/shared endpoints
+### Page skills
 
-Do not use free/shared endpoint failures as evidence that a model is low quality.
+The three page-skills benchmark may start as soon as all four conditions are true:
 
-A final benchmark should preferably use paid/dedicated or otherwise sufficiently provisioned routes so every candidate receives the intended number of attempts.
+1. Subtitle/Description/Features skill contracts are frozen. **DONE in this revision.**
+2. The 10-game set is locked. **DONE in this revision.**
+3. All 10 Evidence Packages are freshly built by the real source pipeline, stored, hashed and validated for exact versions.
+4. All 6 candidate models have routes/quota sufficient to complete the same locked matrix without dropping participants.
 
-If a free route is used, the run must be delayed/throttled enough to stay inside documented limits and must preserve provider errors separately from model-quality scoring.
+The earlier exhausted free-tier session on 2026-09-04 must not be reused as a final test. A clean run can start on **2026-09-05 or later** once conditions 3–4 are verified. If only unstable/free shared endpoints are available, wait or provision capacity; do not run a partial “final” benchmark.
 
-## When the next test may run
+### Review
 
-Do not run another mass benchmark on 2026-09-04 after the exhausted free-tier tests.
+Review benchmarking can begin after:
 
-Gemini daily request quotas reset at midnight Pacific time. The earliest clean next Gemini daily window is 2026-09-05 09:00 Europe/Berlin.
+- the five review evidence packages are frozen;
+- `GOLDEN MAFIA` is frozen;
+- the same six model routes have enough capacity for the qualification round.
 
-However, the final benchmark should start only when all six shortlisted candidates have routes with enough quota/capacity to complete the locked test matrix. If that condition is not met, do not start a partial benchmark.
+The page benchmark does not need to wait for this.
 
-For Groq, per-minute/per-day limits must be checked before the run and requests must be serialized/throttled. For OpenRouter free routes, the small daily request allowance and shared-provider availability make them unsuitable as the sole basis for the final production decision.
+## Execution order from here
 
-## Execution order
-
-1. Delete/retire old benchmark pages. DONE when this protocol lands.
-2. Polish the existing Mafia review into `GOLDEN MAFIA` and freeze its editorial criteria.
-3. Lock five additional benchmark games, bringing the short-description set to 10.
-4. Confirm usable API route/quota for all 6 shortlisted models.
-5. Freeze evidence packages and hashes for all games.
-6. Run short-description benchmark: 6 models x 10 games x 2 samples.
-7. Human/editorial review plus factual-grounding checks; select top 3.
-8. Run full-review benchmark on 5 games using the production section-by-section workflow, one model per entire review.
-9. Compare against `GOLDEN MAFIA` and the fixed scoring rubric.
-10. Approve exactly one production model for short descriptions and exactly one production model for reviews.
-11. Freeze model IDs, prompts, generation settings, retry policy, and acceptance gates in the relevant module documentation.
+1. Land the three Game Page skill contracts and editorial architecture.
+2. Rebuild/freeze complete Evidence Packages for all 10 page games; store hashes and coverage manifests.
+3. Confirm usable capacity for all six candidate routes.
+4. Run the 360-sample page benchmark.
+5. Score Subtitle, Description and Features independently; approve one model per skill.
+6. Freeze each winner's exact model ID, prompt/skill version, generation settings and retry policy.
+7. Integrate the three approved models into the parallel Page Editorial Bundle pipeline.
+8. Freeze `GOLDEN MAFIA` and five Review evidence packages.
+9. Run six-model Review qualification on Mafia + Spore.
+10. Advance top 3 to Far Cry + Jack Orlando + Mass Effect.
+11. Approve exactly one Review model and freeze Review production settings.
+12. Run an end-to-end game-page creation acceptance test including a page with review and a page without review.
 
 ## Decision rule
 
-No winner is chosen merely because it returned more responses during one API session.
+No winner is chosen because it happened to return more responses in one provider session.
 
-No candidate receives zero quality points for provider 429/503 failures.
+No model wins a task because it won a different task.
 
-No candidate is approved because it wins only one game.
+No candidate is approved because it wins only one benchmark game.
 
-If no model meets the golden quality floor and availability requirement, approve none and revise the tool/prompt/workflow before testing again.
+If no model reaches the quality and availability floor for a skill, approve none for that skill and improve the skill/workflow before testing again.
