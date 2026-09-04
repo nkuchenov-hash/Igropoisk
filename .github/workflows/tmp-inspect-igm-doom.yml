@@ -1,4 +1,4 @@
-name: Inspect IGM DOOM trailer
+name: Inspect Igropoisk DOOM preview
 
 on:
   push:
@@ -21,56 +21,63 @@ jobs:
           node-version: 22
       - name: Install puppeteer
         run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
-      - name: Inspect IGM page network
+      - name: Inspect preview rendering and players
         run: |
           node <<'NODE'
           const puppeteer = require('puppeteer-core');
           const fs = require('fs');
-          const candidates = ['/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'];
-          const executablePath = candidates.find(p => fs.existsSync(p));
+          const executablePath = ['/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'].find(p => fs.existsSync(p));
           if (!executablePath) throw new Error('Chromium/Chrome not found');
+          const sleep = ms => new Promise(r=>setTimeout(r,ms));
           (async()=>{
             const browser = await puppeteer.launch({headless:true, executablePath, args:['--no-sandbox','--disable-setuid-sandbox','--autoplay-policy=no-user-gesture-required']});
             const page = await browser.newPage();
             await page.setViewport({width:1440,height:1000});
-            const all=[];
-            page.on('request', req => all.push({kind:'request', type:req.resourceType(), url:req.url()}));
-            page.on('response', res => all.push({kind:'response', status:res.status(), url:res.url()}));
+            const responses=[];
+            page.on('response', r => responses.push({status:r.status(), url:r.url(), type:r.request().resourceType()}));
+            page.on('requestfailed', r => console.log('REQUEST_FAILED', r.resourceType(), r.url(), r.failure()?.errorText));
             page.on('console', msg => console.log('BROWSER', msg.type(), msg.text()));
-            await page.goto('https://igm.gg/game/doom-dark-ages', {waitUntil:'networkidle2', timeout:90000});
-            console.log('TITLE', await page.title());
-            console.log('URL', page.url());
-            const candidatesEls = await page.$$('button,a,[role="button"]');
-            let clicked=false;
-            for (const el of candidatesEls) {
-              const txt = (await page.evaluate(e => (e.innerText || e.textContent || '').trim(), el)).replace(/\s+/g,' ');
-              if (/^Трейлер$/i.test(txt) || /Трейлер/i.test(txt)) {
-                console.log('CLICKING', txt);
-                try { await el.click(); clicked=true; break; } catch(e) { console.log('CLICK_ERR', e.message); }
+            const url='https://nkuchenov-hash.github.io/Igropoisk/preview/doom-dark-ages-player-fallback/?inspect=1';
+            await page.goto(url,{waitUntil:'networkidle2',timeout:90000});
+            console.log('TITLE',await page.title());
+            await page.screenshot({path:'preview-top.png',fullPage:false});
+            const brokenTop=await page.evaluate(()=>Array.from(document.images).filter(i=>i.complete&&i.naturalWidth===0).map(i=>i.src));
+            console.log('BROKEN_IMAGES_TOP',JSON.stringify(brokenTop));
+            const mediaTab=await page.$('[data-tab="media"]');
+            if(mediaTab) await mediaTab.click();
+            await sleep(1500);
+            await page.screenshot({path:'preview-media.png',fullPage:false});
+            const broken=await page.evaluate(()=>Array.from(document.images).filter(i=>i.complete&&i.naturalWidth===0).map(i=>i.src));
+            console.log('BROKEN_IMAGES_ALL',JSON.stringify(broken));
+            const providers=await page.$$eval('[data-provider-tabs] .provider',(els)=>[...new Set(els.map(e=>e.textContent.trim()))]);
+            console.log('PROVIDERS',JSON.stringify(providers));
+            for(const label of providers){
+              const buttons=await page.$$('[data-provider-tabs] .provider');
+              let target=null;
+              for(const b of buttons){
+                const t=await page.evaluate(e=>e.textContent.trim(),b);
+                if(t===label){target=b;break;}
               }
+              if(!target) continue;
+              await target.click();
+              await sleep(4000);
+              const state=await page.evaluate(()=>({
+                status:document.getElementById('inlineStatus')?.innerText,
+                iframe:document.querySelector('#inlinePlayerHost iframe')?.src||null,
+                video:document.querySelector('#inlinePlayerHost video')?.currentSrc||null,
+                loading:document.getElementById('inlineLoading')?.className||null
+              }));
+              console.log('PROVIDER_STATE',label,JSON.stringify(state));
             }
-            console.log('CLICKED', clicked);
-            await new Promise(r=>setTimeout(r,8000));
-            const frames = await page.evaluate(() => Array.from(document.querySelectorAll('iframe')).map(x=>({src:x.src,title:x.title,allow:x.allow})));
-            const videos = await page.evaluate(() => Array.from(document.querySelectorAll('video')).map(v=>({src:v.src,currentSrc:v.currentSrc,poster:v.poster,autoplay:v.autoplay,loop:v.loop,muted:v.muted})));
-            console.log('IFRAMES', JSON.stringify(frames,null,2));
-            console.log('VIDEOS', JSON.stringify(videos,null,2));
-            const interesting = all.filter(x => /(vimeo|youtube|youtu\.be|mp4|webm|m3u8|\.mpd|player|video)/i.test(x.url));
-            console.log('INTERESTING_NETWORK_START');
-            for (const x of interesting) console.log(JSON.stringify(x));
-            console.log('INTERESTING_NETWORK_END');
-            const html = await page.content();
-            fs.writeFileSync('igm-doom-rendered.html', html);
-            fs.writeFileSync('igm-doom-network.json', JSON.stringify(all,null,2));
-            await page.screenshot({path:'igm-doom.png',fullPage:true});
+            const bad=responses.filter(x=>x.status>=400 && /(youtube|youtu|rutube|vimeo|steam|img|jpg|png|webp|mp4)/i.test(x.url));
+            console.log('BAD_RESPONSES',JSON.stringify(bad.slice(0,100),null,2));
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           NODE
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: igm-doom-inspection
+          name: igropoisk-doom-preview-inspection
           path: |
-            igm-doom-rendered.html
-            igm-doom-network.json
-            igm-doom.png
+            preview-top.png
+            preview-media.png
