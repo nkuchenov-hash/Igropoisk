@@ -58,6 +58,7 @@ jobs:
         run: |
           npm install --no-save --ignore-scripts --package-lock=false puppeteer-core@24.16.0
           node scripts/smoke-game-runtime.mjs
+          rm -rf node_modules
       - name: Verify News Content API pipeline health and module boundary
         run: |
           node scripts/test-news-content-api.mjs
