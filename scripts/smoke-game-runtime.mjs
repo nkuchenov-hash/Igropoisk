@@ -82,56 +82,63 @@ for (const check of assetChecks) {
 const executablePath = [process.env.CHROME_PATH, '/usr/bin/google-chrome-stable', '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser']
   .filter(Boolean).find(fs.existsSync);
 if (!executablePath) throw new Error('Chrome/Chromium executable was not found.');
+const launchBrowser = () => puppeteer.launch({ executablePath, headless: true, protocolTimeout: 30000, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
 
-const browser = await puppeteer.launch({ executablePath, headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
 const pageChecks = [
   ['spore', /spore/i],
   ['fallout-2', /fallout\s*2/i],
   ['the-witcher-3-wild-hunt', /witcher/i],
   ['elden-ring', /elden\s*ring/i],
+  ['control', /^control$/i],
 ];
 const browserResults = [];
 try {
   for (const [slug, titlePattern] of pageChecks) {
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1440, height: 1000 });
-    const pageErrors = [];
-    const consoleErrors = [];
-    page.on('pageerror', error => pageErrors.push(String(error?.stack || error)));
-    page.on('console', message => { if (message.type() === 'error') consoleErrors.push(message.text()); });
-    const started = Date.now();
-    let navigationError = null;
+    const browser = await launchBrowser();
     try {
-      await page.goto(`${baseUrl}game/${slug}/?${cacheBust()}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
-      await page.waitForFunction(() => {
-        const title = document.querySelector('#gameTitle')?.textContent?.trim();
-        const failed = /Не удалось открыть страницу игры|Не удалось загрузить страницу игры/i.test(document.body?.textContent || '');
-        return Boolean(title) || failed;
-      }, { timeout: 15000 });
-    } catch (error) { navigationError = String(error?.message || error); }
-    const state = await page.evaluate(() => ({
-      title: document.querySelector('#gameTitle')?.textContent?.trim() || '',
-      designSystem: document.documentElement.dataset.designSystem || '',
-      moduleVersion: window.__IG_GAME_PAGE_MODULE_VERSION__ || '',
-      networkGuard: Boolean(window.__IG_GAME_RUNTIME_NETWORK_GUARD__),
-      body: (document.body?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 1000),
-      tabs: document.querySelectorAll('.game-tabs [data-tab]').length,
-    }));
-    const errors = [];
-    if (navigationError) errors.push(`navigation: ${navigationError}`);
-    if (!state.title) errors.push('game title did not render');
-    if (state.title && !titlePattern.test(state.title)) errors.push(`unexpected title ${JSON.stringify(state.title)}`);
-    if (state.designSystem !== 'igropoisk-game-v3') errors.push(`design system not active: ${state.designSystem || '(empty)'}`);
-    if (!state.moduleVersion) errors.push('approved module version marker missing');
-    if (!state.networkGuard) errors.push('runtime network guard missing');
-    if (state.tabs < 7) errors.push(`incomplete tab shell: ${state.tabs}`);
-    if (/Не удалось открыть страницу игры|Не удалось загрузить страницу игры/i.test(state.body)) errors.push('visible runtime failure');
-    if (pageErrors.length) errors.push(`page errors: ${pageErrors.slice(0, 3).join(' | ')}`);
-    browserResults.push({ slug, elapsedMs: Date.now() - started, state, pageErrors, consoleErrors: consoleErrors.slice(0, 5), errors });
-    await page.close();
+      const page = await browser.newPage();
+      await page.setViewport({ width: 1440, height: 1000 });
+      const pageErrors = [];
+      const consoleErrors = [];
+      page.on('pageerror', error => pageErrors.push(String(error?.stack || error)));
+      page.on('console', message => { if (message.type() === 'error') consoleErrors.push(message.text()); });
+      const started = Date.now();
+      let navigationError = null;
+      try {
+        await page.goto(`${baseUrl}game/${slug}/?${cacheBust()}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await page.waitForFunction(() => {
+          const title = document.querySelector('#gameTitle')?.textContent?.trim();
+          const failed = /Не удалось открыть страницу игры|Не удалось загрузить страницу игры/i.test(document.body?.textContent || '');
+          return Boolean(title) || failed;
+        }, { timeout: 15000 });
+      } catch (error) { navigationError = String(error?.message || error); }
+      const state = await page.evaluate(() => ({
+        title: document.querySelector('#gameTitle')?.textContent?.trim() || '',
+        designSystem: document.documentElement.dataset.designSystem || '',
+        moduleVersion: window.__IG_GAME_PAGE_MODULE_VERSION__ || '',
+        networkGuard: Boolean(window.__IG_GAME_RUNTIME_NETWORK_GUARD__),
+        body: (document.body?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 1000),
+        tabs: document.querySelectorAll('.game-tabs [data-tab]').length,
+        reviewRows: document.querySelectorAll('#reviewGrid .quality-review-row').length,
+      }));
+      const errors = [];
+      if (navigationError) errors.push(`navigation: ${navigationError}`);
+      if (!state.title) errors.push('game title did not render');
+      if (state.title && !titlePattern.test(state.title)) errors.push(`unexpected title ${JSON.stringify(state.title)}`);
+      if (state.designSystem !== 'igropoisk-game-v3') errors.push(`design system not active: ${state.designSystem || '(empty)'}`);
+      if (!state.moduleVersion) errors.push('approved module version marker missing');
+      if (!state.networkGuard) errors.push('runtime network guard missing');
+      if (state.tabs < 7) errors.push(`incomplete tab shell: ${state.tabs}`);
+      if (slug === 'control' && state.reviewRows < 20) errors.push(`control review stress fixture incomplete: ${state.reviewRows}/20`);
+      if (/Не удалось открыть страницу игры|Не удалось загрузить страницу игры/i.test(state.body)) errors.push('visible runtime failure');
+      if (pageErrors.length) errors.push(`page errors: ${pageErrors.slice(0, 3).join(' | ')}`);
+      browserResults.push({ slug, elapsedMs: Date.now() - started, state, pageErrors, consoleErrors: consoleErrors.slice(0, 5), errors });
+      await page.close();
+    } finally {
+      await browser.close();
+    }
   }
 } finally {
-  await browser.close();
   if (server) await new Promise(resolve => server.close(resolve));
 }
 
