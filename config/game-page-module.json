@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "module": "game-page",
+  "approved": {
+    "branch": "main",
+    "version": "2026.09.04.1",
+    "entry": "game/_shared/game-shell.js"
+  },
+  "working": {
+    "branch": "game-page-working",
+    "entry": "game/_shared/game-shell.js"
+  },
+  "contract": {
+    "published_pages_are_content": true,
+    "published_pages_use_approved_module": true,
+    "module_changes_update_all_published_pages_after_promotion": true,
+    "page_elements_are_submodules": true,
+    "working_changes_must_not_reach_production_before_browser_smoke": true
+  }
+}
