@@ -104,6 +104,7 @@ try {
       page.on('console', message => { if (message.type() === 'error') consoleErrors.push(message.text()); });
       const started = Date.now();
       let navigationError = null;
+      let hydrationError = null;
       try {
         await page.goto(`${baseUrl}game/${slug}/?${cacheBust()}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
         await page.waitForFunction(() => {
@@ -112,6 +113,16 @@ try {
           return Boolean(title) || failed;
         }, { timeout: 15000 });
       } catch (error) { navigationError = String(error?.message || error); }
+      if (!navigationError && slug === 'control') {
+        try {
+          await page.waitForFunction(() => {
+            const failed = /Не удалось открыть страницу игры|Не удалось загрузить страницу игры/i.test(document.body?.textContent || '');
+            return document.querySelectorAll('#reviewGrid .quality-review-row').length >= 20 || failed;
+          }, { timeout: 10000 });
+        } catch (error) {
+          hydrationError = String(error?.message || error);
+        }
+      }
       const state = await page.evaluate(() => ({
         title: document.querySelector('#gameTitle')?.textContent?.trim() || '',
         designSystem: document.documentElement.dataset.designSystem || '',
@@ -123,6 +134,7 @@ try {
       }));
       const errors = [];
       if (navigationError) errors.push(`navigation: ${navigationError}`);
+      if (hydrationError) errors.push(`review hydration: ${hydrationError}`);
       if (!state.title) errors.push('game title did not render');
       if (state.title && !titlePattern.test(state.title)) errors.push(`unexpected title ${JSON.stringify(state.title)}`);
       if (state.designSystem !== 'igropoisk-game-v3') errors.push(`design system not active: ${state.designSystem || '(empty)'}`);
