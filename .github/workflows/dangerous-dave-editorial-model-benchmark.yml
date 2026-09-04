@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/dangerous-dave-editorial-model-benchmark.yml'
       - 'benchmarks/editorial-five-games/games.json'
+      - 'scripts/patch-dangerous-dave-benchmark-source-seeds.mjs'
   workflow_dispatch:
 
 permissions:
@@ -27,6 +28,8 @@ jobs:
           node-version: '22'
       - name: Broaden universal semantic game vocabulary
         run: node scripts/patch-benchmark-game-knowledge-vocabulary.mjs
+      - name: Enable benchmark factual source candidates
+        run: node scripts/patch-dangerous-dave-benchmark-source-seeds.mjs
       - name: Build frozen post-assembly pack
         run: node scripts/build-editorial-benchmark-pack.mjs "$GAME"
       - name: Validate frozen pack and identity purity
