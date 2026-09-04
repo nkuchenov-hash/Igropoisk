@@ -1,0 +1,67 @@
+/* Central typography scale for News surfaces. Keep density through clamping/spacing, not tiny type. */
+.ig-news--home .ig-news-card .ig-card__title{font-size:20px;line-height:1.28}
+.ig-news--home .ig-news-card .ig-card__summary{font-size:16px;line-height:1.52}
+.ig-news--home .ig-news-card .ig-card__meta,
+.ig-news--home .ig-news-card .ig-news-source-link,
+.ig-news--home .ig-news-card .ig-hashtag{font-size:14px;line-height:1.42}
+
+.ig-news--archive .ig-news-controls__search-primary .ig-input{font-size:16px}
+.ig-news--archive .ig-news-controls__types .ig-filter-chip,
+.ig-news--archive .ig-news-controls__view .ig-filter-chip{font-size:13px}
+.ig-news--archive .ig-news-sort{font-size:13px}
+
+.ig-news--archive[data-news-layout="list"] .ig-news-entry__title,
+.ig-news--archive[data-news-layout="list"] .ig-card__title{font-size:19px;line-height:1.26}
+.ig-news--archive[data-news-layout="list"] .ig-news-entry__summary,
+.ig-news--archive[data-news-layout="list"] .ig-card__summary{font-size:16px;line-height:1.5}
+.ig-news--archive[data-news-layout="list"] .ig-card__meta,
+.ig-news--archive[data-news-layout="list"] .ig-news-source-link,
+.ig-news--archive[data-news-layout="list"] .ig-hashtag{font-size:14px;line-height:1.42}
+.ig-news--archive[data-news-layout="list"] .ig-news-entry__types .ig-chip{font-size:12.5px}
+
+.ig-news--archive[data-news-layout="tile"] .ig-news-entry__title,
+.ig-news--archive[data-news-layout="tile"] .ig-card__title{font-size:20px;line-height:1.28}
+.ig-news--archive[data-news-layout="tile"] .ig-news-entry__summary,
+.ig-news--archive[data-news-layout="tile"] .ig-card__summary{font-size:16px;line-height:1.5}
+.ig-news--archive[data-news-layout="tile"] .ig-card__meta,
+.ig-news--archive[data-news-layout="tile"] .ig-news-source-link,
+.ig-news--archive[data-news-layout="tile"] .ig-hashtag{font-size:14px;line-height:1.42}
+
+.ig-news--archive .ig-news-featured .ig-news-entry__title,
+.ig-news--archive .ig-news-featured .ig-card__title{font-size:clamp(27px,1.75vw,32px);line-height:1.16}
+.ig-news--archive .ig-news-featured .ig-news-entry__summary,
+.ig-news--archive .ig-news-featured .ig-card__summary{font-size:17px;line-height:1.52}
+.ig-news--archive .ig-news-featured .ig-card__meta,
+.ig-news--archive .ig-news-featured .ig-news-source-link,
+.ig-news--archive .ig-news-featured .ig-hashtag{font-size:14px}
+
+.ig-news--archive .ig-news-side-card__title{font-size:18px}
+.ig-news--archive .ig-news-trend-row__copy strong{font-size:14px;line-height:1.35}
+.ig-news--archive .ig-news-trend-row__copy small{font-size:12px;line-height:1.35}
+.ig-news--archive .ig-news-topic-chip{font-size:12.5px}
+.ig-news--archive .ig-news-stats span{font-size:12px;line-height:1.35}
+
+.ig-news--archive .ig-news-story{max-width:960px;padding:34px}
+.ig-news--archive .ig-news-story__title{font-size:clamp(36px,3vw,52px);line-height:1.08;letter-spacing:-.035em}
+.ig-news--archive .ig-news-story__lead{max-width:820px;font-size:19px;line-height:1.62;color:color-mix(in srgb,var(--ig-text) 82%,var(--ig-muted))}
+.ig-news--archive .ig-news-story__meta,
+.ig-news--archive .ig-news-story .ig-news-source-link{font-size:14.5px;line-height:1.45}
+.ig-news--archive .ig-news-story .ig-chip,
+.ig-news--archive .ig-news-story .ig-hashtag{font-size:14px}
+
+@media(max-width:760px){
+  .ig-news--home .ig-news-card .ig-card__title{font-size:18px}
+  .ig-news--home .ig-news-card .ig-card__summary{font-size:15px}
+  .ig-news--archive[data-news-layout="list"] .ig-news-entry__title,
+  .ig-news--archive[data-news-layout="list"] .ig-card__title{font-size:17px;line-height:1.28}
+  .ig-news--archive[data-news-layout="list"] .ig-card__meta,
+  .ig-news--archive[data-news-layout="list"] .ig-news-source-link,
+  .ig-news--archive[data-news-layout="list"] .ig-hashtag{font-size:13px}
+  .ig-news--archive .ig-news-featured .ig-news-entry__title,
+  .ig-news--archive .ig-news-featured .ig-card__title{font-size:24px}
+  .ig-news--archive .ig-news-featured .ig-news-entry__summary,
+  .ig-news--archive .ig-news-featured .ig-card__summary{font-size:16px}
+  .ig-news--archive .ig-news-story{padding:22px}
+  .ig-news--archive .ig-news-story__title{font-size:34px}
+  .ig-news--archive .ig-news-story__lead{font-size:18px;line-height:1.58}
+}
