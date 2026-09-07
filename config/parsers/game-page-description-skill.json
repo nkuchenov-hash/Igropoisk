@@ -1,8 +1,8 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "game-page-description-skill",
-  "title": "Game Page Description Skill v1 — Игропоиск",
-  "status": "ready_for_model_benchmark",
+  "title": "Game Page Description Skill v2 — Игропоиск",
+  "status": "ready_for_end_to_end_model_benchmark",
   "purpose": "Создавать полноценное вводное описание игры: что это за игра, кем является игрок, что он делает, как устроен игровой процесс и какие системы делают игру именно этой игрой.",
   "canonical_source_contract": {
     "metadata": "data/game-sources/{slug}.json",
@@ -14,10 +14,11 @@
     "exact_version_required": true
   },
   "model_policy": {
-    "approved_model": null,
-    "one_approved_model_for_this_skill": true,
+    "inherits_editorial_model_from_game_job": true,
+    "one_model_per_game_editorial_job": true,
     "same_model_attempts": 3,
-    "cross_model_fallback": false
+    "cross_model_fallback_within_job": false,
+    "different_model_requires_full_game_editorial_job_restart": true
   },
   "output_contract": {
     "field": "description",
@@ -25,7 +26,8 @@
     "target_words": "130-190",
     "soft_max_words": 220,
     "paragraphs": "1-3",
-    "bullets": false
+    "bullets": false,
+    "must_record_editorial_model_id": true
   },
   "workflow": [
     "Прочитать весь доступный канонический корпус и зафиксировать точную версию игры.",
@@ -61,7 +63,8 @@
     "Текст не должен быть только пересказом завязки сюжета.",
     "Текст не должен превращаться в обзор с оценкой качества или итоговым вердиктом.",
     "Все материальные факты должны подтверждаться каноническим корпусом.",
-    "Нельзя смешивать оригинал, ремастер, ремейк, порт или продолжение."
+    "Нельзя смешивать оригинал, ремастер, ремейк, порт или продолжение.",
+    "editorial_model_id должен совпадать с моделью Subtitle и Features этой же редакционной версии страницы."
   ],
   "anti_patterns": [
     "Игра предлагает захватывающее приключение, красивую графику и увлекательный геймплей.",
