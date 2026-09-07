@@ -1,4 +1,4 @@
-name: Review Model Qualification v2 — corrected independent run
+name: Review Model Qualification v3 — final exact-model run
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
     continue-on-error: true
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 3
       matrix:
         game:
           - { slug: mafia, title: 'Mafia: The City of Lost Heaven', year: '2002' }
@@ -31,18 +31,18 @@ jobs:
           - { id: gigachat-3-ultra, label: 'GigaChat 3 Ultra', provider: gigachat, model: 'GigaChat-3-Ultra' }
           - { id: gemini-3-8-flash, label: 'Gemini 3.8 Flash', provider: gemini, model: 'gemini-3.8-flash' }
           - { id: gemini-3-7-flash, label: 'Gemini 3.7 Flash', provider: gemini, model: 'gemini-3.7-flash' }
-          - { id: qwen3-8-27b, label: 'Qwen 3.8 27B', provider: groq, model: 'qwen/qwen3.8-27b' }
-          - { id: qwen3-6-27b, label: 'Qwen 3.6 27B', provider: groq, model: 'qwen/qwen3.6-27b' }
-          - { id: gpt-oss-120b, label: 'GPT-OSS 120B', provider: groq, model: 'openai/gpt-oss-120b' }
-          - { id: gpt-oss-20b, label: 'GPT-OSS 20B', provider: groq, model: 'openai/gpt-oss-20b' }
-          - { id: glm-5-2-free, label: 'GLM 5.2', provider: openrouter, model: 'z-ai/glm-5.2:free' }
-          - { id: nemotron-3-ultra-free, label: 'Nemotron 3 Ultra', provider: openrouter, model: 'nvidia/nemotron-3-ultra-550b-a55b:free' }
-          - { id: nemotron-3-super-free, label: 'Nemotron 3 Super', provider: openrouter, model: 'nvidia/nemotron-3-super-120b-a12b:free' }
-          - { id: minimax-m2-7-free, label: 'MiniMax M2.7', provider: openrouter, model: 'minimax/minimax-m2.7:free' }
-          - { id: minimax-m3-free, label: 'MiniMax M3', provider: openrouter, model: 'minimax/minimax-m3:free' }
-          - { id: dots3-note-free, label: 'Dots3-Note Preview', provider: openrouter, model: 'dots-studio/dots-3-note-preview:free' }
-          - { id: gemma-4-31b-free, label: 'Gemma 4 31B', provider: openrouter, model: 'google/gemma-4-31b-it:free' }
-          - { id: gemma-4-26b-a4b-free, label: 'Gemma 4 26B A4B', provider: openrouter, model: 'google/gemma-4-26b-a4b-it:free' }
+          - { id: qwen3-8-27b, label: 'Qwen 3.8 27B', provider: openrouter, model: 'qwen/qwen3.8-27b' }
+          - { id: qwen3-6-27b, label: 'Qwen 3.6 27B', provider: openrouter, model: 'qwen/qwen3.6-27b' }
+          - { id: gpt-oss-120b, label: 'GPT-OSS 120B', provider: openrouter, model: 'openai/gpt-oss-120b' }
+          - { id: gpt-oss-20b, label: 'GPT-OSS 20B', provider: openrouter, model: 'openai/gpt-oss-20b' }
+          - { id: glm-5-2, label: 'GLM 5.2', provider: openrouter, model: 'z-ai/glm-5.2' }
+          - { id: nemotron-3-ultra, label: 'Nemotron 3 Ultra', provider: openrouter, model: 'nvidia/nemotron-3-ultra-550b-a55b' }
+          - { id: nemotron-3-super, label: 'Nemotron 3 Super', provider: openrouter, model: 'nvidia/nemotron-3-super-120b-a12b' }
+          - { id: minimax-m2-7, label: 'MiniMax M2.7', provider: openrouter, model: 'minimax/minimax-m2.7' }
+          - { id: minimax-m3, label: 'MiniMax M3', provider: openrouter, model: 'minimax/minimax-m3' }
+          - { id: dots3-note, label: 'Dots3-Note Preview', provider: openrouter, model: 'dots-studio/dots-3-note-preview' }
+          - { id: gemma-4-31b, label: 'Gemma 4 31B', provider: openrouter, model: 'google/gemma-4-31b-it' }
+          - { id: gemma-4-26b-a4b, label: 'Gemma 4 26B A4B', provider: openrouter, model: 'google/gemma-4-26b-a4b-it' }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -66,7 +66,6 @@ jobs:
           BENCH_MODEL: ${{ matrix.candidate.model }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GOOGLE_AI_API_KEY: ${{ secrets.GOOGLE_AI_API_KEY }}
           GOOGLE_GEMINI_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
@@ -79,13 +78,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: review-v2-${{ matrix.game.slug }}-${{ matrix.candidate.id }}
+          name: review-v3-${{ matrix.game.slug }}-${{ matrix.candidate.id }}
           path: benchmark-review-one
           if-no-files-found: error
           retention-days: 14
 
   summarize:
-    name: Corrected Review qualification summary
+    name: Final Review qualification summary
     needs: model
     if: always()
     runs-on: ubuntu-latest
@@ -93,17 +92,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          pattern: review-v2-*
+          pattern: review-v3-*
           path: review-artifacts
           merge-multiple: false
       - name: Build summary
         run: |
           node - <<'NODE'
-          const fs=require('fs'),path=require('path');const rows=[];for(const d of fs.readdirSync('review-artifacts')){const f=path.join('review-artifacts',d,'result.json');if(fs.existsSync(f))rows.push(JSON.parse(fs.readFileSync(f,'utf8')))}const by={};for(const r of rows){const x=by[r.label]??={model:r.label,total:0,ok:0,structural_pass:0,errors:0,unavailable:0,games:[]};x.total++;if(r.status==='ok')x.ok++;if(r.structural_contract_ok)x.structural_pass++;if(r.status==='error')x.errors++;if(r.status==='unavailable')x.unavailable++;x.games.push({game:r.game_slug,status:r.status,words:r.review_words,sections:r.section_count,contract:r.structural_contract_ok,error:r.error,evidence_sha256:r.evidence_sha256})}const models=Object.values(by).sort((a,b)=>b.structural_pass-a.structural_pass||b.ok-a.ok||a.model.localeCompare(b.model));fs.mkdirSync('review-summary',{recursive:true});fs.writeFileSync('review-summary/results.json',JSON.stringify(rows,null,2)+'\n');fs.writeFileSync('review-summary/by-model.json',JSON.stringify(models,null,2)+'\n');const md=['# Corrected Review Model Qualification','',`Outputs: ${rows.length}/30`,'','| Model | Outputs | OK | Structural pass | Errors | Unavailable |','|---|---:|---:|---:|---:|---:|'];for(const m of models)md.push(`| ${m.model} | ${m.total} | ${m.ok} | ${m.structural_pass} | ${m.errors} | ${m.unavailable} |`);fs.writeFileSync('review-summary/SUMMARY.md',md.join('\n')+'\n');
+          const fs=require('fs'),path=require('path');const rows=[];for(const d of fs.readdirSync('review-artifacts')){const f=path.join('review-artifacts',d,'result.json');if(fs.existsSync(f))rows.push(JSON.parse(fs.readFileSync(f,'utf8')))}const by={};for(const r of rows){const x=by[r.label]??={model:r.label,total:0,ok:0,structural_pass:0,errors:0,unavailable:0,games:[]};x.total++;if(r.status==='ok')x.ok++;if(r.structural_contract_ok)x.structural_pass++;if(r.status==='error')x.errors++;if(r.status==='unavailable')x.unavailable++;x.games.push({game:r.game_slug,status:r.status,words:r.review_words,sections:r.section_count,contract:r.structural_contract_ok,route:r.route_used,error:r.error,evidence_sha256:r.evidence_sha256,review:r.review})}const models=Object.values(by).sort((a,b)=>b.structural_pass-a.structural_pass||b.ok-a.ok||a.model.localeCompare(b.model));fs.mkdirSync('review-summary',{recursive:true});fs.writeFileSync('review-summary/results.json',JSON.stringify(rows,null,2)+'\n');fs.writeFileSync('review-summary/by-model.json',JSON.stringify(models,null,2)+'\n');const md=['# Final Review Model Qualification','',`Outputs: ${rows.length}/30`,'','| Model | Outputs | OK | Structural pass | Errors | Unavailable |','|---|---:|---:|---:|---:|---:|'];for(const m of models)md.push(`| ${m.model} | ${m.total} | ${m.ok} | ${m.structural_pass} | ${m.errors} | ${m.unavailable} |`);fs.writeFileSync('review-summary/SUMMARY.md',md.join('\n')+'\n');
           NODE
       - uses: actions/upload-artifact@v4
         with:
-          name: review-model-qualification-v2-summary
+          name: review-model-qualification-v3-summary
           path: review-summary
           if-no-files-found: error
           retention-days: 14
