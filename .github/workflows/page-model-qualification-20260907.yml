@@ -1,4 +1,4 @@
-name: Page Model Qualification v3 — exact-route candidates
+name: Page Model Qualification v4 — serial exact-route final
 
 on:
   push:
@@ -6,6 +6,10 @@ on:
     paths:
       - '.github/workflows/page-model-qualification-20260907.yml'
   workflow_dispatch:
+
+concurrency:
+  group: editorial-openrouter-serial-final
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -18,11 +22,11 @@ jobs:
   model:
     name: ${{ matrix.game.title }} — ${{ matrix.candidate.label }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     continue-on-error: true
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 1
       matrix:
         game:
           - { slug: dangerous-dave-in-the-haunted-mansion, title: 'Dangerous Dave in the Haunted Mansion', year: '1991' }
@@ -49,7 +53,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '22' }
-      - name: Download frozen full evidence from qualification run 1
+      - name: Download frozen full evidence
         uses: actions/download-artifact@v4
         with:
           name: page-evidence-${{ matrix.game.slug }}
@@ -57,12 +61,12 @@ jobs:
           github-token: ${{ github.token }}
           repository: nkuchenov-hash/Igropoisk
           run-id: '34121244832'
-      - name: Generate complete Page editorial bundle on exact model route
+      - name: Generate complete Page editorial bundle serially
         env:
           BENCH_GAME: ${{ matrix.game.slug }}
           BENCH_TITLE: ${{ matrix.game.title }}
           BENCH_YEAR: ${{ matrix.game.year }}
-          BENCH_ATTEMPT: '3'
+          BENCH_ATTEMPT: '4'
           BENCH_ID: ${{ matrix.candidate.id }}
           BENCH_LABEL: ${{ matrix.candidate.label }}
           BENCH_PROVIDER: openrouter
@@ -73,13 +77,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: page-v3-${{ matrix.game.slug }}-${{ matrix.candidate.id }}
+          name: page-v4-${{ matrix.game.slug }}-${{ matrix.candidate.id }}
           path: benchmark-page-one
           if-no-files-found: error
           retention-days: 14
 
   summarize:
-    name: Exact-route Page qualification summary
+    name: Serial Page qualification summary
     needs: model
     if: always()
     runs-on: ubuntu-latest
@@ -87,17 +91,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          pattern: page-v3-*
+          pattern: page-v4-*
           path: page-artifacts
           merge-multiple: false
       - name: Build summary
         run: |
           node - <<'NODE'
-          const fs=require('fs'),path=require('path');const rows=[];for(const d of fs.readdirSync('page-artifacts')){const f=path.join('page-artifacts',d,'result.json');if(fs.existsSync(f))rows.push(JSON.parse(fs.readFileSync(f,'utf8')))}const by={};for(const r of rows){const x=by[r.label]??={model:r.label,total:0,ok:0,structural_pass:0,errors:0,unavailable:0,games:[]};x.total++;if(r.status==='ok')x.ok++;if(r.structural_contract_ok)x.structural_pass++;if(r.status==='error')x.errors++;if(r.status==='unavailable')x.unavailable++;x.games.push({game:r.game_slug,status:r.status,contract:r.structural_contract_ok,subtitle:r.subtitle,description:r.description,features:r.features,error:r.error,evidence_sha256:r.evidence_sha256})}const models=Object.values(by).sort((a,b)=>b.structural_pass-a.structural_pass||b.ok-a.ok||a.model.localeCompare(b.model));fs.mkdirSync('page-summary',{recursive:true});fs.writeFileSync('page-summary/results.json',JSON.stringify(rows,null,2)+'\n');fs.writeFileSync('page-summary/by-model.json',JSON.stringify(models,null,2)+'\n');const md=['# Page Model Qualification v3 — exact model routes','',`Outputs: ${rows.length}/84`,'','| Model | Outputs | OK | Structural pass | Errors | Unavailable |','|---|---:|---:|---:|---:|---:|'];for(const m of models)md.push(`| ${m.model} | ${m.total} | ${m.ok} | ${m.structural_pass} | ${m.errors} | ${m.unavailable} |`);fs.writeFileSync('page-summary/SUMMARY.md',md.join('\n')+'\n');
+          const fs=require('fs'),path=require('path');const rows=[];for(const d of fs.readdirSync('page-artifacts')){const f=path.join('page-artifacts',d,'result.json');if(fs.existsSync(f))rows.push(JSON.parse(fs.readFileSync(f,'utf8')))}const by={};for(const r of rows){const x=by[r.label]??={model:r.label,total:0,ok:0,structural_pass:0,errors:0,unavailable:0,games:[]};x.total++;if(r.status==='ok')x.ok++;if(r.structural_contract_ok)x.structural_pass++;if(r.status==='error')x.errors++;if(r.status==='unavailable')x.unavailable++;x.games.push({game:r.game_slug,status:r.status,contract:r.structural_contract_ok,subtitle:r.subtitle,description:r.description,features:r.features,error:r.error,evidence_sha256:r.evidence_sha256})}const models=Object.values(by).sort((a,b)=>b.structural_pass-a.structural_pass||b.ok-a.ok||a.model.localeCompare(b.model));fs.mkdirSync('page-summary',{recursive:true});fs.writeFileSync('page-summary/results.json',JSON.stringify(rows,null,2)+'\n');fs.writeFileSync('page-summary/by-model.json',JSON.stringify(models,null,2)+'\n');const md=['# Page Model Qualification v4 — serial exact routes','',`Outputs: ${rows.length}/84`,'','| Model | Outputs | OK | Structural pass | Errors | Unavailable |','|---|---:|---:|---:|---:|---:|'];for(const m of models)md.push(`| ${m.model} | ${m.total} | ${m.ok} | ${m.structural_pass} | ${m.errors} | ${m.unavailable} |`);fs.writeFileSync('page-summary/SUMMARY.md',md.join('\n')+'\n');
           NODE
       - uses: actions/upload-artifact@v4
         with:
-          name: page-model-qualification-v3-summary
+          name: page-model-qualification-v4-summary
           path: page-summary
           if-no-files-found: error
           retention-days: 14
