@@ -1,7 +1,7 @@
 # Editorial Model Selection Protocol
 
-**Status:** CANONICAL TEST PLAN v2  
-**Updated:** 2026-09-04
+**Status:** CANONICAL TEST PLAN v3  
+**Updated:** 2026-09-07
 
 ## Goal
 
@@ -30,18 +30,64 @@ A model that is best at one can be mediocre at another. Therefore a combined “
 
 Previous Wolfenstein/five-game benchmarks remain historical experiments only. They cannot be final evidence because participant availability, effective input size and source truncation changed between runs.
 
-## Candidate model shortlist
+## Candidate model pool
 
-Initial final-benchmark shortlist:
+The final benchmark starts from the **full original 16-model Wolfenstein comparison pool**, not an arbitrarily narrowed convenience shortlist.
 
-1. Gemini 3.7 Flash
+The original 16 were:
+
+1. GigaChat 3 Ultra
 2. Gemini 3.8 Flash
-3. GLM 5.2
+3. Gemini 3.7 Flash
 4. Qwen 3.8 27B
 5. Qwen 3.6 27B
-6. MiniMax M2.7
+6. GPT-OSS 120B
+7. GPT-OSS 20B
+8. GLM 5.2 Free
+9. Nemotron 3 Ultra Free
+10. Nemotron 3 Super Free
+11. MiniMax M2.7 Free
+12. MiniMax M3 Free
+13. Dots3-Note Preview Free
+14. Gemma 4 31B Free
+15. Gemma 4 26B A4B Free
+16. Qwen 2.5 3B Local
 
-The shortlist must not change automatically because another provider exposes a free model. A new candidate is added only intentionally and must run the complete comparable matrix.
+For the final comparable benchmark, only **Qwen 2.5 3B Local** is excluded because it is objectively in a different capability class and did not produce comparable outputs in the original stand.
+
+Therefore the locked candidate pool is **15 models**:
+
+1. GigaChat 3 Ultra
+2. Gemini 3.8 Flash
+3. Gemini 3.7 Flash
+4. Qwen 3.8 27B
+5. Qwen 3.6 27B
+6. GPT-OSS 120B
+7. GPT-OSS 20B
+8. GLM 5.2 Free
+9. Nemotron 3 Ultra Free
+10. Nemotron 3 Super Free
+11. MiniMax M2.7 Free
+12. MiniMax M3 Free
+13. Dots3-Note Preview Free
+14. Gemma 4 31B Free
+15. Gemma 4 26B A4B Free
+
+### Candidate-retention rule
+
+A candidate must **not** be removed merely because:
+
+- it returned 429/503/timeouts in one shared-provider session;
+- it failed to answer one historical benchmark request;
+- another model was easier or cheaper to call;
+- a temporary free route disappeared;
+- a partial test happened to leave fewer surviving outputs.
+
+Temporary provider/API failures are availability data, not editorial disqualification.
+
+A candidate may be removed only for an objectively documented reason that makes a fair production comparison impossible, such as a fundamentally incomparable capability class, permanently unavailable model identity, or inability to execute the required task after a clean same-model retry procedure. Such an exclusion must be explicit in the benchmark record; the system must never silently shrink the pool.
+
+A newly discovered candidate may be added intentionally, but it must run the complete comparable matrix. The locked 15-model pool cannot be narrowed automatically.
 
 ## Frozen evidence rule
 
@@ -88,7 +134,7 @@ Once frozen evidence packages are created, do not replace games during a benchma
 
 For each of the three page skills:
 
-- 6 models;
+- 15 models;
 - 10 games;
 - 2 independent samples per model/game;
 - identical production skill contract and generation settings;
@@ -96,10 +142,10 @@ For each of the three page skills:
 
 That is:
 
-- 120 Subtitle samples;
-- 120 Description samples;
-- 120 Features samples;
-- **360 page-editorial generations total**.
+- 300 Subtitle samples;
+- 300 Description samples;
+- 300 Features samples;
+- **900 page-editorial generations total**.
 
 Provider 429/503/timeouts are recorded separately and are not quality scores.
 
@@ -193,7 +239,7 @@ Review selection is **not** derived from page-skill ranking. Short-copy performa
 
 ### Review qualification
 
-All 6 candidates first generate full production-style reviews for two very different frozen games:
+All **15 candidates** first generate full production-style reviews for two very different frozen games:
 
 1. Mafia: The City of Lost Heaven
 2. Spore
@@ -270,18 +316,20 @@ A final production model must meet both:
 
 Do not convert provider errors into zero editorial scores.
 
+Do not delete a model from the comparison because of a transient provider error. Restore/provision a comparable route or leave that model's matrix explicitly incomplete until the route is available; never replace the 15-model benchmark with a smaller convenience test and call it final.
+
 ## When we may run the next tests
 
 ### Page skills
 
 The three page-skills benchmark may start as soon as all four conditions are true:
 
-1. Subtitle/Description/Features skill contracts are frozen. **DONE in this revision.**
-2. The 10-game set is locked. **DONE in this revision.**
+1. Subtitle/Description/Features skill contracts are frozen. **DONE.**
+2. The 10-game set is locked. **DONE.**
 3. All 10 Evidence Packages are freshly built by the real source pipeline, stored, hashed and validated for exact versions.
-4. All 6 candidate models have routes/quota sufficient to complete the same locked matrix without dropping participants.
+4. All **15 candidate models** have usable routes/capacity sufficient to complete the same locked matrix, or any objectively impossible candidate has been explicitly documented and approved for exclusion before the run.
 
-The earlier exhausted free-tier session on 2026-09-04 must not be reused as a final test. A clean run can start on **2026-09-05 or later** once conditions 3–4 are verified. If only unstable/free shared endpoints are available, wait or provision capacity; do not run a partial “final” benchmark.
+The earlier exhausted free-tier session on 2026-09-04 must not be reused as a final test. If only unstable/free shared endpoints are available, wait or provision capacity; do not run a partial “final” benchmark.
 
 ### Review
 
@@ -289,21 +337,21 @@ Review benchmarking can begin after:
 
 - the five review evidence packages are frozen;
 - `GOLDEN MAFIA` is frozen;
-- the same six model routes have enough capacity for the qualification round.
+- the same **15-model candidate pool** has enough capacity for the qualification round, subject only to explicitly documented objective exclusions.
 
 The page benchmark does not need to wait for this.
 
 ## Execution order from here
 
-1. Land the three Game Page skill contracts and editorial architecture.
+1. Keep the three Game Page skill contracts and editorial architecture frozen.
 2. Rebuild/freeze complete Evidence Packages for all 10 page games; store hashes and coverage manifests.
-3. Confirm usable capacity for all six candidate routes.
-4. Run the 360-sample page benchmark.
+3. Confirm usable capacity for the full 15-model candidate pool.
+4. Run the **900-sample** page benchmark.
 5. Score Subtitle, Description and Features independently; approve one model per skill.
 6. Freeze each winner's exact model ID, prompt/skill version, generation settings and retry policy.
 7. Integrate the three approved models into the parallel Page Editorial Bundle pipeline.
 8. Freeze `GOLDEN MAFIA` and five Review evidence packages.
-9. Run six-model Review qualification on Mafia + Spore.
+9. Run **15-model** Review qualification on Mafia + Spore.
 10. Advance top 3 to Far Cry + Jack Orlando + Mass Effect.
 11. Approve exactly one Review model and freeze Review production settings.
 12. Run an end-to-end game-page creation acceptance test including a page with review and a page without review.
@@ -315,5 +363,7 @@ No winner is chosen because it happened to return more responses in one provider
 No model wins a task because it won a different task.
 
 No candidate is approved because it wins only one benchmark game.
+
+No candidate is silently removed because it was inconvenient or temporarily unavailable.
 
 If no model reaches the quality and availability floor for a skill, approve none for that skill and improve the skill/workflow before testing again.
