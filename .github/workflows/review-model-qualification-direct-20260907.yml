@@ -1,0 +1,94 @@
+name: Review Model Qualification — direct providers final
+
+on:
+  push:
+    branches: [benchmark/page-review-qualification-20260907]
+    paths:
+      - '.github/workflows/review-model-qualification-direct-20260907.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  NODE_NO_WARNINGS: '1'
+
+jobs:
+  model:
+    name: ${{ matrix.game.title }} — ${{ matrix.candidate.label }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        game:
+          - { slug: mafia, title: 'Mafia: The City of Lost Heaven', year: '2002' }
+          - { slug: spore, title: 'Spore', year: '2008' }
+        candidate:
+          - { id: gigachat-3-ultra, label: 'GigaChat 3 Ultra', provider: gigachat, model: 'GigaChat-3-Ultra' }
+          - { id: gemini-3-8-flash, label: 'Gemini 3.8 Flash', provider: gemini, model: 'gemini-3.8-flash' }
+          - { id: gemini-3-7-flash, label: 'Gemini 3.7 Flash', provider: gemini, model: 'gemini-3.7-flash' }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Download frozen Review evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: review-evidence-${{ matrix.game.slug }}
+          path: benchmark-evidence/${{ matrix.game.slug }}
+          github-token: ${{ github.token }}
+          repository: nkuchenov-hash/Igropoisk
+          run-id: '34121303222'
+      - name: Generate full Review
+        env:
+          BENCH_GAME: ${{ matrix.game.slug }}
+          BENCH_TITLE: ${{ matrix.game.title }}
+          BENCH_YEAR: ${{ matrix.game.year }}
+          BENCH_ID: ${{ matrix.candidate.id }}
+          BENCH_LABEL: ${{ matrix.candidate.label }}
+          BENCH_PROVIDER: ${{ matrix.candidate.provider }}
+          BENCH_MODEL: ${{ matrix.candidate.model }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_AI_API_KEY: ${{ secrets.GOOGLE_AI_API_KEY }}
+          GOOGLE_GEMINI_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
+          GIGACHAT_AUTH_KEY: ${{ secrets.GIGACHAT_AUTH_KEY }}
+          GIGACHAT_CREDENTIALS: ${{ secrets.GIGACHAT_CREDENTIALS }}
+          GIGACHAT_API_KEY: ${{ secrets.GIGACHAT_API_KEY }}
+          GIGACHAT_AUTHORIZATION_KEY: ${{ secrets.GIGACHAT_AUTHORIZATION_KEY }}
+          GIGACHAT_KEY: ${{ secrets.GIGACHAT_KEY }}
+        run: node scripts/run-review-model-qualification.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: review-direct-${{ matrix.game.slug }}-${{ matrix.candidate.id }}
+          path: benchmark-review-one
+          if-no-files-found: error
+          retention-days: 14
+
+  summarize:
+    name: Direct-provider Review summary
+    needs: model
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: review-direct-*
+          path: review-artifacts
+          merge-multiple: false
+      - name: Build summary
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),path=require('path');const rows=[];for(const d of fs.readdirSync('review-artifacts')){const f=path.join('review-artifacts',d,'result.json');if(fs.existsSync(f))rows.push(JSON.parse(fs.readFileSync(f,'utf8')))}const by={};for(const r of rows){const x=by[r.label]??={model:r.label,total:0,ok:0,structural_pass:0,errors:0,games:[]};x.total++;if(r.status==='ok')x.ok++;if(r.structural_contract_ok)x.structural_pass++;if(r.status==='error')x.errors++;x.games.push({game:r.game_slug,status:r.status,words:r.review_words,sections:r.section_count,contract:r.structural_contract_ok,route:r.route_used,error:r.error,evidence_sha256:r.evidence_sha256,review:r.review})}const models=Object.values(by).sort((a,b)=>b.structural_pass-a.structural_pass||b.ok-a.ok||a.model.localeCompare(b.model));fs.mkdirSync('review-summary',{recursive:true});fs.writeFileSync('review-summary/results.json',JSON.stringify(rows,null,2)+'\n');fs.writeFileSync('review-summary/by-model.json',JSON.stringify(models,null,2)+'\n');const md=['# Direct-provider Review qualification','',`Outputs: ${rows.length}/6`,'','| Model | Outputs | OK | Structural pass | Errors |','|---|---:|---:|---:|---:|'];for(const m of models)md.push(`| ${m.model} | ${m.total} | ${m.ok} | ${m.structural_pass} | ${m.errors} |`);fs.writeFileSync('review-summary/SUMMARY.md',md.join('\n')+'\n');
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: review-model-qualification-direct-summary
+          path: review-summary
+          if-no-files-found: error
+          retention-days: 14
