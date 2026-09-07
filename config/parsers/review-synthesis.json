@@ -1,5 +1,5 @@
 {
-  "schema_version": 8,
+  "schema_version": 9,
   "id": "review-synthesis",
   "title": "Review Skill v1 — Игропоиск",
   "status": "active",
@@ -14,10 +14,13 @@
     "sources_define_evidence_not_structure": true
   },
   "model_policy": {
-    "owner": "single_model_per_review_task",
+    "owner": "game_editorial_job_model",
+    "inherits_editorial_model_from_game_page_revision": true,
+    "one_model_per_game_editorial_revision": true,
     "same_model_attempts": 3,
-    "cross_model_fallback": false,
-    "technical_failure_policy": "retry_same_assigned_model"
+    "cross_model_fallback_within_revision": false,
+    "technical_failure_policy": "retry_same_assigned_model",
+    "different_model_requires_full_editorial_revision_restart": true
   },
   "publication_gate": {
     "minimum_sections": 7,
