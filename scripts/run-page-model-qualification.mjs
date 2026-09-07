@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {callEditorialModel} from './editorial-benchmark-provider.mjs';
+
+const root=process.cwd();
+const slug=String(process.env.BENCH_GAME||'').trim();
+const provider=String(process.env.BENCH_PROVIDER||'').trim();
+const model=String(process.env.BENCH_MODEL||'').trim();
+const id=String(process.env.BENCH_ID||'').trim();
+const label=String(process.env.BENCH_LABEL||model).trim();
+const titleOverride=String(process.env.BENCH_TITLE||'').trim();
+const year=String(process.env.BENCH_YEAR||'').trim();
+const attempt=Number(process.env.BENCH_ATTEMPT||1);
+if(!slug||!provider||!model||!id) throw new Error('BENCH_GAME/BENCH_PROVIDER/BENCH_MODEL/BENCH_ID required');
+
+const evidenceDir=path.join(root,'benchmark-evidence',slug);
+const contentPath=path.join(evidenceDir,'source-content.json');
+const registryPath=path.join(evidenceDir,'sources.json');
+const raw=fs.readFileSync(contentPath);
+const sourceDoc=JSON.parse(raw.toString('utf8'));
+const registry=fs.existsSync(registryPath)?JSON.parse(fs.readFileSync(registryPath,'utf8')):null;
+const evidenceHash=crypto.createHash('sha256').update(raw).digest('hex');
+const title=titleOverride||sourceDoc.title||registry?.title||slug;
+const readable=(sourceDoc.sources||[]).filter(s=>s?.readable===true&&String(s.text||'').trim().length>0);
+if(!readable.length) throw new Error(`No readable sources for ${slug}`);
+
+const sourceBlocks=readable.map((s,i)=>`[SOURCE ${i+1}/${readable.length}]\nID: ${s.id||`source-${i+1}`}\nNAME: ${s.name||''}\nTITLE: ${s.title||''}\nURL: ${s.resolved_url||s.url||''}\nTEXT:\n${String(s.text||'').trim()}\n[/SOURCE]`);
+const evidenceChars=sourceBlocks.reduce((n,x)=>n+x.length,0);
+const CHUNK=56000;
+function makeChunks(blocks){const chunks=[];let current='';for(const block of blocks){if(block.length>CHUNK){if(current){chunks.push(current);current=''}for(let pos=0;pos<block.length;pos+=CHUNK)chunks.push(block.slice(pos,pos+CHUNK));continue}if(current&&current.length+block.length+2>CHUNK){chunks.push(current);current=''}current+=(current?'\n\n':'')+block}if(current)chunks.push(current);return chunks}
+const chunks=makeChunks(sourceBlocks);
+
+const SYSTEM=`Ты — редактор Игропоиска. Работаешь только с переданным каноническим корпусом конкретной игры. Нельзя использовать знания из памяти, додумывать факты или смешивать оригинал с ремейками, ремастерами, портами, сиквелами и другими версиями. Не упоминай источники, ИИ, модель, benchmark или процесс. Пиши естественным современным русским языком.`;
+
+async function extractChunk(chunk,index,total){const prompt=`Игра: ${title}${year?` (${year})`:''}.\n\nЭто часть ${index+1}/${total} полного evidence corpus. Извлеки факты, полезные ИСКЛЮЧИТЕЛЬНО для будущих Subtitle, Description и Features страницы игры. Ничего не сочиняй. Сохрани конкретные: роль/цель игрока, сеттинг/конфликт, основные действия, структуру, характерные механики, противников/угрозы, необычные детали. Не пиши сами финальные блоки. Кратко, но не теряй важные identity-bearing факты.\n\nCORPUS CHUNK:\n${chunk}`;const r=await callEditorialModel({provider,model,system:SYSTEM,prompt,maxTokens:2400,temperature:.2});return r.raw}
+
+function pagePrompt(evidence,mode){return `Игра: ${title}${year?` (${year})`:''}.\n\nСоздай ТРИ блока основной страницы Игропоиска. Одна и та же модель должна сделать весь комплект.\n\nSUBTITLE\n- короткий узнаваемый портрет именно этой игры;\n- обычно 7–15 слов, мягкий максимум 18;\n- не просто жанр;\n- сохрани главные identity-bearing признаки: если без монстров/мутантов/особой структуры образ игры искажается, не выбрасывай их ради краткости.\n\nDESCRIPTION\n- полноценное вводное описание, ориентир 130–190 русских слов, мягкий максимум 220;\n- объясни исходную ситуацию, роль/цель игрока, что он регулярно делает и какие конкретные системы отличают игру;\n- не рецензия, не оценка, не рекламный текст и не один сюжетный пересказ.\n\nFEATURES\n- 4–6 коротких тезисов;\n- обычно 2–7 слов, мягкий максимум 10 слов на пункт;\n- конкретные особенности, не рекламные формулы;\n- без длинных предложений и повторов одной механики.\n\nКРИТИЧНО:\n- используй только evidence ниже;\n- не добавляй фактов из памяти;\n- не смешивай версии игры;\n- не упоминай evidence/источники/процесс;\n- механики описывай в настоящем времени.\n\nФормат ответа СТРОГО:\n<<<SUBTITLE>>>\n[одна строка]\n<<<DESCRIPTION>>>\n[текст]\n<<<FEATURES>>>\n- [тезис]\n- [тезис]\n- [тезис]\n- [тезис]\n<<<END>>>\n\n${mode==='notes'?'EVIDENCE NOTES, извлечённые этой же моделью из 100% корпуса':'FULL READABLE SOURCE CORPUS'}:\n${evidence}`}
+
+function section(raw,name,next){const re=new RegExp(`<<<${name}>>>\\s*([\\s\\S]*?)(?=<<<${next}>>>|$)`,'i');return (String(raw||'').match(re)?.[1]||'').trim()}
+function words(s){return String(s||'').trim().split(/\s+/u).filter(Boolean)}
+function parse(rawText){const subtitle=section(rawText,'SUBTITLE','DESCRIPTION');const description=section(rawText,'DESCRIPTION','FEATURES');const featureText=section(rawText,'FEATURES','END');const features=featureText.split(/\r?\n/).map(x=>x.trim().replace(/^[-*•]\s*/,'')) .filter(Boolean);return{subtitle,description,features,format_ok:Boolean(subtitle&&description&&features.length&&/<<<END>>>/i.test(rawText))}}
+
+const started=Date.now();
+let result={schema_version:1,test:'page-model-qualification',qualification:true,game_slug:slug,game_title:title,year,id,label,provider,model,attempt,evidence_sha256:evidenceHash,total_candidates:Number(sourceDoc.total_candidates||sourceDoc.sources?.length||0),readable_sources:readable.length,evidence_chars:evidenceChars,chunk_count:chunks.length,coverage_source_ids:readable.map((s,i)=>s.id||`source-${i+1}`),status:'error',subtitle:'',description:'',features:[],format_ok:false,subtitle_words:0,description_words:0,features_count:0,feature_max_words:0,structural_contract_ok:false,error:null,elapsed_ms:0};
+try{
+  let evidence,mode;
+  if(chunks.length===1){evidence=chunks[0];mode='full'}else{const notes=[];for(let i=0;i<chunks.length;i++)notes.push(`=== CHUNK ${i+1}/${chunks.length} NOTES ===\n${await extractChunk(chunks[i],i,chunks.length)}`);evidence=notes.join('\n\n');mode='notes';fs.mkdirSync(path.join(root,'benchmark-page-one'),{recursive:true});fs.writeFileSync(path.join(root,'benchmark-page-one','evidence-notes.txt'),evidence)}
+  const response=await callEditorialModel({provider,model,system:SYSTEM,prompt:pagePrompt(evidence,mode),maxTokens:2600,temperature:.5});
+  const parsed=parse(response.raw);result={...result,...parsed,status:parsed.subtitle&&parsed.description&&parsed.features.length?'ok':'partial'};if(result.status!=='ok')result.error='Required page block missing';
+}catch(e){result.status=e?.code==='missing_secret'?'unavailable':'error';result.error=String(e?.message||e).slice(0,4000)}
+result.subtitle_words=words(result.subtitle).length;
+result.description_words=words(result.description).length;
+result.features_count=result.features.length;
+result.feature_max_words=Math.max(0,...result.features.map(x=>words(x).length));
+result.structural_contract_ok=result.status==='ok'&&result.format_ok&&result.subtitle_words>0&&result.subtitle_words<=18&&result.description_words>=100&&result.description_words<=220&&result.features_count>=4&&result.features_count<=6&&result.feature_max_words<=10;
+result.elapsed_ms=Date.now()-started;result.completed_at=new Date().toISOString();
+const out=path.join(root,'benchmark-page-one');fs.mkdirSync(out,{recursive:true});fs.writeFileSync(path.join(out,'result.json'),JSON.stringify(result,null,2)+'\n');fs.writeFileSync(path.join(out,'output.txt'),`GAME: ${title}\nMODEL: ${label}\nSTATUS: ${result.status}\nEVIDENCE_SHA256: ${evidenceHash}\nREADABLE: ${readable.length}\nCHUNKS: ${chunks.length}\nSTRUCTURAL_CONTRACT: ${result.structural_contract_ok}\n\n=== SUBTITLE ===\n${result.subtitle}\n\n=== DESCRIPTION ===\n${result.description}\n\n=== FEATURES ===\n${result.features.map(x=>`- ${x}`).join('\n')}\n\nERROR: ${result.error||''}\n`);console.log(JSON.stringify({game:slug,model:label,status:result.status,subtitle_words:result.subtitle_words,description_words:result.description_words,features:result.features_count,contract:result.structural_contract_ok,chunks:chunks.length,elapsed_ms:result.elapsed_ms,error:result.error},null,2));
