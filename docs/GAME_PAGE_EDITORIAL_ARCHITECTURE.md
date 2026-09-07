@@ -1,35 +1,18 @@
 # Игропоиск — архитектура редакционного слоя страницы игры
 
-**Статус:** CANONICAL v2  
+**Статус:** CANONICAL v3  
 **Зафиксировано:** 2026-09-07
 
 ## Главный принцип
 
-**Одна готовая страница игры не смешивает тексты разных моделей.**
+Игропоиск использует **два независимых модельных контура**:
 
-Для конкретной игры и конкретной source revision перед началом редакционной сборки назначается один `editorial_model_id`. Эта модель ведёт редакционную часть страницы до готового состояния.
+1. **Page Editorial Job** — одна модель собирает Subtitle + Description + Features конкретной страницы.
+2. **Review Editorial Job** — отдельно назначенная модель создаёт полный обзор этой игры.
 
-Subtitle, Description, Features и Review остаются разными skills с разными правилами качества, но **skill не выбирает себе отдельную модель**.
+Page Model и Review Model могут совпасть, но это не требуется и не предполагается заранее.
 
-Разные страницы игр могут собираться разными моделями.
-
-Пример допустимой production-схемы:
-
-```text
-Mafia       → Model A → Subtitle + Description + Features + Review
-Spore       → Model B → Subtitle + Description + Features + Review
-Far Cry     → Model C → Subtitle + Description + Features + Review
-Obscure Game→ Model D → Subtitle + Description + Features
-```
-
-Недопустимо:
-
-```text
-Mafia Subtitle    → Model A
-Mafia Description → Model B
-Mafia Features    → Model C
-Mafia Review      → Model D
-```
+Разные страницы игр также могут собираться разными Page Models.
 
 ## Архитектура
 
@@ -47,262 +30,197 @@ Existing Game Page source assembly
         ▼
 Canonical Evidence Package + SHA-256
         │
-        ▼
-ASSIGN ONE editorial_model_id FOR THIS GAME BUILD
-        │
-        ▼
-Single-model Game Editorial Job
-        │
-        ├─ Subtitle Skill    ─┐
-        ├─ Description Skill ├─ same model_id
-        ├─ Features Skill    ┘
-        │
-        ▼
-Page Editorial Bundle
-        │
-        ▼
-page-content QC / publish
-        │
-        ▼
-Game Page
-        │
-        └──────────────► Review Module when required
-                          │
-                          └─ same editorial_model_id
+        ├──────────────────────────────────┐
+        │                                  │
+        ▼                                  ▼
+PAGE EDITORIAL JOB                    REVIEW EDITORIAL JOB
+assign one page_model_id              assign one review_model_id
+        │                                  │
+        ├─ Subtitle Skill                   ├─ evidence pass
+        ├─ Description Skill               ├─ structure
+        └─ Features Skill                  ├─ full review
+        │                                  └─ Review QC
+        ▼                                  │
+Page Editorial Bundle                     ▼
+        │                              Published Review
+        ▼                                  │
+Game Page  ◄───────────────────────────────┘
 ```
 
-## 0. Не создаём второй source pipeline
+## 0. Один source pipeline
 
-Канонический список источников уже собирает существующий Game Page pipeline:
+Оба контура используют один и тот же канонический evidence layer Game Page Module:
 
 - `scripts/collect-game-sources.mjs`;
-- при необходимости он использует `scripts/discover-game-sources-web.mjs`;
-- также использует `scripts/discover-game-publication-hubs.mjs`;
-- итоговый registry сохраняется в `data/game-sources/<slug>.json`.
+- `scripts/discover-game-sources-web.mjs` при необходимости;
+- `scripts/discover-game-publication-hubs.mjs`;
+- `data/game-sources/<slug>.json`;
+- `data/game-source-content/<slug>.json`.
 
-Subtitle/Description/Features skills и Review Skill не выполняют отдельный discovery. Они получают только результаты этого канонического слоя.
+Ни Page skills, ни Review Skill не выполняют собственный независимый discovery.
 
-Отдельный обязательный этап — **full-text materialization**: для каждого принятого источника сохраняется весь реально доступный readable-текст в `data/game-source-content/<slug>.json` вместе с provenance/coverage. Это продолжение существующего source assembly, а не второй сборщик источников.
+Для каждого принятого источника сохраняется весь реально доступный readable-текст. Benchmark-only truncation до первых N источников или первых N символов запрещён.
 
 ## 1. Canonical Evidence Package
 
-Перед любой редакционной генерацией собирается один неизменяемый пакет доказательств конкретной ревизии игры.
+Перед модельной работой фиксируется неизменяемый Evidence Package конкретной версии игры. Он содержит:
 
-Он содержит:
-
-- canonical `game_id`, title, year and version markers;
-- explicit excluded/remake/remaster/sequel identities;
+- `game_id`, title, year и version markers;
+- исключённые ремейки/ремастеры/сиквелы;
 - полный список источников и provenance;
-- весь readable-текст, сохранённый full-text materializer;
-- подтверждённые структурированные facts;
-- доступные professional scores и publication metadata;
+- весь сохранённый readable-текст;
+- подтверждённые structured facts;
+- professional scores/publication metadata;
 - media/source metadata;
-- source revision / content hashes.
+- hashes/coverage.
 
-Пакет получает SHA-256.
+Пакет получает SHA-256. Page Test и Review Test для одной benchmark-игры должны использовать одну зафиксированную evidence revision.
 
-Все модельные артефакты одной готовой страницы должны иметь одновременно:
+## 2. Page Editorial Job: одна модель на страницу
 
-- один `game_id`;
-- один `evidence_hash`;
-- один `editorial_model_id`.
+Перед созданием трёх текстовых блоков страницы назначается один `page_model_id`.
 
-## 2. Model affinity — модель назначается странице, а не skill
-
-Перед началом редакционной сборки создаётся `Game Editorial Job`.
-
-Минимальный контракт job:
+Минимальный job contract:
 
 ```text
-job_id
+page_job_id
 game_id
 evidence_hash
-editorial_model_id
+page_model_id
 status
 attempt
 ```
 
-После назначения `editorial_model_id` нельзя менять модель внутри этого job.
+Эта модель выполняет:
 
-Эта же модель выполняет:
-
-1. evidence reading / extraction;
+1. evidence reading/extraction для page-copy;
 2. Subtitle Skill;
 3. Description Skill;
 4. Features Skill;
-5. исправления этих блоков после QC;
-6. Review Skill, если для этой игры создаётся обзор.
+5. исправления этих трёх блоков после QC.
 
-Skills остаются отдельными контрактами, потому что у них разные форматы и критерии качества. Но они являются стадиями **одного single-model job**.
+Нельзя сделать Subtitle одной моделью, Description второй, Features третьей.
 
-## 3. Полное покрытие корпуса
+Если назначенная модель окончательно не справилась, её незавершённый Page Editorial Job отклоняется целиком. Другая Page Model может начать новый job с нуля на том же Evidence Package.
 
-Запрещено обрезать корпус до первых N источников или первых N символов.
+Разные игры могут использовать разные Page Models.
 
-Если Evidence Package помещается в context window — назначенная модель получает его целиком.
+## 3. Review Editorial Job: независимая модель
 
-Если не помещается:
+Review Module остаётся отдельным модулем и имеет собственное назначение модели.
 
-1. корпус детерминированно разбивается на source-aware chunks;
-2. назначенная этой странице модель проходит все chunks;
-3. фиксируется coverage map;
-4. эта же модель создаёт task-specific evidence notes;
-5. эта же модель выполняет все редакционные skills страницы.
-
-Нельзя использовать одну модель как summarizer, а затем другую как автора страницы.
-
-## 4. Page Editorial Bundle
-
-Subtitle, Description и Features собираются в единый bundle только если:
-
-- `game_id` одинаков;
-- `evidence_hash` одинаков;
-- `editorial_model_id` одинаков;
-- каждый skill прошёл собственный QC;
-- отсутствует cross-version contamination;
-- отсутствует source/process leakage.
-
-Для новой страницы bundle является частью publish gate.
-
-Для уже опубликованной страницы неудачная новая сборка не стирает старый рабочий bundle: остаётся последняя полностью утверждённая версия.
-
-## 5. Что происходит, если назначенная модель не справилась
-
-Сначала выполняются same-model retries и same-model corrections.
-
-**Нельзя:**
-
-- оставить Subtitle от Model A;
-- после ошибки переключиться на Model B;
-- закончить Description/Features Model B;
-- опубликовать смешанный bundle.
-
-Если Model A окончательно не способна закончить новый job:
-
-1. весь незавершённый модельный результат этого job отклоняется;
-2. создаётся новый job на том же Evidence Package;
-3. новому job можно назначить Model B;
-4. Model B пересобирает **все модельные блоки страницы с нуля**.
-
-Таким образом модель можно поменять между попытками сборки страницы, но нельзя смешивать модели внутри одной готовой страницы.
-
-## 6. Review Module остаётся отдельным модулем
-
-Архитектурная независимость Review Module сохраняется:
-
-- обзор не является частью Game Page Module;
-- отсутствие обзора не блокирует публикацию страницы;
-- Review имеет собственный workflow и publication gate;
-- Game Page только подключает опубликованный Review.
-
-Но для конкретной игры Review наследует `editorial_model_id` страницы.
-
-Если обзор создаётся позже, его делает та же модель, которая владеет текущим Page Editorial Bundle этой игры.
-
-Если эта модель не может пройти Review Skill, обзор остаётся pending. Если принято решение сменить модель ради обзора, нельзя просто написать обзор другой моделью поверх старой страницы: создаётся новая full-editorial revision, где новая модель пересобирает Subtitle + Description + Features и затем Review.
-
-Это сохраняет правило **одна модель — одна редакционная версия страницы игры**.
-
-## 7. Страницы с обзором и без обзора
-
-Есть два допустимых типа назначения:
-
-### Page-only assignment
-
-Для игры, где обзор не требуется сейчас:
+Минимальный job contract:
 
 ```text
-Model X
-→ Subtitle
-→ Description
-→ Features
-→ publish page
+review_job_id
+game_id
+evidence_hash
+review_model_id
+status
+attempt
 ```
 
-### Full-editorial assignment
+Одна Review Model выполняет обзор end-to-end:
 
-Для игры, где нужен обзор:
+1. полное evidence coverage;
+2. evidence extraction;
+3. editorial angle/structure;
+4. section writing;
+5. synthesis/polish;
+6. evergreen/anti-generic audit;
+7. Review QC.
+
+`review_model_id` **не обязан совпадать** с `page_model_id`.
+
+Например, полностью допустимо:
 
 ```text
-Model Y
-→ Subtitle
-→ Description
-→ Features
-→ publish page without waiting for review if needed
-→ Review Skill
-→ Review QC
-→ attach published review
+Mafia Page   → Model A → Subtitle + Description + Features
+Mafia Review → Model D → Full Review
+
+Spore Page   → Model B → Subtitle + Description + Features
+Spore Review → Model D → Full Review
 ```
 
-Во втором случае модель та же самая на всех стадиях.
+Обзор другой модели не требует пересобирать Page Editorial Bundle.
 
-## 8. Разные модели для разных игр
+## 4. Review не блокирует страницу
 
-Production не обязан использовать одну универсальную модель для всего Игропоиска.
+Game Page publication и Review publication независимы.
 
-Допустима утверждённая группа моделей, каждая из которых доказала способность собирать страницу целиком.
+После успешного Page Editorial Job страница может быть опубликована сразу. Если Review ещё не готов, страница остаётся полноценной без него.
 
-Orchestrator выбирает модель **один раз перед стартом конкретного Game Editorial Job** с учётом:
+Когда Review Editorial Job проходит свой publication gate, опубликованный обзор автоматически подключается к странице.
 
-- качества модели по end-to-end benchmark;
-- способности обработать Evidence Package нужного размера;
-- необходимости Review;
-- текущей доступности/квоты;
-- стоимости и latency как вторичных факторов.
+Неудача Review Model не делает Game Page pending и не стирает готовую страницу.
 
-После выбора model affinity фиксируется до завершения или полного отказа от job.
+## 5. Полное покрытие корпуса
 
-## 9. Что генерируется AI, а что нет
+Если Evidence Package помещается в context window, назначенная модель получает его целиком.
 
-**Детерминированно / source-driven:**
+Если не помещается, корпус детерминированно делится на source-aware chunks. Внутри конкретного job все chunks и финальный текст обрабатывает одна и та же назначенная этому job модель.
 
-- game identity;
-- source discovery/storage;
-- full-text materialization;
-- version filtering rules;
-- structured factual fields;
-- media metadata;
-- ratings evidence;
-- hashes/provenance;
-- model assignment record;
-- bundle consistency checks;
-- page rendering.
+Запрещено использовать скрытую стороннюю модель как summarizer перед Page Model или Review Model.
 
-**Одной назначенной моделью для конкретной страницы:**
+## 6. Page Editorial Bundle
 
-- evidence extraction;
-- Subtitle;
-- Description;
-- Features;
-- Full Review, если он требуется.
+Subtitle, Description и Features публикуются как единый bundle только если:
 
-Модель не вызывается в browser/request path. Пользователь получает уже материализованный проверенный контент.
+- одинаков `game_id`;
+- одинаков `evidence_hash`;
+- одинаков `page_model_id`;
+- все три skills прошли собственный QC;
+- нет cross-version contamination;
+- нет source/process leakage.
 
-## 10. Обновление источников
+Для уже опубликованной страницы неудачная новая регенерация не стирает последний утверждённый bundle.
 
-Новая source revision создаёт новый evidence hash и новую редакционную revision.
+## 7. Независимые model benchmarks
 
-Для новой revision модель назначается заново. Она может совпадать с предыдущей или быть другой.
+Выбор моделей выполняется отдельно:
 
-Но новая revision снова должна быть single-model целиком.
+### Page Model Test
 
-## 11. Итоговая production-цепочка
+Проверяет, способна ли одна модель стабильно собрать **все три page-блока** одной игры. Это более лёгкая задача, поэтому квалификационный порог может пройти больше моделей.
+
+### Review Model Test
+
+Проверяет длинный журнальный обзор по отдельному Review Skill. Результаты Page Test не определяют победителя Review Test и наоборот.
+
+Page Model pool и Review Model pool являются независимыми production-пулами.
+
+## 8. Что делает AI
+
+**Детерминированно / source-driven:** identity, source discovery/storage, full-text materialization, version filtering, facts, media, ratings, hashes/provenance, job records, validation и rendering.
+
+**Page Model:** Subtitle + Description + Features одной страницы.
+
+**Review Model:** полный Review отдельным job.
+
+Никакая модель не вызывается в browser/request path.
+
+## 9. Production-цепочка
 
 ```text
 identify game
-→ existing collect-game-sources pipeline
-→ materialize complete readable source texts
+→ collect sources/facts/media
+→ materialize all readable source text
 → validate exact identity/version
 → freeze Evidence Package
-→ choose ONE editorial_model_id for this game revision
-→ same model: evidence pass
-→ same model: Subtitle Skill
-→ same model: Description Skill
-→ same model: Features Skill
-→ validate all three
+
+PAGE PATH:
+→ choose one page_model_id
+→ same model: Subtitle + Description + Features
+→ Page QC
 → atomically publish Page Editorial Bundle
 → render/publish Game Page
-→ if Review required: same model → Review Skill → Review QC → publish/attach Review
+
+REVIEW PATH, independently:
+→ choose one review_model_id
+→ same model: full Review workflow
+→ Review QC
+→ publish Review
+→ attach Review to existing Game Page
 ```
 
-Главная единица production — **готовая страница игры**, а не отдельный текстовый skill.
+Итоговое правило: **внутри одной страницы не смешиваем модели между Subtitle/Description/Features, но Page Model и Review Model выбираются независимо.**
