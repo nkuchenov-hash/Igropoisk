@@ -1,65 +1,22 @@
 # Editorial Model Selection Protocol
 
-**Status:** CANONICAL TEST PLAN v4  
+**Status:** CANONICAL TEST PLAN v5  
 **Updated:** 2026-09-07
 
 ## Goal
 
-Select models that can assemble an Igropoisk game page **end-to-end with one model per game**, while keeping Subtitle, Description, Features and Review as separate editorial skills and QC contracts.
+Run **two independent model selections**:
 
-The benchmark does **not** choose a different production model for each skill.
+1. **Page Model Test** — one model creates Subtitle + Description + Features for a complete Game Page editorial bundle.
+2. **Review Model Test** — one independently selected model creates a full Review end-to-end.
 
-The production unit is a **Game Editorial Job**:
+A Page Model and Review Model for the same game may be different. Page ranking does not gate Review participation, and Review ranking does not decide Page routing.
 
-```text
-one game + one evidence revision + one assigned model
-→ Subtitle
-→ Description
-→ Features
-→ Review when required
-```
+## Candidate pool
 
-Different games may be assigned different approved models.
+The benchmark starts from the full historical 16-model Wolfenstein pool. Only `Qwen 2.5 3B Local` is excluded as objectively non-comparable.
 
-## Why skills remain separate
-
-Subtitle, Description and Features are not three lengths of the same text.
-
-- Subtitle compresses the identity of the game into a miniature portrait.
-- Description explains premise, player activity and distinctive systems.
-- Features selects 4–6 scannable characteristic traits.
-- Review is a separate long-form editorial workflow.
-
-They therefore keep separate prompts/contracts and separate QC.
-
-But **separate skills do not imply separate models**. For one game-page revision, all model-generated editorial artifacts must share one `editorial_model_id`.
-
-## Candidate model pool
-
-The final benchmark starts from the full original 16-model Wolfenstein comparison pool.
-
-The original 16 were:
-
-1. GigaChat 3 Ultra
-2. Gemini 3.8 Flash
-3. Gemini 3.7 Flash
-4. Qwen 3.8 27B
-5. Qwen 3.6 27B
-6. GPT-OSS 120B
-7. GPT-OSS 20B
-8. GLM 5.2 Free
-9. Nemotron 3 Ultra Free
-10. Nemotron 3 Super Free
-11. MiniMax M2.7 Free
-12. MiniMax M3 Free
-13. Dots3-Note Preview Free
-14. Gemma 4 31B Free
-15. Gemma 4 26B A4B Free
-16. Qwen 2.5 3B Local
-
-For the final comparable benchmark, only **Qwen 2.5 3B Local** is excluded because it is objectively in a different capability class and did not produce comparable outputs in the original stand.
-
-Therefore the locked candidate pool is **15 models**:
+Locked 15-model pool:
 
 1. GigaChat 3 Ultra
 2. Gemini 3.8 Flash
@@ -77,47 +34,45 @@ Therefore the locked candidate pool is **15 models**:
 14. Gemma 4 31B Free
 15. Gemma 4 26B A4B Free
 
-### Candidate-retention rule
-
-A candidate must not be removed merely because:
-
-- it returned 429/503/timeouts in one shared-provider session;
-- it failed to answer one historical benchmark request;
-- another model was easier or cheaper to call;
-- a temporary free route disappeared;
-- a partial test happened to leave fewer surviving outputs.
-
-Temporary provider/API failures are availability data, not editorial disqualification.
-
-A candidate may be removed only for an objectively documented reason that makes a fair comparison impossible. Such an exclusion must be explicit. The system must never silently shrink the pool.
+Transient 429/503/timeouts, historical endpoint failures or temporary free-route loss are availability data, not automatic editorial disqualification. The pool must never silently shrink.
 
 ## Frozen evidence rule
 
-For every benchmark game:
+For each benchmark game:
 
-1. Run the real Game Page source assembly.
-2. Resolve exact game identity/version through Game Registry.
-3. Store the complete readable source corpus used by production.
-4. Materialize one immutable Evidence Package.
-5. Compute and store SHA-256.
-6. Give the same Evidence Package revision to every candidate model for that game.
-7. Store `game_id`, evidence hash, model ID, skill versions and generation settings with every page-build attempt.
+1. resolve exact `game_id` and version;
+2. run the real Game Page source assembly;
+3. store the complete readable source corpus used by production;
+4. materialize one immutable Evidence Package;
+5. compute SHA-256 and coverage manifest;
+6. give every candidate the identical evidence revision;
+7. record model ID, evidence hash, skill version and generation settings with every output.
 
-If evidence hashes differ between candidates, the comparison is invalid.
+No benchmark-only truncation to first N sources or first N characters is allowed.
 
-### No benchmark-only truncation
+If a corpus does not fit one context window, the **same candidate model assigned to that job** processes all source-aware chunks before writing. No hidden cross-model summarizer is allowed.
 
-Do not take only the first N sources or first N characters of each source.
+# TEST A — PAGE MODEL TEST
 
-If the full package fits the context window, use it directly.
+## What is being selected
 
-If it does not fit, process all source-aware chunks with the **same candidate model that owns the page build**, record 100% chunk coverage, then let that same model perform every editorial skill.
+A Page Model must be able to create the three model-generated Page blocks together:
 
-Do not put one summarizer model in front of another author model.
+```text
+one game + one evidence revision + one Page Model
+→ Subtitle
+→ Description
+→ Features
+→ Page QC
+```
 
-## Locked ten-game benchmark set
+The Page Test is intentionally independent from long-form Review capability. It is the easier editorial task, so more candidates may legitimately qualify.
 
-The page benchmark uses these 10 games:
+Different games in production may use different approved Page Models, but one page may not mix models between Subtitle/Description/Features.
+
+## Page benchmark games
+
+Final target set:
 
 1. Dangerous Dave in the Haunted Mansion (1991)
 2. Far Cry (2004)
@@ -130,287 +85,157 @@ The page benchmark uses these 10 games:
 9. The Witcher 3: Wild Hunt (2015)
 10. Elden Ring (2022)
 
-The set deliberately contains famous and obscure games, several eras, action and non-action structures, sparse and rich source coverage, and titles where version confusion matters.
+A preliminary/qualification run may use the already frozen seven full-corpus games, but it must be labelled qualification rather than the final ten-game benchmark.
 
-Once frozen evidence packages are created, games are not replaced mid-benchmark because a provider/model has trouble.
+## Page matrix
 
-## End-to-end page benchmark matrix
+Final comparable matrix:
 
-For every candidate model:
-
+- 15 models;
 - 10 games;
-- 2 independent full page-build attempts per game;
-- the same model performs Subtitle + Description + Features in each attempt;
-- all three outputs share the same `game_id`, `evidence_hash` and `editorial_model_id`;
-- identical production skill contracts and generation settings are used.
+- 2 independent complete Page attempts per model/game;
+- one model performs all three blocks in each attempt.
 
-That is:
+Total:
 
-- **15 models × 10 games × 2 attempts = 300 complete page-build attempts**;
-- each attempt contains three scored editorial outputs;
-- therefore 300 Subtitle outputs + 300 Description outputs + 300 Features outputs = **900 block outputs total**.
+- **300 complete Page builds**;
+- 300 Subtitle outputs;
+- 300 Description outputs;
+- 300 Features outputs;
+- **900 block outputs**.
 
-The benchmark unit is the **complete page build**, not an isolated skill output.
+For fast qualification on the already available seven frozen corpora, the same rules apply to a smaller labelled qualification matrix before the ten-game final.
 
-Provider 429/503/timeouts are recorded separately from text-quality scores.
+## Page scoring
 
-## Per-skill scoring — diagnostic, not routing
-
-Each block is still scored independently so we can see *why* a page build is good or bad.
+Individual skills are scored diagnostically.
 
 ### Subtitle
 
-Production contract: `config/parsers/game-page-subtitle-skill.json`.
-
-- factual grounding/version discipline: 30
+- factual/version discipline: 30
 - miniature portrait completeness: 25
 - specificity/recognizability: 20
 - natural Russian: 15
 - concision/page usefulness: 10
 
-Hard failures include wrong game/version, invented material facts, generic genre-only wording, material loss of identity, source/process leakage and unusable text.
-
 ### Description
 
-Production contract: `config/parsers/game-page-description-skill.json`.
-
-- factual grounding/version discipline: 30
-- completeness of premise/role/core activity: 25
+- factual/version discipline: 30
+- premise/role/core activity completeness: 25
 - game-specific systems/details: 20
 - natural Russian/readability: 15
-- usefulness as game-page introduction: 10
-
-Hard failures include wrong game/version, invented material facts, pure plot synopsis, generic marketing copy, review verdict instead of description, source/process leakage and unusable text.
+- usefulness as introduction: 10
 
 ### Features
 
-Production contract: `config/parsers/game-page-features-skill.json`.
-
-- factual grounding/version discipline: 30
-- quality/distinctiveness of selected features: 25
-- scannability and compact format: 20
+- factual/version discipline: 30
+- distinctiveness of selected features: 25
+- scannability/compactness: 20
 - non-redundancy/coverage: 15
 - natural Russian: 10
 
-Hard failures include invented features, wrong game/version, long explanatory sentences, generic marketing labels, redundant features, source/process leakage and unusable lists.
-
-## End-to-end page score
-
-The final benchmark decision is based on the complete page-build attempt.
-
-A page attempt receives:
+### Complete Page score
 
 - Subtitle quality: 20
 - Description quality: 25
 - Features quality: 15
-- factual/version consistency across the entire page: 15
-- coherence/non-contradiction between the three blocks: 10
-- ability to complete all required blocks under one model assignment: 10
+- factual/version consistency across all blocks: 15
+- coherence/non-contradiction: 10
+- successful completion of all required blocks by one model: 10
 - page usefulness/editorial consistency: 5
 
 Total: 100.
 
-A model that produces a brilliant Subtitle but repeatedly fails Description or Features is **not** a good page-builder model.
+Hard failures include wrong version/game, material hallucination, missing/unusable required block, source/process leakage or cross-model mixing within one Page build.
 
-A model that is slightly weaker in one isolated skill but consistently produces a strong complete page may rank higher overall.
+## Page result
 
-## Selecting production page models
+The test produces an **approved Page Model pool**, not separate Subtitle/Description/Features winners.
 
-The benchmark does not select `Subtitle winner`, `Description winner` and `Features winner` for production routing.
+A model qualifies only if it can reliably complete the whole Page bundle across multiple games above the quality floor.
 
-Instead it produces an **approved page-builder pool**.
+# TEST B — REVIEW MODEL TEST
 
-A model may enter this pool only if it:
+## Independent selection
 
-1. passes the factual/version floor;
-2. can complete all three page skills under one assignment;
-3. meets the end-to-end page quality floor across multiple games;
-4. has acceptable same-model availability for production.
+Review is a separate module and receives a separate `review_model_id`.
 
-There may be more than one approved page-builder model.
+A model does **not** need to qualify as a Page Model in order to enter or win the Review Test.
 
-Production may therefore do this:
+A Review Model does not force regeneration of Subtitle/Description/Features.
 
-```text
-Mafia       → approved Model A → whole page
-Spore       → approved Model B → whole page
-Far Cry     → approved Model A → whole page
-Fallout 2   → approved Model C → whole page
-```
+## Review qualification round
 
-But it may never do this:
-
-```text
-one page → Model A + Model B + Model C mixed by skill
-```
-
-## Production model assignment
-
-Before each Game Editorial Job starts, the orchestrator chooses one model from the approved pool.
-
-The choice is made **once per page-build attempt**, not once per skill.
-
-Relevant routing inputs may include:
-
-- end-to-end benchmark quality;
-- context-window / corpus-size capability;
-- whether the page requires a Review;
-- current provider availability/quota;
-- latency/cost as secondary factors.
-
-After assignment, `editorial_model_id` is locked for that job.
-
-If the model fails technically or editorially:
-
-1. retry/correct with the same model;
-2. if the job is finally abandoned, reject all its partial model outputs;
-3. a different approved model may start a **new full page-build attempt from scratch**;
-4. no outputs from the abandoned model may be mixed into the new page.
-
-## Full Review benchmark
-
-Review remains a separate module and a separate skill, but it no longer receives an unrelated review-only model for the same page.
-
-A page that requires a review must be assigned a model that is qualified to do **both**:
-
-- the complete Page Editorial Bundle;
-- the Review Skill.
-
-### Review qualification
-
-All 15 candidates may be evaluated on full reviews for:
+All 15 candidates generate full production-style reviews for two frozen games:
 
 1. Mafia: The City of Lost Heaven
 2. Spore
 
-For each candidate/game, the same model does the full review workflow end-to-end:
+For every model/game, the same model performs the Review workflow end-to-end:
 
 1. full evidence coverage;
 2. evidence extraction;
-3. editorial angle/section map;
+3. editorial angle and section map;
 4. grounded section writing;
-5. final synthesis/polish;
+5. synthesis/polish;
 6. anti-generic/evergreen audit;
 7. grounding validation.
 
-Review quality is scored separately, but a model becomes **full-editorial qualified** only if it also meets the page-builder quality floor.
+The strongest Review candidates advance independently of Page scores.
 
-### Final review round
+## Review final round
 
-The strongest review-capable page-builder candidates then generate reviews for:
+Top 3 Review candidates then generate reviews for:
 
 - Far Cry (2004)
 - Jack Orlando: A Cinematic Adventure (1997 original)
 - Mass Effect (2007 original)
 
-The result is not one mandatory universal Review Model. It is an approved **full-editorial model pool** capable of owning a game page plus its review without model mixing.
-
 Review scoring:
 
 - factual grounding/version discipline: 30
-- insight and synthesis: 20
-- structure and pacing: 15
+- insight/synthesis: 20
+- structure/pacing: 15
 - natural Russian: 15
 - atmosphere/charm: 10
 - conclusion/final emotional landing: 10
 
-Hard failures include invented material facts, cross-version contamination, source/process language, broken prose and material failure against the approved Review quality floor.
+Hard failures include material hallucinations, cross-version contamination, source/process language, broken prose or failure of the approved Review quality floor.
 
 ## GOLDEN MAFIA
 
-Before final Review qualification, the existing Mafia review must be frozen as `GOLDEN MAFIA` quality reference:
+`GOLDEN MAFIA` is a Review quality reference only. It is not needed to score Page Model outputs and does not gate Page Test execution.
 
-- factual discipline preserved;
-- strong readable structure;
-- stronger atmospheric conclusion;
-- restrained authorial charm, not theatrical prose;
-- no unsupported atmosphere/facts.
+## Availability
 
-`GOLDEN MAFIA` is required for Review qualification, not for the three short page skills.
+For both tests, record separately:
 
-## Pages without Review vs pages with Review
-
-Two production pools are allowed:
-
-### Page-builder pool
-
-Models proven to create Subtitle + Description + Features as one complete page job.
-
-Suitable for a page where Review is not currently required.
-
-### Full-editorial pool
-
-Models that pass both:
-
-- full page benchmark;
-- Review benchmark.
-
-A game expected to receive a Review should be assigned from this pool from the start.
-
-This avoids creating the page with one model and later discovering that the review requires another model.
-
-## Availability and retries
-
-Quality and provider availability are separate dimensions.
-
-For every candidate record:
-
-- successful complete page jobs / requested jobs;
-- incomplete page jobs;
-- 429/503/timeouts by class;
-- attempts required for same-model success;
+- successful jobs / requested jobs;
+- 429/503/timeouts;
+- same-model retry count;
 - latency;
-- approximate cost where available.
+- approximate cost when available.
 
-Do not convert provider errors into zero editorial quality scores.
+Provider failure is not converted into a zero editorial score, and a candidate is not silently removed because of a temporary endpoint problem.
 
-Do not silently remove a model because of a transient provider error.
+## Execution order
 
-## When we may run the next tests
+1. Keep Page skill contracts frozen.
+2. Freeze/verify full-corpus evidence packages and hashes.
+3. Run Page Model qualification immediately on the available frozen corpora.
+4. Complete the missing evidence packages and run the final ten-game Page matrix.
+5. Approve Page Model pool.
+6. Independently run 15-model Review qualification on Mafia + Spore.
+7. Advance Review top 3 to Far Cry + Jack Orlando + Mass Effect.
+8. Approve Review Model / Review Model pool independently.
+9. Integrate Page routing and Review routing as separate jobs sharing the same canonical evidence layer.
 
-### Page benchmark
+## Final decision rule
 
-The end-to-end page benchmark may start as soon as:
+**Inside one Page bundle:** one model for Subtitle + Description + Features.
 
-1. Subtitle/Description/Features skill contracts are frozen. **DONE.**
-2. The 10-game set is locked. **DONE.**
-3. All 10 Evidence Packages are freshly built by the real source pipeline, stored, hashed and validated for exact versions.
-4. The 15 candidate routes/capacity are verified or any objectively impossible exclusion is explicitly documented before the run.
+**Inside one Review:** one model end-to-end.
 
-Then run **300 complete page-build attempts / 900 block outputs**.
+**Between Page and Review:** models may differ.
 
-### Review qualification
-
-Review qualification can begin after:
-
-- required review Evidence Packages are frozen;
-- `GOLDEN MAFIA` is frozen;
-- candidate capacity is sufficient;
-- page-builder scores are available so Review results can be combined with full-page capability.
-
-## Execution order from here
-
-1. Keep the three editorial skill contracts frozen.
-2. Rebuild/freeze complete Evidence Packages for all 10 benchmark games.
-3. Confirm usable capacity for all 15 candidates.
-4. Run 300 end-to-end page-build attempts.
-5. Score individual blocks diagnostically and complete pages as the production decision unit.
-6. Approve a page-builder model pool; do not assign models per skill.
-7. Freeze exact model IDs/settings/retry rules for the approved pool.
-8. Freeze `GOLDEN MAFIA` and Review evidence packages.
-9. Run Review qualification using the same candidate models.
-10. Approve the full-editorial pool: models capable of whole page + Review.
-11. Integrate page-level model assignment into the Game Editorial Job orchestrator.
-12. Run end-to-end acceptance with multiple games intentionally assigned to different models, while verifying that each individual page contains only one model ID.
-
-## Decision rule
-
-**One page revision = one model.**
-
-Different games may use different approved models.
-
-No model wins production ownership because it is best at only one isolated skill.
-
-No candidate is silently removed because it is inconvenient or temporarily unavailable.
-
-If no model can reliably produce a complete acceptable page under one assignment, approve none and improve the workflow before production rollout.
+**Between different games:** models may differ.
