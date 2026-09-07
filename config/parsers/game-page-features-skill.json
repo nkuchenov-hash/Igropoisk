@@ -1,8 +1,8 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "game-page-features-skill",
-  "title": "Game Page Features Skill v1 — Игропоиск",
-  "status": "ready_for_model_benchmark",
+  "title": "Game Page Features Skill v2 — Игропоиск",
+  "status": "ready_for_end_to_end_model_benchmark",
   "purpose": "Выбирать и формулировать 4-6 самых характерных особенностей игры как короткий сканируемый список тезисов, а не набор рекламных предложений.",
   "canonical_source_contract": {
     "metadata": "data/game-sources/{slug}.json",
@@ -14,10 +14,11 @@
     "exact_version_required": true
   },
   "model_policy": {
-    "approved_model": null,
-    "one_approved_model_for_this_skill": true,
+    "inherits_editorial_model_from_game_job": true,
+    "one_model_per_game_editorial_job": true,
     "same_model_attempts": 3,
-    "cross_model_fallback": false
+    "cross_model_fallback_within_job": false,
+    "different_model_requires_full_game_editorial_job_restart": true
   },
   "output_contract": {
     "field": "features",
@@ -26,7 +27,8 @@
     "target_words_per_item": "2-7",
     "soft_max_words_per_item": 10,
     "full_sentences": false,
-    "terminal_periods": false
+    "terminal_periods": false,
+    "must_record_editorial_model_id": true
   },
   "workflow": [
     "Прочитать весь доступный канонический корпус и зафиксировать точную версию игры.",
@@ -52,7 +54,8 @@
     "В списке не должно быть двух формулировок про одну и ту же систему.",
     "Как минимум большинство пунктов должны быть специфичнее обычных жанровых характеристик.",
     "Список в целом должен помогать узнать конкретную игру, а не рекламировать её.",
-    "Все пункты должны подтверждаться каноническим корпусом."
+    "Все пункты должны подтверждаться каноническим корпусом.",
+    "editorial_model_id должен совпадать с моделью Subtitle и Description этой же редакционной версии страницы."
   ],
   "anti_patterns": [
     "Захватывающий сюжет",
