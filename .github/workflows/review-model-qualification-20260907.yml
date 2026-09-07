@@ -1,0 +1,154 @@
+name: Review Model Qualification — 15 models × Mafia + Spore
+
+on:
+  push:
+    branches: [benchmark/page-review-qualification-20260907]
+    paths:
+      - '.github/workflows/review-model-qualification-20260907.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  NODE_NO_WARNINGS: '1'
+
+jobs:
+  evidence:
+    name: Freeze review evidence — ${{ matrix.game }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { game: mafia, title: 'Mafia: The City of Lost Heaven', year: '2002', artifact: 'full-source-corpus-mafia', run_id: '33922127407' }
+          - { game: spore, title: 'Spore', year: '2008', artifact: '', run_id: '' }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download historical full-corpus artifact
+        if: matrix.game == 'mafia'
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: downloaded
+          github-token: ${{ github.token }}
+          repository: nkuchenov-hash/Igropoisk
+          run-id: ${{ matrix.run_id }}
+      - name: Normalize evidence files
+        env:
+          GAME: ${{ matrix.game }}
+        run: |
+          set -euo pipefail
+          mkdir -p "benchmark-evidence/$GAME"
+          if [ "$GAME" = "spore" ]; then
+            cp "data/game-source-content/$GAME.json" "benchmark-evidence/$GAME/source-content.json"
+            cp "data/game-sources/$GAME.json" "benchmark-evidence/$GAME/sources.json"
+          else
+            CONTENT="$(find downloaded -type f -path "*/game-source-content/$GAME.json" | head -n1)"
+            SOURCES="$(find downloaded -type f -path "*/game-sources/$GAME.json" | head -n1)"
+            test -n "$CONTENT" && test -f "$CONTENT"
+            test -n "$SOURCES" && test -f "$SOURCES"
+            cp "$CONTENT" "benchmark-evidence/$GAME/source-content.json"
+            cp "$SOURCES" "benchmark-evidence/$GAME/sources.json"
+          fi
+          node - <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');const g=process.env.GAME,f=`benchmark-evidence/${g}/source-content.json`,raw=fs.readFileSync(f),j=JSON.parse(raw);const readable=(j.sources||[]).filter(x=>x.readable===true&&String(x.text||'').trim());if(!readable.length)throw new Error('no readable sources');const m={game:g,evidence_sha256:crypto.createHash('sha256').update(raw).digest('hex'),readable_sources:readable.length,evidence_chars:readable.reduce((n,x)=>n+String(x.text||'').length,0),source_ids:readable.map((x,i)=>x.id||`source-${i+1}`)};fs.writeFileSync(`benchmark-evidence/${g}/manifest.json`,JSON.stringify(m,null,2)+'\n');console.log(m);
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: review-evidence-${{ matrix.game }}
+          path: benchmark-evidence/${{ matrix.game }}
+          if-no-files-found: error
+          retention-days: 14
+
+  model:
+    name: ${{ matrix.game.title }} — ${{ matrix.candidate.label }}
+    needs: evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        game:
+          - { slug: mafia, title: 'Mafia: The City of Lost Heaven', year: '2002' }
+          - { slug: spore, title: 'Spore', year: '2008' }
+        candidate:
+          - { id: gigachat-3-ultra, label: 'GigaChat 3 Ultra', provider: gigachat, model: 'GigaChat-3-Ultra' }
+          - { id: gemini-3-8-flash, label: 'Gemini 3.8 Flash', provider: gemini, model: 'gemini-3.8-flash' }
+          - { id: gemini-3-7-flash, label: 'Gemini 3.7 Flash', provider: gemini, model: 'gemini-3.7-flash' }
+          - { id: qwen3-8-27b, label: 'Qwen 3.8 27B', provider: groq, model: 'qwen/qwen3.8-27b' }
+          - { id: qwen3-6-27b, label: 'Qwen 3.6 27B', provider: groq, model: 'qwen/qwen3.6-27b' }
+          - { id: gpt-oss-120b, label: 'GPT-OSS 120B', provider: groq, model: 'openai/gpt-oss-120b' }
+          - { id: gpt-oss-20b, label: 'GPT-OSS 20B', provider: groq, model: 'openai/gpt-oss-20b' }
+          - { id: glm-5-2-free, label: 'GLM 5.2 Free', provider: openrouter, model: 'z-ai/glm-5.2:free' }
+          - { id: nemotron-3-ultra-free, label: 'Nemotron 3 Ultra Free', provider: openrouter, model: 'nvidia/nemotron-3-ultra-550b-a55b:free' }
+          - { id: nemotron-3-super-free, label: 'Nemotron 3 Super Free', provider: openrouter, model: 'nvidia/nemotron-3-super-120b-a12b:free' }
+          - { id: minimax-m2-7-free, label: 'MiniMax M2.7 Free', provider: openrouter, model: 'minimax/minimax-m2.7:free' }
+          - { id: minimax-m3-free, label: 'MiniMax M3 Free', provider: openrouter, model: 'minimax/minimax-m3:free' }
+          - { id: dots3-note-free, label: 'Dots3-Note Preview Free', provider: openrouter, model: 'dots-studio/dots-3-note-preview:free' }
+          - { id: gemma-4-31b-free, label: 'Gemma 4 31B Free', provider: openrouter, model: 'google/gemma-4-31b-it:free' }
+          - { id: gemma-4-26b-a4b-free, label: 'Gemma 4 26B A4B Free', provider: openrouter, model: 'google/gemma-4-26b-a4b-it:free' }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - uses: actions/download-artifact@v4
+        with:
+          name: review-evidence-${{ matrix.game.slug }}
+          path: benchmark-evidence/${{ matrix.game.slug }}
+      - name: Generate full Review
+        env:
+          BENCH_GAME: ${{ matrix.game.slug }}
+          BENCH_TITLE: ${{ matrix.game.title }}
+          BENCH_YEAR: ${{ matrix.game.year }}
+          BENCH_ID: ${{ matrix.candidate.id }}
+          BENCH_LABEL: ${{ matrix.candidate.label }}
+          BENCH_PROVIDER: ${{ matrix.candidate.provider }}
+          BENCH_MODEL: ${{ matrix.candidate.model }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_AI_API_KEY: ${{ secrets.GOOGLE_AI_API_KEY }}
+          GOOGLE_GEMINI_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
+          GIGACHAT_AUTH_KEY: ${{ secrets.GIGACHAT_AUTH_KEY }}
+          GIGACHAT_CREDENTIALS: ${{ secrets.GIGACHAT_CREDENTIALS }}
+          GIGACHAT_API_KEY: ${{ secrets.GIGACHAT_API_KEY }}
+          GIGACHAT_AUTHORIZATION_KEY: ${{ secrets.GIGACHAT_AUTHORIZATION_KEY }}
+          GIGACHAT_KEY: ${{ secrets.GIGACHAT_KEY }}
+        run: node scripts/run-review-model-qualification.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: review-qual-${{ matrix.game.slug }}-${{ matrix.candidate.id }}
+          path: benchmark-review-one
+          if-no-files-found: error
+          retention-days: 14
+
+  summarize:
+    name: Review qualification summary
+    needs: [evidence, model]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: review-qual-*
+          path: review-artifacts
+          merge-multiple: false
+      - name: Build summary
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),path=require('path');const rows=[];for(const d of fs.readdirSync('review-artifacts')){const f=path.join('review-artifacts',d,'result.json');if(fs.existsSync(f))rows.push(JSON.parse(fs.readFileSync(f,'utf8')))}const by={};for(const r of rows){const x=by[r.label]??={model:r.label,total:0,ok:0,structural_pass:0,errors:0,unavailable:0,games:[]};x.total++;if(r.status==='ok')x.ok++;if(r.structural_contract_ok)x.structural_pass++;if(r.status==='error')x.errors++;if(r.status==='unavailable')x.unavailable++;x.games.push({game:r.game_slug,status:r.status,words:r.review_words,sections:r.section_count,contract:r.structural_contract_ok,error:r.error,evidence_sha256:r.evidence_sha256})}const models=Object.values(by).sort((a,b)=>b.structural_pass-a.structural_pass||b.ok-a.ok||a.model.localeCompare(b.model));fs.mkdirSync('review-summary',{recursive:true});fs.writeFileSync('review-summary/results.json',JSON.stringify(rows,null,2)+'\n');fs.writeFileSync('review-summary/by-model.json',JSON.stringify(models,null,2)+'\n');const md=['# Review Model Qualification — 15 models × Mafia + Spore','',`Outputs: ${rows.length}/30`,'','| Model | Outputs | OK | Structural pass | Errors | Unavailable |','|---|---:|---:|---:|---:|---:|'];for(const m of models)md.push(`| ${m.model} | ${m.total} | ${m.ok} | ${m.structural_pass} | ${m.errors} | ${m.unavailable} |`);fs.writeFileSync('review-summary/SUMMARY.md',md.join('\n')+'\n');
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: review-model-qualification-summary
+          path: review-summary
+          if-no-files-found: error
+          retention-days: 14
