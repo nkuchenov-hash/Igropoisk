@@ -1,8 +1,8 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "game-page-subtitle-skill",
-  "title": "Game Page Subtitle Skill v1 — Игропоиск",
-  "status": "ready_for_model_benchmark",
+  "title": "Game Page Subtitle Skill v2 — Игропоиск",
+  "status": "ready_for_end_to_end_model_benchmark",
   "purpose": "Создавать короткий узнаваемый портрет конкретной игры для subtitle страницы: не жанровую подпись и не мини-описание, а сжатую формулу, которая передаёт несколько главных черт игры.",
   "canonical_source_contract": {
     "metadata": "data/game-sources/{slug}.json",
@@ -14,10 +14,11 @@
     "exact_version_required": true
   },
   "model_policy": {
-    "approved_model": null,
-    "one_approved_model_for_this_skill": true,
+    "inherits_editorial_model_from_game_job": true,
+    "one_model_per_game_editorial_job": true,
     "same_model_attempts": 3,
-    "cross_model_fallback": false
+    "cross_model_fallback_within_job": false,
+    "different_model_requires_full_game_editorial_job_restart": true
   },
   "output_contract": {
     "field": "subtitle",
@@ -25,7 +26,8 @@
     "target_words": "7-15",
     "soft_max_words": 18,
     "one_line": true,
-    "period_required": false
+    "period_required": false,
+    "must_record_editorial_model_id": true
   },
   "workflow": [
     "Прочитать весь доступный канонический корпус и точно зафиксировать версию игры.",
@@ -52,7 +54,8 @@
     "Если убрать из subtitle один из identity-bearing элементов и образ игры существенно искажается, исходный элемент должен остаться.",
     "Subtitle должен создавать узнаваемый образ игры, а не просто сообщать жанр.",
     "Нельзя выдумывать факт ради более яркой формулировки.",
-    "Строка должна читаться быстро и не превращаться в полноценное описание."
+    "Строка должна читаться быстро и не превращаться в полноценное описание.",
+    "editorial_model_id должен совпадать с моделью Description и Features этой же редакционной версии страницы."
   ],
   "anti_patterns": [
     "Космическая RPG о выборе и команде",
