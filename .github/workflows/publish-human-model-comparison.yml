@@ -1,0 +1,42 @@
+name: Publish human-readable model comparison
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/generate-human-model-comparison.mjs'
+      - '.github/workflows/publish-human-model-comparison.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Download Page benchmark summary
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 34130415028 -n page-model-qualification-v2-summary -D /tmp/page
+      - name: Download Review benchmark summary
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 34121303222 -n review-model-qualification-summary -D /tmp/review
+      - name: Generate comparison data
+        run: node scripts/generate-human-model-comparison.mjs
+      - name: Commit generated result data
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add benchmarks/model-qualification-20260907/page-results.json benchmarks/model-qualification-20260907/review-results.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Publish human-readable model comparison data"
+          git push origin HEAD:${{ github.ref_name }}
