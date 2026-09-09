@@ -1,0 +1,135 @@
+name: Final Review gap-only rerun
+
+on:
+  push:
+    branches: [benchmark/final-gap-rerun-20260909]
+    paths: ['.github/workflows/review-gap-rerun-20260909.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  gap:
+    name: ${{ matrix.key }} — ${{ matrix.game }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - { key: gem38, game: mafia }
+          - { key: gem38, game: spore }
+          - { key: gem37, game: mafia }
+          - { key: gem37, game: spore }
+          - { key: qwen38, game: mafia }
+          - { key: qwen38, game: spore }
+          - { key: qwen36, game: mafia }
+          - { key: qwen36, game: spore }
+          - { key: gpt120, game: mafia }
+          - { key: gpt120, game: spore }
+          - { key: gpt20, game: mafia }
+          - { key: gpt20, game: spore }
+          - { key: glm, game: mafia }
+          - { key: glm, game: spore }
+          - { key: nemu, game: mafia }
+          - { key: nemu, game: spore }
+          - { key: nems, game: mafia }
+          - { key: nems, game: spore }
+          - { key: mm27, game: mafia }
+          - { key: mm27, game: spore }
+          - { key: mm3, game: mafia }
+          - { key: mm3, game: spore }
+          - { key: dots, game: mafia }
+          - { key: dots, game: spore }
+          - { key: gem31, game: mafia }
+          - { key: gem31, game: spore }
+          - { key: gem26, game: mafia }
+          - { key: gem26, game: spore }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - uses: actions/download-artifact@v4
+        with:
+          name: review-evidence-${{ matrix.game }}
+          path: benchmark-evidence/${{ matrix.game }}
+          github-token: ${{ github.token }}
+          repository: nkuchenov-hash/Igropoisk
+          run-id: '34121303222'
+      - name: Resolve exact model route
+        shell: bash
+        run: |
+          case "${{ matrix.key }}" in
+            gem38) echo "ID=gemini-3-8-flash" >>$GITHUB_ENV; echo "LABEL=Gemini 3.8 Flash" >>$GITHUB_ENV; echo "PROVIDER=gemini" >>$GITHUB_ENV; echo "MODEL=gemini-3.8-flash" >>$GITHUB_ENV;;
+            gem37) echo "ID=gemini-3-7-flash" >>$GITHUB_ENV; echo "LABEL=Gemini 3.7 Flash" >>$GITHUB_ENV; echo "PROVIDER=gemini" >>$GITHUB_ENV; echo "MODEL=gemini-3.7-flash" >>$GITHUB_ENV;;
+            qwen38) echo "ID=qwen3-8-27b" >>$GITHUB_ENV; echo "LABEL=Qwen 3.8 27B" >>$GITHUB_ENV; echo "PROVIDER=groq" >>$GITHUB_ENV; echo "MODEL=qwen/qwen3.8-27b" >>$GITHUB_ENV;;
+            qwen36) echo "ID=qwen3-6-27b" >>$GITHUB_ENV; echo "LABEL=Qwen 3.6 27B" >>$GITHUB_ENV; echo "PROVIDER=groq" >>$GITHUB_ENV; echo "MODEL=qwen/qwen3.6-27b" >>$GITHUB_ENV;;
+            gpt120) echo "ID=gpt-oss-120b" >>$GITHUB_ENV; echo "LABEL=GPT-OSS 120B" >>$GITHUB_ENV; echo "PROVIDER=groq" >>$GITHUB_ENV; echo "MODEL=openai/gpt-oss-120b" >>$GITHUB_ENV;;
+            gpt20) echo "ID=gpt-oss-20b" >>$GITHUB_ENV; echo "LABEL=GPT-OSS 20B" >>$GITHUB_ENV; echo "PROVIDER=groq" >>$GITHUB_ENV; echo "MODEL=openai/gpt-oss-20b" >>$GITHUB_ENV;;
+            glm) echo "ID=glm-5-2-free" >>$GITHUB_ENV; echo "LABEL=GLM 5.2" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=z-ai/glm-5.2:free" >>$GITHUB_ENV;;
+            nemu) echo "ID=nemotron-3-ultra-free" >>$GITHUB_ENV; echo "LABEL=Nemotron 3 Ultra" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=nvidia/nemotron-3-ultra-550b-a55b:free" >>$GITHUB_ENV;;
+            nems) echo "ID=nemotron-3-super-free" >>$GITHUB_ENV; echo "LABEL=Nemotron 3 Super" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=nvidia/nemotron-3-super-120b-a12b:free" >>$GITHUB_ENV;;
+            mm27) echo "ID=minimax-m2-7-free" >>$GITHUB_ENV; echo "LABEL=MiniMax M2.7" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=minimax/minimax-m2.7:free" >>$GITHUB_ENV;;
+            mm3) echo "ID=minimax-m3-free" >>$GITHUB_ENV; echo "LABEL=MiniMax M3" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=minimax/minimax-m3:free" >>$GITHUB_ENV;;
+            dots) echo "ID=dots3-note-free" >>$GITHUB_ENV; echo "LABEL=Dots3-Note Preview" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=dots-studio/dots-3-note-preview:free" >>$GITHUB_ENV;;
+            gem31) echo "ID=gemma-4-31b-free" >>$GITHUB_ENV; echo "LABEL=Gemma 4 31B" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=google/gemma-4-31b-it:free" >>$GITHUB_ENV;;
+            gem26) echo "ID=gemma-4-26b-a4b-free" >>$GITHUB_ENV; echo "LABEL=Gemma 4 26B A4B" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=google/gemma-4-26b-a4b-it:free" >>$GITHUB_ENV;;
+          esac
+          case "${{ matrix.game }}" in
+            mafia) echo "TITLE=Mafia: The City of Lost Heaven" >>$GITHUB_ENV; echo "YEAR=2002" >>$GITHUB_ENV;;
+            spore) echo "TITLE=Spore" >>$GITHUB_ENV; echo "YEAR=2008" >>$GITHUB_ENV;;
+          esac
+      - name: Run missing Review cell only
+        env:
+          BENCH_GAME: ${{ matrix.game }}
+          BENCH_TITLE: ${{ env.TITLE }}
+          BENCH_YEAR: ${{ env.YEAR }}
+          BENCH_ID: ${{ env.ID }}
+          BENCH_LABEL: ${{ env.LABEL }}
+          BENCH_PROVIDER: ${{ env.PROVIDER }}
+          BENCH_MODEL: ${{ env.MODEL }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_AI_API_KEY: ${{ secrets.GOOGLE_AI_API_KEY }}
+          GOOGLE_GEMINI_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
+        run: |
+          rm -rf benchmark-review-one
+          node scripts/run-review-model-qualification.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: review-gap-${{ matrix.key }}-${{ matrix.game }}
+          path: benchmark-review-one
+          if-no-files-found: error
+          retention-days: 14
+
+  summarize:
+    name: Review gap summary
+    needs: gap
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: review-gap-*
+          path: gaps
+          merge-multiple: false
+      - run: |
+          node - <<'NODE'
+          const fs=require('fs'),path=require('path'),rows=[];
+          for(const d of fs.readdirSync('gaps')){const f=path.join('gaps',d,'result.json');if(fs.existsSync(f))rows.push(JSON.parse(fs.readFileSync(f,'utf8')))}
+          fs.mkdirSync('summary',{recursive:true});fs.writeFileSync('summary/results.json',JSON.stringify(rows,null,2)+'\n');
+          fs.writeFileSync('summary/SUMMARY.md',['# Review gap-only rerun','',...rows.map(r=>`- ${r.label} / ${r.game_slug}: ${r.status} / words=${r.review_words} / sections=${r.section_count} / contract=${r.structural_contract_ok} / ${r.error||''}`)].join('\n')+'\n');
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: review-gap-rerun-final-summary
+          path: summary
+          retention-days: 14
