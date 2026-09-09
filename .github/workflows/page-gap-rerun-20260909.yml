@@ -1,0 +1,184 @@
+name: Final Page gap-only rerun
+
+on:
+  push:
+    branches: [benchmark/final-gap-rerun-20260909]
+    paths: ['.github/workflows/page-gap-rerun-20260909.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  gap:
+    name: ${{ matrix.key }} — ${{ matrix.game }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - { key: giga, game: dangerous-dave-in-the-haunted-mansion }
+          - { key: giga, game: far-cry }
+          - { key: giga, game: mass-effect-2007 }
+          - { key: gem38, game: dangerous-dave-in-the-haunted-mansion }
+          - { key: gem38, game: far-cry }
+          - { key: gem38, game: jack-orlando-a-cinematic-adventure-1997 }
+          - { key: gem38, game: mafia }
+          - { key: gem38, game: mass-effect-2007 }
+          - { key: gem38, game: wolfenstein-3d }
+          - { key: gem38, game: spore }
+          - { key: gem37, game: dangerous-dave-in-the-haunted-mansion }
+          - { key: gem37, game: far-cry }
+          - { key: gem37, game: jack-orlando-a-cinematic-adventure-1997 }
+          - { key: gem37, game: mafia }
+          - { key: gem37, game: mass-effect-2007 }
+          - { key: gem37, game: wolfenstein-3d }
+          - { key: gem37, game: spore }
+          - { key: qwen38, game: dangerous-dave-in-the-haunted-mansion }
+          - { key: qwen38, game: mass-effect-2007 }
+          - { key: qwen36, game: wolfenstein-3d }
+          - { key: glm, game: dangerous-dave-in-the-haunted-mansion }
+          - { key: glm, game: jack-orlando-a-cinematic-adventure-1997 }
+          - { key: glm, game: mafia }
+          - { key: glm, game: mass-effect-2007 }
+          - { key: glm, game: wolfenstein-3d }
+          - { key: glm, game: spore }
+          - { key: nemu, game: dangerous-dave-in-the-haunted-mansion }
+          - { key: nemu, game: far-cry }
+          - { key: nemu, game: jack-orlando-a-cinematic-adventure-1997 }
+          - { key: nemu, game: mafia }
+          - { key: nemu, game: mass-effect-2007 }
+          - { key: nemu, game: wolfenstein-3d }
+          - { key: nemu, game: spore }
+          - { key: nems, game: dangerous-dave-in-the-haunted-mansion }
+          - { key: nems, game: far-cry }
+          - { key: nems, game: jack-orlando-a-cinematic-adventure-1997 }
+          - { key: nems, game: mafia }
+          - { key: nems, game: mass-effect-2007 }
+          - { key: nems, game: wolfenstein-3d }
+          - { key: nems, game: spore }
+          - { key: mm3, game: dangerous-dave-in-the-haunted-mansion }
+          - { key: mm3, game: far-cry }
+          - { key: mm3, game: jack-orlando-a-cinematic-adventure-1997 }
+          - { key: mm3, game: mafia }
+          - { key: mm3, game: mass-effect-2007 }
+          - { key: mm3, game: wolfenstein-3d }
+          - { key: mm3, game: spore }
+          - { key: dots, game: dangerous-dave-in-the-haunted-mansion }
+          - { key: dots, game: far-cry }
+          - { key: dots, game: jack-orlando-a-cinematic-adventure-1997 }
+          - { key: dots, game: mafia }
+          - { key: dots, game: mass-effect-2007 }
+          - { key: dots, game: wolfenstein-3d }
+          - { key: dots, game: spore }
+          - { key: gem31, game: dangerous-dave-in-the-haunted-mansion }
+          - { key: gem31, game: far-cry }
+          - { key: gem31, game: jack-orlando-a-cinematic-adventure-1997 }
+          - { key: gem31, game: mafia }
+          - { key: gem31, game: mass-effect-2007 }
+          - { key: gem31, game: wolfenstein-3d }
+          - { key: gem31, game: spore }
+          - { key: gem26, game: dangerous-dave-in-the-haunted-mansion }
+          - { key: gem26, game: far-cry }
+          - { key: gem26, game: jack-orlando-a-cinematic-adventure-1997 }
+          - { key: gem26, game: mafia }
+          - { key: gem26, game: mass-effect-2007 }
+          - { key: gem26, game: wolfenstein-3d }
+          - { key: gem26, game: spore }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - uses: actions/download-artifact@v4
+        with:
+          name: page-evidence-${{ matrix.game }}
+          path: benchmark-evidence/${{ matrix.game }}
+          github-token: ${{ github.token }}
+          repository: nkuchenov-hash/Igropoisk
+          run-id: '34121244832'
+      - name: Resolve exact model route
+        shell: bash
+        run: |
+          case "${{ matrix.key }}" in
+            giga)  echo "ID=gigachat-3-ultra" >>$GITHUB_ENV; echo "LABEL=GigaChat 3 Ultra" >>$GITHUB_ENV; echo "PROVIDER=gigachat" >>$GITHUB_ENV; echo "MODEL=GigaChat-3-Ultra" >>$GITHUB_ENV;;
+            gem38) echo "ID=gemini-3-8-flash" >>$GITHUB_ENV; echo "LABEL=Gemini 3.8 Flash" >>$GITHUB_ENV; echo "PROVIDER=gemini" >>$GITHUB_ENV; echo "MODEL=gemini-3.8-flash" >>$GITHUB_ENV;;
+            gem37) echo "ID=gemini-3-7-flash" >>$GITHUB_ENV; echo "LABEL=Gemini 3.7 Flash" >>$GITHUB_ENV; echo "PROVIDER=gemini" >>$GITHUB_ENV; echo "MODEL=gemini-3.7-flash" >>$GITHUB_ENV;;
+            qwen38) echo "ID=qwen3-8-27b" >>$GITHUB_ENV; echo "LABEL=Qwen 3.8 27B" >>$GITHUB_ENV; echo "PROVIDER=groq" >>$GITHUB_ENV; echo "MODEL=qwen/qwen3.8-27b" >>$GITHUB_ENV;;
+            qwen36) echo "ID=qwen3-6-27b" >>$GITHUB_ENV; echo "LABEL=Qwen 3.6 27B" >>$GITHUB_ENV; echo "PROVIDER=groq" >>$GITHUB_ENV; echo "MODEL=qwen/qwen3.6-27b" >>$GITHUB_ENV;;
+            glm) echo "ID=glm-5-2-free" >>$GITHUB_ENV; echo "LABEL=GLM 5.2" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=z-ai/glm-5.2:free" >>$GITHUB_ENV;;
+            nemu) echo "ID=nemotron-3-ultra-free" >>$GITHUB_ENV; echo "LABEL=Nemotron 3 Ultra" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=nvidia/nemotron-3-ultra-550b-a55b:free" >>$GITHUB_ENV;;
+            nems) echo "ID=nemotron-3-super-free" >>$GITHUB_ENV; echo "LABEL=Nemotron 3 Super" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=nvidia/nemotron-3-super-120b-a12b:free" >>$GITHUB_ENV;;
+            mm3) echo "ID=minimax-m3-free" >>$GITHUB_ENV; echo "LABEL=MiniMax M3" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=minimax/minimax-m3:free" >>$GITHUB_ENV;;
+            dots) echo "ID=dots3-note-free" >>$GITHUB_ENV; echo "LABEL=Dots3-Note Preview" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=dots-studio/dots-3-note-preview:free" >>$GITHUB_ENV;;
+            gem31) echo "ID=gemma-4-31b-free" >>$GITHUB_ENV; echo "LABEL=Gemma 4 31B" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=google/gemma-4-31b-it:free" >>$GITHUB_ENV;;
+            gem26) echo "ID=gemma-4-26b-a4b-free" >>$GITHUB_ENV; echo "LABEL=Gemma 4 26B A4B" >>$GITHUB_ENV; echo "PROVIDER=openrouter" >>$GITHUB_ENV; echo "MODEL=google/gemma-4-26b-a4b-it:free" >>$GITHUB_ENV;;
+          esac
+          case "${{ matrix.game }}" in
+            dangerous-dave-in-the-haunted-mansion) echo "TITLE=Dangerous Dave in the Haunted Mansion" >>$GITHUB_ENV; echo "YEAR=1991" >>$GITHUB_ENV;;
+            far-cry) echo "TITLE=Far Cry" >>$GITHUB_ENV; echo "YEAR=2004" >>$GITHUB_ENV;;
+            jack-orlando-a-cinematic-adventure-1997) echo "TITLE=Jack Orlando: A Cinematic Adventure" >>$GITHUB_ENV; echo "YEAR=1997" >>$GITHUB_ENV;;
+            mafia) echo "TITLE=Mafia: The City of Lost Heaven" >>$GITHUB_ENV; echo "YEAR=2002" >>$GITHUB_ENV;;
+            mass-effect-2007) echo "TITLE=Mass Effect" >>$GITHUB_ENV; echo "YEAR=2007" >>$GITHUB_ENV;;
+            wolfenstein-3d) echo "TITLE=Wolfenstein 3D" >>$GITHUB_ENV; echo "YEAR=1992" >>$GITHUB_ENV;;
+            spore) echo "TITLE=Spore" >>$GITHUB_ENV; echo "YEAR=2008" >>$GITHUB_ENV;;
+          esac
+      - name: Run missing cell only
+        env:
+          BENCH_GAME: ${{ matrix.game }}
+          BENCH_TITLE: ${{ env.TITLE }}
+          BENCH_YEAR: ${{ env.YEAR }}
+          BENCH_ATTEMPT: gap-final-20260909
+          BENCH_ID: ${{ env.ID }}
+          BENCH_LABEL: ${{ env.LABEL }}
+          BENCH_PROVIDER: ${{ env.PROVIDER }}
+          BENCH_MODEL: ${{ env.MODEL }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_AI_API_KEY: ${{ secrets.GOOGLE_AI_API_KEY }}
+          GOOGLE_GEMINI_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
+          GIGACHAT_AUTH_KEY: ${{ secrets.GIGACHAT_AUTH_KEY }}
+          GIGACHAT_CREDENTIALS: ${{ secrets.GIGACHAT_CREDENTIALS }}
+          GIGACHAT_API_KEY: ${{ secrets.GIGACHAT_API_KEY }}
+          GIGACHAT_AUTHORIZATION_KEY: ${{ secrets.GIGACHAT_AUTHORIZATION_KEY }}
+          GIGACHAT_KEY: ${{ secrets.GIGACHAT_KEY }}
+        run: |
+          rm -rf benchmark-page-one
+          node scripts/run-page-model-qualification.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: page-gap-${{ matrix.key }}-${{ matrix.game }}
+          path: benchmark-page-one
+          if-no-files-found: error
+          retention-days: 14
+
+  summarize:
+    name: Page gap summary
+    needs: gap
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: page-gap-*
+          path: gaps
+          merge-multiple: false
+      - run: |
+          node - <<'NODE'
+          const fs=require('fs'),path=require('path'),rows=[];
+          for(const d of fs.readdirSync('gaps')){const f=path.join('gaps',d,'result.json');if(fs.existsSync(f))rows.push(JSON.parse(fs.readFileSync(f,'utf8')))}
+          fs.mkdirSync('summary',{recursive:true});fs.writeFileSync('summary/results.json',JSON.stringify(rows,null,2)+'\n');
+          fs.writeFileSync('summary/SUMMARY.md',['# Page gap-only rerun','',...rows.map(r=>`- ${r.label} / ${r.game_slug}: ${r.status} / contract=${r.structural_contract_ok} / ${r.error||''}`)].join('\n')+'\n');
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: page-gap-rerun-final-summary
+          path: summary
+          retention-days: 14
