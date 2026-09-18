@@ -1,0 +1,237 @@
+name: Complete model benchmark matrix
+
+on:
+  push:
+    branches: [benchmark/complete-matrix-20260918]
+    paths:
+      - '.github/workflows/complete-model-matrix-20260918.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      page: ${{ steps.matrix.outputs.page }}
+      review: ${{ steps.matrix.outputs.review }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: matrix
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const page=JSON.parse(fs.readFileSync('benchmarks/model-qualification-20260907/page-results.json','utf8')).records;
+          const review=JSON.parse(fs.readFileSync('benchmarks/model-qualification-20260907/review-results.json','utf8')).records;
+          const models=[
+            ['giga','gigachat-3-ultra','GigaChat 3 Ultra','gigachat','GigaChat-3-Ultra'],
+            ['gem38','gemini-3-8-flash','Gemini 3.8 Flash','gemini','gemini-3.8-flash'],
+            ['gem37','gemini-3-7-flash','Gemini 3.7 Flash','gemini','gemini-3.7-flash'],
+            ['qwen38','qwen3-8-27b','Qwen 3.8 27B','groq','qwen/qwen3.8-27b'],
+            ['qwen36','qwen3-6-27b','Qwen 3.6 27B','groq','qwen/qwen3.6-27b'],
+            ['gpt120','gpt-oss-120b','GPT-OSS 120B','groq','openai/gpt-oss-120b'],
+            ['gpt20','gpt-oss-20b','GPT-OSS 20B','groq','openai/gpt-oss-20b'],
+            ['glm','glm-5-2-free','GLM 5.2','openrouter','z-ai/glm-5.2:free'],
+            ['nemu','nemotron-3-ultra-free','Nemotron 3 Ultra','openrouter','nvidia/nemotron-3-ultra-550b-a55b:free'],
+            ['nems','nemotron-3-super-free','Nemotron 3 Super','openrouter','nvidia/nemotron-3-super-120b-a12b:free'],
+            ['mm27','minimax-m2-7-free','MiniMax M2.7','openrouter','minimax/minimax-m2.7:free'],
+            ['mm3','minimax-m3-free','MiniMax M3','openrouter','minimax/minimax-m3:free'],
+            ['dots','dots3-note-free','Dots3-Note Preview','openrouter','dots-studio/dots-3-note-preview:free'],
+            ['gem31','gemma-4-31b-free','Gemma 4 31B','openrouter','google/gemma-4-31b-it:free'],
+            ['gem26','gemma-4-26b-a4b-free','Gemma 4 26B A4B','openrouter','google/gemma-4-26b-a4b-it:free']
+          ].map(([key,id,label,provider,model])=>({key,id,label,provider,model}));
+          const games=[
+            ['dangerous-dave-in-the-haunted-mansion','Dangerous Dave in the Haunted Mansion','1991'],
+            ['far-cry','Far Cry','2004'],
+            ['jack-orlando-a-cinematic-adventure-1997','Jack Orlando: A Cinematic Adventure','1997'],
+            ['mafia','Mafia: The City of Lost Heaven','2002'],
+            ['mass-effect-2007','Mass Effect','2007'],
+            ['wolfenstein-3d','Wolfenstein 3D','1992'],
+            ['spore','Spore','2008']
+          ].map(([game,title,year])=>({game,title,year}));
+          const pageHas=r=>!!r&&(String(r.subtitle||'').trim()||String(r.description||'').trim()||(r.features||[]).length);
+          const reviewHas=r=>!!r&&String(r.review||'').trim();
+          const pmap=new Map(page.map(r=>[`${r.model_id}::${r.game_slug}`,r]));
+          const rmap=new Map(review.map(r=>[`${r.model_id}::${r.game_slug}`,r]));
+          const pm=[],rm=[];
+          for(const m of models){
+            for(const g of games){if(!pageHas(pmap.get(`${m.id}::${g.game}`)))pm.push({...m,...g});}
+            for(const g of games.filter(x=>x.game==='mafia'||x.game==='spore')){if(!reviewHas(rmap.get(`${m.id}::${g.game}`)))rm.push({...m,...g});}
+          }
+          console.log(`Missing Page text cells: ${pm.length}`); console.log(`Missing Review text cells: ${rm.length}`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`page=${JSON.stringify(pm)}\nreview=${JSON.stringify(rm)}\n`);
+          NODE
+
+  page:
+    needs: prepare
+    if: ${{ needs.prepare.outputs.page != '[]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include: ${{ fromJSON(needs.prepare.outputs.page) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - uses: actions/download-artifact@v4
+        with:
+          name: page-evidence-${{ matrix.game }}
+          path: benchmark-evidence/${{ matrix.game }}
+          github-token: ${{ github.token }}
+          repository: nkuchenov-hash/Igropoisk
+          run-id: '34121244832'
+      - name: Generate missing Page cell
+        env:
+          BENCH_GAME: ${{ matrix.game }}
+          BENCH_TITLE: ${{ matrix.title }}
+          BENCH_YEAR: ${{ matrix.year }}
+          BENCH_ATTEMPT: completion-20260918
+          BENCH_ID: ${{ matrix.id }}
+          BENCH_LABEL: ${{ matrix.label }}
+          BENCH_PROVIDER: ${{ matrix.provider }}
+          BENCH_MODEL: ${{ matrix.model }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_AI_API_KEY: ${{ secrets.GOOGLE_AI_API_KEY }}
+          GOOGLE_GEMINI_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
+          GIGACHAT_AUTH_KEY: ${{ secrets.GIGACHAT_AUTH_KEY }}
+          GIGACHAT_CREDENTIALS: ${{ secrets.GIGACHAT_CREDENTIALS }}
+          GIGACHAT_API_KEY: ${{ secrets.GIGACHAT_API_KEY }}
+          GIGACHAT_AUTHORIZATION_KEY: ${{ secrets.GIGACHAT_AUTHORIZATION_KEY }}
+          GIGACHAT_KEY: ${{ secrets.GIGACHAT_KEY }}
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            rm -rf benchmark-page-one
+            node scripts/run-page-model-qualification.mjs || true
+            if node -e "const r=require('./benchmark-page-one/result.json');process.exit((String(r.subtitle||'').trim()||String(r.description||'').trim()||(r.features||[]).length)?0:1)"; then break; fi
+            sleep $((20*attempt))
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: completion-page-${{ matrix.key }}-${{ matrix.game }}
+          path: benchmark-page-one
+          if-no-files-found: error
+          retention-days: 14
+
+  review:
+    needs: [prepare, page]
+    if: ${{ always() && needs.prepare.outputs.review != '[]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include: ${{ fromJSON(needs.prepare.outputs.review) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - uses: actions/download-artifact@v4
+        with:
+          name: review-evidence-${{ matrix.game }}
+          path: benchmark-evidence/${{ matrix.game }}
+          github-token: ${{ github.token }}
+          repository: nkuchenov-hash/Igropoisk
+          run-id: '34121303222'
+      - name: Generate missing Review cell
+        env:
+          BENCH_GAME: ${{ matrix.game }}
+          BENCH_TITLE: ${{ matrix.title }}
+          BENCH_YEAR: ${{ matrix.year }}
+          BENCH_ID: ${{ matrix.id }}
+          BENCH_LABEL: ${{ matrix.label }}
+          BENCH_PROVIDER: ${{ matrix.provider }}
+          BENCH_MODEL: ${{ matrix.model }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_AI_API_KEY: ${{ secrets.GOOGLE_AI_API_KEY }}
+          GOOGLE_GEMINI_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
+          GIGACHAT_AUTH_KEY: ${{ secrets.GIGACHAT_AUTH_KEY }}
+          GIGACHAT_CREDENTIALS: ${{ secrets.GIGACHAT_CREDENTIALS }}
+          GIGACHAT_API_KEY: ${{ secrets.GIGACHAT_API_KEY }}
+          GIGACHAT_AUTHORIZATION_KEY: ${{ secrets.GIGACHAT_AUTHORIZATION_KEY }}
+          GIGACHAT_KEY: ${{ secrets.GIGACHAT_KEY }}
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            rm -rf benchmark-review-one
+            node scripts/run-review-model-qualification.mjs || true
+            if node -e "const r=require('./benchmark-review-one/result.json');process.exit(String(r.review||'').trim()?0:1)"; then break; fi
+            sleep $((30*attempt))
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: completion-review-${{ matrix.key }}-${{ matrix.game }}
+          path: benchmark-review-one
+          if-no-files-found: error
+          retention-days: 14
+
+  finalize:
+    needs: [prepare, page, review]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: benchmark/complete-matrix-20260918
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: completion-page-*
+          path: /tmp/page
+          merge-multiple: false
+        continue-on-error: true
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: completion-review-*
+          path: /tmp/review
+          merge-multiple: false
+        continue-on-error: true
+      - name: Merge new outputs and write matrix status
+        run: |
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const dir='benchmarks/model-qualification-20260907';
+          const pagePath=`${dir}/page-results.json`, reviewPath=`${dir}/review-results.json`;
+          const page=JSON.parse(fs.readFileSync(pagePath,'utf8')), review=JSON.parse(fs.readFileSync(reviewPath,'utf8'));
+          function files(root){if(!fs.existsSync(root))return[];const out=[];for(const d of fs.readdirSync(root)){const f=path.join(root,d,'result.json');if(fs.existsSync(f))out.push(f)}return out}
+          function pageNorm(r){return {game_slug:r.game_slug,game_title:r.game_title,year:r.year,model_id:r.id,model_label:r.label,status:r.status,subtitle:r.subtitle||'',description:r.description||'',features:r.features||[],structural_ok:!!r.structural_contract_ok,subtitle_words:r.subtitle_words||0,description_words:r.description_words||0,features_count:r.features_count||0,error:r.error||'',source_run:'Matrix completion 2026-09-18'}}
+          function reviewNorm(r){return {game_slug:r.game_slug,game_title:r.game_title,year:r.year,model_id:r.id,model_label:r.label,status:r.status,review:r.review||'',review_words:r.review_words||0,section_count:r.section_count||0,structural_ok:!!r.structural_contract_ok,error:r.error||'',source_run:'Matrix completion 2026-09-18'}}
+          function pHas(r){return !!r&&(String(r.subtitle||'').trim()||String(r.description||'').trim()||(r.features||[]).length)}
+          function rHas(r){return !!r&&String(r.review||'').trim()}
+          function merge(base, incoming, norm, has){const map=new Map(base.records.map((r,i)=>[`${r.model_id}::${r.game_slug}`,i]));for(const f of incoming){const n=norm(JSON.parse(fs.readFileSync(f,'utf8'))),k=`${n.model_id}::${n.game_slug}`,i=map.get(k);if(!has(n))continue;if(i==null){base.records.push(n);map.set(k,base.records.length-1)}else if(!has(base.records[i]))base.records[i]=n;}}
+          merge(page,files('/tmp/page'),pageNorm,pHas); merge(review,files('/tmp/review'),reviewNorm,rHas);
+          fs.writeFileSync(pagePath,JSON.stringify(page,null,2)+'\n'); fs.writeFileSync(reviewPath,JSON.stringify(review,null,2)+'\n');
+          const models=[['gigachat-3-ultra','GigaChat 3 Ultra'],['gemini-3-8-flash','Gemini 3.8 Flash'],['gemini-3-7-flash','Gemini 3.7 Flash'],['qwen3-8-27b','Qwen 3.8 27B'],['qwen3-6-27b','Qwen 3.6 27B'],['gpt-oss-120b','GPT-OSS 120B'],['gpt-oss-20b','GPT-OSS 20B'],['glm-5-2-free','GLM 5.2'],['nemotron-3-ultra-free','Nemotron 3 Ultra'],['nemotron-3-super-free','Nemotron 3 Super'],['minimax-m2-7-free','MiniMax M2.7'],['minimax-m3-free','MiniMax M3'],['dots3-note-free','Dots3-Note Preview'],['gemma-4-31b-free','Gemma 4 31B'],['gemma-4-26b-a4b-free','Gemma 4 26B A4B']];
+          const games=['dangerous-dave-in-the-haunted-mansion','far-cry','jack-orlando-a-cinematic-adventure-1997','mafia','mass-effect-2007','wolfenstein-3d','spore'], rGames=['mafia','spore'];
+          const pm=new Map(page.records.map(r=>[`${r.model_id}::${r.game_slug}`,r])), rm=new Map(review.records.map(r=>[`${r.model_id}::${r.game_slug}`,r]));
+          const rows=models.map(([id,label])=>({id,label,page:games.filter(g=>pHas(pm.get(`${id}::${g}`))).length,review:rGames.filter(g=>rHas(rm.get(`${id}::${g}`))).length}));
+          const complete=rows.every(x=>x.page===7&&x.review===2);
+          const md=['# Final benchmark matrix completion','',`Complete: **${complete?'YES':'NO'}**`,'','| Model | Page | Review |','|---|---:|---:|',...rows.map(x=>`| ${x.label} | ${x.page}/7 | ${x.review}/2 |`),'',complete?'All 15 models have comparable text for every exercise.':'Remaining technical gaps must be rerun; do not call the benchmark 100% complete.',''];
+          fs.writeFileSync(`${dir}/MATRIX_COMPLETION.md`,md.join('\n'));
+          console.log(md.join('\n'));
+          NODE
+      - name: Commit updated benchmark data
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add benchmarks/model-qualification-20260907/page-results.json benchmarks/model-qualification-20260907/review-results.json benchmarks/model-qualification-20260907/MATRIX_COMPLETION.md
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Complete benchmark matrix outputs'
+          git push origin HEAD:benchmark/complete-matrix-20260918
