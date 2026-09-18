@@ -1,0 +1,105 @@
+name: Materialize final model benchmark results
+
+on:
+  push:
+    branches: [benchmark/final-gap-rerun-20260909]
+    paths:
+      - '.github/workflows/materialize-final-model-results-20260918.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: benchmark/final-gap-rerun-20260909
+          fetch-depth: 0
+      - name: Download final Page gap summary
+        uses: actions/download-artifact@v4
+        with:
+          name: page-gap-rerun-final-summary
+          path: /tmp/page-gap
+          github-token: ${{ github.token }}
+          repository: nkuchenov-hash/Igropoisk
+          run-id: '34403213261'
+      - name: Download final Review gap summary
+        uses: actions/download-artifact@v4
+        with:
+          name: review-gap-rerun-final-summary
+          path: /tmp/review-gap
+          github-token: ${{ github.token }}
+          repository: nkuchenov-hash/Igropoisk
+          run-id: '34403288840'
+      - name: Merge final gap outputs into public benchmark data
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const dir='benchmarks/model-qualification-20260907';
+          function pageNorm(r){return {game_slug:r.game_slug,game_title:r.game_title,year:r.year,model_id:r.id,model_label:r.label,status:r.status,subtitle:r.subtitle||'',description:r.description||'',features:r.features||[],structural_ok:!!r.structural_contract_ok,subtitle_words:r.subtitle_words||0,description_words:r.description_words||0,features_count:r.features_count||0,error:r.error||'',source_run:'Final gap-only rerun 2026-09-09'}}
+          function reviewNorm(r){return {game_slug:r.game_slug,game_title:r.game_title,year:r.year,model_id:r.id,model_label:r.label,status:r.status,review:r.review||'',review_words:r.review_words||0,section_count:r.section_count||0,structural_ok:!!r.structural_contract_ok,error:r.error||'',source_run:'Final gap-only rerun 2026-09-09'}}
+          function merge(basePath,gapPath,norm,textField){const base=JSON.parse(fs.readFileSync(basePath,'utf8'));const gap=JSON.parse(fs.readFileSync(gapPath,'utf8'));const map=new Map(base.records.map((r,i)=>[`${r.model_id}::${r.game_slug}`,i]));for(const raw of gap){const r=norm(raw),key=`${r.model_id}::${r.game_slug}`,i=map.get(key);if(i==null){base.records.push(r);map.set(key,base.records.length-1);continue}const old=base.records[i];const newHasText=textField==='review'?!!String(r.review||'').trim():!!(String(r.subtitle||'').trim()||String(r.description||'').trim()||(r.features||[]).length);const oldHasText=textField==='review'?!!String(old.review||'').trim():!!(String(old.subtitle||'').trim()||String(old.description||'').trim()||(old.features||[]).length);if(newHasText||!oldHasText)base.records[i]=r;}fs.writeFileSync(basePath,JSON.stringify(base,null,2)+'\n')}
+          merge(`${dir}/page-results.json`,'/tmp/page-gap/results.json',pageNorm,'page');
+          merge(`${dir}/review-results.json`,'/tmp/review-gap/results.json',reviewNorm,'review');
+          NODE
+      - name: Write final decision report
+        run: |
+          cat > benchmarks/model-qualification-20260907/FINAL_REPORT.md <<'EOF'
+          # Игропоиск — финальный результат теста моделей
+
+          Обновлено: 2026-09-18. Повторные gap-only прогоны полностью завершены 2026-09-09 и слиты в публичную базу результатов.
+
+          ## Финальное решение
+
+          **Page Model: Qwen 3.6 27B.**
+
+          Одна Qwen 3.6 27B делает весь Page Editorial Bundle конкретной игры: Subtitle + Description + Features. После повторного прогона она закрыла последнюю проблемную Page-клетку (Wolfenstein 3D) и показала наиболее подходящий баланс полного Page-контракта, редакционного русского и доступности через прямой Groq route. Page всё равно обязан проходить claim/evidence audit: структурный pass сам по себе не гарантирует отсутствие выдуманных деталей.
+
+          **Review Model: GigaChat 3 Ultra.**
+
+          Review — отдельный независимый модуль. GigaChat не провалил Review: его подтверждённые полноразмерные обзоры Mafia и Spore прошли long-form structural contract. Повторный gap-run для GigaChat Review не требовался именно потому, что обе Review-клетки уже были закрыты. Его слабость относится к Page-формату, а не к обзорам.
+
+          ## Что показал финальный повтор
+
+          - Page gap-only run `34403213261`: 68 ранее проблемных клеток, завершён успешно.
+          - Review gap-only run `34403288840`: 28 ранее проблемных клеток, завершён успешно.
+          - Qwen 3.6 / Wolfenstein 3D Page: contract pass. Это закрывает её Page-матрицу.
+          - Qwen 3.6 / Spore Review: 1857 слов, 7 разделов, contract pass. Mafia Review не завершился из-за Groq OTPM limit, поэтому Qwen не выбран Review-моделью.
+          - Qwen 3.8 / Mass Effect Page: contract pass; Dave повторно упёрся в Groq limit. Spore Review: 1240 слов, contract fail.
+          - GigaChat / Dave и Far Cry Page: повторно нарушил Page block format. Это подтверждённая слабость именно как Page-builder.
+          - Gemini 3.7 / Mafia Review: 1436 слов, 8 разделов — текст получен, но ниже минимального объёма контракта.
+          - Gemini 3.8 Page при рабочем API повторно выдавал неполные Page bundles; остальные клетки снова ограничивались quota/high-demand.
+          - Nemotron 3 Ultra: Page passes на Far Cry, Jack Orlando и Mafia; Mafia Review 1614 слов / 9 разделов — contract pass, Spore Review 986 слов — fail.
+          - Nemotron 3 Super: Spore Page pass; Spore Review 1678 слов / 8 разделов, но текущий validator не принял итоговый контракт; модель остаётся нестабильной по формату.
+          - OpenRouter-only GLM / MiniMax / Gemma и часть других повторов упёрлись в отсутствие доступных credits/route. Это фиксируется как operational availability, а не как редакционный проигрыш.
+
+          ## Что именно утверждено
+
+          1. **Page и Review выбираются отдельно.** Они не обязаны использовать одну и ту же модель.
+          2. Внутри одной страницы нельзя смешивать модели: Qwen 3.6 делает Subtitle + Description + Features целиком.
+          3. Review пишет GigaChat 3 Ultra отдельным pipeline и его failure никогда не блокирует публикацию Game Page.
+          4. Provider errors (402/429/503/OAuth) хранятся отдельно от editorial quality.
+          5. Любой готовый Page/Review проходит evidence/claim audit перед публикацией.
+
+          ## Production selection
+
+          | Модуль | Утверждённая модель | Статус |
+          |---|---|---|
+          | Game Page: Subtitle + Description + Features | **Qwen 3.6 27B** | **APPROVED** |
+          | Review | **GigaChat 3 Ultra** | **APPROVED** |
+
+          ## Где смотреть тексты
+
+          Публичная страница сравнения читает `page-results.json` и `review-results.json`. В них теперь слиты исходные успешные outputs и результаты финального gap-only rerun. Повтор заменяет только соответствующую проблемную клетку; старый успешный текст не заменяется поздней технической ошибкой провайдера.
+          EOF
+      - name: Commit materialized outputs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add benchmarks/model-qualification-20260907/page-results.json benchmarks/model-qualification-20260907/review-results.json benchmarks/model-qualification-20260907/FINAL_REPORT.md
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Materialize final Page and Review benchmark results'
+          git push origin HEAD:benchmark/final-gap-rerun-20260909
