@@ -1,0 +1,46 @@
+name: Materialize benchmark failure audit
+
+on:
+  push:
+    branches: [benchmark/complete-matrix-20260918]
+    paths:
+      - 'benchmarks/model-qualification-20260907/MATRIX_COMPLETION.md'
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: benchmark/complete-matrix-20260918
+          fetch-depth: 0
+      - name: Build full failure audit
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const dir='benchmarks/model-qualification-20260907';
+          const page=JSON.parse(fs.readFileSync(`${dir}/page-results.json`,'utf8')).records;
+          const review=JSON.parse(fs.readFileSync(`${dir}/review-results.json`,'utf8')).records;
+          const wc=s=>String(s||'').trim().split(/\s+/u).filter(Boolean).length;
+          const pageHas=r=>!!r&&(String(r.subtitle||'').trim()||String(r.description||'').trim()||(r.features||[]).length);
+          const reviewHas=r=>!!r&&String(r.review||'').trim();
+          function pageReasons(r){const a=[];if(!pageHas(r)){a.push(`ТЕХНИЧЕСКИЙ ПРОВАЛ: текста нет${r?.error?` — ${r.error}`:''}`);return a;}if(!String(r.subtitle||'').trim())a.push('нет Subtitle');else if((r.subtitle_words||wc(r.subtitle))>18)a.push(`Subtitle слишком длинный: ${r.subtitle_words||wc(r.subtitle)} слов > 18`);if(!String(r.description||'').trim())a.push('нет Description');else {const n=r.description_words||wc(r.description);if(n<100)a.push(`Description слишком короткий: ${n} слов < 100`);if(n>220)a.push(`Description слишком длинный: ${n} слов > 220`);}const f=r.features||[];if(f.length<4)a.push(`слишком мало Features: ${f.length} < 4`);if(f.length>6)a.push(`слишком много Features: ${f.length} > 6`);const long=f.map(x=>[x,wc(x)]).filter(([,n])=>n>10);if(long.length)a.push(`слишком длинные Features: ${long.map(([x,n])=>`«${x}» (${n} слов)`).join('; ')}`);if(!r.structural_ok&&a.length===0)a.push('нарушен строгий формат/маркеры Page-контракта');if(r.error&&!a.some(x=>x.includes(r.error)))a.push(`runner: ${r.error}`);return a;}
+          function reviewReasons(r){const a=[];if(!reviewHas(r)){a.push(`ТЕХНИЧЕСКИЙ ПРОВАЛ: обзора нет${r?.error?` — ${r.error}`:''}`);return a;}const w=r.review_words||wc(r.review),s=r.section_count||0;if(w<1600)a.push(`обзор слишком короткий: ${w} слов < 1600`);if(w>3200)a.push(`обзор слишком длинный: ${w} слов > 3200`);if(s<7)a.push(`слишком мало разделов: ${s} < 7`);if(s>9)a.push(`слишком много разделов: ${s} > 9`);if(!r.structural_ok&&a.length===0)a.push('нарушен строгий формат/маркеры Review-контракта');if(r.error&&!a.some(x=>x.includes(r.error)))a.push(`runner: ${r.error}`);return a;}
+          const badPage=page.filter(r=>!r.structural_ok),badReview=review.filter(r=>!r.structural_ok);
+          const out=['# Полный аудит неудачных результатов моделей','',`Обновлено: ${new Date().toISOString()}.`,'','Здесь сохранены **все неудачные результаты**, а не только победители. Технические ошибки API отделены от ошибок самой модели. Если модель выдала текст, сам текст приводится ниже, чтобы можно было увидеть причину провала.','',`## Page — не прошли контракт (${badPage.length})`,''];
+          for(const r of badPage){out.push(`### ${r.model_label} — ${r.game_title}`,'',`**Причина:** ${pageReasons(r).join('; ')}.`,'',`**Источник результата:** ${r.source_run||'—'}.`,'', '**Subtitle**','',String(r.subtitle||'_[нет текста]_'),'','**Description**','',String(r.description||'_[нет текста]_'),'','**Features**','',...(r.features||[]).length?(r.features||[]).map(x=>`- ${x}`):['_[нет текста]_'],'');}
+          out.push(`## Review — не прошли контракт (${badReview.length})`,'');
+          for(const r of badReview){out.push(`### ${r.model_label} — ${r.game_title}`,'',`**Причина:** ${reviewReasons(r).join('; ')}.`,'',`**Источник результата:** ${r.source_run||'—'}.`,'',`**Фактический результат:** ${r.review_words||0} слов, ${r.section_count||0} разделов.`,'',String(r.review||'_[обзор не получен]_'),'');}
+          fs.writeFileSync(`${dir}/FAILURE_AUDIT.md`,out.join('\n')+'\n');
+          NODE
+      - name: Commit failure audit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add benchmarks/model-qualification-20260907/FAILURE_AUDIT.md
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Publish complete benchmark failure audit'
+          git push origin HEAD:benchmark/complete-matrix-20260918
