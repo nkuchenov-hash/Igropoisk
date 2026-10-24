@@ -70,6 +70,40 @@ if (/calendarFile|injectPreloads\s*\(/.test(coverCache)) {
   fail('Release cover parser still rewrites calendar/index.html.');
 }
 
+if (process.env.GITHUB_ACTIONS === 'true') {
+  const headers = { Accept: 'application/vnd.github+json', 'User-Agent': 'igropoisk-news-diagnostic' };
+  try {
+    const response = await fetch('https://api.github.com/repos/nkuchenov-hash/Igropoisk/actions/workflows/news-pipeline.yml', {
+      headers,
+      signal: AbortSignal.timeout(15000)
+    });
+    const workflow = await response.json();
+    console.log(`[news/workflow-state] HTTP ${response.status}: ${JSON.stringify(workflow)}`);
+    if (workflow?.id) {
+      const runsResponse = await fetch(`https://api.github.com/repos/nkuchenov-hash/Igropoisk/actions/workflows/${workflow.id}/runs?per_page=30`, {
+        headers,
+        signal: AbortSignal.timeout(15000)
+      });
+      const runs = await runsResponse.json();
+      const summary = (runs.workflow_runs || []).map(run => ({
+        id: run.id,
+        event: run.event,
+        status: run.status,
+        conclusion: run.conclusion,
+        created_at: run.created_at,
+        updated_at: run.updated_at,
+        head_branch: run.head_branch,
+        head_sha: run.head_sha,
+        run_number: run.run_number,
+        run_attempt: run.run_attempt
+      }));
+      console.log(`[news/workflow-runs] HTTP ${runsResponse.status}: ${JSON.stringify(summary)}`);
+    }
+  } catch (error) {
+    console.log(`[news/workflow-state] diagnostic failed: ${error.message}`);
+  }
+}
+
 if (errors.length) {
   throw new Error(`Production boundary validation failed:\n${errors.map(error => `- ${error}`).join('\n')}`);
 }
